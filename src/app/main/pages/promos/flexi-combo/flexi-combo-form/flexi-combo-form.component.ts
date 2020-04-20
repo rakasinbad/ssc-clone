@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -22,6 +23,7 @@ import { MatCheckboxChange, MatDialog, MatRadioChange } from '@angular/material'
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
+import { FuseProgressBarService } from '@fuse/components/progress-bar/progress-bar.service';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
@@ -34,26 +36,34 @@ import {
 import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
+import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { Brand } from 'app/shared/models/brand.model';
 import { CalculationMechanism } from 'app/shared/models/calculation-mechanism.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
-import { EStatus, IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import {
+    EStatus,
+    IBreadcrumbs,
+    IFooterActionConfig,
+    LifecyclePlatform,
+} from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
-import { ConditionDto, CreateFlexiComboDto } from '../models';
+import { ConditionDto, CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../models';
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
+import { FlexiComboSelectors } from '../store/selectors';
 
 type TmpKey = 'imgSuggestion';
 
@@ -65,8 +75,9 @@ type TmpKey = 'imgSuggestion';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FlexiComboFormComponent implements OnInit, OnDestroy {
+export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
+    conditionForm: FormArray;
     pageType: string;
     tmp: Partial<Record<TmpKey, FormControl>> = {};
 
@@ -79,15 +90,16 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
     segmentBase = this._$helperService.segmentationBase();
+    eSegmentBase = SegmentationBase;
 
     minStartDate: Date = new Date();
     maxStartDate: Date = null;
     minEndDate: Date = new Date();
     maxEndDate: Date = null;
 
-    isEdit$: Observable<boolean>;
+    flexiCombo: FlexiCombo = null;
+
     isLoading$: Observable<boolean>;
-    isLoadingDistrict$: Observable<boolean>;
 
     private strictISOString = false;
     private _breadCrumbs: IBreadcrumbs[] = [
@@ -106,6 +118,33 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         },
     ];
 
+    private footerConfig: IFooterActionConfig = {
+        progress: {
+            title: {
+                label: 'Skor tambah toko',
+                active: false,
+            },
+            value: {
+                active: false,
+            },
+            active: false,
+        },
+        action: {
+            save: {
+                label: 'Save',
+                active: true,
+            },
+            draft: {
+                label: 'Save Draft',
+                active: false,
+            },
+            cancel: {
+                label: 'Cancel',
+                active: true,
+            },
+        },
+    };
+
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -117,46 +156,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromFlexiCombo.FeatureState>,
+        private _fuseProgressBarService: FuseProgressBarService,
         private _$applyDialogFactory: ApplyDialogFactoryService<ElementRef<HTMLElement>>,
         private _$errorMessage: ErrorMessageService,
         private _$helperService: HelperService,
         private _$notice: NoticeService
     ) {
-        // Set footer action
-        this.store.dispatch(
-            UiActions.setFooterActionConfig({
-                payload: {
-                    progress: {
-                        title: {
-                            label: 'Skor tambah toko',
-                            active: false,
-                        },
-                        value: {
-                            active: false,
-                        },
-                        active: false,
-                    },
-                    action: {
-                        save: {
-                            label: 'Save',
-                            active: true,
-                        },
-                        draft: {
-                            label: 'Save Draft',
-                            active: false,
-                        },
-                        cancel: {
-                            label: 'Cancel',
-                            active: true,
-                        },
-                    },
-                },
-            })
-        );
-
-        this.store.dispatch(UiActions.showFooterAction());
-
-        this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
+        // this.store.dispatch(UiActions.showFooterAction());
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -168,6 +174,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._initPage();
+    }
+
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
@@ -255,12 +268,48 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    getApplyBonusSku(idx: number): Catalogue {
+    getApplyBonusSku(idx: number): Selection {
         return this.form.get(['conditions', idx, 'benefitCatalogueId']).value || null;
     }
 
     getBenefitType(idx: number): BenefitType {
         return this.form.get(['conditions', idx, 'benefitType']).value;
+    }
+
+    getChosenBrand(): Selection[] {
+        return this.form.get('chosenBrand').value || [];
+    }
+
+    getChosenFaktur(): Selection[] {
+        return this.form.get('chosenInvoice').value || [];
+    }
+
+    getChosenSku(): Selection[] {
+        return this.form.get('chosenSku').value || [];
+    }
+
+    getChosenStore(): Selection[] {
+        return this.form.get('chosenStore').value || [];
+    }
+
+    getChosenStoreChannel(): Selection[] {
+        return this.form.get('chosenStoreChannel').value || [];
+    }
+
+    getChosenStoreCluster(): Selection[] {
+        return this.form.get('chosenStoreCluster').value || [];
+    }
+
+    getChosenStoreGroup(): Selection[] {
+        return this.form.get('chosenStoreGroup').value || [];
+    }
+
+    getChosenStoreType(): Selection[] {
+        return this.form.get('chosenStoreType').value || [];
+    }
+
+    getChosenWarehouse(): Selection[] {
+        return this.form.get('chosenWarehouse').value || [];
     }
 
     /**
@@ -474,7 +523,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev) {
             this.form.get(fieldName).setValue(null);
         } else {
-            this.form.get(fieldName).setValue(ev);
+            const newBenefitSku: Selection = {
+                id: ev.id,
+                label: ev.name,
+                group: 'catalogues',
+            };
+
+            this.form.get(fieldName).setValue(newBenefitSku);
         }
     }
 
@@ -491,7 +546,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenBrand').setValue(null);
         } else {
-            this.form.get('chosenBrand').setValue(ev);
+            const newBrands: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'brand',
+            }));
+
+            this.form.get('chosenBrand').setValue(newBrands);
         }
     }
 
@@ -765,7 +826,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenInvoice').setValue(null);
         } else {
-            this.form.get('chosenInvoice').setValue(ev);
+            const newFaktur: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'faktur',
+            }));
+
+            this.form.get('chosenInvoice').setValue(newFaktur);
         }
     }
 
@@ -782,7 +849,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenSku').setValue(null);
         } else {
-            this.form.get('chosenSku').setValue(ev);
+            const newSku: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'catalogues',
+            }));
+
+            this.form.get('chosenSku').setValue(newSku);
         }
     }
 
@@ -799,7 +872,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenStoreChannel').setValue(null);
         } else {
-            this.form.get('chosenStoreChannel').setValue(ev);
+            const newStoreChannels: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-channels',
+            }));
+
+            this.form.get('chosenStoreChannel').setValue(newStoreChannels);
         }
     }
 
@@ -816,7 +895,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenStoreCluster').setValue(null);
         } else {
-            this.form.get('chosenStoreCluster').setValue(ev);
+            const newStoreClusters: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-clusters',
+            }));
+
+            this.form.get('chosenStoreCluster').setValue(newStoreClusters);
         }
     }
 
@@ -833,7 +918,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenStoreGroup').setValue(null);
         } else {
-            this.form.get('chosenStoreGroup').setValue(ev);
+            const newStoreGroups: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-groups',
+            }));
+
+            this.form.get('chosenStoreGroup').setValue(newStoreGroups);
         }
     }
 
@@ -850,7 +941,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenStoreType').setValue(null);
         } else {
-            this.form.get('chosenStoreType').setValue(ev);
+            const newStoreTypes: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-types',
+            }));
+
+            this.form.get('chosenStoreType').setValue(newStoreTypes);
         }
     }
 
@@ -867,7 +964,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenStore').setValue(null);
         } else {
-            this.form.get('chosenStore').setValue(ev);
+            const newStores: Selection[] = ev.map((item) => ({
+                id: item.store.id,
+                label: item.store.name,
+                group: 'supplier-stores',
+            }));
+
+            this.form.get('chosenStore').setValue(newStores);
         }
     }
 
@@ -884,7 +987,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         if (!ev.length) {
             this.form.get('chosenWarehouse').setValue(null);
         } else {
-            this.form.get('chosenWarehouse').setValue(ev);
+            const newWarehouses: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'warehouses',
+            }));
+
+            this.form.get('chosenWarehouse').setValue(newWarehouses);
         }
     }
 
@@ -1592,6 +1701,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
     private _createConditions(condition?: ConditionDto): FormGroup {
         return this.formBuilder.group({
+            id: null,
             conditionBase: [
                 (condition && condition.conditionBase) || ConditionBase.QTY,
                 [
@@ -1699,6 +1809,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                if (this.pageType === 'new') {
+                    // Display footer action
+                    this.store.dispatch(UiActions.showFooterAction());
+                }
+                break;
+
             case LifecyclePlatform.OnDestroy:
                 this.store.dispatch(FormActions.resetClickCancelButton());
 
@@ -1713,11 +1830,21 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 // Hide footer action
                 this.store.dispatch(UiActions.hideFooterAction());
 
+                // Reset core state flexiCombos
+                this.store.dispatch(FlexiComboActions.clearState());
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
 
             default:
+                // Set footer action
+                this.store.dispatch(
+                    UiActions.setFooterActionConfig({ payload: this.footerConfig })
+                );
+
+                this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
+
                 const { id } = this.route.snapshot.params;
 
                 if (id === 'new') {
@@ -1741,7 +1868,21 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                         },
                     ];
 
-                    // this.store.dispatch(WarehouseActions.fetchWarehouseRequest({ payload: id }));
+                    this.store.dispatch(FlexiComboActions.fetchFlexiComboRequest({ payload: id }));
+
+                    this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading).pipe(
+                        tap((isLoading) => {
+                            if (isLoading) {
+                                // this._fuseProgressBarService.show();
+                                // Hide footer action
+                                this.store.dispatch(UiActions.hideFooterAction());
+                            } else {
+                                // this._fuseProgressBarService.hide();
+                                // Display footer action
+                                this.store.dispatch(UiActions.showFooterAction());
+                            }
+                        })
+                    );
                 } else {
                     this.router.navigateByUrl('/pages/promos/flexi-combo');
                 }
@@ -1810,13 +1951,21 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
-                    RxwebValidators.alphaNumeric({
-                        allowWhiteSpace: false,
-                        message: this._$errorMessage.getErrorMessageNonState(
-                            'default',
-                            'alpha_num_pattern'
-                        ),
+                    /* ^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$ first character letter next allow alphanum hypen underscore */
+                    /* ^[\w-]+$ only allow alphanum hyphen underscore */
+                    RxwebValidators.pattern({
+                        expression: {
+                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$/,
+                        },
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    // RxwebValidators.alphaNumeric({
+                    //     allowWhiteSpace: false,
+                    //     message: this._$errorMessage.getErrorMessageNonState(
+                    //         'default',
+                    //         'alpha_num_pattern'
+                    //     ),
+                    // }),
                 ],
             ],
             promoName: [
@@ -1825,10 +1974,14 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
-                    RxwebValidators.alpha({
+                    RxwebValidators.alphaNumeric({
                         allowWhiteSpace: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    // RxwebValidators.alpha({
+                    //     allowWhiteSpace: true,
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    // }),
                 ],
             ],
             platform: [
@@ -1935,114 +2088,413 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             chosenStoreCluster: null,
         });
 
+        this.conditionForm = this.form.get('conditions') as FormArray;
+
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
     }
 
     private _initEditForm(): void {
-        // combineLatest([
-        //     this.store.select(FlexiComboSelectors.getAllFlexiCombo),
-        //     this.store.select(DropdownSelectors.getInvoiceGroupDropdownState)
-        // ])
-        //     .pipe(
-        //         filter(([row, invoices, temperatures, whValues]) => !!row),
-        //         takeUntil(this._unSubs$)
-        //     )
-        //     .subscribe(([row, invoices, temperatures, whValues]) => {
-        //         const whIdField = this.form.get('whId');
-        //         const whNameField = this.form.get('whName');
-        //         const leadTimeField = this.form.get('leadTime');
-        //         const invoiceField = this.form.get('invoices');
-        //         const temperatureField = this.form.get('temperature');
-        //         const whValueField = this.form.get('whValue');
-        //         const addressField = this.form.get('address');
-        //         const notesField = this.form.get('notes');
-        //         const districtField = this.form.get('district');
-        //         const urbanField = this.form.get('urban');
-        //         const postcodeField = this.form.get('postcode');
-        //         const lngField = this.form.get('lng');
-        //         const latField = this.form.get('lat');
-        //         if (row) {
-        //             if (row.code) {
-        //                 whIdField.setValue(row.code);
-        //             }
-        //             if (whIdField.invalid) {
-        //                 whIdField.markAsTouched();
-        //             }
-        //             if (row.name) {
-        //                 whNameField.setValue(row.name);
-        //             }
-        //             if (whNameField.invalid) {
-        //                 whNameField.markAsTouched();
-        //             }
-        //             if (row.leadTime) {
-        //                 leadTimeField.setValue(row.leadTime);
-        //             }
-        //             if (leadTimeField.invalid) {
-        //                 leadTimeField.markAsTouched();
-        //             }
-        //             if (row.warehouseInvoiceGroups && row.warehouseInvoiceGroups.length > 0) {
-        //                 const currInvoices = row.warehouseInvoiceGroups
-        //                     .map((v, i) => {
-        //                         return v && v.invoiceGroup.id
-        //                             ? invoices.findIndex(r => r.id === v.invoiceGroup.id) === -1
-        //                                 ? null
-        //                                 : v.invoiceGroup.id
-        //                             : null;
-        //                     })
-        //                     .filter(v => v !== null);
-        //                 invoiceField.setValue(currInvoices);
-        //                 if (invoiceField.invalid) {
-        //                     invoiceField.markAsTouched();
-        //                 }
-        //             }
-        //             if (row.warehouseTemperatureId) {
-        //                 temperatureField.setValue(row.warehouseTemperatureId);
-        //             }
-        //             if (temperatureField.invalid) {
-        //                 temperatureField.markAsTouched();
-        //             }
-        //             if (row.warehouseValueId) {
-        //                 whValueField.setValue(row.warehouseValueId);
-        //             }
-        //             if (whValueField.invalid) {
-        //                 whValueField.markAsTouched();
-        //             }
-        //             if (row.address) {
-        //                 addressField.setValue(row.address);
-        //             }
-        //             if (addressField.invalid) {
-        //                 addressField.markAsTouched();
-        //             }
-        //             if (row.noteAddress) {
-        //                 notesField.setValue(row.noteAddress);
-        //             }
-        //             if (notesField.invalid) {
-        //                 notesField.markAsTouched();
-        //             }
-        //             if (row.longitude) {
-        //                 lngField.setValue(row.longitude);
-        //             }
-        //             if (lngField.invalid) {
-        //                 lngField.markAsTouched();
-        //             }
-        //             if (row.latitude) {
-        //                 latField.setValue(row.latitude);
-        //             }
-        //             if (latField.invalid) {
-        //                 latField.markAsTouched();
-        //             }
-        //             if (row.urban) {
-        //                 if (row.urban.provinceId) {
-        //                     districtField.setValue(row.urban);
-        //                     urbanField.setValue(row.urban);
-        //                     postcodeField.setValue(row.urban.zipCode);
-        //                 }
-        //             }
-        //             this.form.markAsPristine();
-        //         }
-        //     });
+        this.store
+            .select(FlexiComboSelectors.getSelectedItem)
+            .pipe(
+                filter((row) => !!row),
+                tap((row) => {
+                    this.flexiCombo = row;
+                }),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe((row) => {
+                this._setEditForm(row);
+            });
+    }
+
+    private _setEditForm(row: FlexiCombo): void {
+        // console.log('ROW', row);
+        const promoSellerIdCtrl = this.form.get('promoId');
+        const promoNameCtrl = this.form.get('promoName');
+        const platformCtrl = this.form.get('platform');
+        const maxRedemptionCtrl = this.form.get('maxRedemption');
+        const promoBudgetCtrl = this.form.get('promoBudget');
+        const startDateCtrl = this.form.get('startDate');
+        const endDateCtrl = this.form.get('endDate');
+        const voucherCombineCtrl = this.form.get('allowCombineWithVoucher');
+        const firstBuyCtrl = this.form.get('firstBuy');
+        const triggerBaseCtrl = this.form.get('base');
+        const chosenSkuCtrl = this.form.get('chosenSku');
+        const chosenBrandCtrl = this.form.get('chosenBrand');
+        const chosenFakturCtrl = this.form.get('chosenInvoice');
+        const calculationMechanismCtrl = this.form.get('calculationMechanism');
+        const segmentationBaseCtrl = this.form.get('segmentationBase');
+        const chosenStoreCtrl = this.form.get('chosenStore');
+        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+        const chosenStoreTypeCtrl = this.form.get('chosenStoreType');
+        const chosenStoreGroupCtrl = this.form.get('chosenStoreGroup');
+        const chosenStoreChannelCtrl = this.form.get('chosenStoreChannel');
+        const chosenStoreClusterCtrl = this.form.get('chosenStoreCluster');
+
+        // Handle Promo Seller ID
+        if (row.externalId) {
+            promoSellerIdCtrl.setValue(row.externalId);
+        }
+
+        // Handle Promo Name
+        if (row.name) {
+            promoNameCtrl.setValue(row.name);
+        }
+
+        // Handle Platform
+        if (row.platform) {
+            platformCtrl.setValue(row.platform);
+        }
+
+        // Handle Max Redemption per Buyer
+        if (row.maxRedemptionPerStore) {
+            maxRedemptionCtrl.setValue(row.maxRedemptionPerStore);
+        }
+
+        // Handle Promo Budget
+        if (row.promoBudget) {
+            promoBudgetCtrl.setValue(row.promoBudget);
+        }
+
+        // Handle Start Date
+        if (row.startDate) {
+            startDateCtrl.setValue(moment(row.startDate));
+        }
+
+        // Handle End Date
+        if (row.endDate) {
+            endDateCtrl.setValue(moment(row.endDate));
+        }
+
+        // Handle Allow Combine with Voucher
+        if (row.voucherCombine) {
+            voucherCombineCtrl.setValue(row.voucherCombine);
+        }
+
+        // Handle First Buy
+        if (row.firstBuy) {
+            firstBuyCtrl.setValue(row.firstBuy);
+        }
+
+        // Handle Trigger Base
+        if (row.base) {
+            triggerBaseCtrl.setValue(row.base);
+
+            this._chosenBrandValidationByTriggerBase(row.base);
+            this._chosenInvoiceValidationByTriggerBase(row.base);
+            this._chosenSkuValidationByTriggerBase(row.base);
+
+            // Handle Trigger Base Sku
+            if (row.base === TriggerBase.SKU) {
+                // Handle Chosen Sku
+                if (row.promoCatalogues && row.promoCatalogues.length > 0) {
+                    const newCatalogues = _.orderBy(
+                        row.promoCatalogues.map((item) => ({
+                            id: item.catalogue.id,
+                            label: item.catalogue.name,
+                            group: 'catalogues',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenSkuCtrl.setValue(newCatalogues);
+                }
+            }
+
+            // Handle Trigger Base Brand
+            else if (row.base === TriggerBase.BRAND) {
+                // Handle Chosen Brand
+                if (row.promoBrands && row.promoBrands.length > 0) {
+                    const newBrands = _.orderBy(
+                        row.promoBrands.map((item) => ({
+                            id: item.brand.id,
+                            label: item.brand.name,
+                            group: 'brand',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenBrandCtrl.setValue(newBrands);
+                }
+            }
+
+            // Handle Trigger Base Faktur
+            else if (row.base === TriggerBase.INVOICE) {
+                // Handle Chosen Fakture
+                if (row.promoInvoiceGroups && row.promoInvoiceGroups.length > 0) {
+                    const newInvoiceGroups = _.orderBy(
+                        row.promoInvoiceGroups.map((item) => ({
+                            id: item.invoiceGroup.id,
+                            label: item.invoiceGroup.name,
+                            group: 'faktur',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenFakturCtrl.setValue(newInvoiceGroups);
+                }
+            }
+        }
+
+        // Handle Conditions & Benefit
+        if (row.promoConditions && row.promoConditions.length > 0) {
+            const newPromoConditions: ConditionDto[] = _.orderBy(
+                row.promoConditions.map((item) => {
+                    return new ConditionDto({
+                        id: item.id,
+                        conditionBase: item.conditionBase,
+                        conditionQty: item.conditionQty,
+                        conditionValue: item.conditionValue,
+                        benefitType: item.benefitType,
+                        benefitCatalogueId: item.benefitCatalogueId,
+                        catalogue: item.catalogue
+                            ? {
+                                  id: item.catalogue.id,
+                                  label: item.catalogue.name,
+                                  group: 'catalogues',
+                              }
+                            : null,
+                        benefitBonusQty: item.benefitBonusQty,
+                        multiplication: item.multiplication,
+                        benefitRebate: item.benefitRebate,
+                        benefitDiscount: item.benefitDiscount,
+                        benefitMaxRebate: item.benefitMaxRebate,
+                    });
+                }),
+                ['id'],
+                ['asc']
+            );
+
+            this._setEditConditionForm(row, newPromoConditions);
+        }
+
+        // Handle Calculation Mechanism
+        if (typeof row.isComulative === 'boolean') {
+            const newCalculationMechanism = row.isComulative
+                ? CalculationMechanism.CUMULATIVE
+                : CalculationMechanism.NON_CUMULATIVE;
+
+            calculationMechanismCtrl.setValue(newCalculationMechanism);
+        }
+
+        // Handle Segmentation Base
+        if (row.target) {
+            segmentationBaseCtrl.setValue(row.target);
+
+            // Handle Segmentation Base Direct Store
+            if (row.target === SegmentationBase.STORE) {
+                // Handle Chosen Store
+                if (row.promoStores && row.promoStores.length > 0) {
+                    const newStores = _.orderBy(
+                        row.promoStores.map((item) => ({
+                            id: item.store.id,
+                            label: item.store.name,
+                            group: 'supplier-stores',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenStoreCtrl.setValue(newStores);
+                }
+            }
+
+            // Handle Segmentation Base Segmentation
+            else if (row.target === SegmentationBase.SEGMENTATION) {
+                // Handle Chosen Warehouse
+                if (row.promoWarehouses && row.promoWarehouses.length > 0) {
+                    const newWarehouses = _.orderBy(
+                        row.promoWarehouses.map((item) => ({
+                            id: item.warehouse.id,
+                            label: item.warehouse.name,
+                            group: 'warehouses',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenWarehouseCtrl.setValue(newWarehouses);
+                }
+
+                // Handle Chosen Store Type
+                if (row.promoTypes && row.promoTypes.length > 0) {
+                    const newStoreTypes = _.orderBy(
+                        row.promoTypes.map((item) => ({
+                            id: item.type.id,
+                            label: item.type.name,
+                            group: 'store-segmentation-types',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenStoreTypeCtrl.setValue(newStoreTypes);
+                }
+
+                // Handle Chosen Store Group
+                if (row.promoGroups && row.promoGroups.length > 0) {
+                    const newStoreGroups = _.orderBy(
+                        row.promoGroups.map((item) => ({
+                            id: item.group.id,
+                            label: item.group.name,
+                            group: 'store-segmentation-groups',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenStoreGroupCtrl.setValue(newStoreGroups);
+                }
+
+                // Handle Chosen Store Channel
+                if (row.promoChannels && row.promoChannels.length > 0) {
+                    const newStoreChannels = _.orderBy(
+                        row.promoChannels.map((item) => ({
+                            id: item.channel.id,
+                            label: item.channel.name,
+                            group: 'store-segmentation-channels',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenStoreChannelCtrl.setValue(newStoreChannels);
+                }
+
+                // Handle Chosen Store Cluster
+                if (row.promoClusters && row.promoClusters.length > 0) {
+                    const newStoreClusters = _.orderBy(
+                        row.promoClusters.map((item) => ({
+                            id: item.cluster.id,
+                            label: item.cluster.name,
+                            group: 'store-segmentation-clusters',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
+
+                    chosenStoreClusterCtrl.setValue(newStoreClusters);
+                }
+            }
+        }
+
+        // Trigger Base
+        this.form.get('base').disable();
+        this.form.get('chosenSku').disable();
+        this.form.get('chosenBrand').disable();
+        this.form.get('chosenInvoice').disable();
+
+        // Customer Segmentation Setting
+        this.form.get('segmentationBase').disable();
+        this.form.get('chosenStore').disable();
+        this.form.get('chosenWarehouse').disable();
+        this.form.get('chosenStoreType').disable();
+        this.form.get('chosenStoreGroup').disable();
+        this.form.get('chosenStoreChannel').disable();
+        this.form.get('chosenStoreCluster').disable();
+
+        setTimeout(() => {
+            if (this.form.invalid) {
+                this.form.markAllAsTouched();
+            }
+        });
+    }
+
+    private _setEditConditionForm(row: FlexiCombo, promoConditions: ConditionDto[]): void {
+        for (const [idx, item] of promoConditions.entries()) {
+            const limitIdx =
+                promoConditions && promoConditions.length > 0
+                    ? promoConditions.length - 1
+                    : promoConditions.length;
+            const nextIdx = this.conditions && this.conditions.length;
+            const currIdx = nextIdx - 1;
+
+            if (nextIdx <= limitIdx) {
+                // Handle add new FormControl for setValue index item 1
+                this.conditions.push(this._createConditions());
+            }
+
+            // if (idx !== limitIdx) {
+            //     // Disable not last tier
+            //     this.conditionsCtrl[idx].disable({
+            //         onlySelf: true,
+            //     });
+            // }
+
+            // if (idx === limitIdx) {
+            //     // Disable conditionBase control (New Tier)
+            //     this.conditionsCtrl[idx].get('conditionBase').disable({
+            //         onlySelf: true,
+            //     });
+
+            //     // Disable benefitType control (New Tier)
+            //     this.conditionsCtrl[idx].get('benefitType').disable({
+            //         onlySelf: true,
+            //     });
+            // }
+
+            this.conditionsCtrl[idx].disable();
+
+            this.conditions.at(idx).get('id').setValue(item.id);
+
+            // Handle Condition Base Field
+            this.conditions.at(idx).get('conditionBase').setValue(item.conditionBase);
+
+            if (item.conditionBase === ConditionBase.QTY) {
+                // Handle Qty Field
+                this.conditions.at(idx).get('conditionQty').setValue(item.conditionQty);
+            } else if (item.conditionBase === ConditionBase.ORDER_VALUE) {
+                // Handle Order Value Field
+                this.conditions.at(idx).get('conditionValue').setValue(item.conditionValue);
+            }
+
+            // Handle Benefit Type Field
+            this.conditions.at(idx).get('benefitType').setValue(item.benefitType);
+
+            if (item.benefitType === BenefitType.QTY) {
+                // Handle Bonus Sku Field
+                this.conditions.at(idx).get('benefitCatalogueId').setValue(item.catalogue);
+
+                // Handle Bonus Qty Field
+                this.conditions.at(idx).get('benefitBonusQty').setValue(item.benefitBonusQty);
+            } else if (item.benefitType === BenefitType.AMOUNT) {
+                // Handle Rebate Field
+                this.conditions.at(idx).get('benefitRebate').setValue(item.benefitRebate);
+            } else if (item.benefitType === BenefitType.PERCENT) {
+                // Handle Benefit Discount Field
+                this.conditions.at(idx).get('benefitDiscount').setValue(item.benefitDiscount);
+
+                // Handle Benefit Max Rebate Field
+                this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
+            }
+
+            // Handle Qty Field Validation
+            this._qtyValueValidationByConditionBase(item.conditionBase, idx);
+
+            // Handle Order Value Field Validation
+            this._orderValueValidationByConditionBase(item.conditionBase, idx);
+
+            // Handle Bonus Sku Field Validation
+            this._benefitBonusSkuValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Bonus Qty Field Validation
+            this._benefitBonusQtyValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Rebate Field Validation
+            this._benefitRebateValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Benefit Discount Field Validation
+            this._benefitDiscountValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Benefit Max Rebate Field Validation
+            this._benefitMaxRebateValidationByBenefitType(item.benefitType, idx);
+        }
     }
 
     private _onSubmit(): void {
@@ -2086,45 +2538,41 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 : [];
         const newChosenFaktur =
             chosenInvoice && chosenInvoice.length > 0 && base === TriggerBase.INVOICE
-                ? chosenInvoice.map((invoice: InvoiceGroup) => invoice.id)
+                ? chosenInvoice.map((invoice: Selection) => invoice.id)
                 : [];
         const newChosenStore =
             chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBase.STORE
-                ? chosenStore.map((store: SupplierStore) => store.store.id)
+                ? chosenStore.map((store: Selection) => store.id)
                 : [];
         const newChosenWarehouse =
             chosenWarehouse &&
             chosenWarehouse.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenWarehouse.map((warehouse: Warehouse) => warehouse.id)
+                ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
                 : [];
         const newChosenStoreType =
             chosenStoreType &&
             chosenStoreType.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreType.map((storeType: StoreSegmentationType) => storeType.id)
+                ? chosenStoreType.map((storeType: Selection) => storeType.id)
                 : [];
         const newChosenStoreGroup =
             chosenStoreGroup &&
             chosenStoreGroup.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreGroup.map((storeGroup: StoreSegmentationGroup) => storeGroup.id)
+                ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
                 : [];
         const newChosenStoreChannel =
             chosenStoreChannel &&
             chosenStoreChannel.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreChannel.map(
-                      (storeChannel: StoreSegmentationChannel) => storeChannel.id
-                  )
+                ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
                 : [];
         const newChosenStoreCluster =
             chosenStoreCluster &&
             chosenStoreCluster.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreCluster.map(
-                      (storeCluster: StoreSegmentationCluster) => storeCluster.id
-                  )
+                ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
                 : [];
 
         const newConditions =
@@ -2133,6 +2581,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                       const {
                           conditionBase,
                           conditionQty,
+                          conditionValue,
                           benefitType,
                           benefitCatalogueId,
                           benefitBonusQty,
@@ -2142,9 +2591,21 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                           benefitMaxRebate,
                       } = condition;
 
+                      let conditionObject = {};
+
+                      if (conditionBase === ConditionBase.QTY) {
+                          conditionObject = {
+                              conditionQty,
+                          };
+                      } else if (conditionBase === ConditionBase.ORDER_VALUE) {
+                          conditionObject = {
+                              conditionValue,
+                          };
+                      }
+
                       const sameObj = {
                           conditionBase,
-                          conditionQty,
+                          ...conditionObject,
                           benefitType,
                           multiplication,
                       };
@@ -2226,6 +2687,34 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 
+            const payload: PatchFlexiComboDto = {
+                // base,
+                // conditions: newConditions,
+                // dataBase: {},
+                // dataTarget: {},
+                endDate: newEndDate,
+                externalId: promoId,
+                firstBuy,
+                image: imgSuggestion || null,
+                maxRedemptionPerUser: maxRedemption,
+                name: promoName,
+                platform,
+                promoBudget,
+                startDate: newStartDate,
+                status: EStatus.ACTIVE,
+                supplierId: null,
+                // target: segmentationBase,
+                type: 'flexi',
+                voucherCombine: allowCombineWithVoucher,
+            };
+
+            if (!imgSuggestion) {
+                delete payload.image;
+            }
+
+            // console.log('[EDIT] OnSubmit 1', body);
+            // console.log('[EDIT] OnSubmit 2', payload);
+
             // const payload = {
             //     urbanId: urban.id,
             //     warehouseValueId: body.whValue ? body.whValue : null,
@@ -2258,13 +2747,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             //     delete payload.noteAddress;
             // }
 
-            // if (id && Object.keys(payload).length > 0) {
-            //     // this.store.dispatch(
-            //     //     WarehouseActions.updateWarehouseRequest({
-            //     //         payload: { id, body: payload }
-            //     //     })
-            //     // );
-            // }
+            if (id && Object.keys(payload).length > 0) {
+                this.store.dispatch(
+                    FlexiComboActions.updateFlexiComboRequest({
+                        payload: { id, body: payload },
+                    })
+                );
+            }
         }
     }
 

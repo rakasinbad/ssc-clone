@@ -4,6 +4,7 @@ import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
 interface IPeriodTargetPromoReward {
     id?: string;
+    rewardId: string;
     rewardValidDate: {
         activeStartDate: string;
         activeEndDate: string;
@@ -27,6 +28,7 @@ interface IPeriodTargetPromoReward {
 
 export class PeriodTargetPromoReward implements IPeriodTargetPromoReward {
     id?: string;
+    rewardId: string;
     rewardValidDate: {
         activeStartDate: string;
         activeEndDate: string;

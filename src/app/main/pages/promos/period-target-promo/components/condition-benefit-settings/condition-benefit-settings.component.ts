@@ -160,6 +160,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
         let benefitType: string = source.promoConditions[index].benefitType;
         let patchValue: any = {
+            id: source.promoConditions[index].id,
             condition: {
                 base: source.promoConditions[index].conditionBase === 'value' ? 'order-value' : source.promoConditions[index].conditionBase,
                 qty: source.promoConditions[index].conditionQty,
@@ -343,6 +344,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         (this.form.get('conditionBenefit') as FormArray).push(
             this.fb.group({
                 subject: [subject],
+                id: [''],
                 condition: this.fb.group({
                     base: ['qty'],
                     qty: ['', [
@@ -722,7 +724,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
                 return {
                     ...rawValue,
-                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
+                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ id: data.id, condition: data.condition, benefit: data.benefit }))
                 };
             }),
             tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),

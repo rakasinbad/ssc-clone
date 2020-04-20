@@ -18,7 +18,7 @@ import { FormStatus, IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { PeriodTargetPromoActions } from '../../store/actions';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { PeriodTargetPromoPayload } from '../../models/period-target-promo.model';
 import * as moment from 'moment';
 
@@ -53,6 +53,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
     constructor(
         // private router: Router,
         private cdRef: ChangeDetectorRef,
+        private notice$: NoticeService,
         private PeriodTargetPromoStore: NgRxStore<PeriodTargetPromoCoreState>,
     ) {
         const breadcrumbs: Array<IBreadcrumbs> = [
@@ -213,6 +214,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
             case 'reward': {
                 const {
                     id,
+                    rewardId,
                     rewardValidDate,
                     trigger,
                     condition,
@@ -221,6 +223,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
 
                 this.formValue = {
                     id,
+                    rewardId,
                     rewardValidDate,
                     trigger,
                     condition,
@@ -359,7 +362,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         const isMultiplication = !!formValue.conditionBenefit[0].benefit.qty.multiplicationOnly;
 
         // Klasifikasi "conditions" untuk Condition & Benefit Settings
-        for (const [index, { condition, benefit }] of formValue.conditionBenefit.entries()) {
+        for (const [index, { id, condition, benefit }] of formValue.conditionBenefit.entries()) {
             if ((isMultiplication && index === 0) || !isMultiplication) {
                 // Condition Payload Master.
                 const conditionPayload = {
@@ -372,6 +375,16 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                                     : 'unknown',
                     multiplication: isMultiplication,
                 };
+
+                /**
+                 * Payload untuk ID condition.
+                 * 
+                 * Jika ID nya valid, maka itu penambahan condition & benefit baru.
+                 * Jika ID valid, maka itu ada perubahan condition & benefit.
+                 */
+                if (id) {
+                    conditionPayload['id'] = id;
+                }
 
                 // Payload untuk Condition.
                 if (conditionPayload.conditionBase === 'qty') {
@@ -465,8 +478,19 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
             },
         };
 
-        if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
-            payload.reward.image = formValue.miscellaneous.couponImage;
+        if (formValue.miscellaneous.couponImage) {
+            if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
+                payload.reward.image = formValue.miscellaneous.couponImage;
+            }
+        }
+        /**
+         * Payload untuk ID condition.
+         * 
+         * Jika ID nya valid, maka itu penambahan condition & benefit baru.
+         * Jika ID valid, maka itu ada perubahan condition & benefit.
+         */
+        if (formValue.rewardId) {
+            payload.reward.id = formValue.rewardId;
         }
 
         // Klasifikasi "reward -> conditionBase" untuk Reward Information.
@@ -572,15 +596,37 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                         break;
                     }
                     case 'trigger': {
-                        this.processTriggerInformationForm();
+                        // this.processTriggerInformationForm();
+                        this.notice$.open('You cannot edit this section.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                            duration: 5000,
+                        });
+
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+
                         break;
                     }
                     case 'condition-benefit': {
-                        this.processConditionBenefitForm();
+                        // this.processConditionBenefitForm();
+                        this.notice$.open('You cannot edit this section.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                            duration: 5000,
+                        });
+
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
                         break;
                     }
                     case 'customer-segmentation': {
-                        this.processCustomerSegmentationForm();
+                        // this.processCustomerSegmentationForm();
+                        this.notice$.open('You cannot edit this section.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                            duration: 5000,
+                        });
+
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
                         break;
                     }
                     case 'reward': {

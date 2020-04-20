@@ -209,7 +209,7 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
                 this.chosen$[0].next(periodTargetPromo.promoStores.map(data => ({
                     id: data.store.id,
                     label: data.store.name,
-                    group: 'stores',
+                    group: 'supplier-stores',
                 })));
             } else if (periodTargetPromo.target === 'segmentation') {
                 // WAREHOUSE

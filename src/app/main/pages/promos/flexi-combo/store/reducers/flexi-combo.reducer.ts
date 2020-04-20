@@ -35,6 +35,8 @@ export const reducer = createReducer(
         FlexiComboActions.fetchFlexiCombosRequest,
         FlexiComboActions.createFlexiComboRequest,
         FlexiComboActions.updateFlexiComboRequest,
+        FlexiComboActions.changeStatusRequest,
+        FlexiComboActions.deleteFlexiComboRequest,
         (state) => ({
             ...state,
             isLoading: true,
@@ -45,7 +47,8 @@ export const reducer = createReducer(
         FlexiComboActions.fetchFlexiCombosFailure,
         FlexiComboActions.createFlexiComboFailure,
         FlexiComboActions.updateFlexiComboFailure,
-
+        FlexiComboActions.changeStatusFailure,
+        FlexiComboActions.deleteFlexiComboFailure,
         (state) => ({
             ...state,
             isLoading: false,
@@ -61,6 +64,17 @@ export const reducer = createReducer(
     ),
     on(FlexiComboActions.fetchFlexiCombosSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
+    on(FlexiComboActions.changeStatusSuccess, (state, { payload }) =>
+        adapter.updateOne(payload, { ...state, isLoading: false })
+    ),
+    on(FlexiComboActions.deleteFlexiComboSuccess, (state, { payload }) =>
+        adapter.removeOne(payload, {
+            ...state,
+            isLoading: false,
+            selectedId: null,
+            total: state.total - 1,
+        })
     ),
     on(FlexiComboActions.clearState, () => initialState)
 );

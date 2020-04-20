@@ -4,6 +4,8 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
+import { FlexiCombo } from '../models';
+
 /**
  *
  *
@@ -95,7 +97,19 @@ export class FlexiComboApiService {
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
-    create<T>(body: T): Observable<any> {
-        return this.http.post<any>(this._url, body);
+    create<T>(body: T): Observable<FlexiCombo> {
+        return this.http.post<FlexiCombo>(this._url, body);
+    }
+
+    patch<T>(body: T, id: string): Observable<FlexiCombo> {
+        return this.http.patch<FlexiCombo>(`${this._url}/${id}`, body);
+    }
+
+    put<T>(body: T, id: string): Observable<FlexiCombo> {
+        return this.http.put<FlexiCombo>(`${this._url}/${id}`, body);
+    }
+
+    delete(id: string): Observable<FlexiCombo> {
+        return this.http.delete<FlexiCombo>(`${this._url}/${id}`);
     }
 }

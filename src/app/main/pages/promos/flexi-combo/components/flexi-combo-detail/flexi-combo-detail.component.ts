@@ -87,8 +87,8 @@ export class FlexiComboDetailComponent implements OnInit, OnDestroy {
                 // Reset breadcrumb state
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
-                // Reset core state warehouses
-                // this.store.dispatch(WarehouseActions.clearState());
+                // Reset core state flexiCombos
+                this.store.dispatch(FlexiComboActions.clearState());
                 break;
 
             default:

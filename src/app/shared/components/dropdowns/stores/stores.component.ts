@@ -68,6 +68,9 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // Untuk menandai apakah pilihannya required atau tidak.
     // tslint:disable-next-line: no-inferrable-types
     @Input() required: boolean = false;
+    // Untuk menandai apakah form ini di-nonaktifkan atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() disabled: boolean = false;
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Store';
 
@@ -228,7 +231,9 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         };
 
         // Reset form-nya store entity.
-        this.entityForm.enable();
+        if (!this.disabled) {
+            this.entityForm.enable();
+        }
         this.entityForm.reset();
 
         // Memulai request data store entity.
@@ -299,67 +304,69 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     openStoreTypeSelection(): void {
-        let selected = this.entityFormValue.value;
+        if (!this.disabled) {
+            let selected = this.entityFormValue.value;
 
-        if (!Array.isArray(selected)) {
-            selected = [];
-            this.entityFormValue.setValue(selected);
-        }
+            if (!Array.isArray(selected)) {
+                selected = [];
+                this.entityFormValue.setValue(selected);
+            }
 
-        this.tempEntity = selected;
-        this.initialSelection = selected;
-        
-        this.dialog = this.applyDialogFactory$.open({
-            title: 'Select Store',
-            template: this.selectStoreType,
-            isApplyEnabled: true,
-        }, {
-            disableClose: true,
-            width: '80vw',
-            minWidth: '80vw',
-            maxWidth: '80vw',
-        });
+            this.tempEntity = selected;
+            this.initialSelection = selected;
+            
+            this.dialog = this.applyDialogFactory$.open({
+                title: 'Select Store',
+                template: this.selectStoreType,
+                isApplyEnabled: true,
+            }, {
+                disableClose: true,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            });
 
-        this.dialog.closed$.subscribe({
-            next: (value: TNullable<string>) => {
-                HelperService.debug('DIALOG SELECTION CLOSED', value);
+            this.dialog.closed$.subscribe({
+                next: (value: TNullable<string>) => {
+                    HelperService.debug('DIALOG SELECTION CLOSED', value);
 
-                let selection;
-                if (value === 'apply') {
-                    if (!this.removing) {
-                        if (Array.isArray(this.tempEntity)) {
-                            if (this.tempEntity.length > 0) {
-                                selection = this.tempEntity;
+                    let selection;
+                    if (value === 'apply') {
+                        if (!this.removing) {
+                            if (Array.isArray(this.tempEntity)) {
+                                if (this.tempEntity.length > 0) {
+                                    selection = this.tempEntity;
+                                } else {
+                                    selection = [];
+                                }
                             } else {
-                                selection = [];
+                                selection = (this.entityFormValue.value as Array<Selection>);
                             }
                         } else {
-                            selection = (this.entityFormValue.value as Array<Selection>);
+                            selection = this.tempEntity;
                         }
                     } else {
-                        selection = this.tempEntity;
+                        selection = (this.entityFormValue.value as Array<Selection>);
                     }
-                } else {
-                    selection = (this.entityFormValue.value as Array<Selection>);
+
+                    if (selection.length === 0) {
+                        this.entityFormView.setValue('');
+                        this.entityFormValue.setValue([]);
+                    } else {
+                        // const firstselection = selection[0].label;
+                        // const remainLength = selection.length - 1;
+                        // const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
+
+                        this.entityFormValue.setValue(selection);
+                        this.updateFormView();
+                        // this.entityFormView.setValue(viewValue);
+                    }
+
+                    this.onSelectedEntity(this.entityFormValue.value);
+                    this.cdRef.detectChanges();
                 }
-
-                if (selection.length === 0) {
-                    this.entityFormView.setValue('');
-                    this.entityFormValue.setValue([]);
-                } else {
-                    // const firstselection = selection[0].label;
-                    // const remainLength = selection.length - 1;
-                    // const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
-
-                    this.entityFormValue.setValue(selection);
-                    this.updateFormView();
-                    // this.entityFormView.setValue(viewValue);
-                }
-
-                this.onSelectedEntity(this.entityFormValue.value);
-                this.cdRef.detectChanges();
-            }
-        });
+            });
+        }
     }
 
     onClearAll(): void {
@@ -482,11 +489,21 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['required'].isFirstChange()) {
-            this.entityFormView.clearValidators();
+        if (changes['required']) {
+            if (!changes['required'].isFirstChange()) {
+                this.entityFormView.clearValidators();
+    
+                if (changes['required'].currentValue === true) {
+                    this.entityFormView.setValidators(RxwebValidators.required());
+                }
+            }
+        }
 
-            if (changes['required'].currentValue === true) {
-                this.entityFormView.setValidators(RxwebValidators.required());
+        if (changes['disabled']) {
+            if (changes['disabled'].currentValue === true) {
+                this.entityFormView.disable();
+            } else {
+                this.entityFormView.enable();
             }
         }
 

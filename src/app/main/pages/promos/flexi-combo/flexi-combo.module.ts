@@ -17,6 +17,7 @@ import { FlexiComboListComponent } from './components/flexi-combo-list';
 import { FlexiComboFormComponent } from './flexi-combo-form';
 import { FlexiComboComponent } from './flexi-combo.component';
 import { FlexiComboRoutingModule } from './flexi-combo.routes';
+import { CanAddTierPipe } from './pipes';
 import { FlexiComboNgrxModule } from './store';
 
 @NgModule({
@@ -29,6 +30,7 @@ import { FlexiComboNgrxModule } from './store';
         FlexiComboDetailTriggerComponent,
         FlexiComboFormComponent,
         FlexiComboListComponent,
+        CanAddTierPipe,
     ],
     imports: [
         FlexiComboRoutingModule,

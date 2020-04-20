@@ -227,7 +227,7 @@
                                     fxLayoutAlign="start stretch"
                                 >
                                     <label
-                                        [fxFlexAlign]="!hasMultipleSKUs ? 'center' : 'start'"
+                                        fxFlexAlign="center"
                                         [fxFlex]="labelLength * 2 - 1"
                                         class="pr-0 form-label"
                                         [class.mat-error]="!isViewMode() && !!(hasError(control.get('benefit.qty.bonusSku'), { ignoreDirty: true }))"
@@ -261,7 +261,6 @@
                                     [ngClass]="formClass"
                                     fxLayout="row"
                                     fxLayoutAlign="start stretch"
-                                    class="mt-8"
                                     *ngIf="$index === 0 && isTriggeredBySKU && triggerSKUs.length === 1"
                                 >
                                     <label

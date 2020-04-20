@@ -236,6 +236,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
     
                 this.form.patchValue({
                     id: periodTargetPromo.id,
+                    rewardId: periodTargetPromo.storeTargetCoupons[0].id,
                     rewardValidDate: {
                         activeStartDate: moment(periodTargetPromo.storeTargetCoupons[0].startDate).toDate(),
                         activeEndDate: moment(periodTargetPromo.storeTargetCoupons[0].endDate).toDate(),
@@ -287,6 +288,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
 
         this.form = this.fb.group({
             id: [''],
+            rewardId: [''],
             rewardValidDate: this.fb.group({
                 activeStartDate: [{ value: '', disabled: true }, [
                     RxwebValidators.required({

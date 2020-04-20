@@ -3,6 +3,7 @@ import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
 interface ConditionBenefit {
+    id: number;
     condition: {
         base: string;
         qty: string;

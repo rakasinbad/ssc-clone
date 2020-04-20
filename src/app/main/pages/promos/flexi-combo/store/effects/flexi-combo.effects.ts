@@ -9,13 +9,24 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, PaginateResponse, TNullable } from 'app/shared/models/global.model';
+import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
+import { ErrorHandler, EStatus, PaginateResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
+import { UiActions } from 'app/shared/store/actions';
 import { Observable, of } from 'rxjs';
-import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    catchError,
+    exhaustMap,
+    finalize,
+    map,
+    retry,
+    switchMap,
+    tap,
+    withLatestFrom,
+} from 'rxjs/operators';
 
-import { CreateFlexiComboDto, FlexiCombo } from '../../models';
+import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../../models';
 import { FlexiComboApiService } from '../../services/flexi-combo-api.service';
 import { FlexiComboActions, FlexiComboFailureActions } from '../actions';
 import * as fromFlexiCombos from '../reducers';
@@ -85,6 +96,291 @@ export class FlexiComboEffects {
                             verticalPosition: 'bottom',
                             horizontalPosition: 'right',
                         });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateFlexiComboRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.updateFlexiComboRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PatchFlexiComboDto; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap((userData) => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PatchFlexiComboDto; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateFlexiComboRequest$),
+                            catchError((err) =>
+                                this._sendErrorToState$(err, 'updateFlexiComboFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap((userData) => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PatchFlexiComboDto; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateFlexiComboRequest$),
+                            catchError((err) =>
+                                this._sendErrorToState$(err, 'updateFlexiComboFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateFlexiComboFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.updateFlexiComboFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateFlexiComboSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.updateFlexiComboSuccess),
+                tap(() => {
+                    this.router.navigate(['/pages/promos/flexi-combo']).finally(() => {
+                        this._$notice.open('Successfully updated flexi promo', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [DELETE - FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmDeleteFlexiCombo$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.confirmDeleteFlexiCombo),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                const title = params.status === EStatus.ACTIVE ? 'Inactive' : 'Active';
+                const body = params.status === EStatus.ACTIVE ? EStatus.INACTIVE : EStatus.ACTIVE;
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
+                    DeleteConfirmationComponent,
+                    {
+                        data: {
+                            title: 'Delete',
+                            message: `Are you sure want to delete <strong>${params.name}</strong> ?`,
+                            id: params.id,
+                        },
+                        disableClose: true,
+                    }
+                );
+
+                return dialogRef.afterClosed();
+            }),
+            map((id) => {
+                if (id) {
+                    return FlexiComboActions.deleteFlexiComboRequest({
+                        payload: id,
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    deleteFlexiComboRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.deleteFlexiComboRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [string, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, string], Observable<AnyAction>>(
+                            this._deleteFlexiComboRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'deleteFlexiComboFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, string], Observable<AnyAction>>(
+                            this._deleteFlexiComboRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'deleteFlexiComboFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    deleteFlexiComboFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.deleteFlexiComboFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to delete Flexi Combo';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    deleteFlexiComboSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.deleteFlexiComboSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully deleted flexi promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CHANGE STATUS - FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmChangeStatus$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.confirmChangeStatus),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                const title = params.status === EStatus.ACTIVE ? 'Inactive' : 'Active';
+                const body = params.status === EStatus.ACTIVE ? EStatus.INACTIVE : EStatus.ACTIVE;
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: EStatus }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: `Set ${title}`,
+                        message: `Are you sure want to change <strong>${params.name}</strong> status to <strong>${body}</strong> ?`,
+                        id: params.id,
+                        change: body,
+                    },
+                    disableClose: true,
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && change) {
+                    return FlexiComboActions.changeStatusRequest({
+                        payload: { id, body: change },
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    changeStatusRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.changeStatusRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [{ body: EStatus; id: string }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: EStatus; id: string }], Observable<AnyAction>>(
+                            this._changeStatusRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: EStatus; id: string }], Observable<AnyAction>>(
+                            this._changeStatusRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    changeStatusFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.changeStatusFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to change status';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    changeStatusSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.changeStatusSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully changed status flexi promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -231,7 +527,7 @@ export class FlexiComboEffects {
         }
 
         // console.log('[REQ] Create 1', payload);
-        console.log('[REQ] Create 2', newPayload);
+        // console.log('[REQ] Create 2', newPayload);
 
         // return of({ type: 'SUCCESS' });
 
@@ -240,6 +536,83 @@ export class FlexiComboEffects {
                 return FlexiComboActions.createFlexiComboSuccess();
             }),
             catchError((err) => this._sendErrorToState$(err, 'createFlexiComboFailure'))
+        );
+    };
+
+    _updateFlexiComboRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PatchFlexiComboDto; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload',
+            });
+        }
+
+        const newPayload = new PatchFlexiComboDto({ ...body });
+        const { supplierId } = userData.userSupplier;
+
+        if (supplierId) {
+            newPayload.supplierId = supplierId;
+        }
+
+        // console.log(`[REQ ${id}] Update 1`, body);
+        // console.log(`[REQ ${id}] Update 2`, newPayload);
+
+        // return of({ type: 'SUCCESS_UPDATE' });
+
+        return this._$flexiComboApi.patch<PatchFlexiComboDto>(newPayload, id).pipe(
+            map((resp) => {
+                return FlexiComboActions.updateFlexiComboSuccess();
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'updateFlexiComboFailure'))
+        );
+    };
+
+    _deleteFlexiComboRequest$ = ([userData, id]: [User, string]): Observable<AnyAction> => {
+        if (!id) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload',
+            });
+        }
+
+        return this._$flexiComboApi.delete(id).pipe(
+            map((resp) => {
+                return FlexiComboActions.deleteFlexiComboSuccess({
+                    payload: id,
+                });
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'deleteFlexiComboFailure'))
+        );
+    };
+
+    _changeStatusRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: EStatus; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload',
+            });
+        }
+
+        return this._$flexiComboApi.put<{ status: EStatus }>({ status: body }, id).pipe(
+            map((resp) => {
+                return FlexiComboActions.changeStatusSuccess({
+                    payload: {
+                        id,
+                        changes: {
+                            ...resp,
+                            status: body,
+                            updatedAt: resp.updatedAt,
+                        },
+                    },
+                });
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
         );
     };
 
