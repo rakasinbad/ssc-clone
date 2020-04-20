@@ -1,0 +1,50 @@
+<div class="page-layout carded fullwidth" fusePerfectScrollbar>
+    <!-- CENTER -->
+    <div
+        class="center px-16 pt-16"
+        fxLayout="column"
+        fxLayoutAlign="space-between none"
+        fxLayoutGap="16px"
+    >
+        <div class="content-card">
+            <voucher-general-information
+                [formMode]="'add'"
+                (formStatusChange)="generalInformationStatus$.next($event)"
+                (formValueChange)="generalInformationValue$.next($event)"
+            ></voucher-general-information>
+        </div>
+        <div class="content-card">
+            <voucher-trigger-information
+                [formMode]="'add'"
+                (formStatusChange)="triggerInformationStatus$.next($event)"
+                (formValueChange)="triggerInformationValue$.next($event)"
+            ></voucher-trigger-information>
+        </div>
+        <div class="content-card">
+            <voucher-trigger-condition-benefit-settings
+                [formMode]="'add'"
+                (formStatusChange)="conditionBenefitStatus$.next($event)"
+                (formValueChange)="conditionBenefitValue$.next($event)"
+            ></voucher-trigger-condition-benefit-settings>
+        </div>
+        <div class="content-card">
+            <voucher-reward-information
+                [formMode]="'add'"
+                (formStatusChange)="rewardStatus$.next($event)"
+                (formValueChange)="rewardValue$.next($event)"
+            ></voucher-reward-information>
+        </div>
+        <div class="content-card">
+            <voucher-customer-segmentation-settings
+                [formMode]="'add'"
+                (formStatusChange)="customerSegmentationStatus$.next($event)"
+                (formValueChange)="customerSegmentationValue$.next($event)"
+            ></voucher-customer-segmentation-settings>
+        </div>
+    </div>
+    <!-- LOADING SPINNER -->
+    <div class="loader" *ngIf="isLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- / LOADING SPINNER -->
+</div>
