@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { CreateFlexiComboDto, FlexiCombo } from '../../models';
+import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Flexi Combos
@@ -64,7 +64,7 @@ export const createFlexiComboSuccess = createAction('[Flexi Combo] Create Flexi 
 
 export const updateFlexiComboRequest = createAction(
     '[Flexi Combo] Update Flexi Combo Request',
-    props<{ payload: { body: any; id: string } }>()
+    props<{ payload: { body: PatchFlexiComboDto; id: string } }>()
 );
 
 export const updateFlexiComboFailure = createAction(

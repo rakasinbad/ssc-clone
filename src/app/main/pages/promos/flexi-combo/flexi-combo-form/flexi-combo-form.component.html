@@ -13,7 +13,7 @@
         <form
             id="flexi-combo-form"
             name="flexiComboForm"
-            class="merchant w-100-p"
+            class="flex-combo w-100-p"
             [formGroup]="form"
             autocomplete="off"
             [class.event-none]="pageType === 'edit' && (isLoading$ | async)"
@@ -376,27 +376,27 @@
                                 <mat-checkbox formControlName="allowCombineWithVoucher">
                                     Allow Combine With Voucher
 
-                                    <mat-icon
+                                    <!-- <mat-icon
                                         class="active-icon s-14 ml-8 cursor-pointer"
                                         color="accent"
                                         matTooltip="If you choose to allow combine with&#10;voucher, users are allowed to use&#10;promo and voucher for the same purchase."
                                         matTooltipClass="tooltip-br"
                                     >
                                         help
-                                    </mat-icon>
+                                    </mat-icon> -->
                                 </mat-checkbox>
 
                                 <mat-checkbox formControlName="firstBuy">
                                     First Buy
 
-                                    <mat-icon
+                                    <!-- <mat-icon
                                         class="active-icon s-14 ml-8 cursor-pointer"
                                         color="accent"
                                         matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
                                         matTooltipClass="tooltip-br"
                                     >
                                         help
-                                    </mat-icon>
+                                    </mat-icon> -->
                                 </mat-checkbox>
                             </div>
                         </div>

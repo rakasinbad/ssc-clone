@@ -91,7 +91,71 @@ export class CreateFlexiComboDto {
     }
 }
 
+export class PatchFlexiComboDto {
+    base?: string;
+    conditions?: IFlexiComboCondition[];
+    dataBase?: IFlexiComboDataBase;
+    dataTarget?: IFlexiComboDataTarget;
+    endDate?: string;
+    externalId?: string;
+    firstBuy?: boolean;
+    image?: string;
+    maxRedemptionPerUser?: number;
+    name?: string;
+    platform?: PlatformSinbad;
+    promoBudget?: number;
+    startDate?: string;
+    status?: EStatus;
+    supplierId?: string;
+    target?: string;
+    type?: string;
+    voucherCombine?: boolean;
+
+    constructor(data: PatchFlexiComboDto) {
+        const {
+            base,
+            conditions,
+            dataBase,
+            dataTarget,
+            endDate,
+            externalId,
+            firstBuy,
+            image,
+            maxRedemptionPerUser,
+            name,
+            platform,
+            promoBudget,
+            startDate,
+            status,
+            supplierId,
+            target,
+            type,
+            voucherCombine,
+        } = data;
+
+        this.base = base;
+        this.conditions = conditions;
+        this.dataBase = dataBase;
+        this.dataTarget = dataTarget;
+        this.endDate = endDate;
+        this.externalId = externalId;
+        this.firstBuy = firstBuy;
+        this.image = image;
+        this.maxRedemptionPerUser = maxRedemptionPerUser;
+        this.name = name;
+        this.platform = platform;
+        this.promoBudget = promoBudget;
+        this.startDate = startDate;
+        this.status = status;
+        this.supplierId = supplierId;
+        this.target = target;
+        this.type = type;
+        this.voucherCombine = voucherCombine;
+    }
+}
+
 export class ConditionDto {
+    readonly id?: string;
     applySameSku?: boolean;
     benefitBonusQty: number;
     benefitCatalogueId: string;
@@ -107,6 +171,7 @@ export class ConditionDto {
 
     constructor(data: ConditionDto) {
         const {
+            id,
             applySameSku,
             benefitBonusQty,
             benefitCatalogueId,
@@ -121,6 +186,7 @@ export class ConditionDto {
             multiplication,
         } = data;
 
+        this.id = id;
         this.applySameSku = applySameSku;
         this.benefitBonusQty = benefitBonusQty;
         this.benefitCatalogueId = benefitCatalogueId;

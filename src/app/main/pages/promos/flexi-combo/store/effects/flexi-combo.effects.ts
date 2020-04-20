@@ -15,7 +15,7 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { CreateFlexiComboDto, FlexiCombo } from '../../models';
+import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../../models';
 import { FlexiComboApiService } from '../../services/flexi-combo-api.service';
 import { FlexiComboActions, FlexiComboFailureActions } from '../actions';
 import * as fromFlexiCombos from '../reducers';
@@ -89,6 +89,52 @@ export class FlexiComboEffects {
                 })
             ),
         { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateFlexiComboRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.updateFlexiComboRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PatchFlexiComboDto; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap((userData) => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PatchFlexiComboDto; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateFlexiComboRequest$),
+                            catchError((err) =>
+                                this._sendErrorToState$(err, 'updateFlexiComboFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap((userData) => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PatchFlexiComboDto; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateFlexiComboRequest$),
+                            catchError((err) =>
+                                this._sendErrorToState$(err, 'updateFlexiComboFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
     );
 
     // -----------------------------------------------------------------------------------------------------
@@ -231,7 +277,7 @@ export class FlexiComboEffects {
         }
 
         // console.log('[REQ] Create 1', payload);
-        console.log('[REQ] Create 2', newPayload);
+        // console.log('[REQ] Create 2', newPayload);
 
         // return of({ type: 'SUCCESS' });
 
@@ -241,6 +287,37 @@ export class FlexiComboEffects {
             }),
             catchError((err) => this._sendErrorToState$(err, 'createFlexiComboFailure'))
         );
+    };
+
+    _updateFlexiComboRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PatchFlexiComboDto; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload',
+            });
+        }
+
+        const newPayload = new PatchFlexiComboDto({ ...body });
+        const { supplierId } = userData.userSupplier;
+
+        if (supplierId) {
+            newPayload.supplierId = supplierId;
+        }
+
+        console.log(`[REQ ${id}] Update 1`, body);
+        console.log(`[REQ ${id}] Update 2`, newPayload);
+
+        return of({ type: 'SUCCESS_UPDATE' });
+
+        // return this._$flexiComboApi.patch<PatchFlexiComboDto>(body, id).pipe(
+        //     map((resp) => {
+        //         return FlexiComboActions.updateFlexiComboSuccess();
+        //     }),
+        //     catchError((err) => this._sendErrorToState$(err, 'updateFlexiComboFailure'))
+        // );
     };
 
     _fetchFlexiCombosRequest$ = ([userData, params]: [User, IQueryParams]): Observable<

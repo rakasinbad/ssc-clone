@@ -42,29 +42,18 @@ import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { Brand } from 'app/shared/models/brand.model';
 import { CalculationMechanism } from 'app/shared/models/calculation-mechanism.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
-import {
-    EStatus,
-    IBreadcrumbs,
-    IFooterActionConfig,
-    LifecyclePlatform,
-} from 'app/shared/models/global.model';
+import { EStatus, IBreadcrumbs, IFooterActionConfig, LifecyclePlatform } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    finalize,
-    takeUntil,
-    tap,
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { ConditionDto, CreateFlexiComboDto, FlexiCombo } from '../models';
 import { FlexiComboActions } from '../store/actions';
@@ -273,7 +262,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
     }
 
-    getApplyBonusSku(idx: number): Catalogue {
+    getApplyBonusSku(idx: number): Selection {
         return this.form.get(['conditions', idx, 'benefitCatalogueId']).value || null;
     }
 
@@ -528,7 +517,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev) {
             this.form.get(fieldName).setValue(null);
         } else {
-            this.form.get(fieldName).setValue(ev);
+            const newBenefitSku: Selection = {
+                id: ev.id,
+                label: ev.name,
+                group: 'catalogues',
+            };
+
+            this.form.get(fieldName).setValue(newBenefitSku);
         }
     }
 
@@ -545,7 +540,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenBrand').setValue(null);
         } else {
-            this.form.get('chosenBrand').setValue(ev);
+            const newBrands: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'brand',
+            }));
+
+            this.form.get('chosenBrand').setValue(newBrands);
         }
     }
 
@@ -819,7 +820,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenInvoice').setValue(null);
         } else {
-            this.form.get('chosenInvoice').setValue(ev);
+            const newFaktur: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'faktur',
+            }));
+
+            this.form.get('chosenInvoice').setValue(newFaktur);
         }
     }
 
@@ -836,7 +843,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenSku').setValue(null);
         } else {
-            this.form.get('chosenSku').setValue(ev);
+            const newSku: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'catalogus,',
+            }));
+
+            this.form.get('chosenSku').setValue(newSku);
         }
     }
 
@@ -853,7 +866,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenStoreChannel').setValue(null);
         } else {
-            this.form.get('chosenStoreChannel').setValue(ev);
+            const newStoreChannels: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-channels',
+            }));
+
+            this.form.get('chosenStoreChannel').setValue(newStoreChannels);
         }
     }
 
@@ -870,7 +889,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenStoreCluster').setValue(null);
         } else {
-            this.form.get('chosenStoreCluster').setValue(ev);
+            const newStoreClusters: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-clusters',
+            }));
+
+            this.form.get('chosenStoreCluster').setValue(newStoreClusters);
         }
     }
 
@@ -887,7 +912,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenStoreGroup').setValue(null);
         } else {
-            this.form.get('chosenStoreGroup').setValue(ev);
+            const newStoreGroups: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-groups',
+            }));
+
+            this.form.get('chosenStoreGroup').setValue(newStoreGroups);
         }
     }
 
@@ -904,7 +935,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenStoreType').setValue(null);
         } else {
-            this.form.get('chosenStoreType').setValue(ev);
+            const newStoreTypes: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'store-segmentation-types',
+            }));
+
+            this.form.get('chosenStoreType').setValue(newStoreTypes);
         }
     }
 
@@ -921,7 +958,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenStore').setValue(null);
         } else {
-            this.form.get('chosenStore').setValue(ev);
+            const newStores: Selection[] = ev.map((item) => ({
+                id: item.store.id,
+                label: item.store.name,
+                group: 'supplier-stores',
+            }));
+
+            this.form.get('chosenStore').setValue(newStores);
         }
     }
 
@@ -938,7 +981,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ev.length) {
             this.form.get('chosenWarehouse').setValue(null);
         } else {
-            this.form.get('chosenWarehouse').setValue(ev);
+            const newWarehouses: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'warehouses',
+            }));
+
+            this.form.get('chosenWarehouse').setValue(newWarehouses);
         }
     }
 
@@ -1646,6 +1695,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     private _createConditions(condition?: ConditionDto): FormGroup {
         return this.formBuilder.group({
+            id: null,
             conditionBase: [
                 (condition && condition.conditionBase) || ConditionBase.QTY,
                 [
@@ -1893,13 +1943,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
-                    RxwebValidators.alphaNumeric({
-                        allowWhiteSpace: false,
-                        message: this._$errorMessage.getErrorMessageNonState(
-                            'default',
-                            'alpha_num_pattern'
-                        ),
+                    /* ^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$ first character letter next allow alphanum hypen underscore */
+                    /* ^[\w-]+$ only allow alphanum hyphen underscore */
+                    RxwebValidators.pattern({
+                        expression: {
+                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$/,
+                        },
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    // RxwebValidators.alphaNumeric({
+                    //     allowWhiteSpace: false,
+                    //     message: this._$errorMessage.getErrorMessageNonState(
+                    //         'default',
+                    //         'alpha_num_pattern'
+                    //     ),
+                    // }),
                 ],
             ],
             promoName: [
@@ -1908,10 +1966,14 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
-                    RxwebValidators.alpha({
+                    RxwebValidators.alphaNumeric({
                         allowWhiteSpace: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    // RxwebValidators.alpha({
+                    //     allowWhiteSpace: true,
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    // }),
                 ],
             ],
             platform: [
@@ -1945,7 +2007,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ],
             ],
             startDate: [
-                { value: null, readonly: true },
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -1953,7 +2015,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ],
             ],
             endDate: [
-                { value: null, readonly: true },
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -2031,11 +2093,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 tap((row) => {
                     this.flexiCombo = row;
                 }),
-                finalize(() => {
-                    if (this.form.invalid) {
-                        this.form.markAllAsTouched();
-                    }
-                }),
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
@@ -2094,12 +2151,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Handle Start Date
         if (row.startDate) {
-            startDateCtrl.setValue(row.startDate);
+            startDateCtrl.setValue(moment(row.startDate));
         }
 
         // Handle End Date
         if (row.endDate) {
-            endDateCtrl.setValue(row.endDate);
+            endDateCtrl.setValue(moment(row.endDate));
         }
 
         // Handle Allow Combine with Voucher
@@ -2116,15 +2173,23 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (row.base) {
             triggerBaseCtrl.setValue(row.base);
 
+            this._chosenBrandValidationByTriggerBase(row.base);
+            this._chosenInvoiceValidationByTriggerBase(row.base);
+            this._chosenSkuValidationByTriggerBase(row.base);
+
             // Handle Trigger Base Sku
             if (row.base === TriggerBase.SKU) {
                 // Handle Chosen Sku
                 if (row.promoCatalogues && row.promoCatalogues.length > 0) {
-                    const newCatalogues = row.promoCatalogues.map((item) => ({
-                        id: item.catalogue.id,
-                        label: item.catalogue.name,
-                        group: 'catalogues',
-                    }));
+                    const newCatalogues = _.orderBy(
+                        row.promoCatalogues.map((item) => ({
+                            id: item.catalogue.id,
+                            label: item.catalogue.name,
+                            group: 'catalogues',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenSkuCtrl.setValue(newCatalogues);
                 }
@@ -2134,11 +2199,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             else if (row.base === TriggerBase.BRAND) {
                 // Handle Chosen Brand
                 if (row.promoBrands && row.promoBrands.length > 0) {
-                    const newBrands = row.promoBrands.map((item) => ({
-                        id: item.brand.id,
-                        label: item.brand.name,
-                        group: 'brand',
-                    }));
+                    const newBrands = _.orderBy(
+                        row.promoBrands.map((item) => ({
+                            id: item.brand.id,
+                            label: item.brand.name,
+                            group: 'brand',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenBrandCtrl.setValue(newBrands);
                 }
@@ -2148,11 +2217,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             else if (row.base === TriggerBase.INVOICE) {
                 // Handle Chosen Fakture
                 if (row.promoInvoiceGroups && row.promoInvoiceGroups.length > 0) {
-                    const newInvoiceGroups = row.promoInvoiceGroups.map((item) => ({
-                        id: item.invoiceGroup.id,
-                        label: item.invoiceGroup.name,
-                        group: 'faktur',
-                    }));
+                    const newInvoiceGroups = _.orderBy(
+                        row.promoInvoiceGroups.map((item) => ({
+                            id: item.invoiceGroup.id,
+                            label: item.invoiceGroup.name,
+                            group: 'faktur',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenFakturCtrl.setValue(newInvoiceGroups);
                 }
@@ -2163,6 +2236,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (row.promoConditions && row.promoConditions.length > 0) {
             const newPromoConditions: ConditionDto[] = row.promoConditions.map((item) => {
                 return new ConditionDto({
+                    id: item.id,
                     conditionBase: item.conditionBase,
                     conditionQty: item.conditionQty,
                     conditionValue: item.conditionValue,
@@ -2203,11 +2277,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (row.target === SegmentationBase.STORE) {
                 // Handle Chosen Store
                 if (row.promoStores && row.promoStores.length > 0) {
-                    const newStores = row.promoStores.map((item) => ({
-                        id: item.store.id,
-                        label: item.store.name,
-                        group: 'stores',
-                    }));
+                    const newStores = _.orderBy(
+                        row.promoStores.map((item) => ({
+                            id: item.store.id,
+                            label: item.store.name,
+                            group: 'supplier-stores',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenStoreCtrl.setValue(newStores);
                 }
@@ -2217,173 +2295,174 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             else if (row.target === SegmentationBase.SEGMENTATION) {
                 // Handle Chosen Warehouse
                 if (row.promoWarehouses && row.promoWarehouses.length > 0) {
-                    const newWarehouses = row.promoWarehouses.map((item) => ({
-                        id: item.warehouse.id,
-                        label: item.warehouse.name,
-                        group: 'warehouses',
-                    }));
+                    const newWarehouses = _.orderBy(
+                        row.promoWarehouses.map((item) => ({
+                            id: item.warehouse.id,
+                            label: item.warehouse.name,
+                            group: 'warehouses',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenWarehouseCtrl.setValue(newWarehouses);
                 }
 
                 // Handle Chosen Store Type
                 if (row.promoTypes && row.promoTypes.length > 0) {
-                    const newStoreTypes = row.promoTypes.map((item) => ({
-                        id: item.type.id,
-                        label: item.type.name,
-                        group: 'store-segmentation-types',
-                    }));
+                    const newStoreTypes = _.orderBy(
+                        row.promoTypes.map((item) => ({
+                            id: item.type.id,
+                            label: item.type.name,
+                            group: 'store-segmentation-types',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenStoreTypeCtrl.setValue(newStoreTypes);
                 }
 
                 // Handle Chosen Store Group
                 if (row.promoGroups && row.promoGroups.length > 0) {
-                    const newStoreGroups = row.promoGroups.map((item) => ({
-                        id: item.group.id,
-                        label: item.group.name,
-                        group: 'store-segmentation-groups',
-                    }));
+                    const newStoreGroups = _.orderBy(
+                        row.promoGroups.map((item) => ({
+                            id: item.group.id,
+                            label: item.group.name,
+                            group: 'store-segmentation-groups',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenStoreGroupCtrl.setValue(newStoreGroups);
                 }
 
                 // Handle Chosen Store Channel
                 if (row.promoChannels && row.promoChannels.length > 0) {
-                    const newStoreChannels = row.promoChannels.map((item) => ({
-                        id: item.channel.id,
-                        label: item.channel.name,
-                        group: 'store-segmentation-channels',
-                    }));
+                    const newStoreChannels = _.orderBy(
+                        row.promoChannels.map((item) => ({
+                            id: item.channel.id,
+                            label: item.channel.name,
+                            group: 'store-segmentation-channels',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenStoreChannelCtrl.setValue(newStoreChannels);
                 }
 
                 // Handle Chosen Store Cluster
                 if (row.promoClusters && row.promoClusters.length > 0) {
-                    const newStoreClusters = row.promoClusters.map((item) => ({
-                        id: item.cluster.id,
-                        label: item.cluster.name,
-                        group: 'store-segmentation-clusters',
-                    }));
+                    const newStoreClusters = _.orderBy(
+                        row.promoClusters.map((item) => ({
+                            id: item.cluster.id,
+                            label: item.cluster.name,
+                            group: 'store-segmentation-clusters',
+                        })),
+                        ['label'],
+                        ['asc']
+                    );
 
                     chosenStoreClusterCtrl.setValue(newStoreClusters);
                 }
             }
         }
+
+        setTimeout(() => {
+            if (this.form.invalid) {
+                this.form.markAllAsTouched();
+            }
+        });
     }
 
     private _setEditConditionForm(row: FlexiCombo, promoConditions: ConditionDto[]): void {
         for (const [idx, item] of promoConditions.entries()) {
-            console.log(this.conditions.length, this.conditions.getRawValue());
             const limitIdx =
                 promoConditions && promoConditions.length > 0
                     ? promoConditions.length - 1
                     : promoConditions.length;
             const nextIdx = this.conditions && this.conditions.length;
-            const currIdx = nextIdx > 0 ? nextIdx - 1 : nextIdx;
+            const currIdx = nextIdx - 1;
 
-            if (currIdx === 0 && idx === 0) {
-                this.conditions.at(idx).get('conditionBase').setValue(item.conditionBase);
-
-                if (item.conditionBase === ConditionBase.QTY) {
-                    this.conditions.at(idx).get('conditionQty').setValue(item.conditionQty);
-                    // this.conditions.at(idx).get('conditionQty').setValue(null);
-                } else if (item.conditionBase === ConditionBase.ORDER_VALUE) {
-                    this.conditions.at(idx).get('conditionValue').setValue(item.conditionValue);
-                }
-
-                this.conditions.at(idx).get('benefitType').setValue(item.benefitType);
-
-                if (item.benefitType === BenefitType.QTY) {
-                    this.conditions.at(idx).get('benefitCatalogueId').setValue(item.catalogue);
-                    this.conditions.at(idx).get('benefitBonusQty').setValue(item.benefitBonusQty);
-                } else if (item.benefitType === BenefitType.AMOUNT) {
-                    this.conditions.at(idx).get('benefitRebate').setValue(item.benefitRebate);
-                } else if (item.benefitType === BenefitType.PERCENT) {
-                    this.conditions.at(idx).get('benefitDiscount').setValue(item.benefitDiscount);
-                    this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
-                }
-
-                if (idx < limitIdx) {
-                    // Handle add new FormControl for setValue index item 1
-                    this.conditions.push(
-                        this._createConditions(new ConditionDto(this.conditions.at(idx).value))
-                    );
-
-                    // Disable conditionBase control (New Tier)
-                    this.conditionsCtrl[nextIdx].get('conditionBase').disable({ onlySelf: true });
-
-                    // Disable benefitType control (New Tier)
-                    this.conditionsCtrl[nextIdx].get('benefitType').disable({ onlySelf: true });
-
-                    // Handle validation FormControl (New Tier)
-                    this._newTierValidation(nextIdx);
-                }
-            } else {
-                const prevIdx = currIdx - 1;
-                const prevCondition = this.conditions.at(prevIdx).value;
-
-                this.conditions.at(idx).get('conditionBase').setValue(item.conditionBase);
-
-                if (item.conditionBase === ConditionBase.QTY) {
-                    this.conditions.at(idx).get('conditionQty').setValue(item.conditionQty);
-                } else if (item.conditionBase === ConditionBase.ORDER_VALUE) {
-                    this.conditions.at(idx).get('conditionValue').setValue(item.conditionValue);
-                }
-
-                this.conditions.at(idx).get('benefitType').setValue(item.benefitType);
-
-                if (item.benefitType === BenefitType.QTY) {
-                    this.conditions.at(idx).get('benefitCatalogueId').setValue(item.catalogue);
-                    this.conditions.at(idx).get('benefitBonusQty').setValue(item.benefitBonusQty);
-                } else if (item.benefitType === BenefitType.AMOUNT) {
-                    this.conditions.at(idx).get('benefitRebate').setValue(item.benefitRebate);
-                } else if (item.benefitType === BenefitType.PERCENT) {
-                    this.conditions.at(idx).get('benefitDiscount').setValue(item.benefitDiscount);
-                    this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
-                }
-
-                if (idx < limitIdx) {
-                    this.conditions.push(this._createConditions(new ConditionDto(prevCondition)));
-
-                    // Disable conditionBase control (New Tier)
-                    this.conditionsCtrl[nextIdx].get('conditionBase').disable({ onlySelf: true });
-
-                    // Disable benefitType control (New Tier)
-                    this.conditionsCtrl[nextIdx].get('benefitType').disable({ onlySelf: true });
-
-                    // Handle validation FormControl (New Tier)
-                    this._newTierValidation(nextIdx);
-                }
+            if (nextIdx <= limitIdx) {
+                // Handle add new FormControl for setValue index item 1
+                this.conditions.push(this._createConditions());
             }
 
-            // if (this.conditions && this.conditions.length > 0) {
-            //     // if (prevIdx >= 0) {
-            //     //     // Disable prev Tier
-            //     //     this.conditionsCtrl[prevIdx].disable({
-            //     //         onlySelf: true,
-            //     //     });
+            if (idx !== limitIdx) {
+                // Disable not last tier
+                this.conditionsCtrl[idx].disable({
+                    onlySelf: true,
+                });
+            }
 
-            //     //     const prevCondition = this.conditions[prevIdx] as ConditionDto;
+            if (idx === limitIdx) {
+                // Disable conditionBase control (New Tier)
+                this.conditionsCtrl[idx].get('conditionBase').disable({
+                    onlySelf: true,
+                });
 
-            //     //     this.conditions.push(this._createConditions(new ConditionDto(prevCondition)));
+                // Disable benefitType control (New Tier)
+                this.conditionsCtrl[idx].get('benefitType').disable({
+                    onlySelf: true,
+                });
+            }
 
-            //     //     // Disable conditionBase control (New Tier)
-            //     //     this.conditionsCtrl[nextIdx].get('conditionBase').disable({ onlySelf: true });
+            this.conditions.at(idx).get('id').setValue(item.id);
 
-            //     //     // Disable benefitType control (New Tier)
-            //     //     this.conditionsCtrl[nextIdx].get('benefitType').disable({ onlySelf: true });
+            // Handle Condition Base Field
+            this.conditions.at(idx).get('conditionBase').setValue(item.conditionBase);
 
-            //     //     // Handle validation FormControl (New Tier)
-            //     //     this._newTierValidation(nextIdx);
-            //     // }
+            if (item.conditionBase === ConditionBase.QTY) {
+                // Handle Qty Field
+                this.conditions.at(idx).get('conditionQty').setValue(item.conditionQty);
+            } else if (item.conditionBase === ConditionBase.ORDER_VALUE) {
+                // Handle Order Value Field
+                this.conditions.at(idx).get('conditionValue').setValue(item.conditionValue);
+            }
 
-            //     // this.conditions.at(idx).get('conditionBase').setValue(item.conditionBase);
+            // Handle Benefit Type Field
+            this.conditions.at(idx).get('benefitType').setValue(item.benefitType);
 
-            //     // if (item)
-            //     // this.conditions.at(idx).get('conditionBase').setValue(item.conditionBase);
-            // }
+            if (item.benefitType === BenefitType.QTY) {
+                // Handle Bonus Sku Field
+                this.conditions.at(idx).get('benefitCatalogueId').setValue(item.catalogue);
+
+                // Handle Bonus Qty Field
+                this.conditions.at(idx).get('benefitBonusQty').setValue(item.benefitBonusQty);
+            } else if (item.benefitType === BenefitType.AMOUNT) {
+                // Handle Rebate Field
+                this.conditions.at(idx).get('benefitRebate').setValue(item.benefitRebate);
+            } else if (item.benefitType === BenefitType.PERCENT) {
+                // Handle Benefit Discount Field
+                this.conditions.at(idx).get('benefitDiscount').setValue(item.benefitDiscount);
+
+                // Handle Benefit Max Rebate Field
+                this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
+            }
+
+            // Handle Qty Field Validation
+            this._qtyValueValidationByConditionBase(item.conditionBase, idx);
+
+            // Handle Order Value Field Validation
+            this._orderValueValidationByConditionBase(item.conditionBase, idx);
+
+            // Handle Bonus Sku Field Validation
+            this._benefitBonusSkuValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Bonus Qty Field Validation
+            this._benefitBonusQtyValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Rebate Field Validation
+            this._benefitRebateValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Benefit Discount Field Validation
+            this._benefitDiscountValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Benefit Max Rebate Field Validation
+            this._benefitMaxRebateValidationByBenefitType(item.benefitType, idx);
         }
     }
 
@@ -2580,6 +2659,48 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
+
+            const payload: CreateFlexiComboDto = {
+                base,
+                conditions: newConditions,
+                dataBase: {},
+                dataTarget: {},
+                endDate: newEndDate,
+                externalId: promoId,
+                firstBuy,
+                image: imgSuggestion || null,
+                maxRedemptionPerUser: maxRedemption,
+                name: promoName,
+                platform,
+                promoBudget,
+                startDate: newStartDate,
+                status: EStatus.ACTIVE,
+                supplierId: null,
+                target: segmentationBase,
+                type: 'flexi',
+                voucherCombine: allowCombineWithVoucher,
+            };
+
+            if (base === TriggerBase.SKU) {
+                payload.dataBase.catalogueId = newChosenSku;
+            } else if (base === TriggerBase.BRAND) {
+                payload.dataBase.brandId = newChosenBrand;
+            } else if (base === TriggerBase.INVOICE) {
+                payload.dataBase.invoiceGroupId = newChosenFaktur;
+            }
+
+            if (segmentationBase === SegmentationBase.STORE) {
+                payload.dataTarget.storeId = newChosenStore;
+            } else if (segmentationBase === SegmentationBase.SEGMENTATION) {
+                payload.dataTarget.warehouseId = newChosenWarehouse;
+                payload.dataTarget.typeId = newChosenStoreType;
+                payload.dataTarget.groupId = newChosenStoreGroup;
+                payload.dataTarget.channelId = newChosenStoreChannel;
+                payload.dataTarget.clusterId = newChosenStoreCluster;
+            }
+
+            console.log('[EDIT] OnSubmit 1', body);
+            console.log('[EDIT] OnSubmit 2', payload);
 
             // const payload = {
             //     urbanId: urban.id,
