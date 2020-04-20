@@ -241,7 +241,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         };
 
         // Reset form-nya store entity.
-        this.entityForm.enable();
+        if (!this.disabled) {
+            this.entityForm.enable();
+        }
         this.entityForm.reset();
 
         // Memulai request data store entity.
@@ -325,67 +327,69 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     openCatalogueSelection(): void {
-        let selected = this.entityFormValue.value;
-
-        if (!Array.isArray(selected)) {
-            selected = [];
-            this.entityFormValue.setValue(selected);
-        }
-
-        this.tempEntity = selected;
-        this.initialSelection = selected;
-        
-        this.dialog = this.applyDialogFactory$.open({
-            title: 'Select SKU',
-            template: this.selectStoreType,
-            isApplyEnabled: true,
-        }, {
-            disableClose: true,
-            width: '80vw',
-            minWidth: '80vw',
-            maxWidth: '80vw',
-        });
-
-        this.dialog.closed$.subscribe({
-            next: (value: TNullable<string>) => {
-                HelperService.debug('DIALOG SELECTION CLOSED', value);
-
-                let selection;
-                if (value === 'apply') {
-                    if (!this.removing) {
-                        if (Array.isArray(this.tempEntity)) {
-                            if (this.tempEntity.length > 0) {
-                                selection = this.tempEntity;
+        if (!this.disabled) {
+            let selected = this.entityFormValue.value;
+    
+            if (!Array.isArray(selected)) {
+                selected = [];
+                this.entityFormValue.setValue(selected);
+            }
+    
+            this.tempEntity = selected;
+            this.initialSelection = selected;
+            
+            this.dialog = this.applyDialogFactory$.open({
+                title: 'Select SKU',
+                template: this.selectStoreType,
+                isApplyEnabled: true,
+            }, {
+                disableClose: true,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            });
+    
+            this.dialog.closed$.subscribe({
+                next: (value: TNullable<string>) => {
+                    HelperService.debug('DIALOG SELECTION CLOSED', value);
+    
+                    let selection;
+                    if (value === 'apply') {
+                        if (!this.removing) {
+                            if (Array.isArray(this.tempEntity)) {
+                                if (this.tempEntity.length > 0) {
+                                    selection = this.tempEntity;
+                                } else {
+                                    selection = [];
+                                }
                             } else {
-                                selection = [];
+                                selection = (this.entityFormValue.value as Array<Selection>);
                             }
                         } else {
-                            selection = (this.entityFormValue.value as Array<Selection>);
+                            selection = this.tempEntity;
                         }
                     } else {
-                        selection = this.tempEntity;
+                        selection = (this.entityFormValue.value as Array<Selection>);
                     }
-                } else {
-                    selection = (this.entityFormValue.value as Array<Selection>);
+    
+                    if (selection.length === 0) {
+                        this.entityFormView.setValue('');
+                        this.entityFormValue.setValue([]);
+                    } else {
+                        // const firstselection = selection[0].label;
+                        // const remainLength = selection.length - 1;
+                        // const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
+    
+                        this.entityFormValue.setValue(selection);
+                        this.updateFormView();
+                        // this.entityFormView.setValue(viewValue);
+                    }
+    
+                    this.onSelectedEntity(this.entityFormValue.value);
+                    this.cdRef.detectChanges();
                 }
-
-                if (selection.length === 0) {
-                    this.entityFormView.setValue('');
-                    this.entityFormValue.setValue([]);
-                } else {
-                    // const firstselection = selection[0].label;
-                    // const remainLength = selection.length - 1;
-                    // const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
-
-                    this.entityFormValue.setValue(selection);
-                    this.updateFormView();
-                    // this.entityFormView.setValue(viewValue);
-                }
-
-                this.onSelectedEntity(this.entityFormValue.value);
-                this.cdRef.detectChanges();
-            }
-        });
+            });
+        }
     }
 
     onClearAll(): void {
