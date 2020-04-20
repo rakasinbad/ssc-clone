@@ -526,6 +526,7 @@
 
                                     <select-brands
                                         [initialSelection]="form.get('chosenBrand').value || []"
+                                        [disabled]="form.get('chosenBrand').disabled"
                                         [required]="true"
                                         (selected)="onBrandSelected($event)"
                                         fxFlex="50"
@@ -557,6 +558,7 @@
 
                                     <select-faktur
                                         [initialSelection]="form.get('chosenInvoice').value || []"
+                                        [disabled]="form.get('chosenInvoice').disabled"
                                         [required]="true"
                                         (selected)="onInvoiceSelected($event)"
                                         fxFlex="50"
@@ -1564,6 +1566,7 @@
 
                                 <select-supplier-stores
                                     [initialSelection]="form.get('chosenStore').value || []"
+                                    [disabled]="form.get('chosenStore').disabled"
                                     placeholder="Choose Store"
                                     [required]="true"
                                     (selected)="onStoreSelected($event)"
@@ -1596,6 +1599,7 @@
 
                                 <select-warehouses
                                     [initialSelection]="form.get('chosenWarehouse').value || []"
+                                    [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
                                     [required]="false"
                                     (selected)="onWarehouseSelected($event)"
@@ -1626,6 +1630,7 @@
 
                                 <select-store-segmentation
                                     [initialSelection]="form.get('chosenStoreType').value || []"
+                                    [disabled]="form.get('chosenStoreType').disabled"
                                     placeholder="Choose Store Type"
                                     title="Select Store Type"
                                     segmentationType="type"
@@ -1658,6 +1663,7 @@
 
                                 <select-store-segmentation
                                     [initialSelection]="form.get('chosenStoreGroup').value || []"
+                                    [disabled]="form.get('chosenStoreGroup').disabled"
                                     placeholder="Choose Store Group"
                                     title="Select Store Group"
                                     segmentationType="group"
@@ -1690,6 +1696,7 @@
 
                                 <select-store-segmentation
                                     [initialSelection]="form.get('chosenStoreChannel').value || []"
+                                    [disabled]="form.get('chosenStoreChannel').disabled"
                                     placeholder="Choose Store Channel"
                                     title="Select Store Channel"
                                     segmentationType="channel"
@@ -1722,6 +1729,7 @@
 
                                 <select-store-segmentation
                                     [initialSelection]="form.get('chosenStoreCluster').value || []"
+                                    [disabled]="form.get('chosenStoreCluster').disabled"
                                     placeholder="Choose Store Cluster"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
