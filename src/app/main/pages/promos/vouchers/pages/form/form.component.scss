@@ -1,0 +1,10 @@
+@import 'src/@sinbad/scss/helper';
+
+period-target-promo-form {
+    .mat-datetimepicker-toggle {
+        /* Set color icon in datepicker */
+        .mat-icon {
+            color: sinbad-color('red', '50');
+        }
+    }
+}
