@@ -202,6 +202,17 @@
                             type="button"
                             mat-menu-item
                             class="sinbad-mat-menu-item"
+                            aria-label="Detail"
+                            [routerLink]="[row?.id, 'detail']"
+                        >
+                            <mat-icon>info</mat-icon>
+                            <span>Detail</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
                             aria-label="Edit"
                             [routerLink]="[row?.id]"
                         >
@@ -209,21 +220,15 @@
                             <span>Edit</span>
                         </button>
 
-                        <!--<button
+                        <button
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
-                            [attr.aria-label]="
-                                row?.status === 'active' ? 'Inactive' : 'Active'
-                            "
+                            [attr.aria-label]="row?.status === 'active' ? 'Inactive' : 'Active'"
                             (click)="onChangeStatus(row)"
                         >
                             <mat-icon>
-                                {{
-                                    row?.status === 'active'
-                                        ? 'archive'
-                                        : 'check_circle_outline'
-                                }}
+                                {{ row?.status === 'active' ? 'archive' : 'check_circle_outline' }}
                             </mat-icon>
                             <span>
                                 {{
@@ -233,7 +238,18 @@
                                     ) | translate
                                 }}
                             </span>
-                        </button> -->
+                        </button>
+
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="remove"
+                            (click)="onDelete(row)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Remove</span>
+                        </button>
                     </ng-template>
                 </mat-menu>
             </div>
@@ -248,11 +264,7 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    <mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        class="flexi-combo-list"
-        [routerLink]="[row?.id, 'detail']"
-    ></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" class="flexi-combo-list"></mat-row>
     <mat-footer-row
         *matFooterRowDef="['no-record']"
         [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"

@@ -42,7 +42,12 @@ import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { Brand } from 'app/shared/models/brand.model';
 import { CalculationMechanism } from 'app/shared/models/calculation-mechanism.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
-import { EStatus, IBreadcrumbs, IFooterActionConfig, LifecyclePlatform } from 'app/shared/models/global.model';
+import {
+    EStatus,
+    IBreadcrumbs,
+    IFooterActionConfig,
+    LifecyclePlatform,
+} from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
@@ -55,7 +60,7 @@ import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
-import { ConditionDto, CreateFlexiComboDto, FlexiCombo } from '../models';
+import { ConditionDto, CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../models';
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 import { FlexiComboSelectors } from '../store/selectors';
@@ -72,6 +77,7 @@ type TmpKey = 'imgSuggestion';
 })
 export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
+    conditionForm: FormArray;
     pageType: string;
     tmp: Partial<Record<TmpKey, FormControl>> = {};
 
@@ -846,7 +852,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             const newSku: Selection[] = ev.map((item) => ({
                 id: item.id,
                 label: item.name,
-                group: 'catalogus,',
+                group: 'catalogues',
             }));
 
             this.form.get('chosenSku').setValue(newSku);
@@ -1786,7 +1792,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     private _setFormStatus(status: string): void {
-        console.log(`Test Form ${status}`, this.form);
+        // console.log(`Test Form ${status}`, this.form);
 
         if (!status) {
             return;
@@ -1804,8 +1810,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.AfterViewInit:
-                // Display footer action
-                // this.store.dispatch(UiActions.showFooterAction());
+                if (this.pageType === 'new') {
+                    // Display footer action
+                    this.store.dispatch(UiActions.showFooterAction());
+                }
                 break;
 
             case LifecyclePlatform.OnDestroy:
@@ -2080,6 +2088,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStoreCluster: null,
         });
 
+        this.conditionForm = this.form.get('conditions') as FormArray;
+
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
@@ -2101,7 +2111,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     private _setEditForm(row: FlexiCombo): void {
-        console.log('ROW', row);
+        // console.log('ROW', row);
         const promoSellerIdCtrl = this.form.get('promoId');
         const promoNameCtrl = this.form.get('promoName');
         const platformCtrl = this.form.get('platform');
@@ -2234,28 +2244,32 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Handle Conditions & Benefit
         if (row.promoConditions && row.promoConditions.length > 0) {
-            const newPromoConditions: ConditionDto[] = row.promoConditions.map((item) => {
-                return new ConditionDto({
-                    id: item.id,
-                    conditionBase: item.conditionBase,
-                    conditionQty: item.conditionQty,
-                    conditionValue: item.conditionValue,
-                    benefitType: item.benefitType,
-                    benefitCatalogueId: item.benefitCatalogueId,
-                    catalogue: item.catalogue
-                        ? {
-                              id: item.catalogue.id,
-                              label: item.catalogue.name,
-                              group: 'catalogues',
-                          }
-                        : null,
-                    benefitBonusQty: item.benefitBonusQty,
-                    multiplication: item.multiplication,
-                    benefitRebate: item.benefitRebate,
-                    benefitDiscount: item.benefitDiscount,
-                    benefitMaxRebate: item.benefitMaxRebate,
-                });
-            });
+            const newPromoConditions: ConditionDto[] = _.orderBy(
+                row.promoConditions.map((item) => {
+                    return new ConditionDto({
+                        id: item.id,
+                        conditionBase: item.conditionBase,
+                        conditionQty: item.conditionQty,
+                        conditionValue: item.conditionValue,
+                        benefitType: item.benefitType,
+                        benefitCatalogueId: item.benefitCatalogueId,
+                        catalogue: item.catalogue
+                            ? {
+                                  id: item.catalogue.id,
+                                  label: item.catalogue.name,
+                                  group: 'catalogues',
+                              }
+                            : null,
+                        benefitBonusQty: item.benefitBonusQty,
+                        multiplication: item.multiplication,
+                        benefitRebate: item.benefitRebate,
+                        benefitDiscount: item.benefitDiscount,
+                        benefitMaxRebate: item.benefitMaxRebate,
+                    });
+                }),
+                ['id'],
+                ['asc']
+            );
 
             this._setEditConditionForm(row, newPromoConditions);
         }
@@ -2370,6 +2384,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }
         }
 
+        // Trigger Base
+        this.form.get('base').disable();
+        this.form.get('chosenSku').disable();
+        this.form.get('chosenBrand').disable();
+        this.form.get('chosenInvoice').disable();
+
+        // Customer Segmentation Setting
+        this.form.get('segmentationBase').disable();
+        this.form.get('chosenStore').disable();
+        this.form.get('chosenWarehouse').disable();
+        this.form.get('chosenStoreType').disable();
+        this.form.get('chosenStoreGroup').disable();
+        this.form.get('chosenStoreChannel').disable();
+        this.form.get('chosenStoreCluster').disable();
+
         setTimeout(() => {
             if (this.form.invalid) {
                 this.form.markAllAsTouched();
@@ -2391,24 +2420,26 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 this.conditions.push(this._createConditions());
             }
 
-            if (idx !== limitIdx) {
-                // Disable not last tier
-                this.conditionsCtrl[idx].disable({
-                    onlySelf: true,
-                });
-            }
+            // if (idx !== limitIdx) {
+            //     // Disable not last tier
+            //     this.conditionsCtrl[idx].disable({
+            //         onlySelf: true,
+            //     });
+            // }
 
-            if (idx === limitIdx) {
-                // Disable conditionBase control (New Tier)
-                this.conditionsCtrl[idx].get('conditionBase').disable({
-                    onlySelf: true,
-                });
+            // if (idx === limitIdx) {
+            //     // Disable conditionBase control (New Tier)
+            //     this.conditionsCtrl[idx].get('conditionBase').disable({
+            //         onlySelf: true,
+            //     });
 
-                // Disable benefitType control (New Tier)
-                this.conditionsCtrl[idx].get('benefitType').disable({
-                    onlySelf: true,
-                });
-            }
+            //     // Disable benefitType control (New Tier)
+            //     this.conditionsCtrl[idx].get('benefitType').disable({
+            //         onlySelf: true,
+            //     });
+            // }
+
+            this.conditionsCtrl[idx].disable();
 
             this.conditions.at(idx).get('id').setValue(item.id);
 
@@ -2507,45 +2538,41 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 : [];
         const newChosenFaktur =
             chosenInvoice && chosenInvoice.length > 0 && base === TriggerBase.INVOICE
-                ? chosenInvoice.map((invoice: InvoiceGroup) => invoice.id)
+                ? chosenInvoice.map((invoice: Selection) => invoice.id)
                 : [];
         const newChosenStore =
             chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBase.STORE
-                ? chosenStore.map((store: SupplierStore) => store.store.id)
+                ? chosenStore.map((store: Selection) => store.id)
                 : [];
         const newChosenWarehouse =
             chosenWarehouse &&
             chosenWarehouse.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenWarehouse.map((warehouse: Warehouse) => warehouse.id)
+                ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
                 : [];
         const newChosenStoreType =
             chosenStoreType &&
             chosenStoreType.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreType.map((storeType: StoreSegmentationType) => storeType.id)
+                ? chosenStoreType.map((storeType: Selection) => storeType.id)
                 : [];
         const newChosenStoreGroup =
             chosenStoreGroup &&
             chosenStoreGroup.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreGroup.map((storeGroup: StoreSegmentationGroup) => storeGroup.id)
+                ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
                 : [];
         const newChosenStoreChannel =
             chosenStoreChannel &&
             chosenStoreChannel.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreChannel.map(
-                      (storeChannel: StoreSegmentationChannel) => storeChannel.id
-                  )
+                ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
                 : [];
         const newChosenStoreCluster =
             chosenStoreCluster &&
             chosenStoreCluster.length > 0 &&
             segmentationBase === SegmentationBase.SEGMENTATION
-                ? chosenStoreCluster.map(
-                      (storeCluster: StoreSegmentationCluster) => storeCluster.id
-                  )
+                ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
                 : [];
 
         const newConditions =
@@ -2660,11 +2687,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 
-            const payload: CreateFlexiComboDto = {
-                base,
-                conditions: newConditions,
-                dataBase: {},
-                dataTarget: {},
+            const payload: PatchFlexiComboDto = {
+                // base,
+                // conditions: newConditions,
+                // dataBase: {},
+                // dataTarget: {},
                 endDate: newEndDate,
                 externalId: promoId,
                 firstBuy,
@@ -2676,31 +2703,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 startDate: newStartDate,
                 status: EStatus.ACTIVE,
                 supplierId: null,
-                target: segmentationBase,
+                // target: segmentationBase,
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
             };
 
-            if (base === TriggerBase.SKU) {
-                payload.dataBase.catalogueId = newChosenSku;
-            } else if (base === TriggerBase.BRAND) {
-                payload.dataBase.brandId = newChosenBrand;
-            } else if (base === TriggerBase.INVOICE) {
-                payload.dataBase.invoiceGroupId = newChosenFaktur;
+            if (!imgSuggestion) {
+                delete payload.image;
             }
 
-            if (segmentationBase === SegmentationBase.STORE) {
-                payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBase.SEGMENTATION) {
-                payload.dataTarget.warehouseId = newChosenWarehouse;
-                payload.dataTarget.typeId = newChosenStoreType;
-                payload.dataTarget.groupId = newChosenStoreGroup;
-                payload.dataTarget.channelId = newChosenStoreChannel;
-                payload.dataTarget.clusterId = newChosenStoreCluster;
-            }
-
-            console.log('[EDIT] OnSubmit 1', body);
-            console.log('[EDIT] OnSubmit 2', payload);
+            // console.log('[EDIT] OnSubmit 1', body);
+            // console.log('[EDIT] OnSubmit 2', payload);
 
             // const payload = {
             //     urbanId: urban.id,
@@ -2734,13 +2747,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             //     delete payload.noteAddress;
             // }
 
-            // if (id && Object.keys(payload).length > 0) {
-            //     // this.store.dispatch(
-            //     //     WarehouseActions.updateWarehouseRequest({
-            //     //         payload: { id, body: payload }
-            //     //     })
-            //     // );
-            // }
+            if (id && Object.keys(payload).length > 0) {
+                this.store.dispatch(
+                    FlexiComboActions.updateFlexiComboRequest({
+                        payload: { id, body: payload },
+                    })
+                );
+            }
         }
     }
 

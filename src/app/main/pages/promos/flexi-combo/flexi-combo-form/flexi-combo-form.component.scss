@@ -20,13 +20,13 @@ app-flexi-combo-form {
                 font-weight: normal;
                 color: sinbad-color('black', '80');
 
-                // + div {
-                //     a[href] {
-                //         margin-left: 16px;
-                //         position: relative;
-                //         top: -0.6em;
-                //     }
-                // }
+                + div {
+                    a[href] {
+                        margin-left: 16px;
+                        position: relative;
+                        top: -0.6em;
+                    }
+                }
             }
 
             .mat-radio-group {

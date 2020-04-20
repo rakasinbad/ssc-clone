@@ -288,7 +288,7 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('endDate')"
                             >
-                                Image Suggestion
+                                Image<br />Suggestion
 
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
@@ -475,7 +475,7 @@
                             </div>
                         </div>
 
-                        <ng-container [ngSwitch]="getTriggerBase()">
+                        <ng-container [ngSwitch]="form.get('base').value">
                             <ng-container *ngSwitchCase="eTriggerBase.SKU">
                                 <div
                                     class="custom-field"
@@ -494,7 +494,8 @@
                                     </label>
 
                                     <select-catalogues
-                                        [initialSelection]="getChosenSku()"
+                                        [initialSelection]="form.get('chosenSku').value || []"
+                                        [disabled]="form.get('chosenSku').disabled"
                                         [required]="true"
                                         (selected)="onSkuSelected($event)"
                                         fxFlex="50"
@@ -524,7 +525,7 @@
                                     </label>
 
                                     <select-brands
-                                        [initialSelection]="getChosenBrand()"
+                                        [initialSelection]="form.get('chosenBrand').value || []"
                                         [required]="true"
                                         (selected)="onBrandSelected($event)"
                                         fxFlex="50"
@@ -555,7 +556,7 @@
                                     </label>
 
                                     <select-faktur
-                                        [initialSelection]="getChosenFaktur()"
+                                        [initialSelection]="form.get('chosenInvoice').value || []"
                                         [required]="true"
                                         (selected)="onInvoiceSelected($event)"
                                         fxFlex="50"
@@ -673,7 +674,7 @@
                                         fxFlex="1 1 auto"
                                         [class.benefit-qty-full]="
                                             isFirst &&
-                                            canApplySameSku() &&
+                                            form.get('chosenSku').value?.length === 1 &&
                                             isBenefitType(eBenefitType.QTY, conditionIdx)
                                         "
                                         [class.benefit-qty-empty]="
@@ -772,7 +773,15 @@
                                         <!-- ./ FIELD TIER CONDITION BASE -->
 
                                         <!-- SWITCH CASE LAYOUT CONDITION VALUE -->
-                                        <ng-container [ngSwitch]="getConditionBase(conditionIdx)">
+                                        <ng-container
+                                            [ngSwitch]="
+                                                form.get([
+                                                    'conditions',
+                                                    conditionIdx,
+                                                    'conditionBase'
+                                                ]).value
+                                            "
+                                        >
                                             <ng-container *ngSwitchCase="eConditionBase.QTY">
                                                 <!-- START FIELD TIER CONDITION VALUE (QTY) -->
                                                 <div
@@ -993,7 +1002,15 @@
                                         <!-- ./ FIELD TIER BENEFIT TYPE -->
 
                                         <!-- SWITCH CASE LAYOUT BENEFIT TYPE -->
-                                        <ng-container [ngSwitch]="getBenefitType(conditionIdx)">
+                                        <ng-container
+                                            [ngSwitch]="
+                                                form.get([
+                                                    'conditions',
+                                                    conditionIdx,
+                                                    'benefitType'
+                                                ]).value
+                                            "
+                                        >
                                             <ng-container *ngSwitchCase="eBenefitType.QTY">
                                                 <!-- START FIELD TIER BONUS SKU -->
                                                 <div
@@ -1020,10 +1037,18 @@
                                                     <select-catalogues
                                                         mode="single"
                                                         [disabled]="
-                                                            isDisabledBonusSku(conditionIdx)
+                                                            form.get([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitCatalogueId'
+                                                            ]).disabled
                                                         "
                                                         [initialSelection]="
-                                                            getApplyBonusSku(conditionIdx)
+                                                            form.get([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitCatalogueId'
+                                                            ]).value || null
                                                         "
                                                         [required]="true"
                                                         (selected)="
@@ -1054,7 +1079,10 @@
                                                     fxLayout="row"
                                                     fxLayoutAlign="start stretch"
                                                     fxLayoutGap="16px"
-                                                    *ngIf="isFirst && canApplySameSku()"
+                                                    *ngIf="
+                                                        isFirst &&
+                                                        form.get('chosenSku').value?.length === 1
+                                                    "
                                                 >
                                                     <label fxFlexAlign="center" fxFlex="16"></label>
 
@@ -1366,17 +1394,12 @@
                                         <p class="title">Sample Case</p>
 
                                         <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                            Ut dignissim interdum accumsan. Sed pretium, felis sit
-                                            amet finibus ullamcorper, elit ligula vehicula diam, eu
-                                            posuere quam nibh ut elit. Nunc suscipit nisi id felis
-                                            facilisis malesuada. Pellentesque suscipit venenatis
-                                            neque, vel aliquet tortor dictum vitae. Mauris eu
-                                            imperdiet nisl, pharetra condimentum lorem. Sed faucibus
-                                            purus tortor, vel sagittis tortor maximus sed. Maecenas
-                                            lorem arcu, porttitor non tellus ut, placerat
-                                            sollicitudin nibh. Sed vel felis vitae augue dictum
-                                            egestas elementum non nulla. Donec ut nunc neque.
+                                            Toko Maju Jaya ordered 5 pcs of SKU A. There are 2
+                                            condition and benefits available: Buy 5 SKU A, get 1 SKU
+                                            A for free Buy 10 SKU A, get 3 SKU A for free If you
+                                            choose non-cumulative: Toko Maju Jaya will get 3 SKU A
+                                            bonus for free. If you choose cumulative: Toko Maju Jaya
+                                            will get 4 SKU A bonus for free.
                                         </p>
                                     </card-instruction>
                                     <!-- ./ CARD-INSTRUCTION -->
@@ -1387,7 +1410,13 @@
                     </div>
 
                     <div>
-                        <ng-container *ngIf="canAddTier()">
+                        <ng-container
+                            *ngIf="
+                                (form.get('conditions').value
+                                    | canAddTier: pageType:conditionForm.controls) &&
+                                pageType === 'new'
+                            "
+                        >
                             <button
                                 type="button"
                                 mat-button
@@ -1398,7 +1427,14 @@
                             </button>
                         </ng-container>
 
-                        <ng-container *ngIf="!canAddTier()">
+                        <ng-container
+                            *ngIf="
+                                !(
+                                    form.get('conditions').value
+                                    | canAddTier: pageType:conditionForm.controls
+                                ) || pageType === 'edit'
+                            "
+                        >
                             <button type="button" mat-button color="accent" disabled>
                                 Add Tier
                             </button>
@@ -1527,7 +1563,7 @@
                                 </label>
 
                                 <select-supplier-stores
-                                    [initialSelection]="getChosenStore()"
+                                    [initialSelection]="form.get('chosenStore').value || []"
                                     placeholder="Choose Store"
                                     [required]="true"
                                     (selected)="onStoreSelected($event)"
@@ -1559,7 +1595,7 @@
                                 </label>
 
                                 <select-warehouses
-                                    [initialSelection]="getChosenWarehouse()"
+                                    [initialSelection]="form.get('chosenWarehouse').value || []"
                                     placeholder="Choose Warehouse"
                                     [required]="false"
                                     (selected)="onWarehouseSelected($event)"
@@ -1589,7 +1625,7 @@
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="getChosenStoreType()"
+                                    [initialSelection]="form.get('chosenStoreType').value || []"
                                     placeholder="Choose Store Type"
                                     title="Select Store Type"
                                     segmentationType="type"
@@ -1621,7 +1657,7 @@
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="getChosenStoreGroup()"
+                                    [initialSelection]="form.get('chosenStoreGroup').value || []"
                                     placeholder="Choose Store Group"
                                     title="Select Store Group"
                                     segmentationType="group"
@@ -1653,7 +1689,7 @@
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="getChosenStoreChannel()"
+                                    [initialSelection]="form.get('chosenStoreChannel').value || []"
                                     placeholder="Choose Store Channel"
                                     title="Select Store Channel"
                                     segmentationType="channel"
@@ -1685,7 +1721,7 @@
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="getChosenStoreCluster()"
+                                    [initialSelection]="form.get('chosenStoreCluster').value || []"
                                     placeholder="Choose Store Cluster"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"

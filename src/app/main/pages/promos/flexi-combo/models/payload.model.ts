@@ -133,24 +133,76 @@ export class PatchFlexiComboDto {
             voucherCombine,
         } = data;
 
-        this.base = base;
-        this.conditions = conditions;
-        this.dataBase = dataBase;
-        this.dataTarget = dataTarget;
-        this.endDate = endDate;
-        this.externalId = externalId;
-        this.firstBuy = firstBuy;
-        this.image = image;
-        this.maxRedemptionPerUser = maxRedemptionPerUser;
-        this.name = name;
-        this.platform = platform;
-        this.promoBudget = promoBudget;
-        this.startDate = startDate;
-        this.status = status;
-        this.supplierId = supplierId;
-        this.target = target;
-        this.type = type;
-        this.voucherCombine = voucherCombine;
+        if (typeof base !== 'undefined') {
+            this.base = base;
+        }
+
+        if (typeof conditions !== 'undefined') {
+            this.conditions = conditions;
+        }
+
+        if (typeof dataBase !== 'undefined') {
+            this.dataBase = dataBase;
+        }
+
+        if (typeof dataTarget !== 'undefined') {
+            this.dataTarget = dataTarget;
+        }
+
+        if (typeof endDate !== 'undefined') {
+            this.endDate = endDate;
+        }
+
+        if (typeof externalId !== 'undefined') {
+            this.externalId = externalId;
+        }
+
+        if (typeof firstBuy !== 'undefined') {
+            this.firstBuy = firstBuy;
+        }
+
+        if (typeof image !== 'undefined') {
+            this.image = image;
+        }
+
+        if (typeof maxRedemptionPerUser !== 'undefined') {
+            this.maxRedemptionPerUser = maxRedemptionPerUser;
+        }
+
+        if (typeof name !== 'undefined') {
+            this.name = name;
+        }
+
+        if (typeof platform !== 'undefined') {
+            this.platform = platform;
+        }
+
+        if (typeof promoBudget !== 'undefined') {
+            this.promoBudget = promoBudget;
+        }
+        if (typeof startDate !== 'undefined') {
+            this.startDate = startDate;
+        }
+
+        if (typeof status !== 'undefined') {
+            this.status = status;
+        }
+
+        if (typeof supplierId !== 'undefined') {
+            this.supplierId = supplierId;
+        }
+
+        if (typeof target !== 'undefined') {
+            this.target = target;
+        }
+
+        if (typeof type !== 'undefined') {
+            this.type = type;
+        }
+
+        if (typeof voucherCombine !== 'undefined') {
+            this.voucherCombine = voucherCombine;
+        }
     }
 }
 

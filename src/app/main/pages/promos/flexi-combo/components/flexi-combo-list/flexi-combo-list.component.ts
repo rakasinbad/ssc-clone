@@ -11,14 +11,16 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatPaginator, MatSort, PageEvent, MatTabChangeEvent } from '@angular/material';
+import { MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
+import { NoticeService } from 'app/shared/helpers';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
+import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
@@ -47,7 +49,7 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
     activeTab: string = 'all';
 
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'promo-seller-id',
         'promo-name',
         'base',
@@ -83,7 +85,8 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        private store: Store<fromFlexiCombos.FeatureState>
+        private store: Store<fromFlexiCombos.FeatureState>,
+        private _$notice: NoticeService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -114,6 +117,52 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    onChangeStatus(item: FlexiCombo): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(FlexiComboActions.confirmChangeStatus({ payload: item }));
+
+        // const canUpdate = this.ngxPermissionsService.hasPermission('SRM.SR.UPDATE');
+
+        // canUpdate.then((hasAccess) => {
+        //     if (hasAccess) {
+        //         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        //         this.store.dispatch(FlexiComboActions.confirmChangeStatus({ payload: item }));
+        //     } else {
+        //         this._$notice.open('Sorry, permission denied!', 'error', {
+        //             verticalPosition: 'bottom',
+        //             horizontalPosition: 'right',
+        //         });
+        //     }
+        // });
+    }
+
+    onDelete(item: FlexiCombo): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(FlexiComboActions.confirmDeleteFlexiCombo({ payload: item }));
+
+        // const canDelete = this.ngxPermissionsService.hasPermission('SRM.SR.UPDATE');
+
+        // canDelete.then((hasAccess) => {
+        //     if (hasAccess) {
+        //         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        //         this.store.dispatch(FlexiComboActions.confirmDeleteFlexiCombo({ payload: item }));
+        //     } else {
+        //         this._$notice.open('Sorry, permission denied!', 'error', {
+        //             verticalPosition: 'bottom',
+        //             horizontalPosition: 'right',
+        //         });
+        //     }
+        // });
+    }
 
     onSelectedTab(ev: MatTabChangeEvent): void {
         this.type = ev.index;
