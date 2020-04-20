@@ -18,7 +18,7 @@ import { FormStatus, IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { PeriodTargetPromoActions } from '../../store/actions';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { PeriodTargetPromoPayload } from '../../models/period-target-promo.model';
 import * as moment from 'moment';
 
@@ -53,6 +53,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
     constructor(
         // private router: Router,
         private cdRef: ChangeDetectorRef,
+        private notice$: NoticeService,
         private PeriodTargetPromoStore: NgRxStore<PeriodTargetPromoCoreState>,
     ) {
         const breadcrumbs: Array<IBreadcrumbs> = [
@@ -477,8 +478,10 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
             },
         };
 
-        if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
-            payload.reward.image = formValue.miscellaneous.couponImage;
+        if (formValue.miscellaneous.couponImage) {
+            if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
+                payload.reward.image = formValue.miscellaneous.couponImage;
+            }
         }
         /**
          * Payload untuk ID condition.
@@ -593,15 +596,37 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                         break;
                     }
                     case 'trigger': {
-                        this.processTriggerInformationForm();
+                        // this.processTriggerInformationForm();
+                        this.notice$.open('You cannot edit this section.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                            duration: 5000,
+                        });
+
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+
                         break;
                     }
                     case 'condition-benefit': {
-                        this.processConditionBenefitForm();
+                        // this.processConditionBenefitForm();
+                        this.notice$.open('You cannot edit this section.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                            duration: 5000,
+                        });
+
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
                         break;
                     }
                     case 'customer-segmentation': {
-                        this.processCustomerSegmentationForm();
+                        // this.processCustomerSegmentationForm();
+                        this.notice$.open('You cannot edit this section.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                            duration: 5000,
+                        });
+
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
                         break;
                     }
                     case 'reward': {

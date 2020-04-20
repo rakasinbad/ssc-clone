@@ -41,7 +41,7 @@
             </div>
             <!-- / APP TITLE -->
             <!-- EDIT BUTTON -->
-            <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
+            <button mat-flat-button (click)="editCatalogue()" [disabled]="section === 'trigger' || section === 'condition-benefit' || section === 'customer-segmentation'" *ngIf="isViewMode()">
                 <span class="red-500-fg">Edit</span>
             </button>
             <!-- / EDIT BUTTON -->
