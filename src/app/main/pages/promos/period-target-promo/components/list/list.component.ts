@@ -53,7 +53,7 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
     search: FormControl = new FormControl();
 
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'promo-seller-id',
         'promo-name',
         'base',
@@ -262,7 +262,7 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
-                        'checkbox',
+                        // 'checkbox',
                         'promo-seller-id',
                         'promo-name',
                         'base',
@@ -273,7 +273,7 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
                     ];
                 } else {
                     this.displayedColumns = [
-                        'checkbox',
+                        // 'checkbox',
                         'promo-seller-id',
                         'promo-name',
                         'base',
