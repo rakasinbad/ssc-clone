@@ -724,7 +724,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
                 return {
                     ...rawValue,
-                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
+                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ id: data.id, condition: data.condition, benefit: data.benefit }))
                 };
             }),
             tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
