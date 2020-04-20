@@ -157,7 +157,14 @@ export class PeriodTargetPromoApiService {
         }
 
         this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
-        return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+
+        if (payload['data'].status) {
+            return this.http.put<R>(`${this._url}/${payload['id']}`, {
+                status: payload['data'].status
+            });
+        } else {
+            return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+        }
     }
 
     removePeriodTargetPromo<T = string, R = undefined>(payload: T): Observable<R> {
