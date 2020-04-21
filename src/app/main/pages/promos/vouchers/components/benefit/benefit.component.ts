@@ -63,14 +63,14 @@ import { Selection } from 'app/shared/components/multiple-selection/models';
 type IFormMode = 'add' | 'view' | 'edit';
 
 @Component({
-    selector: 'voucher-reward-information',
-    templateUrl: './reward.component.html',
-    styleUrls: ['./reward.component.scss'],
+    selector: 'voucher-benefit-information',
+    templateUrl: './benefit.component.html',
+    styleUrls: ['./benefit.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class VoucherRewardInformationComponent
+export class VoucherBenefitInformationComponent
     implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
@@ -179,260 +179,44 @@ export class VoucherRewardInformationComponent
         });
     }
 
-    private prepareEdit(): void {
-        combineLatest([this.trigger$, this.store.select(VoucherSelectors.getSelectedVoucher)])
-            .pipe(
-                withLatestFrom(
-                    this.store.select(AuthSelectors.getUserSupplier),
-                    ([_, voucher], userSupplier) => ({ voucher, userSupplier })
-                ),
-                takeUntil(this.subs$)
-            )
-            .subscribe(({ voucher, userSupplier }) => {
-                // Butuh mengambil data period target promo jika belum ada di state.
-                if (!voucher) {
-                    // Mengambil ID dari parameter URL.
-                    const { id } = this.route.snapshot.params;
-
-                    this.store.dispatch(
-                        VoucherActions.fetchVoucherRequest({
-                            payload: id as string,
-                        })
-                    );
-
-                    this.store.dispatch(
-                        VoucherActions.selectVoucher({
-                            payload: id as string,
-                        })
-                    );
-
-                    return;
-                } else {
-                    // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
-                    if (voucher.supplierId !== userSupplier.supplierId) {
-                        this.store.dispatch(VoucherActions.resetVoucher());
-
-                        this.notice$.open('Promo tidak ditemukan.', 'error', {
-                            verticalPosition: 'bottom',
-                            horizontalPosition: 'right',
-                        });
-
-                        setTimeout(
-                            () => this.router.navigate(['pages', 'promos', 'period-target-promo']),
-                            1000
-                        );
-
-                        return;
-                    }
-                }
-
-                if (voucher.storeTargetCoupons.length === 1) {
-                    let chosenBase: string;
-
-                    switch (voucher.base) {
-                        case 'sku':
-                            this.chosenSku$.next(
-                                voucher.promoCatalogues.map((data) => ({
-                                    id: data.catalogue.id,
-                                    label: data.catalogue.name,
-                                    group: 'catalogues',
-                                }))
-                            );
-
-                            chosenBase = voucher.base;
-                            break;
-                        case 'brand':
-                            this.chosenBrand$.next(
-                                voucher.promoBrands.map((data) => ({
-                                    id: data.brand.id,
-                                    label: data.brand.name,
-                                    group: 'brand',
-                                }))
-                            );
-
-                            chosenBase = voucher.base;
-                            break;
-                        case 'invoiceGroup':
-                            this.chosenFaktur$.next(
-                                voucher.promoInvoiceGroups.map((data) => ({
-                                    id: data.invoiceGroup.id,
-                                    label: data.invoiceGroup.name,
-                                    group: 'faktur',
-                                }))
-                            );
-
-                            chosenBase = 'faktur';
-                            break;
-                    }
-
-                    this.form.patchValue({
-                        id: voucher.id,
-                        rewardId: voucher.storeTargetCoupons[0].id,
-                        rewardValidDate: {
-                            activeStartDate: moment(
-                                voucher.storeTargetCoupons[0].startDate
-                            ).toDate(),
-                            activeEndDate: moment(voucher.storeTargetCoupons[0].endDate).toDate(),
-                        },
-                        trigger: {
-                            base: chosenBase,
-                            chosenSku:
-                                chosenBase !== 'sku' || voucher.promoCatalogues.length === 0
-                                    ? ''
-                                    : voucher.promoCatalogues,
-                            chosenBrand:
-                                chosenBase !== 'brand' || voucher.promoBrands.length === 0
-                                    ? ''
-                                    : voucher.promoBrands,
-                            chosenFaktur:
-                                chosenBase !== 'faktur' || voucher.promoInvoiceGroups.length === 0
-                                    ? ''
-                                    : voucher.promoInvoiceGroups,
-                        },
-                        condition: {
-                            base:
-                                voucher.storeTargetCoupons[0].conditionBase === 'value'
-                                    ? 'order-value'
-                                    : voucher.storeTargetCoupons[0].conditionBase,
-                            qty: voucher.storeTargetCoupons[0].conditionQty,
-                            value: isNaN(+voucher.storeTargetCoupons[0].conditionValue)
-                                ? '0'
-                                : String(voucher.storeTargetCoupons[0].conditionValue).replace(
-                                      '.',
-                                      ','
-                                  ),
-                            valueView: voucher.storeTargetCoupons[0].conditionValue,
-                        },
-                        miscellaneous: {
-                            description: voucher.storeTargetCoupons[0].termCondition,
-                            couponImage: voucher.storeTargetCoupons[0].imageUrl,
-                        },
-                    });
-                }
-
-                if (this.formMode === 'view') {
-                    this.form.get('trigger.base').disable({ onlySelf: true, emitEvent: false });
-                    this.form.get('condition.base').disable({ onlySelf: true, emitEvent: false });
-                } else {
-                    this.form.get('trigger.base').enable({ onlySelf: true, emitEvent: false });
-                    this.form.get('condition.base').enable({ onlySelf: true, emitEvent: false });
-                }
-
-                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-                this.form.markAsDirty({ onlySelf: false });
-                this.form.markAllAsTouched();
-                this.form.markAsPristine();
-            });
-    }
+    private prepareEdit(): void {}
 
     private initForm(): void {
-        this.minActiveStartDate = new Date();
-        this.minActiveEndDate = new Date();
-        this.maxActiveEndDate = null;
-        this.maxActiveStartDate = null;
-
-        this.tmpCouponImage = new FormControl({ value: '', disabled: true });
-
         this.form = this.fb.group({
             id: [''],
-            rewardId: [''],
-            rewardValidDate: this.fb.group({
-                activeStartDate: [
-                    { value: '', disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
+            base: ['rupiah'],
+            rupiah: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
                 ],
-                activeEndDate: [
-                    { value: '', disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
+            ],
+            percent: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
                 ],
-            }),
-            trigger: this.fb.group({
-                base: [
-                    'sku',
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
-                ],
-                chosenSku: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
-                ],
-                chosenBrand: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
-                ],
-                chosenFaktur: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
-                ],
-            }),
-            condition: this.fb.group({
-                base: ['qty'],
-                qty: [
-                    '',
-                    [
-                        RxwebValidators.greaterThanEqualTo({
-                            value: 1,
-                            message: 'This field must be greater than or equal to 1.',
-                        }),
-                    ],
-                ],
-                value: [
-                    '',
-                    [
-                        RxwebValidators.greaterThanEqualTo({
-                            value: 1,
-                            message: 'This field must be greater than or equal to 1.',
-                        }),
-                    ],
-                ],
-                valueView: [''],
-            }),
-            miscellaneous: this.fb.group({
-                description: [''],
-                couponImage: [''],
-            }),
+            ],
         });
+
+        this.form
+            .get('base')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
+            .subscribe((value) => {
+                if (value === 'rupiah') {
+                    this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
+                } else if (value === 'percent') {
+                    this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
+                }
+
+                this.form.updateValueAndValidity();
+            });
     }
 
     private initFormCheck(): void {

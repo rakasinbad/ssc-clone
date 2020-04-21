@@ -1,7 +1,7 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Condition</div>
+        <div class="font-weight-600 font-size-24 line-height-20">Benefit</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -44,25 +44,25 @@
                             fxLayoutAlign="start center"
                             fxLayoutGap="16px"
                         >
-                            <mat-radio-button value="qty"> QTY </mat-radio-button>
-                            <mat-radio-button value="order-value"> Order Value </mat-radio-button>
+                            <mat-radio-button value="rupiah"> Rp </mat-radio-button>
+                            <mat-radio-button value="percent"> % </mat-radio-button>
                         </mat-radio-group>
                     </div>
                     <!-- / BASE (CONDITION) -->
-                    <!-- QTY (BASE) -->
+                    <!-- RUPIAH (BASE) -->
                     <div
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="start stretch"
-                        [fxHide]="form.get('base').value !== 'qty'"
+                        [fxHide]="form.get('base').value !== 'rupiah'"
                     >
                         <label
                             fxFlexAlign="center"
                             [fxFlex]="labelLength * 2 - 1"
                             class="pr-0 form-label"
-                            [class.mat-error]="!isViewMode() && hasError(form.get('qty'))"
+                            [class.mat-error]="!isViewMode() && hasError(form.get('rupiah'))"
                         >
-                            Qty >=
+                            <span class="sinbad-red-fg">* </span>Rebate
                         </label>
 
                         <mat-form-field
@@ -72,62 +72,62 @@
                         >
                             <input
                                 matInput
-                                name="qty"
-                                type="number"
-                                [formControl]="form.get('qty')"
-                            />
-                            <mat-error *ngIf="hasError(form.get('qty'))">
-                                {{ getFormError(form.get('qty')) }}
-                            </mat-error>
-                        </mat-form-field>
-
-                        <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
-                            {{ form.get('qty').value || '-' }}
-                        </span>
-                    </div>
-                    <!-- / QTY (BASE) -->
-                    <!-- ORDER VALUE (BASE) -->
-                    <div
-                        [ngClass]="formClass"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        [fxHide]="form.get('base').value !== 'order-value'"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
-                            class="pr-0 form-label"
-                            [class.mat-error]="!isViewMode() && hasError(form.get('orderValue'))"
-                        >
-                            Order Value >=
-                        </label>
-
-                        <mat-form-field
-                            appearance="outline"
-                            [fxFlex]="formFieldLength * 2 - 1"
-                            *ngIf="!isViewMode()"
-                        >
-                            <input
-                                matInput
-                                name="orderValue"
+                                name="rupiah"
                                 mask="separator.2"
                                 thousandSeparator="."
                                 prefix="Rp"
-                                [formControl]="form.get('orderValue')"
+                                [formControl]="form.get('rupiah')"
                             />
-                            <mat-error *ngIf="hasError(form.get('orderValue'))">
-                                {{ getFormError(form.get('orderValue')) }}
+                            <mat-error *ngIf="hasError(form.get('rupiah'))">
+                                {{ getFormError(form.get('rupiah')) }}
                             </mat-error>
                         </mat-form-field>
 
                         <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
                             {{
-                                (form.get('orderValue').value
-                                    | price: 'full':'IDR':'narrow':'1.0-2') || '-'
+                                (form.get('rupiah').value | price: 'full':'IDR':'narrow':'1.0-2') ||
+                                    '-'
                             }}
                         </span>
                     </div>
-                    <!-- / ORDER VALUE (BASE) -->
+                    <!-- / RUPIAH (BASE) -->
+                    <!-- PERCENT (BASE) -->
+                    <div
+                        [ngClass]="formClass"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        [fxHide]="form.get('base').value !== 'percent'"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            [fxFlex]="labelLength * 2 - 1"
+                            class="pr-0 form-label"
+                            [class.mat-error]="!isViewMode() && hasError(form.get('percent'))"
+                        >
+                            <span class="sinbad-red-fg">* </span> Percent
+                        </label>
+
+                        <mat-form-field
+                            appearance="outline"
+                            [fxFlex]="formFieldLength * 2 - 1"
+                            *ngIf="!isViewMode()"
+                        >
+                            <input
+                                matInput
+                                name="percent"
+                                type="number"
+                                [formControl]="form.get('percent')"
+                            />
+                            <mat-error *ngIf="hasError(form.get('percent'))">
+                                {{ getFormError(form.get('percent')) }}
+                            </mat-error>
+                        </mat-form-field>
+
+                        <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
+                            {{ form.get('percent').value || '-' }}
+                        </span>
+                    </div>
+                    <!-- / PERCENT (BASE) -->
                 </div>
                 <!-- / FORM -->
             </div>

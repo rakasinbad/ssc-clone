@@ -18,7 +18,7 @@ import { VoucherDetailComponent } from './pages/detail/detail.component';
 import { VoucherGeneralInformationComponent } from './components/general-information/general-information.component';
 import { VoucherTriggerInformationComponent } from './components/trigger-information/trigger-information.component';
 import { VoucherCustomerSegmentationSettingsComponent } from './components/customer-segmentation-settings/customer-segmentation-settings.component';
-import { VoucherRewardInformationComponent } from './components/reward/reward.component';
+import { VoucherBenefitInformationComponent } from './components/benefit/benefit.component';
 import { VoucherTriggerConditionBenefitSettingsComponent } from './components/condition-benefit-settings/condition-benefit-settings.component';
 
 @NgModule({
@@ -30,7 +30,7 @@ import { VoucherTriggerConditionBenefitSettingsComponent } from './components/co
         VoucherGeneralInformationComponent,
         VoucherTriggerInformationComponent,
         VoucherCustomerSegmentationSettingsComponent,
-        VoucherRewardInformationComponent,
+        VoucherBenefitInformationComponent,
         VoucherTriggerConditionBenefitSettingsComponent,
     ],
     imports: [
