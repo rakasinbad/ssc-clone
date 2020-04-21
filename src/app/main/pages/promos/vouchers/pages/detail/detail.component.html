@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="subtitle secondary-text">
-                        <span class="fuse-white-fg">Promo Rules Detail</span>
+                        <span class="fuse-white-fg">Voucher Rules Detail</span>
                     </div>
                 </div>
             </div>
@@ -69,8 +69,8 @@
                 </ng-template>
             </mat-tab>
             <!-- / GENERAL INFORMATION -->
-            <!-- TRIGGER -->
-            <mat-tab label="Trigger" [disabled]="isEditMode()">
+            <!-- ELIGIBLE PRODUCT -->
+            <mat-tab label="Eligible Product" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <voucher-trigger-information
                         [(formMode)]="formMode"
@@ -79,9 +79,9 @@
                     ></voucher-trigger-information>
                 </ng-template>
             </mat-tab>
-            <!-- / TRIGGER -->
-            <!--  CONDITION & BENEFIT -->
-            <mat-tab label="Condition & Benefit" [disabled]="isEditMode()">
+            <!-- / ELIGIBLE PRODUCT -->
+            <!--  CONDITION -->
+            <mat-tab label="Condition" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <voucher-trigger-condition-benefit-settings
                         [(formMode)]="formMode"
@@ -90,9 +90,9 @@
                     ></voucher-trigger-condition-benefit-settings>
                 </ng-template>
             </mat-tab>
-            <!--  / CONDITION & BENEFIT -->
-            <!-- REWARD -->
-            <mat-tab label="Reward" [disabled]="isEditMode()">
+            <!--  / CONDITION-->
+            <!-- BENEFIT -->
+            <mat-tab label="Benefit" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <voucher-benefit-information
                         [(formMode)]="formMode"
@@ -101,9 +101,9 @@
                     ></voucher-benefit-information>
                 </ng-template>
             </mat-tab>
-            <!-- / REWARD -->
-            <!-- CUSTOMER SEGMENTATION -->
-            <mat-tab label="Customer Segmentation" [disabled]="isEditMode()">
+            <!-- / BENEFIT -->
+            <!-- STORE SEGMENTATION -->
+            <mat-tab label="Store Segmentation" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <voucher-customer-segmentation-settings
                         [(formMode)]="formMode"
@@ -112,7 +112,7 @@
                     ></voucher-customer-segmentation-settings>
                 </ng-template>
             </mat-tab>
-            <!-- / CUSTOMER SEGMENTATION -->
+            <!-- / STORE SEGMENTATION -->
         </mat-tab-group>
         <!-- / TAB GROUP -->
     </div>

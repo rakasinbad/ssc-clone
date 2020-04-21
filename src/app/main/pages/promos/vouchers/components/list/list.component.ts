@@ -183,7 +183,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         //     })
         // );
 
-        this.router.navigate([`/pages/promos/period-target-promo/view/${promoId}`]);
+        this.router.navigate([`/pages/promos/voucher/view/${promoId}`]);
     }
 
     handleCheckbox(): void {
