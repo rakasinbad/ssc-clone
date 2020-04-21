@@ -81,6 +81,15 @@
                             <!-- CONDITION -->
                             <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
                                 Condition
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Define the condition need to be&#10;fulfilled by your customer so that&#10;they will be eligible for the promo&#10;program."
+                                    matTooltipClass="tooltip-br font-size-14 p-16"
+                                >
+                                    help
+                                </mat-icon>
                             </span>
                             <!-- / CONDITION -->
                             <!-- BASE (CONDITION) -->
@@ -185,6 +194,15 @@
                             <!-- BENEFIT -->
                             <span class="font-size-14 text-semibold font-weight-600 line-height-20 my-20">
                                 Benefit
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Define the benefit of your promo&#10;program that will be granted to your&#10;customers here."
+                                    matTooltipClass="tooltip-br font-size-14 p-16"
+                                >
+                                    help
+                                </mat-icon>
                             </span>
                             <!-- / BENEFIT -->
                             <!-- BENEFIT (TYPE) -->
@@ -323,6 +341,15 @@
     
                                     <mat-checkbox [formControl]="control.get('benefit.qty.multiplicationOnly')">
                                         Multiplication Only
+
+                                        <mat-icon
+                                            class="active-icon s-14 ml-8 cursor-pointer"
+                                            color="accent"
+                                            matTooltip="Once activated, the benefits that will be awarded&#10;to the customer will be following the multiplication&#10;of the inputted value in the quantity above as&#10;If the multiplication rule is activated, you won't be&#10;able to add more tier."
+                                            matTooltipClass="tooltip-br font-size-14 p-16"
+                                        >
+                                            help
+                                        </mat-icon>
                                     </mat-checkbox>
                                 </div>
                                 <!-- / MULTIPLICATION ONLY -->
@@ -484,6 +511,15 @@
                             || form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).disabled)"
             >
                 Add Tier
+
+                <mat-icon
+                    class="active-icon s-14 ml-8 cursor-pointer"
+                    color="accent"
+                    matTooltip="If the multiplication is activated, you&#10;cannot add another tier."
+                    matTooltipClass="tooltip-br font-size-14 p-16"
+                >
+                    help
+                </mat-icon>
             </p>
             <!-- / "ADD TIER" BUTTON -->
         </form>

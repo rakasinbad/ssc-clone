@@ -304,7 +304,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         }
 
         this.PeriodTargetPromoStore.dispatch(
-            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+            PeriodTargetPromoActions.confirmUpdatePeriodTargetPromo({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -341,7 +341,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         }
 
         this.PeriodTargetPromoStore.dispatch(
-            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+            PeriodTargetPromoActions.confirmUpdatePeriodTargetPromo({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -409,7 +409,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         }
 
         this.PeriodTargetPromoStore.dispatch(
-            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+            PeriodTargetPromoActions.confirmUpdatePeriodTargetPromo({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -450,7 +450,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         }
 
         this.PeriodTargetPromoStore.dispatch(
-            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+            PeriodTargetPromoActions.confirmUpdatePeriodTargetPromo({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -510,7 +510,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         }
 
         this.PeriodTargetPromoStore.dispatch(
-            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+            PeriodTargetPromoActions.confirmUpdatePeriodTargetPromo({
                 payload: {
                     id: formValue.id,
                     data: payload,

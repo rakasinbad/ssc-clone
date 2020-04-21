@@ -13,7 +13,18 @@
                 formControlName="id"
             />
             <!-- / *HIDDEN* ID -->
-            <p class="font-weight-600 font-size-20">Reward Valid Date</p>
+            <p class="font-weight-600 font-size-20">
+                Reward Valid Date
+
+                <mat-icon
+                    class="active-icon s-14 ml-8 cursor-pointer"
+                    color="accent"
+                    matTooltip="Define how long customer&#10;can redeem their reward."
+                    matTooltipClass="tooltip-br font-size-14 p-16"
+                >
+                    help
+                </mat-icon>
+            </p>
             <!-- ACTIVE START DATE -->
             <div
                 [ngClass]="formClass"
@@ -118,7 +129,18 @@
                 </span>
             </div>
             <!-- / ACTIVE END DATE -->
-            <p class="font-weight-600 font-size-20 mb-28">Trigger</p>
+            <p class="font-weight-600 font-size-20 mb-28">
+                Trigger
+
+                <mat-icon
+                    class="active-icon s-14 ml-8 cursor-pointer"
+                    color="accent"
+                    matTooltip="Define based on what condition&#10;customers can redeem their reward."
+                    matTooltipClass="tooltip-br font-size-14 p-16"
+                >
+                    help
+                </mat-icon>
+            </p>
             <!-- BASE (TRIGGER) -->
             <div
                 [ngClass]="formClass"
@@ -256,7 +278,18 @@
                 </div>
             </div>
             <!-- / CHOSEN FAKTUR -->
-            <p class="font-weight-600 font-size-20 mb-28">Condition</p>
+            <p class="font-weight-600 font-size-20 mb-28">
+                Condition
+
+                <mat-icon
+                    class="active-icon s-14 ml-8 cursor-pointer"
+                    color="accent"
+                    matTooltip="Define the benefit of the reward that&#10;will be granted to the customers."
+                    matTooltipClass="tooltip-br font-size-14 p-16"
+                >
+                    help
+                </mat-icon>
+            </p>
             <!-- BASE (CONDITION) -->
             <div
                 [ngClass]="formClass"
@@ -386,6 +419,15 @@
                     [class.mat-error]="!isViewMode() && hasError(form.get('miscellaneous.couponImage'))"
                 >
                     Coupon Image
+
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="Upload the image that will be used&#10;as your marketing media to the customers."
+                        matTooltipClass="tooltip-br font-size-14 p-16"
+                    >
+                        help
+                    </mat-icon>
                 </label>
 
                 <!-- INPUT SECTION -->
