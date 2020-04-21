@@ -28,6 +28,13 @@
             ></voucher-trigger-condition-benefit-settings>
         </div>
         <div class="content-card">
+            <voucher-benefit-information
+                [formMode]="'add'"
+                (formStatusChange)="conditionBenefitStatus$.next($event)"
+                (formValueChange)="conditionBenefitValue$.next($event)"
+            ></voucher-benefit-information>
+        </div>
+        <div class="content-card">
             <voucher-customer-segmentation-settings
                 [formMode]="'add'"
                 (formStatusChange)="customerSegmentationStatus$.next($event)"

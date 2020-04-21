@@ -94,11 +94,11 @@
             <!-- REWARD -->
             <mat-tab label="Reward" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <voucher-reward-information
+                    <voucher-benefit-information
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
-                    ></voucher-reward-information>
+                    ></voucher-benefit-information>
                 </ng-template>
             </mat-tab>
             <!-- / REWARD -->
