@@ -1,36 +1,39 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Trigger</div>
+        <div class="font-weight-600 font-size-24 line-height-20">Eligible Product</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
-        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
             <!-- *HIDDEN* ID -->
-            <input
-                hidden
-                name="id"
-                formControlName="id"
-            />
+            <input hidden name="id" formControlName="id" />
             <!-- / *HIDDEN* ID -->
             <!-- BASE -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Base
+                    <span class="sinbad-red-fg">* </span>Base
                 </label>
 
-                <mat-radio-group formControlName="base" [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                <mat-radio-group
+                    formControlName="base"
+                    [fxFlex]="formFieldLength"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                >
                     <mat-radio-button value="sku"> SKU </mat-radio-button>
                     <mat-radio-button value="brand"> Brand </mat-radio-button>
                     <mat-radio-button value="faktur"> Faktur </mat-radio-button>
@@ -50,9 +53,10 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
                 >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Chosen SKU<br/>({{ form.get('chosenSku').value?.length || '0' }} Selected)
+                    <span class="sinbad-red-fg">* </span>Chosen SKU<br />({{
+                        form.get('chosenSku').value?.length || '0'
+                    }}
+                    Selected)
                 </label>
 
                 <select-catalogues
@@ -87,9 +91,10 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
                 >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Chosen Brand<br/>({{ form.get('chosenBrand').value?.length || '0' }} Selected)
+                    <span class="sinbad-red-fg">* </span>Chosen Brand<br />({{
+                        form.get('chosenBrand').value?.length || '0'
+                    }}
+                    Selected)
                 </label>
 
                 <select-brands
@@ -106,7 +111,7 @@
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     <span class="form-value" *ngFor="let brand of form.get('chosenBrand').value">
-                        {{ (brand?.brand?.name) || '-' }}
+                        {{ brand?.brand?.name || '-' }}
                     </span>
                 </div>
             </div>
@@ -124,9 +129,10 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
                 >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Chosen Faktur<br/>({{ form.get('chosenFaktur').value?.length || '0' }} Selected)
+                    <span class="sinbad-red-fg">* </span>Chosen Faktur<br />({{
+                        form.get('chosenFaktur').value?.length || '0'
+                    }}
+                    Selected)
                 </label>
 
                 <select-faktur
@@ -143,7 +149,7 @@
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     <span class="form-value" *ngFor="let faktur of form.get('chosenFaktur').value">
-                        {{ (faktur?.invoieGroup?.name) || '-' }}
+                        {{ faktur?.invoieGroup?.name || '-' }}
                     </span>
                 </div>
             </div>

@@ -27,30 +27,54 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Promo Seller Id Column -->
-    <ng-container matColumnDef="promo-seller-id">
+    <!-- Supplier Voucher Id Column -->
+    <ng-container matColumnDef="supplier-voucher-id">
         <mat-header-cell *matHeaderCellDef>
-            Promo Seller ID
+            Sup Voucher ID
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word;">{{ row?.externalId || '-' }}</p>
         </mat-cell>
     </ng-container>
 
-    <!-- Promo Name Column -->
-    <ng-container matColumnDef="promo-name">
+    <!-- Voucher Name Column -->
+    <ng-container matColumnDef="voucher-name">
         <mat-header-cell *matHeaderCellDef>
-            Promo Name
+            Voucher Name
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word;">{{ row?.name || '-' }}</p>
         </mat-cell>
     </ng-container>
 
-    <!-- Base Column -->
-    <ng-container matColumnDef="base">
+    <!-- Eligible Product Column -->
+    <ng-container matColumnDef="eligible-product">
         <mat-header-cell *matHeaderCellDef>
-            Base
+            Eligible Product
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.base === 'sku' ? 'SKU' : (row?.base | titlecase) || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Benefit Column -->
+    <ng-container matColumnDef="benefit">
+        <mat-header-cell *matHeaderCellDef>
+            Benefit
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.base === 'sku' ? 'SKU' : (row?.base | titlecase) || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Voucher Used Column -->
+    <ng-container matColumnDef="voucher-used">
+        <mat-header-cell *matHeaderCellDef>
+            Voucher Used
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word;">
