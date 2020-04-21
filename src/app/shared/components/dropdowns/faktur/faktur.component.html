@@ -59,7 +59,7 @@
 </div>
 <ng-template #selectStoreType>
     <sinbad-multiple-selection
-        [disableClearAll]="true"
+        [disableClearAll]="false"
         [enableSelectAll]="true"
         [availableOptions]="(availableEntities$ | async)"
         [totalAvailableOptions]="(totalEntities$ | async)"
