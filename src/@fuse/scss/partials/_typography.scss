@@ -256,7 +256,7 @@ strong {
 @for $size from 1 through 60 {
 
     .font-size-#{$size * 2} {
-        font-size: #{$size * 2}px;
+        font-size: #{$size * 2}px !important;
     }
 }
 
