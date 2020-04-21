@@ -79,11 +79,11 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                         title: 'Promo',
                     },
                     {
-                        title: 'Period Target Promo',
+                        title: 'Supplier Voucher',
                         keepCase: true,
                     },
                     {
-                        title: 'Add Period Target Promo',
+                        title: 'Add Supplier Voucher',
                         keepCase: true,
                         active: true,
                     },

@@ -227,7 +227,7 @@ export const navigation: FuseNavigation[] = [
             },
             {
                 id: 'voucher',
-                title: 'Voucher',
+                title: 'Supplier Voucher',
                 type: 'item',
                 url: '/pages/promos/voucher',
             },

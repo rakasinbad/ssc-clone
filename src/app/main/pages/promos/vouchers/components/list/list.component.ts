@@ -54,9 +54,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
 
     displayedColumns = [
         'checkbox',
-        'promo-seller-id',
-        'promo-name',
-        'base',
+        'supplier-voucher-id',
+        'voucher-name',
+        'eligible-product',
+        'benefit',
+        'voucher-used',
         'start-date',
         'end-date',
         'status',
@@ -260,9 +262,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                 if (result) {
                     this.displayedColumns = [
                         'checkbox',
-                        'promo-seller-id',
-                        'promo-name',
-                        'base',
+                        'supplier-voucher-id',
+                        'voucher-name',
+                        'eligible-product',
+                        'benefit',
+                        'voucher-used',
                         'start-date',
                         'end-date',
                         'status',
@@ -271,9 +275,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                 } else {
                     this.displayedColumns = [
                         'checkbox',
-                        'promo-seller-id',
-                        'promo-name',
-                        'base',
+                        'supplier-voucher-id',
+                        'voucher-name',
+                        'eligible-product',
+                        'benefit',
+                        'voucher-used',
                         'start-date',
                         'end-date',
                         'status',

@@ -1,4 +1,4 @@
-period-target-promo-general-information {
+voucher-general-information {
     // .view-field-right {
     //     label {
     //         font-weight: 600;
@@ -42,7 +42,7 @@ period-target-promo-general-information {
             object-fit: cover; /*magic*/
         }
     }
-    
+
     .custom-field-right {
         label {
             text-align: left !important;
@@ -53,9 +53,10 @@ period-target-promo-general-information {
         max-width: 100%;
         min-width: 100%;
         height: calc(100% - 40px);
-// 
+        //
         &.ql-error {
-            .ql-toolbar, .ql-container {
+            .ql-toolbar,
+            .ql-container {
                 border: 1px solid #f44336 !important;
             }
         }
@@ -66,7 +67,7 @@ period-target-promo-general-information {
             .ql-editor {
                 padding: 0px 0px !important;
                 font-size: 10pt;
-                font-family: "Muli", "Helvetica Neue", "Arial", sans-serif;
+                font-family: 'Muli', 'Helvetica Neue', 'Arial', sans-serif;
                 line-height: 1.4 !important;
                 letter-spacing: -0.1px !important;
             }

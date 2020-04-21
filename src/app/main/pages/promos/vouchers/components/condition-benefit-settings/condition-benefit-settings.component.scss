@@ -1,6 +1,6 @@
 @import 'src/@sinbad/scss/helper';
 
-period-target-promo-trigger-condition-benefit-settings {
+voucher-trigger-condition-benefit-settings {
     // .view-field-right {
     //     label {
     //         font-weight: 600;
@@ -72,9 +72,10 @@ period-target-promo-trigger-condition-benefit-settings {
         max-width: 100%;
         min-width: 100%;
         height: calc(100% - 40px);
-// 
+        //
         &.ql-error {
-            .ql-toolbar, .ql-container {
+            .ql-toolbar,
+            .ql-container {
                 border: 1px solid #f44336 !important;
             }
         }
@@ -85,7 +86,7 @@ period-target-promo-trigger-condition-benefit-settings {
             .ql-editor {
                 padding: 0px 0px !important;
                 font-size: 10pt;
-                font-family: "Muli", "Helvetica Neue", "Arial", sans-serif;
+                font-family: 'Muli', 'Helvetica Neue', 'Arial', sans-serif;
                 line-height: 1.4 !important;
                 letter-spacing: -0.1px !important;
             }

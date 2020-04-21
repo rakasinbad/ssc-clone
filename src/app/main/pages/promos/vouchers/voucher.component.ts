@@ -41,7 +41,7 @@ export class VoucherComponent implements OnInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Voucher',
+            label: 'Supplier Voucher',
         },
         search: {
             active: true,

@@ -1,4 +1,4 @@
-period-target-promo-reward-information {
+voucher-reward-information {
     // .view-field-right {
     //     label {
     //         font-weight: 600;
@@ -38,7 +38,7 @@ period-target-promo-reward-information {
 
     .img-container {
         width: 260px; /*any size*/
-        height: 10  0px; /*any size*/
+        height: 10 0px; /*any size*/
         // border: 2px dashed sinbad-color('red', '50');
         // border-radius: 4px;
 
@@ -53,9 +53,10 @@ period-target-promo-reward-information {
         max-width: 100%;
         min-width: 100%;
         height: calc(100% - 40px);
-// 
+        //
         &.ql-error {
-            .ql-toolbar, .ql-container {
+            .ql-toolbar,
+            .ql-container {
                 border: 1px solid #f44336 !important;
             }
         }
@@ -66,7 +67,7 @@ period-target-promo-reward-information {
             .ql-editor {
                 padding: 0px 0px !important;
                 font-size: 10pt;
-                font-family: "Muli", "Helvetica Neue", "Arial", sans-serif;
+                font-family: 'Muli', 'Helvetica Neue', 'Arial', sans-serif;
                 line-height: 1.4 !important;
                 letter-spacing: -0.1px !important;
             }

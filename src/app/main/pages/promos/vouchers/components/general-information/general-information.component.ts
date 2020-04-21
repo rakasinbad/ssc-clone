@@ -261,139 +261,15 @@ export class VoucherGeneralInformationComponent
             });
     }
 
-    // private onSubmit(): void {
-    //     // Menyembunyikan form toolbar agar tidak di-submit lagi.
-    //     this.store.dispatch(UiActions.hideFooterAction());
-    //     // Mendapatkan seluruh nilai dari form.
-    //     const formValues = this.form.getRawValue();
-
-    //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
-    //     const catalogueData: Partial<CatalogueInformation> = {
-    //         /**
-    //          * INFORMASI PRODUK
-    //          */
-    //         externalId: formValues.productInfo.externalId,
-    //         name:
-    //             String(formValues.productInfo.name)
-    //                 .charAt(0)
-    //                 .toUpperCase() + String(formValues.productInfo.name).slice(1),
-    //         description: formValues.productInfo.description,
-    //         information: formValues.productInfo.information,
-    //         detail: formValues.productInfo.information,
-    //         brandId: formValues.productInfo.brandId,
-    //         firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-    //         lastCatalogueCategoryId:
-    //             formValues.productInfo.category.length === 1
-    //                 ? formValues.productInfo.category[0].id
-    //                 : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-    //         unitOfMeasureId: formValues.productInfo.uom,
-    //     };
-
-    //     if (this.formMode === 'edit') {
-    //         this.store.dispatch(
-    //             CatalogueActions.patchCatalogueRequest({
-    //                 payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
-    //             })
-    //         );
-    //     }
-    // }
-
-    // private initCatalogueCategoryState(): void {
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueCategories
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(categories => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (categories.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueCategoriesRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         }
-
-    //         this.catalogueCategories$.next(categories);
-    //     });
-    // }
-
-    // private initCatalogueUnitState(): void {
-    //     // Mendapatkan unit katalog dari state.
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueUnits
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(units => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (units.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueUnitRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         } else {
-    //             // Mengambil nilai ID UOM dari form.
-    //             const uom = this.form.get('productInfo.uom').value;
-    //             // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-    //             const selectedUnit = units.filter(unit => unit.id === uom);
-    //             if (selectedUnit.length > 0) {
-    //                 this.form.patchValue({
-    //                     productInfo: {
-    //                         uomName: selectedUnit[0].unit
-    //                     }
-    //                 });
-    //             }
-
-    //             this.cdRef.markForCheck();
-    //         }
-
-    //         this.catalogueUnits$.next(units);
-    //     });
-    // }
-
-    // private initCatalogueBrand(): void {
-    //     this.brands$ = this.store.select(
-    //         BrandSelectors.getAllBrands
-    //     ).pipe(
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         map(([brands, userSupplier]) => {
-    //             if (userSupplier && brands.length === 0) {
-    //                 const query: IQueryParams = { paginate: false };
-    //                 query['supplierId'] = userSupplier.supplierId;
-
-    //                 this.store.dispatch(
-    //                     BrandActions.fetchBrandsRequest({
-    //                         payload: query
-    //                     })
-    //                 );
-    //             }
-
-    //             return brands;
-    //         }),
-    //         takeUntil(this.subs$)
-    //     );
-    // }
-
     private initForm(): void {
         this.minActiveStartDate = new Date();
         this.minActiveEndDate = new Date();
         this.maxActiveEndDate = null;
         this.maxActiveStartDate = null;
 
-        this.tmpImageSuggestion = new FormControl({ value: '', disabled: true });
-        this.tmpCouponImage = new FormControl({ value: '', disabled: true });
-
         this.form = this.fb.group({
             id: [''],
-            sellerId: [
+            supplierVoucherId: [
                 '',
                 [
                     RxwebValidators.required({
@@ -401,7 +277,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            name: [
+            voucherName: [
                 '',
                 [
                     RxwebValidators.required({
@@ -426,8 +302,15 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            budget: [''],
-            budgetView: [''],
+            maxVoucherRedemtion: [
+                '',
+                [
+                    RxwebValidators.numeric({
+                        allowDecimal: false,
+                        message: 'This field must be numeric.',
+                    }),
+                ],
+            ],
             activeStartDate: [
                 { value: '', disabled: true },
                 [
@@ -444,9 +327,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            imageSuggestion: [''],
-            isAllowCombineWithVoucher: [false],
-            isFirstBuy: [false],
+            description: [''],
         });
     }
 
@@ -493,57 +374,6 @@ export class VoucherGeneralInformationComponent
                 this.formValueChange.emit(value);
             });
     }
-
-    // onEditCategory(): void {
-    //     this.dialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
-    // }
-
-    // checkExternalId(): AsyncValidatorFn {
-    //     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-    //         return control.valueChanges.pipe(
-    //             distinctUntilChanged(),
-    //             debounceTime(500),
-    //             withLatestFrom(
-    //                 this.store.select(AuthSelectors.getUserSupplier),
-    //                 this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
-    //             ),
-    //             take(1),
-    //             switchMap(([value, userSupplier, catalogue]) => {
-    //                 if (!value) {
-    //                     return of({
-    //                         required: true
-    //                     });
-    //                 }
-
-    //                 const params: IQueryParams = {
-    //                     limit: 1,
-    //                     paginate: true
-    //                 };
-
-    //                 params['externalId'] = value;
-    //                 params['supplierId'] = userSupplier.supplierId;
-
-    //                 return this.catalogue$.findAll(params).pipe(
-    //                     map(response => {
-    //                         if (response.total > 0) {
-    //                             if (!this.isAddMode()) {
-    //                                 if (response.data[0].id === catalogue.id) {
-    //                                     return null;
-    //                                 }
-    //                             }
-
-    //                             return {
-    //                                 skuSupplierExist: true
-    //                             };
-    //                         }
-
-    //                         return null;
-    //                     })
-    //                 );
-    //             })
-    //         );
-    //     };
-    // }
 
     getFormError(form: any): string {
         return this.errorMessage$.getFormError(form);
@@ -639,7 +469,7 @@ export class VoucherGeneralInformationComponent
         this.initForm();
 
         this.checkRoute();
-        this.initFormCheck();
+        // this.initFormCheck();
         // this.initCatalogueBrand();
         // this.initCatalogueUnitState();
         // this.initCatalogueCategoryState();
