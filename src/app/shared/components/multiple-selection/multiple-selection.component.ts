@@ -121,7 +121,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             }
 
             HelperService.debug('SELECTED => this.availableOption from ViewChildren', this.availableOption);
-            this.allSelected = true
+            this.allSelected = true;
             // this.selectionChanged.emit({ id: 'all', group: 'all', label: 'all' });
         } else {
             this.availableSelection.deselectAll();
@@ -220,13 +220,14 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             takeUntil(this.subs$)
         ).subscribe(value => {
             if (value === 'clear-all') {
-                this.mergedSelectedOptions = [];
-                this.selectedOptions = [];
-                this.initialSelectedOptions = [];
-                this.totalSelectedOptions = 0;
-                this.totalInitialSelectedOptions = 0;
+                // this.mergedSelectedOptions = [];
+                // this.selectedOptions = [];
+                // this.initialSelectedOptions = [];
+                // this.totalSelectedOptions = 0;
+                // this.totalInitialSelectedOptions = 0;
 
-                this.selectedOptionSub$.next(null);
+                // this.selectedOptionSub$.next(null);
+                this.onToggleSelectAll({ option: { selected: false } } as MatSelectionListChange);
                 this.cdRef.detectChanges();
             }
         });

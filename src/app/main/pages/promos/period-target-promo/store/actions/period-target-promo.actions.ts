@@ -48,7 +48,7 @@ export const confirmAddPeriodTargetPromo = createAction(
 
 export const confirmUpdatePeriodTargetPromo = createAction(
     '[PeriodTargetPromo Page] Confirm Update PeriodTargetPromo',
-    props<{ payload: PeriodTargetPromo }>()
+    props<{ payload: EntityPayload<Partial<PeriodTargetPromo>> }>()
 );
 
 export const confirmSetActivePeriodTargetPromo = createAction(

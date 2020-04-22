@@ -203,7 +203,44 @@ export class PeriodTargetPromoEffects {
         )
     , { dispatch: false });
 
-    confirmRemoveCatalogue$ = createEffect(() =>
+    confirmUpdatePeriodTargetPromo$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PeriodTargetPromoActions.confirmUpdatePeriodTargetPromo),
+            map(action => action.payload),
+            exhaustMap(params => {
+                if (!Array.isArray(params)) {
+                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                        data: {
+                            title: 'Alert',
+                            message: `The promo you are trying to update is currently active.<br/>Updating its details may cause issues.<br/>Do you wish to continue?`,
+                            id: params
+                        },
+                        disableClose: true
+                    });
+
+                    return dialogRef.afterClosed().pipe(
+                        tap(value => {
+                            if (!value && params.source === 'detail-edit') {
+                                this.PeriodTargetPromoStore.dispatch(UiActions.showFooterAction());
+                                this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+                            }
+                        })
+                    );
+                }
+            }),
+            map(response => {
+                if (response) {
+                    this.PeriodTargetPromoStore.dispatch(
+                        PeriodTargetPromoActions.updatePeriodTargetPromoRequest({ payload: response })
+                    );
+                }
+                
+                this.PeriodTargetPromoStore.dispatch(UiActions.resetHighlightRow());
+            })
+        ), { dispatch: false }
+    );
+
+    confirmRemovePeriodTargetPromo$ = createEffect(() =>
         this.actions$.pipe(
             ofType(PeriodTargetPromoActions.confirmRemovePeriodTargetPromo),
             map(action => action.payload),

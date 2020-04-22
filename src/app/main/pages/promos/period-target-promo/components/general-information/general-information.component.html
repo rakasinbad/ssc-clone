@@ -319,6 +319,15 @@
                     [class.mat-error]="!isViewMode() && hasError(form.get('imageSuggestion'))"
                 >
                     Image<br/>Suggestion
+
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="Image Suggestion"
+                        matTooltipClass="tooltip-br font-size-14 p-16"
+                    >
+                        help
+                    </mat-icon>
                 </label>
 
                 <!-- INPUT SECTION -->
@@ -400,11 +409,33 @@
                 <div fxLayout="row" fxLayoutGap="21px" fxFlex>
                     <mat-checkbox
                         formControlName="isAllowCombineWithVoucher"
-                    >Allow Combine with Voucher</mat-checkbox>
+                    >
+                        Allow Combine with Voucher
+
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="If you choose to allow combine with&#10;voucher, users are allowed to use&#10;promo and voucher for the same purchase."
+                            matTooltipClass="tooltip-br font-size-14 p-16"
+                        >
+                            help
+                        </mat-icon>
+                    </mat-checkbox>
 
                     <mat-checkbox
                         formControlName="isFirstBuy"
-                    >First Buy</mat-checkbox>
+                    >
+                        First Buy
+
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
+                            matTooltipClass="tooltip-br font-size-14 p-16"
+                        >
+                            help
+                        </mat-icon>
+                    </mat-checkbox>
                 </div>
             </div>
             <!-- / CHECKBOXES -->
