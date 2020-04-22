@@ -12,7 +12,7 @@ import { MultipleSelectionService } from './services/multiple-selection.service'
     templateUrl: './multiple-selection.component.html',
     styleUrls: ['./multiple-selection.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
@@ -177,21 +177,49 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             // Mendeteksi adanya perubahan.
             this.cdRef.markForCheck();
         }
+
+        if (changes['availableOptions']) {
+            if (this.allSelected) {
+                setTimeout(() => {
+                    this.onToggleSelectAll({ option: { selected: true } } as MatSelectionListChange);
+                }, 100);
+            }
+        }
+
+        if (changes['isAvailableOptionsLoading'] || changes['isSelectedOptionsLoading']) {
+            // Mendeteksi adanya perubahan.
+            this.cdRef.markForCheck();
+        }
     }
 
     ngAfterViewInit(): void {
         // 'Mendengarkan' event scrolling dari CDK Scrollable.
-        this.scroll.scrolled(500)
+        this.scroll.scrolled(200)
             .pipe(
                 // Hanya mengambil dari element-nya available list dan selected list.
+                tap(cdkScrollable => HelperService.debug('MULTIPLE SELECTION SCROLLED', { cdkScrollable })),
                 filter(cdkScrollable => {
                     return this.availableSelectionList.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id
                         || this.selectedSelectionList.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id;
                 }),
                 // Mengubah nilai observable menjadi element-nya saja tanpa membawa status loading.
                 map((cdkScrollable) => (cdkScrollable as CdkScrollable).getElementRef()),
+                tap(elementRef => HelperService.debug('GET MULTIPLE SELECTION ELEMENTREF', { elementRef })),
                 // Hanya diteruskan jika element sudah ter-scroll sampai bawah.
+                tap(elementRef => HelperService.debug('IS MULTIPLE SELECTION ELEMENTREF SCROLLED TO BOTTOM?', this.helper$.isElementScrolledToBottom(elementRef))),
                 filter((elementRef) => this.helper$.isElementScrolledToBottom(elementRef)),
+                tap(elementRef => HelperService.debug('IS MULTIPLE SELECTION IN LOADING STATE?', {
+                    elementRef,
+                    isAvailableOptionsLoading: this.isAvailableOptionsLoading,
+                    isSelectedOptionsLoading: this.isSelectedOptionsLoading
+                })),
+                filter(elementRef => {
+                    if (this.availableSelectionList.nativeElement.id === elementRef.nativeElement.id) {
+                        return !this.isAvailableOptionsLoading;
+                    } else {
+                        return !this.isSelectedOptionsLoading;
+                    }
+                }),
                 takeUntil(this.subs$)
             ).subscribe((elementRef: ElementRef<HTMLElement>) => {
                 // Pemisahan tugas berdasarkan element yang ingin diperiksa.
@@ -228,7 +256,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
                 // this.selectedOptionSub$.next(null);
                 this.onToggleSelectAll({ option: { selected: false } } as MatSelectionListChange);
-                this.cdRef.detectChanges();
+                this.cdRef.markForCheck();
             }
         });
 
@@ -242,6 +270,12 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                     const isSelected = $event.option.selected;
     
                     const isAtInitialSelection = this.initialSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
+
+                    const isAtSelectedOptions = this.mergedSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
+
+                    if (isAtSelectedOptions && isSelected) {
+                        return;
+                    }
     
                     if (isAtInitialSelection) {
                         if (isSelected) {
@@ -314,6 +348,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     }
 
     ngOnDestroy(): void {
+        this.cdRef.detach();
+
         this.subs$.next();
         this.subs$.complete();
 

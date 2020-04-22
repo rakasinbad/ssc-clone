@@ -64,6 +64,9 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     isSelectCatalogueDisabled: boolean = false;
     // Untuk menyimpan SKU yang terpilih di trigger information.
     triggerSKUs: Array<Catalogue> = [];
+    // Untuk menyimpan tier terakhir apakah valid atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    isLastTierValid: boolean = false;
 
     // tslint:disable-next-line: no-inferrable-types
     labelLength: number = 10;
@@ -455,6 +458,18 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             multiplication.disable({ onlySelf: true, emitEvent: true });
             multiplication.reset();
         }
+
+        (lastControl.statusChanges as Observable<FormStatus>).pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            tap(status => HelperService.debug('CONDITION BENEFITS STATUS CHANGED', { index: lastIdx, status, control: lastControl })),
+            takeUntil(subject),
+        ).subscribe({
+            next: status => {
+                this.isLastTierValid = status === 'VALID';
+            },
+            complete: () => HelperService.debug('CONDITION BENEFITS VALUE STATUS COMPLETED', { index: lastIdx, control: lastControl })
+        });
 
         lastControl.valueChanges.pipe(
             distinctUntilChanged(),

@@ -502,25 +502,28 @@
             </ng-container>
             <!-- / CONDITION & BENEFITS -->
             <!-- "ADD TIER" BUTTON -->
-            <p
-                class="sinbad-red-fg mb-0 w-60"
-                style="cursor: pointer;"
-                (click)="addConditionBenefitForm()"
-                *ngIf="!isViewMode()
-                        && (!form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).value
-                            || form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).disabled)"
-            >
-                Add Tier
-
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p
+                    class="w-60"
+                    [class.sinbad-black-60-fg]="!isLastTierValid"
+                    [class.sinbad-red-fg]="isLastTierValid"
+                    [style.cursor]="isLastTierValid ? 'pointer' : ''"
+                    (click)="isLastTierValid ? addConditionBenefitForm() : $event.preventDefault()"
+                    *ngIf="!isViewMode()
+                            && (!form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).value
+                                || form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).disabled)"
+                >
+                    Add Tier
+                </p>
                 <mat-icon
-                    class="active-icon s-14 ml-8 cursor-pointer"
+                    class="active-icon s-14 cursor-pointer"
                     color="accent"
                     matTooltip="If the multiplication is activated, you&#10;cannot add another tier."
                     matTooltipClass="tooltip-br font-size-14 p-16"
                 >
                     help
                 </mat-icon>
-            </p>
+            </div>
             <!-- / "ADD TIER" BUTTON -->
         </form>
     </div>
