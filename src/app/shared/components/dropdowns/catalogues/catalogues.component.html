@@ -83,7 +83,7 @@
             [initialSelectedOptions]="initialSelection"
             [totalInitialSelectedOptions]="initialSelection.length"
             [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
-            (availableReachedBottom)="onEntityReachedBottom($event)"
+            (availableReachedBottom)="onEntityReachedBottom()"
             (selectionListChanged)="onSelectionChanged($event)"
             (clearAll)="onClearAll()"
             (search)="onEntitySearch($event)"

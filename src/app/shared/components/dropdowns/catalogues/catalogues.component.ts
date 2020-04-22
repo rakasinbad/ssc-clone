@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges, NgZone } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
@@ -53,6 +53,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     // Untuk keperluan handle dialog.
     dialog: ApplyDialogService<MultipleSelectionComponent>;
+    // UNtuk keperluan limit entity.
+    // tslint:disable-next-line: no-inferrable-types
+    limit: number = 15;
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -91,6 +94,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         private cdRef: ChangeDetectorRef,
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
+        private ngZone: NgZone,
     ) {
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
@@ -163,10 +167,18 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     private toggleLoading(loading: boolean): void {
-        this.isEntityLoading$.next(loading);
+        if (this.ngZone) {
+            this.ngZone.run(() => {
+                this.isEntityLoading$.next(loading);
+            });
+        }
+
+        this.cdRef.markForCheck();
     }
 
     private requestEntity(params: IQueryParams): void {
+        this.toggleLoading(true);
+
         of(null).pipe(
             // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
@@ -192,7 +204,6 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
-                        tap(() => this.toggleLoading(true)),
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
             }),
@@ -200,20 +211,40 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
+                let addedAvailableEntities: Array<Selection> = [];
+                let addedRawAvailableEntities: Array<Entity> = [];
+
+                // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
-                    this.rawAvailableEntities$.next(response);
-                    this.availableEntities$.next((response as Array<Entity>).map(d =>
-                        ({ id: d.id, label: d.name, group: 'catalogues' }))
-                    );
-                    this.totalEntities$.next((response as Array<Entity>).length);
+                    addedRawAvailableEntities = response;
+                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
                 } else {
-                    this.rawAvailableEntities$.next(response.data.map(d => d));
-                    this.availableEntities$.next(response.data.map(d =>
-                        ({ id: d.id, label: d.name, group: 'catalogues' }))
-                    );
-                    this.totalEntities$.next(response.total);
+                    addedRawAvailableEntities = response.data;
+                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
                 }
 
+                // Mengambil nilai dari subject sebelumnya.
+                const oldAvailableEntities = this.availableEntities$.value || [];
+                const oldRawAvailableEntities = this.rawAvailableEntities$.value || [];
+
+                // Menyimpan nilai subject yang baru, gabungan antara nilai yang lama dengan nilai yang baru.
+                const newRawAvailableEntities = oldRawAvailableEntities.concat(addedRawAvailableEntities);
+                const newAvailableEntities = oldAvailableEntities.concat(addedAvailableEntities);
+
+                this.ngZone.run(() => {
+                    // Menyimpan nilai yang baru tadi ke dalam subject.
+                    this.rawAvailableEntities$.next(newRawAvailableEntities);
+                    this.availableEntities$.next(newAvailableEntities);
+    
+                    // Menyimpan total entities yang baru.
+                    if (Array.isArray(response)) {
+                        this.totalEntities$.next((response as Array<Entity>).length);
+                    } else {
+                        this.totalEntities$.next(response.total);
+                    }
+                });
+
+                this.cdRef.markForCheck();
             },
             error: (err) => {
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
@@ -235,8 +266,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
-            paginate: false,
-            limit: 10,
+            paginate: true,
+            limit: this.limit,
             skip: 0
         };
 
@@ -298,7 +329,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
     onEntitySearch(value: string): void {
         const queryParams: IQueryParams = {
-            paginate: false,
+            paginate: true,
         };
 
         queryParams['keyword'] = value;
@@ -306,10 +337,13 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.requestEntity(queryParams);
     }
 
-    onEntityReachedBottom(entitiesLength: number): void {
+    onEntityReachedBottom(): void {
+        const entities = this.availableEntities$.value || [];
+        const entitiesLength = entities.length;
+
         const params: IQueryParams = {
-            paginate: false,
-            limit: 10,
+            paginate: true,
+            limit: this.limit,
             skip: entitiesLength
         };
 
@@ -323,7 +357,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
 
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
     }
 
     openCatalogueSelection(): void {
@@ -386,7 +420,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                     }
     
                     this.onSelectedEntity(this.entityFormValue.value);
-                    this.cdRef.detectChanges();
+                    this.cdRef.markForCheck();
                 }
             });
         }
@@ -420,7 +454,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     //             ).subscribe(({ entities }) => {
     //                 const params: IQueryParams = {
     //                     paginate: true,
-    //                     limit: 10,
+    //                     limit: this.limit,
     //                     skip: entities.length
     //                 };
 
@@ -501,7 +535,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         // ).subscribe(([formValue]) => {
         //     const queryParams: IQueryParams = {
         //         paginate: true,
-        //         limit: 10,
+        //         limit: this.limit,
         //         skip: 0
         //     };
 
@@ -557,6 +591,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     ngOnDestroy(): void {
+        this.cdRef.detach();
+
         this.subs$.next();
         this.subs$.complete();
 
