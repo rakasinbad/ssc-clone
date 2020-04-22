@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges, NgZone } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
@@ -52,6 +52,9 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     // Untuk keperluan handle dialog.
     dialog: ApplyDialogService<MultipleSelectionComponent>;
+    // UNtuk keperluan limit entity.
+    // tslint:disable-next-line: no-inferrable-types
+    limit: number = 15;
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -92,6 +95,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         private cdRef: ChangeDetectorRef,
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
+        private ngZone: NgZone,
     ) {
         // Set debug prefix.
         // HelperService.setDebugPrefix('[STORE SEGMENTATION #2]');
@@ -161,10 +165,18 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     private toggleLoading(loading: boolean): void {
-        this.isEntityLoading$.next(loading);
+        if (this.ngZone) {
+            this.ngZone.run(() => {
+                this.isEntityLoading$.next(loading);
+            });
+        }
+
+        this.cdRef.markForCheck();
     }
 
     private requestEntity(params: IQueryParams): void {
+        this.toggleLoading(true);
+
         of(null).pipe(
             // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
@@ -194,7 +206,6 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
-                        tap(() => this.toggleLoading(true)),
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
                     );
             }),
@@ -202,29 +213,40 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
-                // tslint:disable-next-line: no-inferrable-types
-                let groupName: string = '';
+                let addedAvailableEntities: Array<Selection> = [];
+                let addedRawAvailableEntities: Array<Entity> = [];
 
-                if (this.segmentationType === 'type') {
-                    groupName = 'store-segmentation-types';
-                } else if (this.segmentationType === 'group') {
-                    groupName = 'store-segmentation-groups';
-                } else if (this.segmentationType === 'channel') {
-                    groupName = 'store-segmentation-channels';
-                } else if (this.segmentationType === 'cluster') {
-                    groupName = 'store-segmentation-clusters';
-                }
-
+                // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
-                    this.rawAvailableEntities$.next(response);
-                    this.availableEntities$.next((response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: groupName })));
-                    this.totalEntities$.next((response as Array<Entity>).length);
+                    addedRawAvailableEntities = response;
+                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
                 } else {
-                    this.rawAvailableEntities$.next(response.data);
-                    this.availableEntities$.next(response.data.map(d => ({ id: d.id, label: d.name, group: groupName })));
-                    this.totalEntities$.next(response.total);
+                    addedRawAvailableEntities = response.data;
+                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
                 }
 
+                // Mengambil nilai dari subject sebelumnya.
+                const oldAvailableEntities = this.availableEntities$.value || [];
+                const oldRawAvailableEntities = this.rawAvailableEntities$.value || [];
+
+                // Menyimpan nilai subject yang baru, gabungan antara nilai yang lama dengan nilai yang baru.
+                const newRawAvailableEntities = oldRawAvailableEntities.concat(addedRawAvailableEntities);
+                const newAvailableEntities = oldAvailableEntities.concat(addedAvailableEntities);
+
+                this.ngZone.run(() => {
+                    // Menyimpan nilai yang baru tadi ke dalam subject.
+                    this.rawAvailableEntities$.next(newRawAvailableEntities);
+                    this.availableEntities$.next(newAvailableEntities);
+    
+                    // Menyimpan total entities yang baru.
+                    if (Array.isArray(response)) {
+                        this.totalEntities$.next((response as Array<Entity>).length);
+                    } else {
+                        this.totalEntities$.next(response.total);
+                    }
+                });
+
+                this.cdRef.markForCheck();
             },
             error: (err) => {
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
@@ -240,8 +262,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
-            paginate: false,
-            limit: 10,
+            paginate: true,
+            limit: this.limit,
             skip: 0
         };
 
@@ -290,7 +312,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
     onEntitySearch(value: string): void {
         const queryParams: IQueryParams = {
-            paginate: false,
+            paginate: true,
         };
 
         queryParams['keyword'] = value;
@@ -298,10 +320,13 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.requestEntity(queryParams);
     }
 
-    onEntityReachedBottom(entitiesLength: number): void {
+    onEntityReachedBottom(): void {
+        const entities = this.availableEntities$.value || [];
+        const entitiesLength = entities.length;
+
         const params: IQueryParams = {
-            paginate: false,
-            limit: 10,
+            paginate: true,
+            limit: this.limit,
             skip: entitiesLength
         };
 
@@ -315,7 +340,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
 
-        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
     }
 
     openStoreTypeSelection(): void {
@@ -378,7 +403,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     }
 
                     this.onSelectedEntity(this.entityFormValue.value);
-                    this.cdRef.detectChanges();
+                    this.cdRef.markForCheck();
                 }
             });
         }
@@ -459,9 +484,6 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     ngOnInit(): void {
         this.initForm();
         
-        // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
-
         // Menangani Form Control-nya warehouse.
         // (this.entityForm.valueChanges).pipe(
         //     startWith(''),
@@ -528,6 +550,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnDestroy(): void {
+        this.cdRef.detach();
+
         this.subs$.next();
         this.subs$.complete();
 
@@ -547,7 +571,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.availableEntities$.complete();
     }
 
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {
+        // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
+        this.initEntity();
+    }
 
 }
 

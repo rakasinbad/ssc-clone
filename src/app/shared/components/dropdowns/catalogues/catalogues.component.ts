@@ -502,9 +502,6 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     ngOnInit(): void {
         this.initForm();
         
-        // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
-
         // Menangani Form Control-nya warehouse.
         // (this.entityForm.valueChanges).pipe(
         //     startWith(''),
@@ -626,6 +623,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         //         this.selectedEntity$.next(null);
         //     }
         // });
+        // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
+        this.initEntity();
     }
 
 }
