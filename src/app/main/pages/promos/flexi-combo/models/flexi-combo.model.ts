@@ -37,7 +37,7 @@ export class FlexiComboCreationPayload {
 //     groupId: string;
 //     imageUrl: string;
 //     invoiceGroupId: string;
-//     isComulative: boolean;
+//     isCumulative: boolean;
 //     maxRedemptionPerStore: string;
 //     name: string;
 //     platform: PlatformSinbad;
@@ -248,7 +248,7 @@ export class FlexiCombo implements ITimestamp {
     groupId: string;
     imageUrl: string;
     invoiceGroupId: string;
-    isComulative: boolean;
+    isCumulative: boolean;
     maxRedemptionPerStore: string;
     name: string;
     platform: PlatformSinbad;
@@ -286,7 +286,7 @@ export class FlexiCombo implements ITimestamp {
             groupId,
             imageUrl,
             invoiceGroupId,
-            isComulative,
+            isCumulative,
             maxRedemptionPerStore,
             name,
             platform,
@@ -323,7 +323,7 @@ export class FlexiCombo implements ITimestamp {
         this.groupId = groupId;
         this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
         this.invoiceGroupId = invoiceGroupId;
-        this.isComulative = isComulative;
+        this.isCumulative = isCumulative;
         this.maxRedemptionPerStore = maxRedemptionPerStore;
         this.name = name ? String(name).trim() : null;
         this.platform = platform;
