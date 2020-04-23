@@ -8,6 +8,8 @@ import { Observable } from 'rxjs';
 import { FlexiCombo, IPromoCondition, IPromoCatalogue } from '../../../models';
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'app-flexi-combo-detail-cnb',
@@ -38,7 +40,22 @@ export class FlexiComboDetailCnbComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
+        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
+            map((item) => {
+                if (item) {
+                    const promoConditions =
+                        item.promoConditions && item.promoConditions.length > 0
+                            ? _.orderBy(item.promoConditions, ['id'], ['asc'])
+                            : [];
+                    return {
+                        ...item,
+                        promoConditions,
+                    };
+                }
+
+                return item;
+            })
+        );
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
     }
 
