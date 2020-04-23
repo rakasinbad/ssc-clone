@@ -2275,8 +2275,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         // Handle Calculation Mechanism
-        if (typeof row.isComulative === 'boolean') {
-            const newCalculationMechanism = row.isComulative
+        if (typeof row.isCumulative === 'boolean') {
+            const newCalculationMechanism = row.isCumulative
                 ? CalculationMechanism.CUMULATIVE
                 : CalculationMechanism.NON_CUMULATIVE;
 
