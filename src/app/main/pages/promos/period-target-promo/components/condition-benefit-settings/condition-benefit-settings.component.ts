@@ -296,7 +296,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
             this.form.patchValue({
                 id: periodTargetPromo.id,
-                calculationMechanism: periodTargetPromo.isComulative ? 'cummulative' : 'non-cummulative',
+                calculationMechanism: periodTargetPromo.isCumulative ? 'cummulative' : 'non-cummulative',
             });
 
             if (this.isViewMode()) {
