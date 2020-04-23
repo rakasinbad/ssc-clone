@@ -57,6 +57,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     // UNtuk keperluan limit entity.
     // tslint:disable-next-line: no-inferrable-types
     limit: number = 15;
+    // Untuk menyimpan search.
+    // tslint:disable-next-line: no-inferrable-types
+    search: string = '';
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -302,18 +305,27 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     onEntitySearch(value: string): void {
-        const queryParams: IQueryParams = {
-            paginate: true,
-        };
+        if (this.ngZone) {
+            this.ngZone.run(() => {
+                this.availableEntities$.next([]);
 
-        queryParams['search'] = [
-            {
-                fieldName: 'name',
-                keyword: value
-            }
-        ];
-
-        this.requestEntity(queryParams);
+                const queryParams: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0
+                };
+        
+                this.search = value;
+                queryParams['search'] = [
+                    {
+                        fieldName: 'name',
+                        keyword: value
+                    }
+                ];
+        
+                this.requestEntity(queryParams);
+            });
+        }
     }
 
     onEntityReachedBottom(): void {
@@ -325,6 +337,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             limit: this.limit,
             skip: entitiesLength
         };
+
+        if (this.search) {
+            params['keyword'] = this.search;
+        }
 
         // Memulai request data store entity.
         this.requestEntity(params);

@@ -1,5 +1,5 @@
 export enum PlatformSinbad {
     ALL = 'all',
-    SINBAD_APP = 'sinbad-app',
-    AGENT_APP = 'agent-app',
+    SINBAD_APP = 'sinbad_app',
+    AGENT_APP = 'agent_app',
 }

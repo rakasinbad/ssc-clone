@@ -16,7 +16,7 @@ interface IPeriodTargetPromo extends Timestamp {
     code: string;
     name: string;
     platform: string;
-    isComulative: boolean;
+    isCumulative: boolean;
     maxRedemptionPerBuyer: string;
     promoBudget: number;
     startDate: string;
@@ -54,7 +54,7 @@ export class PeriodTargetPromo implements IPeriodTargetPromo {
     code: string;
     name: string;
     platform: string;
-    isComulative: boolean;
+    isCumulative: boolean;
     maxRedemptionPerBuyer: string;
     promoBudget: number;
     startDate: string;
@@ -95,7 +95,7 @@ export class PeriodTargetPromo implements IPeriodTargetPromo {
             code,
             name,
             platform,
-            isComulative,
+            isCumulative,
             maxRedemptionPerBuyer,
             promoBudget,
             startDate,
@@ -134,7 +134,7 @@ export class PeriodTargetPromo implements IPeriodTargetPromo {
         this.code = code;
         this.name = name;
         this.platform = platform;
-        this.isComulative = isComulative;
+        this.isCumulative = isCumulative;
         this.maxRedemptionPerBuyer = maxRedemptionPerBuyer;
         this.promoBudget = promoBudget;
         this.startDate = startDate;
