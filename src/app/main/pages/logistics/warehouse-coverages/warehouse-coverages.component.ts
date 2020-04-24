@@ -145,7 +145,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         );
 
         this.totalCoverages$ = this.store.select(
-            WarehouseCoverageSelectors.selectTotal
+            WarehouseCoverageSelectors.getTotalItem
         ).pipe(
             takeUntil(this.subs$)
         );
@@ -273,6 +273,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         ).pipe(
             takeUntil(this.subs$)
         ).subscribe(() => {
+            this.truncateTable();
             this.onRefreshTable();
         });
     }

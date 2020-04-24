@@ -41,7 +41,7 @@ export class WarehouseCoverageEffects {
         // private matDialog: MatDialog,
     ) {}
 
-    fetchPortfoliosRequest$ = createEffect(() =>
+    fetchWarehouseCoveragesRequest$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action request warehouse coverage.
             ofType(WarehouseCoverageActions.fetchWarehouseCoveragesRequest),
