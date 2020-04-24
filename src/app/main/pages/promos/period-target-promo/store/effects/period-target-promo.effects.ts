@@ -196,9 +196,7 @@ export class PeriodTargetPromoEffects {
                 };
                 this.notice$.open(`Add Period Target Promo success.`, 'success', noticeSetting);
                 
-                if (!payload) {
-                    this.router.navigate(['/pages/promos/period-target-promo']);
-                }
+                this.router.navigate(['/pages/promos/period-target-promo']);
             })
         )
     , { dispatch: false });
