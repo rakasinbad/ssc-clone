@@ -19,7 +19,8 @@ import {
     CheckboxValidatorDirective,
     ContentDirective,
     MaterialElevationDirective,
-    TabAutocompleteDirective
+    TabAutocompleteDirective,
+    TrackScrollDirective
 } from './directives';
 import { MaterialModule } from './material.module';
 import { ChangeConfirmationComponent } from './modals/change-confirmation/change-confirmation.component';
@@ -48,6 +49,7 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
         CheckboxValidatorDirective,
         MaterialElevationDirective,
         TabAutocompleteDirective,
+        TrackScrollDirective,
 
         // Component
         ScrollTopComponent,
@@ -98,6 +100,7 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
         CheckboxValidatorDirective,
         MaterialElevationDirective,
         TabAutocompleteDirective,
+        TrackScrollDirective,
 
         // Custom Module
         ExportAdvancedModule,

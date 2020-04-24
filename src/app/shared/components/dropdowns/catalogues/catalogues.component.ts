@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges, NgZone } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges, NgZone, HostListener } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
 
 import { FormControl } from '@angular/forms';
-import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
+import { ErrorMessageService, HelperService, NoticeService, ScrollService } from 'app/shared/helpers';
+import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog, MatSelect } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { Catalogue as Entity } from './models';
@@ -82,9 +82,10 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
-    // Untuk keperluan AutoComplete-nya warehouse
-    @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
-    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
+    // Untuk keperluan AutoComplete
+    @ViewChild('entityAutocomplete', { static: false }) entityAutoComplete: MatAutocomplete;
+    @ViewChild('triggerEntity', { static: false, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
+    // @ViewChild('dropdown', { static: false }) dropdown: MatSelect;
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
     constructor(
@@ -98,6 +99,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
         private ngZone: NgZone,
+        private scroll$: ScrollService
     ) {
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
@@ -308,6 +310,14 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
+    showLabel(selected: TNullable<Selection>): string {
+        if (selected) {
+            return selected.label;
+        } else {
+            return '';
+        }
+    }
+
     onOpenedChangeEntity(isOpened: boolean): void {
         if (!isOpened) {
             const value = this.entityForm.value;
@@ -324,9 +334,16 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
         if (event) {
-            const eventIds = event.map(e => e.id);
+            let value: string | Array<string>;
             const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+
+            if (event['option'] && event['source']) {
+                value = event['option']['value']['id'];
+                this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+            } else {
+                value = event.map(e => e.id);
+                this.selectedEntity$.next(rawEntities.filter(raw => value.includes(raw.id)));
+            }
         }
     }
 
@@ -446,44 +463,67 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.dialogRef$.next('clear-all');
     }
 
-    // processEntityAutoComplete(): void {
-    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
-    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
-    //             .pipe(
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
-    //                 // Kasih jeda ketika scrolling.
-    //                 debounceTime(500),
-    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
-    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
-    //                 ),
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
-    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-    //                 filter(({ isLoading, entities, totalEntities }) =>
-    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
-    //                 ),
-    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
-    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
-    //                 ))
-    //             ).subscribe(({ entities }) => {
-    //                 const params: IQueryParams = {
-    //                     paginate: true,
-    //                     limit: this.limit,
-    //                     skip: entities.length
-    //                 };
+    processEntityAutoComplete(): void {
+        if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
+            // fromEvent<Event>(window, 'wheel').pipe(
+            //     // Debugging.
+            //     tap(event => HelperService.debug(`fromEvent<Event>(window, 'wheel')`, { event })),
+            //     // Kasih jeda ketika scrolling.
+            //     debounceTime(100),
+            //     takeUntil(this.triggerEntity.panelClosingActions.pipe(
+            //         tap((x) => HelperService.debug('SELECT ENTITY IS CLOSING ...', x))
+            //     ))
+            // ).subscribe(() => {
+            //     this.triggerEntity.updatePosition();
+            // });
+            this.scroll$.getUpdatePosition().pipe(
+                takeUntil(this.triggerEntity.panelClosingActions.pipe(
+                    tap((x) => HelperService.debug('SELECT ENTITY IS CLOSING ...', x))
+                ))
+            ).subscribe(() => {
+                this.triggerEntity.updatePosition();
+            });
 
-    //                 // Memulai request data store entity.
-    //                 this.requestEntity(params);
-    //             });
-    //     }
-    // }
+            fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
+                .pipe(
+                    // Debugging.
+                    tap(event => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`, { event })),
+                    // Kasih jeda ketika scrolling.
+                    debounceTime(500),
+                    // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
+                    withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
+                        ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
+                    ),
+                    // Debugging.
+                    tap(({ $event, entities, isLoading, totalEntities }) => HelperService.debug('SELECT ENTITY IS SCROLLING...', { $event, entities, isLoading, totalEntities })),
+                    // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
+                    filter(({ isLoading, entities, totalEntities }) =>
+                        !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
+                    ),
+                    takeUntil(this.triggerEntity.panelClosingActions.pipe(
+                        tap((x) => HelperService.debug('SELECT ENTITY IS CLOSING ...', x))
+                    ))
+                ).subscribe(({ entities }) => {
+                    const params: IQueryParams = {
+                        paginate: true,
+                        limit: this.limit,
+                        skip: entities.length
+                    };
 
-    // listenEntityAutoComplete(): void {
-    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
-    //     setTimeout(() => this.processEntityAutoComplete());
-    // }
+                    params['keyword'] = this.search || '';
+
+                    // Memulai request data store entity.
+                    this.requestEntity(params);
+                });
+        }
+    }
+
+    listenEntityAutoComplete(): void {
+        // this.triggerEntity.autocomplete = this.entityAutoComplete;
+        setTimeout(() => {
+            this.processEntityAutoComplete();
+        });
+    }
 
     private initForm(): void {
         // this.entityFormView = new FormControl('');
@@ -596,9 +636,11 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 this.entityFormValue.setValue(changes['initialSelection'].currentValue);
                 this.updateFormView();
             } else if (this.mode === 'single') {
-                if (changes['initialSelection'].currentValue) {
-                    this.entityForm.setValue((changes['initialSelection'].currentValue as Selection).id);
-                }
+                // if (changes['initialSelection'].currentValue) {
+                //     if (this.entityAutoComplete.opened) {
+                //         this.entityForm.setValue((changes['initialSelection'].currentValue as Selection).id);
+                //     }
+                // }
             }
         }
     }
@@ -626,22 +668,40 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     ngAfterViewInit(): void {
-        // this.entityForm.valueChanges.pipe(
-        //     distinctUntilChanged(),
-        //     debounceTime(100),
-        //     tap(x => HelperService.debug('MAT SELECT CHANGED', x)),
-        //     takeUntil(this.subs$)
-        // ).subscribe(value => {
-        //     if (value) {
-        //         const rawEntities = this.rawAvailableEntities$.value;
-        //         this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
-        //     } else {
-        //         this.selectedEntity$.next(null);
-        //     }
-        // });
+        this.entityForm.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(500),
+            tap(x => HelperService.debug('ENTITY FORM CHANGED', x)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (typeof value === 'string') {
+                this.onEntitySearch(value);
+            }
+            // if (value) {
+            //     const rawEntities = this.rawAvailableEntities$.value;
+            //     this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+            // } else {
+            //     this.selectedEntity$.next(null);
+            // }
+        });
+
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
         this.initEntity();
-    }
 
+        // if (this.dropdown) {
+        //     if (this.dropdown.panel) {
+        //         const panel = this.dropdown.panel.nativeElement;
+        //         fromEvent<Event>(panel, 'scroll').pipe(
+        //             // Debugging.
+        //             tap(event => HelperService.debug(`fromEvent<Event>(panel, 'scroll')`, { event })),
+        //             // Kasih jeda ketika scrolling.
+        //             debounceTime(100),
+        //             takeUntil(this.subs$)
+        //         ).subscribe(() => {
+        //             // this.triggerEntity.updatePosition();
+        //         });
+        //     }
+        // }
+    }
 }
 

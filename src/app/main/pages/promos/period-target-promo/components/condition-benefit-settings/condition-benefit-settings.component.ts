@@ -97,7 +97,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         'content-card': boolean;
         'mt-16': boolean;
         'sinbad-content': boolean;
-        'mat-elevation-z1': boolean;
+        // 'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
     // Untuk styling form field di mode form yang berbeda.
@@ -133,7 +133,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             'mt-16': true,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
-            'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
+            // 'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
             'fuse-white': this.isAddMode() || this.isEditMode()
         };
 

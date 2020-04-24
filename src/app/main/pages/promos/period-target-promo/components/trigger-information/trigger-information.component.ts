@@ -81,7 +81,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
         'content-card': boolean;
         'mt-16': boolean;
         'sinbad-content': boolean;
-        'mat-elevation-z1': boolean;
+        // 'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
     // Untuk styling form field di mode form yang berbeda.
@@ -89,8 +89,6 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
         'custom-field': boolean;
         'view-field label-no-padding': boolean;
     };
-
-    // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -116,7 +114,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             'mt-16': true,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
-            'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
+            // 'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
             'fuse-white': this.isAddMode() || this.isEditMode()
         };
 

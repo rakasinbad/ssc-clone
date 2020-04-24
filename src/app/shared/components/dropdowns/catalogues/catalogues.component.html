@@ -48,7 +48,47 @@
 </ng-template>
 <div class="custom-field" fxLayout="row" *ngIf="mode === 'single'; else multiMode">
     <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
-        <mat-select [placeholder]="placeholder" [formControl]="entityForm" (openedChange)="onOpenedChangeEntity($event)">
+        <input
+            matInput
+            type="text"
+            #triggerEntity
+            [formControl]="entityForm"
+            autocomplete="new-password"
+            [placeholder]="placeholder"
+            [matAutocomplete]="entityAutocomplete"
+        >
+        <mat-autocomplete
+            #entityAutocomplete="matAutocomplete"
+            [displayWith]="showLabel"
+            (opened)="listenEntityAutoComplete()"
+            (optionSelected)="onSelectedEntity($event)"
+        >
+            <mat-option *ngIf="!(isEntityLoading$ | async)">(None)</mat-option>
+
+            <mat-option *ngFor="let option of (availableEntities$ | async)" [value]="option">
+                {{ option?.label || '-' }}
+            </mat-option>
+
+            <!-- <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalSalesReps$ | async) || (totalSalesReps$ | async) > (salesReps$ | async)?.length"
+            >
+                Loading ...
+            </mat-option> -->
+
+        </mat-autocomplete>
+        <!-- LOADER -->
+        <div class="pt-4 loader" style="justify-content: flex-end;" *ngIf="isEntityLoading$ | async">
+            <mat-spinner [diameter]="25" color="accent"></mat-spinner>
+        </div>
+        <!-- / LOADER -->
+        <mat-error *ngIf="mode === 'single'">
+            <ng-container *ngTemplateOutlet="errorMessage"></ng-container>
+        </mat-error>
+    </mat-form-field>
+    <!-- <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <mat-select [placeholder]="placeholder" [formControl]="entityForm" (openedChange)="onOpenedChangeEntity($event)" #dropdown>
             <mat-option>(None)</mat-option>
             <mat-option *ngFor="let option of (availableEntities$ | async)" [value]="option.id">
                 {{ option?.label || '-' }}
@@ -57,7 +97,7 @@
         <mat-error *ngIf="mode === 'single'">
             <ng-container *ngTemplateOutlet="errorMessage"></ng-container>
         </mat-error>
-    </mat-form-field>
+    </mat-form-field> -->
 </div>
 <ng-template #multiMode>
     <div class="custom-field" fxLayout="row">
