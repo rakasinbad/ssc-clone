@@ -234,7 +234,7 @@
             
             <mat-paginator
                 [fxHide]="(totalCoverages$ | async) === 0"
-                [length]="(coverages$ | async).length"
+                [length]="(totalCoverages$ | async)"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
