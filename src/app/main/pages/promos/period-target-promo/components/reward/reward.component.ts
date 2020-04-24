@@ -91,7 +91,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
         'content-card': boolean;
         'mt-16': boolean;
         'sinbad-content': boolean;
-        'mat-elevation-z1': boolean;
+        // 'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
     // Untuk styling form field di mode form yang berbeda.
@@ -125,7 +125,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             'mt-16': true,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
-            'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
+            // 'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
             'fuse-white': this.isAddMode() || this.isEditMode()
         };
 
@@ -344,6 +344,12 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             condition: this.fb.group({
                 base: ['qty'],
                 qty: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        )
+                    }),
                     RxwebValidators.greaterThanEqualTo({
                         value: 1,
                         message: 'This field must be greater than or equal to 1.'
