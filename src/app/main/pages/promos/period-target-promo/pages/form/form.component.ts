@@ -13,7 +13,7 @@ import {
 } from '../../models';
 import { FormStatus } from 'app/shared/models/global.model';
 import { takeUntil, tap, filter, withLatestFrom } from 'rxjs/operators';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, ScrollService } from 'app/shared/helpers';
 import { environment } from 'environments/environment';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
@@ -49,7 +49,8 @@ export class PeriodTargetPromoFormComponent implements OnInit, OnDestroy {
     customerSegmentationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
 
     constructor(
-        private PeriodTargetPromoStore: NgRxStore<PeriodTargetPromoCoreState>
+        private PeriodTargetPromoStore: NgRxStore<PeriodTargetPromoCoreState>,
+        private scroll$: ScrollService,
     ) {
         this.isLoading$ = this.PeriodTargetPromoStore.select(
             PeriodTargetPromoSelectors.getLoadingState
@@ -365,13 +366,18 @@ export class PeriodTargetPromoFormComponent implements OnInit, OnDestroy {
         this.initSubscribeFormStatuses();
         this.initHandleFormSubmission();
     }
-
+    
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
 
         this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
         this.PeriodTargetPromoStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 
+    onTrackScroll(): void {
+        this.scroll$.setUpdatePosition(Math.random());
+    }
 }
