@@ -188,6 +188,17 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
         this.subs$.next();
         this.subs$.complete();
 
+        this.SkuAssignmentsStore.dispatch(
+            SkuAssignmentsSkuActions.setSearchValue({
+                payload: null
+            })
+        );
+        this.SkuAssignmentsStore.dispatch(
+            SkuAssignmentsWarehouseActions.setSearchValue({
+                payload: null
+            })
+        );
+
         this.SkuAssignmentsStore.dispatch(UiActions.hideCustomToolbar());
         this.SkuAssignmentsStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.fuseNavigation$.unregister('customNavigation');
