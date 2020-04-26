@@ -363,9 +363,9 @@ export class PeriodTargetPromoEffects {
     setRefreshStatusToActive$ = createEffect(() =>
         this.actions$.pipe(
             ofType(
-                PeriodTargetPromoActions.updatePeriodTargetPromoSuccess
+                PeriodTargetPromoActions.removePeriodTargetPromoSuccess,
+                PeriodTargetPromoActions.updatePeriodTargetPromoSuccess,
             ),
-            map(action => action.payload),
             tap(() => {
                 this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.setRefreshStatus({ payload: true }));
             })
