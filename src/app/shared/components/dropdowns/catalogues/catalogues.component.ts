@@ -258,7 +258,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             complete: () => {
                 if (this.mode === 'single') {
                     if (this.initialSelection) {
-                        this.entityForm.setValue((this.initialSelection as unknown as Selection).id);
+                        this.entityForm.setValue((this.initialSelection as unknown as Selection));
                     }
                 }
                 
