@@ -1,14 +1,30 @@
 import { createAction, props } from '@ngrx/store';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { ErrorHandler } from 'app/shared/models/global.model';
-import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
+import { WarehouseCoverage, CheckAvailabilityWarehouseCoverageResponse } from '../../models/warehouse-coverage.model';
 import { NotCoveredWarehouse } from '../../models/not-covered-warehouse.model';
 
 export type failureActionNames =
     'fetchWarehouseCoveragesFailure' |
     'createWarehouseCoverageFailure' |
-    'updateWarehouseCoverageFailure'
+    'updateWarehouseCoverageFailure' |
+    'checkAvailabilityWarehouseCoverageFailure'
 ;
+
+export const checkAvailabilityWarehouseCoverageRequest = createAction(
+    '[Warehouse/Warehouse Coverages] Check Availability Warehouse Coverage Request',
+    props<{ payload: { type: 'coverages'; urbanId: number; } }>()
+);
+
+export const checkAvailabilityWarehouseCoverageFailure = createAction(
+    '[Warehouse/Warehouse Coverages] Check Availability Warehouse Coverage Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const checkAvailabilityWarehouseCoverageSuccess = createAction(
+    '[Warehouse/Warehouse Coverages] Check Availability Warehouse Coverage Success',
+    props<{ payload: CheckAvailabilityWarehouseCoverageResponse }>()
+);
 
 export const fetchWarehouseCoveragesRequest = createAction(
     '[Warehouse/Warehouse Coverages] Fetch Warehouse Coverages Request',

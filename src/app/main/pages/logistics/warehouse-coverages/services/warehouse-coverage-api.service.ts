@@ -11,6 +11,7 @@ export class WarehouseCoverageApiService {
     private _url: string;
     private readonly _endpoint = '/warehouse-coverages';
     private readonly _endpointWarehouseUrbans = '/warehouse-urbans';
+    private readonly _warehouseConfirmationEndpoint = '/warehouse-confirmation';
 
     constructor(
         private http: HttpClient,
@@ -91,6 +92,20 @@ export class WarehouseCoverageApiService {
         this._url = this._$helper.handleApiRouter(this._endpointWarehouseUrbans);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    checkAvailabilityWarehouseCoverage(
+        type: 'coverages',
+        urbanId: number,
+        supplierId: number,
+    ): Observable<{ available: boolean; message?: string; urban: string; warehouseName: string; }> {
+        this._url = this._$helper.handleApiRouter(this._warehouseConfirmationEndpoint);
+        return this.http.post<{
+            available: boolean;
+            message?: string;
+            urban: string;
+            warehouseName: string;
+        }>(this._url, { type, urbanId, supplierId });
     }
 
     createWarehouseCoverage<T>(payload: { warehouseId: number; urbanId: Array<number>; }): Observable<T> {
