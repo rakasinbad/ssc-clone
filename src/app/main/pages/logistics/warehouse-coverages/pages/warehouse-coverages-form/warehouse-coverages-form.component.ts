@@ -3,7 +3,7 @@ import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAut
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxjs';
+import { Subject, Observable, fromEvent, Subscription, combineLatest, BehaviorSubject } from 'rxjs';
 import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take, exhaustMap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
@@ -24,7 +24,10 @@ import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { LocationSelectors, WarehouseUrbanSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { WarehouseCoverageSelectors } from '../../store/selectors';
-import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
+import { WarehouseCoverageService, WarehouseCoverageApiService } from '../../services';
+import { User } from 'app/shared/models/user.model';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { catchOffline } from '@ngx-pwa/offline';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -40,6 +43,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     // Untuk menyimpan mode edit.
     // tslint:disable-next-line: no-inferrable-types
     isEditMode: boolean = false;
+    // Untuk menyimpan data user dari state.
+    user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
 
     // Untuk menyimpan daftar warehouse yang tersedia.
     availableWarehouses$: Observable<Array<Warehouse>>;
@@ -85,6 +90,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     // Untuk menyimpan urban yang tersedia.
     availableUrbans$: Observable<Array<string>>;
 
+    disabledOptions: Array<Selection> = [];
     initialSelectedOptions: Array<Selection> = [];
     totallInitialSelectedOptions$: Observable<number>;
     availableOptions: Array<Selection> = [];
@@ -118,6 +124,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     constructor(
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
+        private wh$: WarehouseCoverageService,
+        private whApi$: WarehouseCoverageApiService,
         private route: ActivatedRoute,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
         private helper$: HelperService,
@@ -126,6 +134,32 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         private errorMessageSvc: ErrorMessageService,
         private matDialog: MatDialog,
     ) {
+        this.locationStore.select(
+            AuthSelectors.getUserState
+        ).pipe(
+            takeUntil(this.subs$)
+        ).subscribe(userData => {
+            if (userData) {
+                this.user$.next(userData.user);
+            }
+        });
+
+        this.wh$.getUrbanSubject().pipe(
+            takeUntil(this.subs$)
+        ).subscribe(payload => {
+            if (payload) {
+                if (payload.available) {
+                    this.disabledOptions = this.disabledOptions.filter(disabled => 
+                        String(disabled.id + disabled.group) !== String(payload.urbanId + 'urban')
+                    );
+                } else {
+
+                }
+            }
+
+            this.cdRef.markForCheck();
+        });
+
         const breadcrumbs: Array<IBreadcrumbs> = [
             {
                 title: 'Home',
@@ -586,8 +620,58 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         return item.name;
     }
 
-    onSelectionChanged($event: { added: Array<Selection>; removed: Array<Selection> }): void {
-        this.debug('onSelectionChanged', $event);
+    checkAvailabilityWarehouseCoverage(type: 'coverages', urbanId: number): void {
+        // Mendapatkan data user dari Subject.
+        const userData = this.user$.value;
+        // Hanya mengambil ID supplier saja.
+        const { supplierId } = userData.userSupplier;
+
+        this.whApi$.checkAvailabilityWarehouseCoverage(type, urbanId, +supplierId).pipe(
+            catchOffline()
+        ).subscribe({
+            next: response => {
+                if (response.available) {
+                    this.disabledOptions = this.disabledOptions.filter(disabled => 
+                        String(disabled.id + disabled.group) !== String(urbanId + 'urban')
+                    );
+                }
+
+                if (this.disabledOptions.length > 0) {
+                    this.form.get('isUniqueCoverage').setValue('');
+                } else {
+                    this.form.get('isUniqueCoverage').setValue(true);
+                }
+            },
+            error: err => {},
+            complete: () => {
+                this.cdRef.markForCheck();
+                this.form.updateValueAndValidity();
+            }
+        });
+    }
+
+    onSelectionChanged($event: Selection): void {
+        HelperService.debug('onSelectionChanged', $event);
+
+        if ($event.isSelected) {
+            this.disabledOptions.push($event);
+
+            this.form.get('isUniqueCoverage').setValue('');
+
+            this.checkAvailabilityWarehouseCoverage('coverages', +$event.id);
+            // this.locationStore.dispatch(
+            //     WarehouseCoverageActions.checkAvailabilityWarehouseCoverageRequest({
+            //         payload: {
+            //             type: 'coverages',
+            //             urbanId: +$event.id
+            //         }
+            //     })
+            // );
+        }
+    }
+
+    onSelectionListChanged($event: { added: Array<Selection>; removed: Array<Selection> }): void {
+        HelperService.debug('onSelectionListChanged', $event);
 
         this.form.patchValue({
             selectedUrbans: $event.added,
@@ -854,6 +938,14 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             district: [
                 { value: '', disabled: true },
             ],
+            isUniqueCoverage: [
+                { value: '', disabled: false },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
             selectedUrbans: [
                 { value: [], disabled: false },
                 [
@@ -984,18 +1076,24 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             takeUntil(this.subs$)
         ).subscribe();
 
+        this.form.statusChanges
+        .pipe(
+            debounceTime(200),
+            takeUntil(this.subs$)
+        ).subscribe(status => {
+            if (status === 'VALID') {
+                this.locationStore.dispatch(FormActions.setFormStatusValid());
+            } else {
+                this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+            } 
+        });
+
         this.form.valueChanges
         .pipe(
             debounceTime(100),
             takeUntil(this.subs$)
         ).subscribe(() => {
-            if (!this.isEditMode) {
-                if (this.form.valid) {
-                    this.locationStore.dispatch(FormActions.setFormStatusValid());
-                } else {
-                    this.locationStore.dispatch(FormActions.setFormStatusInvalid());
-                } 
-            } else {
+            if (this.isEditMode) {
                 const warehouse: string = this.form.get('warehouse').value;
                 const selectedUrbans: Array<Selection> = this.form.get('selectedUrbans').value;
                 const removedUrbans: Array<Selection> = this.form.get('removedUrbans').value;

@@ -25,6 +25,7 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
 import { NotCoveredWarehouse } from '../../models/not-covered-warehouse.model';
+import { WarehouseCoverageService } from '../../services';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
 
@@ -34,6 +35,7 @@ export class WarehouseCoverageEffects {
         private actions$: Actions,
         private authStore: NgRxStore<fromAuth.FeatureState>,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
+        private wh$: WarehouseCoverageService,
         private whApi$: WarehouseCoverageApiService,
         private notice$: NoticeService,
         private router: Router,
@@ -206,6 +208,71 @@ export class WarehouseCoverageEffects {
             })
         )
     , { dispatch: false });
+
+    checkAvailabilityWarehouseCoverageRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WarehouseCoverageActions.checkAvailabilityWarehouseCoverageRequest),
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([payload, authState]: [{ type: 'coverages'; urbanId: number; }, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, payload])),
+                        switchMap<[User, { type: 'coverages'; urbanId: number; }], Observable<AnyAction>>(
+                            this.checkAvailabilityWarehouseCoverage
+                        ),
+                        catchError(err => this.sendErrorToState(err, 'checkAvailabilityWarehouseCoverageFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, payload])),
+                        switchMap<[User, { type: 'coverages'; urbanId: number; }], Observable<AnyAction>>(
+                            this.checkAvailabilityWarehouseCoverage
+                        ),
+                        catchError(err => this.sendErrorToState(err, 'checkAvailabilityWarehouseCoverageFailure'))
+                    );
+                }
+            }),
+            catchError(err => this.sendErrorToState(err, 'checkAvailabilityWarehouseCoverageFailure'))
+        )
+    );
+
+    checkStoreAtInvoiceGroupSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WarehouseCoverageActions.checkAvailabilityWarehouseCoverageSuccess),
+            map(action => action.payload),
+            tap((payload) => {
+                this.wh$.updateUrban(payload);
+            })
+        ), { dispatch: false }
+    );
+
+    checkAvailabilityWarehouseCoverage = ([userData, payload]: [User, { type: 'coverages', urbanId: number; }]): Observable<AnyAction> => {
+        // Hanya mengambil ID supplier saja.
+        const { supplierId } = userData.userSupplier;
+
+        return this.whApi$.checkAvailabilityWarehouseCoverage(payload.type, payload.urbanId, +supplierId).pipe(
+            catchOffline(),
+            switchMap(response =>
+                of(
+                    WarehouseCoverageActions.checkAvailabilityWarehouseCoverageSuccess({
+                        payload: {
+                            ...response,
+                            urbanId: payload.urbanId,
+                        }
+                    })
+                )
+            ),
+            catchError(err => this.sendErrorToState(err, 'checkAvailabilityWarehouseCoverageFailure'))
+        );
+    };
 
     checkUserSupplier = (userData: User): User | Observable<never> => {
         // Jika user tidak ada data supplier.

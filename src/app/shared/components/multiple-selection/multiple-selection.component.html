@@ -80,6 +80,7 @@
                         [checkboxPosition]="'before'"
                         [value]="option"
                         [selected]="isAvailableAtSelection(option)"
+                        [disabled]="isDisabled(option)"
                     >
                         {{ option?.label }}
                     </mat-list-option>
@@ -146,6 +147,7 @@
                         [checkboxPosition]="'before'"
                         [selected]="true"
                         [value]="option"
+                        [disabled]="isDisabled(option)"
                     >
                         {{ option?.label }}
                     </mat-list-option>

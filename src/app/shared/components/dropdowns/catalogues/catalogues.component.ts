@@ -276,6 +276,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             skip: 0
         };
 
+        this.availableEntities$.next([]);
+        this.rawAvailableEntities$.next([]);
+
         // Reset form-nya store entity.
         if (!this.disabled) {
             this.entityForm.enable();
@@ -351,6 +354,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         if (this.ngZone) {
             this.ngZone.run(() => {
                 this.availableEntities$.next([]);
+                this.rawAvailableEntities$.next([]);
 
                 const queryParams: IQueryParams = {
                     paginate: true,

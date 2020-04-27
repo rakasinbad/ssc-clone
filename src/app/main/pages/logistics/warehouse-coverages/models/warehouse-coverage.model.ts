@@ -199,3 +199,19 @@ export class WarehouseCoverage implements WarehouseCoverage {
         this.urban = new Urban(urban);
     }
 }
+
+interface ICheckAvailabilityWarehouseCoverageResponse {
+    available: boolean;
+    message?: string;
+    urban: string;
+    urbanId: number;
+    warehouseName: string;
+}
+
+export class CheckAvailabilityWarehouseCoverageResponse implements ICheckAvailabilityWarehouseCoverageResponse {
+    available: boolean;
+    message?: string;
+    urban: string;
+    urbanId: number;
+    warehouseName: string;
+}

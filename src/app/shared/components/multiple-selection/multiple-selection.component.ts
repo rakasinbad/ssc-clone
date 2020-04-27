@@ -25,6 +25,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     @Input() disableClearAll: boolean = false;
     // tslint:disable-next-line: no-inferrable-types
     @Input() enableSelectAll: boolean = false;
+    // Untuk menyimpan daftar list options yang ingin di-disable.
+    @Input() disabledOptions: Array<Selection> = [];
 
     // Untuk meletakkan judul di kolom available options.
     // tslint:disable-next-line: no-inferrable-types
@@ -92,6 +94,10 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         private multiple$: MultipleSelectionService,
     ) {}
 
+    isDisabled(value: Selection): boolean {
+        return !!(this.disabledOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
+    }
+
     isAvailableAtSelection(value: Selection): boolean {
         return !!(this.mergedSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
     }
@@ -111,7 +117,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             this.availableSelection.selectAll();
 
             for (const option of this.availableOption.toArray()) {
-                if (!option.selected) {
+                if (!option.selected && !option.disabled) {
                     option.toggle();
                 }
 
@@ -292,7 +298,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                     }
 
                     // Mengirim event selectionChanged dengan membawa nilai option yang baru saya diklik.
-                    this.selectionChanged.emit(value);
+                    this.selectionChanged.emit({ ...value, isSelected });
                 }
 
                 // Memeriksa apakah option berada di initial selection.
