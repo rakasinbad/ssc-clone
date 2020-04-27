@@ -641,10 +641,14 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 this.updateFormView();
             } else if (this.mode === 'single') {
                 // if (changes['initialSelection'].currentValue) {
-                //     if (this.entityAutoComplete.opened) {
-                //         this.entityForm.setValue((changes['initialSelection'].currentValue as Selection).id);
-                //     }
+                // if (this.entityAutoComplete.opened) {
+                //     this.entityForm.setValue((changes['initialSelection'].currentValue as Selection).id);
                 // }
+                // }
+                if (changes['initialSelection'].currentValue) {
+                    this.entityForm.setValue((changes['initialSelection'].currentValue as Selection));
+                    // this.entityFormView.setValue((changes['initialSelection'].currentValue as Selection).label);
+                }
             }
         }
     }
@@ -679,7 +683,11 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             takeUntil(this.subs$)
         ).subscribe(value => {
             if (typeof value === 'string') {
-                this.onEntitySearch(value);
+                if (this.entityAutoComplete) {
+                    if (this.entityAutoComplete.panel) {
+                        this.onEntitySearch(value);
+                    }
+                }
             }
             // if (value) {
             //     const rawEntities = this.rawAvailableEntities$.value;
