@@ -27,6 +27,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     @Input() enableSelectAll: boolean = false;
     // Untuk menyimpan daftar list options yang ingin di-disable.
     @Input() disabledOptions: Array<Selection> = [];
+    // Untuk menyimpan daftar list options yang ingin diberi warning.
+    @Input() warnedOptions: Array<Selection> = [];
 
     // Untuk meletakkan judul di kolom available options.
     // tslint:disable-next-line: no-inferrable-types
@@ -93,6 +95,28 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         private cdRef: ChangeDetectorRef,
         private multiple$: MultipleSelectionService,
     ) {}
+
+    getWarn(value: Selection): string {
+        if (this.warnedOptions.length > 0) {
+            const warnedOption = (this.warnedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
+            
+            if (warnedOption) {
+                if (!warnedOption.tooltip) {
+                    return '';
+                }
+
+                return warnedOption.tooltip;
+            }
+
+            return '';
+        }
+
+        return '';
+    }
+    
+    hasWarn(value: Selection): boolean {
+        return !!(this.warnedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
+    }
 
     isDisabled(value: Selection): boolean {
         return !!(this.disabledOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
