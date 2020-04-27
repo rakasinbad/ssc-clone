@@ -91,6 +91,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     availableUrbans$: Observable<Array<string>>;
 
     disabledOptions: Array<Selection> = [];
+    warnedOptions: Array<Selection> = [];
     initialSelectedOptions: Array<Selection> = [];
     totallInitialSelectedOptions$: Observable<number>;
     availableOptions: Array<Selection> = [];
@@ -620,7 +621,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         return item.name;
     }
 
-    checkAvailabilityWarehouseCoverage(type: 'coverages', urbanId: number): void {
+    checkAvailabilityWarehouseCoverage(type: 'coverages', urbanId: number, selection: Selection): void {
         // Mendapatkan data user dari Subject.
         const userData = this.user$.value;
         // Hanya mengambil ID supplier saja.
@@ -630,13 +631,22 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             catchOffline()
         ).subscribe({
             next: response => {
+                this.disabledOptions = this.disabledOptions.filter(disabled => 
+                    String(disabled.id + disabled.group) !== String(urbanId + 'urban')
+                );
+
                 if (response.available) {
-                    this.disabledOptions = this.disabledOptions.filter(disabled => 
-                        String(disabled.id + disabled.group) !== String(urbanId + 'urban')
+                    this.warnedOptions = this.warnedOptions.filter(warned => 
+                        String(warned.id + warned.group) !== String(urbanId + 'urban')
                     );
+                } else {
+                    this.warnedOptions.push({
+                        ...selection,
+                        tooltip: `This urban is already covered by Warehouse "${response.warehouseName}"`
+                    });
                 }
 
-                if (this.disabledOptions.length > 0) {
+                if (this.disabledOptions.length > 0 || this.warnedOptions.length > 0) {
                     this.form.get('isUniqueCoverage').setValue('');
                 } else {
                     this.form.get('isUniqueCoverage').setValue(true);
@@ -658,7 +668,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
             this.form.get('isUniqueCoverage').setValue('');
 
-            this.checkAvailabilityWarehouseCoverage('coverages', +$event.id);
+            this.checkAvailabilityWarehouseCoverage('coverages', +$event.id, $event);
             // this.locationStore.dispatch(
             //     WarehouseCoverageActions.checkAvailabilityWarehouseCoverageRequest({
             //         payload: {
@@ -667,6 +677,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             //         }
             //     })
             // );
+        } else {
+            this.warnedOptions = this.warnedOptions.filter(warned => 
+                String(warned.id + warned.group) !== String($event.id + $event.group)
+            );
+
+            if (this.disabledOptions.length > 0 || this.warnedOptions.length > 0) {
+                this.form.get('isUniqueCoverage').setValue('');
+            } else {
+                this.form.get('isUniqueCoverage').setValue(true);
+            }
         }
     }
 

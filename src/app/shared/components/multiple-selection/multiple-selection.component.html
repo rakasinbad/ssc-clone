@@ -144,6 +144,9 @@
                         #selectedOption
                         *ngFor="let option of (mergedSelectedOptions)"
                         class="relative"
+                        [class.yellow-800]="hasWarn(option)"
+                        [matTooltip]="getWarn(option)"
+                        matTooltipClass="tooltip-br font-size-14 p-16"
                         [checkboxPosition]="'before'"
                         [selected]="true"
                         [value]="option"

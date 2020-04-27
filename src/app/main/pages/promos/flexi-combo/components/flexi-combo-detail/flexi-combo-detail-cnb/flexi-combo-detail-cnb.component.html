@@ -10,7 +10,7 @@
         [class.mb-16]="!isLast"
         fxLayout="column"
         fxLayoutGap="16px"
-        *ngFor="let condition of conditions; index as idx; last as isLast"
+        *ngFor="let condition of conditions; index as idx; first as isFirst; last as isLast"
     >
         <span class="box-title"> Tier {{ idx + 1 }} </span>
 
@@ -135,7 +135,7 @@
                     </div>
 
                     <div class="info" fxFlex="100">
-                        {{ condition?.benefitCatalogueId }}
+                        {{ condition?.catalogue?.name || '-' }}
                     </div>
                 </div>
 
@@ -144,6 +144,7 @@
                     fxLayout="row"
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
+                    *ngIf="isFirst"
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10"></div>
 
@@ -181,6 +182,7 @@
                     fxLayout="row"
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
+                    *ngIf="isFirst"
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10"></div>
 
