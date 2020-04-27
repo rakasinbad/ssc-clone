@@ -8,7 +8,7 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    TemplateRef
+    TemplateRef,
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
@@ -16,7 +16,7 @@ import {
     MatAutocompleteSelectedEvent,
     MatAutocompleteTrigger,
     MatSelectChange,
-    MatSlideToggleChange
+    MatSlideToggleChange,
 } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -49,7 +49,7 @@ import {
     tap,
     switchMap,
     take,
-    catchError
+    catchError,
 } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
@@ -66,7 +66,11 @@ import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-seg
 import { StoreSegmentationTypesApiService } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/services';
 import { StoreSegmentationTreeComponent } from 'app/shared/components/selection-tree/store-segmentation/store-segmentation.component';
 import { SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
-import { StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
+import {
+    StoreSegmentationGroup,
+    StoreSegmentationChannel,
+    StoreSegmentationCluster,
+} from 'app/main/pages/catalogues/models';
 
 interface RecordedSelection<T> {
     lastSaved: T;
@@ -79,7 +83,7 @@ interface RecordedSelection<T> {
     styleUrls: ['./merchant-form.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
@@ -136,10 +140,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedStoreChannel: Array<StoreSegmentationChannel> = [];
     selectedStoreCluster: Array<StoreSegmentationCluster> = [];
 
-    selectedStoreType$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Type', current: '' });
-    selectedStoreGroup$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Group', current: '' });
-    selectedStoreChannel$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Channel', current: '' });
-    selectedStoreCluster$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Cluster', current: '' });
+    selectedStoreType$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
+        RecordedSelection<string>
+    >({ lastSaved: 'Choose Store Type', current: '' });
+    selectedStoreGroup$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
+        RecordedSelection<string>
+    >({ lastSaved: 'Choose Store Group', current: '' });
+    selectedStoreChannel$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
+        RecordedSelection<string>
+    >({ lastSaved: 'Choose Store Channel', current: '' });
+    selectedStoreCluster$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
+        RecordedSelection<string>
+    >({ lastSaved: 'Choose Store Cluster', current: '' });
 
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
@@ -155,10 +167,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('cdkDistrict2', { static: false }) cdkDistrict2: CdkVirtualScrollViewport;
     @ViewChild('cdkUrban', { static: false }) cdkUrban: CdkVirtualScrollViewport;
 
-    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<StoreSegmentationTreeComponent>;
-    @ViewChild('selectStoreGroup', { static: false }) selectStoreGroup: TemplateRef<StoreSegmentationTreeComponent>;
-    @ViewChild('selectStoreChannel', { static: false }) selectStoreChannel: TemplateRef<StoreSegmentationTreeComponent>;
-    @ViewChild('selectStoreCluster', { static: false }) selectStoreCluster: TemplateRef<StoreSegmentationTreeComponent>;
+    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<
+        StoreSegmentationTreeComponent
+    >;
+    @ViewChild('selectStoreGroup', { static: false }) selectStoreGroup: TemplateRef<
+        StoreSegmentationTreeComponent
+    >;
+    @ViewChild('selectStoreChannel', { static: false }) selectStoreChannel: TemplateRef<
+        StoreSegmentationTreeComponent
+    >;
+    @ViewChild('selectStoreCluster', { static: false }) selectStoreCluster: TemplateRef<
+        StoreSegmentationTreeComponent
+    >;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -177,14 +197,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const params: IQueryParams = {
             paginate: false,
             limit: 10,
-            skip: 0
+            skip: 0,
         };
         this.requestStoreType(params);
-        
-        this.storeTypes$.pipe(
-            tap(value => HelperService.debug('AVAILABLE STORE TYPES', value)),
-            takeUntil(this._unSubs$)
-        ).subscribe();
+
+        this.storeTypes$
+            .pipe(
+                tap((value) => HelperService.debug('AVAILABLE STORE TYPES', value)),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe();
 
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -196,33 +218,33 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     progress: {
                         title: {
                             label: 'Skor tambah toko',
-                            active: true
+                            active: true,
                         },
                         value: {
-                            active: true
+                            active: true,
                         },
-                        active: false
+                        active: false,
                     },
                     action: {
                         save: {
                             label: 'Save',
-                            active: true
+                            active: true,
                         },
                         draft: {
                             label: 'Save Draft',
-                            active: false
+                            active: false,
                         },
                         cancel: {
                             label: 'Cancel',
-                            active: true
+                            active: true,
                         },
                         goBack: {
                             label: 'Back',
                             active: true,
-                            url: '/pages/account/stores'
-                        }
-                    }
-                }
+                            url: '/pages/account/stores',
+                        },
+                    },
+                },
             })
         );
 
@@ -236,19 +258,19 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home'
+                            title: 'Home',
                             // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
-                            translate: 'BREADCRUMBS.ACCOUNT'
+                            translate: 'BREADCRUMBS.ACCOUNT',
                         },
                         {
                             title: 'Add Store',
                             translate: 'BREADCRUMBS.ADD_STORE',
-                            active: true
-                        }
-                    ]
+                            active: true,
+                        },
+                    ],
                 })
             );
 
@@ -261,19 +283,19 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home'
+                            title: 'Home',
                             // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
-                            translate: 'BREADCRUMBS.ACCOUNT'
+                            translate: 'BREADCRUMBS.ACCOUNT',
                         },
                         {
                             title: 'Edit Store',
                             translate: 'BREADCRUMBS.EDIT_STORE',
-                            active: true
-                        }
-                    ]
+                            active: true,
+                        },
+                    ],
                 })
             );
 
@@ -373,17 +395,17 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.form
             .get('storeInfo.address.district')
             .valueChanges.pipe(
-                filter(v => {
+                filter((v) => {
                     this.districtHighlight = v;
                     return v.length >= 3;
                 }),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(v => {
+            .subscribe((v) => {
                 if (v) {
                     const data: IQueryParams = {
                         limit: 10,
-                        skip: 0
+                        skip: 0,
                     };
 
                     data['paginate'] = true;
@@ -391,8 +413,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     data['search'] = [
                         {
                             fieldName: 'keyword',
-                            keyword: v
-                        }
+                            keyword: v,
+                        },
                     ];
 
                     this.districtHighlight = v;
@@ -405,18 +427,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.form
             .get('storeInfo.address.urban')
             .valueChanges.pipe(takeUntil(this._unSubs$))
-            .subscribe(v => {
+            .subscribe((v) => {
                 this.urbanHighlight = v;
 
                 this.urbans$ = this.store
                     .select(DropdownSelectors.getAllUrban)
-                    .pipe(map(source => this._filterUrban(source, v)));
+                    .pipe(map((source) => this._filterUrban(source, v)));
             });
 
         // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
         this.form.statusChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(status => {
+            .subscribe((status) => {
                 if (status === 'VALID' && this.addressValid()) {
                     this.store.dispatch(FormActions.setFormStatusValid());
                 }
@@ -430,10 +452,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(FormSelectors.getIsClickResetButton)
             .pipe(
-                filter(isClick => !!isClick),
+                filter((isClick) => !!isClick),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(isClick => {
+            .subscribe((isClick) => {
                 if (isClick) {
                     this.form.reset();
                     this.tmpPhoto.reset();
@@ -445,10 +467,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
-                filter(isClick => !!isClick),
+                filter((isClick) => !!isClick),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(isClick => {
+            .subscribe((isClick) => {
                 if (isClick) {
                     this.onSubmit();
                 }
@@ -457,15 +479,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(StoreSettingSelectors.getAllStoreSetting)
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(storeSettings => {
+            .subscribe((storeSettings) => {
                 if (storeSettings.length === 0) {
                     return this.store.dispatch(
                         StoreSettingActions.fetchStoreSettingsRequest({
                             payload: {
                                 paginate: true,
                                 skip: 0,
-                                limit: 1
-                            }
+                                limit: 1,
+                            },
                         })
                     );
                 }
@@ -481,7 +503,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.storeIdType.valueChanges
             .pipe(debounceTime(100), distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(value => {
+            .subscribe((value) => {
                 if (value === 'auto') {
                     this.form.get('storeInfo.storeId.id').setValue(this.storeIdNextNumber);
                 }
@@ -493,7 +515,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements AfterViewInit' to the class.
 
         // Handle trigger autocomplete district force selected from options
-        this.triggerDistrict.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+        this.triggerDistrict.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe((e) => {
             const value = this.form.get('storeInfo.address.district').value;
 
             if (!this._selectedDistrict || this._selectedDistrict !== JSON.stringify(value)) {
@@ -515,7 +537,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         // Handle trigger autocomplete urban force selected from options
-        this.triggerUrban.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+        this.triggerUrban.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe((e) => {
             const value = this.form.get('storeInfo.address.urban').value;
 
             if (!this._selectedUrban || this._selectedUrban !== JSON.stringify(value)) {
@@ -583,22 +605,28 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectStoreType(): void {
-        this.dialogStoreType = this.applyDialogFactory$.open({
-            title: 'Select Store Type',
-            template: this.selectStoreType,
-            isApplyEnabled: true,
-        }, {
-            disableClose: true,
-            width: '80vw',
-            minWidth: '80vw',
-            maxWidth: '80vw',
-        });
+        this.dialogStoreType = this.applyDialogFactory$.open(
+            {
+                title: 'Select Store Type',
+                template: this.selectStoreType,
+                isApplyEnabled: true,
+            },
+            {
+                disableClose: true,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            }
+        );
 
         this.dialogStoreType.closed$.subscribe({
             next: (value: TNullable<string>) => {
                 HelperService.debug('DIALOG SELECTION STORE TYPE CLOSED', value);
 
-                const selected = this.selectedStoreType.length === 0 ? null : this.selectedStoreType[this.selectedStoreType.length - 1].id;
+                const selected =
+                    this.selectedStoreType.length === 0
+                        ? null
+                        : this.selectedStoreType[this.selectedStoreType.length - 1].id;
                 if (value === 'apply') {
                     this.form.get('storeInfo.storeClassification.storeType').setValue(selected);
 
@@ -609,7 +637,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.cdRef.detectChanges();
-            }
+            },
         });
     }
 
@@ -620,7 +648,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onStoreTypeSelectionChanged($event: SelectedTree): void {
         HelperService.debug('onStoreTypeSelectionChanged', $event);
-    
+
         if (!$event.selected) {
             this.dialogStoreType.disableApply();
         } else if ($event.selected.hasChild) {
@@ -636,22 +664,28 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectStoreGroup(): void {
-        this.dialogStoreType = this.applyDialogFactory$.open({
-            title: 'Select Store Group',
-            template: this.selectStoreGroup,
-            isApplyEnabled: true,
-        }, {
-            disableClose: true,
-            width: '80vw',
-            minWidth: '80vw',
-            maxWidth: '80vw',
-        });
+        this.dialogStoreType = this.applyDialogFactory$.open(
+            {
+                title: 'Select Store Group',
+                template: this.selectStoreGroup,
+                isApplyEnabled: true,
+            },
+            {
+                disableClose: true,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            }
+        );
 
         this.dialogStoreType.closed$.subscribe({
             next: (value: TNullable<string>) => {
                 HelperService.debug('DIALOG SELECTION STORE GROUP CLOSED', value);
 
-                const selected = this.selectedStoreGroup.length === 0 ? null : this.selectedStoreGroup[this.selectedStoreGroup.length - 1].id;
+                const selected =
+                    this.selectedStoreGroup.length === 0
+                        ? null
+                        : this.selectedStoreGroup[this.selectedStoreGroup.length - 1].id;
                 if (value === 'apply') {
                     this.form.get('storeInfo.storeClassification.storeGroup').setValue(selected);
 
@@ -662,7 +696,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.cdRef.detectChanges();
-            }
+            },
         });
     }
 
@@ -673,7 +707,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onStoreGroupSelectionChanged($event: SelectedTree): void {
         HelperService.debug('onStoreGroupSelectionChanged', $event);
-    
+
         if (!$event.selected) {
             this.dialogStoreType.disableApply();
         } else if ($event.selected.hasChild) {
@@ -689,22 +723,28 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectStoreChannel(): void {
-        this.dialogStoreType = this.applyDialogFactory$.open({
-            title: 'Select Store Channel',
-            template: this.selectStoreChannel,
-            isApplyEnabled: true,
-        }, {
-            disableClose: true,
-            width: '80vw',
-            minWidth: '80vw',
-            maxWidth: '80vw',
-        });
+        this.dialogStoreType = this.applyDialogFactory$.open(
+            {
+                title: 'Select Store Channel',
+                template: this.selectStoreChannel,
+                isApplyEnabled: true,
+            },
+            {
+                disableClose: true,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            }
+        );
 
         this.dialogStoreType.closed$.subscribe({
             next: (value: TNullable<string>) => {
                 HelperService.debug('DIALOG SELECTION STORE CHANNEL CLOSED', value);
 
-                const selected = this.selectedStoreChannel.length === 0 ? null : this.selectedStoreChannel[this.selectedStoreChannel.length - 1].id;
+                const selected =
+                    this.selectedStoreChannel.length === 0
+                        ? null
+                        : this.selectedStoreChannel[this.selectedStoreChannel.length - 1].id;
                 if (value === 'apply') {
                     this.form.get('storeInfo.storeClassification.storeChannel').setValue(selected);
 
@@ -715,7 +755,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.cdRef.detectChanges();
-            }
+            },
         });
     }
 
@@ -726,7 +766,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onStoreChannelSelectionChanged($event: SelectedTree): void {
         HelperService.debug('onStoreChannelSelectionChanged', $event);
-    
+
         if (!$event.selected) {
             this.dialogStoreType.disableApply();
         } else if ($event.selected.hasChild) {
@@ -742,22 +782,28 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectStoreCluster(): void {
-        this.dialogStoreType = this.applyDialogFactory$.open({
-            title: 'Select Store Cluster',
-            template: this.selectStoreCluster,
-            isApplyEnabled: true,
-        }, {
-            disableClose: true,
-            width: '80vw',
-            minWidth: '80vw',
-            maxWidth: '80vw',
-        });
+        this.dialogStoreType = this.applyDialogFactory$.open(
+            {
+                title: 'Select Store Cluster',
+                template: this.selectStoreCluster,
+                isApplyEnabled: true,
+            },
+            {
+                disableClose: true,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            }
+        );
 
         this.dialogStoreType.closed$.subscribe({
             next: (value: TNullable<string>) => {
                 HelperService.debug('DIALOG SELECTION STORE CLUSTER CLOSED', value);
 
-                const selected = this.selectedStoreCluster.length === 0 ? null : this.selectedStoreCluster[this.selectedStoreCluster.length - 1].id;
+                const selected =
+                    this.selectedStoreCluster.length === 0
+                        ? null
+                        : this.selectedStoreCluster[this.selectedStoreCluster.length - 1].id;
                 if (value === 'apply') {
                     this.form.get('storeInfo.storeClassification.storeCluster').setValue(selected);
 
@@ -768,7 +814,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.cdRef.detectChanges();
-            }
+            },
         });
     }
 
@@ -779,7 +825,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onStoreClusterSelectionChanged($event: SelectedTree): void {
         HelperService.debug('onStoreClusterSelectionChanged', $event);
-    
+
         if (!$event.selected) {
             this.dialogStoreType.disableApply();
         } else if ($event.selected.hasChild) {
@@ -1072,7 +1118,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (this.autoDistrict && this.autoDistrict.panel && this.autoCompleteTrigger) {
                         fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
                             .pipe(
-                                map(x => this.autoDistrict.panel.nativeElement.scrollTop),
+                                map((x) => this.autoDistrict.panel.nativeElement.scrollTop),
                                 withLatestFrom(
                                     this.store.select(DropdownSelectors.getTotalDistrictEntity),
                                     this.store.select(DropdownSelectors.getTotalDistrict)
@@ -1090,7 +1136,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 if (atBottom && skip && total && skip < total) {
                                     const data: IQueryParams = {
                                         limit: 10,
-                                        skip: skip
+                                        skip: skip,
                                     };
 
                                     data['paginate'] = true;
@@ -1099,13 +1145,13 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         data['search'] = [
                                             {
                                                 fieldName: 'keyword',
-                                                keyword: this.districtHighlight
-                                            }
+                                                keyword: this.districtHighlight,
+                                            },
                                         ];
 
                                         this.store.dispatch(
                                             DropdownActions.fetchScrollDistrictRequest({
-                                                payload: data
+                                                payload: data,
                                             })
                                         );
                                     }
@@ -1235,7 +1281,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(DropdownSelectors.getCreditLimitGroupState, { id: ev.value })
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(resp => {
+            .subscribe((resp) => {
                 if (resp) {
                     // Handle credit limit amount
                     if (resp.defaultCreditLimit) {
@@ -1247,10 +1293,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     this.tempCreditLimitAmount[idx] = false;
 
-                    this.formCreditLimits
-                        .at(idx)
-                        .get('creditLimit')
-                        .disable();
+                    this.formCreditLimits.at(idx).get('creditLimit').disable();
 
                     // Handle term of payment
                     if (resp.termOfPayment) {
@@ -1262,10 +1305,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     this.tempTermOfPayment[idx] = false;
 
-                    this.formCreditLimits
-                        .at(idx)
-                        .get('termOfPayment')
-                        .disable();
+                    this.formCreditLimits.at(idx).get('termOfPayment').disable();
                 }
             });
     }
@@ -1400,54 +1440,66 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
     private requestStoreType(params: IQueryParams): void {
-        of(null).pipe(
-            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-            // delay(1000),
-            withLatestFrom<any, UserSupplier>(
-                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-            ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<StoreSegmentationType>>>(([_, userSupplier]) => {
-                // Jika user tidak ada data supplier.
-                if (!userSupplier) {
-                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                }
+        of(null)
+            .pipe(
+                // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+                // delay(1000),
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<
+                    [null, UserSupplier],
+                    Observable<IPaginatedResponse<StoreSegmentationType>>
+                >(([_, userSupplier]) => {
+                    // Jika user tidak ada data supplier.
+                    if (!userSupplier) {
+                        throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                    }
 
-                // Mengambil ID supplier-nya.
-                const { supplierId } = userSupplier;
+                    // Mengambil ID supplier-nya.
+                    const { supplierId } = userSupplier;
 
-                // Membentuk query baru.
-                const newQuery: IQueryParams = { ... params };
-                // Memasukkan ID supplier ke dalam params baru.
-                newQuery['supplierId'] = supplierId;
+                    // Membentuk query baru.
+                    const newQuery: IQueryParams = { ...params };
+                    // Memasukkan ID supplier ke dalam params baru.
+                    newQuery['supplierId'] = supplierId;
 
-                // Melakukan request data warehouse.
-                return this._$typeApi
-                    .find<IPaginatedResponse<StoreSegmentationType>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND STORE TYPE', { params: newQuery, response }))
-                    );
-            }),
-            take(1),
-            catchError(err => { throw err; }),
-        ).subscribe({
-            next: (response) => {
-                HelperService.debug('STORE TYPE RESPONSE', response);
+                    // Melakukan request data warehouse.
+                    return this._$typeApi
+                        .find<IPaginatedResponse<StoreSegmentationType>>(newQuery)
+                        .pipe(
+                            tap((response) =>
+                                HelperService.debug('FIND STORE TYPE', {
+                                    params: newQuery,
+                                    response,
+                                })
+                            )
+                        );
+                }),
+                take(1),
+                catchError((err) => {
+                    throw err;
+                })
+            )
+            .subscribe({
+                next: (response) => {
+                    HelperService.debug('STORE TYPE RESPONSE', response);
 
-                if (Array.isArray(response)) {
-                    this.storeTypes$.next(response);
-                } else {
-                    this.storeTypes$.next(response.data);
-                }
-            },
-            error: (err) => {
-                HelperService.debug('ERROR FIND STORE TYPE', { params, error: err });
-                this._$helper.showErrorNotification(new ErrorHandler(err));
-            },
-            complete: () => {
-                HelperService.debug('FIND STORE TYPE COMPLETED');
-            }
-        });
+                    if (Array.isArray(response)) {
+                        this.storeTypes$.next(response);
+                    } else {
+                        this.storeTypes$.next(response.data);
+                    }
+                },
+                error: (err) => {
+                    HelperService.debug('ERROR FIND STORE TYPE', { params, error: err });
+                    this._$helper.showErrorNotification(new ErrorHandler(err));
+                },
+                complete: () => {
+                    HelperService.debug('FIND STORE TYPE COMPLETED');
+                },
+            });
     }
 
     private createCreditLimitForm(): FormGroup {
@@ -1461,18 +1513,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
                         allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             termOfPayment: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
-                    })
-                ]
-            ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                ],
+            ],
         });
     }
 
@@ -1484,71 +1536,47 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tempCreditLimitAmount[idx] = true;
         this.tempTermOfPayment[idx] = true;
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimit').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .enable();
+        this.formCreditLimits.at(idx).get('creditLimit').enable();
 
         this.formCreditLimits
             .at(idx)
             .get('creditLimit')
             .setValidators([
                 RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                 }),
                 RxwebValidators.numeric({
                     acceptValue: NumericValueType.PositiveNumber,
                     allowDecimal: true,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                })
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
             ]);
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('creditLimit').updateValueAndValidity();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .reset();
+        this.formCreditLimits.at(idx).get('termOfPayment').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .enable();
+        this.formCreditLimits.at(idx).get('termOfPayment').enable();
 
         this.formCreditLimits
             .at(idx)
             .get('termOfPayment')
             .setValidators([
                 RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                 }),
                 RxwebValidators.digit({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                })
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
             ]);
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('termOfPayment').updateValueAndValidity();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .enable();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').enable();
     }
 
     private handleNotAllowCredit(idx: number): void {
@@ -1559,55 +1587,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tempCreditLimitAmount[idx] = false;
         this.tempTermOfPayment[idx] = false;
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimit').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .disable();
+        this.formCreditLimits.at(idx).get('creditLimit').disable();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .clearValidators();
+        this.formCreditLimits.at(idx).get('creditLimit').clearValidators();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('creditLimit').updateValueAndValidity();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .reset();
+        this.formCreditLimits.at(idx).get('termOfPayment').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .disable();
+        this.formCreditLimits.at(idx).get('termOfPayment').disable();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .clearValidators();
+        this.formCreditLimits.at(idx).get('termOfPayment').clearValidators();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('termOfPayment').updateValueAndValidity();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .disable();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').disable();
     }
 
     private handleAllowCreditPatch(idx: number, item: any): void {
@@ -1619,53 +1617,41 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tempTermOfPayment[idx] = item.creditLimitGroupId ? false : true;
 
         // Handle allowCreditLimit Field
-        this.formCreditLimits
-            .at(idx)
-            .get('allowCreditLimit')
-            .patchValue(true);
+        this.formCreditLimits.at(idx).get('allowCreditLimit').patchValue(true);
 
         if (this.formCreditLimits.at(idx).get('allowCreditLimit').invalid) {
-            this.formCreditLimits
-                .at(idx)
-                .get('allowCreditLimit')
-                .markAsTouched();
+            this.formCreditLimits.at(idx).get('allowCreditLimit').markAsTouched();
         }
 
         // Handle creditLimit Field
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimit').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .enable();
+        this.formCreditLimits.at(idx).get('creditLimit').enable();
 
         if (item.creditLimitGroupId) {
-            this.formCreditLimits
-                .at(idx)
-                .get('creditLimit')
-                .setValidators([
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]);
+            // this.formCreditLimits
+            //     .at(idx)
+            //     .get('creditLimit')
+            //     .setValidators([
+            //         RxwebValidators.numeric({
+            //             acceptValue: NumericValueType.PositiveNumber,
+            //             allowDecimal: true,
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+            //         }),
+            //     ]);
         } else {
             this.formCreditLimits
                 .at(idx)
                 .get('creditLimit')
                 .setValidators([
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
+                    // RxwebValidators.numeric({
+                    //     acceptValue: NumericValueType.PositiveNumber,
+                    //     allowDecimal: true,
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    // }),
                 ]);
         }
 
@@ -1675,27 +1661,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .patchValue(item.creditLimit.replace('.', ','));
 
         if (this.formCreditLimits.at(idx).get('creditLimit').invalid) {
-            this.formCreditLimits
-                .at(idx)
-                .get('creditLimit')
-                .markAsTouched();
+            this.formCreditLimits.at(idx).get('creditLimit').markAsTouched();
         }
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('creditLimit').updateValueAndValidity();
 
         // Handle termOfPayment Field
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .reset();
+        this.formCreditLimits.at(idx).get('termOfPayment').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .enable();
+        this.formCreditLimits.at(idx).get('termOfPayment').enable();
 
         if (item.creditLimitGroupId) {
             this.formCreditLimits
@@ -1703,8 +1677,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 .get('termOfPayment')
                 .setValidators([
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
-                    })
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
                 ]);
         } else {
             this.formCreditLimits
@@ -1712,46 +1686,28 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 .get('termOfPayment')
                 .setValidators([
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
-                    })
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
                 ]);
         }
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .patchValue(item.termOfPayment);
+        this.formCreditLimits.at(idx).get('termOfPayment').patchValue(item.termOfPayment);
 
         if (this.formCreditLimits.at(idx).get('termOfPayment').invalid) {
-            this.formCreditLimits
-                .at(idx)
-                .get('termOfPayment')
-                .markAsTouched();
+            this.formCreditLimits.at(idx).get('termOfPayment').markAsTouched();
         }
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('termOfPayment').updateValueAndValidity();
 
         // Handle creditLimitGroup Field
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .enable();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').enable();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .patchValue(item.creditLimitGroupId);
+        this.formCreditLimits.at(idx).get('creditLimitGroup').patchValue(item.creditLimitGroupId);
     }
 
     private handleNotAllowCreditPatch(idx: number): void {
@@ -1762,55 +1718,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tempCreditLimitAmount[idx] = false;
         this.tempTermOfPayment[idx] = false;
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimit').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .disable();
+        this.formCreditLimits.at(idx).get('creditLimit').disable();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .clearValidators();
+        this.formCreditLimits.at(idx).get('creditLimit').clearValidators();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('creditLimit').updateValueAndValidity();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .reset();
+        this.formCreditLimits.at(idx).get('termOfPayment').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .disable();
+        this.formCreditLimits.at(idx).get('termOfPayment').disable();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .clearValidators();
+        this.formCreditLimits.at(idx).get('termOfPayment').clearValidators();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('termOfPayment')
-            .updateValueAndValidity();
+        this.formCreditLimits.at(idx).get('termOfPayment').updateValueAndValidity();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .reset();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimitGroup')
-            .disable();
+        this.formCreditLimits.at(idx).get('creditLimitGroup').disable();
     }
 
     private _filterUrban(source: Array<Urban>, value: string): Array<Urban> {
@@ -1820,11 +1746,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const filterValue = String(value).toLowerCase();
 
-        return source.filter(r =>
-            String(r.urban)
-                .toLowerCase()
-                .includes(filterValue)
-        );
+        return source.filter((r) => String(r.urban).toLowerCase().includes(filterValue));
     }
 
     private initForm(): void {
@@ -1857,15 +1779,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // }),
                             RxwebValidators.pattern({
                                 expression: {
-                                    mobilePhone: /^08[0-9]{8,12}$/
+                                    mobilePhone: /^08[0-9]{8,12}$/,
                                 },
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
                                     'mobile_phone_pattern',
                                     '08'
-                                )
-                            })
-                        ]
+                                ),
+                            }),
+                        ],
                     ],
                     photos: [
                         '',
@@ -1876,9 +1798,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     'default',
                                     'file_size_lte',
                                     { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                )
-                            })
-                        ]
+                                ),
+                            }),
+                        ],
                         // [
                         //     RxwebValidators.required({
                         //         message: this._$errorMessage.getErrorMessageNonState(
@@ -1902,17 +1824,17 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
                                     'pattern'
-                                )
+                                ),
                             }),
                             RxwebValidators.maxLength({
                                 value: 15,
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
                                     'pattern'
-                                )
-                            })
-                        ]
-                    ]
+                                ),
+                            }),
+                        ],
+                    ],
                 }),
                 storeInfo: this.formBuilder.group({
                     storeId: this.formBuilder.group({
@@ -1923,9 +1845,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         storeName: [
                             '',
@@ -1934,10 +1856,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
-                        ]
+                                    ),
+                                }),
+                            ],
+                        ],
                     }),
                     address: this.formBuilder.group({
                         // province: [
@@ -1969,9 +1891,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         urban: [
                             '',
@@ -1980,9 +1902,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         // district: [
                         //     { value: '', disabled: true },
@@ -2013,29 +1935,29 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.digit({
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.minLength({
                                     value: 5,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.maxLength({
                                     value: 5,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         notes: [
                             '',
@@ -2044,9 +1966,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         geolocation: this.formBuilder.group({
                             lng: [
@@ -2056,9 +1978,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         message: this._$errorMessage.getErrorMessageNonState(
                                             'default',
                                             'pattern'
-                                        )
-                                    })
-                                ]
+                                        ),
+                                    }),
+                                ],
                             ],
                             lat: [
                                 '',
@@ -2067,11 +1989,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         message: this._$errorMessage.getErrorMessageNonState(
                                             'default',
                                             'pattern'
-                                        )
-                                    })
-                                ]
-                            ]
-                        })
+                                        ),
+                                    }),
+                                ],
+                            ],
+                        }),
                     }),
                     legalInfo: this.formBuilder.group({
                         name: [
@@ -2081,16 +2003,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
+                                    ),
                                 }),
-                                RxwebValidators.alpha({
-                                    allowWhiteSpace: true,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    )
-                                })
-                            ]
+                                // RxwebValidators.alpha({
+                                //     allowWhiteSpace: true,
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'pattern'
+                                //     ),
+                                // }),
+                            ],
                         ],
                         identityId: [
                             '',
@@ -2105,23 +2027,23 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.minLength({
                                     value: 16,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.maxLength({
                                     value: 16,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         identityPhoto: [
                             '',
@@ -2138,9 +2060,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         'default',
                                         'file_size_lte',
                                         { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         identityPhotoSelfie: [
                             '',
@@ -2151,9 +2073,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         'default',
                                         'file_size_lte',
                                         { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         npwpId: [
                             '',
@@ -2169,25 +2091,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.maxLength({
                                     value: 15,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
-                                })
-                            ]
-                        ]
+                                    ),
+                                }),
+                            ],
+                        ],
                     }),
                     physicalStoreInfo: this.formBuilder.group({
                         numberOfEmployee: [''],
-                        vehicleAccessibility: ['']
+                        vehicleAccessibility: [''],
                     }),
                     storeClassification: this.formBuilder.group({
                         storeType: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2198,7 +2120,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // ]
                         ],
                         storeGroup: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2209,7 +2131,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // ]
                         ],
                         storeChannel: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2220,7 +2142,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // ]
                         ],
                         storeCluster: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2244,15 +2166,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         // hierarchy: ['']
                     }),
                     payment: this.formBuilder.group({
-                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
-                    })
-                })
+                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()]),
+                    }),
+                }),
             });
 
             this.store
                 .select(DropdownSelectors.getInvoiceGroupDropdownState)
                 .pipe(takeUntil(this._unSubs$))
-                .subscribe(data => {
+                .subscribe((data) => {
                     if (data && data.length > 0) {
                         for (const [idx, row] of data.entries()) {
                             if (row.id) {
@@ -2266,28 +2188,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                             creditLimitGroup: [
                                                 {
                                                     value: '',
-                                                    disabled: true
-                                                }
+                                                    disabled: true,
+                                                },
                                             ],
                                             creditLimit: [
                                                 {
                                                     value: '',
-                                                    disabled: true
-                                                }
+                                                    disabled: true,
+                                                },
                                             ],
                                             termOfPayment: [
                                                 {
                                                     value: '',
-                                                    disabled: true
-                                                }
-                                            ]
+                                                    disabled: true,
+                                                },
+                                            ],
                                         })
                                     );
                                 } else {
-                                    this.formCreditLimits
-                                        .at(idx)
-                                        .get('allowCreditLimit')
-                                        .reset();
+                                    this.formCreditLimits.at(idx).get('allowCreditLimit').reset();
 
                                     this.formCreditLimits
                                         .at(idx)
@@ -2299,20 +2218,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         .get('invoiceGroup')
                                         .patchValue(row.id);
 
-                                    this.formCreditLimits
-                                        .at(idx)
-                                        .get('creditLimit')
-                                        .reset();
+                                    this.formCreditLimits.at(idx).get('creditLimit').reset();
 
-                                    this.formCreditLimits
-                                        .at(idx)
-                                        .get('termOfPayment')
-                                        .reset();
+                                    this.formCreditLimits.at(idx).get('termOfPayment').reset();
 
-                                    this.formCreditLimits
-                                        .at(idx)
-                                        .get('creditLimitGroup')
-                                        .reset();
+                                    this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
                                 }
                             }
                         }
@@ -2343,15 +2253,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // }),
                             RxwebValidators.pattern({
                                 expression: {
-                                    mobilePhone: /^08[0-9]{8,12}$/
+                                    mobilePhone: /^08[0-9]{8,12}$/,
                                 },
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
                                     'mobile_phone_pattern',
                                     '08'
-                                )
-                            })
-                        ]
+                                ),
+                            }),
+                        ],
                     ],
                     photos: [
                         '',
@@ -2362,15 +2272,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     'default',
                                     'file_size_lte',
                                     { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                )
-                            })
+                                ),
+                            }),
                             // RxwebValidators.required({
                             //     message: this._$errorMessage.getErrorMessageNonState(
                             //         'default',
                             //         'required'
                             //     )
                             // })
-                        ]
+                        ],
                     ],
                     npwpId: [
                         '',
@@ -2386,17 +2296,17 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
                                     'pattern'
-                                )
+                                ),
                             }),
                             RxwebValidators.maxLength({
                                 value: 15,
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
                                     'pattern'
-                                )
-                            })
-                        ]
-                    ]
+                                ),
+                            }),
+                        ],
+                    ],
                 }),
                 storeInfo: this.formBuilder.group({
                     storeId: this.formBuilder.group({
@@ -2407,9 +2317,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         storeName: [
                             '',
@@ -2418,10 +2328,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
-                        ]
+                                    ),
+                                }),
+                            ],
+                        ],
                     }),
                     address: this.formBuilder.group({
                         // province: [
@@ -2453,9 +2363,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         urban: [
                             '',
@@ -2464,9 +2374,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         postcode: [
                             { value: '', disabled: true },
@@ -2475,29 +2385,29 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.digit({
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.minLength({
                                     value: 5,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.maxLength({
                                     value: 5,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         notes: [
                             '',
@@ -2506,9 +2416,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         geolocation: this.formBuilder.group({
                             lng: [
@@ -2518,9 +2428,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         message: this._$errorMessage.getErrorMessageNonState(
                                             'default',
                                             'pattern'
-                                        )
-                                    })
-                                ]
+                                        ),
+                                    }),
+                                ],
                             ],
                             lat: [
                                 '',
@@ -2529,11 +2439,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         message: this._$errorMessage.getErrorMessageNonState(
                                             'default',
                                             'pattern'
-                                        )
-                                    })
-                                ]
-                            ]
-                        })
+                                        ),
+                                    }),
+                                ],
+                            ],
+                        }),
                     }),
                     legalInfo: this.formBuilder.group({
                         name: [
@@ -2543,16 +2453,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'required'
-                                    )
+                                    ),
                                 }),
-                                RxwebValidators.alpha({
-                                    allowWhiteSpace: true,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    )
-                                })
-                            ]
+                                // RxwebValidators.alpha({
+                                //     allowWhiteSpace: true,
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'pattern'
+                                //     ),
+                                // }),
+                            ],
                         ],
                         identityId: [
                             '',
@@ -2567,23 +2477,23 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.minLength({
                                     value: 16,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.maxLength({
                                     value: 16,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         identityPhoto: [
                             '',
@@ -2600,9 +2510,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         'default',
                                         'file_size_lte',
                                         { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         identityPhotoSelfie: [
                             '',
@@ -2613,9 +2523,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         'default',
                                         'file_size_lte',
                                         { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    )
-                                })
-                            ]
+                                    ),
+                                }),
+                            ],
                         ],
                         npwpId: [
                             '',
@@ -2631,25 +2541,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
+                                    ),
                                 }),
                                 RxwebValidators.maxLength({
                                     value: 15,
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
                                         'pattern'
-                                    )
-                                })
-                            ]
-                        ]
+                                    ),
+                                }),
+                            ],
+                        ],
                     }),
                     physicalStoreInfo: this.formBuilder.group({
                         numberOfEmployee: [''],
-                        vehicleAccessibility: ['']
+                        vehicleAccessibility: [''],
                     }),
                     storeClassification: this.formBuilder.group({
                         storeType: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2660,7 +2570,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // ]
                         ],
                         storeGroup: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2671,7 +2581,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // ]
                         ],
                         storeChannel: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2682,7 +2592,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             // ]
                         ],
                         storeCluster: [
-                            ''
+                            '',
                             // [
                             //     RxwebValidators.required({
                             //         message: this._$errorMessage.getErrorMessageNonState(
@@ -2706,9 +2616,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         // hierarchy: ['']
                     }),
                     payment: this.formBuilder.group({
-                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
-                    })
-                })
+                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()]),
+                    }),
+                }),
             });
 
             /* withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
@@ -2733,7 +2643,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             this.store
                 .select(StoreSelectors.getStoreEdit)
                 .pipe(takeUntil(this._unSubs$))
-                .subscribe(data => {
+                .subscribe((data) => {
                     if (data) {
                         if (data.phoneNo) {
                             this.form.get('profileInfo.phoneNumber').setValue(data.phoneNo);
@@ -2772,8 +2682,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                         'default',
                                         'file_size_lte',
                                         { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    )
-                                })
+                                    ),
+                                }),
                             ]);
                             this.form.get('profileInfo.photos').updateValueAndValidity();
                         }
@@ -2844,10 +2754,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                                 size: numeral(5 * 1048576).format(
                                                     '0.0 b',
                                                     Math.floor
-                                                )
+                                                ),
                                             }
-                                        )
-                                    })
+                                        ),
+                                    }),
                                 ]);
 
                                 this.form
@@ -2906,10 +2816,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                                     size: numeral(5 * 1048576).format(
                                                         '0.0 b',
                                                         Math.floor
-                                                    )
+                                                    ),
                                                 }
-                                            )
-                                        })
+                                            ),
+                                        }),
                                     ]);
                                 this.form
                                     .get('storeInfo.legalInfo.identityPhotoSelfie')
@@ -3085,17 +2995,17 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                                     creditLimitGroup: row.creditLimitGroupId,
                                                     creditLimit: [
                                                         row.creditLimit.replace('.', ','),
-                                                        [
-                                                            RxwebValidators.numeric({
-                                                                acceptValue:
-                                                                    NumericValueType.PositiveNumber,
-                                                                allowDecimal: true,
-                                                                message: this._$errorMessage.getErrorMessageNonState(
-                                                                    'default',
-                                                                    'pattern'
-                                                                )
-                                                            })
-                                                        ]
+                                                        // [
+                                                        //     RxwebValidators.numeric({
+                                                        //         acceptValue:
+                                                        //             NumericValueType.PositiveNumber,
+                                                        //         allowDecimal: true,
+                                                        //         message: this._$errorMessage.getErrorMessageNonState(
+                                                        //             'default',
+                                                        //             'pattern'
+                                                        //         )
+                                                        //     })
+                                                        // ]
                                                     ],
                                                     termOfPayment: [
                                                         row.termOfPayment,
@@ -3104,10 +3014,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                                                 message: this._$errorMessage.getErrorMessageNonState(
                                                                     'default',
                                                                     'numeric'
-                                                                )
-                                                            })
-                                                        ]
-                                                    ]
+                                                                ),
+                                                            }),
+                                                        ],
+                                                    ],
                                                 })
                                             );
 
@@ -3121,21 +3031,21 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                                     creditLimitGroup: [
                                                         {
                                                             value: '',
-                                                            disabled: true
-                                                        }
+                                                            disabled: true,
+                                                        },
                                                     ],
                                                     creditLimit: [
                                                         {
                                                             value: '',
-                                                            disabled: true
-                                                        }
+                                                            disabled: true,
+                                                        },
                                                     ],
                                                     termOfPayment: [
                                                         {
                                                             value: '',
-                                                            disabled: true
-                                                        }
-                                                    ]
+                                                            disabled: true,
+                                                        },
+                                                    ],
                                                 })
                                             );
 
@@ -3219,15 +3129,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         const newCreditLimit =
                             body.storeInfo.payment.creditLimit &&
                             body.storeInfo.payment.creditLimit.length > 0
-                                ? body.storeInfo.payment.creditLimit.map(row => {
-                                    return {
-                                        allowCreditLimit: row.allowCreditLimit,
-                                        invoiceGroupId: row.invoiceGroup,
-                                        creditLimitGroupId: row.creditLimitGroup,
-                                        creditLimit: row.creditLimit,
-                                        termOfPayment: row.termOfPayment
-                                    };
-                                })
+                                ? body.storeInfo.payment.creditLimit.map((row) => {
+                                      return {
+                                          allowCreditLimit: row.allowCreditLimit,
+                                          invoiceGroupId: row.invoiceGroup,
+                                          creditLimitGroupId: row.creditLimitGroup,
+                                          creditLimit: row.creditLimit,
+                                          termOfPayment: row.termOfPayment,
+                                      };
+                                  })
                                 : [];
 
                         const urban = body.storeInfo.address.urban as Urban;
@@ -3244,16 +3154,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
                             status: 'active',
                             type: {
-                                typeId: body.storeInfo.storeClassification.storeType
+                                typeId: body.storeInfo.storeClassification.storeType,
                             },
                             group: {
-                                groupId: body.storeInfo.storeClassification.storeGroup
+                                groupId: body.storeInfo.storeClassification.storeGroup,
                             },
                             channel: {
-                                clusterId: body.storeInfo.storeClassification.storeChannel
+                                clusterId: body.storeInfo.storeClassification.storeChannel,
                             },
                             cluster: {
-                                clusterId: body.storeInfo.storeClassification.storeCluster
+                                clusterId: body.storeInfo.storeClassification.storeCluster,
                             },
                             // storeTypeId: body.storeInfo.storeClassification.storeType,
                             // storeGroupId: body.storeInfo.storeClassification.storeGroup,
@@ -3269,15 +3179,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
                                 phone: body.profileInfo.phoneNumber,
                                 status: 'active',
-                                roles: [1]
+                                roles: [1],
                             },
                             // hierarchy: {
                             //     hierarchyId: body.storeInfo.storeClassification.hierarchy
                             // },
                             supplier: {
-                                supplierId: supplierId
+                                supplierId: supplierId,
                             },
-                            creditLimit: newCreditLimit
+                            creditLimit: newCreditLimit,
                         };
 
                         if (this.storeIdType.value === 'auto') {
@@ -3398,16 +3308,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
             const newCreditLimit =
                 body.storeInfo.payment.creditLimit && body.storeInfo.payment.creditLimit.length > 0
-                    ? body.storeInfo.payment.creditLimit.map(row => {
-                        return {
-                            allowCreditLimit: row.allowCreditLimit,
-                            id: row.creditLimitStoreId,
-                            invoiceGroupId: row.invoiceGroup,
-                            creditLimitGroupId: row.creditLimitGroup,
-                            creditLimit: row.creditLimit,
-                            termOfPayment: row.termOfPayment
-                        };
-                    })
+                    ? body.storeInfo.payment.creditLimit.map((row) => {
+                          return {
+                              allowCreditLimit: row.allowCreditLimit,
+                              id: row.creditLimitStoreId,
+                              invoiceGroupId: row.invoiceGroup,
+                              creditLimitGroupId: row.creditLimitGroup,
+                              creditLimit: row.creditLimit,
+                              termOfPayment: row.termOfPayment,
+                          };
+                      })
                     : [];
 
             const urban = body.storeInfo.address.urban as Urban;
@@ -3425,16 +3335,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 // storeTypeId: body.storeInfo.storeClassification.storeType,
                 // storeGroupId: body.storeInfo.storeClassification.storeGroup,
                 type: {
-                    typeId: body.storeInfo.storeClassification.storeType
+                    typeId: body.storeInfo.storeClassification.storeType,
                 },
                 group: {
-                    groupId: body.storeInfo.storeClassification.storeGroup
+                    groupId: body.storeInfo.storeClassification.storeGroup,
                 },
                 channel: {
-                    clusterId: body.storeInfo.storeClassification.storeChannel
+                    clusterId: body.storeInfo.storeClassification.storeChannel,
                 },
                 cluster: {
-                    clusterId: body.storeInfo.storeClassification.storeCluster
+                    clusterId: body.storeInfo.storeClassification.storeCluster,
                 },
                 // storeSegmentId: body.storeInfo.storeClassification.storeSegment,
                 vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
@@ -3446,12 +3356,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     taxNo: body.storeInfo.legalInfo.npwpId || '',
                     idImage: body.storeInfo.legalInfo.identityPhoto,
                     selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
-                    phone: body.profileInfo.phoneNumber
+                    phone: body.profileInfo.phoneNumber,
                 },
                 // hierarchy: {
                 //     hierarchyId: body.storeInfo.storeClassification.hierarchy
                 // },
-                creditLimit: newCreditLimit
+                creditLimit: newCreditLimit,
             };
 
             if (!body.storeInfo.address.geolocation.lng) {
