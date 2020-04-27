@@ -1034,6 +1034,13 @@
                                                     >
                                                         <span class="sinbad-red-fg">*</span>
                                                         Bonus SKU
+                                                        {{
+                                                            form.get([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitCatalogueId'
+                                                            ]).value | json
+                                                        }}
                                                     </label>
 
                                                     <select-catalogues
@@ -1396,12 +1403,17 @@
                                         <p class="title">Sample Case</p>
 
                                         <p>
-                                            Toko Maju Jaya ordered 5 pcs of SKU A. There are 2
-                                            condition and benefits available: Buy 5 SKU A, get 1 SKU
-                                            A for free Buy 10 SKU A, get 3 SKU A for free If you
-                                            choose non-cumulative: Toko Maju Jaya will get 3 SKU A
-                                            bonus for free. If you choose cumulative: Toko Maju Jaya
-                                            will get 4 SKU A bonus for free.
+                                            Toko Maju Jaya ordered 5 pcs of SKU A.<br />
+                                            There are 2 condition and benefits available:
+                                            <br /><br />
+                                            Buy 5 SKU A, get 1 SKU A for free<br />
+                                            Buy 10 SKU A, get 3 SKU A for free
+                                            <br /><br />
+                                            If you choose non-cumulative:<br />
+                                            Toko Maju Jaya will get 3 SKU A bonus for free.
+                                            <br /><br />
+                                            If you choose cumulative:<br />
+                                            Toko Maju Jaya will get 4 SKU A bonus for free.
                                         </p>
                                     </card-instruction>
                                     <!-- ./ CARD-INSTRUCTION -->
