@@ -316,7 +316,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
                         )
                     })
                 ]],
-                chosenSku: ['', [
+                chosenSku: [{ value: '', disabled: false }, [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState(
                             'default',
@@ -324,7 +324,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
                         )
                     })
                 ]],
-                chosenBrand: ['', [
+                chosenBrand: [{ value: '', disabled: true }, [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState(
                             'default',
@@ -332,7 +332,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
                         )
                     })
                 ]],
-                chosenFaktur: ['', [
+                chosenFaktur: [{ value: '', disabled: true }, [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState(
                             'default',
