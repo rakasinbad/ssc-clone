@@ -90,8 +90,8 @@
                 class="quantity-indicator text-truncate"
                 [matTooltip]="row?.freezeStatus ? 'Freeze Balance' : 'Unfreeze Balance'"
                 [ngClass]="{
-                    'indicator-error': !row?.freezeStatus,
-                    'indicator-success': row?.freezeStatus
+                    'indicator-success': !row?.freezeStatus,
+                    'indicator-error': row?.freezeStatus
                 }"
             >
             </span>

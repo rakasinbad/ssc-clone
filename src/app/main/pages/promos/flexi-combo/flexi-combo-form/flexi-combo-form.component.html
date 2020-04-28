@@ -1034,13 +1034,6 @@
                                                     >
                                                         <span class="sinbad-red-fg">*</span>
                                                         Bonus SKU
-                                                        {{
-                                                            form.get([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitCatalogueId'
-                                                            ]).value | json
-                                                        }}
                                                     </label>
 
                                                     <select-catalogues
@@ -1048,7 +1041,7 @@
                                                         [disabled]="
                                                             form.get([
                                                                 'conditions',
-                                                                conditionIdx,
+                                                                0,
                                                                 'benefitCatalogueId'
                                                             ]).disabled
                                                         "
@@ -1426,9 +1419,8 @@
                     <div>
                         <ng-container
                             *ngIf="
-                                (form.get('conditions').value
-                                    | canAddTier: pageType:conditionForm.controls) &&
-                                pageType === 'new'
+                                form.get('conditions').value
+                                    | canAddTier: pageType:conditionForm.controls
                             "
                         >
                             <button
@@ -1437,7 +1429,11 @@
                                 color="accent"
                                 (click)="addCondition()"
                             >
-                                Add Tier
+                                Add Tier1
+                                {{
+                                    form.get('conditions').value
+                                        | canAddTier: pageType:conditionForm.controls
+                                }}
                             </button>
                         </ng-container>
 
@@ -1446,11 +1442,15 @@
                                 !(
                                     form.get('conditions').value
                                     | canAddTier: pageType:conditionForm.controls
-                                ) || pageType === 'edit'
+                                )
                             "
                         >
                             <button type="button" mat-button color="accent" disabled>
-                                Add Tier
+                                Add Tier2
+                                {{
+                                    form.get('conditions').value
+                                        | canAddTier: pageType:conditionForm.controls
+                                }}
                             </button>
                         </ng-container>
 
@@ -1613,7 +1613,7 @@
                                     [initialSelection]="form.get('chosenWarehouse').value || []"
                                     [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
-                                    [required]="false"
+                                    [required]="true"
                                     (selected)="onWarehouseSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1646,7 +1646,7 @@
                                     placeholder="Choose Store Type"
                                     title="Select Store Type"
                                     segmentationType="type"
-                                    [required]="false"
+                                    [required]="true"
                                     (selected)="onStoreTypeSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1679,7 +1679,7 @@
                                     placeholder="Choose Store Group"
                                     title="Select Store Group"
                                     segmentationType="group"
-                                    [required]="false"
+                                    [required]="true"
                                     (selected)="onStoreGroupSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1712,7 +1712,7 @@
                                     placeholder="Choose Store Channel"
                                     title="Select Store Channel"
                                     segmentationType="channel"
-                                    [required]="false"
+                                    [required]="true"
                                     (selected)="onStoreChannelSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1745,7 +1745,7 @@
                                     placeholder="Choose Store Cluster"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
-                                    [required]="false"
+                                    [required]="true"
                                     (selected)="onStoreClusterSelected($event)"
                                     fxFlex="50"
                                 >

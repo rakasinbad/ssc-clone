@@ -211,20 +211,20 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (prevIdx >= 0) {
                 // Disable prev Tier
-                this.conditionsCtrl[prevIdx].disable();
+                this.conditionsCtrl[prevIdx].disable({ onlySelf: true });
 
                 const prevCondition = conditions[prevIdx] as ConditionDto;
 
                 this.conditions.push(this._createConditions(new ConditionDto(prevCondition)));
 
                 // Disable conditionBase control (New Tier)
-                this.conditionsCtrl[nextIdx].get('conditionBase').disable();
+                this.conditionsCtrl[nextIdx].get('conditionBase').disable({ onlySelf: true });
 
                 // Disable benefitType control (New Tier)
-                this.conditionsCtrl[nextIdx].get('benefitType').disable();
+                this.conditionsCtrl[nextIdx].get('benefitType').disable({ onlySelf: true });
 
                 // Disable benefitCatalogueId control (New Tier)
-                // this.conditionsCtrl[nextIdx].get('benefitCatalogueId').disable();
+                this.conditionsCtrl[nextIdx].get('benefitCatalogueId').disable({ onlySelf: true });
 
                 // Handle validation FormControl (New Tier)
                 this._newTierValidation(nextIdx);
@@ -686,11 +686,72 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                 }),
             ]);
+
+            this.form.get('chosenWarehouse').clearValidators();
+            this.form.get('chosenStoreType').clearValidators();
+            this.form.get('chosenStoreGroup').clearValidators();
+            this.form.get('chosenStoreChannel').clearValidators();
+            this.form.get('chosenCluster').clearValidators();
         } else if (ev.value === SegmentationBase.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
+
+            this.form.get('chosenWarehouse').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+
+            this.form.get('chosenStoreType').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+
+            this.form.get('chosenStoreGroup').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+
+            this.form.get('chosenStoreChannel').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+
+            this.form.get('chosenCluster').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
         }
 
-        this.form.get('chosenStore').updateValueAndValidity({ onlySelf: true });
+        this.form.get('chosenStore').updateValueAndValidity();
+        this.form.get('chosenWarehouse').updateValueAndValidity();
+        this.form.get('chosenStoreType').updateValueAndValidity();
+        this.form.get('chosenStoreGroup').updateValueAndValidity();
+        this.form.get('chosenStoreChannel').updateValueAndValidity();
+        this.form.get('chosenCluster').updateValueAndValidity();
     }
 
     /**
@@ -1226,7 +1287,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 }),
             ]);
 
-            // benefitBonusSkuCtrl.setValue(prevBenefitBonusSkuCtrl.value);
+            benefitBonusSkuCtrl.setValue(prevBenefitBonusSkuCtrl.value);
         } else {
             benefitBonusSkuCtrl.clearValidators();
         }
@@ -1796,7 +1857,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     private _setFormStatus(status: string): void {
-        console.log(`Test Form ${status}`, this.form, this.form.getRawValue());
+        // console.log(`Test Form ${status}`, this.form, this.form.getRawValue());
 
         if (!status) {
             return;
@@ -2306,7 +2367,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     );
 
                     chosenStoreCtrl.setValue(newStores);
+                } else {
+                    chosenStoreCtrl.setValue([]);
                 }
+
+                chosenStoreCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ]);
+
+                chosenStoreCtrl.updateValueAndValidity();
             }
 
             // Handle Segmentation Base Segmentation
@@ -2324,7 +2399,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     );
 
                     chosenWarehouseCtrl.setValue(newWarehouses);
+                } else {
+                    chosenWarehouseCtrl.setValue([]);
                 }
+
+                chosenWarehouseCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ]);
+
+                chosenWarehouseCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Type
                 if (row.promoTypes && row.promoTypes.length > 0) {
@@ -2339,7 +2428,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     );
 
                     chosenStoreTypeCtrl.setValue(newStoreTypes);
+                } else {
+                    chosenStoreTypeCtrl.setValue([]);
                 }
+
+                chosenStoreTypeCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ]);
+
+                chosenStoreTypeCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Group
                 if (row.promoGroups && row.promoGroups.length > 0) {
@@ -2354,7 +2457,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     );
 
                     chosenStoreGroupCtrl.setValue(newStoreGroups);
+                } else {
+                    chosenStoreGroupCtrl.setValue([]);
                 }
+
+                chosenStoreGroupCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ]);
+
+                chosenStoreGroupCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Channel
                 if (row.promoChannels && row.promoChannels.length > 0) {
@@ -2369,7 +2486,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     );
 
                     chosenStoreChannelCtrl.setValue(newStoreChannels);
+                } else {
+                    chosenStoreChannelCtrl.setValue([]);
                 }
+
+                chosenStoreChannelCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ]);
+
+                chosenStoreChannelCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Cluster
                 if (row.promoClusters && row.promoClusters.length > 0) {
@@ -2384,7 +2515,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     );
 
                     chosenStoreClusterCtrl.setValue(newStoreClusters);
+                } else {
+                    chosenStoreClusterCtrl.setValue([]);
                 }
+
+                chosenStoreClusterCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ]);
+
+                chosenStoreClusterCtrl.updateValueAndValidity();
             }
         }
 
@@ -2444,8 +2589,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             // }
 
             if (idx < limitIdx) {
-                this.conditionsCtrl[idx].disable();
+                this.conditionsCtrl[idx].disable({ onlySelf: true });
             }
+
+            // Disable conditionBase control (New Tier)
+            this.conditionsCtrl[idx].get('conditionBase').disable({ onlySelf: true });
+
+            // Disable benefitType control (New Tier)
+            this.conditionsCtrl[idx].get('benefitType').disable({ onlySelf: true });
+
+            // Disable benefitCatalogueId control (New Tier)
+            this.conditionsCtrl[idx].get('benefitCatalogueId').disable({ onlySelf: true });
 
             this.conditions.at(idx).get('id').setValue(item.id);
 
@@ -2595,6 +2749,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           benefitRebate,
                           benefitDiscount,
                           benefitMaxRebate,
+                          id,
                       } = condition;
 
                       let conditionObject = {};
@@ -2615,6 +2770,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           benefitType,
                           multiplication,
                       };
+
+                      if (this.pageType === 'edit') {
+                          sameObj['id'] = id;
+                      }
 
                       if (benefitType === BenefitType.QTY) {
                           return {
@@ -2686,10 +2845,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataTarget.clusterId = newChosenStoreCluster;
             }
 
-            console.log('[NEW] OnSubmit 1', body);
-            console.log('[NEW] OnSubmit 2', payload);
+            // console.log('[NEW] OnSubmit 1', body);
+            // console.log('[NEW] OnSubmit 2', payload);
 
-            // this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
+            this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 
@@ -2744,8 +2903,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataTarget = null;
             }
 
-            console.log('[EDIT] OnSubmit 1', body);
-            console.log('[EDIT] OnSubmit 2', payload);
+            // console.log('[EDIT] OnSubmit 1', body);
+            // console.log('[EDIT] OnSubmit 2', payload);
 
             // const payload = {
             //     urbanId: urban.id,
@@ -2780,11 +2939,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             // }
 
             if (id && Object.keys(payload).length > 0) {
-                // this.store.dispatch(
-                //     FlexiComboActions.updateFlexiComboRequest({
-                //         payload: { id, body: payload },
-                //     })
-                // );
+                this.store.dispatch(
+                    FlexiComboActions.updateFlexiComboRequest({
+                        payload: { id, body: payload },
+                    })
+                );
             }
         }
     }
