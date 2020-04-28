@@ -14,6 +14,6 @@ export const environment = {
     host: 'https://kong.sinbad.web.id',
     hiddenMenu: [
         'dashboard',
-        'warehouse', // Warehouse
+        'period-target-promo', // Period Target Promo
     ],
 };
