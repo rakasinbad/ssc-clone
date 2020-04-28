@@ -1,6 +1,7 @@
-<div [fxHide]="isLoading$ | async">
+<div>
     <mat-table
         class="period-target-promo-list-table"
+        [class.h-256]="(totalDataSource$ | async) > 0"
         #table
         [dataSource]="dataSource$ | async"
         matSort
@@ -183,7 +184,7 @@
         ></mat-row> -->
     </mat-table>
     
-    <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    <div class="h-280 no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
         No records found
     </div>
     
