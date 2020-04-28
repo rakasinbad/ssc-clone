@@ -227,6 +227,7 @@
         <mat-table
             #table
             class="catalogue-price-table grey-300-border"
+            [class.h-360]="(totalCataloguePrice$ | async) > 0"
             [dataSource]="(cataloguePrices$ | async)"
             [@animateStagger]="{ value: '50' }"
             fusePerfectScrollbar
