@@ -165,12 +165,13 @@ export class CatalogueAmountSettingsComponent implements OnInit, AfterViewInit, 
 
             /** Penetapan nilai pada form. */
             this.form.patchValue({
-                productShipment: {
-                    catalogueWeight: catalogue.catalogueWeight,
-                    packagedWeight: catalogue.packagedWeight,
-                    catalogueDimension: catalogue.catalogueDimension,
-                    packagedDimension: catalogue.packagedDimension
-                },
+                productCount: {
+                    qtyPerMasterBox: catalogue.packagedQty,
+                    minQtyOption: catalogue.minQtyType,
+                    minQtyValue: catalogue.minQty,
+                    additionalQtyOption: catalogue.multipleQtyType,
+                    additionalQtyValue: catalogue.multipleQty
+                }
             }, { onlySelf: false });
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
