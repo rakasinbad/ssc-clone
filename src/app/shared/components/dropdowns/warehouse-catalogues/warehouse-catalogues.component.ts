@@ -466,11 +466,13 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['required'].isFirstChange()) {
-            this.entityFormView.clearValidators();
+        if (changes['required']) {
+            if (!changes['required'].isFirstChange()) {
+                this.entityFormView.clearValidators();
 
-            if (changes['required'].currentValue === true) {
-                this.entityFormView.setValidators(RxwebValidators.required());
+                if (changes['required'].currentValue === true) {
+                    this.entityFormView.setValidators(RxwebValidators.required());
+                }
             }
         }
     }
