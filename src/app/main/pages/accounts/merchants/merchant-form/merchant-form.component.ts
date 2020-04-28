@@ -926,28 +926,28 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         return !value ? false : value.length <= minLength;
     }
 
-    onBlur(field: string): void {
-        switch (field) {
-            case 'district':
-                {
-                    const value = this.form.get('storeInfo.address.district').value;
+    // onBlur(field: string): void {
+    //     switch (field) {
+    //         case 'district':
+    //             {
+    //                 const value = this.form.get('storeInfo.address.district').value;
 
-                    // if (
-                    //     !this._selectedDistrict ||
-                    //     this._selectedDistrict !== JSON.stringify(value)
-                    // ) {
-                    //     this.form.get('storeInfo.address.district').setValue('');
-                    //     this._selectedDistrict = '';
-                    // }
+    //                 // if (
+    //                 //     !this._selectedDistrict ||
+    //                 //     this._selectedDistrict !== JSON.stringify(value)
+    //                 // ) {
+    //                 //     this.form.get('storeInfo.address.district').setValue('');
+    //                 //     this._selectedDistrict = '';
+    //                 // }
 
-                    console.log('BLUR', value);
-                }
-                break;
+    //                 console.log('BLUR', value);
+    //             }
+    //             break;
 
-            default:
-                return;
-        }
-    }
+    //         default:
+    //             return;
+    //     }
+    // }
 
     onChangeAllowCredit(ev: MatSlideToggleChange, idx: number): void {
         if (typeof ev.checked !== 'boolean' || typeof idx !== 'number') {
@@ -1006,7 +1006,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                             fileReader.readAsDataURL(file);
 
-                            setTimeout(() => console.log(this.form, this.tmpPhoto), 200);
+                            // setTimeout(() => console.log(this.form, this.tmpPhoto), 200);
                         }
                         break;
 
@@ -1270,7 +1270,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 return;
         }
 
-        console.log('AUTO ON SELECT', ev);
+        // console.log('AUTO ON SELECT', ev);
     }
 
     onSelectCreditLimitGroup(ev: MatSelectChange, idx: number): void {
@@ -1410,31 +1410,31 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     } */
 
-    onScroll(ev: any, field: string): void {
-        console.log('ON SCROLL', ev);
+    // onScroll(ev: any, field: string): void {
+    //     console.log('ON SCROLL', ev);
 
-        switch (field) {
-            case 'district':
-                const end = this.cdkDistrict.getRenderedRange().end;
-                const total = this.cdkDistrict.getDataLength();
+    //     switch (field) {
+    //         case 'district':
+    //             const end = this.cdkDistrict.getRenderedRange().end;
+    //             const total = this.cdkDistrict.getDataLength();
 
-                /* if (total > 0) {
-                    const data: IQueryParams = {
-                        limit: 50,
-                        skip: this.cdkDistrict.getDataLength()
-                    };
+    //             /* if (total > 0) {
+    //                 const data: IQueryParams = {
+    //                     limit: 50,
+    //                     skip: this.cdkDistrict.getDataLength()
+    //                 };
 
-                    data['paginate'] = true;
+    //                 data['paginate'] = true;
 
-                    this.store.dispatch(
-                        DropdownActions.fetchScrollDistrictRequest({ payload: data })
-                    );
-                } */
+    //                 this.store.dispatch(
+    //                     DropdownActions.fetchScrollDistrictRequest({ payload: data })
+    //                 );
+    //             } */
 
-                console.log('CEK', end, total, this.cdkDistrict.getViewportSize());
-                break;
-        }
-    }
+    //             console.log('CEK', end, total, this.cdkDistrict.getViewportSize());
+    //             break;
+    //     }
+    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods

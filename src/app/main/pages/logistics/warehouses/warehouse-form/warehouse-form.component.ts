@@ -9,7 +9,7 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
@@ -19,7 +19,7 @@ import {
     MatCheckboxChange,
     MatDialog,
     MatOptionSelectionChange,
-    MatSelect
+    MatSelect,
 } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -40,7 +40,7 @@ import {
     FormActions,
     TemperatureActions,
     UiActions,
-    WarehouseValueActions
+    WarehouseValueActions,
 } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { TemperatureSelectors, WarehouseValueSelectors } from 'app/shared/store/selectors/sources';
@@ -52,7 +52,7 @@ import {
     map,
     takeUntil,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
 import { WarehouseActions } from '../store/actions';
@@ -65,7 +65,7 @@ import { WarehouseSelectors } from '../store/selectors';
     styleUrls: ['./warehouse-form.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehouseFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
@@ -82,9 +82,9 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             url: 'assets/images/marker.png',
             scaledSize: {
                 width: 18,
-                height: 30
-            }
-        }
+                height: 30,
+            },
+        },
     };
 
     draggAble = true;
@@ -122,17 +122,17 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
     private _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Logistics'
+            title: 'Logistics',
         },
         {
-            title: 'Warehouse List'
+            title: 'Warehouse List',
         },
         {
-            title: 'Add Warehouse'
-        }
+            title: 'Add Warehouse',
+        },
     ];
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -161,28 +161,28 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     progress: {
                         title: {
                             label: 'Skor tambah toko',
-                            active: false
+                            active: false,
                         },
                         value: {
-                            active: false
+                            active: false,
                         },
-                        active: false
+                        active: false,
                     },
                     action: {
                         save: {
                             label: 'Save',
-                            active: true
+                            active: true,
                         },
                         draft: {
                             label: 'Save Draft',
-                            active: false
+                            active: false,
                         },
                         cancel: {
                             label: 'Cancel',
-                            active: true
-                        }
-                    }
-                }
+                            active: true,
+                        },
+                    },
+                },
             })
         );
 
@@ -230,7 +230,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     displayInvoices(sources: Array<InvoiceGroup>, selectedSources: string): any {
-        const idx = sources.findIndex(s => s.id === selectedSources);
+        const idx = sources.findIndex((s) => s.id === selectedSources);
 
         if (idx !== -1) {
             return sources[idx].name;
@@ -451,7 +451,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     if (this.autoDistrict && this.autoDistrict.panel && this.triggerDistrict) {
                         fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
                             .pipe(
-                                map(x => this.autoDistrict.panel.nativeElement.scrollTop),
+                                map((x) => this.autoDistrict.panel.nativeElement.scrollTop),
                                 withLatestFrom(
                                     this.store.select(DropdownSelectors.getTotalDistrictEntity),
                                     this.store.select(DropdownSelectors.getTotalDistrict)
@@ -469,7 +469,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                                 if (atBottom && skip && total && skip < total) {
                                     const data: IQueryParams = {
                                         limit: 10,
-                                        skip: skip
+                                        skip: skip,
                                     };
 
                                     data['paginate'] = true;
@@ -478,13 +478,13 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                                         data['search'] = [
                                             {
                                                 fieldName: 'keyword',
-                                                keyword: this.districtHighlight
-                                            }
+                                                keyword: this.districtHighlight,
+                                            },
                                         ];
 
                                         this.store.dispatch(
                                             DropdownActions.fetchScrollDistrictRequest({
-                                                payload: data
+                                                payload: data,
                                             })
                                         );
                                     }
@@ -560,8 +560,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     WarehouseActions.confirmationChangeInvoiceRequest({
                         payload: new PayloadWarehouseConfirmation({
                             warehouseId: id,
-                            invoiceGroupId: invoiceId
-                        })
+                            invoiceGroupId: invoiceId,
+                        }),
                     })
                 );
             } else {
@@ -621,7 +621,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 // Fetch request warehouse value
                 this.store.dispatch(
                     WarehouseValueActions.fetchWarehouseValueRequest({
-                        payload: { paginate: false }
+                        payload: { paginate: false },
                     })
                 );
 
@@ -634,17 +634,17 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
                     this._breadCrumbs = [
                         {
-                            title: 'Home'
+                            title: 'Home',
                         },
                         {
-                            title: 'Warehouse'
+                            title: 'Warehouse',
                         },
                         {
-                            title: 'Warehouse List'
+                            title: 'Warehouse List',
                         },
                         {
-                            title: 'Edit Warehouse'
-                        }
+                            title: 'Edit Warehouse',
+                        },
                     ];
 
                     this.store.dispatch(WarehouseActions.fetchWarehouseRequest({ payload: id }));
@@ -655,7 +655,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
+                        payload: this._breadCrumbs,
                     })
                 );
 
@@ -670,23 +670,15 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.warehouseValues$ = this.store.select(WarehouseValueSelectors.selectAll);
 
                 this.districts$ = this.store.select(DropdownSelectors.getAllDistrict).pipe(
-                    tap(sources => {
+                    tap((sources) => {
                         if (sources && sources.length > 0) {
                             const districtCtrl = this.form.get('district').value as Urban;
                             const filterDistrict = sources.filter(
-                                v =>
-                                    String(v.district)
-                                        .trim()
-                                        .toUpperCase() ===
-                                        String(districtCtrl.district)
-                                            .trim()
-                                            .toUpperCase() &&
-                                    String(v.city)
-                                        .trim()
-                                        .toUpperCase() ===
-                                        String(districtCtrl.city)
-                                            .trim()
-                                            .toUpperCase()
+                                (v) =>
+                                    String(v.district).trim().toUpperCase() ===
+                                        String(districtCtrl.district).trim().toUpperCase() &&
+                                    String(v.city).trim().toUpperCase() ===
+                                        String(districtCtrl.city).trim().toUpperCase()
                             );
                             const urbanSources =
                                 filterDistrict && filterDistrict.length > 0
@@ -696,7 +688,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                             if (urbanSources) {
                                 this.store.dispatch(
                                     DropdownActions.setUrbanSource({
-                                        payload: urbanSources
+                                        payload: urbanSources,
                                     })
                                 );
                             }
@@ -709,7 +701,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
 
                 this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading).pipe(
-                    tap(isLoading => {
+                    tap((isLoading) => {
                         if (!isLoading) {
                             // Display footer action
                             this.store.dispatch(UiActions.showFooterAction());
@@ -725,7 +717,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     this.store
                         .select(WarehouseSelectors.getInvoiceConfirmation)
                         .pipe(takeUntil(this._unSubs$))
-                        .subscribe(data => {
+                        .subscribe((data) => {
                             if (data && Object.keys(data).length === 3) {
                                 const invoice = data.faktur;
                                 const totalSku = data.countCatalogue;
@@ -743,15 +735,15 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                                         <br/>Removing the assignment will disconnect the ${totalSku} SKU from
                                         <br/>${whId}. As a consequence, product will be made non visible
                                         <br/>from ${whId}, new order will not be taken. Current order under<br/>fulfillment will be continued`,
-                                        id: id
+                                        id: id,
                                     },
-                                    disableClose: true
+                                    disableClose: true,
                                 });
 
                                 dialogRef
                                     .afterClosed()
                                     .pipe(takeUntil(this._unSubs$))
-                                    .subscribe(res => {
+                                    .subscribe((res) => {
                                         if (res) {
                                             this._deletedInvoiceGroups.push(data.invoiceId);
                                             dialogRef.close();
@@ -778,13 +770,13 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.form
                     .get('district')
                     .valueChanges.pipe(
-                        filter(v => {
+                        filter((v) => {
                             this.districtHighlight = v;
                             return v && v.length >= 3;
                         }),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this._onSearchDistrict(v);
                     });
 
@@ -792,7 +784,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.form
                     .get('urban')
                     .valueChanges.pipe(takeUntil(this._unSubs$))
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this.urbanHighlight = v;
 
                         this._onSearchUrban(v);
@@ -801,7 +793,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-                    .subscribe(status => {
+                    .subscribe((status) => {
                         this._setFormStatus(status);
                     });
 
@@ -809,10 +801,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.store
                     .select(FormSelectors.getIsClickCancelButton)
                     .pipe(
-                        filter(isClick => !!isClick),
+                        filter((isClick) => !!isClick),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(isClick => {
+                    .subscribe((isClick) => {
                         // this.router.navigate(['/pages/logistics/warehouses'], { replaceUrl: true });
                         this.location.back();
 
@@ -824,10 +816,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.store
                     .select(FormSelectors.getIsClickSaveButton)
                     .pipe(
-                        filter(isClick => !!isClick),
+                        filter((isClick) => !!isClick),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(isClick => {
+                    .subscribe((isClick) => {
                         this._onSubmit();
                     });
                 break;
@@ -840,33 +832,33 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             whName: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             leadTime: [
                 '',
                 [
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                ],
             ],
             invoices: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             temperature: [''],
             whValue: [''],
@@ -874,63 +866,63 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             manually: false,
             district: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             urban: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             postcode: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minLength({
                         value: 5,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxLength({
                         value: 5,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             lat: [
                 '',
                 [
                     RxwebValidators.latitude({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             lng: [
                 '',
                 [
                     RxwebValidators.longitude({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
-            notes: ''
+            notes: '',
         });
 
         if (this.pageType === 'edit') {
@@ -943,7 +935,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             this.store.select(WarehouseSelectors.getSelectedItem),
             this.store.select(DropdownSelectors.getInvoiceGroupDropdownState),
             this.store.select(TemperatureSelectors.selectAll),
-            this.store.select(WarehouseValueSelectors.selectAll)
+            this.store.select(WarehouseValueSelectors.selectAll),
         ])
             .pipe(
                 filter(([row, invoices, temperatures, whValues]) => !!row),
@@ -987,12 +979,12 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         const currInvoices = row.warehouseInvoiceGroups
                             .map((v, i) => {
                                 return v && v.invoiceGroup.id
-                                    ? invoices.findIndex(r => r.id === v.invoiceGroup.id) === -1
+                                    ? invoices.findIndex((r) => r.id === v.invoiceGroup.id) === -1
                                         ? null
                                         : v.invoiceGroup.id
                                     : null;
                             })
-                            .filter(v => v !== null);
+                            .filter((v) => v !== null);
 
                         invoiceField.setValue(currInvoices);
 
@@ -1102,7 +1094,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         if (address.length === 0) {
             this._$notice.open('No results found', 'error', {
                 verticalPosition: 'bottom',
-                horizontalPosition: 'right'
+                horizontalPosition: 'right',
             });
             return;
         }
@@ -1117,7 +1109,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             province: '',
             city: '',
             district: '',
-            urban: ''
+            urban: '',
         };
 
         for (const item of addressComponent) {
@@ -1164,7 +1156,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         this.store
             .select(DropdownSelectors.getLocationState)
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(x => {
+            .subscribe((x) => {
                 if (this.form.status === 'PENDING') {
                     this.cdRef.markForCheck();
                     return;
@@ -1199,7 +1191,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                                     'warning',
                                     {
                                         verticalPosition: 'bottom',
-                                        horizontalPosition: 'right'
+                                        horizontalPosition: 'right',
                                     }
                                 );
                             });
@@ -1220,11 +1212,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
         const filterValue = String(value).toLowerCase();
 
-        return source.filter(r =>
-            String(r.urban)
-                .toLowerCase()
-                .includes(filterValue)
-        );
+        return source.filter((r) => String(r.urban).toLowerCase().includes(filterValue));
     }
 
     private _getAddress(lat: number, lng: number): void {
@@ -1235,21 +1223,21 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             .geocode({ location: { lat, lng } })
             .pipe(takeUntil(this._unSubs$))
             .subscribe({
-                next: res => {
+                next: (res) => {
                     this._decomposeAddress(res, lat, lng);
                 },
-                error: err => {
+                error: (err) => {
                     this._$notice.open('Failed geocoder', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
-                }
+                },
             });
     }
 
     private _getCurrentPosition(): void {
         if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(position => {
+            navigator.geolocation.getCurrentPosition((position) => {
                 this.lat = position.coords.latitude;
                 this.lng = position.coords.longitude;
 
@@ -1263,7 +1251,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             const autoComplete = new google.maps.places.Autocomplete(
                 this.searchElRef.nativeElement,
                 {
-                    types: ['address']
+                    types: ['address'],
                 }
             );
 
@@ -1291,31 +1279,36 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     private _handleTrigger(): void {
         // Handle trigger autocomplete district force selected from options
         if (this.triggerDistrict) {
-            this.triggerDistrict.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
-                const value = this.form.get('district').value;
+            this.triggerDistrict.panelClosingActions
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe((e) => {
+                    const value = this.form.get('district').value;
 
-                if (!this._selectedDistrict || this._selectedDistrict !== JSON.stringify(value)) {
-                    // Set input district empty
-                    this.form.get('district').setValue('');
+                    if (
+                        !this._selectedDistrict ||
+                        this._selectedDistrict !== JSON.stringify(value)
+                    ) {
+                        // Set input district empty
+                        this.form.get('district').setValue('');
 
-                    // Reset input urban
-                    this.form.get('urban').reset();
+                        // Reset input urban
+                        this.form.get('urban').reset();
 
-                    // Reset input postcode
-                    this.form.get('postcode').reset();
+                        // Reset input postcode
+                        this.form.get('postcode').reset();
 
-                    // Reset state urban
-                    this.store.dispatch(DropdownActions.resetUrbansState());
+                        // Reset state urban
+                        this.store.dispatch(DropdownActions.resetUrbansState());
 
-                    // Set selected district empty (helper check User is choose from option or not)
-                    this._selectedDistrict = '';
-                }
-            });
+                        // Set selected district empty (helper check User is choose from option or not)
+                        this._selectedDistrict = '';
+                    }
+                });
         }
 
         // Handle trigger autocomplete urban force selected from options
         if (this.triggerUrban) {
-            this.triggerUrban.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+            this.triggerUrban.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe((e) => {
                 const value = this.form.get('urban').value;
 
                 if (!this._selectedUrban || this._selectedUrban !== JSON.stringify(value)) {
@@ -1352,7 +1345,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         if (v) {
             const data: IQueryParams = {
                 limit: 10,
-                skip: 0
+                skip: 0,
             };
 
             data['paginate'] = true;
@@ -1360,8 +1353,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             data['search'] = [
                 {
                     fieldName: 'keyword',
-                    keyword: v
-                }
+                    keyword: v,
+                },
             ];
 
             this.districtHighlight = v;
@@ -1373,7 +1366,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     private _onSearchUrban(v: string): void {
         this.urbans$ = this.store
             .select(DropdownSelectors.getAllUrban)
-            .pipe(map(source => this._filterUrban(source, v)));
+            .pipe(map((source) => this._filterUrban(source, v)));
     }
 
     private _onSubmit(): void {
@@ -1397,7 +1390,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 noteAddress: body.notes,
                 address: body.address,
                 invoiceGroup: body.invoices,
-                status: 'active'
+                status: 'active',
             };
 
             this.store.dispatch(WarehouseActions.createWarehouseRequest({ payload }));
@@ -1417,7 +1410,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 address: body.address,
                 invoiceGroup: body.invoices,
                 deletedInvoiceGroup: this._deletedInvoiceGroups,
-                status: 'active'
+                status: 'active',
             };
 
             if (!body.longitude) {
@@ -1439,7 +1432,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             if (id && Object.keys(payload).length > 0) {
                 this.store.dispatch(
                     WarehouseActions.updateWarehouseRequest({
-                        payload: { id, body: payload }
+                        payload: { id, body: payload },
                     })
                 );
             }

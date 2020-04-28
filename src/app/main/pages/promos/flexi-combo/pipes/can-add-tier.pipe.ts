@@ -10,15 +10,15 @@ export class CanAddTierPipe implements PipeTransform {
         const pageType = args[0];
         const conditionsCtrl = args[1];
 
-        if (pageType === 'edit') {
-            return false;
-        }
+        // if (pageType === 'edit') {
+        //     return false;
+        // }
 
-        const nextIdx = conditions.length;
-        const currIdx = conditions.length - 1;
+        const nextIdx = conditionsCtrl.length;
+        const currIdx = conditionsCtrl.length - 1;
 
         // Check total conditions item greater than 0
-        if (conditions && conditions.length > 0) {
+        if (conditionsCtrl && conditionsCtrl.length > 0) {
             // Get conditions has checked multiplication
             const hasMultiplication = conditions.filter(
                 (condition) => condition.multiplication === true

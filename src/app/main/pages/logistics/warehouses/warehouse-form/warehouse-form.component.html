@@ -330,7 +330,7 @@
                             fxLayoutAlign="start stretch"
                             *ngIf="!editAddress && !isManually"
                         >
-                            <label fxFlexAlign="center" fxFlex="12" style="top:0">
+                            <label fxFlexAlign="center" fxFlex="12" style="top: 0;">
                                 *Address
                             </label>
 
@@ -353,7 +353,7 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <textarea matInput rows="5"></textarea>
+                                <textarea matInput rows="5" formControlName="notes"></textarea>
                             </mat-form-field>
                         </div>
 
