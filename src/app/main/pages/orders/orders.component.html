@@ -1,4 +1,4 @@
-<div id="orders" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div id="orders" class="page-layout carded fullwidth inner-scroll">
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
 
     <!-- TOP BACKGROUND -->
@@ -72,7 +72,10 @@
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
-                class="orders-table mx-16"
+                class="orders-table sinbad-table mx-12"
+                [class.sinbad-table-no-record]="
+                    !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                "
                 #table
                 [dataSource]="dataSource$ | async"
                 [trackBy]="onTrackBy"
@@ -418,8 +421,14 @@
                     </mat-cell>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                <!-- No Record Column -->
+                <ng-container matColumnDef="no-record">
+                    <mat-footer-cell *matFooterCellDef colspan="10">
+                        No records found
+                    </mat-footer-cell>
+                </ng-container>
 
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="order"
@@ -427,9 +436,23 @@
                     [routerLink]="['/pages/orders', row.id, 'detail']"
                 >
                 </mat-row>
+                <mat-footer-row
+                    *matFooterRowDef="['no-record']"
+                    [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                ></mat-footer-row>
             </mat-table>
 
-            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+            <div
+                class="loader-content"
+                *ngIf="
+                    (isLoading$ | async) &&
+                    (!(totalDataSource$ | async) || (totalDataSource$ | async))
+                "
+            >
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <!-- <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
@@ -441,10 +464,10 @@
                 "
             >
                 No records found
-            </div>
+            </div> -->
 
             <mat-paginator
-                [fxHide]="
+                [disabled]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
@@ -455,7 +478,7 @@
             >
             </mat-paginator>
 
-            <div
+            <!-- <div
                 class="loader"
                 *ngIf="
                     ((isLoading$ | async) && (totalDataSource$ | async)) ||
@@ -463,7 +486,7 @@
                 "
             >
                 <mat-spinner color="accent"></mat-spinner>
-            </div>
+            </div> -->
         </div>
         <!-- / CONTENT CARD -->
     </div>
