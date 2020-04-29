@@ -12,7 +12,7 @@
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
-                class="payments-table sinbad-table mx-16"
+                class="payments-table sinbad-table mx-12"
                 [class.sinbad-table-no-record]="
                     !(isLoading$ | async) && (totalDataSource$ | async) === 0
                 "
@@ -279,7 +279,7 @@
 
                 <!-- No Record Column -->
                 <ng-container matColumnDef="no-record">
-                    <mat-footer-cell *matFooterCellDef colspan="8">
+                    <mat-footer-cell *matFooterCellDef colspan="13">
                         No records found
                     </mat-footer-cell>
                 </ng-container>
