@@ -1655,16 +1655,22 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 ]);
         }
 
-        this.formCreditLimits
-            .at(idx)
-            .get('creditLimit')
-            .patchValue(item.creditLimit.replace('.', ','));
+        setTimeout(() => {
+            this.formCreditLimits
+                .at(idx)
+                .get('creditLimit')
+                .patchValue(item.creditLimit.replace('.', ','));
 
-        if (this.formCreditLimits.at(idx).get('creditLimit').invalid) {
-            this.formCreditLimits.at(idx).get('creditLimit').markAsTouched();
-        }
+            setTimeout(() => {
+                if (this.formCreditLimits.at(idx).get('creditLimit').invalid) {
+                    this.formCreditLimits.at(idx).get('creditLimit').markAsTouched();
+                }
 
-        this.formCreditLimits.at(idx).get('creditLimit').updateValueAndValidity();
+                setTimeout(() => {
+                    this.formCreditLimits.at(idx).get('creditLimit').updateValueAndValidity();
+                });
+            });
+        });
 
         // Handle termOfPayment Field
         this.formCreditLimits.at(idx).get('termOfPayment').reset();
@@ -2994,7 +3000,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                                     invoiceGroup: row.invoiceGroupId,
                                                     creditLimitGroup: row.creditLimitGroupId,
                                                     creditLimit: [
-                                                        row.creditLimit.replace('.', ','),
+                                                        '',
                                                         // [
                                                         //     RxwebValidators.numeric({
                                                         //         acceptValue:
