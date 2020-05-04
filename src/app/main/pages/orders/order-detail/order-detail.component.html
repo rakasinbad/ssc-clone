@@ -1312,9 +1312,26 @@
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
                                 {{
-                                    +row?.nettPrice > 0
-                                        ? (+row?.nettPrice | price: 'full':'IDR':'narrow':'1.2-2')
-                                        : +row?.nettPrice
+                                    +row?.grossPrice > 0
+                                        ? (+row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : +row?.grossPrice
+                                }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Discount Price Column -->
+                    <ng-container matColumnDef="discount-price">
+                        <mat-header-cell *matHeaderCellDef>
+                            Discount Price
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p style="word-break: break-word;">
+                                {{
+                                    +row?.cataloguePromo > 0
+                                        ? (+row?.cataloguePromo
+                                          | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : +row?.cataloguePromo
                                 }}
                             </p>
                         </mat-cell>
@@ -1329,14 +1346,26 @@
                     <!-- Gross Column -->
                     <ng-container matColumnDef="gross">
                         <mat-header-cell *matHeaderCellDef>
-                            Gross
+                            Gross Price
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p class="text-truncate">
                                 {{
-                                    +row?.grossPrice > 0
-                                        ? (+row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2')
-                                        : +row?.grossPrice
+                                    calculateGrossPrice(
+                                        +row?.grossPrice,
+                                        +row?.cataloguePromo,
+                                        +row?.qty
+                                    ) > 0
+                                        ? (calculateGrossPrice(
+                                              +row?.grossPrice,
+                                              +row?.cataloguePromo,
+                                              +row?.qty
+                                          ) | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : calculateGrossPrice(
+                                              +row?.grossPrice,
+                                              +row?.cataloguePromo,
+                                              +row?.qty
+                                          )
                                 }}
                             </p>
                         </mat-cell>

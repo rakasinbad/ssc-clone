@@ -3,7 +3,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
@@ -32,7 +32,7 @@ import { OrderSelectors } from '../store/selectors';
     styleUrls: ['./order-detail.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDetailComponent implements OnInit, OnDestroy {
     dataSource: MatTableDataSource<any>;
@@ -44,7 +44,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         // 'invoiced-qty',
         // 'unitOfMeasured',
         'unit-price',
-        'gross'
+        'discount-price',
+        'gross',
         // 'amountDisc1',
         // 'amountDisc2',
         // 'amountDisc3',
@@ -77,19 +78,19 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home'
+                        title: 'Home',
                         // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Order Managements',
-                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS'
+                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS',
                     },
                     {
                         title: 'Order Details',
                         translate: 'BREADCRUMBS.ORDER_DETAILS',
-                        active: true
-                    }
-                ]
+                        active: true,
+                    },
+                ],
             })
         );
 
@@ -98,16 +99,16 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             UiActions.createSmallBreadcrumb({
                 payload: [
                     {
-                        title: 'Quotations'
+                        title: 'Quotations',
                     },
                     {
-                        title: 'Quotations Send'
+                        title: 'Quotations Send',
                     },
                     {
                         title: 'Sales Order',
-                        active: true
-                    }
-                ]
+                        active: true,
+                    },
+                ],
             })
         );
     }
@@ -134,10 +135,10 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         this.store
             .select(OrderSelectors.getIsRefresh)
             .pipe(
-                filter(v => !!v),
+                filter((v) => !!v),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(isRefresh => {
+            .subscribe((isRefresh) => {
                 this.initSource();
             });
     }
@@ -157,6 +158,22 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    calculateGrossPrice(grossPrice: number, cataloguePromo: number, qty: number): number {
+        if (
+            typeof grossPrice !== 'number' ||
+            typeof cataloguePromo !== 'number' ||
+            typeof qty !== 'number'
+        ) {
+            return 0;
+        }
+
+        if (grossPrice >= cataloguePromo && qty) {
+            return (grossPrice - cataloguePromo) * qty;
+        }
+
+        return 0;
+    }
 
     calculateUnit(nettPrice: number, qty: number): number {
         if (typeof nettPrice !== 'number' || typeof qty !== 'number') {
@@ -178,12 +195,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             {
                 item: {
                     type: 'log',
-                    value: item
+                    value: item,
                 },
                 type: {
                     type: 'log',
-                    value: type
-                }
+                    value: type,
+                },
             },
             'groupCollapsed'
         );
@@ -203,22 +220,22 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
                 title: `Set ${type === 'delivered' ? 'Delivered' : 'Invoiced'} Qty`,
                 id: item.id,
                 label: `${type === 'delivered' ? 'Delivered' : 'Invoiced'} Qty`,
-                qty: type === 'delivered' ? +item.deliveredQty : +item.invoicedQty
+                qty: type === 'delivered' ? +item.deliveredQty : +item.invoicedQty,
             },
-            disableClose: true
+            disableClose: true,
         });
 
         dialogRef
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(resp => {
+            .subscribe((resp) => {
                 this._$log.generateGroup(
                     'AFTER CLOSED DIALOG EDIT QTY',
                     {
                         response: {
                             type: 'log',
-                            value: resp
-                        }
+                            value: resp,
+                        },
                     },
                     'groupCollapsed'
                 );
@@ -227,13 +244,13 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
                     if (type === 'delivered') {
                         this.store.dispatch(
                             OrderActions.updateDeliveredQtyRequest({
-                                payload: { id: item.id, body: resp.payload }
+                                payload: { id: item.id, body: resp.payload },
                             })
                         );
                     } else if (type === 'invoiced') {
                         this.store.dispatch(
                             OrderActions.updateInvoicedQtyRequest({
-                                payload: { id: item.id, body: resp.payload }
+                                payload: { id: item.id, body: resp.payload },
                             })
                         );
                     }
@@ -255,7 +272,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         const { id } = this.route.snapshot.params;
 
         this.order$ = this.store.select(OrderSelectors.getSelectedOrder).pipe(
-            tap(data => {
+            tap((data) => {
                 if (data && data.orderBrands && data.orderBrands.length > 0) {
                     const orderBrandCatalogues =
                         _.flatten(_.map(data.orderBrands, 'orderBrandCatalogues')) || [];
