@@ -77,4 +77,6 @@ export const setSelectedAttendance = createAction(
     props<{ payload: Attendance }>()
 );
 
+export const resetAttendances = createAction('[Attendances Page] Reset Attendances');
+
 export const resetSelectedAttendance = createAction('[Attendances Page] Reset Selected Attendance');

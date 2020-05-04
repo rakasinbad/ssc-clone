@@ -160,7 +160,7 @@
                     <ng-container matColumnDef="employee">
                         <mat-header-cell *matHeaderCellDef>Toko</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p class="text-truncate">{{ row?.getStore()?.name }}</p>
+                            <p class="text-truncate">{{ row?.storeName || row?.getStore()?.name }}</p>
                         </mat-cell>
                     </ng-container>
     

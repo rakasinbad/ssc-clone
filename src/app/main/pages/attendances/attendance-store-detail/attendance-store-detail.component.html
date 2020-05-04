@@ -135,7 +135,7 @@
                     <ng-container matColumnDef="employee">
                         <mat-header-cell *matHeaderCellDef>Employee</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p class="text-truncate">{{ row?.user?.fullName }}</p>
+                            <p class="text-truncate">{{ row?.fullName || row?.user?.fullName || '-' }}</p>
                         </mat-cell>
                     </ng-container>
     
@@ -144,14 +144,19 @@
                         <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
     
                         <mat-cell *matCellDef="let row" fxLayout="column" fxLayoutAlign="center start">
-                            <div *ngFor="let role of row?.user?.roles; last as $last;">
-                                <ng-container *ngIf="!$last; else lastElement;">
-                                    <span>{{ role.role }},</span>
-                                </ng-container>
-                                <ng-template #lastElement>
-                                    <span>{{ role.role }}</span>
-                                </ng-template>
+                            <div *ngIf="row?.roles; else multipleRoles;">
+                                <span>{{ row?.roles || '-' }}</span>
                             </div>
+                            <ng-template #multipleRoles>
+                                <div *ngFor="let role of row?.user?.roles; last as $last;">
+                                    <ng-container *ngIf="!$last; else lastElement;">
+                                        <span>{{ role.role || '-' }},</span>
+                                    </ng-container>
+                                    <ng-template #lastElement>
+                                        <span>{{ role.role || '-' }}</span>
+                                    </ng-template>
+                                </div>
+                            </ng-template>
                         </mat-cell>
                     </ng-container>
     

@@ -135,9 +135,6 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         this.selectedUser$ = this._fromUser
             .select(UserSelectors.getUser)
             .pipe(takeUntil(this._unSubs$));
-
-        /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
-        this.onChangePage();
     }
 
     ngOnDestroy(): void {
@@ -153,6 +150,8 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
             this._unSubs$.next();
             this._unSubs$.complete();
         }
+
+        this._fromAttendance.dispatch(AttendanceActions.resetAttendances());
     }
 
     ngAfterViewInit(): void {

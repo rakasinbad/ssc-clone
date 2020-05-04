@@ -13,6 +13,7 @@ import { Attendance, IAttendance } from '../models';
 export class AttendanceApiService {
     private _url: string;
     private readonly _endpoint = '/attendances';
+    private readonly _presenceEndpoint = '/store-presences';
 
     constructor(private http: HttpClient, private helperSvc: HelperService) {
         this._url = helperSvc.handleApiRouter(this._endpoint);
@@ -42,7 +43,12 @@ export class AttendanceApiService {
             });
         }
 
-        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+        if (params['store-presences']) {
+            this._url = this.helperSvc.handleApiRouter(this._presenceEndpoint);
+        } else {
+            this._url = this.helperSvc.handleApiRouter(this._endpoint);
+        }
+
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<T>(this._url, { params: newParams });

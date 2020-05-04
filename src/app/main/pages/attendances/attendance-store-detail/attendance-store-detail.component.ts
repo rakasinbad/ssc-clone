@@ -192,6 +192,8 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
             this._unSubs$.next();
             this._unSubs$.complete();
         }
+
+        this._fromAttendance.dispatch(AttendanceActions.resetAttendances());
     }
 
     ngAfterViewInit(): void {
@@ -235,6 +237,9 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.defaultPageSize * this.paginator.pageIndex
             };
+
+            // Butuh endpoint khusus.
+            data['store-presences'] = true;
 
             /** Menyalakan opsi pagination ke back-end. */
             data['paginate'] = true;
@@ -304,7 +309,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         this._fromUser.dispatch(UserActions.setSelectedUser({ payload: data.user }));
 
         this.router.navigate([
-            `/pages/attendances/${this.storeId}/employee/${data.user.id}/detail`
+            `/pages/attendances/${this.storeId}/employee/${data.userId || data.user.id}/detail`
         ]);
     }
 
