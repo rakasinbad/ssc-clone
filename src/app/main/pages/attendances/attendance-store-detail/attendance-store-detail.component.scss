@@ -62,7 +62,8 @@
 
     .employees-activity-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0,0,0,.12);
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
