@@ -343,7 +343,7 @@ body.theme-sinbad-light {
 
     .custom-field {
         label {
-            font-weight: 600;
+            font-weight: 600 !important;
             position: relative;
             top: -0.78em;
         }
@@ -372,7 +372,7 @@ body.theme-sinbad-light {
 
     .custom-field-right {
         label {
-            font-weight: 600;
+            font-weight: 600 !important;
             position: relative;
             top: -0.78em;
             text-align: right;

@@ -30,7 +30,7 @@
                     <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                         <label
                             fxFlexAlign="center"
-                            [fxFlex]="labelLength"
+                            [fxFlex]="labelLength * 2 - 1"
                             class="pr-0 form-label"
                             [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                         >

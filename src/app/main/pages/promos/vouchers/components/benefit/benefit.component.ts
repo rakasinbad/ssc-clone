@@ -202,21 +202,6 @@ export class VoucherBenefitInformationComponent
                 ],
             ],
         });
-
-        this.form
-            .get('base')
-            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
-            .subscribe((value) => {
-                if (value === 'rupiah') {
-                    this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
-                } else if (value === 'percent') {
-                    this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
-                }
-
-                this.form.updateValueAndValidity();
-            });
     }
 
     private initFormCheck(): void {
@@ -284,55 +269,7 @@ export class VoucherBenefitInformationComponent
                 this.formValueChange.emit(value);
             });
 
-        this.form
-            .get('trigger.base')
-            .valueChanges.pipe(
-                distinctUntilChanged(),
-                debounceTime(100),
-                tap((value) =>
-                    HelperService.debug(
-                        'PERIOD TARGET PROMO REWARD INFORMATION TRIGGER BASE VALUE CHANGED:',
-                        value
-                    )
-                ),
-                takeUntil(this.subs$)
-            )
-            .subscribe((value) => {
-                if (value === 'sku') {
-                    this.form.get('trigger.chosenSku').enable({ onlySelf: false, emitEvent: true });
-                    this.form
-                        .get('trigger.chosenBrand')
-                        .disable({ onlySelf: false, emitEvent: true });
-                    this.form
-                        .get('trigger.chosenFaktur')
-                        .disable({ onlySelf: false, emitEvent: true });
-                } else if (value === 'brand') {
-                    this.form
-                        .get('trigger.chosenSku')
-                        .disable({ onlySelf: false, emitEvent: true });
-                    this.form
-                        .get('trigger.chosenBrand')
-                        .enable({ onlySelf: false, emitEvent: true });
-                    this.form
-                        .get('trigger.chosenFaktur')
-                        .disable({ onlySelf: false, emitEvent: true });
-                } else if (value === 'faktur') {
-                    this.form
-                        .get('trigger.chosenSku')
-                        .disable({ onlySelf: false, emitEvent: true });
-                    this.form
-                        .get('trigger.chosenBrand')
-                        .disable({ onlySelf: false, emitEvent: true });
-                    this.form
-                        .get('trigger.chosenFaktur')
-                        .enable({ onlySelf: false, emitEvent: true });
-                }
-
-                this.form.updateValueAndValidity();
-            });
-
-        this.form
-            .get('condition.base')
+        this.form.get('base')
             .valueChanges.pipe(
                 distinctUntilChanged(),
                 debounceTime(100),
@@ -345,12 +282,12 @@ export class VoucherBenefitInformationComponent
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
-                if (value === 'qty') {
-                    this.form.get('condition.qty').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('condition.value').disable({ onlySelf: true, emitEvent: true });
-                } else if (value === 'order-value') {
-                    this.form.get('condition.qty').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('condition.value').enable({ onlySelf: true, emitEvent: true });
+                if (value === 'rupiah') {
+                    this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
+                } else if (value === 'percent') {
+                    this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
                 }
 
                 this.form.updateValueAndValidity();
@@ -389,94 +326,6 @@ export class VoucherBenefitInformationComponent
 
     isViewMode(): boolean {
         return this.formMode === 'view';
-    }
-
-    onCatalogueSelected(event: Array<Catalogue>): void {
-        this.form.get('trigger.chosenSku').markAsDirty({ onlySelf: true });
-        this.form.get('trigger.chosenSku').markAsTouched({ onlySelf: true });
-
-        if (event.length === 0) {
-            this.form.get('trigger.chosenSku').setValue('');
-        } else {
-            this.form.get('trigger.chosenSku').setValue(event);
-        }
-    }
-
-    onBrandSelected(event: Array<Brand>): void {
-        this.form.get('trigger.chosenBrand').markAsDirty({ onlySelf: true });
-        this.form.get('trigger.chosenBrand').markAsTouched({ onlySelf: true });
-
-        if (event.length === 0) {
-            this.form.get('trigger.chosenBrand').setValue('');
-        } else {
-            this.form.get('trigger.chosenBrand').setValue(event);
-        }
-    }
-
-    onFakturSelected(event: Array<InvoiceGroup>): void {
-        this.form.get('trigger.chosenFaktur').markAsDirty({ onlySelf: true });
-        this.form.get('trigger.chosenFaktur').markAsTouched({ onlySelf: true });
-
-        if (event.length === 0) {
-            this.form.get('trigger.chosenFaktur').setValue('');
-        } else {
-            this.form.get('trigger.chosenFaktur').setValue(event);
-        }
-    }
-
-    onChangeActiveStartDate(ev: MatDatetimepickerInputEvent<any>): void {
-        const activeStartDate = moment(ev.value);
-
-        if (this.form.get('rewardValidDate.activeEndDate').value) {
-            const activeEndDate = moment(this.form.get('rewardValidDate.activeEndDate').value);
-
-            if (activeStartDate.isAfter(activeEndDate)) {
-                this.form.get('rewardValidDate.activeEndDate').reset();
-            }
-        }
-
-        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
-    }
-
-    onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
-        const activeEndDate = moment(ev.value);
-
-        if (this.form.get('rewardValidDate.activeStartDate').value) {
-            const activeStartDate = moment(this.form.get('rewardValidDate.activeStartDate').value);
-
-            if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('rewardValidDate.activeStartDate').reset();
-            }
-        }
-
-        this.maxActiveStartDate = activeEndDate.toDate();
-    }
-
-    onFileBrowse(ev: Event): void {
-        const inputEl = ev.target as HTMLInputElement;
-
-        if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0];
-
-            if (file) {
-                const photoField = this.form.get('miscellaneous.couponImage');
-
-                const fileReader = new FileReader();
-
-                fileReader.onload = () => {
-                    photoField.setValue(fileReader.result);
-                    this.tmpCouponImage.setValue(file.name);
-
-                    if (photoField.invalid) {
-                        photoField.markAsTouched();
-                    }
-                };
-
-                fileReader.readAsDataURL(file);
-            }
-        }
-
-        return;
     }
 
     ngOnInit(): void {

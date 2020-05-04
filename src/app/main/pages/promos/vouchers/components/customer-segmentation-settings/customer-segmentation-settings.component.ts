@@ -312,7 +312,7 @@ export class VoucherCustomerSegmentationSettingsComponent
         this.form = this.fb.group({
             id: [''],
             segmentationBase: [
-                'segmentation',
+                'direct-store',
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
