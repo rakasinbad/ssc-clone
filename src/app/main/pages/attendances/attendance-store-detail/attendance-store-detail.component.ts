@@ -19,7 +19,7 @@ import { Role } from 'app/shared/models/role.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, merge } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
@@ -137,7 +137,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         this._unSubs$ = new Subject<void>();
 
         /** Menentukan maksimal jumlah data yang ditampilkan pada tabel. */
-        this.paginator.pageSize = 5;
+        // this.paginator.pageSize = 5;
 
         /** Mendapatkan status loading dari store-nya Attendance. */
         this.isAttendanceLoading$ = this._fromAttendance
@@ -177,9 +177,6 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         this.totalEmployeesActivities$ = this._fromAttendance
             .select(AttendanceSelectors.getTotalAttendance)
             .pipe(takeUntil(this._unSubs$));
-
-        /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
-        this.onChangePage();
     }
 
     ngOnDestroy(): void {
@@ -195,6 +192,8 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
             this._unSubs$.next();
             this._unSubs$.complete();
         }
+
+        this._fromAttendance.dispatch(AttendanceActions.resetAttendances());
     }
 
     ngAfterViewInit(): void {
@@ -213,6 +212,18 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                 ]
             })
         );
+
+        /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
+        this.onChangePage();
+
+        merge(
+            this.sort.sortChange,
+            this.paginator.page
+        ).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(() => {
+            this.onChangePage();
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -227,6 +238,9 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                 skip: this.defaultPageSize * this.paginator.pageIndex
             };
 
+            // Butuh endpoint khusus.
+            data['store-presences'] = true;
+
             /** Menyalakan opsi pagination ke back-end. */
             data['paginate'] = true;
 
@@ -236,7 +250,30 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
             /** Mengambil arah sortir dan data yang ingin disotir. */
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-                data['sortBy'] = this.sort.active;
+
+                switch (this.sort.active) {
+                    case 'number':
+                        data['sortBy'] = 'id';
+                        break;
+                    case 'checkDate':
+                        data['sortBy'] = 'date';
+                        break;
+                    case 'attendanceType':
+                        data['sortBy'] = 'attendance_type';
+                        break;
+                    case 'locationType':
+                        data['sortBy'] = 'location_type';
+                        break;
+                    case 'checkIn':
+                        data['sortBy'] = 'check_in';
+                        break;
+                    case 'checkOut':
+                        data['sortBy'] = 'check_out';
+                        break;
+                }
+            } else {
+                data['sort'] = 'desc';
+                data['sortBy'] = 'id';
             }
 
             /** Melakukan request dengan membawa query string yang telah disiapkan. */
@@ -272,7 +309,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         this._fromUser.dispatch(UserActions.setSelectedUser({ payload: data.user }));
 
         this.router.navigate([
-            `/pages/attendances/${this.storeId}/employee/${data.user.id}/detail`
+            `/pages/attendances/${this.storeId}/employee/${data.userId || data.user.id}/detail`
         ]);
     }
 

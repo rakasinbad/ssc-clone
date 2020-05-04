@@ -179,37 +179,54 @@ export class AttendanceEffects {
                             catchOffline(),
                             map(resp => {
                                 let newResp = {
-                                    total: 0,
+                                    total: resp.total,
                                     data: []
                                 };
 
-                                newResp = {
-                                    total: resp.total,
-                                    data: resp.data.map(attendance => {
-                                        const newAttendance = new Attendance(
-                                            attendance.id,
-                                            attendance.date,
-                                            attendance.longitudeCheckIn,
-                                            attendance.latitudeCheckIn,
-                                            attendance.longitudeCheckOut,
-                                            attendance.latitudeCheckOut,
-                                            attendance.checkIn,
-                                            attendance.checkOut,
-                                            attendance.locationType,
-                                            attendance.attendanceType,
-                                            attendance.userId,
-                                            attendance.user,
-                                            attendance.createdAt,
-                                            attendance.updatedAt,
-                                            attendance.deletedAt
-                                        );
-
-                                        newAttendance.user.setUserStores =
-                                            attendance.user.userStores;
-
-                                        return newAttendance;
-                                    })
-                                };
+                                if (queryParams['store-presences']) {
+                                    newResp = {
+                                        ...newResp,
+                                        data: resp.data.map((attendance: any) => ({
+                                            id: attendance.id,
+                                            date: attendance.date,
+                                            checkIn: attendance.checkIn,
+                                            checkOut: attendance.checkOut,
+                                            userId: attendance.userId,
+                                            fullName: attendance.fullName,
+                                            locationType: attendance.locationType,
+                                            attendanceType: attendance.attendanceType,
+                                            roles: [],
+                                        }))
+                                    };
+                                } else {
+                                    newResp = {
+                                        ...newResp,
+                                        data: resp.data.map(attendance => {
+                                            const newAttendance = new Attendance(
+                                                attendance.id,
+                                                attendance.date,
+                                                attendance.longitudeCheckIn,
+                                                attendance.latitudeCheckIn,
+                                                attendance.longitudeCheckOut,
+                                                attendance.latitudeCheckOut,
+                                                attendance.checkIn,
+                                                attendance.checkOut,
+                                                attendance.locationType,
+                                                attendance.attendanceType,
+                                                attendance.userId,
+                                                attendance.user,
+                                                attendance.createdAt,
+                                                attendance.updatedAt,
+                                                attendance.deletedAt
+                                            );
+    
+                                            newAttendance.user.setUserStores =
+                                                attendance.user.userStores;
+    
+                                            return newAttendance;
+                                        })
+                                    };
+                                }
 
                                 this.logSvc.generateGroup(
                                     '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
