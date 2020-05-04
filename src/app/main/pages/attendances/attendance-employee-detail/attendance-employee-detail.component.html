@@ -137,19 +137,15 @@
                 Employee Activity
             </div>
             <!-- / CARD TITLE -->
-    
-            <!-- DIVIDER -->
-            <mat-divider></mat-divider>
-            <!-- / DIVIDER -->
-    
+
             <!-- CONTENT -->
             <div>
                 <mat-table
-                    class="employees-activity-table"
+                    class="employees-activity-table mx-12 sinbad-table"
                     #table
                     [dataSource]="employeeActivities$ | async"
                     matSort
-                    [@animateStagger]="{ value: '50' }"
+                    [class.h-464]="(totalEmployeeActivities$ | async) > 0"
                     fusePerfectScrollbar
                 >
                     <!-- ID Column -->
@@ -162,7 +158,7 @@
     
                     <!-- "ID Toko" Column -->
                     <ng-container matColumnDef="employee">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Toko</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Toko</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p class="text-truncate">{{ row?.getStore()?.name }}</p>
                         </mat-cell>
@@ -170,7 +166,7 @@
     
                     <!-- Store Name Column -->
                     <ng-container matColumnDef="role">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Role</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
     
                         <mat-cell *matCellDef="let row" fxLayout="column" fxLayoutAlign="center start">
                             <div *ngFor="let role of row?.user?.roles; last as $last;">
@@ -237,7 +233,7 @@
     
                     <!-- Duration Column -->
                     <ng-container matColumnDef="duration">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <mat-header-cell *matHeaderCellDef>
                             Duration
                         </mat-header-cell>
     

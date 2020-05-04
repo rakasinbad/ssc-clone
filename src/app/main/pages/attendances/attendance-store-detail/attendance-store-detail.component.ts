@@ -195,11 +195,6 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
     }
 
     ngAfterViewInit(): void {
-        if (this.sort) {
-            this.sort.start = 'desc';
-            this.sort.active = 'number';
-        }
-
         this._fromMerchant.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -259,13 +254,18 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                         data['sortBy'] = 'date';
                         break;
                     case 'attendanceType':
+                        data['sortBy'] = 'attendance_type';
+                        break;
                     case 'locationType':
+                        data['sortBy'] = 'location_type';
+                        break;
                     case 'checkIn':
+                        data['sortBy'] = 'check_in';
+                        break;
                     case 'checkOut':
-                        data['sortBy'] = this.sort.active;
+                        data['sortBy'] = 'check_out';
                         break;
                 }
-                data['sortBy'] = this.sort.active === 'number' ? 'id' : this.sort.active;
             } else {
                 data['sort'] = 'desc';
                 data['sortBy'] = 'id';
