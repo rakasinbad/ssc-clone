@@ -129,6 +129,10 @@ const attendanceReducer = createReducer(
         ...state,
         attendance: payload
     })),
+    on(AttendanceActions.resetAttendances, state => ({
+        ...state,
+        attendances: adapterAttendance.removeAll(state.attendances)
+    })),
     on(AttendanceActions.resetSelectedAttendance, state => ({
         ...state,
         attendance: null
