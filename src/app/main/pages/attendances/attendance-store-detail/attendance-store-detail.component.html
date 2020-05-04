@@ -4,7 +4,7 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center px-32">
+    <div class="center px-20">
         <!-- HEADER -->
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
@@ -108,7 +108,7 @@
         <!-- / CONTENT CARD -->
         
         <!-- EMPLOYEES ACTIVITY -->
-        <div class="content-card mat-elevation-z1 fuse-white mt-32">
+        <div class="content-card mat-elevation-z1 fuse-white mt-16">
             <!-- TITLE -->
             <div class="h1 px-40 py-20">Employees Activity</div>
             <!-- / TITLE -->
@@ -127,7 +127,7 @@
                     <ng-container matColumnDef="number">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
                         <mat-cell *matCellDef="let row; index as $index">
-                            <p class="text-truncate">{{ $index + 1 }}</p>
+                            <p>{{ (paginator?.pageSize * paginator?.pageIndex) + $index + 1 }}</p>
                         </mat-cell>
                     </ng-container>
     
