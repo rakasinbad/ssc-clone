@@ -5,7 +5,8 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ElementRef
 } from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -71,6 +72,9 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
     defaultPageSize = environment.pageSize;
     // Untuk menampilkan opsi jumlah data per halaman tabel.
     defaultPageSizeTable = environment.pageSizeTable;
+
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef<HTMLElement>;
 
     /** Paginator untuk tabel aktivitas karyawan. */
     @ViewChild(MatPaginator, { static: true })
@@ -180,6 +184,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         ).pipe(
             takeUntil(this._unSubs$)
         ).subscribe(() => {
+            this.table.nativeElement.scrollTop = 0;
             this.onChangePage();
         });
     }
