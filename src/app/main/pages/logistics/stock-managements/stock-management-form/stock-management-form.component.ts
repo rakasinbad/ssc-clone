@@ -7,7 +7,7 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator, MatSelectChange, MatSort } from '@angular/material';
@@ -24,11 +24,11 @@ import { StockManagementReason } from 'app/shared/models/stock-management-reason
 import {
     StockManagementReasonActions,
     UiActions,
-    WarehouseActions
+    WarehouseActions,
 } from 'app/shared/store/actions';
 import {
     StockManagementReasonSelectors,
-    WarehouseSelectors
+    WarehouseSelectors,
 } from 'app/shared/store/selectors/sources';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
@@ -46,7 +46,7 @@ import { StockManagementCatalogueSelectors } from '../store/selectors';
     styleUrls: ['./stock-management-form.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
@@ -58,25 +58,25 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'List SKU'
+            label: 'List SKU',
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
-            }
+            },
         },
         // add: {
         //     permissions: []
         // },
         export: {
-            permissions: ['OMS.EXPORT']
+            permissions: ['OMS.EXPORT'],
         },
         import: {
             permissions: ['OMS.IMPORT'],
             useAdvanced: true,
-            pageType: ''
-        }
+            pageType: '',
+        },
     };
     displayedColumns = [
         'no',
@@ -86,7 +86,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         'qty-change',
         'reason',
         'sellable', // stock
-        'after' // column sellable calc with column qty-change
+        'after', // column sellable calc with column qty-change
         // 'on-hand',
         // 'final'
     ];
@@ -96,26 +96,26 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
             id: '1',
             code: '82716127',
             name: 'LAKME CLASSIC EYEBROW PENCIL Brown',
-            total: 58
+            total: 58,
         },
         {
             id: '2',
             code: '82716127',
             name: 'LAKME CLASSIC EYEBROW PENCIL Red',
-            total: 51
+            total: 51,
         },
         {
             id: '3',
             code: '82716127',
             name: 'LAKME CLASSIC EYEBROW PENCIL White',
-            total: 34
+            total: 34,
         },
         {
             id: '4',
             code: '82716127',
             name: 'LAKME CLASSIC EYEBROW PENCIL Black',
-            total: 100
-        }
+            total: 100,
+        },
     ];
 
     search: FormControl = new FormControl('');
@@ -140,17 +140,17 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Warehouse'
+            title: 'Warehouse',
         },
         {
-            title: 'Stock Management'
+            title: 'Stock Management',
         },
         {
-            title: 'Update Stock'
-        }
+            title: 'Update Stock',
+        },
     ];
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -172,33 +172,33 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     progress: {
                         title: {
                             label: 'Skor tambah toko',
-                            active: false
+                            active: false,
                         },
                         value: {
-                            active: false
+                            active: false,
                         },
-                        active: false
+                        active: false,
                     },
                     action: {
                         save: {
                             label: 'Save',
-                            active: false
+                            active: false,
                         },
                         draft: {
                             label: 'Save Draft',
-                            active: false
+                            active: false,
                         },
                         cancel: {
                             label: 'Cancel',
-                            active: false
+                            active: false,
                         },
                         goBack: {
                             label: 'Back',
                             active: true,
-                            url: '/pages/logistics/stock-managements'
-                        }
-                    }
-                }
+                            url: '/pages/logistics/stock-managements',
+                        },
+                    },
+                },
             })
         );
 
@@ -361,7 +361,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
             this._$notice.open(message, 'error', {
                 verticalPosition: 'bottom',
-                horizontalPosition: 'right'
+                horizontalPosition: 'right',
             });
         }
     }
@@ -380,21 +380,21 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     RxwebValidators.minNumber({
                         value: -source.stock,
                         conditionalExpression: (x, y) => x.qtyChange !== 0,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
                         conditionalExpression: (x, y) => x.qtyChange === 0,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.Both,
                         allowDecimal: false,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
-            warehouseCatalogueReasonId: [{ value: '', disabled: false }]
+            warehouseCatalogueReasonId: [{ value: '', disabled: false }],
         });
 
         this.skus.push(row);
@@ -436,13 +436,13 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 this.sort.sort({
                     id: 'updated_at',
                     start: 'desc',
-                    disableClear: true
+                    disableClear: true,
                 });
 
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
+                        payload: this._breadCrumbs,
                     })
                 );
 
@@ -454,7 +454,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 // Fetch request stock management reason
                 this.store.dispatch(
                     StockManagementReasonActions.fetchStockManagementReasonRequest({
-                        payload: { params: { paginate: false }, method: null }
+                        payload: { params: { paginate: false }, method: null },
                     })
                 );
 
@@ -475,10 +475,10 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                         .get('whName')
                         .valueChanges.pipe(
                             debounceTime(1000),
-                            filter(v => !!v),
+                            filter((v) => !!v),
                             takeUntil(this._unSubs$)
                         )
-                        .subscribe(v => {
+                        .subscribe((v) => {
                             this._initTable(v);
                         });
                 } else if (this.pageType === 'edit') {
@@ -487,9 +487,9 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     this.store
                         .select(WarehouseSelectors.selectAll)
                         .pipe(takeUntil(this._unSubs$))
-                        .subscribe(data => {
+                        .subscribe((data) => {
                             if (data && data.length > 0) {
-                                const selectedData = data.find(v => v.id === id);
+                                const selectedData = data.find((v) => v.id === id);
                                 this.selectedWhName = selectedData.name;
                                 this.form.get('whName').setValue(id);
                             }
@@ -499,9 +499,11 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 this.dataSource$ = this.store
                     .select(StockManagementCatalogueSelectors.selectAll)
                     .pipe(
-                        tap(data => {
+                        tap((data) => {
+                            this.skus.clear();
+
                             if (data && data.length > 0) {
-                                data.forEach(v => this.createSkusForm(v));
+                                data.forEach((v) => this.createSkusForm(v));
                             }
                         })
                     );
@@ -519,7 +521,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     .pipe(
                         distinctUntilChanged(),
                         debounceTime(1000),
-                        filter(v => {
+                        filter((v) => {
                             if (v) {
                                 return (
                                     !!this.domSanitizer.sanitize(SecurityContext.HTML, v) &&
@@ -531,7 +533,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                         }),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this.table.nativeElement.scrollTop = 0;
                         this._onRefreshTable(this.form.get('whName').value);
                     });
@@ -540,7 +542,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 this.store
                     .select(StockManagementCatalogueSelectors.getIsRefresh)
                     .pipe(
-                        filter(v => !!v),
+                        filter((v) => !!v),
                         takeUntil(this._unSubs$)
                     )
                     .subscribe(() => this._onRefreshTable(this.form.get('whName').value));
@@ -554,11 +556,11 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
-            skus: this.formBuilder.array([])
+            skus: this.formBuilder.array([]),
         });
     }
 
@@ -566,7 +568,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -582,14 +584,14 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 data['search'] = [
                     {
                         fieldName: 'keyword',
-                        keyword: query
-                    }
+                        keyword: query,
+                    },
                 ];
             }
 
             this.store.dispatch(
                 StockManagementCatalogueActions.fetchStockManagementCataloguesRequest({
-                    payload: { params: data, warehouseId }
+                    payload: { params: data, warehouseId },
                 })
             );
         }
@@ -616,7 +618,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
             warehouseCatalogueReasonId:
                 body.skus[idx].unlimitedStock === true
                     ? null
-                    : body.skus[idx].warehouseCatalogueReasonId
+                    : body.skus[idx].warehouseCatalogueReasonId,
         });
 
         this.form.get(['skus', idx]).reset();
