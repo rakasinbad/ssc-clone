@@ -2592,14 +2592,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 this.conditionsCtrl[idx].disable({ onlySelf: true });
             }
 
-            // Disable conditionBase control (New Tier)
-            this.conditionsCtrl[idx].get('conditionBase').disable({ onlySelf: true });
+            if (promoConditions.length !== 1) {
+                // Disable conditionBase control (New Tier)
+                this.conditionsCtrl[idx].get('conditionBase').disable({ onlySelf: true });
 
-            // Disable benefitType control (New Tier)
-            this.conditionsCtrl[idx].get('benefitType').disable({ onlySelf: true });
+                // Disable benefitType control (New Tier)
+                this.conditionsCtrl[idx].get('benefitType').disable({ onlySelf: true });
 
-            // Disable benefitCatalogueId control (New Tier)
-            this.conditionsCtrl[idx].get('benefitCatalogueId').disable({ onlySelf: true });
+                // Disable benefitCatalogueId control (New Tier)
+                this.conditionsCtrl[idx].get('benefitCatalogueId').disable({ onlySelf: true });
+            }
 
             this.conditions.at(idx).get('id').setValue(item.id);
 

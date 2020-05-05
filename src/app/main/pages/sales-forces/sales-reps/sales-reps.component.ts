@@ -10,7 +10,7 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTable, MatTableDataSource } from '@angular/material';
@@ -37,6 +37,8 @@ import { SalesRep, SalesRepBatchActions } from './models';
 import { SalesRepActions } from './store/actions';
 import * as fromSalesReps from './store/reducers';
 import { SalesRepSelectors } from './store/selectors';
+import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
 
 @Component({
     selector: 'app-sales-reps',
@@ -47,16 +49,16 @@ import { SalesRepSelectors } from './store/selectors';
         trigger('enterAnimation', [
             transition(':enter', [
                 style({ transform: 'translateX(100%)', opacity: 0 }),
-                animate('500ms', style({ transform: 'translateX(0)', opacity: 1 }))
+                animate('500ms', style({ transform: 'translateX(0)', opacity: 1 })),
             ]),
             transition(':leave', [
                 style({ transform: 'translateX(0)', opacity: 1 }),
-                animate('500ms', style({ transform: 'translateX(100%)', opacity: 0 }))
-            ])
-        ])
+                animate('500ms', style({ transform: 'translateX(100%)', opacity: 0 })),
+            ]),
+        ]),
     ],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
@@ -65,39 +67,48 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Sales Rep'
+            label: 'Sales Rep',
         },
         batchAction: {
             actions: [
                 { id: 'active', label: 'Set Active' },
                 { id: 'inactive', label: 'Set Inactive' },
-                { id: 'delete', label: 'Remove' }
+                { id: 'delete', label: 'Remove' },
             ],
-            onActionSelected: $event => this.onSelectedActions($event.id as SalesRepBatchActions),
-            show: false
+            onActionSelected: ($event) => this.onSelectedActions($event.id as SalesRepBatchActions),
+            show: false,
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
-            }
+            },
         },
         add: {
             permissions: ['SRM.SR.CREATE'],
             onClick: () => {
                 this.router.navigate(['/pages/sales-force/sales-rep/new']);
-            }
+            },
         },
         export: {
             permissions: ['SRM.SR.EXPORT'],
             useAdvanced: true,
-            pageType: 'sales-rep'
+            pageType: 'sales-rep',
         },
         import: {
             permissions: ['SRM.SR.IMPORT'],
             useAdvanced: true,
-            pageType: 'sales-rep'
-        }
+            pageType: 'sales-rep',
+        },
+        // filter: {
+        //     permissions: [],
+        //     onClick: () => {
+        //         // this._$sinbadFilterService.config = 'Filter Sales Rep';
+        //         // this._$sinbadFilterService.setConfig({ title: 'Filter Sales Rep' });
+
+        //         this._fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+        //     },
+        // },
     };
 
     search: FormControl = new FormControl('');
@@ -112,7 +123,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         'area',
         'joining-date',
         'status',
-        'actions'
+        'actions',
     ];
     dataSource: MatTableDataSource<SalesRep>;
     selection: SelectionModel<SalesRep> = new SelectionModel<SalesRep>(true, []);
@@ -138,14 +149,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private readonly _breadCrumbs: IBreadcrumbs[] = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Sales Management'
+            title: 'Sales Management',
         },
         {
-            title: 'Sales Rep'
-        }
+            title: 'Sales Rep',
+        },
     ];
 
     constructor(
@@ -153,10 +164,11 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         private ngxPermissions: NgxPermissionsService,
         private router: Router,
         private store: Store<fromSalesReps.FeatureState>,
+        private _fuseSidebarService: FuseSidebarService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private cd$: ChangeDetectorRef
+        private _$sinbadFilterService: SinbadFilterService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -175,7 +187,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sort.sort({
             id: 'id',
             start: 'desc',
-            disableClear: true
+            disableClear: true,
         });
 
         this._initPage();
@@ -183,7 +195,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         this._initTable();
 
         this.dataSource$ = this.store.select(SalesRepSelectors.selectAll).pipe(
-            tap(source => {
+            tap((source) => {
                 this.dataSource = new MatTableDataSource(source);
                 this.selection.clear();
             })
@@ -197,7 +209,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(1000),
-                filter(v => {
+                filter((v) => {
                     if (v) {
                         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
                     }
@@ -206,7 +218,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(v => {
+            .subscribe((v) => {
                 this._onRefreshTable();
             });
     }
@@ -219,8 +231,8 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ...this.cardHeaderConfig,
                 batchAction: {
                     ...this.cardHeaderConfig.batchAction,
-                    show: this.selection.hasValue()
-                }
+                    show: this.selection.hasValue(),
+                },
             };
         });
 
@@ -252,14 +264,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource.data.forEach(row => this.selection.select(row));
+            : this.dataSource.data.forEach((row) => this.selection.select(row));
     }
 
     joinPortfolios(value: Array<Portfolio>): string {
         if (value && value.length > 0) {
             const invoiceGroup = value
-                .filter(v => v.type !== 'direct')
-                .map(v => v.invoiceGroup.name);
+                .filter((v) => v.type !== 'direct')
+                .map((v) => v.invoiceGroup.name);
 
             return invoiceGroup.length > 0 ? invoiceGroup.join(', ') : '-';
         }
@@ -290,14 +302,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
 
-        canUpdate.then(hasAccess => {
+        canUpdate.then((hasAccess) => {
             if (hasAccess) {
                 this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
                 this.store.dispatch(SalesRepActions.confirmChangeStatusSalesRep({ payload: item }));
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -311,12 +323,12 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         switch (action) {
             case SalesRepBatchActions.ACTIVE:
                 {
-                    const ids = this.selection.selected.map(r => r.id);
+                    const ids = this.selection.selected.map((r) => r.id);
 
                     if (ids && ids.length > 0) {
                         this.store.dispatch(
                             SalesRepActions.batchSetActiveSalesRepsRequest({
-                                payload: { ids, status: SalesRepBatchActions.ACTIVE }
+                                payload: { ids, status: SalesRepBatchActions.ACTIVE },
                             })
                         );
                     }
@@ -325,12 +337,12 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
             case SalesRepBatchActions.INACTIVE:
                 {
-                    const ids = this.selection.selected.map(r => r.id);
+                    const ids = this.selection.selected.map((r) => r.id);
 
                     if (ids && ids.length > 0) {
                         this.store.dispatch(
                             SalesRepActions.batchSetInactiveSalesRepsRequest({
-                                payload: { ids, status: SalesRepBatchActions.INACTIVE }
+                                payload: { ids, status: SalesRepBatchActions.INACTIVE },
                             })
                         );
                     }
@@ -339,12 +351,12 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
             case SalesRepBatchActions.DELETE:
                 {
-                    const ids = this.selection.selected.map(r => r.id);
+                    const ids = this.selection.selected.map((r) => r.id);
 
                     if (ids && ids.length > 0) {
                         this.store.dispatch(
                             SalesRepActions.batchDeleteSalesRepsRequest({
-                                payload: { ids, status: SalesRepBatchActions.DELETE }
+                                payload: { ids, status: SalesRepBatchActions.DELETE },
                             })
                         );
                     }
@@ -384,7 +396,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
 
-                canUpdate.then(hasAccess => {
+                canUpdate.then((hasAccess) => {
                     if (hasAccess) {
                         this.displayedColumns = [
                             'checkbox',
@@ -397,7 +409,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                             'area',
                             'joining-date',
                             'status',
-                            'actions'
+                            'actions',
                         ];
                     } else {
                         this.displayedColumns = [
@@ -410,7 +422,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                             'invoice-group',
                             'area',
                             'joining-date',
-                            'status'
+                            'status',
                         ];
                     }
                 });
@@ -428,7 +440,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
+                        payload: this._breadCrumbs,
                     })
                 );
                 break;
@@ -439,7 +451,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -457,8 +469,8 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 data['search'] = [
                     {
                         fieldName: 'keyword',
-                        keyword: query
-                    }
+                        keyword: query,
+                    },
                 ];
             } else {
                 localStorage.removeItem('filter.search.salesreps');
