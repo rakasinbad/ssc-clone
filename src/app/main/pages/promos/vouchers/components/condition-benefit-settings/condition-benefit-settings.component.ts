@@ -244,7 +244,7 @@ export class VoucherTriggerConditionBenefitSettingsComponent
                 debounceTime(300),
                 tap((value) =>
                     HelperService.debug(
-                        'PERIOD TARGET PROMO TRIGGER INFORMATON FORM STATUS CHANGED:',
+                        'SUPPLIER VOUCHER CONDITION INFORMATION FORM STATUS CHANGED:',
                         value
                     )
                 ),
@@ -258,10 +258,10 @@ export class VoucherTriggerConditionBenefitSettingsComponent
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(200),
-                // tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
+                // tap(value => HelperService.debug('SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED', value)),
                 tap((value) =>
                     HelperService.debug(
-                        '[BEFORE MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED',
+                        '[BEFORE MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
                         value
                     )
                 ),
@@ -292,7 +292,7 @@ export class VoucherTriggerConditionBenefitSettingsComponent
                 })),
                 tap((value) =>
                     HelperService.debug(
-                        '[AFTER MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED',
+                        '[AFTER MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
                         value
                     )
                 ),

@@ -377,7 +377,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 debounceTime(300),
                 tap((value) =>
                     HelperService.debug(
-                        'PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM STATUS CHANGED:',
+                        'SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM STATUS CHANGED:',
                         value
                     )
                 ),
@@ -391,10 +391,10 @@ export class VoucherCustomerSegmentationSettingsComponent
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(200),
-                // tap(value => HelperService.debug('PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED', value)),
+                // tap(value => HelperService.debug('SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED', value)),
                 tap((value) =>
                     HelperService.debug(
-                        '[BEFORE MAP] PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
+                        '[BEFORE MAP] SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
                         value
                     )
                 ),
@@ -439,7 +439,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 }),
                 tap((value) =>
                     HelperService.debug(
-                        '[AFTER MAP] PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
+                        '[AFTER MAP] SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
                         value
                     )
                 ),
@@ -456,7 +456,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 debounceTime(100),
                 tap((value) =>
                     HelperService.debug(
-                        'PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS SEGMENTATION BASE VALUE CHANGED:',
+                        'SUPPLIER VOUCHER SEGMENTATION SETTINGS SEGMENTATION BASE VALUE CHANGED:',
                         value
                     )
                 ),

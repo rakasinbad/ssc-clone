@@ -53,7 +53,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
     search: FormControl = new FormControl();
 
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'supplier-voucher-id',
         'voucher-name',
         'eligible-product',
@@ -261,7 +261,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
-                        'checkbox',
+                        // 'checkbox',
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
@@ -274,7 +274,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                     ];
                 } else {
                     this.displayedColumns = [
-                        'checkbox',
+                        // 'checkbox',
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',

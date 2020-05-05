@@ -338,7 +338,7 @@ export class VoucherGeneralInformationComponent
                 debounceTime(300),
                 tap((value) =>
                     HelperService.debug(
-                        'PERIOD TARGET PROMO GENERAL INFORMATION FORM STATUS CHANGED:',
+                        'SUPPLIER VOUCHER GENERAL INFORMATION FORM STATUS CHANGED:',
                         value
                     )
                 ),
@@ -352,10 +352,10 @@ export class VoucherGeneralInformationComponent
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(200),
-                // tap(value => HelperService.debug('PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
+                // tap(value => HelperService.debug('SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED', value)),
                 tap((value) =>
                     HelperService.debug(
-                        '[BEFORE MAP] PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED',
+                        '[BEFORE MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
                         value
                     )
                 ),
@@ -364,7 +364,7 @@ export class VoucherGeneralInformationComponent
                 }),
                 tap((value) =>
                     HelperService.debug(
-                        '[AFTER MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED',
+                        '[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
                         value
                     )
                 ),
@@ -437,39 +437,39 @@ export class VoucherGeneralInformationComponent
         this.maxActiveStartDate = activeEndDate.toDate();
     }
 
-    onFileBrowse(ev: Event): void {
-        const inputEl = ev.target as HTMLInputElement;
+    // onFileBrowse(ev: Event): void {
+    //     const inputEl = ev.target as HTMLInputElement;
 
-        if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0];
+    //     if (inputEl.files && inputEl.files.length > 0) {
+    //         const file = inputEl.files[0];
 
-            if (file) {
-                const photoField = this.form.get('imageSuggestion');
+    //         if (file) {
+    //             const photoField = this.form.get('imageSuggestion');
 
-                const fileReader = new FileReader();
+    //             const fileReader = new FileReader();
 
-                fileReader.onload = () => {
-                    photoField.setValue(fileReader.result);
-                    this.tmpImageSuggestion.setValue(file.name);
+    //             fileReader.onload = () => {
+    //                 photoField.setValue(fileReader.result);
+    //                 this.tmpImageSuggestion.setValue(file.name);
 
-                    if (photoField.invalid) {
-                        photoField.markAsTouched();
-                    }
-                };
+    //                 if (photoField.invalid) {
+    //                     photoField.markAsTouched();
+    //                 }
+    //             };
 
-                fileReader.readAsDataURL(file);
-            }
-        }
+    //             fileReader.readAsDataURL(file);
+    //         }
+    //     }
 
-        return;
-    }
+    //     return;
+    // }
 
     ngOnInit(): void {
         /** Menyiapkan form. */
         this.initForm();
 
         this.checkRoute();
-        // this.initFormCheck();
+        this.initFormCheck();
         // this.initCatalogueBrand();
         // this.initCatalogueUnitState();
         // this.initCatalogueCategoryState();

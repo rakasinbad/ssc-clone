@@ -227,42 +227,25 @@ export class VoucherBenefitInformationComponent
                 debounceTime(200),
                 tap((value) =>
                     HelperService.debug(
-                        '[BEFORE MAP] PERIOD TARGET PROMO REWARD INFORMATON FORM VALUE CHANGED',
+                        'SUPPLIER VOUCHER BENEFIT INFORMATON FORM VALUE CHANGED',
                         value
                     )
                 ),
-                map(() => {
-                    const rawValue = this.form.getRawValue();
-
-                    const newValue = {
-                        ...rawValue,
-                    };
-
-                    newValue.trigger = {
-                        ...newValue.trigger,
-                        base: newValue.trigger.base,
-                        chosenSku:
-                            newValue.trigger.chosenSku.length === 0
-                                ? []
-                                : newValue.trigger.chosenSku,
-                        chosenBrand:
-                            newValue.trigger.chosenBrand.length === 0
-                                ? []
-                                : newValue.trigger.chosenBrand,
-                        chosenFaktur:
-                            newValue.trigger.chosenFaktur.length === 0
-                                ? []
-                                : newValue.trigger.chosenFaktur,
-                    };
-
-                    return newValue;
-                }),
-                tap((value) =>
-                    HelperService.debug(
-                        '[AFTER MAP] PERIOD TARGET PROMO REWARD INFORMATON FORM VALUE CHANGED',
-                        value
-                    )
-                ),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         '[BEFORE MAP] SUPPLIER VOUCHER BENEFIT INFORMATON FORM VALUE CHANGED',
+                //         value
+                //     )
+                // ),
+                // map(() => {
+                //     const rawValue = this.form.getRawValue();
+                // }),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         '[AFTER MAP] SUPPLIER VOUCHER BENEFIT INFORMATON FORM VALUE CHANGED',
+                //         value
+                //     )
+                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
@@ -275,7 +258,7 @@ export class VoucherBenefitInformationComponent
                 debounceTime(100),
                 tap((value) =>
                     HelperService.debug(
-                        'PERIOD TARGET PROMO REWARD INFORMATION CONDITION BASE VALUE CHANGED:',
+                        'SUPPLIER VOUCHER BENEFIT INFORMATION CONDITION BASE VALUE CHANGED:',
                         value
                     )
                 ),
