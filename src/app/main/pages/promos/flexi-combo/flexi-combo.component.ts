@@ -36,16 +36,16 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
         add: {
             permissions: [],
         },
-        export: {
-            permissions: [],
-            useAdvanced: true,
-            pageType: '',
-        },
-        import: {
-            permissions: [],
-            useAdvanced: true,
-            pageType: '',
-        },
+        // export: {
+        //     permissions: [],
+        //     useAdvanced: true,
+        //     pageType: '',
+        // },
+        // import: {
+        //     permissions: [],
+        //     useAdvanced: true,
+        //     pageType: '',
+        // },
     };
 
     private breadCrumbs: IBreadcrumbs[] = [
