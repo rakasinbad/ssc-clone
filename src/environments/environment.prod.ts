@@ -15,5 +15,6 @@ export const environment = {
     hiddenMenu: [
         'dashboard',
         'period-target-promo', // Period Target Promo
+        'voucher', // Supplier Voucher
     ],
 };
