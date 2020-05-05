@@ -84,16 +84,16 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
             ],
             onChanged: (value: { id: string; label: string }) => this.clickTabViewBy(value.id)
         },
-        export: {
-            permissions: [],
-            useAdvanced: true,
-            pageType: ''
-        },
-        import: {
-            permissions: [],
-            useAdvanced: true,
-            pageType: ''
-        }
+        // export: {
+        //     permissions: [],
+        //     useAdvanced: true,
+        //     pageType: ''
+        // },
+        // import: {
+        //     permissions: [],
+        //     useAdvanced: true,
+        //     pageType: ''
+        // }
     };
 
     // Untuk menyimpan kolom default.
