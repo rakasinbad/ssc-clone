@@ -103,8 +103,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         // filter: {
         //     permissions: [],
         //     onClick: () => {
-        //         // this._$sinbadFilterService.config = 'Filter Sales Rep';
-        //         // this._$sinbadFilterService.setConfig({ title: 'Filter Sales Rep' });
+        //         this._$sinbadFilterService.setConfig({ title: 'Filter Sales Rep' });
 
         //         this._fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
         //     },

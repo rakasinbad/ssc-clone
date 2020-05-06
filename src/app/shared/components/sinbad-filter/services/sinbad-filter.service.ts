@@ -6,8 +6,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class SinbadFilterService {
-    cobaTitle = 'Filter';
-
     private _config$: BehaviorSubject<SinbadFilterConfig> = new BehaviorSubject({
         title: 'Filter',
     });
