@@ -24,7 +24,7 @@
 
             <ng-template matExpansionPanelContent>
                 <div fxLayout="column">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" fxFlex>
                         <input
                             matInput
                             name="minTarget"
@@ -45,8 +45,9 @@
                             prefix="Rp"
                         />
                     </mat-form-field>
+                </div>
 
-                    <!-- <input
+                <!-- <input
                         matInput
                         class="sinbad__filter-input"
                         name="minTarget"
@@ -58,7 +59,6 @@
                         name="maxTarget"
                         placeholder="Maximum"
                     /> -->
-                </div>
             </ng-template>
         </mat-expansion-panel>
     </mat-list>
@@ -75,9 +75,11 @@
             </mat-expansion-panel-header>
 
             <ng-template matExpansionPanelContent>
-                <mat-form-field appearance="outline">
-                    <input matInput name="salesName" placeholder="Input Sales Name" />
-                </mat-form-field>
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <input matInput name="salesName" placeholder="Input Sales Name" />
+                    </mat-form-field>
+                </div>
             </ng-template>
         </mat-expansion-panel>
     </mat-list>
@@ -133,7 +135,43 @@
             </mat-expansion-panel-header>
 
             <ng-template matExpansionPanelContent>
-                Some deferred content
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [matDatepicker]="startDatePicker"
+                            autocomplete="off"
+                            name="startDate"
+                            formControlName="startDate"
+                            placeholder="Start"
+                        />
+                        <mat-datepicker-toggle
+                            matSuffix
+                            [for]="startDatePicker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker
+                            touchUi
+                            #startDatePicker
+                            [disabled]="false"
+                        ></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [matDatepicker]="endDatePicker"
+                            autocomplete="off"
+                            name="endDate"
+                            formControlName="endDate"
+                            placeholder="End"
+                        />
+                        <mat-datepicker-toggle
+                            matSuffix
+                            [for]="endDatePicker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
+                    </mat-form-field>
+                </div>
             </ng-template>
         </mat-expansion-panel>
     </mat-list>
@@ -150,7 +188,15 @@
             </mat-expansion-panel-header>
 
             <ng-template matExpansionPanelContent>
-                Some deferred content
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <input matInput name="minQty" placeholder="Minimum Qty" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <input matInput name="maxQty" placeholder="Maximum Qty" />
+                    </mat-form-field>
+                </div>
             </ng-template>
         </mat-expansion-panel>
     </mat-list>

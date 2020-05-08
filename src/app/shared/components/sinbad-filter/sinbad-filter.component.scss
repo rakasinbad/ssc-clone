@@ -50,7 +50,7 @@
     .sinbad__filter-checkbox--container {
         overflow-x: auto;
         overflow-y: hidden;
-        background-color: dodgerblue;
+        // background-color: dodgerblue;
     }
 
     .sinbad__filter-checkbox {
@@ -62,7 +62,7 @@
         margin: -5px;
 
         > * {
-            flex: 1 1 100px;
+            flex: 1 1 20px;
             margin: 5px;
         }
     }
