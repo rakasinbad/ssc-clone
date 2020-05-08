@@ -1,5 +1,3 @@
-import { HelperService } from 'app/shared/helpers';
-
 interface ExportFilterFormConfiguration {
     required: boolean;
     placeholder?: string;
@@ -9,13 +7,13 @@ interface ExportFilterFormConfiguration {
 export interface ExportFormFilterConfiguration {
     requireFilter?: boolean;
     filterAspect?: {
-        status?: ExportFilterFormConfiguration,
+        status?: ExportFilterFormConfiguration;
         rangeDate?: ExportFilterFormConfiguration & {
             maxRange: {
-                number: number,
-                duration: 'year' | 'month' | 'week' | 'day',
-            }
-        },
+                number: number;
+                duration: 'year' | 'month' | 'week' | 'day';
+            };
+        };
     };
 }
 
@@ -40,79 +38,81 @@ export interface ExportConfiguration {
         | 'portfolios'
         | 'journey-plans'
         | 'sr-assignment'
-        | 'sales-rep';
+        | 'sales-rep'
+        | 'warehouses';
+
     // Menentukan konfigurasi setiap export.
     configuration?: ExportFilterConfiguration;
 }
 
 export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
-    'orders': {
+    orders: {
         requireFilter: true,
         filterAspect: {
             status: {
                 label: 'Order Status',
                 placeholder: 'Choose Order Status',
-                required: true
+                required: true,
             },
             rangeDate: {
                 required: true,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
+                    duration: 'month',
+                },
+            },
+        },
     },
-    'catalogues': {
+    catalogues: {
         requireFilter: true,
         filterAspect: {
             status: {
                 label: 'Catalogue Status',
                 placeholder: 'Choose Catalogue Status',
-                required: true
+                required: true,
             },
             rangeDate: {
                 required: false,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
+                    duration: 'month',
+                },
+            },
+        },
     },
-    'payments': {
+    payments: {
         requireFilter: true,
         filterAspect: {
             status: {
                 label: 'Payment Status',
                 placeholder: 'Choose Payment Status',
-                required: true
+                required: true,
             },
             rangeDate: {
                 required: true,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
+                    duration: 'month',
+                },
+            },
+        },
     },
-    'stores': {
+    stores: {
         requireFilter: true,
         filterAspect: {
             status: {
                 label: 'Store List Status',
                 placeholder: 'Choose Store List Status',
-                required: true
+                required: true,
             },
             rangeDate: {
                 required: false,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
+                    duration: 'month',
+                },
+            },
+        },
     },
     'journey-plans': {
         requireFilter: true,
@@ -121,13 +121,13 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
                 required: true,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
+                    duration: 'month',
+                },
+            },
+        },
     },
-    'portfolios': {
-        requireFilter: false
+    portfolios: {
+        requireFilter: false,
     },
     'sr-assignment': {
         requireFilter: true,
@@ -135,16 +135,16 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
             status: {
                 label: 'SR Assignment Status',
                 placeholder: 'Choose SR Assignment Status',
-                required: true
+                required: true,
             },
             rangeDate: {
                 required: false,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
+                    duration: 'month',
+                },
+            },
+        },
     },
     'sales-rep': {
         requireFilter: true,
@@ -152,15 +152,18 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
             status: {
                 label: 'Sales Rep Status',
                 placeholder: 'Choose Sales Rep Status',
-                required: true
+                required: true,
             },
             rangeDate: {
                 required: false,
                 maxRange: {
                     number: 1,
-                    duration: 'month'
-                }
-            }
-        }
-    }
+                    duration: 'month',
+                },
+            },
+        },
+    },
+    warehouses: {
+        requireFilter: false,
+    },
 };
