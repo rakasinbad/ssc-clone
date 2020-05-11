@@ -1605,7 +1605,7 @@
                                     [initialSelection]="form.get('chosenWarehouse').value || []"
                                     [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
-                                    [required]="true"
+                                    [required]="false"
                                     (selected)="onWarehouseSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1638,7 +1638,7 @@
                                     placeholder="Choose Store Type"
                                     title="Select Store Type"
                                     segmentationType="type"
-                                    [required]="true"
+                                    [required]="false"
                                     (selected)="onStoreTypeSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1671,7 +1671,7 @@
                                     placeholder="Choose Store Group"
                                     title="Select Store Group"
                                     segmentationType="group"
-                                    [required]="true"
+                                    [required]="false"
                                     (selected)="onStoreGroupSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1704,7 +1704,7 @@
                                     placeholder="Choose Store Channel"
                                     title="Select Store Channel"
                                     segmentationType="channel"
-                                    [required]="true"
+                                    [required]="false"
                                     (selected)="onStoreChannelSelected($event)"
                                     fxFlex="50"
                                 >
@@ -1737,7 +1737,7 @@
                                     placeholder="Choose Store Cluster"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
-                                    [required]="true"
+                                    [required]="false"
                                     (selected)="onStoreClusterSelected($event)"
                                     fxFlex="50"
                                 >

@@ -695,55 +695,55 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         } else if (ev.value === SegmentationBase.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
 
-            this.form.get('chosenWarehouse').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
+            // this.form.get('chosenWarehouse').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            //     RxwebValidators.choice({
+            //         minLength: 1,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            // ]);
 
-            this.form.get('chosenStoreType').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
+            // this.form.get('chosenStoreType').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            //     RxwebValidators.choice({
+            //         minLength: 1,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            // ]);
 
-            this.form.get('chosenStoreGroup').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
+            // this.form.get('chosenStoreGroup').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            //     RxwebValidators.choice({
+            //         minLength: 1,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            // ]);
 
-            this.form.get('chosenStoreChannel').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
+            // this.form.get('chosenStoreChannel').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            //     RxwebValidators.choice({
+            //         minLength: 1,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            // ]);
 
-            this.form.get('chosenCluster').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
+            // this.form.get('chosenCluster').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            //     RxwebValidators.choice({
+            //         minLength: 1,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //     }),
+            // ]);
         }
 
         this.form.get('chosenStore').updateValueAndValidity();
@@ -2403,17 +2403,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenWarehouseCtrl.setValue([]);
                 }
 
-                chosenWarehouseCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+                // chosenWarehouseCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.choice({
+                //         minLength: 1,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                // ]);
 
-                chosenWarehouseCtrl.updateValueAndValidity();
+                // chosenWarehouseCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Type
                 if (row.promoTypes && row.promoTypes.length > 0) {
@@ -2432,17 +2432,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenStoreTypeCtrl.setValue([]);
                 }
 
-                chosenStoreTypeCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+                // chosenStoreTypeCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.choice({
+                //         minLength: 1,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                // ]);
 
-                chosenStoreTypeCtrl.updateValueAndValidity();
+                // chosenStoreTypeCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Group
                 if (row.promoGroups && row.promoGroups.length > 0) {
@@ -2461,17 +2461,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenStoreGroupCtrl.setValue([]);
                 }
 
-                chosenStoreGroupCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+                // chosenStoreGroupCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.choice({
+                //         minLength: 1,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                // ]);
 
-                chosenStoreGroupCtrl.updateValueAndValidity();
+                // chosenStoreGroupCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Channel
                 if (row.promoChannels && row.promoChannels.length > 0) {
@@ -2490,17 +2490,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenStoreChannelCtrl.setValue([]);
                 }
 
-                chosenStoreChannelCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+                // chosenStoreChannelCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.choice({
+                //         minLength: 1,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                // ]);
 
-                chosenStoreChannelCtrl.updateValueAndValidity();
+                // chosenStoreChannelCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Cluster
                 if (row.promoClusters && row.promoClusters.length > 0) {
@@ -2519,17 +2519,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenStoreClusterCtrl.setValue([]);
                 }
 
-                chosenStoreClusterCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+                // chosenStoreClusterCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.choice({
+                //         minLength: 1,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                // ]);
 
-                chosenStoreClusterCtrl.updateValueAndValidity();
+                // chosenStoreClusterCtrl.updateValueAndValidity();
             }
         }
 
