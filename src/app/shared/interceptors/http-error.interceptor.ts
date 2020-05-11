@@ -61,7 +61,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                         url: err.url,
                         message: err.message,
                         error: err.error,
-                        body: req.body
+                        body: req.body,
+                        httpError: err,
                     };
                 }
 
