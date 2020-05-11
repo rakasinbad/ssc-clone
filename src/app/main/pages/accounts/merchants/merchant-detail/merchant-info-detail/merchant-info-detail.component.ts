@@ -3,7 +3,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,7 @@ import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, Subject } from 'rxjs';
 
+import { Warehouse } from '../../models/warehouse.model';
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
@@ -24,7 +25,7 @@ import { StoreSelectors } from '../../store/selectors';
     styleUrls: ['./merchant-info-detail.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     store$: Observable<SupplierStore>;
@@ -80,7 +81,15 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
             return '-';
         }
 
-        return salesRep.map(salesRep => salesRep.fullName).join(',<br/>');
+        return salesRep.map((salesRep) => salesRep.fullName).join(',<br/>');
+    }
+
+    generateWarehouse(warehouse: Warehouse[]): string {
+        if (!warehouse || !Array.isArray(warehouse) || warehouse.length === 0) {
+            return '-';
+        }
+
+        return warehouse.map((row) => `${row.code || '-'} (${row.name})`).join(',<br/>');
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -95,9 +104,9 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
         this.matDialog.open(ShowImageComponent, {
             data: {
                 title: title || '',
-                url: imageUrl || ''
+                url: imageUrl || '',
             },
-            disableClose: true
+            disableClose: true,
         });
     }
 }

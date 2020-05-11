@@ -554,7 +554,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td class="info-title">
+                                    <td class="info-title multi">
                                         <ng-container
                                             *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                         >
@@ -766,6 +766,43 @@
                                         <ngx-skeleton-loader
                                             *ngIf="
                                                 !(store$ | async)?.store?.storeSegment?.name &&
+                                                (isLoading$ | async)
+                                            "
+                                            [theme]="{ width: '100px' }"
+                                        ></ngx-skeleton-loader>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title multi">
+                                        <ng-container
+                                            *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+                                        >
+                                            Warehouse
+                                        </ng-container>
+                                        <ngx-skeleton-loader
+                                            *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+                                            [theme]="{ width: '60px' }"
+                                        ></ngx-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <ng-container
+                                            *ngIf="
+                                                (store$ | async)?.store?.warehouses?.length ||
+                                                !(isLoading$ | async)
+                                            "
+                                        >
+                                            <span
+                                                [innerHTML]="
+                                                    generateWarehouse(
+                                                        (store$ | async)?.store?.warehouses
+                                                    ) | safe: 'html'
+                                                "
+                                            ></span>
+                                        </ng-container>
+                                        <ngx-skeleton-loader
+                                            *ngIf="
+                                                !(store$ | async)?.store?.warehouses?.length &&
                                                 (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
