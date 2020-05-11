@@ -9,7 +9,7 @@ const routes: Routes = [
     {
         path: 'flexi-combo',
         loadChildren: () =>
-            import('./flexi-combo/flexi-combo.module').then(m => m.FlexiComboModule),
+            import('./flexi-combo/flexi-combo.module').then((m) => m.FlexiComboModule),
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -18,22 +18,24 @@ const routes: Routes = [
                     'HEAD_OF_SALES',
                     'BOS',
                     'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ]
+                    'SUPPLIER_ADMIN',
+                ],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
                 navigationExtras: {
                     replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
-        }
+                    skipLocationChange: true,
+                },
+            },
+        },
     },
     {
         path: 'period-target-promo',
         loadChildren: () =>
-            import('./period-target-promo/period-target-promo.module').then(m => m.PeriodTargetPromoModule),
+            import('./period-target-promo/period-target-promo.module').then(
+                (m) => m.PeriodTargetPromoModule
+            ),
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -42,22 +44,45 @@ const routes: Routes = [
                     'HEAD_OF_SALES',
                     'BOS',
                     'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ]
+                    'SUPPLIER_ADMIN',
+                ],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
                 navigationExtras: {
                     replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
-        }
-    }
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
+        path: 'voucher',
+        loadChildren: () => import('./vouchers/voucher.module').then((m) => m.VoucherModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN',
+                ],
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class PromosRoutingModule {}
