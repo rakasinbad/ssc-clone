@@ -13,12 +13,12 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, combineLatest } from 'rxjs';
 import {
-    Voucher,
+    SupplierVoucher,
     VoucherGeneralInformation as GeneralInformation,
-    VoucherTriggerInformation as TriggerInformation,
-    PeriodTargetConditionBenefit as ConditionBenefit,
-    VoucherReward as PromoReward,
-    VoucherCustomerSegmentationSettings as CustomerSegmentation,
+    VoucherConditionSettings,
+    VoucherEligibleProduct as EligibleProduct,
+    VoucherBenefit as Benefit,
+    VoucherSegmentationSettings as EligibleStore,
 } from '../../models';
 import { FeatureState as VoucherCoreState } from '../../store/reducers';
 import { VoucherSelectors } from '../../store/selectors';
@@ -29,7 +29,7 @@ import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { VoucherActions } from '../../store/actions';
 import { HelperService } from 'app/shared/helpers';
-import { VoucherPayload } from '../../models/voucher.model';
+import { SupplierVoucherPayload } from '../../models/voucher.model';
 import * as moment from 'moment';
 
 type IFormMode = 'add' | 'view' | 'edit';
@@ -54,14 +54,14 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     formMode: IFormMode = 'view';
     // tslint:disable-next-line
     formValue:
-        | Partial<Voucher>
+        | Partial<SupplierVoucher>
         | Partial<GeneralInformation>
-        | Partial<TriggerInformation>
-        | Partial<ConditionBenefit>
-        | Partial<PromoReward>
-        | Partial<CustomerSegmentation>;
+        | Partial<VoucherConditionSettings>
+        | Partial<EligibleProduct>
+        | Partial<Benefit>
+        | Partial<EligibleStore>;
 
-    selectedPromo$: Observable<Voucher>;
+    selectedPromo$: Observable<SupplierVoucher>;
 
     @ViewChild('detail', { static: true, read: ElementRef }) promoDetailRef: ElementRef<
         HTMLElement
@@ -163,39 +163,39 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     onFormValueChanged(
         $event:
             | GeneralInformation
-            | TriggerInformation
-            | ConditionBenefit
-            | PromoReward
-            | CustomerSegmentation
+            | VoucherConditionSettings
+            | EligibleProduct
+            | Benefit
+            | EligibleStore
     ): void {
         switch (this.section) {
             case 'general-information': {
                 const {
                     id,
-                    sellerId,
+                    externalId,
                     name,
                     platform,
                     maxRedemptionPerBuyer,
-                    budget,
+                    // budget,
                     activeStartDate,
                     activeEndDate,
-                    imageSuggestion,
-                    isAllowCombineWithVoucher,
-                    isFirstBuy,
+                    // imageSuggestion,
+                    // isAllowCombineWithVoucher,
+                    // isFirstBuy,
                 } = $event as GeneralInformation;
 
                 this.formValue = {
                     id,
-                    sellerId,
+                    externalId,
                     name,
                     platform,
                     maxRedemptionPerBuyer,
-                    budget,
+                    // budget,
                     activeStartDate,
                     activeEndDate,
-                    imageSuggestion,
-                    isAllowCombineWithVoucher,
-                    isFirstBuy,
+                    // imageSuggestion,
+                    // isAllowCombineWithVoucher,
+                    // isFirstBuy,
                 };
 
                 break;
@@ -207,7 +207,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     chosenSku = [],
                     chosenBrand = [],
                     chosenFaktur = [],
-                } = $event as TriggerInformation;
+                } = $event as VoucherConditionSettings;
 
                 this.formValue = {
                     id,
@@ -220,12 +220,18 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 break;
             }
             case 'condition-benefit': {
-                const { id, calculationMechanism, conditionBenefit } = $event as ConditionBenefit;
+                const {
+                    id,
+                    base,
+                    qty,
+                    orderValue
+                } = $event as EligibleProduct;
 
                 this.formValue = {
                     id,
-                    calculationMechanism,
-                    conditionBenefit,
+                    base,
+                    qty,
+                    orderValue
                 };
 
                 break;
@@ -233,20 +239,16 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
             case 'reward': {
                 const {
                     id,
-                    rewardId,
-                    rewardValidDate,
-                    trigger,
-                    condition,
-                    miscellaneous,
-                } = $event as PromoReward;
+                    base,
+                    percent,
+                    rupiah
+                } = $event as Benefit;
 
                 this.formValue = {
                     id,
-                    rewardId,
-                    rewardValidDate,
-                    trigger,
-                    condition,
-                    miscellaneous,
+                    base,
+                    percent,
+                    rupiah
                 };
 
                 break;
@@ -256,22 +258,22 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     id,
                     segmentationBase,
                     chosenStore = [],
-                    chosenWarehouse = [],
-                    chosenStoreType = [],
-                    chosenStoreGroup = [],
-                    chosenStoreChannel = [],
-                    chosenStoreCluster = [],
-                } = $event as CustomerSegmentation;
+                    // chosenWarehouse = [],
+                    // chosenStoreType = [],
+                    // chosenStoreGroup = [],
+                    // chosenStoreChannel = [],
+                    // chosenStoreCluster = [],
+                } = $event as EligibleStore;
 
                 this.formValue = {
                     id,
                     segmentationBase,
                     chosenStore,
-                    chosenWarehouse,
-                    chosenStoreType,
-                    chosenStoreGroup,
-                    chosenStoreChannel,
-                    chosenStoreCluster,
+                    // chosenWarehouse,
+                    // chosenStoreType,
+                    // chosenStoreGroup,
+                    // chosenStoreChannel,
+                    // chosenStoreCluster,
                 };
 
                 break;
@@ -316,24 +318,18 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     private processGeneralInformationForm(): void {
         const formValue = this.formValue as Partial<GeneralInformation>;
 
-        const payload: Partial<VoucherPayload> = {
-            externalId: formValue.sellerId,
+        const payload: Partial<SupplierVoucherPayload> = {
+            externalId: formValue.externalId,
             name: formValue.name,
             platform: formValue.platform,
             maxRedemptionPerStore: +formValue.maxRedemptionPerBuyer,
-            promoBudget: +formValue.budget,
             startDate: ((formValue.activeStartDate as unknown) as moment.Moment).toISOString(),
             endDate: ((formValue.activeEndDate as unknown) as moment.Moment).toISOString(),
-            voucherCombine: !!formValue.isAllowCombineWithVoucher,
-            firstBuy: !!formValue.isFirstBuy,
+            description: formValue.description,
         };
 
-        if (formValue.imageSuggestion.startsWith('data:image')) {
-            payload.image = formValue.imageSuggestion;
-        }
-
         this.VoucherStore.dispatch(
-            VoucherActions.updateVoucherRequest({
+            VoucherActions.updateSupplierVoucherRequest({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -343,10 +339,10 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         );
     }
 
-    private processTriggerInformationForm(): void {
-        const formValue = this.formValue as Partial<TriggerInformation>;
+    private processVoucherConditionSettingsForm(): void {
+        const formValue = this.formValue as Partial<VoucherConditionSettings>;
 
-        const payload: Partial<VoucherPayload> = {
+        const payload: Partial<SupplierVoucherPayload> = {
             base:
                 formValue.base === 'sku'
                     ? 'sku'
@@ -374,7 +370,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         this.VoucherStore.dispatch(
-            VoucherActions.updateVoucherRequest({
+            VoucherActions.updateSupplierVoucherRequest({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -384,74 +380,24 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         );
     }
 
-    private processConditionBenefitForm(): void {
-        const formValue = this.formValue as Partial<ConditionBenefit>;
+    private processEligibleProductForm(): void {
+        const formValue = this.formValue as Partial<EligibleProduct>;
 
-        const payload: Partial<VoucherPayload> = {
+        const payload: Partial<SupplierVoucherPayload> = {
             // CONDITION & BENEFIT SETTINGS
-            conditions: [],
+            conditionBase: formValue.base
         };
 
-        const isMultiplication = !!formValue.conditionBenefit[0].benefit.qty.multiplicationOnly;
-
-        // Klasifikasi "conditions" untuk Condition & Benefit Settings
-        for (const [index, { id, condition, benefit }] of formValue.conditionBenefit.entries()) {
-            if ((isMultiplication && index === 0) || !isMultiplication) {
-                // Condition Payload Master.
-                const conditionPayload = {
-                    conditionBase:
-                        condition.base === 'qty'
-                            ? 'qty'
-                            : condition.base === 'order-value'
-                            ? 'value'
-                            : 'unknown',
-                    benefitType:
-                        benefit.base === 'qty'
-                            ? 'qty'
-                            : benefit.base === 'cash'
-                            ? 'amount'
-                            : benefit.base === 'percent'
-                            ? 'percent'
-                            : 'unknown',
-                    multiplication: isMultiplication,
-                };
-
-                /**
-                 * Payload untuk ID condition.
-                 *
-                 * Jika ID nya valid, maka itu penambahan condition & benefit baru.
-                 * Jika ID valid, maka itu ada perubahan condition & benefit.
-                 */
-                if (id) {
-                    conditionPayload['id'] = id;
-                }
-
-                // Payload untuk Condition.
-                if (conditionPayload.conditionBase === 'qty') {
-                    conditionPayload['conditionQty'] = +condition.qty;
-                } else if (conditionPayload.conditionBase === 'value') {
-                    conditionPayload['conditionValue'] = +condition.value;
-                }
-
-                // Payload untuk Benefit.
-                if (conditionPayload.benefitType === 'qty') {
-                    conditionPayload['benefitCatalogueId'] = +benefit.qty.bonusSku.id;
-                    conditionPayload['benefitBonusQty'] = +benefit.qty.bonusQty;
-                } else if (conditionPayload.benefitType === 'amount') {
-                    conditionPayload['benefitRebate'] = +benefit.cash.rebate;
-                } else if (conditionPayload.benefitType === 'percent') {
-                    conditionPayload['benefitDiscount'] = +benefit.percent.percentDiscount;
-                    conditionPayload['benefitMaxRebate'] = +benefit.percent.maxRebate;
-                }
-
-                payload.conditions.push(conditionPayload);
-            }
+        if (payload.conditionBase === 'qty') {
+            payload.conditionQty = formValue.qty;
+        } else if (payload.conditionBase === 'value') {
+            payload.conditionQty = formValue.orderValue;
         }
 
         this.VoucherStore.dispatch(
-            VoucherActions.updateVoucherRequest({
+            VoucherActions.updateSupplierVoucherRequest({
                 payload: {
-                    id: formValue.id,
+                    id: String(formValue.id),
                     data: payload,
                     source: 'detail-edit',
                 },
@@ -459,10 +405,10 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         );
     }
 
-    private processCustomerSegmentationForm(): void {
-        const formValue = this.formValue as Partial<CustomerSegmentation>;
+    private processEligibleStoreForm(): void {
+        const formValue = this.formValue as Partial<EligibleStore>;
 
-        const payload: Partial<VoucherPayload> = {
+        const payload: Partial<SupplierVoucherPayload> = {
             target:
                 formValue.segmentationBase === 'direct-store'
                     ? 'store'
@@ -478,32 +424,32 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 storeId: formValue.chosenStore.map((supplierStore) => supplierStore.storeId),
             };
         } else if (payload.target === 'segmentation') {
-            payload.dataTarget = {
-                warehouseId:
-                    formValue.chosenWarehouse.length === 0
-                        ? 'all'
-                        : formValue.chosenWarehouse.map((warehouse) => warehouse.id),
-                typeId:
-                    formValue.chosenStoreType.length === 0
-                        ? 'all'
-                        : formValue.chosenStoreType.map((storeType) => storeType.id),
-                groupId:
-                    formValue.chosenStoreGroup.length === 0
-                        ? 'all'
-                        : formValue.chosenStoreGroup.map((storeGroup) => storeGroup.id),
-                clusterId:
-                    formValue.chosenStoreCluster.length === 0
-                        ? 'all'
-                        : formValue.chosenStoreCluster.map((storeCluster) => storeCluster.id),
-                channelId:
-                    formValue.chosenStoreChannel.length === 0
-                        ? 'all'
-                        : formValue.chosenStoreChannel.map((storeChannel) => storeChannel.id),
-            };
+            // payload.dataTarget = {
+            //     warehouseId:
+            //         formValue.chosenWarehouse.length === 0
+            //             ? 'all'
+            //             : formValue.chosenWarehouse.map((warehouse) => warehouse.id),
+            //     typeId:
+            //         formValue.chosenStoreType.length === 0
+            //             ? 'all'
+            //             : formValue.chosenStoreType.map((storeType) => storeType.id),
+            //     groupId:
+            //         formValue.chosenStoreGroup.length === 0
+            //             ? 'all'
+            //             : formValue.chosenStoreGroup.map((storeGroup) => storeGroup.id),
+            //     clusterId:
+            //         formValue.chosenStoreCluster.length === 0
+            //             ? 'all'
+            //             : formValue.chosenStoreCluster.map((storeCluster) => storeCluster.id),
+            //     channelId:
+            //         formValue.chosenStoreChannel.length === 0
+            //             ? 'all'
+            //             : formValue.chosenStoreChannel.map((storeChannel) => storeChannel.id),
+            // };
         }
 
         this.VoucherStore.dispatch(
-            VoucherActions.updateVoucherRequest({
+            VoucherActions.updateSupplierVoucherRequest({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -514,65 +460,20 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     private processRewardForm(): void {
-        const formValue = this.formValue as Partial<PromoReward>;
+        const formValue = this.formValue as Partial<Benefit>;
 
-        const payload: Partial<VoucherPayload> = {
-            reward: {
-                startDate: ((formValue.rewardValidDate
-                    .activeStartDate as unknown) as moment.Moment).toISOString(),
-                endDate: ((formValue.rewardValidDate
-                    .activeEndDate as unknown) as moment.Moment).toISOString(),
-                triggerBase:
-                    formValue.trigger.base === 'sku'
-                        ? 'sku'
-                        : formValue.trigger.base === 'brand'
-                        ? 'brand'
-                        : formValue.trigger.base === 'faktur'
-                        ? 'invoiceGroup'
-                        : 'unknown',
-                conditionBase:
-                    formValue.condition.base === 'qty'
-                        ? 'qty'
-                        : formValue.condition.base === 'order-value'
-                        ? 'value'
-                        : 'unknown',
-                termCondition: formValue.miscellaneous.description,
-            },
+        const payload: Partial<SupplierVoucherPayload> = {
+            benefitType: formValue.base,
         };
 
-        if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
-            payload.reward.image = formValue.miscellaneous.couponImage;
-        }
-        /**
-         * Payload untuk ID condition.
-         *
-         * Jika ID nya valid, maka itu penambahan condition & benefit baru.
-         * Jika ID valid, maka itu ada perubahan condition & benefit.
-         */
-        if (formValue.rewardId) {
-            payload.reward.id = formValue.rewardId;
-        }
-
-        // Klasifikasi "reward -> conditionBase" untuk Reward Information.
-        if (payload.reward.conditionBase === 'qty') {
-            payload.reward['conditionQty'] = formValue.condition.qty;
-        } else if (payload.reward.conditionBase === 'value') {
-            payload.reward['conditionValue'] = formValue.condition.value;
-        }
-
-        // Klasifikasi "reward -> triggerBase" untuk Trigger Information.
-        if (payload.reward.triggerBase === 'sku') {
-            payload.reward['catalogueId'] = formValue.trigger.chosenSku.map((sku) => sku.id);
-        } else if (payload.reward.triggerBase === 'brand') {
-            payload.reward['brandId'] = formValue.trigger.chosenBrand.map((brand) => brand.id);
-        } else if (payload.reward.triggerBase === 'invoiceGroup') {
-            payload.reward['invoiceGroupId'] = formValue.trigger.chosenFaktur.map(
-                (faktur) => faktur.id
-            );
+        if (payload.benefitType === 'amount') {
+            payload['benefitRebate'] = formValue.rupiah;
+        } else if (payload.reward.conditionBase === 'percent') {
+            payload['benefitPercent'] = formValue.percent;
         }
 
         this.VoucherStore.dispatch(
-            VoucherActions.updateVoucherRequest({
+            VoucherActions.updateSupplierVoucherRequest({
                 payload: {
                     id: formValue.id,
                     data: payload,
@@ -616,7 +517,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.VoucherStore.dispatch(VoucherActions.setRefreshStatus({ payload: false }));
 
                     this.VoucherStore.dispatch(
-                        VoucherActions.fetchVoucherRequest({
+                        VoucherActions.fetchSupplierVoucherRequest({
                             payload: catalogue.id,
                         })
                     );
@@ -652,15 +553,15 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                             break;
                         }
                         case 'trigger': {
-                            this.processTriggerInformationForm();
+                            this.processVoucherConditionSettingsForm();
                             break;
                         }
                         case 'condition-benefit': {
-                            this.processConditionBenefitForm();
+                            this.processEligibleProductForm();
                             break;
                         }
                         case 'customer-segmentation': {
-                            this.processCustomerSegmentationForm();
+                            this.processEligibleStoreForm();
                             break;
                         }
                         case 'reward': {
@@ -679,7 +580,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         this.navigationSub$.next();
         this.navigationSub$.complete();
 
-        this.VoucherStore.dispatch(VoucherActions.deselectVoucher());
+        this.VoucherStore.dispatch(VoucherActions.deselectSupplierVoucher());
         this.VoucherStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 }

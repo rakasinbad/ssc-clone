@@ -1,183 +1,188 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
-import {
-    Catalogue,
-    StoreSegmentationGroup,
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-} from 'app/main/pages/catalogues/models';
+import { Catalogue, StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
 import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { Store } from 'app/shared/models/store.model';
 import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 import { StoreSegmentationType } from 'app/shared/components/selection-tree/store-segmentation/models';
 
-type PromoStatus = 'active' | 'inactive';
+type VoucherStatus = 'active' | 'inactive';
 
-interface IVoucher extends Timestamp {
+interface ISupplierVoucher extends Timestamp {
     id: string;
     supplierId: string;
+    storeCouponId: string;
     externalId: string;
     code: string;
     name: string;
     platform: string;
-    isComulative: boolean;
-    maxRedemptionPerBuyer: string;
-    promoBudget: number;
+    maxRedemptionPerStore: string;
+    maxVoucherRedemption: number;
     startDate: string;
     endDate: string;
+    description: string;
+    shortDescription: string;
     imageUrl: string;
-    voucherCombine: boolean;
-    firstBuy: boolean;
     base: string;
-    type: string;
+    conditionBase: string;
+    conditionQty: TNullable<string>;
+    conditionValue: TNullable<number>;
+    benefitType: string;
+    benefitDiscount: TNullable<number>;
+    benefitMaxRebate: TNullable<number>;
+    benefitRebate: TNullable<number>;
+    benefitCatalogueId: TNullable<string>;
+    benefitBonusQty: TNullable<number>;
     target: string;
-    status: PromoStatus;
-    clusterId: TNullable<string>;
-    groupId: TNullable<string>;
-    channelId: TNullable<string>;
-    invoiceGroupId: TNullable<string>;
-    // TODO: Under development because need more in-depth structure.
-    promoConditions?: Array<any>;
-    storeTargetCoupons?: Array<any>;
-    promoStores?: Array<any>;
-    promoWarehouses?: Array<any>;
-    promoTypes?: Array<any>;
-    promoGroups?: Array<any>;
-    promoClusters?: Array<any>;
-    promoChannels?: Array<any>;
-    promoCatalogues?: Array<any>;
-    promoBrands?: Array<any>;
-    promoInvoiceGroups?: Array<any>;
-}
-
-export class Voucher implements IVoucher {
-    // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
-    id: string;
-    supplierId: string;
-    externalId: string;
-    code: string;
-    name: string;
-    platform: string;
-    isComulative: boolean;
-    maxRedemptionPerBuyer: string;
-    promoBudget: number;
-    startDate: string;
-    endDate: string;
-    imageUrl: string;
-    voucherCombine: boolean;
-    firstBuy: boolean;
-    base: string;
-    type: string;
-    target: string;
-    status: PromoStatus;
-    clusterId: TNullable<string>;
-    groupId: TNullable<string>;
-    channelId: TNullable<string>;
-    invoiceGroupId: TNullable<string>;
+    status: VoucherStatus;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
     // TODO: Under development because need more in-depth structure.
-    promoConditions?: Array<any>;
-    storeTargetCoupons?: Array<any>;
-    promoStores?: Array<{ store: Store }>;
-    promoWarehouses?: Array<{ warehouse: Warehouse }>;
-    promoTypes?: Array<{ type: StoreSegmentationType }>;
-    promoGroups?: Array<{ group: StoreSegmentationGroup }>;
-    promoClusters?: Array<{ cluster: StoreSegmentationCluster }>;
-    promoChannels?: Array<{ channel: StoreSegmentationChannel }>;
-    promoCatalogues?: Array<{ catalogue: Catalogue }>;
-    promoBrands?: Array<{ brand: Brand }>;
-    promoInvoiceGroups?: Array<{ invoiceGroup: InvoiceGroup }>;
+    voucherCatalogues?: Array<any>;
+    voucherBrands?: Array<any>;
+    voucherInvoiceGroups?: Array<any>;
+    voucherStores?: Array<any>;
+    voucherWarehouses?: Array<any>;
+    voucherTypes?: Array<any>;
+    voucherGroups?: Array<any>;
+    voucherClusters?: Array<any>;
+    voucherChannels?: Array<any>;
+}
 
-    constructor(data: IVoucher) {
+export class SupplierVoucher implements ISupplierVoucher {
+    // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
+    id: string;
+    supplierId: string;
+    storeCouponId: string;
+    externalId: string;
+    code: string;
+    name: string;
+    platform: string;
+    maxRedemptionPerStore: string;
+    maxVoucherRedemption: number;
+    startDate: string;
+    endDate: string;
+    description: string;
+    shortDescription: string;
+    imageUrl: string;
+    base: string;
+    conditionBase: string;
+    conditionQty: TNullable<string>;
+    conditionValue: TNullable<number>;
+    benefitType: string;
+    benefitDiscount: TNullable<number>;
+    benefitMaxRebate: TNullable<number>;
+    benefitRebate: TNullable<number>;
+    benefitCatalogueId: TNullable<string>;
+    benefitBonusQty: TNullable<number>;
+    target: string;
+    status: VoucherStatus;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+    // TODO: Under development because need more in-depth structure.
+    voucherCatalogues?: Array<any>;
+    voucherBrands?: Array<any>;
+    voucherInvoiceGroups?: Array<any>;
+    voucherStores?: Array<any>;
+    voucherWarehouses?: Array<any>;
+    voucherTypes?: Array<any>;
+    voucherGroups?: Array<any>;
+    voucherClusters?: Array<any>;
+    voucherChannels?: Array<any>;
+
+    constructor(data: ISupplierVoucher) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
             supplierId,
+            storeCouponId,
             externalId,
             code,
             name,
             platform,
-            isComulative,
-            maxRedemptionPerBuyer,
-            promoBudget,
+            maxRedemptionPerStore,
+            maxVoucherRedemption,
             startDate,
             endDate,
+            description,
+            shortDescription,
             imageUrl,
-            voucherCombine,
-            firstBuy,
             base,
-            type,
+            conditionBase,
+            conditionQty,
+            conditionValue,
+            benefitType,
+            benefitDiscount,
+            benefitMaxRebate,
+            benefitRebate,
+            benefitCatalogueId,
+            benefitBonusQty,
             target,
             status,
-            clusterId,
-            groupId,
-            channelId,
-            invoiceGroupId,
             createdAt,
             updatedAt,
             deletedAt,
-            promoConditions = [],
-            storeTargetCoupons = [],
-            promoStores = [],
-            promoWarehouses = [],
-            promoTypes = [],
-            promoGroups = [],
-            promoClusters = [],
-            promoChannels = [],
-            promoCatalogues = [],
-            promoBrands = [],
-            promoInvoiceGroups = [],
+            voucherCatalogues = [],
+            voucherBrands = [],
+            voucherInvoiceGroups = [],
+            voucherStores = [],
+            voucherWarehouses = [],
+            voucherTypes = [],
+            voucherGroups = [],
+            voucherClusters = [],
+            voucherChannels = [],
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
         this.supplierId = supplierId;
+        this.storeCouponId = storeCouponId;
         this.externalId = externalId;
         this.code = code;
         this.name = name;
         this.platform = platform;
-        this.isComulative = isComulative;
-        this.maxRedemptionPerBuyer = maxRedemptionPerBuyer;
-        this.promoBudget = promoBudget;
+        this.maxRedemptionPerStore = maxRedemptionPerStore;
+        this.maxVoucherRedemption = maxVoucherRedemption;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.description = description;
+        this.shortDescription = shortDescription;
         this.imageUrl = imageUrl;
-        this.voucherCombine = voucherCombine;
-        this.firstBuy = firstBuy;
         this.base = base;
-        this.type = type;
+        this.conditionBase = conditionBase;
+        this.conditionQty = conditionQty;
+        this.conditionValue = conditionValue;
+        this.benefitType = benefitType;
+        this.benefitDiscount = benefitDiscount;
+        this.benefitMaxRebate = benefitMaxRebate;
+        this.benefitRebate = benefitRebate;
+        this.benefitCatalogueId = benefitCatalogueId;
+        this.benefitBonusQty = benefitBonusQty;
         this.target = target;
         this.status = status;
-        this.clusterId = clusterId;
-        this.groupId = groupId;
-        this.channelId = channelId;
-        this.invoiceGroupId = invoiceGroupId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
-        // TODO: Under development because need more in-depth structure.
-        this.promoConditions = promoConditions;
-        this.storeTargetCoupons = storeTargetCoupons;
-        this.promoStores = promoStores;
-        this.promoWarehouses = promoWarehouses;
-        this.promoTypes = promoTypes;
-        this.promoGroups = promoGroups;
-        this.promoClusters = promoClusters;
-        this.promoChannels = promoChannels;
-        this.promoCatalogues = promoCatalogues;
-        this.promoBrands = promoBrands;
-        this.promoInvoiceGroups = promoInvoiceGroups;
+        this.voucherCatalogues = voucherCatalogues;
+        this.voucherBrands = voucherBrands;
+        this.voucherInvoiceGroups = voucherInvoiceGroups;
+        this.voucherStores = voucherStores;
+        this.voucherWarehouses = voucherWarehouses;
+        this.voucherTypes = voucherTypes;
+        this.voucherGroups = voucherGroups;
+        this.voucherClusters = voucherClusters;
+        this.voucherChannels = voucherChannels;
     }
 }
 
-interface IVoucherPayload {
+interface ISupplierVoucherPayload {
     [key: string]: any;
 }
 
-export class VoucherPayload implements IVoucherPayload {
+export class SupplierVoucherPayload implements ISupplierVoucherPayload {
     [key: string]: any;
 }
 

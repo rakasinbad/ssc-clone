@@ -2,7 +2,7 @@ import { Catalogue } from 'app/main/pages/catalogues/models';
 import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
-interface IVoucherTriggerInformation {
+interface IVoucherConditionSettings {
     id?: string;
     base: string;
     chosenSku?: Array<Catalogue>;
@@ -10,14 +10,14 @@ interface IVoucherTriggerInformation {
     chosenFaktur?: Array<InvoiceGroup>;
 }
 
-export class VoucherTriggerInformation implements IVoucherTriggerInformation {
+export class VoucherConditionSettings implements IVoucherConditionSettings {
     id?: string;
     base: string;
     chosenSku?: Array<Catalogue>;
     chosenBrand?: Array<Brand>;
     chosenFaktur?: Array<InvoiceGroup>;
 
-    constructor(data: IVoucherTriggerInformation) {
+    constructor(data: IVoucherConditionSettings) {
         const { id, base, chosenSku = [], chosenBrand = [], chosenFaktur = [] } = data;
 
         this.id = id;

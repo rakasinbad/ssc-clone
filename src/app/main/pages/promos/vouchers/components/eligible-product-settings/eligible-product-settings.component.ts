@@ -55,7 +55,7 @@ import { VoucherSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
@@ -65,7 +65,7 @@ import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { Selection } from 'app/shared/components/multiple-selection/models';
-import { VoucherTriggerInformationService } from '../trigger-information/services';
+import { VoucherConditionSettingsService } from '../condition-settings/services';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -75,14 +75,14 @@ import { VoucherTriggerInformationService } from '../trigger-information/service
 type IFormMode = 'add' | 'view' | 'edit';
 
 @Component({
-    selector: 'voucher-trigger-condition-benefit-settings',
-    templateUrl: './condition-benefit-settings.component.html',
-    styleUrls: ['./condition-benefit-settings.component.scss'],
+    selector: 'voucher-eligible-product-settings',
+    templateUrl: './eligible-product-settings.component.html',
+    styleUrls: ['./eligible-product-settings.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class VoucherTriggerConditionBenefitSettingsComponent
+export class VoucherEligibleProductSettingsComponent
     implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
@@ -116,7 +116,7 @@ export class VoucherTriggerConditionBenefitSettingsComponent
     dialog: ApplyDialogService<ElementRef<HTMLElement>>;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
-    @Output() formValueChange: EventEmitter<Voucher> = new EventEmitter<Voucher>();
+    @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -160,7 +160,7 @@ export class VoucherTriggerConditionBenefitSettingsComponent
         private store: NgRxStore<VoucherCoreFeatureState>,
         private promo$: VoucherApiService,
         private errorMessage$: ErrorMessageService,
-        private triggerInformation$: VoucherTriggerInformationService
+        private conditionSettings$: VoucherConditionSettingsService
     ) {}
 
     private updateFormView(): void {
@@ -197,7 +197,80 @@ export class VoucherTriggerConditionBenefitSettingsComponent
         });
     }
 
-    private prepareEdit(): void {}
+    private prepareEdit(): void {
+        combineLatest([this.trigger$, this.store.select(VoucherSelectors.getSelectedVoucher)])
+            .pipe(
+                withLatestFrom(
+                    this.store.select(AuthSelectors.getUserSupplier),
+                    ([_, voucher], userSupplier) => ({ voucher, userSupplier })
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe(({ voucher, userSupplier }) => {
+                // Butuh mengambil data period target promo jika belum ada di state.
+                if (!voucher) {
+                    // Mengambil ID dari parameter URL.
+                    const { id } = this.route.snapshot.params;
+
+                    this.store.dispatch(
+                        VoucherActions.fetchSupplierVoucherRequest({
+                            payload: id as string,
+                        })
+                    );
+
+                    this.store.dispatch(
+                        VoucherActions.selectSupplierVoucher({
+                            payload: id as string,
+                        })
+                    );
+
+                    return;
+                } else {
+                    // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
+                    if (voucher.supplierId !== userSupplier.supplierId) {
+                        this.store.dispatch(VoucherActions.resetSupplierVoucher());
+
+                        this.notice$.open('Voucher tidak ditemukan.', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+
+                        setTimeout(
+                            () => this.router.navigate(['pages', 'promos', 'voucher']),
+                            1000
+                        );
+
+                        return;
+                    }
+                }
+
+                this.form.patchValue({
+                    id: voucher.id,
+                    base: voucher.conditionBase,
+                    qty: voucher.conditionQty,
+                    orderValue: voucher.conditionValue,
+                });
+
+                if (voucher.benefitType === 'qty') {
+                    this.form.get('qty').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('orderValue').disable({ onlySelf: true, emitEvent: true });
+                } else if (voucher.benefitType === 'order-value') {
+                    this.form.get('qty').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('orderValue').enable({ onlySelf: true, emitEvent: true });
+                }
+
+                if (this.formMode === 'view') {
+                    this.form.get('base').disable({ onlySelf: true, emitEvent: true });
+                } else {
+                    this.form.get('base').enable({ onlySelf: true, emitEvent: true });
+                }
+
+                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+                this.form.markAsDirty({ onlySelf: false });
+                this.form.markAllAsTouched();
+                this.form.markAsPristine();
+            });
+    }
 
     private initForm(): void {
         this.form = this.fb.group({
@@ -212,7 +285,7 @@ export class VoucherTriggerConditionBenefitSettingsComponent
                 ],
             ],
             orderValue: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -258,49 +331,30 @@ export class VoucherTriggerConditionBenefitSettingsComponent
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(200),
-                // tap(value => HelperService.debug('SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED', value)),
-                tap((value) =>
-                    HelperService.debug(
-                        '[BEFORE MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                        value
-                    )
-                ),
-                // map(value => {
-                //     let formValue = {
-                //         ...value.productInfo,
-                //         detail: value.productInfo.information,
-                //         unitOfMeasureId: value.productInfo.uom,
-                //     };
-
-                //     if (formValue.category.length > 0) {
-                //         formValue = {
-                //             ...formValue,
-                //             firstCatalogueCategoryId: value.productInfo.category[0].id,
-                //             lastCatalogueCategoryId: value.productInfo.category.length === 1
-                //                                     ? value.productInfo.category[0].id
-                //                                     : value.productInfo.category[value.productInfo.category.length - 1].id,
-                //         };
-                //     }
-
-                //     return formValue;
-                // }),
-                map((value) => ({
-                    ...value,
-                    chosenSku: !value.chosenSku ? [] : value.chosenSku,
-                    chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
-                    chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
-                })),
-                tap((value) =>
-                    HelperService.debug(
-                        '[AFTER MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                        value
-                    )
-                ),
+                tap(value => HelperService.debug('SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED', value)),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         '[BEFORE MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
+                //         value
+                //     )
+                // ),
+                // map((value) => ({
+                //     ...value,
+                //     chosenSku: !value.chosenSku ? [] : value.chosenSku,
+                //     chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
+                //     chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
+                // })),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         '[AFTER MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
+                //         value
+                //     )
+                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
                 this.formValueChange.emit(value);
-                this.triggerInformation$.setValue(value);
+                this.conditionSettings$.setValue(value);
             });
     }
 
@@ -357,41 +411,6 @@ export class VoucherTriggerConditionBenefitSettingsComponent
         this.dialog.closed$.subscribe({
             complete: () => HelperService.debug('DIALOG HINT CLOSED', {}),
         });
-    }
-
-    onCatalogueSelected(event: Catalogue, control: FormControl): void {
-        control.markAsDirty({ onlySelf: true });
-        control.markAsTouched({ onlySelf: true });
-
-        if (!event) {
-            control.setValue('');
-        } else {
-            control.setValue(event);
-        }
-
-        control.updateValueAndValidity();
-    }
-
-    onBrandSelected(event: Array<Brand>): void {
-        this.form.get('chosenBrand').markAsDirty({ onlySelf: true });
-        this.form.get('chosenBrand').markAsTouched({ onlySelf: true });
-
-        if (event.length === 0) {
-            this.form.get('chosenBrand').setValue('');
-        } else {
-            this.form.get('chosenBrand').setValue(event);
-        }
-    }
-
-    onFakturSelected(event: Array<InvoiceGroup>): void {
-        this.form.get('chosenFaktur').markAsDirty({ onlySelf: true });
-        this.form.get('chosenFaktur').markAsTouched({ onlySelf: true });
-
-        if (event.length === 0) {
-            this.form.get('chosenFaktur').setValue('');
-        } else {
-            this.form.get('chosenFaktur').setValue(event);
-        }
     }
 
     ngOnInit(): void {

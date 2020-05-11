@@ -44,7 +44,7 @@ import { VoucherSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
@@ -102,7 +102,7 @@ export class VoucherBenefitInformationComponent
     formFieldLength: number = 40;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
-    @Output() formValueChange: EventEmitter<Voucher> = new EventEmitter<Voucher>();
+    @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -179,12 +179,85 @@ export class VoucherBenefitInformationComponent
         });
     }
 
-    private prepareEdit(): void {}
+    private prepareEdit(): void {
+        combineLatest([this.trigger$, this.store.select(VoucherSelectors.getSelectedVoucher)])
+            .pipe(
+                withLatestFrom(
+                    this.store.select(AuthSelectors.getUserSupplier),
+                    ([_, voucher], userSupplier) => ({ voucher, userSupplier })
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe(({ voucher, userSupplier }) => {
+                // Butuh mengambil data period target promo jika belum ada di state.
+                if (!voucher) {
+                    // Mengambil ID dari parameter URL.
+                    const { id } = this.route.snapshot.params;
+
+                    this.store.dispatch(
+                        VoucherActions.fetchSupplierVoucherRequest({
+                            payload: id as string,
+                        })
+                    );
+
+                    this.store.dispatch(
+                        VoucherActions.selectSupplierVoucher({
+                            payload: id as string,
+                        })
+                    );
+
+                    return;
+                } else {
+                    // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
+                    if (voucher.supplierId !== userSupplier.supplierId) {
+                        this.store.dispatch(VoucherActions.resetSupplierVoucher());
+
+                        this.notice$.open('Voucher tidak ditemukan.', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+
+                        setTimeout(
+                            () => this.router.navigate(['pages', 'promos', 'voucher']),
+                            1000
+                        );
+
+                        return;
+                    }
+                }
+
+                this.form.patchValue({
+                    id: voucher.id,
+                    base: voucher.benefitType,
+                    rupiah: voucher.benefitRebate,
+                    percent: voucher.benefitDiscount,
+                });
+
+                if (voucher.benefitType === 'amount') {
+                    this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
+                } else if (voucher.benefitType === 'percent') {
+                    this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
+                }
+
+                if (this.formMode === 'view') {
+                    this.form.get('base').disable({ onlySelf: true, emitEvent: true });
+                } else {
+                    this.form.get('base').enable({ onlySelf: true, emitEvent: true });
+                }
+
+                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+                this.form.markAsDirty({ onlySelf: false });
+                this.form.markAllAsTouched();
+                this.form.markAsPristine();
+            });
+    }
 
     private initForm(): void {
         this.form = this.fb.group({
             id: [''],
-            base: ['rupiah'],
+            base: ['amount'],
             rupiah: [
                 '',
                 [
@@ -194,7 +267,7 @@ export class VoucherBenefitInformationComponent
                 ],
             ],
             percent: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -265,7 +338,7 @@ export class VoucherBenefitInformationComponent
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
-                if (value === 'rupiah') {
+                if (value === 'amount') {
                     this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
                 } else if (value === 'percent') {

@@ -16,10 +16,10 @@ import { VoucherListComponent } from './components/list/list.component';
 import { VoucherFormComponent } from './pages/form/form.component';
 import { VoucherDetailComponent } from './pages/detail/detail.component';
 import { VoucherGeneralInformationComponent } from './components/general-information/general-information.component';
-import { VoucherTriggerInformationComponent } from './components/trigger-information/trigger-information.component';
-import { VoucherCustomerSegmentationSettingsComponent } from './components/customer-segmentation-settings/customer-segmentation-settings.component';
+import { VoucherConditionSettingsComponent } from './components/condition-settings/condition-settings.component';
+import { VoucherEligibleProductSettingsComponent } from './components/eligible-product-settings/eligible-product-settings.component';
 import { VoucherBenefitInformationComponent } from './components/benefit/benefit.component';
-import { VoucherTriggerConditionBenefitSettingsComponent } from './components/condition-benefit-settings/condition-benefit-settings.component';
+import { VoucherEligibleStoreSettingsComponent } from './components/eligible-store-settings/eligible-store-settings.component';
 
 @NgModule({
     declarations: [
@@ -28,10 +28,10 @@ import { VoucherTriggerConditionBenefitSettingsComponent } from './components/co
         VoucherDetailComponent,
         VoucherFormComponent,
         VoucherGeneralInformationComponent,
-        VoucherTriggerInformationComponent,
-        VoucherCustomerSegmentationSettingsComponent,
+        VoucherConditionSettingsComponent,
+        VoucherEligibleStoreSettingsComponent,
         VoucherBenefitInformationComponent,
-        VoucherTriggerConditionBenefitSettingsComponent,
+        VoucherEligibleProductSettingsComponent,
     ],
     imports: [
         CommonModule,

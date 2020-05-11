@@ -44,7 +44,7 @@
                             fxLayoutAlign="start center"
                             fxLayoutGap="16px"
                         >
-                            <mat-radio-button value="rupiah"> Rp </mat-radio-button>
+                            <mat-radio-button value="amount"> Rp </mat-radio-button>
                             <mat-radio-button value="percent"> % </mat-radio-button>
                         </mat-radio-group>
                     </div>
@@ -54,7 +54,7 @@
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="start stretch"
-                        [fxHide]="form.get('base').value !== 'rupiah'"
+                        [fxHide]="form.get('base').value !== 'amount'"
                     >
                         <label
                             fxFlexAlign="center"

@@ -26,7 +26,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as VoucherCoreState } from '../../store/reducers';
 import { IQueryParams } from 'app/shared/models/query.model';
 // import { LifecyclePlatform } from 'app/shared/models/global.model';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { VoucherSelectors } from '../../store/selectors';
 import { HelperService } from 'app/shared/helpers';
 
@@ -58,16 +58,16 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         'voucher-name',
         'eligible-product',
         'benefit',
-        'voucher-used',
+        // 'voucher-used',
         'start-date',
         'end-date',
         'status',
         'actions',
     ];
 
-    selection: SelectionModel<Voucher>;
+    selection: SelectionModel<SupplierVoucher>;
 
-    dataSource$: Observable<Array<Voucher>>;
+    dataSource$: Observable<Array<SupplierVoucher>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -92,7 +92,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
 
     ngOnInit(): void {
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<Voucher>(true, []);
+        this.selection = new SelectionModel<SupplierVoucher>(true, []);
 
         this.dataSource$ = this.VoucherStore.select(VoucherSelectors.getAllVoucher).pipe(
             takeUntil(this.subs$)
@@ -190,11 +190,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         this.isAllSelected()
             ? this.selection.clear()
             : this.dataSource$
-                  .pipe(
-                      flatMap((v) => v),
-                      takeUntil(this.subs$)
-                  )
-                  .forEach((row) => this.selection.select(row));
+                .pipe(
+                    flatMap((v) => v),
+                    takeUntil(this.subs$)
+                )
+                .forEach((row) => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -206,28 +206,28 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         return numSelected === numRows;
     }
 
-    onDelete(item: Voucher): void {
+    onDelete(item: SupplierVoucher): void {
         if (!item) {
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmRemoveVoucher({ payload: item }));
+        this.VoucherStore.dispatch(VoucherActions.confirmRemoveSupplierVoucher({ payload: item }));
     }
 
-    setActive(item: Voucher): void {
+    setActive(item: SupplierVoucher): void {
         if (!item) {
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmSetActiveVoucher({ payload: item }));
+        this.VoucherStore.dispatch(VoucherActions.confirmSetActiveSupplierVoucher({ payload: item }));
     }
 
-    setInactive(item: Voucher): void {
+    setInactive(item: SupplierVoucher): void {
         if (!item) {
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmSetInactiveVoucher({ payload: item }));
+        this.VoucherStore.dispatch(VoucherActions.confirmSetInactiveSupplierVoucher({ payload: item }));
     }
 
     private _initTable(): void {
@@ -244,10 +244,10 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                 data['status'] = this.selectedStatus;
             }
 
-            this.VoucherStore.dispatch(VoucherActions.resetVoucher());
+            this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucher());
 
             this.VoucherStore.dispatch(
-                VoucherActions.fetchVoucherRequest({
+                VoucherActions.fetchSupplierVoucherRequest({
                     payload: data,
                 })
             );
@@ -266,7 +266,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                         'voucher-name',
                         'eligible-product',
                         'benefit',
-                        'voucher-used',
+                        // 'voucher-used',
                         'start-date',
                         'end-date',
                         'status',
@@ -279,7 +279,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                         'voucher-name',
                         'eligible-product',
                         'benefit',
-                        'voucher-used',
+                        // 'voucher-used',
                         'start-date',
                         'end-date',
                         'status',

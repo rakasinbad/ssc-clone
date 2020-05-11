@@ -7,46 +7,46 @@ import {
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 
-interface IVoucherCustomerSegmentationSettings {
+interface IVoucherSegmentationSettings {
     id?: string;
     segmentationBase: string;
     chosenStore?: Array<SupplierStore>;
-    chosenWarehouse?: Array<Warehouse>;
-    chosenStoreType?: Array<StoreSegmentationType>;
-    chosenStoreGroup?: Array<StoreSegmentationGroup>;
-    chosenStoreChannel?: Array<StoreSegmentationChannel>;
-    chosenStoreCluster?: Array<StoreSegmentationCluster>;
+    // chosenWarehouse?: Array<Warehouse>;
+    // chosenStoreType?: Array<StoreSegmentationType>;
+    // chosenStoreGroup?: Array<StoreSegmentationGroup>;
+    // chosenStoreChannel?: Array<StoreSegmentationChannel>;
+    // chosenStoreCluster?: Array<StoreSegmentationCluster>;
 }
 
-export class VoucherCustomerSegmentationSettings implements IVoucherCustomerSegmentationSettings {
+export class VoucherSegmentationSettings implements IVoucherSegmentationSettings {
     id?: string;
     segmentationBase: string;
     chosenStore?: Array<SupplierStore>;
-    chosenWarehouse?: Array<Warehouse>;
-    chosenStoreType?: Array<StoreSegmentationType>;
-    chosenStoreGroup?: Array<StoreSegmentationGroup>;
-    chosenStoreChannel?: Array<StoreSegmentationChannel>;
-    chosenStoreCluster?: Array<StoreSegmentationCluster>;
+    // chosenWarehouse?: Array<Warehouse>;
+    // chosenStoreType?: Array<StoreSegmentationType>;
+    // chosenStoreGroup?: Array<StoreSegmentationGroup>;
+    // chosenStoreChannel?: Array<StoreSegmentationChannel>;
+    // chosenStoreCluster?: Array<StoreSegmentationCluster>;
 
-    constructor(data: IVoucherCustomerSegmentationSettings) {
+    constructor(data: IVoucherSegmentationSettings) {
         const {
             id,
             segmentationBase,
             chosenStore = [],
-            chosenWarehouse = [],
-            chosenStoreType = [],
-            chosenStoreGroup = [],
-            chosenStoreChannel = [],
-            chosenStoreCluster = [],
+            // chosenWarehouse = [],
+            // chosenStoreType = [],
+            // chosenStoreGroup = [],
+            // chosenStoreChannel = [],
+            // chosenStoreCluster = [],
         } = data;
 
         this.id = id;
         this.segmentationBase = segmentationBase;
         this.chosenStore = chosenStore;
-        this.chosenWarehouse = chosenWarehouse;
-        this.chosenStoreType = chosenStoreType;
-        this.chosenStoreGroup = chosenStoreGroup;
-        this.chosenStoreChannel = chosenStoreChannel;
-        this.chosenStoreCluster = chosenStoreCluster;
+        // this.chosenWarehouse = chosenWarehouse;
+        // this.chosenStoreType = chosenStoreType;
+        // this.chosenStoreGroup = chosenStoreGroup;
+        // this.chosenStoreChannel = chosenStoreChannel;
+        // this.chosenStoreCluster = chosenStoreCluster;
     }
 }

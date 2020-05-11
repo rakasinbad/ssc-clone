@@ -7,7 +7,7 @@ import * as fromVoucher from './voucher.reducer';
 const featureKey = 'voucher';
 
 interface State {
-    [fromVoucher.FEATURE_KEY]: fromVoucher.VoucherState;
+    [fromVoucher.FEATURE_KEY]: fromVoucher.SupplierVoucherState;
 }
 
 interface FeatureState extends fromRoot.State {

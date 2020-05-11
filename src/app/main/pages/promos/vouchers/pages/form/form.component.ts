@@ -6,10 +6,10 @@ import { UiActions, FormActions } from 'app/shared/store/actions';
 import { Subject, BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import {
     VoucherGeneralInformation as GeneralInformation,
-    VoucherTriggerInformation as TriggerInformation,
-    PeriodTargetConditionBenefit as ConditionBenefit,
-    VoucherReward as Reward,
-    VoucherCustomerSegmentationSettings as CustomerSegmentation,
+    VoucherConditionSettings,
+    VoucherEligibleProduct as EligibleProduct,
+    VoucherBenefit as Benefit,
+    VoucherSegmentationSettings as EligibleStore,
 } from '../../models';
 import { FormStatus } from 'app/shared/models/global.model';
 import { takeUntil, tap, filter, withLatestFrom } from 'rxjs/operators';
@@ -18,7 +18,7 @@ import { environment } from 'environments/environment';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import * as moment from 'moment';
-import { VoucherPayload } from '../../models/voucher.model';
+import { SupplierVoucherPayload } from '../../models/voucher.model';
 import { VoucherActions } from '../../store/actions';
 import { VoucherSelectors } from '../../store/selectors';
 
@@ -34,34 +34,18 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     // Untuk menyimpan nilai yang dikirim oleh form.
-    generalInformationValue$: BehaviorSubject<GeneralInformation> = new BehaviorSubject<
-        GeneralInformation
-    >(null);
-    triggerInformationValue$: BehaviorSubject<TriggerInformation> = new BehaviorSubject<
-        TriggerInformation
-    >(null);
-    conditionBenefitValue$: BehaviorSubject<ConditionBenefit> = new BehaviorSubject<
-        ConditionBenefit
-    >(null);
-    rewardValue$: BehaviorSubject<Reward> = new BehaviorSubject<Reward>(null);
-    customerSegmentationValue$: BehaviorSubject<CustomerSegmentation> = new BehaviorSubject<
-        CustomerSegmentation
-    >(null);
+    generalInformationValue$: BehaviorSubject<GeneralInformation> = new BehaviorSubject<GeneralInformation>(null);
+    conditionSettingsValue$: BehaviorSubject<VoucherConditionSettings> = new BehaviorSubject<VoucherConditionSettings>(null);
+    eligibleProductValue$: BehaviorSubject<EligibleProduct> = new BehaviorSubject<EligibleProduct>(null);
+    benefitValue$: BehaviorSubject<Benefit> = new BehaviorSubject<Benefit>(null);
+    eligibleStoreValue$: BehaviorSubject<EligibleStore> = new BehaviorSubject<EligibleStore>(null);
 
     // Untuk menyimpan status masing-masing form.
-    generalInformationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(
-        'INVALID'
-    );
-    triggerInformationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(
-        'INVALID'
-    );
-    conditionBenefitStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(
-        'INVALID'
-    );
-    rewardStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
-    customerSegmentationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>(
-        'INVALID'
-    );
+    generalInformationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
+    conditionSettingsStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
+    eligibleProductStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
+    benefitStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
+    eligibleStoreStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
 
     constructor(private VoucherStore: NgRxStore<VoucherCoreState>) {
         this.isLoading$ = this.VoucherStore.select(VoucherSelectors.getLoadingState).pipe(
@@ -147,30 +131,30 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             )
             .subscribe();
 
-        this.triggerInformationStatus$
+        this.conditionSettingsStatus$
             .pipe(
-                tap((status) => HelperService.debug('triggerInformationStatus$ CHANGED', status)),
+                tap((status) => HelperService.debug('conditionSettingsStatus$ CHANGED', status)),
                 takeUntil(this.subs$)
             )
             .subscribe();
 
-        this.conditionBenefitStatus$
+        this.benefitStatus$
             .pipe(
-                tap((status) => HelperService.debug('conditionBenefitStatus$ CHANGED', status)),
+                tap((status) => HelperService.debug('benefitStatus$ CHANGED', status)),
                 takeUntil(this.subs$)
             )
             .subscribe();
 
-        this.rewardStatus$
+        this.eligibleProductStatus$
             .pipe(
-                tap((status) => HelperService.debug('rewardStatus$ CHANGED', status)),
+                tap((status) => HelperService.debug('eligibleProductStatus$ CHANGED', status)),
                 takeUntil(this.subs$)
             )
             .subscribe();
 
-        this.customerSegmentationStatus$
+        this.eligibleStoreStatus$
             .pipe(
-                tap((status) => HelperService.debug('customerSegmentationStatus$ CHANGED', status)),
+                tap((status) => HelperService.debug('eligibleStoreStatus$ CHANGED', status)),
                 takeUntil(this.subs$)
             )
             .subscribe();
@@ -184,30 +168,30 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             )
             .subscribe();
 
-        this.triggerInformationValue$
+        this.conditionSettingsValue$
             .pipe(
-                tap((value) => HelperService.debug('triggerInformationValue$ CHANGED', value)),
+                tap((value) => HelperService.debug('conditionSettingsValue$ CHANGED', value)),
                 takeUntil(this.subs$)
             )
             .subscribe();
 
-        this.conditionBenefitValue$
+        this.benefitValue$
             .pipe(
-                tap((value) => HelperService.debug('conditionBenefitValue$ CHANGED', value)),
+                tap((value) => HelperService.debug('benefitValue$ CHANGED', value)),
                 takeUntil(this.subs$)
             )
             .subscribe();
 
-        this.rewardValue$
+        this.eligibleProductValue$
             .pipe(
-                tap((value) => HelperService.debug('rewardValue$ CHANGED', value)),
+                tap((value) => HelperService.debug('eligibleProductValue$ CHANGED', value)),
                 takeUntil(this.subs$)
             )
             .subscribe();
 
-        this.customerSegmentationValue$
+        this.eligibleStoreValue$
             .pipe(
-                tap((value) => HelperService.debug('customerSegmentationValue$ CHANGED', value)),
+                tap((value) => HelperService.debug('eligibleStoreValue$ CHANGED', value)),
                 takeUntil(this.subs$)
             )
             .subscribe();
@@ -216,10 +200,10 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     private initSubscribeFormStatuses(): void {
         combineLatest([
             this.generalInformationStatus$,
-            this.triggerInformationStatus$,
-            this.conditionBenefitStatus$,
-            this.rewardStatus$,
-            this.customerSegmentationStatus$,
+            this.conditionSettingsStatus$,
+            this.eligibleProductStatus$,
+            this.benefitStatus$,
+            this.eligibleStoreStatus$,
         ])
             .pipe(
                 tap((statuses) => HelperService.debug('COMBINED FORM STATUSES CHANGED', statuses)),
@@ -251,202 +235,128 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
 
     private submitForm(supplierId: string): void {
         const generalInformationValue = this.generalInformationValue$.value;
-        const triggerInformationValue = this.triggerInformationValue$.value;
-        const conditionBenefitValue = this.conditionBenefitValue$.value;
-        const rewardValue = this.rewardValue$.value;
-        const customerSegmentationValue = this.customerSegmentationValue$.value;
+        const conditionSettingsValue = this.conditionSettingsValue$.value;
+        const eligibleProductValue = this.eligibleProductValue$.value;
+        const benefitValue = this.benefitValue$.value;
+        const eligibleStoreValue = this.eligibleStoreValue$.value;
 
-        const payload: VoucherPayload = {
+        const payload: SupplierVoucherPayload = {
             // MASTER
             supplierId,
-            type: 'target',
             status: 'active',
             // GENERAL INFORMATON
-            externalId: generalInformationValue.sellerId,
+            externalId: generalInformationValue.externalId,
             name: generalInformationValue.name,
             platform: generalInformationValue.platform,
             maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
-            promoBudget: +generalInformationValue.budget,
             startDate: ((generalInformationValue.activeStartDate as unknown) as moment.Moment).toISOString(),
             endDate: ((generalInformationValue.activeEndDate as unknown) as moment.Moment).toISOString(),
-            image: generalInformationValue.imageSuggestion,
-            voucherCombine: !!generalInformationValue.isAllowCombineWithVoucher,
-            firstBuy: !!generalInformationValue.isFirstBuy,
-            // TRIGGER INFORMATION
-            base:
-                triggerInformationValue.base === 'sku'
+            // CONDITION SETTINGS
+            base: conditionSettingsValue.base === 'sku'
                     ? 'sku'
-                    : triggerInformationValue.base === 'brand'
+                    : conditionSettingsValue.base === 'brand'
                     ? 'brand'
-                    : triggerInformationValue.base === 'faktur'
+                    : conditionSettingsValue.base === 'faktur'
                     ? 'invoiceGroup'
                     : 'unknown',
             dataBase: {},
-            // CONDITION & BENEFIT SETTINGS
-            conditions: [],
-            // REWARD INFORMATION
-            reward: {
-                name: generalInformationValue.name,
-                startDate: ((rewardValue.rewardValidDate
-                    .activeStartDate as unknown) as moment.Moment).toISOString(),
-                endDate: ((rewardValue.rewardValidDate
-                    .activeEndDate as unknown) as moment.Moment).toISOString(),
-                triggerBase:
-                    rewardValue.trigger.base === 'sku'
-                        ? 'sku'
-                        : rewardValue.trigger.base === 'brand'
-                        ? 'brand'
-                        : rewardValue.trigger.base === 'faktur'
-                        ? 'invoiceGroup'
-                        : 'unknown',
-                conditionBase:
-                    rewardValue.condition.base === 'qty'
-                        ? 'qty'
-                        : rewardValue.condition.base === 'order-value'
-                        ? 'value'
-                        : 'unknown',
-                termCondition: rewardValue.miscellaneous.description,
-                image: rewardValue.miscellaneous.couponImage,
-            },
-            // CUSTOMER SEGMENTATION SETTINGS
+            // ELIGIBLE PRODUCT SETTINGS
+            conditionBase: eligibleProductValue.base === 'qty'
+                            ? 'qty'
+                            : eligibleProductValue.base === 'order-value'
+                            ? 'value'
+                            : 'unknown',
+            // BENEFIT SETTINGS
+            benefitType: benefitValue.base === 'amount'
+                            ? 'amount'
+                            : benefitValue.base === 'percent'
+                            ? 'percent'
+                            : 'unknown',
+            // ELIGIBLE STORE SETTINGS
             target:
-                customerSegmentationValue.segmentationBase === 'direct-store'
+                eligibleStoreValue.segmentationBase === 'direct-store'
                     ? 'store'
-                    : customerSegmentationValue.segmentationBase === 'segmentation'
+                    : eligibleStoreValue.segmentationBase === 'segmentation'
                     ? 'segmentation'
                     : 'unknown',
             dataTarget: {},
         };
 
-        const isMultiplication = !!conditionBenefitValue.conditionBenefit[0].benefit.qty
-            .multiplicationOnly;
-
-        // Klasifikasi "conditions" untuk Condition & Benefit Settings
-        for (const [
-            index,
-            { condition, benefit },
-        ] of conditionBenefitValue.conditionBenefit.entries()) {
-            if ((isMultiplication && index === 0) || !isMultiplication) {
-                // Condition Payload Master.
-                const conditionPayload = {
-                    conditionBase:
-                        condition.base === 'qty'
-                            ? 'qty'
-                            : condition.base === 'order-value'
-                            ? 'value'
-                            : 'unknown',
-                    benefitType:
-                        benefit.base === 'qty'
-                            ? 'qty'
-                            : benefit.base === 'cash'
-                            ? 'amount'
-                            : benefit.base === 'percent'
-                            ? 'percent'
-                            : 'unknown',
-                    multiplication: isMultiplication,
-                };
-
-                // Payload untuk Condition.
-                if (conditionPayload.conditionBase === 'qty') {
-                    conditionPayload['conditionQty'] = +condition.qty;
-                } else if (conditionPayload.conditionBase === 'value') {
-                    conditionPayload['conditionValue'] = +condition.value;
-                }
-
-                // Payload untuk Benefit.
-                if (conditionPayload.benefitType === 'qty') {
-                    conditionPayload['benefitCatalogueId'] = +benefit.qty.bonusSku.id;
-                    conditionPayload['benefitBonusQty'] = +benefit.qty.bonusQty;
-                } else if (conditionPayload.benefitType === 'amount') {
-                    conditionPayload['benefitRebate'] = +benefit.cash.rebate;
-                } else if (conditionPayload.benefitType === 'percent') {
-                    conditionPayload['benefitDiscount'] = +benefit.percent.percentDiscount;
-                    conditionPayload['benefitMaxRebate'] = +benefit.percent.maxRebate;
-                }
-
-                payload.conditions.push(conditionPayload);
-            }
-        }
-
-        // Klasifikasi "reward -> conditionBase" untuk Reward Information.
-        if (payload.reward.conditionBase === 'qty') {
-            payload.reward['conditionQty'] = rewardValue.condition.qty;
-        } else if (payload.reward.conditionBase === 'value') {
-            payload.reward['conditionValue'] = rewardValue.condition.value;
-        }
-
-        // Klasifikasi "reward -> triggerBase" untuk Trigger Information.
-        if (payload.reward.triggerBase === 'sku') {
-            payload.reward['catalogueId'] = rewardValue.trigger.chosenSku.map((sku) => sku.id);
-        } else if (payload.reward.triggerBase === 'brand') {
-            payload.reward['brandId'] = rewardValue.trigger.chosenBrand.map((brand) => brand.id);
-        } else if (payload.reward.triggerBase === 'invoiceGroup') {
-            payload.reward['invoiceGroupId'] = rewardValue.trigger.chosenFaktur.map(
-                (faktur) => faktur.id
-            );
-        }
-
-        // Klasifikasi "dataBase" untuk Trigger Information.
+        // Klasifikasi "dataBase" untuk Condition Settings.
         if (payload.base === 'sku') {
             payload.dataBase = {
-                catalogueId: triggerInformationValue.chosenSku.map((sku) => sku.id),
+                catalogueId: conditionSettingsValue.chosenSku.map((sku) => sku.id),
             };
         } else if (payload.base === 'brand') {
             payload.dataBase = {
-                brandId: triggerInformationValue.chosenBrand.map((brand) => brand.id),
+                brandId: conditionSettingsValue.chosenBrand.map((brand) => brand.id),
             };
         } else if (payload.base === 'invoiceGroup') {
             payload.dataBase = {
-                invoiceGroupId: triggerInformationValue.chosenFaktur.map((faktur) => faktur.id),
+                invoiceGroupId: conditionSettingsValue.chosenFaktur.map((faktur) => faktur.id),
             };
         }
 
-        // Klasifikasi "dataTarget" untuk Customer Segmentation Settings.
+        // Klasifikasi "condition" untuk Eligible Product.
+        if (payload.conditionBase === 'qty') {
+            payload['conditionQty'] = eligibleProductValue.qty;
+        } else if (payload.conditionBase === 'value') {
+            payload['conditionValue'] = eligibleProductValue.orderValue;
+        }
+
+        // Klasifikasi "benefit" untuk Benefit Settings.
+        if (payload.benefitType === 'amount') {
+            payload['benefitRebate'] = benefitValue.rupiah;
+        } else if (payload.benefitType === 'percent') {
+            payload['benefitPercent'] = benefitValue.percent;
+        }
+
+        // Klasifikasi "dataTarget" untuk Eligible Store Settings.
         if (payload.target === 'store') {
             payload.dataTarget = {
-                storeId: customerSegmentationValue.chosenStore.map(
+                storeId: eligibleStoreValue.chosenStore.map(
                     (supplierStore) => supplierStore.storeId
                 ),
             };
         } else if (payload.target === 'segmentation') {
-            payload.dataTarget = {
-                warehouseId:
-                    customerSegmentationValue.chosenWarehouse.length === 0
-                        ? 'all'
-                        : customerSegmentationValue.chosenWarehouse.map(
-                              (warehouse) => warehouse.id
-                          ),
-                typeId:
-                    customerSegmentationValue.chosenStoreType.length === 0
-                        ? 'all'
-                        : customerSegmentationValue.chosenStoreType.map(
-                              (storeType) => storeType.id
-                          ),
-                groupId:
-                    customerSegmentationValue.chosenStoreGroup.length === 0
-                        ? 'all'
-                        : customerSegmentationValue.chosenStoreGroup.map(
-                              (storeGroup) => storeGroup.id
-                          ),
-                clusterId:
-                    customerSegmentationValue.chosenStoreCluster.length === 0
-                        ? 'all'
-                        : customerSegmentationValue.chosenStoreCluster.map(
-                              (storeCluster) => storeCluster.id
-                          ),
-                channelId:
-                    customerSegmentationValue.chosenStoreChannel.length === 0
-                        ? 'all'
-                        : customerSegmentationValue.chosenStoreChannel.map(
-                              (storeChannel) => storeChannel.id
-                          ),
-            };
+            // payload.dataTarget = {
+            //     warehouseId:
+            //         eligibleStoreValue.chosenWarehouse.length === 0
+            //             ? 'all'
+            //             : eligibleStoreValue.chosenWarehouse.map(
+            //                   (warehouse) => warehouse.id
+            //               ),
+            //     typeId:
+            //         eligibleStoreValue.chosenStoreType.length === 0
+            //             ? 'all'
+            //             : eligibleStoreValue.chosenStoreType.map(
+            //                   (storeType) => storeType.id
+            //               ),
+            //     groupId:
+            //         eligibleStoreValue.chosenStoreGroup.length === 0
+            //             ? 'all'
+            //             : eligibleStoreValue.chosenStoreGroup.map(
+            //                   (storeGroup) => storeGroup.id
+            //               ),
+            //     clusterId:
+            //         eligibleStoreValue.chosenStoreCluster.length === 0
+            //             ? 'all'
+            //             : eligibleStoreValue.chosenStoreCluster.map(
+            //                   (storeCluster) => storeCluster.id
+            //               ),
+            //     channelId:
+            //         eligibleStoreValue.chosenStoreChannel.length === 0
+            //             ? 'all'
+            //             : eligibleStoreValue.chosenStoreChannel.map(
+            //                   (storeChannel) => storeChannel.id
+            //               ),
+            // };
         }
 
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
 
         this.VoucherStore.dispatch(
-            VoucherActions.addVoucherRequest({
+            VoucherActions.addSupplierVoucherRequest({
                 payload,
             })
         );
@@ -463,5 +373,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
 
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
         this.VoucherStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+
+        this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucher());
     }
 }

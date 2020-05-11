@@ -44,7 +44,7 @@ import { VoucherSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
@@ -52,7 +52,7 @@ import { FormStatus } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { Selection } from 'app/shared/components/multiple-selection/models';
-import { VoucherTriggerInformationService } from './services';
+import { VoucherConditionSettingsService } from './services';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -62,15 +62,14 @@ import { VoucherTriggerInformationService } from './services';
 type IFormMode = 'add' | 'view' | 'edit';
 
 @Component({
-    selector: 'voucher-trigger-information',
-    templateUrl: './trigger-information.component.html',
-    styleUrls: ['./trigger-information.component.scss'],
+    selector: 'voucher-condition-settings',
+    templateUrl: './condition-settings.component.html',
+    styleUrls: ['./condition-settings.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class VoucherTriggerInformationComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class VoucherConditionSettingsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
@@ -92,7 +91,7 @@ export class VoucherTriggerInformationComponent
     formFieldLength: number = 40;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
-    @Output() formValueChange: EventEmitter<Voucher> = new EventEmitter<Voucher>();
+    @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -133,7 +132,7 @@ export class VoucherTriggerInformationComponent
         private store: NgRxStore<VoucherCoreFeatureState>,
         private promo$: VoucherApiService,
         private errorMessage$: ErrorMessageService,
-        private triggerInformation$: VoucherTriggerInformationService
+        private conditionSettings$: VoucherConditionSettingsService
     ) {}
 
     private updateFormView(): void {
@@ -186,13 +185,13 @@ export class VoucherTriggerInformationComponent
                     const { id } = this.route.snapshot.params;
 
                     this.store.dispatch(
-                        VoucherActions.fetchVoucherRequest({
+                        VoucherActions.fetchSupplierVoucherRequest({
                             payload: id as string,
                         })
                     );
 
                     this.store.dispatch(
-                        VoucherActions.selectVoucher({
+                        VoucherActions.selectSupplierVoucher({
                             payload: id as string,
                         })
                     );
@@ -201,15 +200,15 @@ export class VoucherTriggerInformationComponent
                 } else {
                     // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
                     if (voucher.supplierId !== userSupplier.supplierId) {
-                        this.store.dispatch(VoucherActions.resetVoucher());
+                        this.store.dispatch(VoucherActions.resetSupplierVoucher());
 
-                        this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        this.notice$.open('Voucher tidak ditemukan.', 'error', {
                             verticalPosition: 'bottom',
                             horizontalPosition: 'right',
                         });
 
                         setTimeout(
-                            () => this.router.navigate(['pages', 'promos', 'period-target-promo']),
+                            () => this.router.navigate(['pages', 'promos', 'voucher']),
                             1000
                         );
 
@@ -222,7 +221,7 @@ export class VoucherTriggerInformationComponent
                 switch (voucher.base) {
                     case 'sku':
                         this.chosenSku$.next(
-                            voucher.promoCatalogues.map((data) => ({
+                            voucher.voucherCatalogues.map((data) => ({
                                 id: data.catalogue.id,
                                 label: data.catalogue.name,
                                 group: 'catalogues',
@@ -233,7 +232,7 @@ export class VoucherTriggerInformationComponent
                         break;
                     case 'brand':
                         this.chosenBrand$.next(
-                            voucher.promoBrands.map((data) => ({
+                            voucher.voucherBrands.map((data) => ({
                                 id: data.brand.id,
                                 label: data.brand.name,
                                 group: 'brand',
@@ -244,7 +243,7 @@ export class VoucherTriggerInformationComponent
                         break;
                     case 'invoiceGroup':
                         this.chosenFaktur$.next(
-                            voucher.promoInvoiceGroups.map((data) => ({
+                            voucher.voucherInvoiceGroups.map((data) => ({
                                 id: data.invoiceGroup.id,
                                 label: data.invoiceGroup.name,
                                 group: 'faktur',
@@ -258,10 +257,9 @@ export class VoucherTriggerInformationComponent
                 this.form.patchValue({
                     id: voucher.id,
                     base: chosenBase,
-                    chosenSku: voucher.promoCatalogues.length === 0 ? '' : voucher.promoCatalogues,
-                    chosenBrand: voucher.promoBrands.length === 0 ? '' : voucher.promoBrands,
-                    chosenFaktur:
-                        voucher.promoInvoiceGroups.length === 0 ? '' : voucher.promoInvoiceGroups,
+                    chosenSku: voucher.voucherCatalogues.length === 0 ? '' : voucher.voucherCatalogues,
+                    chosenBrand: voucher.voucherBrands.length === 0 ? '' : voucher.voucherBrands,
+                    chosenFaktur: voucher.voucherInvoiceGroups.length === 0 ? '' : voucher.voucherInvoiceGroups,
                 });
 
                 if (this.formMode === 'view') {
@@ -276,127 +274,6 @@ export class VoucherTriggerInformationComponent
                 this.form.markAsPristine();
             });
     }
-
-    // private onSubmit(): void {
-    //     // Menyembunyikan form toolbar agar tidak di-submit lagi.
-    //     this.store.dispatch(UiActions.hideFooterAction());
-    //     // Mendapatkan seluruh nilai dari form.
-    //     const formValues = this.form.getRawValue();
-
-    //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
-    //     const catalogueData: Partial<CatalogueInformation> = {
-    //         /**
-    //          * INFORMASI PRODUK
-    //          */
-    //         externalId: formValues.productInfo.externalId,
-    //         name:
-    //             String(formValues.productInfo.name)
-    //                 .charAt(0)
-    //                 .toUpperCase() + String(formValues.productInfo.name).slice(1),
-    //         description: formValues.productInfo.description,
-    //         information: formValues.productInfo.information,
-    //         detail: formValues.productInfo.information,
-    //         brandId: formValues.productInfo.brandId,
-    //         firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-    //         lastCatalogueCategoryId:
-    //             formValues.productInfo.category.length === 1
-    //                 ? formValues.productInfo.category[0].id
-    //                 : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-    //         unitOfMeasureId: formValues.productInfo.uom,
-    //     };
-
-    //     if (this.formMode === 'edit') {
-    //         this.store.dispatch(
-    //             CatalogueActions.patchCatalogueRequest({
-    //                 payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
-    //             })
-    //         );
-    //     }
-    // }
-
-    // private initCatalogueCategoryState(): void {
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueCategories
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(categories => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (categories.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueCategoriesRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         }
-
-    //         this.catalogueCategories$.next(categories);
-    //     });
-    // }
-
-    // private initCatalogueUnitState(): void {
-    //     // Mendapatkan unit katalog dari state.
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueUnits
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(units => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (units.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueUnitRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         } else {
-    //             // Mengambil nilai ID UOM dari form.
-    //             const uom = this.form.get('productInfo.uom').value;
-    //             // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-    //             const selectedUnit = units.filter(unit => unit.id === uom);
-    //             if (selectedUnit.length > 0) {
-    //                 this.form.patchValue({
-    //                     productInfo: {
-    //                         uomName: selectedUnit[0].unit
-    //                     }
-    //                 });
-    //             }
-
-    //             this.cdRef.markForCheck();
-    //         }
-
-    //         this.catalogueUnits$.next(units);
-    //     });
-    // }
-
-    // private initCatalogueBrand(): void {
-    //     this.brands$ = this.store.select(
-    //         BrandSelectors.getAllBrands
-    //     ).pipe(
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         map(([brands, userSupplier]) => {
-    //             if (userSupplier && brands.length === 0) {
-    //                 const query: IQueryParams = { paginate: false };
-    //                 query['supplierId'] = userSupplier.supplierId;
-
-    //                 this.store.dispatch(
-    //                     BrandActions.fetchBrandsRequest({
-    //                         payload: query
-    //                     })
-    //                 );
-    //             }
-
-    //             return brands;
-    //         }),
-    //         takeUntil(this.subs$)
-    //     );
-    // }
 
     private initForm(): void {
         this.form = this.fb.group({
@@ -478,25 +355,6 @@ export class VoucherTriggerInformationComponent
                         value
                     )
                 ),
-                // map(value => {
-                //     let formValue = {
-                //         ...value.productInfo,
-                //         detail: value.productInfo.information,
-                //         unitOfMeasureId: value.productInfo.uom,
-                //     };
-
-                //     if (formValue.category.length > 0) {
-                //         formValue = {
-                //             ...formValue,
-                //             firstCatalogueCategoryId: value.productInfo.category[0].id,
-                //             lastCatalogueCategoryId: value.productInfo.category.length === 1
-                //                                     ? value.productInfo.category[0].id
-                //                                     : value.productInfo.category[value.productInfo.category.length - 1].id,
-                //         };
-                //     }
-
-                //     return formValue;
-                // }),
                 map((value) => ({
                     ...value,
                     chosenSku: !value.chosenSku ? [] : value.chosenSku,
@@ -513,60 +371,9 @@ export class VoucherTriggerInformationComponent
             )
             .subscribe((value) => {
                 this.formValueChange.emit(value);
-                this.triggerInformation$.setValue(value);
+                this.conditionSettings$.setValue(value);
             });
     }
-
-    // onEditCategory(): void {
-    //     this.dialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
-    // }
-
-    // checkExternalId(): AsyncValidatorFn {
-    //     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-    //         return control.valueChanges.pipe(
-    //             distinctUntilChanged(),
-    //             debounceTime(500),
-    //             withLatestFrom(
-    //                 this.store.select(AuthSelectors.getUserSupplier),
-    //                 this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
-    //             ),
-    //             take(1),
-    //             switchMap(([value, userSupplier, catalogue]) => {
-    //                 if (!value) {
-    //                     return of({
-    //                         required: true
-    //                     });
-    //                 }
-
-    //                 const params: IQueryParams = {
-    //                     limit: 1,
-    //                     paginate: true
-    //                 };
-
-    //                 params['externalId'] = value;
-    //                 params['supplierId'] = userSupplier.supplierId;
-
-    //                 return this.catalogue$.findAll(params).pipe(
-    //                     map(response => {
-    //                         if (response.total > 0) {
-    //                             if (!this.isAddMode()) {
-    //                                 if (response.data[0].id === catalogue.id) {
-    //                                     return null;
-    //                                 }
-    //                             }
-
-    //                             return {
-    //                                 skuSupplierExist: true
-    //                             };
-    //                         }
-
-    //                         return null;
-    //                     })
-    //                 );
-    //             })
-    //         );
-    //     };
-    // }
 
     getFormError(form: any): string {
         return this.errorMessage$.getFormError(form);

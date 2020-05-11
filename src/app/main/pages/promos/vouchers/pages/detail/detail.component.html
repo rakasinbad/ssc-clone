@@ -72,22 +72,22 @@
             <!-- ELIGIBLE PRODUCT -->
             <mat-tab label="Eligible Product" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <voucher-trigger-information
+                    <voucher-condition-settings
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
-                    ></voucher-trigger-information>
+                    ></voucher-condition-settings>
                 </ng-template>
             </mat-tab>
             <!-- / ELIGIBLE PRODUCT -->
             <!--  CONDITION -->
             <mat-tab label="Condition" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <voucher-trigger-condition-benefit-settings
+                    <voucher-eligible-product-settings
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
-                    ></voucher-trigger-condition-benefit-settings>
+                    ></voucher-eligible-product-settings>
                 </ng-template>
             </mat-tab>
             <!--  / CONDITION-->
@@ -105,11 +105,11 @@
             <!-- STORE SEGMENTATION -->
             <mat-tab label="Store Segmentation" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <voucher-customer-segmentation-settings
+                    <voucher-eligible-store-settings
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
-                    ></voucher-customer-segmentation-settings>
+                    ></voucher-eligible-store-settings>
                 </ng-template>
             </mat-tab>
             <!-- / STORE SEGMENTATION -->

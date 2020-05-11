@@ -20,8 +20,8 @@ import { of, Observable, throwError } from 'rxjs';
 import { VoucherApiService } from '../../services/voucher-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
 import {
-    Voucher,
-    VoucherPayload,
+    SupplierVoucher,
+    SupplierVoucherPayload,
     // VoucherCreationPayload
 } from '../../models/voucher.model';
 import { Auth } from 'app/main/pages/core/auth/models';
@@ -43,7 +43,7 @@ export class VoucherEffects {
     constructor(
         private actions$: Actions,
         private authStore: NgRxStore<fromAuth.FeatureState>,
-        private VoucherStore: NgRxStore<fromVoucher.VoucherState>,
+        private VoucherStore: NgRxStore<fromVoucher.SupplierVoucherState>,
         private VoucherApi$: VoucherApiService,
         private notice$: NoticeService,
         private router: Router,
@@ -53,8 +53,8 @@ export class VoucherEffects {
 
     fetchVoucherRequest$ = createEffect(() =>
         this.actions$.pipe(
-            // Hanya untuk action request period target promo.
-            ofType(VoucherActions.fetchVoucherRequest),
+            // Hanya untuk action request Supplier Voucher.
+            ofType(VoucherActions.fetchSupplierVoucherRequest),
             // Hanya mengambil payload-nya saja dari action.
             map((action) => action.payload),
             // Mengambil data dari store-nya auth.
@@ -70,7 +70,7 @@ export class VoucherEffects {
                         switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
                             this.processVoucherRequest
                         ),
-                        catchError((err) => this.sendErrorToState(err, 'fetchVoucherFailure'))
+                        catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -80,7 +80,7 @@ export class VoucherEffects {
                         switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
                             this.processVoucherRequest
                         ),
-                        catchError((err) => this.sendErrorToState(err, 'fetchVoucherFailure'))
+                        catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherFailure'))
                     );
                 }
             })
@@ -89,34 +89,34 @@ export class VoucherEffects {
 
     addVoucherRequest$ = createEffect(() =>
         this.actions$.pipe(
-            // Hanya untuk action penambahan Period Target Promo.
-            ofType(VoucherActions.addVoucherRequest),
+            // Hanya untuk action penambahan Supplier Voucher.
+            ofType(VoucherActions.addSupplierVoucherRequest),
             // Hanya mengambil payload-nya saja dari action.
             map((action) => action.payload),
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [VoucherPayload, TNullable<Auth>]) => {
+            switchMap(([queryParams, authState]: [SupplierVoucherPayload, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, VoucherPayload], Observable<AnyAction>>(
+                        switchMap<[User, SupplierVoucherPayload], Observable<AnyAction>>(
                             this.addVoucherRequest
                         ),
-                        catchError((err) => this.sendErrorToState(err, 'addVoucherFailure'))
+                        catchError((err) => this.sendErrorToState(err, 'addSupplierVoucherFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, VoucherPayload], Observable<AnyAction>>(
+                        switchMap<[User, SupplierVoucherPayload], Observable<AnyAction>>(
                             this.addVoucherRequest
                         ),
-                        catchError((err) => this.sendErrorToState(err, 'addVoucherFailure'))
+                        catchError((err) => this.sendErrorToState(err, 'addSupplierVoucherFailure'))
                     );
                 }
             })
@@ -125,15 +125,15 @@ export class VoucherEffects {
 
     updateVoucherRequest$ = createEffect(() =>
         this.actions$.pipe(
-            // Hanya untuk action penambahan Period Target Promo.
-            ofType(VoucherActions.updateVoucherRequest),
+            // Hanya untuk action penambahan Supplier Voucher.
+            ofType(VoucherActions.updateSupplierVoucherRequest),
             // Hanya mengambil payload-nya saja dari action.
             map((action) => action.payload),
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
             switchMap(
-                ([queryParams, authState]: [EntityPayload<Partial<Voucher>>, TNullable<Auth>]) => {
+                ([queryParams, authState]: [EntityPayload<Partial<SupplierVoucher>>, TNullable<Auth>]) => {
                     // Jika tidak ada data supplier-nya user dari state.
                     if (!authState) {
                         return this.helper$.decodeUserToken().pipe(
@@ -141,10 +141,10 @@ export class VoucherEffects {
                             retry(3),
                             switchMap((userData) => of([userData, queryParams])),
                             switchMap<
-                                [User, EntityPayload<Partial<Voucher>>],
+                                [User, EntityPayload<Partial<SupplierVoucher>>],
                                 Observable<AnyAction>
                             >(this.updateVoucherRequest),
-                            catchError((err) => this.sendErrorToState(err, 'updateVoucherFailure'))
+                            catchError((err) => this.sendErrorToState(err, 'updateSupplierVoucherFailure'))
                         );
                     } else {
                         return of(authState.user).pipe(
@@ -152,10 +152,10 @@ export class VoucherEffects {
                             retry(3),
                             switchMap((userData) => of([userData, queryParams])),
                             switchMap<
-                                [User, EntityPayload<Partial<Voucher>>],
+                                [User, EntityPayload<Partial<SupplierVoucher>>],
                                 Observable<AnyAction>
                             >(this.updateVoucherRequest),
-                            catchError((err) => this.sendErrorToState(err, 'updateVoucherFailure'))
+                            catchError((err) => this.sendErrorToState(err, 'updateSupplierVoucherFailure'))
                         );
                     }
                 }
@@ -165,8 +165,8 @@ export class VoucherEffects {
 
     removeVoucherRequest$ = createEffect(() =>
         this.actions$.pipe(
-            // Hanya untuk action penambahan Period Target Promo.
-            ofType(VoucherActions.removeVoucherRequest),
+            // Hanya untuk action penambahan Supplier Voucher.
+            ofType(VoucherActions.removeSupplierVoucherRequest),
             // Hanya mengambil payload-nya saja dari action.
             map((action) => action.payload),
             // Mengambil data dari store-nya auth.
@@ -180,7 +180,7 @@ export class VoucherEffects {
                         retry(3),
                         switchMap((userData) => of([userData, VoucherId])),
                         switchMap<[User, string], Observable<AnyAction>>(this.removeVoucherRequest),
-                        catchError((err) => this.sendErrorToState(err, 'removeVoucherFailure'))
+                        catchError((err) => this.sendErrorToState(err, 'removeSupplierVoucherFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -188,7 +188,7 @@ export class VoucherEffects {
                         retry(3),
                         switchMap((userData) => of([userData, VoucherId])),
                         switchMap<[User, string], Observable<AnyAction>>(this.removeVoucherRequest),
-                        catchError((err) => this.sendErrorToState(err, 'removeVoucherFailure'))
+                        catchError((err) => this.sendErrorToState(err, 'removeSupplierVoucherFailure'))
                     );
                 }
             })
@@ -198,21 +198,19 @@ export class VoucherEffects {
     addVoucherSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                // Hanya untuk action penambahan Period Target Promo.
-                ofType(VoucherActions.addVoucherSuccess),
+                // Hanya untuk action penambahan Supplier Voucher.
+                ofType(VoucherActions.addSupplierVoucherSuccess),
                 // Hanya mengambil payload-nya saja dari action.
                 map((action) => action.payload),
-                tap((payload) => {
+                tap(() => {
                     const noticeSetting: MatSnackBarConfig = {
                         horizontalPosition: 'right',
                         verticalPosition: 'bottom',
                         duration: 5000,
                     };
-                    this.notice$.open(`Add Period Target Promo success.`, 'success', noticeSetting);
+                    this.notice$.open(`Add Supplier Voucher success.`, 'success', noticeSetting);
 
-                    if (!payload) {
-                        this.router.navigate(['/pages/promos/period-target-promo']);
-                    }
+                    this.router.navigate(['/pages/promos/voucher']);
                 })
             ),
         { dispatch: false }
@@ -221,14 +219,14 @@ export class VoucherEffects {
     confirmRemoveCatalogue$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(VoucherActions.confirmRemoveVoucher),
+                ofType(VoucherActions.confirmRemoveSupplierVoucher),
                 map((action) => action.payload),
                 exhaustMap((params) => {
                     if (!Array.isArray(params)) {
                         const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                             data: {
                                 title: 'Delete',
-                                message: `Are you sure want to delete Period Target Promo <strong>${params.name}</strong>?`,
+                                message: `Are you sure want to delete Supplier Voucher <strong>${params.name}</strong>?`,
                                 id: params.id,
                             },
                             disableClose: true,
@@ -240,7 +238,7 @@ export class VoucherEffects {
                 map((response) => {
                     if (response) {
                         this.VoucherStore.dispatch(
-                            VoucherActions.removeVoucherRequest({ payload: response })
+                            VoucherActions.removeSupplierVoucherRequest({ payload: response })
                         );
                     } else {
                         this.VoucherStore.dispatch(UiActions.resetHighlightRow());
@@ -253,13 +251,13 @@ export class VoucherEffects {
     confirmSetCatalogueToActive$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(VoucherActions.confirmSetActiveVoucher),
+                ofType(VoucherActions.confirmSetActiveSupplierVoucher),
                 map((action) => action.payload),
                 exhaustMap((params) => {
                     const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                         data: {
-                            title: 'Set Product to Active',
-                            message: `Are you sure want to set Period Target Promo <strong>${params.name}</strong> to <strong>Active</strong>?`,
+                            title: 'Set Voucher to Active',
+                            message: `Are you sure want to set Supplier Voucher <strong>${params.name}</strong> to <strong>Active</strong>?`,
                             id: params.id,
                         },
                         disableClose: true,
@@ -270,7 +268,7 @@ export class VoucherEffects {
                 map((response) => {
                     if (response) {
                         this.VoucherStore.dispatch(
-                            VoucherActions.updateVoucherRequest({
+                            VoucherActions.updateSupplierVoucherRequest({
                                 payload: {
                                     id: response,
                                     data: {
@@ -290,13 +288,13 @@ export class VoucherEffects {
     confirmSetCatalogueToInactive$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(VoucherActions.confirmSetInactiveVoucher),
+                ofType(VoucherActions.confirmSetInactiveSupplierVoucher),
                 map((action) => action.payload),
                 exhaustMap((params) => {
                     const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                         data: {
-                            title: 'Set Product to Inactive',
-                            message: `Are you sure want to set Period Target Promo <strong>${params.name}</strong> to <strong>Inactive</strong>?`,
+                            title: 'Set Voucher to Inactive',
+                            message: `Are you sure want to set Supplier Voucher <strong>${params.name}</strong> to <strong>Inactive</strong>?`,
                             id: params.id,
                         },
                         disableClose: true,
@@ -307,7 +305,7 @@ export class VoucherEffects {
                 map((response) => {
                     if (response) {
                         this.VoucherStore.dispatch(
-                            VoucherActions.updateVoucherRequest({
+                            VoucherActions.updateSupplierVoucherRequest({
                                 payload: {
                                     id: response,
                                     data: {
@@ -328,7 +326,7 @@ export class VoucherEffects {
         () =>
             this.actions$.pipe(
                 // Hanya untuk action fetch export logs failure.
-                ofType(...[VoucherActions.addVoucherFailure]),
+                ofType(...[VoucherActions.addSupplierVoucherFailure]),
                 // Hanya mengambil payload-nya saja.
                 map((action) => action.payload),
                 // Memunculkan notif bahwa request export gagal.
@@ -341,7 +339,7 @@ export class VoucherEffects {
         () =>
             this.actions$.pipe(
                 // Hanya untuk action fetch export logs failure.
-                ofType(VoucherActions.updateVoucherFailure),
+                ofType(VoucherActions.updateSupplierVoucherFailure),
                 // Hanya mengambil payload-nya saja.
                 map((action) => action.payload),
                 // Memunculkan notif bahwa request export gagal.
@@ -353,7 +351,7 @@ export class VoucherEffects {
     setRefreshStatusToActive$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(VoucherActions.updateVoucherSuccess),
+                ofType(VoucherActions.updateSupplierVoucherSuccess),
                 map((action) => action.payload),
                 tap(() => {
                     this.VoucherStore.dispatch(VoucherActions.setRefreshStatus({ payload: true }));
@@ -376,9 +374,7 @@ export class VoucherEffects {
         return userData;
     };
 
-    processVoucherRequest = ([userData, queryParams]: [User, IQueryParams | string]): Observable<
-        AnyAction
-    > => {
+    processVoucherRequest = ([userData, queryParams]: [User, IQueryParams | string]): Observable<AnyAction> => {
         let newQuery: IQueryParams = {};
 
         if (typeof queryParams === 'string') {
@@ -396,23 +392,23 @@ export class VoucherEffects {
         // Memasukkan ID supplier ke dalam parameter.
         newQuery['supplierId'] = supplierId;
 
-        return this.VoucherApi$.find<IPaginatedResponse<Voucher>>(newQuery).pipe(
+        return this.VoucherApi$.find<IPaginatedResponse<SupplierVoucher>>(newQuery).pipe(
             catchOffline(),
             switchMap((response) => {
                 if (typeof queryParams === 'string') {
                     return of(
-                        VoucherActions.fetchVoucherSuccess({
+                        VoucherActions.fetchSupplierVoucherSuccess({
                             payload: {
-                                data: new Voucher((response as unknown) as Voucher),
+                                data: new SupplierVoucher((response as unknown) as SupplierVoucher),
                             },
                         })
                     );
                 } else if (newQuery.paginate) {
                     return of(
-                        VoucherActions.fetchVoucherSuccess({
+                        VoucherActions.fetchSupplierVoucherSuccess({
                             payload: {
-                                data: (response as IPaginatedResponse<Voucher>).data.map(
-                                    (p) => new Voucher(p)
+                                data: (response as IPaginatedResponse<SupplierVoucher>).data.map(
+                                    (p) => new SupplierVoucher(p)
                                 ),
                                 total: response.total,
                             },
@@ -420,31 +416,29 @@ export class VoucherEffects {
                     );
                 } else {
                     return of(
-                        VoucherActions.fetchVoucherSuccess({
+                        VoucherActions.fetchSupplierVoucherSuccess({
                             payload: {
-                                data: ((response as unknown) as Array<Voucher>).map(
-                                    (p) => new Voucher(p)
+                                data: ((response as unknown) as Array<SupplierVoucher>).map(
+                                    (p) => new SupplierVoucher(p)
                                 ),
-                                total: ((response as unknown) as Array<Voucher>).length,
+                                total: ((response as unknown) as Array<SupplierVoucher>).length,
                             },
                         })
                     );
                 }
             }),
-            catchError((err) => this.sendErrorToState(err, 'fetchVoucherFailure'))
+            catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherFailure'))
         );
     };
 
-    updateVoucherRequest = ([_, payload]: [User, EntityPayload<Partial<Voucher>>]): Observable<
-        AnyAction
-    > => {
-        return this.VoucherApi$.updateVoucher<EntityPayload<Partial<Voucher>>, Voucher>(
+    updateVoucherRequest = ([_, payload]: [User, EntityPayload<Partial<SupplierVoucher>>]): Observable<AnyAction> => {
+        return this.VoucherApi$.updateVoucher<EntityPayload<Partial<SupplierVoucher>>, SupplierVoucher>(
             payload
         ).pipe(
             catchOffline(),
             switchMap((response) => {
                 return of(
-                    VoucherActions.updateVoucherSuccess({
+                    VoucherActions.updateSupplierVoucherSuccess({
                         payload: {
                             id: response.id,
                             data: response,
@@ -460,7 +454,7 @@ export class VoucherEffects {
                     this.VoucherStore.dispatch(FormActions.resetClickCancelButton());
                 }
 
-                return this.sendErrorToState(err, 'updateVoucherFailure');
+                return this.sendErrorToState(err, 'updateSupplierVoucherFailure');
             })
         );
     };
@@ -470,23 +464,23 @@ export class VoucherEffects {
             catchOffline(),
             switchMap((response) => {
                 return of(
-                    VoucherActions.removeVoucherSuccess({
+                    VoucherActions.removeSupplierVoucherSuccess({
                         payload: response,
                     })
                 );
             }),
             catchError((err) => {
-                return this.sendErrorToState(err, 'removeVoucherFailure');
+                return this.sendErrorToState(err, 'removeSupplierVoucherFailure');
             })
         );
     };
 
-    addVoucherRequest = ([_, payload]: [User, VoucherPayload]): Observable<AnyAction> => {
-        return this.VoucherApi$.addVoucher<VoucherPayload, Voucher>(payload).pipe(
+    addVoucherRequest = ([_, payload]: [User, SupplierVoucherPayload]): Observable<AnyAction> => {
+        return this.VoucherApi$.addVoucher<SupplierVoucherPayload, SupplierVoucher>(payload).pipe(
             catchOffline(),
             switchMap((response) => {
                 return of(
-                    VoucherActions.addVoucherSuccess({
+                    VoucherActions.addSupplierVoucherSuccess({
                         payload: response,
                     })
                 );
@@ -497,7 +491,7 @@ export class VoucherEffects {
                 this.VoucherStore.dispatch(FormActions.resetClickSaveButton());
                 this.VoucherStore.dispatch(FormActions.resetClickCancelButton());
 
-                return this.sendErrorToState(err, 'addVoucherFailure');
+                return this.sendErrorToState(err, 'addSupplierVoucherFailure');
             })
         );
     };

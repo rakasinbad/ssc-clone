@@ -44,7 +44,7 @@ import { VoucherSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
@@ -70,15 +70,14 @@ import { Selection } from 'app/shared/components/multiple-selection/models';
 type IFormMode = 'add' | 'view' | 'edit';
 
 @Component({
-    selector: 'voucher-customer-segmentation-settings',
-    templateUrl: './customer-segmentation-settings.component.html',
-    styleUrls: ['./customer-segmentation-settings.component.scss'],
+    selector: 'voucher-eligible-store-settings',
+    templateUrl: './eligible-store-settings.component.html',
+    styleUrls: ['./eligible-store-settings.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class VoucherCustomerSegmentationSettingsComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
@@ -105,7 +104,7 @@ export class VoucherCustomerSegmentationSettingsComponent
     formFieldLength: number = 40;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
-    @Output() formValueChange: EventEmitter<Voucher> = new EventEmitter<Voucher>();
+    @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -198,13 +197,13 @@ export class VoucherCustomerSegmentationSettingsComponent
                     const { id } = this.route.snapshot.params;
 
                     this.store.dispatch(
-                        VoucherActions.fetchVoucherRequest({
+                        VoucherActions.fetchSupplierVoucherRequest({
                             payload: id as string,
                         })
                     );
 
                     this.store.dispatch(
-                        VoucherActions.selectVoucher({
+                        VoucherActions.selectSupplierVoucher({
                             payload: id as string,
                         })
                     );
@@ -213,15 +212,15 @@ export class VoucherCustomerSegmentationSettingsComponent
                 } else {
                     // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
                     if (voucher.supplierId !== userSupplier.supplierId) {
-                        this.store.dispatch(VoucherActions.resetVoucher());
+                        this.store.dispatch(VoucherActions.resetSupplierVoucher());
 
-                        this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        this.notice$.open('Voucher tidak ditemukan.', 'error', {
                             verticalPosition: 'bottom',
                             horizontalPosition: 'right',
                         });
 
                         setTimeout(
-                            () => this.router.navigate(['pages', 'promos', 'period-target-promo']),
+                            () => this.router.navigate(['pages', 'promos', 'voucher']),
                             1000
                         );
 
@@ -232,67 +231,72 @@ export class VoucherCustomerSegmentationSettingsComponent
                 this.form.patchValue({
                     id: voucher.id,
                     segmentationBase: voucher.target === 'store' ? 'direct-store' : voucher.target,
-                    chosenStore: voucher.promoStores.length === 0 ? '' : voucher.promoStores,
-                    chosenWarehouse:
-                        voucher.promoWarehouses.length === 0 ? '' : voucher.promoWarehouses,
-                    chosenStoreType: voucher.promoTypes.length === 0 ? '' : voucher.promoTypes,
-                    chosenStoreGroup: voucher.promoGroups.length === 0 ? '' : voucher.promoGroups,
-                    chosenStoreChannel:
-                        voucher.promoChannels.length === 0 ? '' : voucher.promoChannels,
-                    chosenStoreCluster:
-                        voucher.promoClusters.length === 0 ? '' : voucher.promoClusters,
+                    chosenStore: voucher.voucherStores.length === 0 ? '' : voucher.voucherStores,
+                    // UNUSED
+                    //
+                    //
+                    //
+                    // chosenWarehouse: voucher.promoWarehouses.length === 0 ? '' : voucher.promoWarehouses,
+                    // chosenStoreType: voucher.promoTypes.length === 0 ? '' : voucher.promoTypes,
+                    // chosenStoreGroup: voucher.promoGroups.length === 0 ? '' : voucher.promoGroups,
+                    // chosenStoreChannel: voucher.promoChannels.length === 0 ? '' : voucher.promoChannels,
+                    // chosenStoreCluster: voucher.promoClusters.length === 0 ? '' : voucher.promoClusters,
                 });
 
                 if (voucher.target === 'store') {
                     // STORE
                     this.chosen$[0].next(
-                        voucher.promoStores.map((data) => ({
+                        voucher.voucherStores.map((data) => ({
                             id: data.store.id,
                             label: data.store.name,
                             group: 'stores',
                         }))
                     );
                 } else if (voucher.target === 'segmentation') {
+                    // UNUSED
+                    //
+                    //
+                    //
                     // WAREHOUSE
-                    this.chosen$[1].next(
-                        voucher.promoWarehouses.map((data) => ({
-                            id: data.warehouse.id,
-                            label: data.warehouse.name,
-                            group: 'warehouses',
-                        }))
-                    );
-                    // STORE SEGMENTATION TYPE
-                    this.chosen$[2].next(
-                        voucher.promoTypes.map((data) => ({
-                            id: data.type.id,
-                            label: data.type.name,
-                            group: 'store-segmentation-types',
-                        }))
-                    );
-                    // STORE SEGMENTATION GROUP
-                    this.chosen$[3].next(
-                        voucher.promoGroups.map((data) => ({
-                            id: data.group.id,
-                            label: data.group.name,
-                            group: 'store-segmentation-groups',
-                        }))
-                    );
-                    // STORE SEGMENTATION CHANNEL
-                    this.chosen$[4].next(
-                        voucher.promoChannels.map((data) => ({
-                            id: data.channel.id,
-                            label: data.channel.name,
-                            group: 'store-segmentation-channels',
-                        }))
-                    );
-                    // STORE SEGMENTATION CLUSTER
-                    this.chosen$[5].next(
-                        voucher.promoClusters.map((data) => ({
-                            id: data.cluster.id,
-                            label: data.cluster.name,
-                            group: 'store-segmentation-clusters',
-                        }))
-                    );
+                    // this.chosen$[1].next(
+                    //     voucher.promoWarehouses.map((data) => ({
+                    //         id: data.warehouse.id,
+                    //         label: data.warehouse.name,
+                    //         group: 'warehouses',
+                    //     }))
+                    // );
+                    // // STORE SEGMENTATION TYPE
+                    // this.chosen$[2].next(
+                    //     voucher.promoTypes.map((data) => ({
+                    //         id: data.type.id,
+                    //         label: data.type.name,
+                    //         group: 'store-segmentation-types',
+                    //     }))
+                    // );
+                    // // STORE SEGMENTATION GROUP
+                    // this.chosen$[3].next(
+                    //     voucher.promoGroups.map((data) => ({
+                    //         id: data.group.id,
+                    //         label: data.group.name,
+                    //         group: 'store-segmentation-groups',
+                    //     }))
+                    // );
+                    // // STORE SEGMENTATION CHANNEL
+                    // this.chosen$[4].next(
+                    //     voucher.promoChannels.map((data) => ({
+                    //         id: data.channel.id,
+                    //         label: data.channel.name,
+                    //         group: 'store-segmentation-channels',
+                    //     }))
+                    // );
+                    // // STORE SEGMENTATION CLUSTER
+                    // this.chosen$[5].next(
+                    //     voucher.promoClusters.map((data) => ({
+                    //         id: data.cluster.id,
+                    //         label: data.cluster.name,
+                    //         group: 'store-segmentation-clusters',
+                    //     }))
+                    // );
                 }
 
                 if (this.formMode === 'view') {
@@ -327,8 +331,12 @@ export class VoucherCustomerSegmentationSettingsComponent
                     }),
                 ],
             ],
+            // UNUSED
+            //
+            //
+            //
             chosenWarehouse: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -336,7 +344,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 ],
             ],
             chosenStoreType: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -344,7 +352,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 ],
             ],
             chosenStoreGroup: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -352,7 +360,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 ],
             ],
             chosenStoreChannel: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -360,7 +368,7 @@ export class VoucherCustomerSegmentationSettingsComponent
                 ],
             ],
             chosenStoreCluster: [
-                '',
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -410,28 +418,31 @@ export class VoucherCustomerSegmentationSettingsComponent
                         };
                     } else if (rawValue.segmentationBase === 'segmentation') {
                         return {
-                            id: rawValue.id,
-                            segmentationBase: rawValue.segmentationBase,
-                            chosenWarehouse:
-                                rawValue.chosenWarehouse.length === 0
-                                    ? []
-                                    : rawValue.chosenWarehouse,
-                            chosenStoreType:
-                                rawValue.chosenStoreType.length === 0
-                                    ? []
-                                    : rawValue.chosenStoreType,
-                            chosenStoreGroup:
-                                rawValue.chosenStoreGroup.length === 0
-                                    ? []
-                                    : rawValue.chosenStoreGroup,
-                            chosenStoreChannel:
-                                rawValue.chosenStoreChannel.length === 0
-                                    ? []
-                                    : rawValue.chosenStoreChannel,
-                            chosenStoreCluster:
-                                rawValue.chosenStoreCluster.length === 0
-                                    ? []
-                                    : rawValue.chosenStoreCluster,
+                            // UNUSED
+                            //
+                            //
+                            // id: rawValue.id,
+                            // segmentationBase: rawValue.segmentationBase,
+                            // chosenWarehouse:
+                            //     rawValue.chosenWarehouse.length === 0
+                            //         ? []
+                            //         : rawValue.chosenWarehouse,
+                            // chosenStoreType:
+                            //     rawValue.chosenStoreType.length === 0
+                            //         ? []
+                            //         : rawValue.chosenStoreType,
+                            // chosenStoreGroup:
+                            //     rawValue.chosenStoreGroup.length === 0
+                            //         ? []
+                            //         : rawValue.chosenStoreGroup,
+                            // chosenStoreChannel:
+                            //     rawValue.chosenStoreChannel.length === 0
+                            //         ? []
+                            //         : rawValue.chosenStoreChannel,
+                            // chosenStoreCluster:
+                            //     rawValue.chosenStoreCluster.length === 0
+                            //         ? []
+                            //         : rawValue.chosenStoreCluster,
                         };
                     }
 
@@ -465,78 +476,31 @@ export class VoucherCustomerSegmentationSettingsComponent
             .subscribe((value) => {
                 if (value === 'direct-store') {
                     this.form.get('chosenStore').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenWarehouse').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenStoreType').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenStoreGroup').disable({ onlySelf: true, emitEvent: true });
-                    this.form
-                        .get('chosenStoreChannel')
-                        .disable({ onlySelf: true, emitEvent: true });
-                    this.form
-                        .get('chosenStoreCluster')
-                        .disable({ onlySelf: true, emitEvent: true });
+                    // UNUSED
+                    //
+                    //
+                    //
+                    // this.form.get('chosenWarehouse').disable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreType').disable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreGroup').disable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreChannel').disable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreCluster').disable({ onlySelf: true, emitEvent: true });
                 } else if (value === 'segmentation') {
                     this.form.get('chosenStore').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenWarehouse').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenStoreType').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenStoreGroup').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenStoreChannel').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('chosenStoreCluster').enable({ onlySelf: true, emitEvent: true });
+                    // UNUSED
+                    //
+                    //
+                    //
+                    // this.form.get('chosenWarehouse').enable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreType').enable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreGroup').enable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreChannel').enable({ onlySelf: true, emitEvent: true });
+                    // this.form.get('chosenStoreCluster').enable({ onlySelf: true, emitEvent: true });
                 }
 
                 this.form.updateValueAndValidity();
             });
     }
-
-    // onEditCategory(): void {
-    //     this.dialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
-    // }
-
-    // checkExternalId(): AsyncValidatorFn {
-    //     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-    //         return control.valueChanges.pipe(
-    //             distinctUntilChanged(),
-    //             debounceTime(500),
-    //             withLatestFrom(
-    //                 this.store.select(AuthSelectors.getUserSupplier),
-    //                 this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
-    //             ),
-    //             take(1),
-    //             switchMap(([value, userSupplier, catalogue]) => {
-    //                 if (!value) {
-    //                     return of({
-    //                         required: true
-    //                     });
-    //                 }
-
-    //                 const params: IQueryParams = {
-    //                     limit: 1,
-    //                     paginate: true
-    //                 };
-
-    //                 params['externalId'] = value;
-    //                 params['supplierId'] = userSupplier.supplierId;
-
-    //                 return this.catalogue$.findAll(params).pipe(
-    //                     map(response => {
-    //                         if (response.total > 0) {
-    //                             if (!this.isAddMode()) {
-    //                                 if (response.data[0].id === catalogue.id) {
-    //                                     return null;
-    //                                 }
-    //                             }
-
-    //                             return {
-    //                                 skuSupplierExist: true
-    //                             };
-    //                         }
-
-    //                         return null;
-    //                     })
-    //                 );
-    //             })
-    //         );
-    //     };
-    // }
 
     getFormError(form: any): string {
         return this.errorMessage$.getFormError(form);
@@ -584,58 +548,58 @@ export class VoucherCustomerSegmentationSettingsComponent
     }
 
     onWarehouseSelected(event: Array<Warehouse>): void {
-        this.form.get('chosenWarehouse').markAsDirty({ onlySelf: true });
-        this.form.get('chosenWarehouse').markAsTouched({ onlySelf: true });
+        // this.form.get('chosenWarehouse').markAsDirty({ onlySelf: true });
+        // this.form.get('chosenWarehouse').markAsTouched({ onlySelf: true });
 
-        if (event.length === 0) {
-            this.form.get('chosenWarehouse').setValue('');
-        } else {
-            this.form.get('chosenWarehouse').setValue(event);
-        }
+        // if (event.length === 0) {
+        //     this.form.get('chosenWarehouse').setValue('');
+        // } else {
+        //     this.form.get('chosenWarehouse').setValue(event);
+        // }
     }
 
     onStoreTypeSelected(event: Array<StoreSegmentationType>): void {
-        this.form.get('chosenStoreType').markAsDirty({ onlySelf: true });
-        this.form.get('chosenStoreType').markAsTouched({ onlySelf: true });
+        // this.form.get('chosenStoreType').markAsDirty({ onlySelf: true });
+        // this.form.get('chosenStoreType').markAsTouched({ onlySelf: true });
 
-        if (event.length === 0) {
-            this.form.get('chosenStoreType').setValue('');
-        } else {
-            this.form.get('chosenStoreType').setValue(event);
-        }
+        // if (event.length === 0) {
+        //     this.form.get('chosenStoreType').setValue('');
+        // } else {
+        //     this.form.get('chosenStoreType').setValue(event);
+        // }
     }
 
     onStoreGroupSelected(event: Array<StoreSegmentationGroup>): void {
-        this.form.get('chosenStoreGroup').markAsDirty({ onlySelf: true });
-        this.form.get('chosenStoreGroup').markAsTouched({ onlySelf: true });
+        // this.form.get('chosenStoreGroup').markAsDirty({ onlySelf: true });
+        // this.form.get('chosenStoreGroup').markAsTouched({ onlySelf: true });
 
-        if (event.length === 0) {
-            this.form.get('chosenStoreGroup').setValue('');
-        } else {
-            this.form.get('chosenStoreGroup').setValue(event);
-        }
+        // if (event.length === 0) {
+        //     this.form.get('chosenStoreGroup').setValue('');
+        // } else {
+        //     this.form.get('chosenStoreGroup').setValue(event);
+        // }
     }
 
     onStoreChannelSelected(event: Array<StoreSegmentationChannel>): void {
-        this.form.get('chosenStoreChannel').markAsDirty({ onlySelf: true });
-        this.form.get('chosenStoreChannel').markAsTouched({ onlySelf: true });
+        // this.form.get('chosenStoreChannel').markAsDirty({ onlySelf: true });
+        // this.form.get('chosenStoreChannel').markAsTouched({ onlySelf: true });
 
-        if (event.length === 0) {
-            this.form.get('chosenStoreChannel').setValue('');
-        } else {
-            this.form.get('chosenStoreChannel').setValue(event);
-        }
+        // if (event.length === 0) {
+        //     this.form.get('chosenStoreChannel').setValue('');
+        // } else {
+        //     this.form.get('chosenStoreChannel').setValue(event);
+        // }
     }
 
     onStoreClusterSelected(event: Array<StoreSegmentationCluster>): void {
-        this.form.get('chosenStoreCluster').markAsDirty({ onlySelf: true });
-        this.form.get('chosenStoreCluster').markAsTouched({ onlySelf: true });
+        // this.form.get('chosenStoreCluster').markAsDirty({ onlySelf: true });
+        // this.form.get('chosenStoreCluster').markAsTouched({ onlySelf: true });
 
-        if (event.length === 0) {
-            this.form.get('chosenStoreCluster').setValue('');
-        } else {
-            this.form.get('chosenStoreCluster').setValue(event);
-        }
+        // if (event.length === 0) {
+        //     this.form.get('chosenStoreCluster').setValue('');
+        // } else {
+        //     this.form.get('chosenStoreCluster').setValue(event);
+        // }
     }
 
     ngOnInit(): void {
@@ -644,10 +608,6 @@ export class VoucherCustomerSegmentationSettingsComponent
 
         this.checkRoute();
         this.initFormCheck();
-        // this.initCatalogueBrand();
-        // this.initCatalogueUnitState();
-        // this.initCatalogueCategoryState();
-        // this.checkSelectedCatalogueCategory();
     }
 
     ngAfterViewInit(): void {}
@@ -676,16 +636,5 @@ export class VoucherCustomerSegmentationSettingsComponent
             chosen.next([]);
             chosen.complete();
         });
-
-        // this.catalogueCategories$.next([]);
-        // this.catalogueCategories$.complete();
-
-        // this.catalogueUnits$.next([]);
-        // this.catalogueUnits$.complete();
-
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
-        // this.store.dispatch(UiActions.hideFooterAction());
-        // this.store.dispatch(FormActions.resetCancelButtonAction());
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
     }
 }

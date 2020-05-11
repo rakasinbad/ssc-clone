@@ -5,9 +5,10 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
 
-import { Voucher } from '../models';
+import { SupplierVoucher } from '../models';
 import { fromVoucher } from '../store/reducers';
 import { EntityPayload } from 'app/shared/models/entity-payload.model';
+import { SupplierVoucherPayload } from '../models/voucher.model';
 
 /**
  *
@@ -34,7 +35,7 @@ export class VoucherApiService {
      * @private
      * @memberof VoucherApiService
      */
-    private readonly _VoucherEndpoint = '/target-promo';
+    private readonly _VoucherEndpoint = '/voucher';
 
     /**
      * Creates an instance of VoucherApiService.
@@ -148,13 +149,18 @@ export class VoucherApiService {
         return this.http.post<R>(this._url, payload);
     }
 
-    updateVoucher<T = EntityPayload<any>, R = undefined>(payload: T): Observable<R> {
+    updateVoucher<T = EntityPayload<SupplierVoucherPayload>, R = undefined>(payload: T): Observable<R> {
         if (!payload['id'] || !payload['data']) {
             throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_ENTITY_PAYLOAD');
         }
 
         this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
-        return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+
+        if (payload['data']['status']) {
+            return this.http.put<R>(`${this._url}/${payload['id']}`, payload['data']);
+        } else {
+            return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+        }
     }
 
     removeVoucher<T = string, R = undefined>(payload: T): Observable<R> {

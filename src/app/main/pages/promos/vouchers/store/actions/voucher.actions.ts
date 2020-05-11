@@ -1,141 +1,141 @@
 import { createAction, props } from '@ngrx/store';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
-import { VoucherPayload } from '../../models/voucher.model';
+import { SupplierVoucherPayload } from '../../models/voucher.model';
 import { EntityPayload } from 'app/shared/models/entity-payload.model';
 // import { VoucherCreationPayload } from '../../models/voucher.model';
 
 export type requestActionNames =
-    | 'fetchVoucherRequest'
-    | 'addVoucherRequest'
-    | 'updateVoucherRequest'
+    | 'fetchSupplierVoucherRequest'
+    | 'addSupplierVoucherRequest'
+    | 'updateSupplierVoucherRequest'
     | 'removeVoucherRequest';
 
 export type failureActionNames =
-    | 'fetchVoucherFailure'
-    | 'addVoucherFailure'
-    | 'updateVoucherFailure'
-    | 'removeVoucherFailure';
+    | 'fetchSupplierVoucherFailure'
+    | 'addSupplierVoucherFailure'
+    | 'updateSupplierVoucherFailure'
+    | 'removeSupplierVoucherFailure';
 
 /**
  * FETCH DATA
  */
 
-export const fetchVoucherRequest = createAction(
-    '[Promo/Voucher API] Fetch Voucher Request',
+export const fetchSupplierVoucherRequest = createAction(
+    '[Promo/SupplierVoucher API] Fetch SupplierVoucher Request',
     props<{ payload: IQueryParams | string }>()
 );
 
-export const fetchVoucherFailure = createAction(
-    '[Promo/Voucher API] Fetch Voucher Failure',
+export const fetchSupplierVoucherFailure = createAction(
+    '[Promo/SupplierVoucher API] Fetch SupplierVoucher Failure',
     props<{ payload: IErrorHandler }>()
 );
 
-export const fetchVoucherSuccess = createAction(
-    '[Promo/Voucher API] Fetch Voucher Success',
-    props<{ payload: { data: Voucher | Array<Voucher>; total?: number } }>()
+export const fetchSupplierVoucherSuccess = createAction(
+    '[Promo/SupplierVoucher API] Fetch SupplierVoucher Success',
+    props<{ payload: { data: SupplierVoucher | Array<SupplierVoucher>; total?: number } }>()
 );
 
 /**
  * CONFIRMATION
  */
 
-export const confirmAddVoucher = createAction(
-    '[Voucher Page] Confirm Add Voucher',
-    props<{ payload: Voucher }>()
+export const confirmAddSupplierVoucher = createAction(
+    '[SupplierVoucher Page] Confirm Add SupplierVoucher',
+    props<{ payload: SupplierVoucher }>()
 );
 
-export const confirmUpdateVoucher = createAction(
-    '[Voucher Page] Confirm Update Voucher',
-    props<{ payload: Voucher }>()
+export const confirmUpdateSupplierVoucher = createAction(
+    '[SupplierVoucher Page] Confirm Update SupplierVoucher',
+    props<{ payload: SupplierVoucher }>()
 );
 
-export const confirmSetActiveVoucher = createAction(
-    '[Voucher Page] Confirm Set to Active Voucher',
-    props<{ payload: Voucher }>()
+export const confirmSetActiveSupplierVoucher = createAction(
+    '[SupplierVoucher Page] Confirm Set to Active SupplierVoucher',
+    props<{ payload: SupplierVoucher }>()
 );
 
-export const confirmSetInactiveVoucher = createAction(
-    '[Voucher Page] Confirm Set to Inactive Voucher',
-    props<{ payload: Voucher }>()
+export const confirmSetInactiveSupplierVoucher = createAction(
+    '[SupplierVoucher Page] Confirm Set to Inactive SupplierVoucher',
+    props<{ payload: SupplierVoucher }>()
 );
 
-export const confirmRemoveVoucher = createAction(
-    '[Voucher Page] Confirm Remove Voucher',
-    props<{ payload: Voucher | Array<Voucher> }>()
+export const confirmRemoveSupplierVoucher = createAction(
+    '[SupplierVoucher Page] Confirm Remove SupplierVoucher',
+    props<{ payload: SupplierVoucher | Array<SupplierVoucher> }>()
 );
 
 /**
  * CREATE (ADD)
  */
-export const addVoucherRequest = createAction(
-    '[Promo/Voucher API] Add Voucher Request',
-    props<{ payload: VoucherPayload }>()
+export const addSupplierVoucherRequest = createAction(
+    '[Promo/SupplierVoucher API] Add SupplierVoucher Request',
+    props<{ payload: SupplierVoucherPayload }>()
 );
 
-export const addVoucherSuccess = createAction(
-    '[Promo/Voucher API] Add Voucher Success',
-    props<{ payload: TNullable<Voucher> }>()
+export const addSupplierVoucherSuccess = createAction(
+    '[Promo/SupplierVoucher API] Add SupplierVoucher Success',
+    props<{ payload: TNullable<SupplierVoucher> }>()
 );
 
-export const addVoucherFailure = createAction(
-    '[Promo/Voucher API] Add Voucher Failure',
+export const addSupplierVoucherFailure = createAction(
+    '[Promo/SupplierVoucher API] Add SupplierVoucher Failure',
     props<{ payload: IErrorHandler }>()
 );
 //
 /**
  * UPDATE
  */
-export const updateVoucherRequest = createAction(
-    '[Promo/Voucher API] Update Voucher Request',
-    props<{ payload: EntityPayload<Partial<Voucher>> }>()
+export const updateSupplierVoucherRequest = createAction(
+    '[Promo/SupplierVoucher API] Update SupplierVoucher Request',
+    props<{ payload: EntityPayload<Partial<SupplierVoucher>> }>()
 );
 
-export const updateVoucherSuccess = createAction(
-    '[Promo/Voucher API] Update Voucher Success',
-    props<{ payload: { id: string; data: Voucher } }>()
+export const updateSupplierVoucherSuccess = createAction(
+    '[Promo/SupplierVoucher API] Update SupplierVoucher Success',
+    props<{ payload: { id: string; data: SupplierVoucher } }>()
 );
 
-export const updateVoucherFailure = createAction(
-    '[Promo/Voucher API] Update Voucher Failure',
+export const updateSupplierVoucherFailure = createAction(
+    '[Promo/SupplierVoucher API] Update SupplierVoucher Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 /**
  * REMOVE (DELETE)
  */
-export const removeVoucherRequest = createAction(
-    '[Promo/Voucher API] Remove Voucher Request',
+export const removeSupplierVoucherRequest = createAction(
+    '[Promo/SupplierVoucher API] Remove SupplierVoucher Request',
     props<{ payload: string }>()
 );
 
-export const removeVoucherSuccess = createAction(
-    '[Promo/Voucher API] Remove Voucher Success',
-    props<{ payload: { id: string; data: Voucher } }>()
+export const removeSupplierVoucherSuccess = createAction(
+    '[Promo/SupplierVoucher API] Remove SupplierVoucher Success',
+    props<{ payload: { id: string; data: SupplierVoucher } }>()
 );
 
-export const removeVoucherFailure = createAction(
-    '[Promo/Voucher API] Remove Voucher Failure',
+export const removeSupplierVoucherFailure = createAction(
+    '[Promo/SupplierVoucher API] Remove SupplierVoucher Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 /**
  * SELECTION
  */
-export const selectVoucher = createAction(
-    '[Promo/Voucher] Select Period Target Promo',
+export const selectSupplierVoucher = createAction(
+    '[Promo/SupplierVoucher] Select Period Target Promo',
     props<{ payload: string }>()
 );
 
-export const deselectVoucher = createAction('[Promo/Voucher] Deselect Period Target Promo');
+export const deselectSupplierVoucher = createAction('[Promo/SupplierVoucher] Deselect Period Target Promo');
 
 /**
  * RESET
  */
-export const resetVoucher = createAction('[Promo/Voucher Page] Reset Voucher State');
+export const resetSupplierVoucher = createAction('[Promo/SupplierVoucher Page] Reset SupplierVoucher State');
 
 export const setRefreshStatus = createAction(
-    '[Promo/Voucher Page] Set Refresh Statuse',
+    '[Promo/SupplierVoucher Page] Set Refresh Statuse',
     props<{ payload: boolean }>()
 );

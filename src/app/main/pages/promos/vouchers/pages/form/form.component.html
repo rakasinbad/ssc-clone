@@ -14,32 +14,32 @@
             ></voucher-general-information>
         </div>
         <div class="content-card">
-            <voucher-trigger-information
+            <voucher-condition-settings
                 [formMode]="'add'"
-                (formStatusChange)="triggerInformationStatus$.next($event)"
-                (formValueChange)="triggerInformationValue$.next($event)"
-            ></voucher-trigger-information>
+                (formStatusChange)="conditionSettingsStatus$.next($event)"
+                (formValueChange)="conditionSettingsValue$.next($event)"
+            ></voucher-condition-settings>
         </div>
         <div class="content-card">
-            <voucher-trigger-condition-benefit-settings
+            <voucher-eligible-product-settings
                 [formMode]="'add'"
-                (formStatusChange)="conditionBenefitStatus$.next($event)"
-                (formValueChange)="conditionBenefitValue$.next($event)"
-            ></voucher-trigger-condition-benefit-settings>
+                (formStatusChange)="eligibleProductStatus$.next($event)"
+                (formValueChange)="eligibleProductValue$.next($event)"
+            ></voucher-eligible-product-settings>
         </div>
         <div class="content-card">
             <voucher-benefit-information
                 [formMode]="'add'"
-                (formStatusChange)="conditionBenefitStatus$.next($event)"
-                (formValueChange)="conditionBenefitValue$.next($event)"
+                (formStatusChange)="benefitStatus$.next($event)"
+                (formValueChange)="benefitValue$.next($event)"
             ></voucher-benefit-information>
         </div>
         <div class="content-card">
-            <voucher-customer-segmentation-settings
+            <voucher-eligible-store-settings
                 [formMode]="'add'"
-                (formStatusChange)="customerSegmentationStatus$.next($event)"
-                (formValueChange)="customerSegmentationValue$.next($event)"
-            ></voucher-customer-segmentation-settings>
+                (formStatusChange)="eligibleStoreStatus$.next($event)"
+                (formValueChange)="eligibleStoreValue$.next($event)"
+            ></voucher-eligible-store-settings>
         </div>
     </div>
     <!-- LOADING SPINNER -->

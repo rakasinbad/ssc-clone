@@ -1,14 +1,14 @@
 import { createReducer, on } from '@ngrx/store';
 import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
 import { environment } from 'environments/environment';
-import { Voucher } from '../../models/voucher.model';
+import { SupplierVoucher } from '../../models/voucher.model';
 import { VoucherActions } from '../actions';
 
 // Set reducer's feature key
 export const FEATURE_KEY = 'voucher';
 
 // Store's Voucher
-export interface VoucherState extends EntityState<Voucher> {
+export interface SupplierVoucherState extends EntityState<SupplierVoucher> {
     isLoading: boolean;
     needRefresh: boolean;
     limit: number;
@@ -17,13 +17,13 @@ export interface VoucherState extends EntityState<Voucher> {
     selectedId: string;
 }
 
-export const adapterVoucher: EntityAdapter<Voucher> = createEntityAdapter<Voucher>({
-    selectId: (voucher) => voucher.id as string,
+export const adapterSupplierVoucher: EntityAdapter<SupplierVoucher> = createEntityAdapter<SupplierVoucher>({
+    selectId: (SupplierVoucher) => SupplierVoucher.id as string,
 });
 
-// Initial value for Voucher State.
-const initialVoucherState: VoucherState = adapterVoucher.getInitialState<
-    Omit<VoucherState, 'ids' | 'entities'>
+// Initial value for SupplierVoucher State.
+const initialSupplierVoucherState: SupplierVoucherState = adapterSupplierVoucher.getInitialState<
+    Omit<SupplierVoucherState, 'ids' | 'entities'>
 >({
     isLoading: false,
     needRefresh: false,
@@ -35,15 +35,15 @@ const initialVoucherState: VoucherState = adapterVoucher.getInitialState<
 
 // Create the reducer.
 export const reducer = createReducer(
-    initialVoucherState,
+    initialSupplierVoucherState,
     /**
      * REQUEST STATES.
      */
     on(
-        VoucherActions.fetchVoucherRequest,
-        VoucherActions.addVoucherRequest,
-        VoucherActions.updateVoucherRequest,
-        VoucherActions.removeVoucherRequest,
+        VoucherActions.fetchSupplierVoucherRequest,
+        VoucherActions.addSupplierVoucherRequest,
+        VoucherActions.updateSupplierVoucherRequest,
+        VoucherActions.removeSupplierVoucherRequest,
         (state) => ({
             ...state,
             isLoading: true,
@@ -53,11 +53,11 @@ export const reducer = createReducer(
      * FAILURE STATES.
      */
     on(
-        VoucherActions.fetchVoucherFailure,
-        VoucherActions.addVoucherSuccess,
-        VoucherActions.addVoucherFailure,
-        VoucherActions.updateVoucherFailure,
-        VoucherActions.removeVoucherFailure,
+        VoucherActions.fetchSupplierVoucherFailure,
+        VoucherActions.addSupplierVoucherSuccess,
+        VoucherActions.addSupplierVoucherFailure,
+        VoucherActions.updateSupplierVoucherFailure,
+        VoucherActions.removeSupplierVoucherFailure,
         (state) => ({
             ...state,
             isLoading: false,
@@ -66,16 +66,16 @@ export const reducer = createReducer(
     /**
      * FETCH SUCCESS STATE.
      */
-    on(VoucherActions.fetchVoucherSuccess, (state, { payload }) => {
+    on(VoucherActions.fetchSupplierVoucherSuccess, (state, { payload }) => {
         if (Array.isArray(payload.data)) {
-            return adapterVoucher.upsertMany(payload.data, {
+            return adapterSupplierVoucher.upsertMany(payload.data, {
                 ...state,
                 total: payload.total,
                 isLoading: false,
             });
         }
 
-        return adapterVoucher.upsertOne(payload.data, {
+        return adapterSupplierVoucher.upsertOne(payload.data, {
             ...state,
             isLoading: false,
         });
@@ -83,32 +83,32 @@ export const reducer = createReducer(
     /**
      * ADD SUCCESS STATE.
      */
-    on(VoucherActions.addVoucherSuccess, (state, { payload }) => ({
+    on(VoucherActions.addSupplierVoucherSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
     })),
     /**
      * REMOVE SUCCESS STATE.
      */
-    on(VoucherActions.removeVoucherSuccess, (state, { payload }) => ({
+    on(VoucherActions.removeSupplierVoucherSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
     })),
     /**
      * UPDATE SUCCESS STATE.
      */
-    on(VoucherActions.updateVoucherSuccess, (state, { payload }) => ({
+    on(VoucherActions.updateSupplierVoucherSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
     })),
     /**
      * SELECTION STATE.
      */
-    on(VoucherActions.selectVoucher, (state, { payload }) => ({
+    on(VoucherActions.selectSupplierVoucher, (state, { payload }) => ({
         ...state,
         selectedId: payload,
     })),
-    on(VoucherActions.deselectVoucher, (state) => ({
+    on(VoucherActions.deselectSupplierVoucher, (state) => ({
         ...state,
         selectedId: null,
     })),
@@ -119,5 +119,5 @@ export const reducer = createReducer(
         ...state,
         needRefresh: payload,
     })),
-    on(VoucherActions.resetVoucher, () => initialVoucherState)
+    on(VoucherActions.resetSupplierVoucher, () => initialSupplierVoucherState)
 );

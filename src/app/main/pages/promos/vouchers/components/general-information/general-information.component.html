@@ -23,7 +23,7 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('supplierVoucherId'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('externalId'))"
                 >
                     <span class="sinbad-red-fg">* </span>Sup Voucher ID
                 </label>
@@ -33,9 +33,9 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="!isViewMode()"
                 >
-                    <input matInput name="supplierVoucherId" formControlName="supplierVoucherId" />
-                    <mat-error *ngIf="!isViewMode() && hasError(form.get('supplierVoucherId'))">
-                        {{ getFormError(form.get('supplierVoucherId')) }}
+                    <input matInput name="externalId" formControlName="externalId" />
+                    <mat-error *ngIf="!isViewMode() && hasError(form.get('externalId'))">
+                        {{ getFormError(form.get('externalId')) }}
                     </mat-error>
                     <!-- <mat-error
                         *ngIf="!isViewMode() && $any(form.get('sellerId').errors)?.skuSupplierExist"
@@ -61,7 +61,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ form.get('supplierVoucherId').value || '-' }}
+                    {{ form.get('externalId').value || '-' }}
                 </span>
             </div>
             <!-- / SUPPLIER VOUCHER ID -->
@@ -72,7 +72,7 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherName'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('name'))"
                 >
                     <span class="sinbad-red-fg">* </span>Voucher Name
                 </label>
@@ -82,9 +82,9 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="!isViewMode()"
                 >
-                    <input matInput name="voucherName" formControlName="voucherName" />
-                    <mat-error *ngIf="hasError(form.get('voucherName'))">
-                        {{ getFormError(form.get('voucherName')) }}
+                    <input matInput name="name" formControlName="name" />
+                    <mat-error *ngIf="hasError(form.get('name'))">
+                        {{ getFormError(form.get('name')) }}
                     </mat-error>
                 </mat-form-field>
                 <span
@@ -93,7 +93,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ form.get('voucherName').value || '-' }}
+                    {{ form.get('name').value || '-' }}
                 </span>
             </div>
             <!-- / VOUCHER NAME -->
@@ -179,10 +179,10 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxVoucherRedemtion'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('maxVoucherRedemption'))"
                 >
                     Max Voucher <br />
-                    Redemtion
+                    Redemption
                 </label>
 
                 <mat-form-field
@@ -193,11 +193,11 @@
                     <input
                         matInput
                         type="number"
-                        name="maxVoucherRedemtion"
-                        formControlName="maxVoucherRedemtion"
+                        name="maxVoucherRedemption"
+                        formControlName="maxVoucherRedemption"
                     />
-                    <mat-error *ngIf="hasError(form.get('maxVoucherRedemtion'))">
-                        {{ getFormError(form.get('maxVoucherRedemtion')) }}
+                    <mat-error *ngIf="hasError(form.get('maxVoucherRedemption'))">
+                        {{ getFormError(form.get('maxVoucherRedemption')) }}
                     </mat-error>
                 </mat-form-field>
                 <span
@@ -206,7 +206,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ form.get('maxVoucherRedemtion').value || '-' }}
+                    {{ form.get('maxVoucherRedemption').value || '-' }}
                 </span>
             </div>
             <!-- / MAX VOUCHER REDEMTION -->

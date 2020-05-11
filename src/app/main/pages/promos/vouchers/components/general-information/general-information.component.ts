@@ -44,7 +44,7 @@ import { VoucherSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Voucher } from '../../models';
+import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
@@ -73,6 +73,8 @@ export class VoucherGeneralInformationComponent
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk keperluan memicu adanya perubahan form status.
+    private triggerStatus$: BehaviorSubject<string> = new BehaviorSubject<string>('');
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
     // Untuk form.
@@ -99,7 +101,7 @@ export class VoucherGeneralInformationComponent
     sinbadPlatforms: Array<{ id: string; label: string }> = [];
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
-    @Output() formValueChange: EventEmitter<Voucher> = new EventEmitter<Voucher>();
+    @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -196,13 +198,13 @@ export class VoucherGeneralInformationComponent
                     const { id } = this.route.snapshot.params;
 
                     this.store.dispatch(
-                        VoucherActions.fetchVoucherRequest({
+                        VoucherActions.fetchSupplierVoucherRequest({
                             payload: id as string,
                         })
                     );
 
                     this.store.dispatch(
-                        VoucherActions.selectVoucher({
+                        VoucherActions.selectSupplierVoucher({
                             payload: id as string,
                         })
                     );
@@ -211,15 +213,15 @@ export class VoucherGeneralInformationComponent
                 } else {
                     // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
                     if (voucher.supplierId !== userSupplier.supplierId) {
-                        this.store.dispatch(VoucherActions.resetVoucher());
+                        this.store.dispatch(VoucherActions.resetSupplierVoucher());
 
-                        this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        this.notice$.open('Voucher tidak ditemukan.', 'error', {
                             verticalPosition: 'bottom',
                             horizontalPosition: 'right',
                         });
 
                         setTimeout(
-                            () => this.router.navigate(['pages', 'promos', 'period-target-promo']),
+                            () => this.router.navigate(['pages', 'promos', 'voucher']),
                             1000
                         );
 
@@ -229,30 +231,15 @@ export class VoucherGeneralInformationComponent
 
                 this.form.patchValue({
                     id: voucher.id,
-                    sellerId: voucher.externalId,
+                    externalId: voucher.externalId,
                     name: voucher.name,
                     platform: String(voucher.platform).toLowerCase(),
-                    maxRedemptionPerBuyer: voucher['maxRedemptionPerStore'],
-                    budget: String(voucher.promoBudget).replace('.', ','),
-                    budgetView: voucher.promoBudget,
+                    maxRedemptionPerBuyer: voucher.maxRedemptionPerStore,
+                    maxVoucherRedemption: voucher.maxVoucherRedemption,
                     activeStartDate: moment(voucher.startDate).toDate(),
                     activeEndDate: moment(voucher.endDate).toDate(),
-                    imageSuggestion: voucher.imageUrl,
-                    isAllowCombineWithVoucher: voucher.voucherCombine,
-                    isFirstBuy: voucher.firstBuy,
+                    description: voucher.description,
                 });
-
-                if (this.formMode === 'view') {
-                    this.form
-                        .get('isAllowCombineWithVoucher')
-                        .disable({ onlySelf: true, emitEvent: false });
-                    this.form.get('isFirstBuy').disable({ onlySelf: true, emitEvent: false });
-                } else {
-                    this.form
-                        .get('isAllowCombineWithVoucher')
-                        .enable({ onlySelf: true, emitEvent: false });
-                    this.form.get('isFirstBuy').enable({ onlySelf: true, emitEvent: false });
-                }
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
                 this.form.markAsDirty({ onlySelf: false });
@@ -269,7 +256,7 @@ export class VoucherGeneralInformationComponent
 
         this.form = this.fb.group({
             id: [''],
-            supplierVoucherId: [
+            externalId: [
                 '',
                 [
                     RxwebValidators.required({
@@ -277,7 +264,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            voucherName: [
+            name: [
                 '',
                 [
                     RxwebValidators.required({
@@ -302,7 +289,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            maxVoucherRedemtion: [
+            maxVoucherRedemption: [
                 '',
                 [
                     RxwebValidators.numeric({
@@ -332,21 +319,28 @@ export class VoucherGeneralInformationComponent
     }
 
     private initFormCheck(): void {
-        (this.form.statusChanges as Observable<FormStatus>)
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(300),
-                tap((value) =>
-                    HelperService.debug(
-                        'SUPPLIER VOUCHER GENERAL INFORMATION FORM STATUS CHANGED:',
-                        value
-                    )
-                ),
-                takeUntil(this.subs$)
-            )
-            .subscribe((status) => {
-                this.formStatusChange.emit(status);
-            });
+        combineLatest([
+            this.triggerStatus$,
+            this.form.statusChanges as Observable<FormStatus>,
+        ]).pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(([_, value]) => HelperService.debug('[BEFORE MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED', value)),
+            map(([_, status]) => {
+                const rawValue = this.form.getRawValue();
+
+                if (!rawValue.activeStartDate || !rawValue.activeEndDate) {
+                    return 'INVALID';
+                } else {
+                    return status;
+                }
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED', value)),
+            // tap(value => HelperService.debug('SUPPLIER VOUCHER GENERAL INFORMATION FORM STATUS CHANGED:', value)),
+            takeUntil(this.subs$)
+        ).subscribe(status => {
+            this.formStatusChange.emit(status);
+        });
 
         this.form.valueChanges
             .pipe(
@@ -421,6 +415,7 @@ export class VoucherGeneralInformationComponent
         }
 
         this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
+        this.triggerStatus$.next('');
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
@@ -435,6 +430,7 @@ export class VoucherGeneralInformationComponent
         }
 
         this.maxActiveStartDate = activeEndDate.toDate();
+        this.triggerStatus$.next('');
     }
 
     // onFileBrowse(ev: Event): void {
@@ -497,6 +493,9 @@ export class VoucherGeneralInformationComponent
 
         this.trigger$.next('');
         this.trigger$.complete();
+
+        this.triggerStatus$.next('');
+        this.triggerStatus$.complete();
 
         // this.catalogueCategories$.next([]);
         // this.catalogueCategories$.complete();

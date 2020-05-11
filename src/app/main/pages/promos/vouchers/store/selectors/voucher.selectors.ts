@@ -13,7 +13,7 @@ export const {
     selectEntities: selectVoucherEntities,
     selectIds: selectVoucherIds,
     selectTotal: selectVoucherTotal,
-} = fromVoucherCore.fromVoucher.adapterVoucher.getSelectors();
+} = fromVoucherCore.fromVoucher.adapterSupplierVoucher.getSelectors();
 
 const getVoucherState = createSelector(
     getVoucherCoreState,
