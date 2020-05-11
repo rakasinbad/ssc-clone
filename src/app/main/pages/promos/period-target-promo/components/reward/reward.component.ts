@@ -45,6 +45,8 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk keperluan memicu adanya perubahan form status.
+    private triggerStatus$: BehaviorSubject<string> = new BehaviorSubject<string>('');
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
     chosenSku$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     chosenBrand$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
@@ -371,10 +373,24 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
     }
 
     private initFormCheck(): void {
-        (this.form.statusChanges as Observable<FormStatus>).pipe(
+        combineLatest([
+            this.triggerStatus$,
+            this.form.statusChanges as Observable<FormStatus>,
+        ]).pipe(
             distinctUntilChanged(),
             debounceTime(300),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO REWARD INFORMATION FORM STATUS CHANGED:', value)),
+            tap(([_, value]) => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO REWARD INFORMATION FORM VALUE CHANGED', value)),
+            map(([_, status]) => {
+                const rawValue = this.form.getRawValue();
+
+                if (!rawValue.rewardValidDate.activeStartDate || !rawValue.rewardValidDate.activeEndDate) {
+                    return 'INVALID';
+                } else {
+                    return status;
+                }
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO REWARD INFORMATION FORM VALUE CHANGED', value)),
+            // tap(value => HelperService.debug('PERIOD TARGET PROMO REWARD INFORMATION FORM STATUS CHANGED:', value)),
             takeUntil(this.subs$)
         ).subscribe(status => {
             this.formStatusChange.emit(status);
@@ -527,6 +543,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
         }
 
         this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
+        this.triggerStatus$.next('');
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
@@ -541,6 +558,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
         }
 
         this.maxActiveStartDate = activeEndDate.toDate();
+        this.triggerStatus$.next('');
     }
 
     onFileBrowse(ev: Event): void {
@@ -603,6 +621,9 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
 
         this.trigger$.next('');
         this.trigger$.complete();
+
+        this.triggerStatus$.next('');
+        this.triggerStatus$.complete();
 
         // this.catalogueCategories$.next([]);
         // this.catalogueCategories$.complete();

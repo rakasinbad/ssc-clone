@@ -225,6 +225,12 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/promos/period-target-promo',
             },
+            {
+                id: 'voucher',
+                title: 'Supplier Voucher',
+                type: 'item',
+                url: '/pages/promos/voucher',
+            },
         ],
     },
 ];
