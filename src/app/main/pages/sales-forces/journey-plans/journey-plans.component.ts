@@ -9,7 +9,7 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
@@ -49,11 +49,11 @@ import { JourneyPlanSalesSelectors, JourneyPlanSelectors } from './store/selecto
         trigger('detailExpand', [
             state('collapsed', style({ height: '0px', minHeight: '0' })),
             state('expanded', style({ height: '*' })),
-            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
-        ])
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
     ],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
@@ -62,33 +62,33 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Journey Plan'
+            label: 'Journey Plan',
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
-            }
+            },
         },
-        add: {
-            permissions: ['SRM.JP.CREATE'],
-            onClick: () => {
-                this.router.navigate(['/pages/sales-force/journey-plans/new']);
-            }
-        },
+        // add: {
+        //     permissions: ['SRM.JP.CREATE'],
+        //     onClick: () => {
+        //         this.router.navigate(['/pages/sales-force/journey-plans/new']);
+        //     }
+        // },
         viewBy: {
-            list: [{ id: 'date-sales-rep', label: 'Date - Sales Rep' }]
+            list: [{ id: 'date-sales-rep', label: 'Date - Sales Rep' }],
         },
         export: {
             permissions: ['SRM.JP.EXPORT'],
             useAdvanced: true,
-            pageType: 'journey-plans'
+            pageType: 'journey-plans',
         },
         import: {
             permissions: ['SRM.JP.IMPORT'],
             useAdvanced: true,
-            pageType: 'journey-plans'
-        }
+            pageType: 'journey-plans',
+        },
     };
 
     search: FormControl = new FormControl('');
@@ -101,7 +101,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'sales-rep-name',
         'store-id',
         'store-name',
-        'actions'
+        'actions',
     ];
     detailDisplayedColumns = [
         // 'checkbox',
@@ -111,7 +111,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'sales-rep-name',
         'store-id',
         'store-name',
-        'actions'
+        'actions',
     ];
     importBtnConfig: IButtonImportConfig = {
         id: 'import-journey-plan',
@@ -119,10 +119,10 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         color: 'accent',
         dialogConf: {
             title: 'Import',
-            cssToolbar: 'fuse-white-bg'
+            cssToolbar: 'fuse-white-bg',
         },
         title: 'IMPORT ADV',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
+        type: ButtonDesignType.MAT_STROKED_BUTTON,
     };
 
     dataSource: MatTableDataSource<JourneyPlan>;
@@ -149,14 +149,14 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Sales Management'
+            title: 'Sales Management',
         },
         {
-            title: 'Journey Plan'
-        }
+            title: 'Journey Plan',
+        },
     ];
 
     constructor(
@@ -215,7 +215,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource.data.forEach(row => this.selection.select(row));
+            : this.dataSource.data.forEach((row) => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -244,17 +244,17 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                     >(ExportFilterComponent, {
                         data: {
                             dialog: {
-                                title: 'Filter Export'
-                            }
+                                title: 'Filter Export',
+                            },
                         },
                         panelClass: 'event-form-dialog',
-                        disableClose: true
+                        disableClose: true,
                     });
 
                     dialogRef
                         .afterClosed()
                         .pipe(take(1), takeUntil(this._unSubs$))
-                        .subscribe(resp => {
+                        .subscribe((resp) => {
                             if (!resp) {
                                 return;
                             }
@@ -274,7 +274,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                                         ? (payload.end as moment.Moment).format('YYYY-MM-DD')
                                         : payload.end
                                         ? moment(payload.end).format('YYYY-MM-DD')
-                                        : null
+                                        : null,
                             };
 
                             if (payload) {
@@ -328,7 +328,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                     case 'docs':
                         this.store.dispatch(
                             JourneyPlanActions.importRequest({
-                                payload: { file, type: 'insert_journey_plans' }
+                                payload: { file, type: 'insert_journey_plans' },
                             })
                         );
                         break;
@@ -371,7 +371,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
-                payload: this._breadCrumbs
+                payload: this._breadCrumbs,
             })
         );
 
@@ -404,7 +404,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
-                    disableClear: true
+                    disableClear: true,
                 });
 
                 this._initTable();
@@ -412,7 +412,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store.dispatch(JourneyPlanActions.setViewBy(ViewBy.DATE));
 
                 this.dataSource$ = this.store.select(JourneyPlanSelectors.selectAll).pipe(
-                    tap(source => {
+                    tap((source) => {
                         this.dataSource = new MatTableDataSource(source);
                         this.selection.clear();
                     })
@@ -433,7 +433,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                     .pipe(
                         distinctUntilChanged(),
                         debounceTime(1000),
-                        filter(v => {
+                        filter((v) => {
                             if (v) {
                                 return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
                             }
@@ -442,7 +442,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                         }),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this._onRefreshTable();
                     });
                 break;
@@ -453,7 +453,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -471,8 +471,8 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 data['search'] = [
                     {
                         fieldName: 'keyword',
-                        keyword: query
-                    }
+                        keyword: query,
+                    },
                 ];
             } else {
                 localStorage.removeItem('filter.search.journeyplans');

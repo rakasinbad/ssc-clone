@@ -48,7 +48,11 @@ app-merchant-info-detail {
             .info-title {
                 // font-weight: bold;
 
-                +td {
+                &.multi {
+                    vertical-align: top;
+                }
+
+                + td {
                     padding-left: 15px;
                 }
             }
@@ -66,6 +70,7 @@ app-merchant-info-detail {
             }
         }
 
-        &.info-box {}
+        &.info-box {
+        }
     }
 }
