@@ -1,9 +1,9 @@
 <div>
     <mat-table
         class="period-target-promo-list-table"
-        [class.h-256]="(totalDataSource$ | async) > 0"
+        [class.h-256]="!(isLoading$ | async) && (totalDataSource$ | async) > 0"
         #table
-        [dataSource]="dataSource$ | async"
+        [dataSource]="(isLoading$ | async) ? [] : (dataSource$ | async)"
         matSort
         [@animateStagger]="{ value: '50' }"
         fusePerfectScrollbar
@@ -189,10 +189,7 @@
     </div>
     
     <mat-paginator
-        [fxHide]="
-            ((isLoading$ | async) && !(totalDataSource$ | async)) ||
-            (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-        "
+        [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
         [length]="totalDataSource$ | async"
         [pageSize]="defaultPageSize"
         [pageSizeOptions]="defaultPageOpts"
