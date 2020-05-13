@@ -322,28 +322,20 @@ export class VoucherEffects {
         { dispatch: false }
     );
 
-    fetchFailureAction$ = createEffect(
+    failureActions$ = createEffect(
         () =>
             this.actions$.pipe(
                 // Hanya untuk action fetch export logs failure.
-                ofType(...[VoucherActions.addSupplierVoucherFailure]),
+                ofType(
+                    VoucherActions.fetchSupplierVoucherFailure,
+                    VoucherActions.addSupplierVoucherFailure,
+                    VoucherActions.updateSupplierVoucherFailure,
+                    VoucherActions.removeSupplierVoucherFailure,
+                ),
                 // Hanya mengambil payload-nya saja.
                 map((action) => action.payload),
                 // Memunculkan notif bahwa request export gagal.
-                tap(this.showErrorNotification)
-            ),
-        { dispatch: false }
-    );
-
-    updateFailureAction$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                // Hanya untuk action fetch export logs failure.
-                ofType(VoucherActions.updateSupplierVoucherFailure),
-                // Hanya mengambil payload-nya saja.
-                map((action) => action.payload),
-                // Memunculkan notif bahwa request export gagal.
-                tap((err) => this.showErrorNotification(err))
+                tap(err => this.helper$.showErrorNotification(err))
             ),
         { dispatch: false }
     );
@@ -351,7 +343,10 @@ export class VoucherEffects {
     setRefreshStatusToActive$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(VoucherActions.updateSupplierVoucherSuccess),
+                ofType(
+                    VoucherActions.removeSupplierVoucherSuccess,
+                    VoucherActions.updateSupplierVoucherSuccess
+                ),
                 map((action) => action.payload),
                 tap(() => {
                     this.VoucherStore.dispatch(VoucherActions.setRefreshStatus({ payload: true }));

@@ -341,24 +341,17 @@ export class PeriodTargetPromoEffects {
     fetchFailureAction$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action fetch export logs failure.
-            ofType(...[
+            ofType(
                 PeriodTargetPromoActions.addPeriodTargetPromoFailure,
-            ]),
+                PeriodTargetPromoActions.fetchPeriodTargetPromoFailure,
+                PeriodTargetPromoActions.updatePeriodTargetPromoFailure,
+                PeriodTargetPromoActions.removePeriodTargetPromoFailure,
+            ),
             // Hanya mengambil payload-nya saja.
             map(action => action.payload),
             // Memunculkan notif bahwa request export gagal.
-            tap(this.showErrorNotification),
+            tap(err => this.helper$.showErrorNotification(err)),
         ) , { dispatch: false });
-
-    updateFailureAction$ = createEffect(() =>
-        this.actions$.pipe(
-            // Hanya untuk action fetch export logs failure.
-            ofType(PeriodTargetPromoActions.updatePeriodTargetPromoFailure),
-            // Hanya mengambil payload-nya saja.
-            map(action => action.payload),
-            // Memunculkan notif bahwa request export gagal.
-            tap(err => this.showErrorNotification(err)),
-        ), { dispatch: false });
 
     setRefreshStatusToActive$ = createEffect(() =>
         this.actions$.pipe(
@@ -522,22 +515,22 @@ export class PeriodTargetPromoEffects {
         }));
     }
 
-    showErrorNotification = (error: any) => {
-        const noticeSetting: MatSnackBarConfig = {
-            horizontalPosition: 'right',
-            verticalPosition: 'bottom',
-            duration: 5000,
-        };
+    // showErrorNotification = (error: any) => {
+    //     const noticeSetting: MatSnackBarConfig = {
+    //         horizontalPosition: 'right',
+    //         verticalPosition: 'bottom',
+    //         duration: 5000,
+    //     };
 
-        if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
-            this.notice$.open(`An error occured. Reason: ${error.errors}`, 'error', noticeSetting);
-        } else {
-            this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
-        }
+    //     if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
+    //         this.notice$.open(`An error occured. Reason: ${error.errors}`, 'error', noticeSetting);
+    //     } else {
+    //         this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
+    //     }
 
-        // Me-reset state tombol save.
-        this.PeriodTargetPromoStore.dispatch(
-            FormActions.resetClickSaveButton()
-        );
-    }
+    //     // Me-reset state tombol save.
+    //     this.PeriodTargetPromoStore.dispatch(
+    //         FormActions.resetClickSaveButton()
+    //     );
+    // }
 }
