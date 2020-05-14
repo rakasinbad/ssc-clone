@@ -206,7 +206,9 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         if (key === 'journeyPlanSales' && item.hasOwnProperty('journeyPlanSales')) {
-            return `#${(item[key] as Array<JourneyPlanSales>).length}`;
+            return item && item.journeyPlanSales && item.journeyPlanSales.length > 0
+                ? `#${(item[key] as JourneyPlanSales[]).length}`
+                : '#0';
         }
 
         return '-';

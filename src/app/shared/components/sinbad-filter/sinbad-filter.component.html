@@ -200,20 +200,7 @@
     </mat-list>
 
     <mat-list fxLayout="column" fxLayoutAlign="end stretch" class="sinbad__filter-action--wrapper">
-        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="m-0 p-16">
-            <button type="button" mat-stroked-button class="sinbad__filter-action--item">
-                Reset
-            </button>
-
-            <button
-                type="button"
-                mat-flat-button
-                color="accent"
-                class="sinbad__filter-action--item"
-            >
-                Apply
-            </button>
-        </div>
+        <app-sinbad-filter-action [config]="(config$ | async)?.actions"></app-sinbad-filter-action>
     </mat-list>
 
     <!-- <mat-list class="date" cdkFocusRegionStart>
