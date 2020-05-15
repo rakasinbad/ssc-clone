@@ -105,7 +105,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                         goBack: {
                             label: 'Back',
                             active: true,
-                            url: '/pages/promos/period-target-promo',
+                            url: '/pages/promos/voucher'
                         },
                     },
                 },

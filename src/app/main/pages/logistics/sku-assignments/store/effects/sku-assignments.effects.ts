@@ -183,7 +183,7 @@ export class SkuAssignmentsEffects {
             // Hanya mengambil payload-nya saja.
             map(action => action.payload),
             // Memunculkan notif bahwa request export gagal.
-            tap(this.showErrorNotification),
+            tap(err => this.helper$.showErrorNotification(err)),
         )
     , { dispatch: false });
 
@@ -313,22 +313,22 @@ export class SkuAssignmentsEffects {
         }));
     }
 
-    showErrorNotification = (error: any) => {
-        const noticeSetting: MatSnackBarConfig = {
-            horizontalPosition: 'right',
-            verticalPosition: 'bottom',
-            duration: 5000,
-        };
+    // showErrorNotification = (error: any) => {
+    //     const noticeSetting: MatSnackBarConfig = {
+    //         horizontalPosition: 'right',
+    //         verticalPosition: 'bottom',
+    //         duration: 5000,
+    //     };
 
-        if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
-            this.notice$.open(`Failed to request export logs. Reason: ${error.errors}`, 'error', noticeSetting);
-        } else {
-            this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
-        }
+    //     if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
+    //         this.notice$.open(`Failed to request export logs. Reason: ${error.errors}`, 'error', noticeSetting);
+    //     } else {
+    //         this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
+    //     }
 
-        // Me-reset state tombol save.
-        this.SkuAssignmentsStore.dispatch(
-            FormActions.resetClickSaveButton()
-        );
-    }
+    //     // Me-reset state tombol save.
+    //     this.SkuAssignmentsStore.dispatch(
+    //         FormActions.resetClickSaveButton()
+    //     );
+    // }
 }

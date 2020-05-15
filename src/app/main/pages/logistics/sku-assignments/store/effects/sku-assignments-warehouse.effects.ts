@@ -120,19 +120,7 @@ export class SkuAssignmentsWarehouseEffects {
             this.actions$.pipe(
                 ofType(SkuAssignmentsWarehouseActions.fetchSkuAssignmentsWarehouseFailure),
                 map(action => action.payload),
-                tap(resp => {
-                    this.helper$.showErrorNotification(resp);
-
-                    // const message =
-                    //     typeof resp.errors === 'string'
-                    //         ? resp.errors
-                    //         : resp.errors.error.message || resp.errors.message;
-
-                    // this._$notice.open(message, 'error', {
-                    //     verticalPosition: 'bottom',
-                    //     horizontalPosition: 'right'
-                    // });
-                })
+                tap(resp => this.helper$.showErrorNotification(resp))
             ),
         { dispatch: false }
     );
