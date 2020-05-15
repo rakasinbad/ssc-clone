@@ -207,7 +207,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     chosenSku = [],
                     chosenBrand = [],
                     chosenFaktur = [],
-                } = $event as VoucherConditionSettings;
+                } = $event as EligibleProduct;
 
                 this.formValue = {
                     id,
@@ -225,7 +225,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     base,
                     qty,
                     orderValue
-                } = $event as EligibleProduct;
+                } = $event as VoucherConditionSettings;
 
                 this.formValue = {
                     id,
@@ -340,7 +340,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     private processVoucherConditionSettingsForm(): void {
-        const formValue = this.formValue as Partial<VoucherConditionSettings>;
+        const formValue = this.formValue as Partial<EligibleProduct>;
 
         const payload: Partial<SupplierVoucherPayload> = {
             base:
@@ -381,7 +381,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     private processEligibleProductForm(): void {
-        const formValue = this.formValue as Partial<EligibleProduct>;
+        const formValue = this.formValue as Partial<VoucherConditionSettings>;
 
         const payload: Partial<SupplierVoucherPayload> = {
             // CONDITION & BENEFIT SETTINGS
@@ -468,8 +468,8 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
         if (payload.benefitType === 'amount') {
             payload['benefitRebate'] = formValue.rupiah;
-        } else if (payload.reward.conditionBase === 'percent') {
-            payload['benefitPercent'] = formValue.percent;
+        } else if (payload.benefitType === 'percent') {
+            payload['benefitDiscount'] = formValue.percent;
         }
 
         this.VoucherStore.dispatch(

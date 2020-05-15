@@ -1,6 +1,4 @@
-@import 'src/@sinbad/scss/helper';
-
-voucher-trigger-condition-benefit-settings {
+catalogue-sku-information {
     // .view-field-right {
     //     label {
     //         font-weight: 600;
@@ -38,37 +36,13 @@ voucher-trigger-condition-benefit-settings {
         }
     }
 
-    .dark-box {
-        background-color: rgba(232, 232, 232, 0.25);
-
-        mat-form-field {
-            .mat-form-field-outline {
-                background-color: white !important;
-            }
-        }
-    }
-
-    card-instruction {
-        .title {
-            font-size: 18px;
-            font-weight: 600;
-            text-decoration: underline;
-        }
-
-        .instruction {
-            font-size: 14px;
-            font-weight: 600;
-        }
-    }
-
     quill-editor {
         max-width: 100%;
         min-width: 100%;
         height: calc(100% - 40px);
-        //
+// 
         &.ql-error {
-            .ql-toolbar,
-            .ql-container {
+            .ql-toolbar, .ql-container {
                 border: 1px solid #f44336 !important;
             }
         }
@@ -79,7 +53,7 @@ voucher-trigger-condition-benefit-settings {
             .ql-editor {
                 padding: 0px 0px !important;
                 font-size: 10pt;
-                font-family: 'Muli', 'Helvetica Neue', 'Arial', sans-serif;
+                font-family: "Muli", "Helvetica Neue", "Arial", sans-serif;
                 line-height: 1.4 !important;
                 letter-spacing: -0.1px !important;
             }

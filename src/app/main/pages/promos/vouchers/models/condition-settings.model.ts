@@ -3,27 +3,29 @@ import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
 interface IVoucherConditionSettings {
-    id?: string;
+    id: number;
     base: string;
-    chosenSku?: Array<Catalogue>;
-    chosenBrand?: Array<Brand>;
-    chosenFaktur?: Array<InvoiceGroup>;
+    qty: string;
+    orderValue: string;
 }
 
 export class VoucherConditionSettings implements IVoucherConditionSettings {
-    id?: string;
+    id: number;
     base: string;
-    chosenSku?: Array<Catalogue>;
-    chosenBrand?: Array<Brand>;
-    chosenFaktur?: Array<InvoiceGroup>;
+    qty: string;
+    orderValue: string;
 
     constructor(data: IVoucherConditionSettings) {
-        const { id, base, chosenSku = [], chosenBrand = [], chosenFaktur = [] } = data;
+        const {
+            id,
+            base,
+            qty,
+            orderValue,
+        } = data;
 
         this.id = id;
         this.base = base;
-        this.chosenSku = chosenSku;
-        this.chosenBrand = chosenBrand;
-        this.chosenFaktur = chosenFaktur;
+        this.qty = qty;
+        this.orderValue = orderValue;
     }
 }

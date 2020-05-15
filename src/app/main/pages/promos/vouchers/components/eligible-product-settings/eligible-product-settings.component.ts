@@ -13,12 +13,11 @@ import {
     Output,
     ViewChild,
     ElementRef,
-    TemplateRef,
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest, BehaviorSubject, throwError } from 'rxjs';
-//
+import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
+
 import { FeatureState as VoucherCoreFeatureState } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import {
@@ -28,14 +27,8 @@ import {
     AbstractControl,
     ValidationErrors,
     FormControl,
-    FormArray,
 } from '@angular/forms';
-import {
-    RxwebValidators,
-    RxFormBuilder,
-    RxFormArray,
-    NumericValueType,
-} from '@rxweb/reactive-form-validators';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import {
     distinctUntilChanged,
     debounceTime,
@@ -45,10 +38,6 @@ import {
     map,
     takeUntil,
     tap,
-    filter,
-    mergeMap,
-    retry,
-    first,
 } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { VoucherSelectors } from '../../store/selectors';
@@ -62,10 +51,8 @@ import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
-import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
-import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { Selection } from 'app/shared/components/multiple-selection/models';
-import { VoucherConditionSettingsService } from '../condition-settings/services';
+import { VoucherEligibleProductSettingsService } from './services';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -82,38 +69,26 @@ type IFormMode = 'add' | 'view' | 'edit';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class VoucherEligibleProductSettingsComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class VoucherEligibleProductSettingsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
-    private formSubs$: Array<Subject<void>> = [];
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
-    chosenSku$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(null);
+    chosenSku$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+    chosenBrand$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+    chosenFaktur$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
     // Untuk form.
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
     formModeValue: IFormMode = 'add';
-    // Untuk menandakan apakah trigger SKU memiliki SKU lebih dari 1.
-    // tslint:disable-next-line: no-inferrable-types
-    hasMultipleSKUs: boolean = false;
-    // tslint:disable-next-line: no-inferrable-types
-    isTriggeredBySKU: boolean = true;
-    // tslint:disable-next-line: no-inferrable-types
-    isSelectCatalogueDisabled: boolean = false;
-    // Untuk menyimpan SKU yang terpilih di trigger information.
-    triggerSKUs: Array<Catalogue> = [];
 
     // tslint:disable-next-line: no-inferrable-types
     labelLength: number = 10;
     // tslint:disable-next-line: no-inferrable-types
     formFieldLength: number = 40;
-
-    // Untuk keperluan handle dialog.
-    dialog: ApplyDialogService<ElementRef<HTMLElement>>;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
@@ -146,9 +121,6 @@ export class VoucherEligibleProductSettingsComponent
     };
 
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
-    @ViewChild('whatIsThisHint', { static: true, read: HTMLElement }) selectHint: TemplateRef<
-        ElementRef<HTMLElement>
-    >;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -156,11 +128,11 @@ export class VoucherEligibleProductSettingsComponent
         private notice$: NoticeService,
         private route: ActivatedRoute,
         private router: Router,
-        private applyDialogFactory$: ApplyDialogFactoryService<ElementRef<HTMLElement>>,
+        private dialog: MatDialog,
         private store: NgRxStore<VoucherCoreFeatureState>,
         private promo$: VoucherApiService,
         private errorMessage$: ErrorMessageService,
-        private conditionSettings$: VoucherConditionSettingsService
+        private conditionSettings$: VoucherEligibleProductSettingsService
     ) {}
 
     private updateFormView(): void {
@@ -244,25 +216,56 @@ export class VoucherEligibleProductSettingsComponent
                     }
                 }
 
-                this.form.patchValue({
-                    id: voucher.id,
-                    base: voucher.conditionBase,
-                    qty: voucher.conditionQty,
-                    orderValue: voucher.conditionValue,
-                });
+                let chosenBase: string;
 
-                if (voucher.benefitType === 'qty') {
-                    this.form.get('qty').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('orderValue').disable({ onlySelf: true, emitEvent: true });
-                } else if (voucher.benefitType === 'order-value') {
-                    this.form.get('qty').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('orderValue').enable({ onlySelf: true, emitEvent: true });
+                switch (voucher.base) {
+                    case 'sku':
+                        this.chosenSku$.next(
+                            voucher.voucherCatalogues.map((data) => ({
+                                id: data.catalogue.id,
+                                label: data.catalogue.name,
+                                group: 'catalogues',
+                            }))
+                        );
+
+                        chosenBase = voucher.base;
+                        break;
+                    case 'brand':
+                        this.chosenBrand$.next(
+                            voucher.voucherBrands.map((data) => ({
+                                id: data.brand.id,
+                                label: data.brand.name,
+                                group: 'brand',
+                            }))
+                        );
+
+                        chosenBase = voucher.base;
+                        break;
+                    case 'invoiceGroup':
+                        this.chosenFaktur$.next(
+                            voucher.voucherInvoiceGroups.map((data) => ({
+                                id: data.invoiceGroup.id,
+                                label: data.invoiceGroup.name,
+                                group: 'faktur',
+                            }))
+                        );
+
+                        chosenBase = 'faktur';
+                        break;
                 }
 
+                this.form.patchValue({
+                    id: voucher.id,
+                    base: chosenBase,
+                    chosenSku: voucher.voucherCatalogues.length === 0 ? '' : voucher.voucherCatalogues,
+                    chosenBrand: voucher.voucherBrands.length === 0 ? '' : voucher.voucherBrands,
+                    chosenFaktur: voucher.voucherInvoiceGroups.length === 0 ? '' : voucher.voucherInvoiceGroups,
+                });
+
                 if (this.formMode === 'view') {
-                    this.form.get('base').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('base').disable({ onlySelf: true, emitEvent: false });
                 } else {
-                    this.form.get('base').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('base').enable({ onlySelf: true, emitEvent: false });
                 }
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
@@ -275,8 +278,8 @@ export class VoucherEligibleProductSettingsComponent
     private initForm(): void {
         this.form = this.fb.group({
             id: [''],
-            base: ['qty'],
-            qty: [
+            base: ['sku'],
+            chosenSku: [
                 '',
                 [
                     RxwebValidators.required({
@@ -284,7 +287,15 @@ export class VoucherEligibleProductSettingsComponent
                     }),
                 ],
             ],
-            orderValue: [
+            chosenBrand: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            chosenFaktur: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
@@ -298,12 +309,18 @@ export class VoucherEligibleProductSettingsComponent
             .get('base')
             .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
             .subscribe((value) => {
-                if (value === 'qty') {
-                    this.form.get('qty').enable({ onlySelf: true, emitEvent: true });
-                    this.form.get('orderValue').disable({ onlySelf: true, emitEvent: true });
-                } else if (value === 'order-value') {
-                    this.form.get('qty').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('orderValue').enable({ onlySelf: true, emitEvent: true });
+                if (value === 'sku') {
+                    this.form.get('chosenSku').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: true });
+                } else if (value === 'brand') {
+                    this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('chosenBrand').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: true });
+                } else if (value === 'faktur') {
+                    this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('chosenFaktur').enable({ onlySelf: true, emitEvent: true });
                 }
 
                 this.form.updateValueAndValidity();
@@ -317,7 +334,7 @@ export class VoucherEligibleProductSettingsComponent
                 debounceTime(300),
                 tap((value) =>
                     HelperService.debug(
-                        'SUPPLIER VOUCHER CONDITION INFORMATION FORM STATUS CHANGED:',
+                        'SUPPLIER VOUCHER ELIGIBLE PRODUCT INFORMATION FORM STATUS CHANGED:',
                         value
                     )
                 ),
@@ -331,25 +348,25 @@ export class VoucherEligibleProductSettingsComponent
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(200),
-                tap(value => HelperService.debug('SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED', value)),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[BEFORE MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
-                // map((value) => ({
-                //     ...value,
-                //     chosenSku: !value.chosenSku ? [] : value.chosenSku,
-                //     chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
-                //     chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
-                // })),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[AFTER MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
+                // tap(value => HelperService.debug('SUPPLIER VOUCHER ELIGIBLE PRODUCT INFORMATION FORM VALUE CHANGED', value)),
+                tap((value) =>
+                    HelperService.debug(
+                        '[BEFORE MAP] SUPPLIER VOUCHER ELIGIBLE PRODUCT INFORMATION FORM VALUE CHANGED',
+                        value
+                    )
+                ),
+                map((value) => ({
+                    ...value,
+                    chosenSku: !value.chosenSku ? [] : value.chosenSku,
+                    chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
+                    chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
+                })),
+                tap((value) =>
+                    HelperService.debug(
+                        '[AFTER MAP] SUPPLIER VOUCHER ELIGIBLE PRODUCT INFORMATION FORM VALUE CHANGED',
+                        value
+                    )
+                ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
@@ -392,25 +409,37 @@ export class VoucherEligibleProductSettingsComponent
         return this.formMode === 'view';
     }
 
-    openHint(): void {
-        this.dialog = this.applyDialogFactory$.open(
-            {
-                title: 'Calculation Mechanism',
-                template: this.selectHint,
-                isApplyEnabled: false,
-                showApplyButton: false,
-            },
-            {
-                disableClose: false,
-                width: '50vw',
-                minWidth: '50vw',
-                maxWidth: '50vw',
-            }
-        );
+    onCatalogueSelected(event: Array<Catalogue>): void {
+        this.form.get('chosenSku').markAsDirty();
+        this.form.get('chosenSku').markAsTouched();
 
-        this.dialog.closed$.subscribe({
-            complete: () => HelperService.debug('DIALOG HINT CLOSED', {}),
-        });
+        if (event.length === 0) {
+            this.form.get('chosenSku').setValue('');
+        } else {
+            this.form.get('chosenSku').setValue(event);
+        }
+    }
+
+    onBrandSelected(event: Array<Brand>): void {
+        this.form.get('chosenBrand').markAsDirty();
+        this.form.get('chosenBrand').markAsTouched();
+
+        if (event.length === 0) {
+            this.form.get('chosenBrand').setValue('');
+        } else {
+            this.form.get('chosenBrand').setValue(event);
+        }
+    }
+
+    onFakturSelected(event: Array<InvoiceGroup>): void {
+        this.form.get('chosenFaktur').markAsDirty();
+        this.form.get('chosenFaktur').markAsTouched();
+
+        if (event.length === 0) {
+            this.form.get('chosenFaktur').setValue('');
+        } else {
+            this.form.get('chosenFaktur').setValue(event);
+        }
     }
 
     ngOnInit(): void {
@@ -446,9 +475,6 @@ export class VoucherEligibleProductSettingsComponent
 
         this.trigger$.next('');
         this.trigger$.complete();
-
-        this.chosenSku$.next(null);
-        this.chosenSku$.complete();
 
         // this.catalogueCategories$.next([]);
         // this.catalogueCategories$.complete();
