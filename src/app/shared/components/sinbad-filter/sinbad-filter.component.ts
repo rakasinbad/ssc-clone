@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 
 import { SinbadFilterConfig } from './models/sinbad-filter.model';
 import { SinbadFilterService } from './services/sinbad-filter.service';
-import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-sinbad-filter',
@@ -34,8 +33,6 @@ export class SinbadFilterComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.config$ = this._$sinbadFilterService
-            .getConfig$()
-            .pipe(tap((config) => console.log('Sinbad Filter', config)));
+        this.config$ = this._$sinbadFilterService.getConfig$();
     }
 }

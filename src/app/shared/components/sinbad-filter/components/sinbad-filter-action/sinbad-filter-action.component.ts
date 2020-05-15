@@ -24,16 +24,14 @@ export class SinbadFilterActionComponent implements OnInit, OnChanges {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        console.log('Action 1', this.config);
+        // console.log('Action 1', this.config);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         // Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
         // Add '${implements OnChanges}' to the class.
-
-        console.log('Action 2A', this.config);
-        console.log('Action 2B', changes);
+        // console.log('Action 2A', this.config);
+        // console.log('Action 2B', changes);
     }
 
     getReset(): SinbadFilterAction {
