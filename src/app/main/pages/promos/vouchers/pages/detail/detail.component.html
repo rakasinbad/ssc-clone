@@ -72,22 +72,22 @@
             <!-- ELIGIBLE PRODUCT -->
             <mat-tab label="Eligible Product" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <voucher-condition-settings
+                    <voucher-eligible-product-settings
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
-                    ></voucher-condition-settings>
+                    ></voucher-eligible-product-settings>
                 </ng-template>
             </mat-tab>
             <!-- / ELIGIBLE PRODUCT -->
             <!--  CONDITION -->
             <mat-tab label="Condition" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <voucher-eligible-product-settings
+                    <voucher-condition-settings
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
-                    ></voucher-eligible-product-settings>
+                    ></voucher-condition-settings>
                 </ng-template>
             </mat-tab>
             <!--  / CONDITION-->
@@ -103,7 +103,7 @@
             </mat-tab>
             <!-- / BENEFIT -->
             <!-- STORE SEGMENTATION -->
-            <mat-tab label="Store Segmentation" [disabled]="isEditMode()">
+            <mat-tab label="Eligible Store" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <voucher-eligible-store-settings
                         [(formMode)]="formMode"

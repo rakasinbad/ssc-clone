@@ -6,6 +6,7 @@
         fxLayoutAlign="space-between none"
         fxLayoutGap="16px"
     >
+        <!-- GENERAL INFORMATION -->
         <div class="content-card">
             <voucher-general-information
                 [formMode]="'add'"
@@ -13,6 +14,17 @@
                 (formValueChange)="generalInformationValue$.next($event)"
             ></voucher-general-information>
         </div>
+        <!-- / GENERAL INFORMATION -->
+        <!-- ELIGIBLE PRODUCT -->
+        <div class="content-card">
+            <voucher-eligible-product-settings
+            [formMode]="'add'"
+            (formStatusChange)="eligibleProductStatus$.next($event)"
+            (formValueChange)="eligibleProductValue$.next($event)"
+            ></voucher-eligible-product-settings>
+        </div>
+        <!-- / ELIGIBLE PRODUCT -->
+        <!--  CONDITION -->
         <div class="content-card">
             <voucher-condition-settings
                 [formMode]="'add'"
@@ -20,13 +32,8 @@
                 (formValueChange)="conditionSettingsValue$.next($event)"
             ></voucher-condition-settings>
         </div>
-        <div class="content-card">
-            <voucher-eligible-product-settings
-                [formMode]="'add'"
-                (formStatusChange)="eligibleProductStatus$.next($event)"
-                (formValueChange)="eligibleProductValue$.next($event)"
-            ></voucher-eligible-product-settings>
-        </div>
+        <!--  / CONDITION-->
+        <!-- BENEFIT -->
         <div class="content-card">
             <voucher-benefit-information
                 [formMode]="'add'"
@@ -34,6 +41,8 @@
                 (formValueChange)="benefitValue$.next($event)"
             ></voucher-benefit-information>
         </div>
+        <!-- / BENEFIT -->
+        <!-- STORE SEGMENTATION -->
         <div class="content-card">
             <voucher-eligible-store-settings
                 [formMode]="'add'"
@@ -41,6 +50,7 @@
                 (formValueChange)="eligibleStoreValue$.next($event)"
             ></voucher-eligible-store-settings>
         </div>
+        <!-- / STORE SEGMENTATION -->
     </div>
     <!-- LOADING SPINNER -->
     <div class="loader" *ngIf="isLoading$ | async">

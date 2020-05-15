@@ -251,19 +251,20 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
             startDate: ((generalInformationValue.activeStartDate as unknown) as moment.Moment).toISOString(),
             endDate: ((generalInformationValue.activeEndDate as unknown) as moment.Moment).toISOString(),
+            description: generalInformationValue.description,
             // CONDITION SETTINGS
-            base: conditionSettingsValue.base === 'sku'
+            base: eligibleProductValue.base === 'sku'
                     ? 'sku'
-                    : conditionSettingsValue.base === 'brand'
+                    : eligibleProductValue.base === 'brand'
                     ? 'brand'
-                    : conditionSettingsValue.base === 'faktur'
+                    : eligibleProductValue.base === 'faktur'
                     ? 'invoiceGroup'
                     : 'unknown',
             dataBase: {},
             // ELIGIBLE PRODUCT SETTINGS
-            conditionBase: eligibleProductValue.base === 'qty'
+            conditionBase: conditionSettingsValue.base === 'qty'
                             ? 'qty'
-                            : eligibleProductValue.base === 'order-value'
+                            : conditionSettingsValue.base === 'order-value'
                             ? 'value'
                             : 'unknown',
             // BENEFIT SETTINGS
@@ -285,30 +286,30 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         // Klasifikasi "dataBase" untuk Condition Settings.
         if (payload.base === 'sku') {
             payload.dataBase = {
-                catalogueId: conditionSettingsValue.chosenSku.map((sku) => sku.id),
+                catalogueId: eligibleProductValue.chosenSku.map((sku) => sku.id),
             };
         } else if (payload.base === 'brand') {
             payload.dataBase = {
-                brandId: conditionSettingsValue.chosenBrand.map((brand) => brand.id),
+                brandId: eligibleProductValue.chosenBrand.map((brand) => brand.id),
             };
         } else if (payload.base === 'invoiceGroup') {
             payload.dataBase = {
-                invoiceGroupId: conditionSettingsValue.chosenFaktur.map((faktur) => faktur.id),
+                invoiceGroupId: eligibleProductValue.chosenFaktur.map((faktur) => faktur.id),
             };
         }
 
         // Klasifikasi "condition" untuk Eligible Product.
         if (payload.conditionBase === 'qty') {
-            payload['conditionQty'] = eligibleProductValue.qty;
+            payload['conditionQty'] = conditionSettingsValue.qty;
         } else if (payload.conditionBase === 'value') {
-            payload['conditionValue'] = eligibleProductValue.orderValue;
+            payload['conditionValue'] = conditionSettingsValue.orderValue;
         }
 
         // Klasifikasi "benefit" untuk Benefit Settings.
         if (payload.benefitType === 'amount') {
             payload['benefitRebate'] = benefitValue.rupiah;
         } else if (payload.benefitType === 'percent') {
-            payload['benefitPercent'] = benefitValue.percent;
+            payload['benefitDiscount'] = benefitValue.percent;
         }
 
         // Klasifikasi "dataTarget" untuk Eligible Store Settings.
@@ -373,6 +374,15 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
 
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
         this.VoucherStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+
+        // Reset form status state
+        this.VoucherStore.dispatch(FormActions.resetFormStatus());
+
+        // Reset click reset button state
+        this.VoucherStore.dispatch(FormActions.resetClickResetButton());
+
+        // Reset click save button state
+        this.VoucherStore.dispatch(FormActions.resetClickSaveButton());
 
         this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucher());
     }
