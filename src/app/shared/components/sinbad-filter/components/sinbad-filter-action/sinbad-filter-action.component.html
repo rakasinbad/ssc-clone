@@ -3,15 +3,24 @@
     [fxLayoutAlign]="config && config.length === 1 ? 'end stretch' : 'space-between stretch'"
     class="m-0 p-16"
 >
+    <ng-container *ngIf="getReset() as item">
+        <ng-container *ngTemplateOutlet="reset; context: item"></ng-container>
+    </ng-container>
+
     <ng-container *ngIf="getSubmit() as item">
         <ng-container *ngTemplateOutlet="submit; context: item"></ng-container>
     </ng-container>
 </div>
 
 <!-- Reset Action -->
-<ng-template #reset>
-    <button type="button" mat-stroked-button class="sinbad__filter-action--item">
-        Reset
+<ng-template #reset let-title="title" let-color="color" let-class="class">
+    <button
+        type="button"
+        mat-stroked-button
+        [color]="color"
+        [ngClass]="class ? class + ' sinbad__filter-action--item' : 'sinbad__filter-action--item'"
+    >
+        {{ title }}
     </button>
 </ng-template>
 <!-- / Reset Action -->

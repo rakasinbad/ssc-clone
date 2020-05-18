@@ -6,7 +6,10 @@ export interface SinbadFilterAction {
     action: 'reset' | 'submit';
 }
 
+export interface SinbadFilterForm<T> {}
+
 export interface SinbadFilterConfig {
     title: NonNullable<string>;
+    form?: any;
     actions?: SinbadFilterAction[];
 }
