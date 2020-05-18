@@ -12,10 +12,9 @@ export class SinbadFilterService {
         title: 'Filter',
         actions: [
             {
-                id: 'apply',
-                title: 'Apply',
-                color: 'accent',
-                action: 'submit',
+                id: 'reset',
+                title: 'Reset',
+                action: 'reset',
             },
             {
                 id: 'apply',

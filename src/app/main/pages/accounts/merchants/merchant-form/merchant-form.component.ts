@@ -3447,8 +3447,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     ) {
                         delete payload.creditLimit[idx];
                         payload.creditLimit[idx] = null;
-
-                        // delete payload.creditLimit[idx].allowCreditLimit;
                         // delete payload.creditLimit[idx].invoiceGroupId;
                         // delete payload.creditLimit[idx].creditLimitGroupId;
                         // delete payload.creditLimit[idx].creditLimit;
