@@ -3260,14 +3260,29 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     (typeof allowCredit === 'boolean' && !allowCredit) ||
                                     typeof allowCredit !== 'boolean'
                                 ) {
+                                    delete payload.creditLimit[idx];
+                                    payload.creditLimit[idx] = null;
+
+                                    // delete payload.creditLimit[idx].allowCreditLimit;
+                                    // delete payload.creditLimit[idx].invoiceGroupId;
                                     // delete payload.creditLimit[idx].creditLimitGroupId;
                                     // delete payload.creditLimit[idx].creditLimit;
                                     // delete payload.creditLimit[idx].termOfPayment;
 
-                                    payload.creditLimit[idx].creditLimitGroupId = null;
-                                    payload.creditLimit[idx].creditLimit = 0;
-                                    payload.creditLimit[idx].termOfPayment = 0;
+                                    // payload.creditLimit[idx].creditLimitGroupId = null;
+                                    // payload.creditLimit[idx].creditLimit = 0;
+                                    // payload.creditLimit[idx].termOfPayment = 0;
                                 }
+                            }
+
+                            const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
+
+                            if (newPCreditLimit && !newPCreditLimit.length) {
+                                delete payload.creditLimit;
+                            }
+                        } else {
+                            if (payload.creditLimit && !payload.creditLimit.length) {
+                                delete payload.creditLimit;
                             }
                         }
 
@@ -3430,14 +3445,27 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         (typeof allowCredit === 'boolean' && !allowCredit) ||
                         typeof allowCredit !== 'boolean'
                     ) {
+                        delete payload.creditLimit[idx];
+                        payload.creditLimit[idx] = null;
+                        // delete payload.creditLimit[idx].invoiceGroupId;
                         // delete payload.creditLimit[idx].creditLimitGroupId;
                         // delete payload.creditLimit[idx].creditLimit;
                         // delete payload.creditLimit[idx].termOfPayment;
 
-                        payload.creditLimit[idx].creditLimitGroupId = null;
-                        payload.creditLimit[idx].creditLimit = 0;
-                        payload.creditLimit[idx].termOfPayment = 0;
+                        // payload.creditLimit[idx].creditLimitGroupId = null;
+                        // payload.creditLimit[idx].creditLimit = 0;
+                        // payload.creditLimit[idx].termOfPayment = 0;
                     }
+                }
+
+                const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
+
+                if (newPCreditLimit && !newPCreditLimit.length) {
+                    delete payload.creditLimit;
+                }
+            } else {
+                if (payload.creditLimit && !payload.creditLimit.length) {
+                    delete payload.creditLimit;
                 }
             }
 

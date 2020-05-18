@@ -100,14 +100,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             useAdvanced: true,
             pageType: 'sales-rep',
         },
-        // filter: {
-        //     permissions: [],
-        //     onClick: () => {
-        //         this._$sinbadFilterService.setConfig({ title: 'Filter Sales Rep' });
+        filter: {
+            permissions: [],
+            onClick: () => {
+                this._$sinbadFilterService.setConfig({ title: 'Filter Sales Rep' });
 
-        //         this._fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
-        //     },
-        // },
+                this._fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+            },
+        },
     };
 
     search: FormControl = new FormControl('');
