@@ -353,7 +353,7 @@ export class HelperService {
         // tslint:disable-next-line: no-inferrable-types
         let message: string = 'Unknown error';
         // tslint:disable-next-line: no-inferrable-types
-        let uuid: string = '-';
+        let requestId: string = '-';
 
         if (error.httpError) {
             // Error message related to HTTP.
@@ -372,7 +372,7 @@ export class HelperService {
 
         if (error.error) {
             if (typeof error.error !== 'string') {
-                uuid = !error.error.errors ? '-'
+                requestId = !error.error.errors ? '-'
                         : !error.error.errors.uuid ? '-'
                         : error.error.errors.uuid;
             }
@@ -405,7 +405,7 @@ export class HelperService {
                     );
                 }
 
-                this.reportError(message, uuid, tagTime);
+                this.reportError(message, requestId, tagTime);
             });
     };
 
