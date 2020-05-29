@@ -328,6 +328,10 @@
                                                         Done
                                                     </ng-container>
 
+                                                    <ng-container *ngSwitchCase="'pending'">
+                                                        Pending
+                                                    </ng-container>
+
                                                     <ng-container *ngSwitchCase="'cancel'">
                                                         Canceled
                                                     </ng-container>
@@ -439,6 +443,10 @@
 
                                     <ng-container *ngSwitchCase="'done'">
                                         Done
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'pending'">
+                                        Pending
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'cancel'">
@@ -788,6 +796,13 @@
 
                             <div
                                 class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'pending'"
+                            >
+                                <div class="header">Pending</div>
+                            </div>
+
+                            <div
+                                class="status secondary-text"
                                 [class.active]="(order$ | async)?.status === 'cancel'"
                             >
                                 <div class="header">Cancel</div>
@@ -828,6 +843,10 @@
 
                         <ng-container *ngSwitchCase="'done'">
                             Done
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'pending'">
+                            Pending
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'cancel'">
@@ -975,6 +994,29 @@
                                         <div class="content" fxFlex="90">
                                             <div class="label">
                                                 Done
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>-</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'pending'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Pending
                                             </div>
 
                                             <div class="time line-height-8">
