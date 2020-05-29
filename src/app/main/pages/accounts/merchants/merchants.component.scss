@@ -1,69 +1,86 @@
 @import 'src/@fuse/scss/fuse';
 
 app-merchants {
-    #merchants {
-        .top-bg {
-            @include media-breakpoint('lt-md') {
-                height: 256px;
-            }
-        }
+    // #merchants {
+        // height: 80px;
+        // min-height: 80px;
+        // max-height: 136px;
 
-        > .center {
-            > .header {
-                &.sinbad {
-                    height: 100px !important;
-                    min-height: 100px !important;
-                }
+        // @include media-breakpoint('lt-md') {
+        //     padding: 8px 0;
+        //     height: 192px !important;
+        //     min-height: 192px !important;
+        //     max-height: 192px !important;
+        // }
 
-                .search-wrapper {
-                    width: 100%;
-                    max-width: 480px;
-                    // max-width: 200px;
-                    border-radius: 28px;
-                    overflow: hidden;
-                    // @include mat-elevation(1);
+        // > .center {
+        //     > .header {
+        //         &.sinbad {
+        //             height: 100px !important;
+        //             min-height: 100px !important;
+        //         }
 
-                    @include media-breakpoint('xs') {
-                        width: 100%;
-                    }
+        //         .search-wrapper {
+        //             width: 100%;
+        //             max-width: 480px;
+        //             // max-width: 200px;
+        //             border-radius: 28px;
+        //             overflow: hidden;
+        //             // @include mat-elevation(1);
 
-                    .search {
-                        width: 100%;
-                        // height: 48px;
-                        // line-height: 48px;
-                        // height: 36px;
-                        height: 40px;
-                        line-height: 36px;
-                        padding: 0 18px;
+        //             @include media-breakpoint('xs') {
+        //                 width: 100%;
+        //             }
 
-                        input {
-                            width: 100%;
-                            // height: 48px;
-                            // min-height: 48px;
-                            // max-height: 48px;
-                            // padding: 0 16px;
-                            // height: 36px;
-                            // min-height: 36px;
-                            // max-height: 36px;
-                            // padding: 0 16px 0 4px;
-                            height: 40px;
-                            min-height: 40px;
-                            max-height: 40px;
-                            padding: 10px 16px 10px 4px;
-                            border: none;
-                            outline: none;
-                            font-size: 13px;
-                        }
-                    }
-                }
+        //             .search {
+        //                 width: 100%;
+        //                 // height: 48px;
+        //                 // line-height: 48px;
+        //                 // height: 36px;
+        //                 height: 40px;
+        //                 line-height: 36px;
+        //                 padding: 0 18px;
 
-                @include media-breakpoint('lt-md') {
-                    padding: 8px 0;
-                    height: 192px !important;
-                    min-height: 192px !important;
-                    max-height: 192px !important;
-                }
-            }
+        //                 input {
+        //                     width: 100%;
+        //                     // height: 48px;
+        //                     // min-height: 48px;
+        //                     // max-height: 48px;
+        //                     // padding: 0 16px;
+        //                     // height: 36px;
+        //                     // min-height: 36px;
+        //                     // max-height: 36px;
+        //                     // padding: 0 16px 0 4px;
+        //                     height: 40px;
+        //                     min-height: 40px;
+        //                     max-height: 40px;
+        //                     padding: 10px 16px 10px 4px;
+        //                     border: none;
+        //                     outline: none;
+        //                     font-size: 13px;
+        //                 }
+        //             }
+        //         }
+
+        //         @include media-breakpoint('lt-md') {
+        //             padding: 8px 0;
+        //             height: 192px !important;
+        //             min-height: 192px !important;
+        //             max-height: 192px !important;
+        //         }
+        //     }
+        // }
+    // }
+    .header {
+        height: 80px;
+        min-height: 80px;
+        max-height: 136px;
+
+        @include media-breakpoint('lt-md') {
+            padding: 8px 0;
+            height: 192px !important;
+            min-height: 192px !important;
+            max-height: 192px !important;
         }
     }
 

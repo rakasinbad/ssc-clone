@@ -146,7 +146,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // search: FormControl = new FormControl('');
     total: number;
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'store-code',
         'name',
         'city',
@@ -496,7 +496,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
-
+// 
     /**
      *
      *
@@ -522,7 +522,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     .then(hasAccess => {
                         if (hasAccess) {
                             this.displayedColumns = [
-                                'checkbox',
+                                // 'checkbox',
                                 'store-code',
                                 'name',
                                 'city',
@@ -540,7 +540,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                             ];
                         } else {
                             this.displayedColumns = [
-                                'checkbox',
+                                // 'checkbox',
                                 'store-code',
                                 'name',
                                 'city',

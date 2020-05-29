@@ -1,30 +1,30 @@
 <div id="merchants" class="page-layout carded fullwidth inner-scroll">
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
-    <mat-tab-group
-        color="accent" style="border-radius: 4px;"
-        class="mx-8 mt-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
-        animationDuration="0ms"
-        (selectedIndexChange)="onSelectedTab($event)"
-    >
-        <mat-tab label="All"></mat-tab>
-        <mat-tab label="Guest"></mat-tab>
-        <mat-tab label="Rejected"></mat-tab>
-        <mat-tab label="Pending"></mat-tab>
-        <mat-tab label="Updating"></mat-tab>
-    </mat-tab-group>
-
     <!-- TOP BACKGROUND -->
-    <div class="accent"></div>
+    <!-- <div class="accent"></div> -->
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
     <div class="center p-8">
+        <mat-tab-group
+            color="accent" style="border-radius: 4px;"
+            class="mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab label="All"></mat-tab>
+            <mat-tab label="Guest"></mat-tab>
+            <mat-tab label="Rejected"></mat-tab>
+            <mat-tab label="Pending"></mat-tab>
+            <mat-tab label="Updating"></mat-tab>
+        </mat-tab-group>
+
         <!-- CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
-                class="merchants-table sinbad-table grey-300-border mx-12"
+                class="merchants-table grey-300-border mx-12"
                 [class.sinbad-table-no-record]="
                     !(isLoading$ | async) && (totalDataSource$ | async) === 0
                 "
@@ -415,8 +415,6 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div> -->
         </div>
-
-        <!-- <div class="sinbad-content mat-elevation-z1"></div> -->
         <!-- / CONTENT CARD -->
     </div>
     <!-- / CENTER -->
