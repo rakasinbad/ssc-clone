@@ -43,6 +43,92 @@ export class MerchantEffects {
     // -----------------------------------------------------------------------------------------------------
     /**
      *
+     * [CALCULATE SUPPLIER STORES - REQUEST] Store
+     * @memberof MerchantEffects
+     */
+    fetchCalculateSupplierStoresRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.fetchCalculateSupplierStoresRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, userData]) => {
+                return this._$merchantApi.getTotalApprovalStatus(userData.supplierId).pipe(
+                    map((resp) => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST CALCULATE SUPPLIER STORE]`, {
+                            response: {
+                                type: 'log',
+                                value: resp,
+                            },
+                        });
+
+                        return StoreActions.fetchCalculateSupplierStoresSuccess({ payload: resp });
+                    }),
+                    catchError((err) =>
+                        of(
+                            StoreActions.fetchCalculateSupplierStoresFailure({
+                                payload: { id: 'fetchCalculateSupplierStoresFailure', errors: err },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [CALCULATE SUPPLIER STORES - FAILURE] Store
+     * @memberof MerchantEffects
+     */
+    // fetchCalculateSupplierStoresFailure$ = createEffect(
+    //     () =>
+    //         this.actions$.pipe(
+    //             ofType(StoreActions.fetchCalculateSupplierStoresFailure),
+    //             map((action) => action.payload),
+    //             // withLatestFrom(this.store.pipe(select(geStoreErrorById('fetchCalculateSupplierStoresFailure')))),
+    //             tap((resp) => {
+    //                 const msg =
+    //                     resp && resp.errors && resp.errors.error && resp.errors.error.data
+    //                         ? resp.errors.error.data
+    //                         : `Re-send stores failed.<br/>Reason: ${resp.errors.message}`;
+
+    //                 // this._$log.generateGroup(`[REQUEST CALCULATE SUPPLIER STORES STORE FAILURE]`, {
+    //                 //     response: {
+    //                 //         type: 'log',
+    //                 //         value: resp
+    //                 //     }
+    //                 // });
+
+    //                 this._$notice.open(msg, 'error', {
+    //                     verticalPosition: 'bottom',
+    //                     horizontalPosition: 'right',
+    //                 });
+    //             })
+    //         ),
+    //     { dispatch: false }
+    // );
+
+    /**
+     *
+     * [CALCULATE SUPPLIER STORES - SUCCESS] Store
+     * @memberof MerchantEffects
+     */
+    // fetchCalculateSupplierStoresSuccess$ = createEffect(
+    //     () =>
+    //         this.actions$.pipe(
+    //             ofType(StoreActions.fetchCalculateSupplierStoresSuccess),
+    //             map((action) => action.payload),
+    //             tap((resp) => {
+    //                 this._$notice.open('Re-send stores success.', 'success', {
+    //                     verticalPosition: 'bottom',
+    //                     horizontalPosition: 'right',
+    //                 });
+    //             })
+    //         ),
+    //     { dispatch: false }
+    // );
+    
+    /**
+     *
      * [RE-SEND - REQUEST] Store
      * @memberof MerchantEffects
      */

@@ -40,6 +40,11 @@ export const getSelectedSupplierStore = createSelector(
     (state) => state.selectedSupplierStore
 );
 
+export const getApprovalStatuses = createSelector(
+    getAccountStoreState,
+    state => state.approvalStatuses
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Store State
 // -----------------------------------------------------------------------------------------------------

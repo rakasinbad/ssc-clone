@@ -180,6 +180,12 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         type: ButtonDesignType.MAT_STROKED_BUTTON
     };
 
+    totalStores$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
+    totalGuest$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
+    totalRejected$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
+    totalPending$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
+    totalUpdating$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
+
     dataSource$: Observable<Array<SupplierStore>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
@@ -465,11 +471,13 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectedTab(index: number): void {
-        // switch (index) {
-        //     case 0: this.section = 'all'; break;
-        //     case 1: this.section = 'active'; break;
-        //     case 2: this.section = 'inactive'; break;
-        // }
+        switch (index) {
+            case 1: this._onRefreshTable('guest'); break;
+            case 2: this._onRefreshTable('rejected'); break;
+            case 3: this._onRefreshTable('pending'); break;
+            case 4: this._onRefreshTable('updating'); break;
+            default: this._onRefreshTable(); break;
+        }
     }
 
     handleCheckbox(): void {
@@ -566,6 +574,18 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Reset core state stores
                 this.store.dispatch(StoreActions.resetStore());
 
+                this.totalStores$.next('');
+                this.totalGuest$.next('');
+                this.totalRejected$.next('');
+                this.totalPending$.next('');
+                this.totalUpdating$.next('');
+
+                this.totalStores$.complete();
+                this.totalGuest$.complete();
+                this.totalRejected$.complete();
+                this.totalPending$.complete();
+                this.totalUpdating$.complete();
+
                 this.trigger$.next('');
                 this.trigger$.complete();
 
@@ -592,6 +612,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     startWith(this._$merchantApi.initBrandStore())
                 // );
 
+
+
                 this.selection = new SelectionModel<SupplierStore>(true, []);
                 this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
                 this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
@@ -600,6 +622,20 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.store.select(StoreSelectors.getIsLoading),
                     this.store.select(ExportSelector.getRequestingState)
                 ]).pipe(map(state => state.includes(true)));
+
+                this.store.select(StoreSelectors.getApprovalStatuses).pipe(
+                    takeUntil(this._unSubs$)
+                ).subscribe(data => {
+                    if (!data) {
+                        this.store.dispatch(StoreActions.fetchCalculateSupplierStoresRequest());
+                    } else {
+                        this.totalStores$.next(data.totalStores);
+                        this.totalGuest$.next(data.totalGuest);
+                        this.totalRejected$.next(data.totalRejected);
+                        this.totalPending$.next(data.totalPending);
+                        this.totalUpdating$.next(data.totalUpdating);
+                    }
+                });
 
                 this._initTable();
 
@@ -662,9 +698,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    private _onRefreshTable(): void {
+    private _onRefreshTable(approvalStatus: string = null): void {
         this.paginator.pageIndex = 0;
-        this._initTable();
+        this._initTable(approvalStatus);
     }
 
     /**
@@ -673,7 +709,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
      * @private
      * @memberof MerchantsComponent
      */
-    private _initTable(): void {
+    private _initTable(approvalStatus: string = null): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
@@ -695,6 +731,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     keyword: query
                 }
             ];
+        }
+
+        if (approvalStatus) {
+            data['approvalStatus'] = approvalStatus;
         }
 
         this.store.dispatch(

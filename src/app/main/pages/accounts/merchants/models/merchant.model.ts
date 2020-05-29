@@ -14,6 +14,14 @@ import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 
+export interface ICalculateSupplierStoreResponse {
+    totalStores: string;
+    totalGuest: string;
+    totalRejected: string;
+    totalPending: string;
+    totalUpdating: string;
+}
+
 export interface IResendStorePayload {
     supplierId: number;
     stores: Array<{ storeId: number }>;

@@ -5,7 +5,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore, SupplierStoreOptions } from 'app/shared/models/supplier.model';
 import { Observable } from 'rxjs';
 
-import { Store as Merchant, IResendStorePayload, IResendStoreResponse } from '../models';
+import { Store as Merchant, IResendStorePayload, IResendStoreResponse, ICalculateSupplierStoreResponse } from '../models';
 
 /**
  *
@@ -67,6 +67,14 @@ export class MerchantApiService {
     private readonly _resendStoresEndpoint = '/resend-stores';
 
     /**
+     *
+     *
+     * @private
+     * @memberof MerchantApiService
+     */
+    private readonly _calculateSupplierStoresEndpoint = '/calculate-supplier-stores';
+
+    /**
      * Creates an instance of MerchantApiService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
@@ -87,6 +95,13 @@ export class MerchantApiService {
                   }
               ]
             : [];
+
+        if (params['approvalStatus']) {
+            newArg.push({
+                key: 'approvalStatus',
+                value: params['approvalStatus']
+            });
+        }
 
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
@@ -230,6 +245,21 @@ export class MerchantApiService {
     getStore(id: string): Observable<Merchant> {
         this._url = this._$helper.handleApiRouter(this._endpointStore);
         return this.http.get<Merchant>(`${this._url}/${id}`);
+    }
+
+    getTotalApprovalStatus(supplierId: string): Observable<ICalculateSupplierStoreResponse> {
+        const newArg = supplierId ?
+        [
+            {
+                key: 'supplierId',
+                value: supplierId
+            }
+        ] : [];
+
+        this._url = this._$helper.handleApiRouter(this._calculateSupplierStoresEndpoint);
+        const newParams = this._$helper.handleParams(this._url, {}, ...newArg);
+
+        return this.http.get<ICalculateSupplierStoreResponse>(this._url, { params: newParams });
     }
 
     resendStore(payload: IResendStorePayload): Observable<Array<IResendStoreResponse>> {

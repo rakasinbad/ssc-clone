@@ -5,7 +5,23 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 
-import { Store as Merchant, UserStore, IResendStoreResponse } from '../../models';
+import { Store as Merchant, UserStore, IResendStoreResponse, ICalculateSupplierStoreResponse } from '../../models';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Calculate Supplier Stores
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchCalculateSupplierStoresRequest = createAction('[Stores API] Fetch Calculate Supplier Stores Request');
+
+export const fetchCalculateSupplierStoresFailure = createAction(
+    '[Stores API] Fetch Calculate Supplier Stores Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCalculateSupplierStoresSuccess = createAction(
+    '[Stores API] Fetch Calculate Supplier Stores Success',
+    props<{ payload: ICalculateSupplierStoreResponse }>()
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Re-send Stores

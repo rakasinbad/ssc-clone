@@ -5,7 +5,7 @@ import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { Store as Merchant, UserStore } from '../../models';
+import { Store as Merchant, UserStore, ICalculateSupplierStoreResponse } from '../../models';
 import { StoreSetting } from '../../models/store-setting.model';
 import { StoreActions, StoreSettingActions } from '../actions';
 
@@ -45,6 +45,7 @@ export interface State {
     employees: StoreEmployeeState;
     settings: StoreSettingState;
     employee?: User;
+    approvalStatuses: ICalculateSupplierStoreResponse;
     // brandStore?: BrandStore;
     // brandStores: BrandStoreState;
     // editBrandStore?: StoreEdit;
@@ -105,6 +106,7 @@ export const initialState: State = {
     employees: initialStoreEmployeeState,
     settings: initialStoreSettingState,
     selectedSupplierStore: null,
+    approvalStatuses: null,
     // brandStore: undefined,
     // brandStores: initialBrandStoreState,
     // employee: undefined,
@@ -293,6 +295,13 @@ const brandStoreReducer = createReducer(
         isLoading: false,
         isRefresh: true,
         errors: adapterError.removeOne('resendStoresFailure', state.errors),
+    })),
+    on(StoreActions.fetchCalculateSupplierStoresSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        approvalStatuses: payload,
+        errors: adapterError.removeOne('fetchCalculateSupplierStoresFailure', state.errors),
     })),
     on(StoreActions.setEditLocation, (state) => ({
         ...state,
