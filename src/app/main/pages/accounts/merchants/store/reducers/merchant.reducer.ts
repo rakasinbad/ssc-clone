@@ -126,7 +126,8 @@ const brandStoreReducer = createReducer(
         StoreActions.fetchStoreRequest,
         StoreActions.fetchStoresRequest,
         StoreActions.fetchStoreEmployeeEditRequest,
-        StoreActions.fetchStoreEmployeesRequest,
+        StoreActions.updateStatusStoreFailure,
+        StoreActions.resendStoresRequest,
         StoreSettingActions.fetchStoreSettingsRequest,
         StoreSettingActions.createStoreSettingRequest,
         StoreSettingActions.updateStoreSettingRequest,
@@ -143,6 +144,7 @@ const brandStoreReducer = createReducer(
         StoreActions.deleteStoreEmployeeFailure,
         StoreActions.updateStatusStoreFailure,
         StoreActions.updateStatusStoreEmployeeFailure,
+        StoreActions.resendStoresFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -285,6 +287,12 @@ const brandStoreReducer = createReducer(
         isLoading: false,
         employees: adapterStoreEmployee.updateOne(payload, state.employees),
         errors: adapterError.removeOne('updateStatusStoreEmployeeFailure', state.errors),
+    })),
+    on(StoreActions.resendStoresSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        errors: adapterError.removeOne('resendStoresFailure', state.errors),
     })),
     on(StoreActions.setEditLocation, (state) => ({
         ...state,

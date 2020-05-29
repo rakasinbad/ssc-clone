@@ -5,7 +5,26 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 
-import { Store as Merchant, UserStore } from '../../models';
+import { Store as Merchant, UserStore, IResendStoreResponse } from '../../models';
+
+// -----------------------------------------------------------------------------------------------------
+// Re-send Stores
+// -----------------------------------------------------------------------------------------------------
+
+export const resendStoresRequest = createAction(
+    '[Stores API] Re-send Stores Request',
+    props<{ payload: SupplierStore | Array<SupplierStore> }>()
+);
+
+export const resendStoresFailure = createAction(
+    '[Stores API] Re-send Stores Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const resendStoresSuccess = createAction(
+    '[Stores API] Re-send Stores Success',
+    props<{ payload: Array<IResendStoreResponse> }>()
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Stores
@@ -148,6 +167,11 @@ export const createStoreSuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 // [CRUD - UPDATE STORE] Stores
 // -----------------------------------------------------------------------------------------------------
+
+export const confirmUpdateStore = createAction(
+    '[Stores API] Confirm Update Store',
+    props<{ payload: { body: any; id: string } }>()
+);
 
 export const updateStoreRequest = createAction(
     '[Stores API] Update Store Request',

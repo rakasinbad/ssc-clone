@@ -5,7 +5,9 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef,
+    TemplateRef
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
@@ -19,7 +21,7 @@ import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ButtonDesignType } from 'app/shared/models/button.model';
-import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { LifecyclePlatform, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
@@ -28,14 +30,18 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { combineLatest, merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { combineLatest, merge, Observable, Subject, BehaviorSubject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, takeUntil, flatMap, tap, take, withLatestFrom } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
+import { SelectionModel, SelectionChange } from '@angular/cdk/collections';
+
+import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 
 @Component({
     selector: 'app-merchants',
@@ -53,6 +59,28 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
             label: 'Store List'
+        },
+        batchAction: {
+            actions: [
+                // {
+                //     id: 'approve',
+                //     label: 'Approve',
+                // },
+                // {
+                //     id: 'reject',
+                //     label: 'Reject',
+                // },
+                {
+                    id: 'resend',
+                    label: 'Re-send',
+                }
+            ],
+            onActionSelected: action => {
+                if (action.id === 'resend') {
+                    this.onResendStores();
+                }
+            },
+            show: false
         },
         search: {
             active: true,
@@ -79,6 +107,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     };
 
+    selection: SelectionModel<SupplierStore>;
     search: FormControl = new FormControl('');
     formConfig = {
         status: {
@@ -117,6 +146,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // search: FormControl = new FormControl('');
     total: number;
     displayedColumns = [
+        'checkbox',
         'store-code',
         'name',
         'city',
@@ -129,7 +159,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'sr-name',
         'joining-date',
         'status',
+        'supplier-status',
         'actions'
+    ];
+    resendStoreColumns: Array<string> = [
+        'name',
+        'owner-name',
+        'city',
+        'owner-phone-no'
     ];
     importBtnConfig: IButtonImportConfig = {
         id: 'import-journey-plan',
@@ -154,9 +191,13 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    @ViewChild('resendStore', { static: false }) resendStore: TemplateRef<any>;
+
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
+    dialogStoreType: ApplyDialogService;
+    private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('empty');
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -167,7 +208,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         public translate: TranslateService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        private cdRef: ChangeDetectorRef,
+        private applyDialogFactory$: ApplyDialogFactoryService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -243,6 +286,97 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
+    }
+
+    onResendStore(item: SupplierStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
+
+        canChangeStatusStore.then(hasAccess => {
+            if (hasAccess) {
+                this.selection.select(item);
+
+                this.dialogStoreType = this.applyDialogFactory$.open(
+                    {
+                        title: 'Re-send',
+                        template: this.resendStore,
+                        isApplyEnabled: true,
+                    },
+                    {
+                        disableClose: true,
+                        width: '60vw',
+                        minWidth: '60vw',
+                        maxWidth: '60vw',
+                        panelClass: 'dialog-container-no-padding'
+                    }
+                );
+
+                this.dialogStoreType.closed$.subscribe({
+                    next: (value: TNullable<string>) => {
+                        HelperService.debug('DIALOG RE-SEND STORE CLOSED', value);
+        
+                        if (value === 'apply') {
+                            this.store.dispatch(StoreActions.resendStoresRequest({
+                                payload: this.selection.selected
+                            }));
+                        }
+        
+                        this.cdRef.detectChanges();
+                    },
+                });
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
+    }
+
+
+    onResendStores(): void {
+        const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
+
+        canChangeStatusStore.then(hasAccess => {
+            if (hasAccess) {
+                this.dialogStoreType = this.applyDialogFactory$.open(
+                    {
+                        title: 'Re-send',
+                        template: this.resendStore,
+                        isApplyEnabled: true,
+                    },
+                    {
+                        disableClose: true,
+                        width: '60vw',
+                        minWidth: '60vw',
+                        maxWidth: '60vw',
+                        panelClass: 'dialog-container-no-padding'
+                    }
+                );
+
+                this.dialogStoreType.closed$.subscribe({
+                    next: (value: TNullable<string>) => {
+                        HelperService.debug('DIALOG RE-SEND STORE CLOSED', value);
+        
+                        if (value === 'apply') {
+                            this.store.dispatch(StoreActions.resendStoresRequest({
+                                payload: this.selection.selected
+                            }));
+                        }
+        
+                        this.cdRef.detectChanges();
+                    },
+                });
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onChangeStatus(item: SupplierStore): void {
@@ -330,6 +464,35 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return salesRep.map(sR => sR.fullName).join(',<br/>');
     }
 
+    onSelectedTab(index: number): void {
+        // switch (index) {
+        //     case 0: this.section = 'all'; break;
+        //     case 1: this.section = 'active'; break;
+        //     case 2: this.section = 'inactive'; break;
+        // }
+    }
+
+    handleCheckbox(): void {
+        this.isAllSelected()
+            ? this.trigger$.next('empty')
+            : this.trigger$.next('all');
+            // : this.dataSource$
+            //     .pipe(
+            //         flatMap(v => v),
+            //         take(1)
+            //     )
+            //     .forEach(row => this.selection.select(row));
+    }
+
+    isAllSelected(): boolean {
+        const numSelected = this.selection.selected.length;
+        const numRows = this.paginator.length;
+
+        HelperService.debug('IS ALL SELECTED', { selection: this.selection, numSelected, numRows });
+
+        return numSelected === numRows;
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
@@ -359,6 +522,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     .then(hasAccess => {
                         if (hasAccess) {
                             this.displayedColumns = [
+                                'checkbox',
                                 'store-code',
                                 'name',
                                 'city',
@@ -371,10 +535,12 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 // 'sr-name',
                                 'joining-date',
                                 'status',
+                                'supplier-status',
                                 'actions'
                             ];
                         } else {
                             this.displayedColumns = [
+                                'checkbox',
                                 'store-code',
                                 'name',
                                 'city',
@@ -386,7 +552,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 // 'store-type',
                                 // 'sr-name',
                                 'joining-date',
-                                'status'
+                                'status',
+                                'supplier-status'
                             ];
                         }
                     });
@@ -398,6 +565,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Reset core state stores
                 this.store.dispatch(StoreActions.resetStore());
+
+                this.trigger$.next('');
+                this.trigger$.complete();
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -422,6 +592,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     startWith(this._$merchantApi.initBrandStore())
                 // );
 
+                this.selection = new SelectionModel<SupplierStore>(true, []);
                 this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
                 this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
@@ -431,6 +602,43 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ]).pipe(map(state => state.includes(true)));
 
                 this._initTable();
+
+                this.selection.changed.pipe(
+                    debounceTime(100),
+                    tap(value => HelperService.debug('SELECTION CHANGED', value)),
+                    takeUntil(this._unSubs$)
+                ).subscribe((value: SelectionChange<SupplierStore>) => {
+                    if (value.source.isEmpty()) {
+                        this.cardHeaderConfig = {
+                            ...this.cardHeaderConfig,
+                            batchAction: {
+                                ...this.cardHeaderConfig.batchAction,
+                                show: false
+                            }
+                        };
+                    } else {
+                        this.cardHeaderConfig = {
+                            ...this.cardHeaderConfig,
+                            batchAction: {
+                                ...this.cardHeaderConfig.batchAction,
+                                show: true
+                            }
+                        };
+                    }
+
+                    this.cdRef.markForCheck();
+                });
+
+                this.trigger$.pipe(
+                    withLatestFrom(this.dataSource$),
+                    takeUntil(this._unSubs$)
+                ).subscribe(([trigger, dataSource]) => {
+                    if (trigger === 'empty') {
+                        this.selection.clear();
+                    } else if (trigger === 'all') {
+                        dataSource.forEach(source => this.selection.select(source));
+                    }
+                });
 
                 this.search.valueChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))

@@ -41,6 +41,105 @@ export class MerchantEffects {
     // -----------------------------------------------------------------------------------------------------
     // @ CRUD methods
     // -----------------------------------------------------------------------------------------------------
+    /**
+     *
+     * [RE-SEND - REQUEST] Store
+     * @memberof MerchantEffects
+     */
+    resendStoresRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.resendStoresRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, userData]) => {
+                // Menyiapkan body request-nya.
+                const requestBody = {
+                    supplierId: +userData.supplierId,
+                    stores: [],
+                };
+
+                // Memeriksa payload state apakah Array atau bukan.
+                if (Array.isArray(payload)) {
+                    requestBody.stores = payload.map(p => ({ storeId: +p.storeId }));
+                } else {
+                    requestBody.stores = [ +payload.storeId ];
+                }
+
+                return this._$merchantApi.resendStore(requestBody).pipe(
+                    map((resp) => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST RESEND STORE]`, {
+                            response: {
+                                type: 'log',
+                                value: resp,
+                            },
+                        });
+
+                        return StoreActions.resendStoresSuccess({ payload: resp });
+                    }),
+                    catchError((err) =>
+                        of(
+                            StoreActions.resendStoresFailure({
+                                payload: { id: 'resendStoresFailure', errors: err },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [RE-SEND - FAILURE] Store
+     * @memberof MerchantEffects
+     */
+    resendStoresFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.resendStoresFailure),
+                map((action) => action.payload),
+                // withLatestFrom(this.store.pipe(select(geStoreErrorById('resendStoresFailure')))),
+                tap((resp) => {
+                    const msg =
+                        resp && resp.errors && resp.errors.error && resp.errors.error.data
+                            ? resp.errors.error.data
+                            : `Re-send stores failed.<br/>Reason: ${resp.errors.message}`;
+
+                    // this._$log.generateGroup(`[REQUEST RE-SEND STORE FAILURE]`, {
+                    //     response: {
+                    //         type: 'log',
+                    //         value: resp
+                    //     }
+                    // });
+
+                    this._$notice.open(msg, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [RE-SEND - SUCCESS] Store
+     * @memberof MerchantEffects
+     */
+    resendStoresSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.resendStoresSuccess),
+                map((action) => action.payload),
+                tap((resp) => {
+                    this._$notice.open('Re-send stores success.', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
 
     /**
      *
@@ -1438,7 +1537,8 @@ export class MerchantEffects {
                                             row.owner,
                                             row.createdAt,
                                             row.updatedAt,
-                                            row.deletedAt
+                                            row.deletedAt,
+                                            row
                                         );
                                     }),
                                 };
@@ -1522,7 +1622,8 @@ export class MerchantEffects {
                             resp.owner,
                             resp.createdAt,
                             resp.updatedAt,
-                            resp.deletedAt
+                            resp.deletedAt,
+                            resp
                         );
 
                         return StoreActions.fetchStoreSuccess({

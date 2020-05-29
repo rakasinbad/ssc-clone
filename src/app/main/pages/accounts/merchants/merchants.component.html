@@ -1,5 +1,17 @@
 <div id="merchants" class="page-layout carded fullwidth inner-scroll">
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
+    <mat-tab-group
+        color="accent" style="border-radius: 4px;"
+        class="mx-8 mt-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+        animationDuration="0ms"
+        (selectedIndexChange)="onSelectedTab($event)"
+    >
+        <mat-tab label="All"></mat-tab>
+        <mat-tab label="Guest"></mat-tab>
+        <mat-tab label="Rejected"></mat-tab>
+        <mat-tab label="Pending"></mat-tab>
+        <mat-tab label="Updating"></mat-tab>
+    </mat-tab-group>
 
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
@@ -23,6 +35,25 @@
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            (change)="$event ? handleCheckbox() : null"
+                            (click)="$event.stopPropagation()"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- ID Column -->
                 <ng-container matColumnDef="store-code">
                     <mat-header-cell *matHeaderCellDef>
@@ -183,6 +214,16 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Supplier's Status Column -->
+                <ng-container matColumnDef="supplier-status">
+                    <mat-header-cell *matHeaderCellDef>
+                        Supplier Status
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        {{ (row?.outerStore?.approvalStatus | titlecase) || '-' }}
+                    </mat-cell>
+                </ng-container>
+
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
                         Actions
@@ -199,6 +240,43 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
+                                <!-- <ng-template *ngIf="row?.outerStore?.approvalStatus !== 'verified'" [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                    >
+                                        <mat-icon>check</mat-icon>
+                                        <span>Approve</span>
+                                    </button>
+                                </ng-template>
+                                <ng-template *ngIf="row?.outerStore?.approvalStatus !== 'rejected'" [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                    >
+                                        <mat-icon>close</mat-icon>
+                                        <span>Reject</span>
+                                    </button>
+                                </ng-template> -->
+                                <ng-template *ngIf="row?.outerStore?.approvalStatus === 'rejected'" [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        (click)="onResendStore(row)"
+                                    >
+                                        <mat-icon>check</mat-icon>
+                                        <span>Re-send</span>
+                                    </button>
+                                </ng-template>
+
+                                <mat-divider></mat-divider>
+
                                 <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
                                     <button
                                         mat-menu-item
@@ -343,3 +421,63 @@
     </div>
     <!-- / CENTER -->
 </div>
+<ng-template #resendStore>
+    <mat-table
+        class="sinbad-table grey-300-border mx-16"
+        style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
+        [dataSource]="selection.selected"
+        fusePerfectScrollbar
+    >
+        <!-- Store Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>
+                Store Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row?.store?.name || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Owner Name Column -->
+        <ng-container matColumnDef="owner-name">
+            <mat-header-cell *matHeaderCellDef>
+                Owner Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row?.store?.owner?.fullName || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- City Column -->
+        <ng-container matColumnDef="city">
+            <mat-header-cell *matHeaderCellDef>
+                City
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row?.store?.urban?.city || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Owner Phone Number Column -->
+        <ng-container matColumnDef="owner-phone-no">
+            <mat-header-cell *matHeaderCellDef>
+                Phone Number
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row?.store?.owner?.mobilePhoneNo || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="resendStoreColumns; sticky: true"></mat-header-row>
+        <mat-row class="sinbad-white-bg" *matRowDef="let row; columns: resendStoreColumns"></mat-row>
+    </mat-table>
+</ng-template>
+<ng-template #reject></ng-template>

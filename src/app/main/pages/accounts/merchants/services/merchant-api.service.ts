@@ -5,7 +5,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore, SupplierStoreOptions } from 'app/shared/models/supplier.model';
 import { Observable } from 'rxjs';
 
-import { Store as Merchant } from '../models';
+import { Store as Merchant, IResendStorePayload, IResendStoreResponse } from '../models';
 
 /**
  *
@@ -57,6 +57,14 @@ export class MerchantApiService {
      * @memberof MerchantApiService
      */
     private readonly _endpointStore = '/stores';
+
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantApiService
+     */
+    private readonly _resendStoresEndpoint = '/resend-stores';
 
     /**
      * Creates an instance of MerchantApiService.
@@ -222,6 +230,11 @@ export class MerchantApiService {
     getStore(id: string): Observable<Merchant> {
         this._url = this._$helper.handleApiRouter(this._endpointStore);
         return this.http.get<Merchant>(`${this._url}/${id}`);
+    }
+
+    resendStore(payload: IResendStorePayload): Observable<Array<IResendStoreResponse>> {
+        this._url = this._$helper.handleApiRouter(this._resendStoresEndpoint);
+        return this.http.post<Array<IResendStoreResponse>>(`${this._url}`, payload);
     }
 
     // findStoreById(id: string): Observable<IStoreEdit> {

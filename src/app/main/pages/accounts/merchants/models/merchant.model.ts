@@ -14,6 +14,20 @@ import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 
+export interface IResendStorePayload {
+    supplierId: number;
+    stores: Array<{ storeId: number }>;
+}
+
+export interface IResendStoreResponse {
+    id: string;
+    status: number;
+    message: {
+        message: string;
+        supplierStoreCode: string;
+    }
+}
+
 export interface IStorePortfolio extends ITimestamp {
     readonly id: NonNullable<string>;
     portfolio?: Portfolio;
