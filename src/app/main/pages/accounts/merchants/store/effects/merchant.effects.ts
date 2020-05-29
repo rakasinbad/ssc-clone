@@ -13,6 +13,7 @@ import {
     NoticeService,
     StoreApiService,
     UserApiService,
+    HelperService,
 } from 'app/shared/helpers';
 import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
 import { ErrorHandler, PaginateResponse, TStatus } from 'app/shared/models/global.model';
@@ -184,24 +185,14 @@ export class MerchantEffects {
             this.actions$.pipe(
                 ofType(StoreActions.resendStoresFailure),
                 map((action) => action.payload),
-                // withLatestFrom(this.store.pipe(select(geStoreErrorById('resendStoresFailure')))),
                 tap((resp) => {
-                    const msg =
-                        resp && resp.errors && resp.errors.error && resp.errors.error.data
-                            ? resp.errors.error.data
-                            : `Re-send stores failed.<br/>Reason: ${resp.errors.message}`;
-
-                    // this._$log.generateGroup(`[REQUEST RE-SEND STORE FAILURE]`, {
-                    //     response: {
-                    //         type: 'log',
-                    //         value: resp
-                    //     }
-                    // });
-
-                    this._$notice.open(msg, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
-                    });
+                    if (resp.errors.code) {
+                        if (resp.errors.code === 500) {
+                            this._$helper.showErrorNotification({ id: 'ERR_INTERNAL_SERVER', errors: resp.errors });
+                        } else {
+                            this._$helper.showErrorNotification({ id: 'ERR_UNKNOWN', errors: resp.errors });
+                        }
+                    }
                 })
             ),
         { dispatch: false }
@@ -2501,6 +2492,7 @@ export class MerchantEffects {
         private _$merchantEmployeeApi: MerchantEmployeeApiService,
         private _$notice: NoticeService,
         private _$storeApi: StoreApiService,
-        private _$userApi: UserApiService
+        private _$userApi: UserApiService,
+        private _$helper: HelperService
     ) {}
 }
