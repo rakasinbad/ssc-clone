@@ -229,6 +229,10 @@
                                     Done
                                 </ng-container>
 
+                                <ng-container *ngSwitchCase="'pending'">
+                                    Pending
+                                </ng-container>
+
                                 <ng-container *ngSwitchCase="'cancel'">
                                     Canceled
                                 </ng-container>
@@ -318,7 +322,8 @@
                                 *ngIf="
                                     row?.status !== 'done' &&
                                     row?.status !== 'cancel' &&
-                                    row?.status !== 'checkout'
+                                    row?.status !== 'checkout' &&
+                                    row?.status !== 'pending'
                                 "
                                 (click)="$event.stopPropagation()"
                             >
@@ -335,7 +340,8 @@
                                         *ngIf="
                                             row?.status !== 'done' &&
                                             row?.status !== 'cancel' &&
-                                            row?.status !== 'checkout'
+                                            row?.status !== 'checkout' &&
+                                            row?.status !== 'pending'
                                         "
                                         (click)="onChangeStatus(row)"
                                     >

@@ -1783,16 +1783,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //         'required'
                             //     )
                             // }),
-                            RxwebValidators.pattern({
-                                expression: {
-                                    mobilePhone: /^08[0-9]{8,12}$/,
-                                },
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'mobile_phone_pattern',
-                                    '08'
-                                ),
-                            }),
+                            // RxwebValidators.pattern({
+                            //     expression: {
+                            //         mobilePhone: /^08[0-9]{8,12}$/,
+                            //     },
+                            //     message: this._$errorMessage.getErrorMessageNonState(
+                            //         'default',
+                            //         'mobile_phone_pattern',
+                            //         '08'
+                            //     ),
+                            // }),
                         ],
                     ],
                     photos: [
@@ -2257,16 +2257,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //         'required'
                             //     )
                             // }),
-                            RxwebValidators.pattern({
-                                expression: {
-                                    mobilePhone: /^08[0-9]{8,12}$/,
-                                },
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'mobile_phone_pattern',
-                                    '08'
-                                ),
-                            }),
+                            // RxwebValidators.pattern({
+                            //     expression: {
+                            //         mobilePhone: /^08[0-9]{8,12}$/,
+                            //     },
+                            //     message: this._$errorMessage.getErrorMessageNonState(
+                            //         'default',
+                            //         'mobile_phone_pattern',
+                            //         '08'
+                            //     ),
+                            // }),
                         ],
                     ],
                     photos: [
