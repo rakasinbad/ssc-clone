@@ -262,7 +262,7 @@
                                         <span>Reject</span>
                                     </button>
                                 </ng-template> -->
-                                <ng-template *ngIf="row?.outerStore?.approvalStatus === 'rejected'" [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                <ng-template *ngIf="row?.outerStore?.approvalStatus !== 'verified'" [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
                                     <button
                                         mat-menu-item
                                         type="button"
