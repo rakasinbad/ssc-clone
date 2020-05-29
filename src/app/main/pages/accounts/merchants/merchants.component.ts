@@ -60,28 +60,28 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         title: {
             label: 'Store List'
         },
-        batchAction: {
-            actions: [
-                // {
-                //     id: 'approve',
-                //     label: 'Approve',
-                // },
-                // {
-                //     id: 'reject',
-                //     label: 'Reject',
-                // },
-                {
-                    id: 'resend',
-                    label: 'Re-send',
-                }
-            ],
-            onActionSelected: action => {
-                if (action.id === 'resend') {
-                    this.onResendStores();
-                }
-            },
-            show: false
-        },
+        // batchAction: {
+        //     actions: [
+        //         // {
+        //         //     id: 'approve',
+        //         //     label: 'Approve',
+        //         // },
+        //         // {
+        //         //     id: 'reject',
+        //         //     label: 'Reject',
+        //         // },
+        //         {
+        //             id: 'resend',
+        //             label: 'Re-send',
+        //         }
+        //     ],
+        //     onActionSelected: action => {
+        //         if (action.id === 'resend') {
+        //             this.onResendStores();
+        //         }
+        //     },
+        //     show: false
+        // },
         search: {
             active: true,
             changed: (value: string) => {
@@ -644,23 +644,23 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     tap(value => HelperService.debug('SELECTION CHANGED', value)),
                     takeUntil(this._unSubs$)
                 ).subscribe((value: SelectionChange<SupplierStore>) => {
-                    if (value.source.isEmpty()) {
-                        this.cardHeaderConfig = {
-                            ...this.cardHeaderConfig,
-                            batchAction: {
-                                ...this.cardHeaderConfig.batchAction,
-                                show: false
-                            }
-                        };
-                    } else {
-                        this.cardHeaderConfig = {
-                            ...this.cardHeaderConfig,
-                            batchAction: {
-                                ...this.cardHeaderConfig.batchAction,
-                                show: true
-                            }
-                        };
-                    }
+                    // if (value.source.isEmpty()) {
+                    //     this.cardHeaderConfig = {
+                    //         ...this.cardHeaderConfig,
+                    //         batchAction: {
+                    //             ...this.cardHeaderConfig.batchAction,
+                    //             show: false
+                    //         }
+                    //     };
+                    // } else {
+                    //     this.cardHeaderConfig = {
+                    //         ...this.cardHeaderConfig,
+                    //         batchAction: {
+                    //             ...this.cardHeaderConfig.batchAction,
+                    //             show: true
+                    //         }
+                    //     };
+                    // }
 
                     this.cdRef.markForCheck();
                 });
