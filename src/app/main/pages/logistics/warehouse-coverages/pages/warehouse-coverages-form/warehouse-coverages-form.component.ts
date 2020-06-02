@@ -942,9 +942,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             province: [
                 { value: '', disabled: false },
                 [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
+                    // RxwebValidators.required({
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    // })
                 ]
             ],
             city: [
@@ -959,7 +959,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 { value: '', disabled: true },
             ],
             isUniqueCoverage: [
-                { value: '', disabled: false },
+                { value: true, disabled: false },
                 [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
@@ -1132,6 +1132,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.subs$.next();
         this.subs$.complete();
 
+        this.locationStore.dispatch(WarehouseCoverageActions.deselectWarehouse());
         this.locationStore.dispatch(LocationActions.deselectProvince());
         this.locationStore.dispatch(LocationActions.deselectCity());
         this.locationStore.dispatch(LocationActions.deselectDistrict());
@@ -1240,6 +1241,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 this.form.patchValue({
                     warehouse: warehouseId
                 });
+
+                this.form.get('selectedUrbans').clearValidators();
+                this.form.get('selectedUrbans').updateValueAndValidity();
 
                 const query: IQueryParams = {
                     paginate: false
