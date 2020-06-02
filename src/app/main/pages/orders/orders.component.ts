@@ -6,7 +6,7 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -47,7 +47,7 @@ import { OrderSelectors } from './store/selectors';
     styleUrls: ['./orders.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 25;
@@ -56,14 +56,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Order Management'
+            label: 'Order Management',
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
                 setTimeout(() => this._onRefreshTable(), 100);
-            }
+            },
         },
         add: {
             // permissions: ['INVENTORY.ISI.CREATE'],
@@ -71,13 +71,13 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         export: {
             permissions: ['OMS.EXPORT'],
             useAdvanced: true,
-            pageType: 'orders'
+            pageType: 'orders',
         },
         import: {
             permissions: ['OMS.IMPORT'],
             useAdvanced: true,
-            pageType: 'orders'
-        }
+            pageType: 'orders',
+        },
     };
 
     search: FormControl = new FormControl('');
@@ -88,21 +88,21 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             placeholder: 'Choose Order Status',
             sources: this._$helper.orderStatus(),
             rules: {
-                required: true
-            }
+                required: true,
+            },
         },
         startDate: {
             label: 'Start Date',
             rules: {
-                required: true
-            }
+                required: true,
+            },
         },
         endDate: {
             label: 'End Date',
             rules: {
-                required: true
-            }
-        }
+                required: true,
+            },
+        },
     };
     total: number;
     displayedColumns = [
@@ -118,7 +118,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'deliveredOn',
         // 'actual-amount-delivered',
         'delivered-date',
-        'actions'
+        'actions',
     ];
     importBtnConfig: IButtonImportConfig = {
         id: 'import-oms',
@@ -126,10 +126,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         color: 'accent',
         dialogConf: {
             title: 'Import',
-            cssToolbar: 'fuse-white-bg'
+            cssToolbar: 'fuse-white-bg',
         },
         title: 'IMPORT',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
+        type: ButtonDesignType.MAT_STROKED_BUTTON,
     };
     hasSelected = false;
     statusOrder: any;
@@ -170,14 +170,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home'
+                        title: 'Home',
                         // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Order Managements',
-                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS'
-                    }
-                ]
+                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS',
+                    },
+                ],
             })
         );
 
@@ -232,14 +232,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
 
-        canUpdate.then(hasAccess => {
+        canUpdate.then((hasAccess) => {
             if (hasAccess) {
                 this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
                 this.store.dispatch(OrderActions.confirmChangeCancelStatusOrder({ payload: item }));
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -252,14 +252,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
 
-        canUpdate.then(hasAccess => {
+        canUpdate.then((hasAccess) => {
             if (hasAccess) {
                 this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
                 this.store.dispatch(OrderActions.confirmChangeStatusOrder({ payload: item }));
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -299,7 +299,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                         ? (payload.end as moment.Moment).format('YYYY-MM-DD')
                         : payload.end
                         ? moment(payload.end).format('YYYY-MM-DD')
-                        : null
+                        : null,
             };
 
             // this.store.dispatch(OrderActions.exportRequest({ payload: body }));
@@ -326,7 +326,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     case 'docs':
                         this.store.dispatch(
                             OrderActions.importRequest({
-                                payload: { file, type: 'update_order_status' }
+                                payload: { file, type: 'update_order_status' },
                             })
                         );
                         // {
@@ -370,14 +370,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Set default first status active
                 this.store.dispatch(
                     UiActions.setCustomToolbarActive({
-                        payload: 'all-status'
+                        payload: 'all-status',
                     })
                 );
 
                 // Register to navigation [FuseNavigation]
                 this.store.dispatch(
                     UiActions.registerNavigation({
-                        payload: { key: 'customNavigation', navigation: this.statusOrder }
+                        payload: { key: 'customNavigation', navigation: this.statusOrder },
                     })
                 );
 
@@ -396,7 +396,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
 
-                canUpdate.then(hasAccess => {
+                canUpdate.then((hasAccess) => {
                     if (hasAccess) {
                         this.displayedColumns = [
                             // 'checkbox',
@@ -411,7 +411,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
                             'delivered-date',
-                            'actions'
+                            'actions',
                         ];
                     } else {
                         this.displayedColumns = [
@@ -426,7 +426,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             'status',
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
-                            'delivered-date'
+                            'delivered-date',
                         ];
                     }
                 });
@@ -459,7 +459,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
-                    disableClear: true
+                    disableClear: true,
                 });
 
                 localStorage.removeItem('filter.order');
@@ -482,7 +482,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.store.select(OrderSelectors.getTotalShippedOrder),
                     this.store.select(OrderSelectors.getTotalDeliveredOrder),
                     this.store.select(OrderSelectors.getTotalCompletedOrder),
-                    this.store.select(OrderSelectors.getTotalCanceledOrder)
+                    this.store.select(OrderSelectors.getTotalPendingOrder),
+                    this.store.select(OrderSelectors.getTotalCanceledOrder),
                 ])
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(
@@ -493,7 +494,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             shippedOrder,
                             deliveredOrder,
                             completedOrder,
-                            canceledOrder
+                            pendingOrder,
+                            canceledOrder,
                         ]) => {
                             if (typeof allOrder !== 'undefined') {
                                 this._updateStatus(
@@ -543,6 +545,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                                 );
                             }
 
+                            if (typeof pendingOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'pending',
+                                    { title: `Pending (${pendingOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
                             if (typeof canceledOrder !== 'undefined') {
                                 this._updateStatus(
                                     'cancel',
@@ -560,10 +570,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     .pipe(
                         distinctUntilChanged(),
                         debounceTime(1000),
-                        filter(v => !!v),
+                        filter((v) => !!v),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         const currFilter = localStorage.getItem('filter.order');
 
                         if (v !== 'all-status') {
@@ -604,7 +614,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store
                     .select(OrderSelectors.getIsRefresh)
                     .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-                    .subscribe(isRefresh => {
+                    .subscribe((isRefresh) => {
                         if (isRefresh) {
                             this._onRefreshTable();
                         }
@@ -616,7 +626,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
         };
 
         data['paginate'] = true;
@@ -632,14 +642,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             if (data['search'] && data['search'].length > 0) {
                 data['search'].push({
                     fieldName: 'keyword',
-                    keyword: query
+                    keyword: query,
                 });
             } else {
                 data['search'] = [
                     {
                         fieldName: 'keyword',
-                        keyword: query
-                    }
+                        keyword: query,
+                    },
                 ];
             }
         }
@@ -651,19 +661,20 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.filterStatus === 'shipping' ||
                 this.filterStatus === 'delivered' ||
                 this.filterStatus === 'done' ||
+                this.filterStatus === 'pending' ||
                 this.filterStatus === 'cancel'
             ) {
                 if (data['search'] && data['search'].length > 0) {
                     data['search'].push({
                         fieldName: 'status',
-                        keyword: this.filterStatus.replace(/-/g, ' ')
+                        keyword: this.filterStatus.replace(/-/g, ' '),
                     });
                 } else {
                     data['search'] = [
                         {
                             fieldName: 'status',
-                            keyword: this.filterStatus.replace(/-/g, ' ')
-                        }
+                            keyword: this.filterStatus.replace(/-/g, ' '),
+                        },
                     ];
                 }
             }
@@ -687,8 +698,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: {
                     id,
                     properties,
-                    key
-                }
+                    key,
+                },
             })
         );
     }

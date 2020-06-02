@@ -8,12 +8,10 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "name": "Launch Firefox PB",
+            "name": "Launch Firefox",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceRoot}",
             // "runtimeArgs": ["--remote-debugging-port=9222"],
-            "pathMappings": [{ "url": "*", "path": "${webRoot}/*" }],
-            "firefoxArgs": ["-private-window"]
         },
 
         {
@@ -31,9 +29,6 @@
             "webRoot": "${workspaceRoot}",
             // "runtimeArgs": ["--remote-debugging-port=9222"],
             "sourceMaps": true,
-            "sourceMapPathOverrides": {
-                "*": "${webRoot}/*"
-            }
         }
     ]
 }

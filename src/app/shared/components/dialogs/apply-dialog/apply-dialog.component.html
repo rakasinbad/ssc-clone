@@ -1,6 +1,6 @@
 <div class="dialog-content-wrapper">
     <mat-toolbar class="m-0 fuse-white-bg">
-        <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+        <mat-toolbar-row class="pr-8" fxFlex fxLayout="row" fxLayoutAlign="space-between center">
             <span class="title dialog-title">{{ data.title }}</span>
             <button mat-icon-button aria-label="Close Dialog" (click)="onClose()">
                 <mat-icon>close</mat-icon>
@@ -12,7 +12,7 @@
         <ng-container [ngTemplateOutlet]="data.template"></ng-container>
     </div>
 
-    <div class="mt-16" fxLayout="row" fxLayoutAlign="end center" *ngIf="data.showApplyButton">
+    <div class="m-16" fxLayout="row" fxLayoutAlign="end center" *ngIf="data.showApplyButton">
         <button mat-flat-button color="accent" (click)="onApply()" [disabled]=!(!!data?.isApplyEnabled)> Apply </button>
     </div>
 </div>

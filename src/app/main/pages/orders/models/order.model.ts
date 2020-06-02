@@ -5,5 +5,6 @@ export interface IStatusOMS {
     totalShippedOrder: string;
     totalDeliveredOrder: string;
     totalCompletedOrder: string;
+    totalPendingOrder: string;
     totalCanceledOrder: string;
 }
