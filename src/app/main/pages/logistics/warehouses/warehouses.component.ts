@@ -8,7 +8,7 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
@@ -36,7 +36,7 @@ import { WarehouseSelectors } from './store/selectors';
     styleUrls: ['./warehouses.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
@@ -45,25 +45,27 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Warehouse List'
+            label: 'Warehouse List',
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
-            }
+            },
         },
         add: {
-            permissions: []
+            permissions: [],
         },
         export: {
-            // permissions: ['OMS.EXPORT']
+            permissions: ['OMS.EXPORT'],
+            useAdvanced: true,
+            pageType: 'warehouses',
         },
-        import: {
-            // permissions: ['OMS.IMPORT'],
-            // useAdvanced: true,
-            // pageType: 'oms'
-        }
+        // import: {
+        //     // permissions: ['OMS.IMPORT'],
+        //     // useAdvanced: true,
+        //     // pageType: 'oms'
+        // },
     };
     displayedColumns = [
         // 'checkbox',
@@ -75,7 +77,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
         'stock-available',
         'total-urban',
         // 'status',
-        'actions'
+        'actions',
     ];
 
     search: FormControl = new FormControl('');
@@ -99,14 +101,14 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Warehouse'
+            title: 'Warehouse',
         },
         {
-            title: 'Warehouse List'
-        }
+            title: 'Warehouse List',
+        },
     ];
 
     constructor(
@@ -146,7 +148,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     getInvoices(value: Array<WarehouseInvoiceGroup>): string {
         if (value && value.length > 0) {
-            const invoiceGroup = value.map(v => v.invoiceGroup.name);
+            const invoiceGroup = value.map((v) => v.invoiceGroup.name);
 
             return invoiceGroup.length > 0 ? invoiceGroup.join(', ') : '-';
         }
@@ -161,7 +163,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource.data.forEach(row => this.selection.select(row));
+            : this.dataSource.data.forEach((row) => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -212,18 +214,18 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.sort.sort({
                     id: 'updated_at',
                     start: 'desc',
-                    disableClear: true
+                    disableClear: true,
                 });
 
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
+                        payload: this._breadCrumbs,
                     })
                 );
 
                 this.dataSource$ = this.store.select(WarehouseSelectors.selectAll).pipe(
-                    tap(source => {
+                    tap((source) => {
                         this.dataSource = new MatTableDataSource(source);
                         this.selection.clear();
                     })
@@ -235,7 +237,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                     .pipe(
                         distinctUntilChanged(),
                         debounceTime(1000),
-                        filter(v => {
+                        filter((v) => {
                             if (v) {
                                 return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
                             }
@@ -244,7 +246,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                         }),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this._onRefreshTable();
                     });
 
@@ -257,7 +259,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -273,8 +275,8 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                 data['search'] = [
                     {
                         fieldName: 'keyword',
-                        keyword: query
-                    }
+                        keyword: query,
+                    },
                 ];
             }
 

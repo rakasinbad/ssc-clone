@@ -1,3 +1,4 @@
+import { Warehouse } from './warehouse.model';
 import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
 import { CustomerHierarchy, Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { TNullable, TStatus } from 'app/shared/models/global.model';
@@ -12,6 +13,28 @@ import { SupplierStore } from 'app/shared/models/supplier.model';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
+
+export interface ICalculateSupplierStoreResponse {
+    totalStores: string;
+    totalGuest: string;
+    totalRejected: string;
+    totalPending: string;
+    totalUpdating: string;
+}
+
+export interface IResendStorePayload {
+    supplierId: number;
+    stores: Array<{ storeId: number }>;
+}
+
+export interface IResendStoreResponse {
+    id: string;
+    status: number;
+    message: {
+        message: string;
+        supplierStoreCode: string;
+    }
+}
 
 export interface IStorePortfolio extends ITimestamp {
     readonly id: NonNullable<string>;
@@ -43,7 +66,7 @@ export class StorePortfolio implements IStorePortfolio {
             target,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;
@@ -107,6 +130,7 @@ export interface IStore extends ITimestamp {
     vehicleAccessibility?: VehicleAccessibility;
     vehicleAccessibilityId: string;
     warehouseId: string;
+    warehouses?: Warehouse[];
     isSelected?: boolean; // Menandakan apakah object ini terpilih atau tidak.
     source?: 'fetch' | 'list'; // Menandakan apakah object ini berasal hasil fetch atau mengambil dari list (cache).
     isLoading?: boolean; // Untuk keperluan data store diperiksa di back-end.
@@ -153,6 +177,7 @@ export class Store implements IStore {
     vehicleAccessibility?: VehicleAccessibility;
     vehicleAccessibilityId: string;
     warehouseId: string;
+    warehouses?: Warehouse[];
     sales: Array<User>;
     createdAt: string;
     updatedAt: string;
@@ -203,13 +228,14 @@ export class Store implements IStore {
             vehicleAccessibility,
             vehicleAccessibilityId,
             warehouseId,
+            warehouses = [],
             sales,
             createdAt,
             updatedAt,
             deletedAt,
             isSelected = false,
             source = 'fetch',
-            isLoading = false
+            isLoading = false,
         } = data;
 
         this.id = id;
@@ -247,7 +273,7 @@ export class Store implements IStore {
 
         this.userStores =
             userStores && userStores.length > 0
-                ? userStores.map(row => {
+                ? userStores.map((row) => {
                       const newUserStore = new UserStore(
                           row.id,
                           row.userId,
@@ -344,10 +370,14 @@ export class Store implements IStore {
             this.setOwner = owner;
         }
 
+        if (warehouses) {
+            this.setWarehouse = warehouses;
+        }
+
         this.storePortfolios =
             storePortfolios.length === 0
                 ? []
-                : storePortfolios.map(storePortfolio => new StorePortfolio(storePortfolio));
+                : storePortfolios.map((storePortfolio) => new StorePortfolio(storePortfolio));
     }
 
     set setDeletedAt(time: string) {
@@ -368,7 +398,7 @@ export class Store implements IStore {
 
     set setCreditLimitStores(value: CreditLimitStore[]) {
         if (value && value.length > 0) {
-            const newCreditLimitStores = value.map(row => {
+            const newCreditLimitStores = value.map((row) => {
                 return new CreditLimitStore(row);
             });
 
@@ -384,7 +414,7 @@ export class Store implements IStore {
 
     set setSupplierStores(value: SupplierStore[]) {
         if (value && value.length > 0) {
-            const newSupplierStores = value.map(row => {
+            const newSupplierStores = value.map((row) => {
                 return new SupplierStore(
                     row.id,
                     row.supplierId,
@@ -418,7 +448,7 @@ export class Store implements IStore {
 
     set setCustomerHierarchies(value: CustomerHierarchy[]) {
         if (value && value.length > 0) {
-            const newCustomerHierarchies = value.map(row => new CustomerHierarchy(row));
+            const newCustomerHierarchies = value.map((row) => new CustomerHierarchy(row));
 
             this.customerHierarchies = newCustomerHierarchies;
         } else {
@@ -428,7 +458,7 @@ export class Store implements IStore {
 
     set setStoreClusters(value: StoreCluster[]) {
         if (value && value.length > 0) {
-            const newStoreClusters = value.map(row => new StoreCluster(row));
+            const newStoreClusters = value.map((row) => new StoreCluster(row));
 
             this.storeClusters = newStoreClusters;
         } else {
@@ -448,6 +478,14 @@ export class Store implements IStore {
         this.urban = value ? new Urban(value) : null;
     }
 
+    set setWarehouse(value: Warehouse[]) {
+        if (value && value.length > 0) {
+            this.warehouses = value.map((row) => new Warehouse(row));
+        } else {
+            this.warehouses = [];
+        }
+    }
+
     static patch(body: StoreOptions): StoreOptions {
         return body;
     }
@@ -459,7 +497,7 @@ export class Store implements IStore {
 
         const storePortfolios = this.storePortfolios;
         const isPart = storePortfolios.filter(
-            storePortfolio => storePortfolio.portfolio.invoiceGroupId === invoiceGroupId
+            (storePortfolio) => storePortfolio.portfolio.invoiceGroupId === invoiceGroupId
         );
 
         return isPart.length > 0;
@@ -513,7 +551,7 @@ export class UserStore extends Timestamp implements IUserStore {
         if (this.user.roles.length === 0) {
             return '';
         } else {
-            return this.user.roles.map(role => role.role).join(delimiter);
+            return this.user.roles.map((role) => role.role).join(delimiter);
         }
     }
 }

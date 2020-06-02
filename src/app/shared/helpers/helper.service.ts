@@ -20,6 +20,7 @@ import { SegmentationBase } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
+import * as moment from 'moment';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -31,8 +32,6 @@ interface TTemplateFiles {
     providedIn: 'root',
 })
 export class HelperService {
-    static debugPrefix: string = '';
-
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
         {
             id: BenefitType.QTY,
@@ -268,16 +267,12 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
-    static setDebugPrefix(prefix: string): void {
-        HelperService.debugPrefix = prefix;
-    }
-
     static debug(label: string, data: any = {}): void {
         if (!environment.production) {
             // tslint:disable-next-line:no-console
-            console.groupCollapsed(HelperService.debugPrefix + label, data);
+            console.groupCollapsed(label, data);
             // tslint:disable-next-line:no-console
-            console.trace(HelperService.debugPrefix + label, data);
+            console.trace(label, data);
             // tslint:disable-next-line:no-console
             console.groupEnd();
         }
@@ -355,70 +350,77 @@ export class HelperService {
             duration: 10000,
         };
 
-        const message =
-            typeof error.error === 'string'
-                ? 'Unknown error'
-                : !error.error
-                ? 'Unknown error'
-                : !error.error.message
-                ? 'Unknown error'
-                : error.error.message;
-        const uuid =
-            typeof error.error === 'string'
-                ? '-'
-                : !error.error
-                ? '-'
-                : !error.error.errors
-                ? '-'
-                : error.error.errors.uuid;
+        // tslint:disable-next-line: no-inferrable-types
+        let message: string = 'Unknown error';
+        // tslint:disable-next-line: no-inferrable-types
+        let requestId: string = '-';
 
-        if (environment.logRocketId) {
-            this.storage
-                .get<string>('session', { type: 'string' })
-                .pipe(take(1))
-                .subscribe((sessionId) => {
-                    if (!errId.startsWith('ERR_UNRECOGNIZED')) {
-                        this._$notice.open(
-                            `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message},<br/>Request code: ${uuid}`,
-                            'error',
-                            noticeSetting
-                        );
-                    } else {
-                        this._$notice.open(
-                            `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
-                            'error',
-                            noticeSetting
-                        );
-                    }
-
-                    LogRocket.captureMessage(message, {
-                        tags: {
-                            environment: environment.environment.toUpperCase(),
-                            version: environment.appVersion,
-                            commitHash: environment.appHash,
-                        },
-                        extra: {
-                            sessionId,
-                            requestId: uuid,
-                        },
-                    });
-                });
-        } else {
-            if (!errId.startsWith('ERR_UNRECOGNIZED')) {
-                this._$notice.open(
-                    `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message},<br/>Request code: ${uuid}`,
-                    'error',
-                    noticeSetting
-                );
-            } else {
-                this._$notice.open(
-                    `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
-                    'error',
-                    noticeSetting
-                );
+        if (error.httpError) {
+            // Error message related to HTTP.
+            if (error.httpError.error) {
+                if (error.httpError.error.code || error.httpError.error.message) {
+                    errId = `ERROR_NET_HTTP_${ error.httpError.error.code || 'UNKNOWN'}`,
+                    message = 'Network related issue';
+                }
+            }
+        } else if (error.error) {
+            // Defined error message.
+            if (error.error.message) {
+                message = error.error.message;
             }
         }
+
+        if (error.error) {
+            if (typeof error.error !== 'string') {
+                requestId = !error.error.errors ? '-'
+                        : !error.error.errors.uuid ? '-'
+                        : error.error.errors.uuid;
+            }
+        }
+
+        // Read local storage to get sessionId.
+        this.storage
+            .get<string>('session', { type: 'string' })
+            .pipe(take(1))
+            .subscribe(() => {
+                // Membuat tag time untuk LogRocket.
+                const tagTime: string = moment().format('YYYYMMDDHHmmSSSSS');
+
+                // Show error notification based on errId.
+                if (!errId.startsWith('ERR_UNRECOGNIZED')) {
+                    this._$notice.open(
+                        `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message}<br/>Session: ${tagTime}`,
+                        'error',
+                        noticeSetting
+                    );
+                } else {
+                    this._$notice.open(
+                        `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>
+                            Error code: ${errId}<br/>
+                            Reason: ${message}<br/>
+                            Session: ${tagTime}
+                        `,
+                        'error',
+                        noticeSetting
+                    );
+                }
+
+                this.reportError(message, requestId, tagTime);
+            });
     };
+
+    reportError(message: string, requestId: string, sessionId: string): void {
+        if (environment.logRocketId) {
+            LogRocket.captureMessage(message, {
+                tags: {
+                    environment: environment.environment.toUpperCase(),
+                    version: environment.appVersion,
+                    commitHash: environment.appHash,
+                },
+                extra: { tagTime: sessionId, requestId },
+            });
+        }
+    }
 
     handleApiRouter(endpoint: string): string {
         /* if (
@@ -718,7 +720,7 @@ export class HelperService {
                 if (!userAuth) {
                     throw new ErrorHandler({
                         id: 'ERR_NO_TOKEN',
-                        errors: `Token found: ${userAuth.token}`,
+                        errors: `Local Storage found: ${userAuth}`,
                     });
                 } else {
                     try {
@@ -734,20 +736,11 @@ export class HelperService {
 
                         // Create User object.
                         const user = new User(userData);
-                        // user.setUserStores = userData.userStores;
-                        // user.setUserSuppliers = userData.userSuppliers;
-                        // user.setUrban = userData.urban;
-                        // user.setAttendances = userData.attendances;
 
                         // Return the value as User object.
                         return user;
                     } catch (e) {
-                        throwError(
-                            new ErrorHandler({
-                                id: 'ERR_USER_INVALID_TOKEN',
-                                errors: `Local Storage's auth found: ${userAuth} | Error: ${e}`,
-                            })
-                        );
+                        throw e;
                     }
                 }
             })

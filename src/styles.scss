@@ -343,7 +343,7 @@ body.theme-sinbad-light {
 
     .custom-field {
         label {
-            font-weight: 600;
+            font-weight: 600 !important;
             position: relative;
             top: -0.78em;
         }
@@ -372,7 +372,7 @@ body.theme-sinbad-light {
 
     .custom-field-right {
         label {
-            font-weight: 600;
+            font-weight: 600 !important;
             position: relative;
             top: -0.78em;
             text-align: right;
@@ -604,6 +604,13 @@ mat-header-row {
         border-bottom: 0px solid rgba(0,0,0,0) !important;
     }
 
+    &.narrow {
+        .mat-tab-label {
+            min-width: 100px !important;
+            width: 100px !important;
+        }
+    }
+
     .mat-tab-label {
         color: sinbad-color('black', '50');
 
@@ -671,5 +678,11 @@ mat-header-row {
         label {
             top: 0;
         }
+    }
+}
+
+.dialog-container-no-padding {
+    .mat-dialog-container {
+        padding: 0;
     }
 }

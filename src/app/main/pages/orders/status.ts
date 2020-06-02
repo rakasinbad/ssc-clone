@@ -10,10 +10,10 @@ export const statusOrder: Array<FuseNavigation> = [
         // title: 'All',
         // translate: 'STATUS.ORDER.ALL.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
+        },
     },
     {
         id: 'confirm',
@@ -21,10 +21,10 @@ export const statusOrder: Array<FuseNavigation> = [
         // title: 'New Order',
         // translate: 'STATUS.ORDER.NEW_ORDER.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'confirm' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
+        },
     },
     {
         id: 'packing',
@@ -32,10 +32,10 @@ export const statusOrder: Array<FuseNavigation> = [
         // title: 'Packing',
         // translate: 'STATUS.ORDER.PACKING.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'packing' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
+        },
     },
     // {
     //     id: 'confirm',
@@ -53,10 +53,10 @@ export const statusOrder: Array<FuseNavigation> = [
         //    title: 'Shipped',
         //    translate: 'STATUS.ORDER.SHIPPED.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'shipping' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
+        },
     },
     {
         id: 'delivered',
@@ -64,10 +64,10 @@ export const statusOrder: Array<FuseNavigation> = [
         //    title: 'Received',
         //    translate: 'STATUS.ORDER.RECEIVED.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'delivered' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
+        },
     },
     {
         id: 'done',
@@ -75,10 +75,19 @@ export const statusOrder: Array<FuseNavigation> = [
         // title: 'Completed',
         // translate: 'STATUS.ORDER.COMPLETED.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'done' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
+        },
+    },
+    {
+        id: 'pending',
+        title: 'Pending (-)',
+        type: 'item',
+        function: (store) => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'pending' }));
+            store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+        },
     },
     {
         id: 'cancel',
@@ -86,9 +95,9 @@ export const statusOrder: Array<FuseNavigation> = [
         // title: 'Completed',
         // translate: 'STATUS.ORDER.COMPLETED.TITLE',
         type: 'item',
-        function: store => {
+        function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'cancel' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        }
-    }
+        },
+    },
 ];

@@ -1,17 +1,209 @@
 <div fxLayout="column" fxFlex fusePerfectScrollbar>
     <mat-list>
-        <div class="mb-0 p-16">
-            <div class="sinbad__filter-title">
-                {{ (config$ | async).title }}
-            </div>
+        <div matSubheader class="sinbad__filter-title">
+            {{ (config$ | async).title }}
+        </div>
 
+        <!-- <div class="mb-0 p-16">
             <div class="sinbad__filter-keyword">
                 xxxx
             </div>
-        </div>
+        </div> -->
     </mat-list>
 
-    <mat-list class="date" cdkFocusRegionStart>
+    <mat-list>
+        <mat-expansion-panel
+            class="sinbad__expansion-panel--filter mat-elevation-z0"
+            [expanded]="showPanel"
+        >
+            <mat-expansion-panel-header>
+                <mat-panel-title class="sinbad__filter-title">
+                    Sales Target
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ng-template matExpansionPanelContent>
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline" fxFlex>
+                        <input
+                            matInput
+                            name="minTarget"
+                            placeholder="Minimum"
+                            mask="separator.2"
+                            thousandSeparator="."
+                            prefix="Rp"
+                        />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="maxTarget"
+                            placeholder="Maximum"
+                            mask="separator.2"
+                            thousandSeparator="."
+                            prefix="Rp"
+                        />
+                    </mat-form-field>
+                </div>
+
+                <!-- <input
+                        matInput
+                        class="sinbad__filter-input"
+                        name="minTarget"
+                        placeholder="Minimum"
+                    />
+                    <input
+                        matInput
+                        class="sinbad__filter-input"
+                        name="maxTarget"
+                        placeholder="Maximum"
+                    /> -->
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-list>
+
+    <mat-list>
+        <mat-expansion-panel
+            class="sinbad__expansion-panel--filter mat-elevation-z0"
+            [expanded]="showPanel"
+        >
+            <mat-expansion-panel-header>
+                <mat-panel-title class="sinbad__filter-title">
+                    Sales Rep Name
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ng-template matExpansionPanelContent>
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <input matInput name="salesName" placeholder="Input Sales Name" />
+                    </mat-form-field>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-list>
+
+    <mat-list>
+        <mat-expansion-panel
+            class="sinbad__expansion-panel--filter mat-elevation-z0"
+            [expanded]="showPanel"
+        >
+            <mat-expansion-panel-header>
+                <mat-panel-title class="sinbad__filter-title">
+                    Portfolio Name
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ng-template matExpansionPanelContent>
+                <div class="sinbad__filter-checkbox--container">
+                    <div class="sinbad__filter-checkbox">
+                        <mat-checkbox>A12 Group</mat-checkbox>
+                        <mat-checkbox>B12 Group</mat-checkbox>
+                        <mat-checkbox>C12 Group</mat-checkbox>
+
+                        <mat-checkbox>D34 Group</mat-checkbox>
+                        <mat-checkbox>E34 Group</mat-checkbox>
+                        <mat-checkbox>F34 Group</mat-checkbox>
+
+                        <mat-checkbox>H56 Group</mat-checkbox>
+                        <mat-checkbox>I56 Group</mat-checkbox>
+                        <mat-checkbox>J56 Group</mat-checkbox>
+
+                        <mat-checkbox>K78 Group</mat-checkbox>
+                        <mat-checkbox>L78 Group</mat-checkbox>
+                        <mat-checkbox>M78 Group</mat-checkbox>
+
+                        <mat-checkbox>O90 Group</mat-checkbox>
+                        <mat-checkbox>P90 Group</mat-checkbox>
+                        <mat-checkbox>Q90 Group</mat-checkbox>
+                    </div>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-list>
+
+    <mat-list>
+        <mat-expansion-panel
+            class="sinbad__expansion-panel--filter mat-elevation-z0"
+            [expanded]="showPanel"
+        >
+            <mat-expansion-panel-header>
+                <mat-panel-title class="sinbad__filter-title">
+                    Date Assignment
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ng-template matExpansionPanelContent>
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [matDatepicker]="startDatePicker"
+                            autocomplete="off"
+                            name="startDate"
+                            placeholder="Start"
+                        />
+                        <mat-datepicker-toggle
+                            matSuffix
+                            [for]="startDatePicker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker
+                            touchUi
+                            #startDatePicker
+                            [disabled]="false"
+                        ></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            [matDatepicker]="endDatePicker"
+                            autocomplete="off"
+                            name="endDate"
+                            placeholder="End"
+                        />
+                        <mat-datepicker-toggle
+                            matSuffix
+                            [for]="endDatePicker"
+                        ></mat-datepicker-toggle>
+                        <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-list>
+
+    <mat-list>
+        <mat-expansion-panel
+            class="sinbad__expansion-panel--filter mat-elevation-z0"
+            [expanded]="showPanel"
+        >
+            <mat-expansion-panel-header>
+                <mat-panel-title class="sinbad__filter-title">
+                    Store Qty
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <ng-template matExpansionPanelContent>
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <input matInput name="minQty" placeholder="Minimum Qty" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <input matInput name="maxQty" placeholder="Maximum Qty" />
+                    </mat-form-field>
+                </div>
+            </ng-template>
+        </mat-expansion-panel>
+    </mat-list>
+
+    <mat-list fxLayout="column" fxLayoutAlign="end stretch" class="sinbad__filter-action--wrapper">
+        <app-sinbad-filter-action [config]="(config$ | async)?.actions"></app-sinbad-filter-action>
+    </mat-list>
+
+    <!-- <mat-list class="date" cdkFocusRegionStart>
         <h3 matSubheader cdkFocusInit>
             <span>Today</span>
         </h3>
@@ -26,11 +218,11 @@
                 <span> {{ date | date: 'MMMM' }}</span>
             </div>
         </div>
-    </mat-list>
+    </mat-list> -->
 
-    <mat-divider cdkFocusRegionEnd></mat-divider>
+    <!-- <mat-divider cdkFocusRegionEnd></mat-divider> -->
 
-    <mat-list>
+    <!-- <mat-list>
         <h3 matSubheader>
             <span>Events</span>
         </h3>
@@ -39,9 +231,9 @@
             <h3 matLine>{{ event.title }}</h3>
             <p matLine class="secondary-text">{{ event.detail }}</p>
         </mat-list-item>
-    </mat-list>
+    </mat-list> -->
 
-    <mat-divider></mat-divider>
+    <!-- <mat-divider></mat-divider>
 
     <mat-list>
         <h3 matSubheader>
@@ -96,5 +288,5 @@
                 <h3>Retro Thrusters</h3>
             </mat-slide-toggle>
         </mat-list-item>
-    </mat-list>
+    </mat-list> -->
 </div>

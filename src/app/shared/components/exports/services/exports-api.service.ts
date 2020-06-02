@@ -16,7 +16,7 @@ import { ExportConfiguration } from '../models';
  * @class ExportsApiService
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ExportsApiService {
     /**
@@ -50,10 +50,7 @@ export class ExportsApiService {
      * @param {HelperService} _$helper
      * @memberof ExportsApiService
      */
-    constructor(
-        private http: HttpClient,
-        private helperSvc: HelperService
-    ) {}
+    constructor(private http: HttpClient, private helperSvc: HelperService) {}
 
     findExportLogs<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
@@ -61,21 +58,21 @@ export class ExportsApiService {
         if (params['userId']) {
             newArgs.push({
                 key: 'userId',
-                value: params['userId']
+                value: params['userId'],
             });
         }
 
         if (params['keyword']) {
             newArgs.push({
                 key: 'keyword',
-                value: params['keyword']
+                value: params['keyword'],
             });
         }
 
         if (params['page']) {
             newArgs.push({
                 key: 'page',
-                value: params['page']
+                value: params['page'],
             });
         }
         this._url = this.helperSvc.handleApiRouter(this._exportLogsEndpoint);
@@ -116,10 +113,14 @@ export class ExportsApiService {
                 params['page'] = 'journey-plans';
                 break;
 
+            case 'warehouses':
+                params['page'] = 'warehouses';
+                break;
+
             default: {
                 const err: ErrorHandler = {
                     id: 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED',
-                    errors: params
+                    errors: params,
                 };
 
                 throw new ErrorHandler(err);
@@ -129,38 +130,38 @@ export class ExportsApiService {
         if (params['supplierId']) {
             newArgs.push({
                 key: 'supplierId',
-                value: params['supplierId']
+                value: params['supplierId'],
             });
         }
 
         if (params['status']) {
             newArgs.push({
                 key: 'status',
-                value: params['status']
+                value: params['status'],
             });
         }
 
         if (params['dateGte']) {
             newArgs.push({
                 key: 'dateGte',
-                value: params['dateGte']
+                value: params['dateGte'],
             });
         } else {
             newArgs.push({
                 key: 'dateGte',
-                value: ''
+                value: '',
             });
         }
 
         if (params['dateLte']) {
             newArgs.push({
                 key: 'dateLte',
-                value: params['dateLte']
+                value: params['dateLte'],
             });
         } else {
             newArgs.push({
                 key: 'dateLte',
-                value: ''
+                value: '',
             });
         }
 

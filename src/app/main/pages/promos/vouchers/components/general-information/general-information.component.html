@@ -1,0 +1,353 @@
+<!-- CONTENT CARD (INFORMASI PRODUK) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">General Information</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- *HIDDEN* ID -->
+            <input hidden name="id" formControlName="id" />
+            <!-- / *HIDDEN* ID -->
+
+            <!-- SUPPLIER VOUCHER ID -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('externalId'))"
+                >
+                    <span class="sinbad-red-fg">* </span>Sup Voucher ID
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input matInput name="externalId" formControlName="externalId" />
+                    <mat-error *ngIf="!isViewMode() && hasError(form.get('externalId'))">
+                        {{ getFormError(form.get('externalId')) }}
+                    </mat-error>
+                    <!-- <mat-error
+                        *ngIf="!isViewMode() && $any(form.get('sellerId').errors)?.skuSupplierExist"
+                    >
+                        SKU already exist.
+                    </mat-error>
+                    <mat-hint
+                        class="mb-4 primary-fg"
+                        *ngIf="form.get('sellerId').status === 'PENDING'"
+                    >
+                        Checking ...
+                    </mat-hint>
+                    <mat-hint
+                        class="mb-4 green-800-fg"
+                        *ngIf="form.get('sellerId').status === 'VALID'"
+                    >
+                        SKU is available.
+                    </mat-hint> -->
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('externalId').value || '-' }}
+                </span>
+            </div>
+            <!-- / SUPPLIER VOUCHER ID -->
+
+            <!-- VOUCHER NAME -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('name'))"
+                >
+                    <span class="sinbad-red-fg">* </span>Voucher Name
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input matInput name="name" formControlName="name" />
+                    <mat-error *ngIf="hasError(form.get('name'))">
+                        {{ getFormError(form.get('name')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('name').value || '-' }}
+                </span>
+            </div>
+            <!-- / VOUCHER NAME -->
+
+            <!-- PLATFORM -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('platform'))"
+                >
+                    <span class="sinbad-red-fg">* </span>Platform
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="formMode !== 'view'"
+                >
+                    <mat-select name="platform" formControlName="platform">
+                        <mat-option *ngFor="let platform of sinbadPlatforms" [value]="platform.id">
+                            {{ platform.label }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('platform'))">
+                        {{ getFormError(form.get('platform')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('platform').value | titlecase) || '-' }}
+                </span>
+            </div>
+            <!-- / PLATFORM -->
+
+            <!-- MAX REDEMPTION PER USER -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerBuyer'))"
+                >
+                    Max Redemption <br />
+                    per Buyer
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        type="number"
+                        name="maxRedemptionPerBuyer"
+                        formControlName="maxRedemptionPerBuyer"
+                    />
+                    <mat-error *ngIf="hasError(form.get('maxRedemptionPerBuyer'))">
+                        {{ getFormError(form.get('maxRedemptionPerBuyer')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('maxRedemptionPerBuyer').value || '-' }}
+                </span>
+            </div>
+            <!-- / MAX REDEMPTION PER USER -->
+
+            <!-- MAX VOUCHER REDEMTION -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('maxVoucherRedemption'))"
+                >
+                    Max Voucher <br />
+                    Redemption
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        type="number"
+                        name="maxVoucherRedemption"
+                        formControlName="maxVoucherRedemption"
+                    />
+                    <mat-error *ngIf="hasError(form.get('maxVoucherRedemption'))">
+                        {{ getFormError(form.get('maxVoucherRedemption')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('maxVoucherRedemption').value || '-' }}
+                </span>
+            </div>
+            <!-- / MAX VOUCHER REDEMTION -->
+
+            <!-- ACTIVE START DATE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('activeStartDate'))"
+                >
+                    <span class="sinbad-red-fg">* </span>Active From
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        [matDatetimepicker]="activeStartDatePicker"
+                        [max]="maxActiveStartDate"
+                        [min]="minActiveStartDate"
+                        (dateChange)="onChangeActiveStartDate($event)"
+                        autocomplete="false"
+                        name="activeStartDate"
+                        formControlName="activeStartDate"
+                    />
+                    <mat-datetimepicker-toggle
+                        matSuffix
+                        [for]="activeStartDatePicker"
+                    ></mat-datetimepicker-toggle>
+                    <mat-datetimepicker
+                        touchUi
+                        #activeStartDatePicker
+                        [disabled]="false"
+                        type="datetime"
+                    >
+                    </mat-datetimepicker>
+                    <mat-error *ngIf="hasError(form.get('activeStartDate'))">
+                        {{ getFormError(form.get('activeStartDate')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('activeStartDate').value | date: 'dd/MM/yyyy HH:mm') || '-' }}
+                </span>
+            </div>
+            <!-- / ACTIVE START DATE -->
+
+            <!-- ACTIVE END DATE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('activeEndDate'))"
+                >
+                    <span class="sinbad-red-fg">* </span>To
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        [matDatetimepicker]="activeEndDatePicker"
+                        [max]="maxActiveEndDate"
+                        [min]="minActiveEndDate"
+                        (dateChange)="onChangeActiveEndDate($event)"
+                        autocomplete="false"
+                        name="activeEndDate"
+                        formControlName="activeEndDate"
+                    />
+                    <mat-datetimepicker-toggle
+                        matSuffix
+                        [for]="activeEndDatePicker"
+                    ></mat-datetimepicker-toggle>
+                    <mat-datetimepicker
+                        touchUi
+                        #activeEndDatePicker
+                        [disabled]="false"
+                        type="datetime"
+                    >
+                    </mat-datetimepicker>
+                    <mat-error *ngIf="hasError(form.get('activeEndDate'))">
+                        {{ getFormError(form.get('activeEndDate')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('activeEndDate').value | date: 'dd/MM/yyyy HH:mm') || '-' }}
+                </span>
+            </div>
+            <!-- / ACTIVE END DATE -->
+
+            <!-- DESCRIPTION -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="start"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('description'))"
+                    [class.mt-20]="!isViewMode()"
+                >
+                    Description
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <textarea
+                        matInput
+                        rows="10"
+                        name="description"
+                        formControlName="description"
+                    ></textarea>
+                    <mat-error *ngIf="hasError(form.get('description'))">
+                        {{ getFormError(form.get('description')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('description').value || '-' }}
+                </span>
+            </div>
+            <!-- / DESCRIPTION -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->

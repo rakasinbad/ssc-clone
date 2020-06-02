@@ -7,42 +7,8 @@
 
     <!-- CENTER -->
     <div class="center p-8">
-        <!-- CONTENT HEADER -->
-        <!-- <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center"> -->
-            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
-
-            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent" (click)="addProduct()">
-                    <mat-icon>add</mat-icon>
-                    Add Product
-                </button>
-
-                <button mat-stroked-button color="accent" class="sinbad" type="button" (click)="onImportProduct()">
-                    IMPORT
-                </button>
-
-                <button type="button" mat-flat-button color="primary" (click)="onDownload('catalogueStock')">
-                    <span>DOWNLOAD TEMPLATE</span>
-                </button>
-            </div> -->
-
-            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <sinbad-search-bar placeholder="Search" (changed)="onSearch($event)"></sinbad-search-bar>
-            </div> -->
-        <!-- </div> -->
-        <!-- / CONTENT HEADER -->
-
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <!-- CONTENT TOOLBAR -->
-            <!-- <div class="toolbar px-24 py-8">
-                <span>Content toolbar</span>
-            </div> -->
-            <!-- / CONTENT TOOLBAR -->
-
-            <!-- CONTENT -->
-            <!-- <div class="content p-24"></div> -->
-            <!-- / CONTENT -->
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table class="catalogues-table mx-16" #table [dataSource]="dataSource$ | async" matSort

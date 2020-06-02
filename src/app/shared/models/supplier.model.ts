@@ -118,7 +118,8 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
         public owner: any,
         createdAt: string,
         updatedAt: string,
-        deletedAt: TNullable<string>
+        deletedAt: TNullable<string>,
+        public outerStore: any = {}
     ) {
         super(createdAt, updatedAt, deletedAt);
 
@@ -126,6 +127,10 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
             this.store = new Merchant(store);
         } else {
             this.store = null;
+        }
+
+        if (Object.keys(this.outerStore).length > 0) {
+            delete this.outerStore.store;
         }
     }
 

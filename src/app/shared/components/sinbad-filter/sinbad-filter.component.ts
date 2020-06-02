@@ -12,8 +12,8 @@ import { SinbadFilterService } from './services/sinbad-filter.service';
     // encapsulation: ViewEncapsulation.None,
 })
 export class SinbadFilterComponent implements OnInit {
-    cobaTitle: string;
     config$: Observable<SinbadFilterConfig>;
+    showPanel = true;
     date: Date;
     events: any[];
     notes: any[];
@@ -34,6 +34,5 @@ export class SinbadFilterComponent implements OnInit {
         // Add 'implements OnInit' to the class.
 
         this.config$ = this._$sinbadFilterService.getConfig$();
-        this.cobaTitle = this._$sinbadFilterService.cobaTitle;
     }
 }

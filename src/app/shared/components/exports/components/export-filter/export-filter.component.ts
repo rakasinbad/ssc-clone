@@ -4,7 +4,7 @@ import {
     Component,
     Inject,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material';
@@ -19,14 +19,14 @@ import {
     defaultExportFilterConfiguration,
     ExportConfiguration,
     ExportFilterConfiguration,
-    ExportFormFilterConfiguration
+    ExportFormFilterConfiguration,
 } from '../../models';
 
 @Component({
     templateUrl: './export-filter.component.html',
     styleUrls: ['./export-filter.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportFilterComponent implements OnInit {
     form: FormGroup;
@@ -69,6 +69,7 @@ export class ExportFilterComponent implements OnInit {
                 hasDefaultConfig = true;
                 break;
 
+            case 'warehouses':
             case 'portfolios':
                 break;
 
@@ -80,7 +81,7 @@ export class ExportFilterComponent implements OnInit {
                     {
                         horizontalPosition: 'right',
                         verticalPosition: 'bottom',
-                        duration: 5000
+                        duration: 5000,
                     }
                 );
 
@@ -114,11 +115,14 @@ export class ExportFilterComponent implements OnInit {
             if (filterAspect.status.required) {
                 rules.push(
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        ),
                     }),
                     RxwebValidators.oneOf({
-                        matchValues: [...this.statusSources.map(r => r.id)],
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern')
+                        matchValues: [...this.statusSources.map((r) => r.id)],
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
                     })
                 );
                 this.form.get('status').setValidators(rules);
@@ -135,7 +139,10 @@ export class ExportFilterComponent implements OnInit {
             if (filterAspect.rangeDate.required) {
                 rangeDateRules.push(
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        ),
                     })
                 );
 
@@ -198,19 +205,28 @@ export class ExportFilterComponent implements OnInit {
                         if (startDate.isAfter(endDate)) {
                             this.form.get('endDate').reset();
                         } else {
-                            const duration = endDate.diff(startDate, this.activeConfiguration.filterAspect.rangeDate.maxRange.duration, true);
+                            const duration = endDate.diff(
+                                startDate,
+                                this.activeConfiguration.filterAspect.rangeDate.maxRange.duration,
+                                true
+                            );
 
-                            if (duration > this.activeConfiguration.filterAspect.rangeDate.maxRange.number) {
+                            if (
+                                duration >
+                                this.activeConfiguration.filterAspect.rangeDate.maxRange.number
+                            ) {
                                 this.form.get('endDate').reset();
                             }
                         }
                     }
 
                     this.minEndDate = startDate.toDate();
-                    const isAfter = moment(startDate).add(
-                        this.activeConfiguration.filterAspect.rangeDate.maxRange.number,
-                        this.activeConfiguration.filterAspect.rangeDate.maxRange.duration
-                    ).isAfter(moment());
+                    const isAfter = moment(startDate)
+                        .add(
+                            this.activeConfiguration.filterAspect.rangeDate.maxRange.number,
+                            this.activeConfiguration.filterAspect.rangeDate.maxRange.duration
+                        )
+                        .isAfter(moment());
 
                     if (isAfter) {
                         // const duration = this.activeConfiguration.filterAspect.rangeDate.maxRange.duration;
@@ -352,6 +368,9 @@ export class ExportFilterComponent implements OnInit {
 
             case 'stores':
                 return '(Store List)';
+
+            case 'warehouses':
+                return '(Warehouses)';
 
             default:
                 return '';

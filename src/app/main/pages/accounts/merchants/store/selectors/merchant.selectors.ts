@@ -22,11 +22,11 @@ export const getTotalStoreEntity = createSelector(
     fromMerchant.selectStoreTotal
 );
 
-export const getTotalStore = createSelector(getAccountStoreState, state => state.stores.total);
+export const getTotalStore = createSelector(getAccountStoreState, (state) => state.stores.total);
 
 export const getSelectedStoreId = createSelector(
     getAccountStoreState,
-    state => state.stores.selectedStoreId
+    (state) => state.stores.selectedStoreId
 );
 
 export const getSelectedStore = createSelector(
@@ -37,20 +37,25 @@ export const getSelectedStore = createSelector(
 
 export const getSelectedSupplierStore = createSelector(
     getAccountStoreState,
-    state => state.selectedSupplierStore
+    (state) => state.selectedSupplierStore
+);
+
+export const getApprovalStatuses = createSelector(
+    getAccountStoreState,
+    state => state.approvalStatuses
 );
 
 // -----------------------------------------------------------------------------------------------------
 // Store State
 // -----------------------------------------------------------------------------------------------------
 
-export const getStoreEdit = createSelector(getAccountStoreState, state => state.store);
+export const getStoreEdit = createSelector(getAccountStoreState, (state) => state.store);
 
 // -----------------------------------------------------------------------------------------------------
 // Employee State
 // -----------------------------------------------------------------------------------------------------
 
-export const getEmployeeEdit = createSelector(getAccountStoreState, state => state.employee);
+export const getEmployeeEdit = createSelector(getAccountStoreState, (state) => state.employee);
 
 // -----------------------------------------------------------------------------------------------------
 // Store Employees State
@@ -78,12 +83,12 @@ export const getTotalStoreEmployeeEntity = createSelector(
 
 export const getTotalStoreEmployee = createSelector(
     getAccountStoreState,
-    state => state.employees.total
+    (state) => state.employees.total
 );
 
 export const getSelectedStoreEmployeeId = createSelector(
     getAccountStoreState,
-    state => state.employees.selectedEmployeeId
+    (state) => state.employees.selectedEmployeeId
 );
 
 export const getSelectedStoreEmployee = createSelector(
@@ -93,19 +98,50 @@ export const getSelectedStoreEmployee = createSelector(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// Error Store State
+// -----------------------------------------------------------------------------------------------------
+
+export const getAllStoreError = createSelector(
+    getAccountStoreState,
+    fromMerchant.selectAllStoreError
+);
+
+export const getStoreErrorEntities = createSelector(
+    getAccountStoreState,
+    fromMerchant.selectStoreErrorEntities
+);
+
+export const getStoreErrorIds = createSelector(
+    getAccountStoreState,
+    fromMerchant.selectStoreErrorIds
+);
+
+export const getTotalStoreErrorEntity = createSelector(
+    getAccountStoreState,
+    fromMerchant.selectStoreErrorTotal
+);
+
+export const geStoreErrorById = (id: string) =>
+    createSelector(getAllStoreError, (storeErrors) => {
+        return storeErrors && storeErrors.length && id
+            ? storeErrors.filter((storeErr) => storeErr.id === id)
+            : storeErrors;
+    });
+
+// -----------------------------------------------------------------------------------------------------
 // Helper State
 // -----------------------------------------------------------------------------------------------------
 
 export const getIsEditLocation = createSelector(
     getAccountStoreState,
-    state => state.stores.isEditLocation
+    (state) => state.stores.isEditLocation
 );
 
-export const getGoPage = createSelector(getAccountStoreState, state => state.goPage);
+export const getGoPage = createSelector(getAccountStoreState, (state) => state.goPage);
 
-export const getIsRefresh = createSelector(getAccountStoreState, state => state.isRefresh);
+export const getIsRefresh = createSelector(getAccountStoreState, (state) => state.isRefresh);
 
-export const getIsLoading = createSelector(getAccountStoreState, state => state.isLoading);
+export const getIsLoading = createSelector(getAccountStoreState, (state) => state.isLoading);
 
 // export const getAllBrandStore = createSelector(
 //     getBrandStoreState,
