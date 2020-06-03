@@ -217,7 +217,7 @@
                 <!-- Supplier's Status Column -->
                 <ng-container matColumnDef="supplier-status">
                     <mat-header-cell *matHeaderCellDef>
-                        Supplier Status
+                        Supplier<br/>Status
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         {{ (row?.outerStore?.approvalStatus | titlecase) || '-' }}
