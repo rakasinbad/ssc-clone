@@ -163,14 +163,19 @@
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
                                 matInput
+                                name="checkDate"
+                                formControlName="checkDate"
+                            />
+                            <!-- <input
+                                matInput
                                 [matDatetimepicker]="checkDatePicker"
                                 [max]="maxCheckInDate"
                                 [min]="minCheckInDate"
                                 autocomplete="false"
                                 name="checkDate"
                                 formControlName="checkDate"
-                            />
-                            <mat-datetimepicker-toggle
+                            /> -->
+                            <!-- <mat-datetimepicker-toggle
                                 matSuffix
                                 [for]="checkDatePicker"
                             ></mat-datetimepicker-toggle>
@@ -180,7 +185,7 @@
                                 [disabled]="false"
                                 type="date"
                             >
-                            </mat-datetimepicker>
+                            </mat-datetimepicker> -->
                         </mat-form-field>
                     </div>
                     <!-- / CHECK DATE -->
