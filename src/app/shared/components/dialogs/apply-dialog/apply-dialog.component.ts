@@ -19,12 +19,15 @@ export class ApplyDialogComponent<T> {
                 template: TemplateRef<any>,
                 isApplyEnabled: boolean,
                 showApplyButton: boolean,
+                showCloseButton: boolean,
+                applyValue: string,
+                closeValue: string,
                 context: T,
             },
     ) {}
 
     onApply(): void {
-        this.matDialogRef.close('apply');
+        this.matDialogRef.close(typeof this.data.applyValue !== undefined ? this.data.applyValue : 'apply');
     }
 
     onClose(): void {

@@ -19,6 +19,7 @@ export * from './invoice-group-api.service';
 export * from './location-search-api.service';
 export * from './order-brand-catalogue-api.service';
 export * from './order-parcel-api.service';
+export * from './photo-upload-api.service';
 export * from './portfolio-api.service';
 export * from './province-api.service';
 export * from './scroll.service';

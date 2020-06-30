@@ -31,6 +31,7 @@ export interface ExportConfiguration {
     // Tipe halaman harus diisi untuk menentukan export yang dibutuhkan.
     page:
         | ''
+        | 'supplier-stores'
         | 'stores'
         | 'catalogues'
         | 'payments'
@@ -98,6 +99,23 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
         },
     },
     stores: {
+        requireFilter: true,
+        filterAspect: {
+            status: {
+                label: 'Store List Status',
+                placeholder: 'Choose Store List Status',
+                required: true,
+            },
+            rangeDate: {
+                required: false,
+                maxRange: {
+                    number: 1,
+                    duration: 'month',
+                },
+            },
+        },
+    },
+    'supplier-stores': {
         requireFilter: true,
         filterAspect: {
             status: {

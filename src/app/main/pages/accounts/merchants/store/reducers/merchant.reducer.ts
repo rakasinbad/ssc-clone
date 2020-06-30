@@ -125,6 +125,7 @@ const brandStoreReducer = createReducer(
         StoreActions.updateStatusStoreRequest,
         StoreActions.updateStatusStoreEmployeeRequest,
         StoreActions.fetchStoreEditRequest,
+        StoreActions.fetchSupplierStoreRequest,
         StoreActions.fetchStoreRequest,
         StoreActions.fetchStoresRequest,
         StoreActions.fetchStoreEmployeeEditRequest,
@@ -155,6 +156,7 @@ const brandStoreReducer = createReducer(
         })
     ),
     on(
+        StoreActions.fetchSupplierStoreFailure,
         StoreActions.fetchStoreEditFailure,
         StoreActions.fetchStoreFailure,
         StoreActions.fetchStoresFailure,
@@ -205,6 +207,12 @@ const brandStoreReducer = createReducer(
         ...state,
         isLoading: false,
         settings: adapterStoreSetting.upsertOne(payload, state.settings),
+    })),
+    on(StoreActions.fetchSupplierStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        selectedSupplierStore: payload,
+        errors: adapterError.removeOne('fetchSupplierStoreFailure', state.errors),
     })),
     on(StoreActions.fetchStoreEditSuccess, (state, { payload }) => ({
         ...state,
@@ -299,7 +307,7 @@ const brandStoreReducer = createReducer(
     on(StoreActions.fetchCalculateSupplierStoresSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        isRefresh: true,
+        isRefresh: false,
         approvalStatuses: payload,
         errors: adapterError.removeOne('fetchCalculateSupplierStoresFailure', state.errors),
     })),
@@ -354,7 +362,11 @@ const brandStoreReducer = createReducer(
     on(StoreActions.goPage, (state, { payload }) => ({
         ...state,
         goPage: payload,
-    }))
+    })),
+    on(StoreActions.setRefreshStatus, (state, { refreshStatus }) => ({
+        ...state,
+        isRefresh: refreshStatus
+    })),
 );
 
 export function reducer(state: State | undefined, action: Action): State {

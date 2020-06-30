@@ -20,6 +20,7 @@ import { ExportActions } from '../exports/store/actions';
 import { fromExport } from '../exports/store/reducers';
 import { IButtonImportConfig } from '../import-advanced/models';
 import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-header.model';
+import { HelperService } from 'app/shared/helpers';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -27,7 +28,7 @@ import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-
     styleUrls: ['./card-header.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class CardHeaderComponent implements OnInit, OnChanges {
     importBtnConfig: IButtonImportConfig;
@@ -438,6 +439,13 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        HelperService.debug('SINBAD CARD HEADER CHANGED', changes);
+
+        if (changes['config']) {
+            if (changes['config'].currentValue['batchAction']) {
+                this.batchActions = changes['config'].currentValue['batchAction']['actions'];
+            }
+        }
         // console.log(changes);
         // if (this.config.batchAction) {
         //     if (this.config.batchAction.show) {

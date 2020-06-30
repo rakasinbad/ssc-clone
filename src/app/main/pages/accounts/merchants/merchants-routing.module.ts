@@ -12,6 +12,7 @@ import {
 import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee.component';
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
 import { MerchantsComponent } from './merchants.component';
+import { StoreDetailPageComponent } from './pages/detail/detail.component';
 // import { MerchantSettingComponent } from './merchant-setting/merchant-setting.component';
 
 const routes: Routes = [
@@ -61,7 +62,7 @@ const routes: Routes = [
     },
     {
         path: ':id/detail',
-        component: MerchantDetailComponent,
+        component: StoreDetailPageComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         children: [
             // {

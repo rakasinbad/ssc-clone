@@ -639,10 +639,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                     this.warnedOptions = this.warnedOptions.filter(warned => 
                         String(warned.id + warned.group) !== String(urbanId + 'urban')
                     );
-                } else {
+                } else if (this.selectedWarehouse.name !== response.warehouseName) {
                     this.warnedOptions.push({
                         ...selection,
                         tooltip: `This urban is already covered by Warehouse "${response.warehouseName}"`
+                    });
+
+                    this.notice$.open(`Urban "${selection.label}" is already covered by Warehouse "${response.warehouseName}"`, 'error', {
+                        duration: 6000,
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom',
                     });
                 }
 
@@ -968,12 +974,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             ],
             selectedUrbans: [
                 { value: [], disabled: false },
-                [
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                // [
+                //     RxwebValidators.choice({
+                //         minLength: 1,
+                //         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                //     })
+                // ]
             ],
             removedUrbans: [
                 { value: [], disabled: false }, []
@@ -1099,10 +1105,23 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.form.statusChanges
         .pipe(
             debounceTime(200),
+            tap(value => HelperService.debug('WAREHOUSE COVERAGE FORM STATUS CHANGES', { value, form: this.form })),
             takeUntil(this.subs$)
         ).subscribe(status => {
             if (status === 'VALID') {
-                this.locationStore.dispatch(FormActions.setFormStatusValid());
+                const formValue = this.form.getRawValue();
+
+                if (formValue.removedUrbans.length === 0 && formValue.selectedUrbans.length === 0) {
+                    this.notice$.open('You have to remove or select an urban to save this warehouse coverage.', 'warning', {
+                        duration: 6000,
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom',
+                    });
+
+                    this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+                } else {
+                    this.locationStore.dispatch(FormActions.setFormStatusValid());
+                }
             } else {
                 this.locationStore.dispatch(FormActions.setFormStatusInvalid());
             } 
@@ -1111,6 +1130,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.form.valueChanges
         .pipe(
             debounceTime(100),
+            tap(value => HelperService.debug('WAREHOUSE COVERAGE FORM VALUE CHANGES', { value, form: this.form })),
             takeUntil(this.subs$)
         ).subscribe(() => {
             if (this.isEditMode) {

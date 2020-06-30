@@ -48,6 +48,8 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
         // },
     };
 
+    keyword = '';
+
     private breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',

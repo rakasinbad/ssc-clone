@@ -405,7 +405,7 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
     onSubmit(action: string): void {
         let formValue = this.form.getRawValue();
         const attendanceData = Attendance.patch({
-            date: moment(formValue.checkDate).toISOString(),
+            // date: moment(formValue.checkDate).toISOString(),
             checkIn: moment(formValue.checkInTime).toISOString(),
             checkOut: moment(formValue.checkOutTime).toISOString(),
             locationType: formValue.locationType,
