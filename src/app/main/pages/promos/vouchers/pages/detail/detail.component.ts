@@ -389,13 +389,13 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
         const payload: Partial<SupplierVoucherPayload> = {
             // CONDITION & BENEFIT SETTINGS
-            conditionBase: formValue.base
+            conditionBase: formValue.base === 'order-value' ? 'value' : formValue.base
         };
 
         if (payload.conditionBase === 'qty') {
             payload.conditionQty = formValue.qty;
         } else if (payload.conditionBase === 'value') {
-            payload.conditionQty = formValue.orderValue;
+            payload.conditionValue = formValue.orderValue;
         }
 
         this.VoucherStore.dispatch(
