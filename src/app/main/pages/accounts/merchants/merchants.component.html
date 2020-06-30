@@ -194,7 +194,7 @@
                     <mat-cell *matCellDef="let row">
                         <ng-container *ngIf="row?.status">
                             <mat-icon
-                                class="active-icon s-16"
+                                class="active-icon s-24"
                                 [matTooltip]="row?.status | titlecase"
                                 svgIcon="sinbad-check-active"
                                 *ngIf="row?.status === 'active'"
@@ -202,7 +202,7 @@
                             </mat-icon>
 
                             <mat-icon
-                                class="active-icon s-16"
+                                class="active-icon s-24"
                                 [matTooltip]="row?.status | titlecase"
                                 svgIcon="sinbad-check-inactive"
                                 *ngIf="row?.status === 'inactive'"
@@ -577,18 +577,24 @@
                 <mat-checkbox formControlName="taxImageUrl">Picture (Owner NPWP)</mat-checkbox>
             </div>
         </div> -->
+        <div fxLayout="row" fxLayoutGap="20px">
+            <mat-checkbox formControlName="name">Store Name</mat-checkbox>
+            <mat-checkbox formControlName="mobilePhoneNo">Store Phone Number</mat-checkbox>
+            <mat-checkbox formControlName="imageUrl">Picture (Toko)</mat-checkbox>
+        </div>
         <!-- / CHECKBOXES -->
         <!-- HINT -->
-        <p class="sinbad-black-100-fg">Please input your reason for {{ this.isMassAction ? 'mass reject' : 'reject' }} the verification store.</p>
+        <!-- <p class="sinbad-black-100-fg">Please input your reason for {{ this.isMassAction ? 'mass reject' : 'reject' }} the verification store.</p> -->
         <!-- / HINT -->
         <!-- REASON TEXT AREA -->
         <div fxLayout="row">
             <!-- LABEL -->
-            <mat-label class="sinbad-black-80-fg" fxFlex="20">Alasan</mat-label>
+            <!-- <mat-label class="sinbad-black-80-fg" fxFlex="20">Alasan</mat-label> -->
             <!-- / LABEL -->
             <!-- TEXT AREA -->
             <mat-form-field appearance="outline" fxFlex>
-                <textarea matInput rows="8" formControlName="reason"></textarea>
+                <mat-label class="sinbad-black-80-fg" fxFlex="20">Alasan</mat-label>
+                <textarea placeholder="Alasan" matInput rows="8" formControlName="reason"></textarea>
                 <mat-error></mat-error>
             </mat-form-field>
             <!-- / TEXT AREA -->
