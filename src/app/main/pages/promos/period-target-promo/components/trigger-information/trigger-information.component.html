@@ -143,7 +143,7 @@
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     <span class="form-value" *ngFor="let faktur of form.get('chosenFaktur').value">
-                        {{ (faktur?.invoieGroup?.name) || '-' }}
+                        {{ (faktur?.invoiceGroup?.name) || '-' }}
                     </span>
                 </div>
             </div>
