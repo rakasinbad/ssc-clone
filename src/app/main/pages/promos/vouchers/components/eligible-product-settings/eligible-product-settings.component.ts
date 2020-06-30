@@ -241,7 +241,7 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
 
                         chosenBase = voucher.base;
                         break;
-                    case 'invoiceGroup':
+                    case 'invoice_group':
                         this.chosenFaktur$.next(
                             voucher.voucherInvoiceGroups.map((data) => ({
                                 id: data.invoiceGroup.id,
