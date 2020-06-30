@@ -16,7 +16,7 @@ import {
     HelperService,
 } from 'app/shared/helpers';
 import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
-import { ErrorHandler, PaginateResponse, TStatus } from 'app/shared/models/global.model';
+import { ErrorHandler, PaginateResponse, TStatus, TApprovalStatus } from 'app/shared/models/global.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import { FormActions, ProgressActions, UiActions } from 'app/shared/store/actions';
@@ -318,8 +318,8 @@ export class MerchantEffects {
         this.actions$.pipe(
             ofType(StoreActions.updateStoreRequest),
             map((action) => action.payload),
-            switchMap(({ body, id }) => {
-                return this._$storeApi.patchCustom<any>(body, id).pipe(
+            switchMap(({ body, id, isSupplierStore }) => {
+                return this._$storeApi.patchCustom<any>(body, id, isSupplierStore).pipe(
                     map((resp) => {
                         this._$log.generateGroup(`[RESPONSE REQUEST UPDATE STORE]`, {
                             response: {
@@ -393,6 +393,10 @@ export class MerchantEffects {
                             value: resp,
                         },
                     });
+
+                    this.store.dispatch(UiActions.resetHighlightRow());
+
+                    this.store.dispatch(StoreActions.setRefreshStatus({ refreshStatus: true }));
 
                     this.router.navigate(['/pages/account/stores']).finally(() => {
                         this._$notice.open('Data berhasil diubah', 'success', {
@@ -531,6 +535,60 @@ export class MerchantEffects {
 
     /**
      *
+     * [UPDATE - DIALOG] Approval Status Store
+     * @memberof MerchantEffects
+     */
+    confirmUpdateApprovalStatusStore$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.confirmUpdateApprovalStatusStore),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                let title: string;
+
+                if (params.approvalStatus === 'verified') {
+                    title = 'Verified';
+                } else if (params.approvalStatus === 'guest') {
+                    title = 'Guest';
+                } else if (params.approvalStatus === 'rejected') {
+                    title = 'Rejected';
+                } else if (params.approvalStatus === 'pending') {
+                    title = 'Pending';
+                } else if (params.approvalStatus === 'updating') {
+                    title = 'Updating';
+                }
+
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; approvalStatus: TApprovalStatus }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: `Set Approval Status to ${title}`,
+                        message: `Are you sure want to change <strong>${params.supplierStore.store.name}</strong> approval status ?`,
+                        id: params.supplierStore.id,
+                        approvalStatus: params.approvalStatus
+                    },
+                    disableClose: true,
+                });
+
+                return dialogRef.afterClosed().pipe(
+                    map(({ id }) => {
+                        return { id, approvalStatus: params.approvalStatus };
+                    })
+                );
+            }),
+            map(({ id, approvalStatus }) => {
+                if (id) {
+                    return StoreActions.updateStoreRequest({ payload: { id, body: { approvalStatus }, isSupplierStore: true } });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    /**
+     *
      * [UPDATE - DIALOG] Status Store
      * @memberof MerchantEffects
      */
@@ -539,8 +597,32 @@ export class MerchantEffects {
             ofType(StoreActions.confirmChangeStatusStore),
             map((action) => action.payload),
             exhaustMap((params) => {
-                const title = params.status === 'active' ? 'Inactive' : 'Active';
-                const body = params.status === 'active' ? 'inactive' : 'active';
+                let title = params.status === 'active' ? 'Inactive' : 'Active';
+                let body = params.status === 'active' ? 'inactive' : 'active';
+
+                if (params.status === 'active') {
+                    title = 'Active';
+                    body = 'active';
+                } else if (params.status === 'inactive') {
+                    title = 'Inactive';
+                    body = 'inactive';
+                } else if (params.status === 'verified') {
+                    title = 'Verified';
+                    body = 'verified';
+                } else if (params.status === 'guest') {
+                    title = 'Guest';
+                    body = 'guest';
+                } else if (params.status === 'rejected') {
+                    title = 'Rejected';
+                    body = 'rejected';
+                } else if (params.status === 'pending') {
+                    title = 'Pending';
+                    body = 'pending';
+                } else if (params.status === 'updating') {
+                    title = 'Updating';
+                    body = 'updating';
+                }
+
                 const dialogRef = this.matDialog.open<
                     ChangeConfirmationComponent,
                     any,
@@ -1755,6 +1837,88 @@ export class MerchantEffects {
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST - REQUEST] Store Edit
+     * @memberof MerchantEffects
+     */
+    fetchSupplierStoreRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.fetchSupplierStoreRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([id, { supplierId }]) => {
+                if (!id || !supplierId) {
+                    return of(
+                        StoreActions.fetchSupplierStoreFailure({
+                            payload: {
+                                id: 'fetchSupplierStoreFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
+
+                return this._$merchantApi.findById(id).pipe(
+                    catchOffline(),
+                    map((resp) => {
+                        return StoreActions.fetchSupplierStoreSuccess({
+                            payload: new SupplierStore(
+                                resp.id,
+                                resp.supplierId,
+                                resp.storeId,
+                                resp.status,
+                                resp.store,
+                                resp.owner,
+                                resp.createdAt,
+                                resp.updatedAt,
+                                resp.deletedAt,
+                                resp
+                            ),
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            StoreActions.fetchSupplierStoreFailure({
+                                payload: {
+                                    id: 'fetchSupplierStoreFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST - FAILURE] Store Edit
+     * @memberof MerchantEffects
+     */
+    fetchSupplierStoreFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.fetchSupplierStoreFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
+
+                    this.router.navigate(['/pages/account/stores']).finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
                     });
                 })
             ),

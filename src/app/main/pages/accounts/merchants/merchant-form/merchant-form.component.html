@@ -21,55 +21,23 @@
         >
             <mat-card class="mb-24" formGroupName="profileInfo">
                 <div fxLayout="column">
-                    <span class="mat-headline">
-                        Profile Information
-                    </span>
+                    <!-- <span class="mat-headline">
+                        Owner Information
+                    </span> -->
+                    <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Store Information</span>
 
                     <div>
-                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('profileInfo.username').errors &&
-                                    !form.get('profileInfo.username').untouched &&
-                                    (form.get('profileInfo.username').dirty ||
-                                        form.get('profileInfo.username').touched)
-                                "
-                            >
-                                *Username
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="100">
-                                <input
-                                    matInput
-                                    name="username"
-                                    formControlName="username"
-                                    maxlength="30"
-                                />
-
-                                <mat-error
-                                    *ngIf="
-                                        form.get('profileInfo.username').errors &&
-                                        (form.get('profileInfo.username').dirty ||
-                                            form.get('profileInfo.username').touched)
-                                    "
-                                >
-                                    {{ getErrorMessage('profileInfo.username') }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div> -->
-
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label
+                        <!-- OWNER PHONE NUMBER -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.phoneNumber')"
                             >
-                                Phone Number
+                                *Owner Phone
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="100">
+                            <mat-form-field appearance="outline" fxFlex="50">
                                 <input
                                     matInput
                                     type="tel"
@@ -82,13 +50,492 @@
                                     {{ getErrorMessage('profileInfo.phoneNumber') }}
                                 </mat-error>
                             </mat-form-field>
-                        </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label
+                            <mat-spinner
+                                *ngIf="isCheckingOwnerPhone$ | async"
+                                class="ml-24 mb-24"
+                                fxFlexAlign="center"
+                                color="accent"
+                                [diameter]="40"
+                                [strokeWidth]="5"
+                                [mode]="'indeterminate'"
+                            ></mat-spinner>
+                        </div>
+                        <!-- / OWNER PHONE NUMBER -->
+                        <!-- OWNER NAME -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="hasError('profileInfo.photos')"
+                                [class.mat-error]="hasError('profileInfo.name')"
+                            >
+                                *Owner Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="name"
+                                    formControlName="name"
+                                />
+
+                                <mat-error *ngIf="hasError('profileInfo.name', true)">
+                                    {{ getErrorMessage('profileInfo.name') }}
+                                </mat-error>
+
+                                <mat-hint *ngIf="form.get('storeId').value && pageType === 'new'">
+                                    Owner name is cannot be changed, because phone number already exists in the system.
+                                </mat-hint>
+                            </mat-form-field>
+                        </div>
+                        <!-- / OWNER NAME -->
+                        <!-- OWNER NPWP ID -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.taxId')"
+                            >
+                                Owner NPWP ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="taxId"
+                                    formControlName="taxId"
+                                    mask="00.000.000.0-000.000"
+                                    [validation]="false"
+                                />
+
+                                <mat-error *ngIf="hasError('profileInfo.taxId', true)">
+                                    {{ getErrorMessage('profileInfo.taxId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / OWNER NPWP ID -->
+                        <!-- OWNER KTP ID -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.identityId')"
+                            >
+                                KTP ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="identityId"
+                                    formControlName="identityId"
+                                    mask="0000000000000000"
+                                />
+
+                                <mat-error *ngIf="hasError('profileInfo.identityId', true)">
+                                    {{ getErrorMessage('profileInfo.identityId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / OWNER KTP ID -->
+                        <!-- OWNER TAX PHOTO -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.taxPhoto')"
+                            >
+                                Owner<br/>NPWP Photo
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                    [class.mat-sinbad-field-error]="hasError('profileInfo.taxPhoto')"
+                                >
+                                    <input
+                                        #ownerTaxPhotoPicker
+                                        type="file"
+                                        class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="taxPhoto"
+                                        (change)="onFileBrowse($event, 'owner-tax-photo')"
+                                    />
+                                    <input
+                                        matInput
+                                        name="taxPhoto"
+                                        [formControl]="tmpOwnerTaxPhoto"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="hasError('profileInfo.taxPhoto', true)"
+                                    >
+                                        {{ getErrorMessage('profileInfo.taxPhoto') }}
+                                    </mat-hint>
+                                </mat-form-field>
+
+                                <button
+                                    mat-flat-button
+                                    class="ml-12"
+                                    color="accent"
+                                    type="button"
+                                    (click)="ownerTaxPhotoPicker.click()"
+                                    [disabled]="form.get('profileInfo.taxPhoto').disabled"
+                                    fxFlexAlign="center"
+                                >
+                                    Upload your file
+                                </button>
+
+                                <ng-container *ngIf="form.get('profileInfo.taxPhoto').value || form.get('profileInfo.oldTaxPhoto').value">
+                                    <a
+                                        style="position: relative; top: -0.78em;"
+                                        (click)="openPreviewPhoto(form.get('profileInfo.taxPhoto').value, form.get('profileInfo.oldTaxPhoto').value, 'Owner NPWP Photo')"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <!-- / OWNER TAX PHOTO -->
+                        <!-- OWNER IDENTITY PHOTO -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.identityPhoto')"
+                            >
+                                KTP Photo
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                    [class.mat-sinbad-field-error]="hasError('profileInfo.identityPhoto')"
+                                >
+                                    <input
+                                        #ownerIdentityPhotoPicker
+                                        type="file"
+                                        class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="identityPhoto"
+                                        (change)="onFileBrowse($event, 'owner-identity-photo')"
+                                    />
+                                    <input
+                                        matInput
+                                        name="identityPhoto"
+                                        [formControl]="tmpIdentityPhoto"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="hasError('profileInfo.identityPhoto', true)"
+                                    >
+                                        {{ getErrorMessage('profileInfo.identityPhoto') }}
+                                    </mat-hint>
+                                </mat-form-field>
+
+                                <button
+                                    mat-flat-button
+                                    class="ml-12"
+                                    color="accent"
+                                    type="button"
+                                    (click)="ownerIdentityPhotoPicker.click()"
+                                    [disabled]="form.get('profileInfo.identityPhoto').disabled"
+                                    fxFlexAlign="center"
+                                >
+                                    Upload your file
+                                </button>
+
+                                <ng-container *ngIf="form.get('profileInfo.identityPhoto').value || form.get('profileInfo.oldIdentityPhoto').value">
+                                    <a
+                                        style="position: relative; top: -0.78em;"
+                                        (click)="openPreviewPhoto(form.get('profileInfo.identityPhoto').value, form.get('profileInfo.oldIdentityPhoto').value, 'KTP Photo')"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <!-- / OWNER IDENTITY PHOTO -->
+                        <!-- OWNER IDENTITY PHOTO + SELFIE -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.identityPhotoSelfie')"
+                            >
+                                KTP Photo + Selfie
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                    [class.mat-sinbad-field-error]="hasError('profileInfo.identityPhotoSelfie')"
+                                >
+                                    <input
+                                        #ownerIdentityPhotoSelfiePicker
+                                        type="file"
+                                        class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="identityPhotoSelfie"
+                                        (change)="onFileBrowse($event, 'owner-identity-selfie-photo')"
+                                    />
+                                    <input
+                                        matInput
+                                        name="identityPhotoSelfie"
+                                        [formControl]="tmpIdentityPhotoSelfie"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="hasError('profileInfo.identityPhotoSelfie', true)"
+                                    >
+                                        {{ getErrorMessage('profileInfo.identityPhotoSelfie') }}
+                                    </mat-hint>
+                                </mat-form-field>
+
+                                <button
+                                    mat-flat-button
+                                    class="ml-12"
+                                    color="accent"
+                                    type="button"
+                                    (click)="ownerIdentityPhotoSelfiePicker.click()"
+                                    [disabled]="form.get('profileInfo.identityPhotoSelfie').disabled"
+                                    fxFlexAlign="center"
+                                >
+                                    Upload your file
+                                </button>
+
+                                <ng-container *ngIf="form.get('profileInfo.identityPhotoSelfie').value || form.get('profileInfo.oldIdentityPhotoSelfie').value">
+                                    <a
+                                        style="position: relative; top: -0.78em;"
+                                        (click)="openPreviewPhoto(form.get('profileInfo.identityPhotoSelfie').value, form.get('profileInfo.oldIdentityPhotoSelfie').value, 'KTP Photo + Selfie')"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <!-- / OWNER IDENTITY PHOTO + SELFIE -->
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card class="mb-24" formGroupName="storeInfo">
+                <div fxLayout="column">
+                    <!-- <span class="mat-headline">
+                        Store Information
+                    </span> -->
+
+                    <!-- STORE INFORMATION -->
+                    <div class="form-box">
+                        <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Store Information</span>
+
+                        <div formGroupName="storeId">
+                            <!-- STORE ID -->
+                            <div class="custom-field mt-20" fxLayout="row" fxLayoutAlign="start center">
+                                <label
+                                    fxFlexAlign="start"
+                                    fxFlex="12"
+                                    [class.mat-error]="hasError('storeInfo.storeId.id')"
+                                    class="pt-16 form-label"
+                                >
+                                    *ID
+                                </label>
+    
+                                <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="50">
+                                    <div fxLayout="row" fxLayoutAlign="start start" class="mt-8">
+                                        <!-- RADIO GROUP -->
+                                        <mat-radio-group [formControl]="storeIdType" class="pt-8">
+                                            <mat-radio-button value="manual">Manually</mat-radio-button>
+                                            <mat-radio-button
+                                                value="auto"
+                                                class="ml-16"
+                                                [disabled]="!storeIdNextNumber || isEditMode"
+                                            >
+                                                Auto Generate
+                                                <span class="grey-fg">
+                                                    ({{ storeIdNextNumber || '-' }})
+                                                </span>
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                        <!-- / RADIO GROUP -->
+                                        <!-- HELP -->
+                                        <mat-icon
+                                            class="grey-fg"
+                                            style="font-size: 16px;"
+                                            matTooltip="You can change this AutoGenerate Store ID Number in Store Setting"
+                                            >help</mat-icon
+                                        >
+                                        <!-- / HELP -->
+                                    </div>
+                                    <!-- FORM FIELD INPUT -->
+                                    <mat-form-field
+                                        appearance="outline"
+                                        [@animate]="{
+                                            value: '*',
+                                            params: { delay: '100ms', x: '-25px' }
+                                        }"
+                                        [fxHide]="this.storeIdType.value === 'auto'"
+                                    >
+                                        <input matInput name="id" formControlName="id" [placeholder]="currentStoreId"/>
+    
+                                        <mat-error *ngIf="hasError('storeInfo.storeId.id', true)">
+                                            {{ getErrorMessage('storeInfo.storeId.id') }}
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <!-- / FORM FIELD INPUT -->
+                                </div>
+                            </div>
+                            <!-- / STORE ID -->
+                            <!-- STORE NAME -->
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                                <label class="form-label"
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="hasError('storeInfo.storeId.storeName')"
+                                >
+                                    *Store Name
+                                </label>
+    
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input matInput name="storeName" formControlName="storeName" />
+    
+                                    <mat-error *ngIf="hasError('storeInfo.storeId.storeName', true)">
+                                        {{ getErrorMessage('storeInfo.storeId.storeName') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <!-- / STORE NAME -->
+                        </div>
+                        <!-- STORE PHONE NUMBER -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.phoneNumber')"
+                            >
+                                Store Phone<br/>Number
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    type="tel"
+                                    name="phoneNumber"
+                                    formControlName="phoneNumber"
+                                    maxlength="30"
+                                />
+
+                                <mat-error *ngIf="hasError('storeInfo.phoneNumber', true)">
+                                    {{ getErrorMessage('storeInfo.phoneNumber') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / STORE PHONE NUMBER -->
+                        <!-- STORE TAX (NPWP) ID -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.taxId')"
+                            >
+                                Store NPWP ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="taxId"
+                                    formControlName="taxId"
+                                    mask="00.000.000.0-000.000"
+                                    [validation]="false"
+                                />
+
+                                <mat-error *ngIf="hasError('storeInfo.taxId', true)">
+                                    {{ getErrorMessage('storeInfo.taxId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / STORE TAX (NPWP) ID -->
+                        <!-- STORE TAX (NPWP) PHOTO -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.taxPhoto')"
+                            >
+                                Store NPWP<br/>Photo
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                    [class.mat-sinbad-field-error]="hasError('storeInfo.taxPhoto')"
+                                >
+                                    <input
+                                        #ownerStoreTaxPhotoPicker
+                                        type="file"
+                                        class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="taxPhoto"
+                                        (change)="onFileBrowse($event, 'store-tax-photo')"
+                                    />
+                                    <input
+                                        matInput
+                                        name="taxPhoto"
+                                        [formControl]="tmpStoreTaxPhoto"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="hasError('storeInfo.taxPhoto', true)"
+                                    >
+                                        {{ getErrorMessage('storeInfo.taxPhoto') }}
+                                    </mat-hint>
+                                </mat-form-field>
+
+                                <button
+                                    mat-flat-button
+                                    class="ml-12"
+                                    color="accent"
+                                    type="button"
+                                    (click)="ownerStoreTaxPhotoPicker.click()"
+                                    fxFlexAlign="center"
+                                >
+                                    Upload your file
+                                </button>
+
+                                <ng-container *ngIf="form.get('storeInfo.taxPhoto').value || form.get('storeInfo.oldTaxPhoto').value">
+                                    <a
+                                        style="position: relative; top: -0.78em;"
+                                        (click)="openPreviewPhoto(form.get('storeInfo.taxPhoto').value, form.get('storeInfo.oldTaxPhoto').value, 'Store NPWP Photo')"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <!-- / STORE TAX (NPWP) PHOTO -->
+                        <!-- STORE PHOTO -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.photo')"
                             >
                                 Store Photo
                             </label>
@@ -98,174 +545,98 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
-                                    [class.mat-sinbad-field-error]="hasError('profileInfo.photos')"
+                                    [class.mat-sinbad-field-error]="hasError('storeInfo.photo')"
                                 >
                                     <input
-                                        #photoPicker
+                                        #ownerStorePhotoPicker
                                         type="file"
                                         class="custom-file"
                                         accept=".jpg, .jpeg, .png"
-                                        formControlName="photos"
-                                        (change)="onFileBrowse($event, 'photo')"
+                                        formControlName="photo"
+                                        (change)="onFileBrowse($event, 'store-photo')"
                                     />
                                     <input
                                         matInput
-                                        name="photos"
-                                        [formControl]="tmpPhoto"
+                                        name="photo"
+                                        [formControl]="tmpStorePhoto"
                                         placeholder="No file choose"
                                     />
 
                                     <mat-hint
                                         class="mat-error"
-                                        *ngIf="hasError('profileInfo.photos', true)"
+                                        *ngIf="hasError('storeInfo.photo', true)"
                                     >
-                                        {{ getErrorMessage('profileInfo.photos') }}
+                                        {{ getErrorMessage('storeInfo.photo') }}
                                     </mat-hint>
                                 </mat-form-field>
 
                                 <button
                                     mat-flat-button
+                                    class="ml-12"
                                     color="accent"
                                     type="button"
-                                    (click)="photoPicker.click()"
+                                    (click)="ownerStorePhotoPicker.click()"
                                     fxFlexAlign="center"
                                 >
                                     Upload your file
                                 </button>
 
-                                <ng-container
-                                    *ngIf="pageType === 'edit' && (stores$ | async) as stores"
-                                >
+                                <ng-container *ngIf="form.get('storeInfo.photo').value || form.get('storeInfo.oldPhoto').value">
                                     <a
-                                        [href]="stores?.imageUrl"
-                                        target="_blank"
-                                        *ngIf="stores?.imageUrl"
                                         style="position: relative; top: -0.78em;"
+                                        (click)="openPreviewPhoto(form.get('storeInfo.photo').value, form.get('storeInfo.oldPhoto').value, 'Store Photo')"
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
                                 </ng-container>
                             </div>
                         </div>
-
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label
+                        <!-- / STORE PHOTO -->
+                        <!-- STORE STATUS -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="hasError('profileInfo.npwpId')"
+                                [class.mat-error]="
+                                    hasError('storeInfo.status')
+                                "
                             >
-                                NPWP ID
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="100">
-                                <input
-                                    matInput
-                                    name="npwpId"
-                                    formControlName="npwpId"
-                                    mask="00.000.000.0-000.000"
-                                    [validation]="false"
-                                />
-
-                                <mat-error *ngIf="hasError('profileInfo.npwpId', true)">
-                                    {{ getErrorMessage('profileInfo.npwpId') }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </div>
-            </mat-card>
-
-            <mat-card class="mb-24" formGroupName="storeInfo">
-                <div fxLayout="column">
-                    <span class="mat-headline">
-                        Store Information
-                    </span>
-
-                    <div class="form-box" formGroupName="storeId">
-                        <span class="mat-subheading-2">Store ID</span>
-
-                        <div
-                            class="custom-field-right mt-20"
-                            fxLayout="row"
-                            fxLayoutAlign="start center"
-                        >
-                            <label
-                                fxFlexAlign="start"
-                                fxFlex="12"
-                                [class.mat-error]="hasError('storeInfo.storeId.id')"
-                                class="pt-16"
-                            >
-                                *ID
-                            </label>
-
-                            <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="50">
-                                <div fxLayout="row" fxLayoutAlign="start start" class="mt-8">
-                                    <!-- RADIO GROUP -->
-                                    <mat-radio-group [formControl]="storeIdType" class="pt-8">
-                                        <mat-radio-button value="manual">Manually</mat-radio-button>
-                                        <mat-radio-button
-                                            value="auto"
-                                            [disabled]="!storeIdNextNumber || isEditMode"
-                                        >
-                                            Auto Generate
-                                            <span class="grey-fg">
-                                                ({{ storeIdNextNumber || '-' }})
-                                            </span>
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                    <!-- / RADIO GROUP -->
-                                    <!-- HELP -->
-                                    <mat-icon
-                                        class="grey-fg"
-                                        style="font-size: 16px;"
-                                        matTooltip="You can change this AutoGenerate Store ID Number in Store Setting"
-                                        >help</mat-icon
-                                    >
-                                    <!-- / HELP -->
-                                </div>
-                                <!-- FORM FIELD INPUT -->
-                                <mat-form-field
-                                    appearance="outline"
-                                    [@animate]="{
-                                        value: '*',
-                                        params: { delay: '100ms', x: '-25px' }
-                                    }"
-                                    [fxHide]="this.storeIdType.value === 'auto'"
-                                >
-                                    <input matInput name="id" formControlName="id" />
-
-                                    <mat-error *ngIf="hasError('storeInfo.storeId.id', true)">
-                                        {{ getErrorMessage('storeInfo.storeId.id') }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <!-- / FORM FIELD INPUT -->
-                            </div>
-                        </div>
-
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="12"
-                                [class.mat-error]="hasError('storeInfo.storeId.storeName')"
-                            >
-                                *Store Name
+                                Store Status
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="storeName" formControlName="storeName" />
+                                <mat-select formControlName="status"
+                                placeholder="Choose Store Status">
+                                    <mat-option value="active">Active</mat-option>
+                                    <mat-option value="inactive">Inactive</mat-option>
+                                </mat-select>
 
-                                <mat-error *ngIf="hasError('storeInfo.storeId.storeName', true)">
-                                    {{ getErrorMessage('storeInfo.storeId.storeName') }}
+                                <mat-error
+                                    *ngIf="
+                                        hasError(
+                                            'storeInfo.status',
+                                            true
+                                        )
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.status'
+                                        )
+                                    }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
+                        <!-- / STORE STATUS -->
                     </div>
+                    <!-- / STORE INFORMATION -->
 
+                    <!-- STORE ADDRESS -->
                     <div class="form-box" formGroupName="address">
-                        <span class="mat-subheading-2">Address</span>
-
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Store Address</span>
+                        <!-- DISTRICT -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.district')"
@@ -415,9 +786,10 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- / DISTRICT -->
+                        <!-- URBAN -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.urban')"
@@ -489,9 +861,9 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-
-                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- / URBAN -->
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -560,8 +932,8 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -624,8 +996,8 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -694,8 +1066,8 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -757,9 +1129,9 @@
                                 </mat-error>
                             </mat-form-field>
                         </div> -->
-
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- POSTCODE -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.postcode')"
@@ -787,18 +1159,42 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-
+                        <!-- / POSTCODE -->
+                        <!-- ADDRESS -->
                         <div
-                            class="custom-field-right sinbad-textarea"
+                            class="custom-field sinbad-textarea"
                             fxLayout="row"
                             fxLayoutAlign="start center"
                         >
-                            <label
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.address.address')"
+                            >
+                                *Address
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea matInput formControlName="address" rows="5"></textarea>
+
+                                <mat-error *ngIf="hasError('storeInfo.address.address', true)">
+                                    {{ getErrorMessage('storeInfo.address.address') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / ADDRESS -->
+                        <!-- NOTES ADDRESS -->
+                        <div
+                            class="custom-field sinbad-textarea"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                        >
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.notes')"
                             >
-                                *Notes
+                                Notes Address
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -809,14 +1205,16 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-
+                        <!-- / NOTES ADDRESS -->
+                        <!-- GEOLOCATION -->
                         <ng-container formGroupName="geolocation">
+                            <!-- LATITUDE -->
                             <div
-                                class="custom-field-right"
+                                class="custom-field"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                             >
-                                <label
+                                <label class="form-label"
                                     fxFlexAlign="center"
                                     fxFlex="12"
                                     [class.mat-error]="
@@ -836,13 +1234,14 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
-
+                            <!-- / LATITUDE -->
+                            <!-- LONGITUDE -->
                             <div
-                                class="custom-field-right"
+                                class="custom-field"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                             >
-                                <label
+                                <label class="form-label"
                                     fxFlexAlign="center"
                                     fxFlex="12"
                                     [class.mat-error]="
@@ -862,14 +1261,14 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
+                            <!-- / LONGITUDE -->
                         </ng-container>
-
                         <!-- <div
-                            class="custom-field-right sinbad-button"
+                            class="custom-field sinbad-button"
                             fxLayout="row"
                             fxLayoutAlign="start center"
                         >
-                            <label
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -898,15 +1297,16 @@
                                 </mat-error>
                             </mat-form-field>
                         </div> -->
+                        <!-- / GEOLOCATION -->
                     </div>
+                    <!-- / STORE ADDRESS -->
 
-                    <!--  *ngIf="pageType === 'new'" -->
 
-                    <div class="form-box mt-16" formGroupName="legalInfo">
+                    <!-- <div class="form-box mt-16" formGroupName="legalInfo">
                         <span class="mat-subheading-2">Legal Information</span>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.legalInfo.name')"
@@ -923,8 +1323,8 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.legalInfo.identityId')"
@@ -947,11 +1347,11 @@
                         </div>
 
                         <div
-                            class="custom-field-right"
+                            class="custom-field"
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
                         >
-                            <label
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.legalInfo.identityPhoto')"
@@ -993,6 +1393,7 @@
 
                                 <button
                                     mat-flat-button
+                                    class="ml-12"
                                     color="accent"
                                     type="button"
                                     (click)="identityPhotoPicker.click()"
@@ -1017,11 +1418,11 @@
                         </div>
 
                         <div
-                            class="custom-field-right"
+                            class="custom-field"
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
                         >
-                            <label
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1074,6 +1475,7 @@
 
                                 <button
                                     mat-flat-button
+                                    class="ml-12"
                                     color="accent"
                                     type="button"
                                     (click)="identityPhotoSelfiePicker.click()"
@@ -1097,8 +1499,8 @@
                             </div>
                         </div>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.legalInfo.npwpId')"
@@ -1120,13 +1522,13 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="form-box" formGroupName="physicalStoreInfo">
-                        <span class="mat-subheading-2">Physical Store Information</span>
+                        <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Physical Store Information</span>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1145,9 +1547,9 @@
                                         <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of numberOfEmployees"
-                                            [value]="row?.id"
+                                            [value]="row.amount"
                                         >
-                                            {{ row?.label }}
+                                            {{ row.amount }}
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
@@ -1178,15 +1580,15 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
                                     hasError('storeInfo.physicalStoreInfo.vehicleAccessibility')
                                 "
                             >
-                                Vehicle Accessibility
+                                Vehicle<br/>Accessibility
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1237,16 +1639,16 @@
                         </div>
                     </div>
 
-                    <!-- Store Classification Group -->
+                    <!-- Store Segmentation Group -->
                     <div class="form-box" formGroupName="storeClassification">
-                        <span class="mat-subheading-2">Store Classification</span>
+                        <span class="mat-subheading-2 mb-4" fxLayout="row" fxLayoutAlign="start center">Store Segmentation</span>
 
                         <!-- Store Type Field -->
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label
-                                class="reset-top"
+                                class="reset-top form-label"
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="13"
                                 [class.mat-error]="
                                     hasError('storeInfo.storeClassification.storeType')
                                 "
@@ -1255,11 +1657,11 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                class="sinbad-red-fg py-12 selected-selection-tree h-64"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreType()"
-                                [innerHTML]="(selectedStoreType$ | async).lastSaved | safe: 'html'"
+                                [innerHTML]="(selectedStoreType$ | async).current | safe: 'html'"
                             ></a>
 
                             <!-- <mat-form-field appearance="outline" fxFlex="50">
@@ -1300,11 +1702,11 @@
                         </div>
 
                         <!-- Store Group Field -->
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label
-                                class="reset-top"
+                                class="reset-top form-label"
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="13"
                                 [class.mat-error]="
                                     hasError('storeInfo.storeClassification.storeGroup')
                                 "
@@ -1313,11 +1715,11 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                class="sinbad-red-fg py-12 selected-selection-tree h-64"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreGroup()"
-                                [innerHTML]="(selectedStoreGroup$ | async).lastSaved | safe: 'html'"
+                                [innerHTML]="(selectedStoreGroup$ | async).current | safe: 'html'"
                             ></a>
 
                             <!-- <mat-form-field appearance="outline" fxFlex="50">
@@ -1372,11 +1774,11 @@
                         </div>
 
                         <!-- Store Channel Field -->
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label
-                                class="reset-top"
+                                class="reset-top form-label"
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="13"
                                 [class.mat-error]="
                                     hasError('storeInfo.storeClassification.storeChannel')
                                 "
@@ -1385,12 +1787,12 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                class="sinbad-red-fg py-12 selected-selection-tree h-64"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreChannel()"
                                 [innerHTML]="
-                                    (selectedStoreChannel$ | async).lastSaved | safe: 'html'
+                                    (selectedStoreChannel$ | async).current | safe: 'html'
                                 "
                             ></a>
 
@@ -1451,11 +1853,11 @@
                         </div>
 
                         <!-- Store Cluster Field -->
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label
-                                class="reset-top"
+                                class="reset-top form-label"
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="13"
                                 [class.mat-error]="
                                     hasError('storeInfo.storeClassification.storeCluster')
                                 "
@@ -1464,19 +1866,19 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                class="sinbad-red-fg py-12 selected-selection-tree h-64"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreCluster()"
                                 [innerHTML]="
-                                    (selectedStoreCluster$ | async).lastSaved | safe: 'html'
+                                    (selectedStoreCluster$ | async).current | safe: 'html'
                                 "
                             ></a>
                         </div>
 
                         <!-- Store Segment Field -->
-                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1531,8 +1933,8 @@
                         </div> -->
 
                         <!-- Customer Hierarchy Field -->
-                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1579,7 +1981,7 @@
 
                     <!-- Payment Group -->
                     <div class="form-box" formGroupName="payment">
-                        <span class="mat-subheading-2">Payment</span>
+                        <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Payment</span>
 
                         <!-- Credit Limit Form Array -->
                         <ng-container
@@ -1601,28 +2003,33 @@
 
                                     <!-- Allow Credit Field -->
                                     <div
-                                        class="custom-field-right"
+                                        class="custom-field mt-24"
                                         fxLayout="row"
                                         fxLayoutAlign="start center"
                                     >
-                                        <div style="margin-left: 50px; margin-top: 10px;">
-                                            <mat-slide-toggle
-                                                [labelPosition]="'before'"
-                                                formControlName="allowCreditLimit"
-                                                (change)="onChangeAllowCredit($event, i)"
-                                            >
-                                                Allow Credit
-                                            </mat-slide-toggle>
-                                        </div>
+                                        <label class="form-label"
+                                            fxFlexAlign="center"
+                                            fxFlex="11"
+                                        >
+                                            Allow Credit
+                                        </label>
+
+                                        <mat-slide-toggle
+                                            fxFlex="50"
+                                            class="form-label"
+                                            [labelPosition]="'before'"
+                                            formControlName="allowCreditLimit"
+                                            (change)="onChangeAllowCredit($event, i)"
+                                        ></mat-slide-toggle>
                                     </div>
 
                                     <!-- Credit Limit Field -->
                                     <div
-                                        class="custom-field-right"
+                                        class="custom-field"
                                         fxLayout="row"
                                         fxLayoutAlign="start center"
                                     >
-                                        <label
+                                        <label class="form-label"
                                             fxFlexAlign="center"
                                             fxFlex="12"
                                             [class.mat-error]="
@@ -1678,11 +2085,11 @@
 
                                     <!-- Term of Payment Field -->
                                     <div
-                                        class="custom-field-right"
+                                        class="custom-field"
                                         fxLayout="row"
                                         fxLayoutAlign="start center"
                                     >
-                                        <label
+                                        <label class="form-label"
                                             fxFlexAlign="center"
                                             fxFlex="12"
                                             [class.mat-error]="
@@ -1740,11 +2147,11 @@
 
                                     <!-- Credit Limit Group Field -->
                                     <div
-                                        class="custom-field-right"
+                                        class="custom-field"
                                         fxLayout="row"
                                         fxLayoutAlign="start center"
                                     >
-                                        <label
+                                        <label class="form-label"
                                             fxFlexAlign="center"
                                             fxFlex="12"
                                             [class.mat-error]="
@@ -1843,8 +2250,8 @@
                             </ng-container>
                         </ng-container>
 
-                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1908,8 +2315,8 @@
                         </div> -->
 
                         <!-- Store Segment Field -->
-                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1973,8 +2380,8 @@
                         </div> -->
 
                         <!-- Customer Hierarchy Field -->
-                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -2037,6 +2444,27 @@
     <mat-spinner color="accent"></mat-spinner>
 </div>
 
+<ng-template #previewPhoto>
+    <div
+        fxLayout="row"
+        [fxLayoutAlign]="newPhoto !== oldPhoto ? 'space-between center' : 'center center'"
+        fxLayoutGap="20px"
+    >
+        <!-- CURRENT PHOTO -->
+        <div class="img-container" *ngIf="oldPhoto" fxLayout="column" fxLayoutAlign="center center">
+            <img [src]="oldPhoto" alt="Current Photo" class="fit-image"/>
+            <p class="mt-40 text-semibold">Current</p>
+        </div>
+        <!-- / CURRENT PHOTO -->
+        <!-- NEW PHOTO -->
+        <div class="img-container" *ngIf="newPhoto !== oldPhoto" fxLayout="column" fxLayoutAlign="center center">
+            <img [src]="newPhoto" alt="New Photo" class="fit-image"/>
+            <p class="mt-40 text-semibold">New</p>
+        </div>
+        <!-- / NEW PHOTO -->
+    </div>
+</ng-template>
+
 <ng-template #selectStoreType>
     <tree-store-segmentation
         [segmentationType]="'type'"
@@ -2068,4 +2496,158 @@
         (selectionChanged)="onStoreClusterSelectionChanged($event)"
     >
     </tree-store-segmentation>
+</ng-template>
+<ng-template #uploadPhotos>
+    <div
+        class="ml-32 mt-20"
+        fxLayout="column"
+        fxLayoutAlign="center stretch"
+        fxLayoutGap="20px"
+    >
+        <!-- FOTO NPWP PEMILIK TOKO -->
+        <div
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="20px"
+        >
+            <p class="ml-80 mt-12" fxFlex="40">Upload Owner NPWP Photo</p>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-pending"
+                *ngIf="(uploadOwnerTaxPhoto$ | async) === 'pending'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-on-process"
+                *ngIf="(uploadOwnerTaxPhoto$ | async) === 'uploading'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-check-active"
+                *ngIf="(uploadOwnerTaxPhoto$ | async) === 'success'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-cross-red"
+                *ngIf="(uploadOwnerTaxPhoto$ | async) === 'failed'"
+            ></mat-icon>
+        </div>
+        <!-- / FOTO NPWP PEMILIK TOKO -->
+        <!-- FOTO KTP PEMILIK TOKO -->
+        <div
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="20px"
+        >
+            <p class="ml-80 mt-12" fxFlex="40">Upload KTP Photo</p>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-pending"
+                *ngIf="(uploadIdentityPhoto$ | async) === 'pending'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-on-process"
+                *ngIf="(uploadIdentityPhoto$ | async) === 'uploading'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-check-active"
+                *ngIf="(uploadIdentityPhoto$ | async) === 'success'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-cross-red"
+                *ngIf="(uploadIdentityPhoto$ | async) === 'failed'"
+            ></mat-icon>
+        </div>
+        <!-- / FOTO KTP PEMILIK TOKO -->
+        <!-- FOTO KTP PEMILIK TOKO + SELFIE -->
+        <div
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="20px"
+        >
+            <p class="ml-80 mt-12" fxFlex="40">Upload KTP Photo + Selfie</p>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-pending"
+                *ngIf="(uploadIdentityPhotoSelfie$ | async) === 'pending'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-on-process"
+                *ngIf="(uploadIdentityPhotoSelfie$ | async) === 'uploading'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-check-active"
+                *ngIf="(uploadIdentityPhotoSelfie$ | async) === 'success'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-cross-red"
+                *ngIf="(uploadIdentityPhotoSelfie$ | async) === 'failed'"
+            ></mat-icon>
+        </div>
+        <!-- / FOTO KTP PEMILIK TOKO + SELFIE -->
+        <!-- FOTO NPWP TOKO -->
+        <div
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="20px"
+        >
+            <p class="ml-80 mt-12" fxFlex="40">Upload Store NPWP Photo</p>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-pending"
+                *ngIf="(uploadStoreTaxPhoto$ | async) === 'pending'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-on-process"
+                *ngIf="(uploadStoreTaxPhoto$ | async) === 'uploading'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-check-active"
+                *ngIf="(uploadStoreTaxPhoto$ | async) === 'success'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-cross-red"
+                *ngIf="(uploadStoreTaxPhoto$ | async) === 'failed'"
+            ></mat-icon>
+        </div>
+        <!-- / FOTO NPWP TOKO -->
+        <!-- FOTO TOKO -->
+        <div
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="20px"
+        >
+            <p class="ml-80 mt-12" fxFlex="40">Upload Store Photo</p>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-pending"
+                *ngIf="(uploadStorePhoto$ | async) === 'pending'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-on-process"
+                *ngIf="(uploadStorePhoto$ | async) === 'uploading'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-check-active"
+                *ngIf="(uploadStorePhoto$ | async) === 'success'"
+            ></mat-icon>
+            <mat-icon
+                class="active-icon s-24"
+                svgIcon="sinbad-cross-red"
+                *ngIf="(uploadStorePhoto$ | async) === 'failed'"
+            ></mat-icon>
+        </div>
+        <!-- / FOTO NPWP TOKO -->
+    </div>
 </ng-template>
