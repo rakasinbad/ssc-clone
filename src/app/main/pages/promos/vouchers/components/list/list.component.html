@@ -68,7 +68,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    Rp. 100.000
+                    {{ row?.benefitType === 'percent' ? row?.benefitDiscount + ' %' : row?.benefitType === 'amount' ? (row?.benefitRebate | price: 'full':'IDR':'narrow':'1.0-2') : '-' }}
                 </p>
             </mat-cell>
         </ng-container>
