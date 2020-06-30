@@ -329,16 +329,30 @@ export class MainImportComponent implements OnInit, OnDestroy {
                 break;
 
             case 'stores':
-                this.store.dispatch(
-                    ImportAdvancedActions.importConfirmRequest({
-                        payload: {
-                            file,
-                            page: this.pageType,
-                            type: mode,
-                            endpoint: 'import-stores'
-                        }
-                    })
-                );
+                if (mode === 'update_status') {
+                    this.store.dispatch(
+                        ImportAdvancedActions.importConfirmRequest({
+                            payload: {
+                                file,
+                                page: this.pageType,
+                                type: mode,
+                                endpoint: 'import-supplier-stores'
+                            }
+                        })
+                    );
+                } else {
+                    this.store.dispatch(
+                        ImportAdvancedActions.importConfirmRequest({
+                            payload: {
+                                file,
+                                page: this.pageType,
+                                type: mode,
+                                endpoint: 'import-stores'
+                            }
+                        })
+                    );
+                }
+
                 break;
 
             case 'portfolios':
