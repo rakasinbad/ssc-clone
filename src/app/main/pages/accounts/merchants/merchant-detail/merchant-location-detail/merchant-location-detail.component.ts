@@ -122,7 +122,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        const { id } = this.route.parent.snapshot.params;
+        const { id } = this.route.snapshot.params;
 
         this._initForm();
 
@@ -196,6 +196,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
                     this.store.dispatch(FormActions.resetClickCancelButton());
                     this.store.dispatch(FormActions.resetCancelButtonAction());
                 }
+
             })
         );
 
@@ -289,6 +290,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
         this.store
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
+                tap(isClick => HelperService.debug('IS CLICK SAVE LOCATION DETAIL', isClick)),
                 filter(isClick => !!isClick),
                 takeUntil(this._unSubs$)
             )
@@ -990,7 +992,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        const { id } = this.route.parent.snapshot.params;
+        const { id } = this.route.snapshot.params;
         const body = this.form.getRawValue();
         const urban = body.urban as Urban;
         const payload = {
@@ -1019,7 +1021,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
 
         if (id && Object.keys(payload).length > 0) {
             this.store.dispatch(
-                StoreActions.updateStoreRequest({ payload: { id, body: payload } })
+                StoreActions.updateStoreRequest({ payload: { id, body: payload, isSupplierStore: true } })
             );
         }
     }

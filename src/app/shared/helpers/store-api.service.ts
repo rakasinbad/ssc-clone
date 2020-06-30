@@ -33,6 +33,14 @@ export class StoreApiService {
     private readonly _endpoint = '/stores';
 
     /**
+     *
+     *
+     * @private
+     * @memberof StoreApiService
+     */
+    private readonly _supplierStoreEndpoint = '/supplier-stores';
+
+    /**
      * Creates an instance of StoreApiService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
@@ -73,7 +81,20 @@ export class StoreApiService {
      * @memberof StoreApiService
      */
     create(body: any): Observable<Merchant> {
-        return this.http.post<Merchant>(this._url, body);
+        if (body['supplierStore']) {
+            this._url = this._$helper.handleApiRouter(this._supplierStoreEndpoint);
+        } else {
+            this._url = this._$helper.handleApiRouter(this._endpoint);
+        }
+
+        const newBody = {};
+        Object.keys(body).forEach(key => {
+            if (key !== 'supplierStore') {
+                newBody[key] = body[key];
+            }
+        });
+
+        return this.http.post<Merchant>(this._url, newBody);
     }
 
     /**
@@ -85,7 +106,24 @@ export class StoreApiService {
      * @returns {Observable<Merchant>}
      * @memberof StoreApiService
      */
-    patchCustom<T>(body: T, id: string): Observable<Merchant> {
-        return this.http.patch<Merchant>(`${this._url}/${id}`, body);
+    patchCustom<T>(body: T, id: string, isSupplierStore?: boolean): Observable<Merchant> {
+        if (body['supplierStore'] || isSupplierStore) {
+            this._url = this._$helper.handleApiRouter(this._supplierStoreEndpoint);
+        } else {
+            this._url = this._$helper.handleApiRouter(this._endpoint);
+        }
+
+        const newBody = {};
+        Object.keys(body).forEach(key => {
+            if (key !== 'supplierStore') {
+                newBody[key] = body[key];
+            }
+        });
+
+        if (id) {
+            return this.http.patch<Merchant>(`${this._url}/${id}`, newBody);
+        }
+
+        return this.http.patch<Merchant>(`${this._url}`, newBody);
     }
 }

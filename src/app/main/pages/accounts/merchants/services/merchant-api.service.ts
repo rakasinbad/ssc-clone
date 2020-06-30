@@ -5,7 +5,8 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore, SupplierStoreOptions } from 'app/shared/models/supplier.model';
 import { Observable } from 'rxjs';
 
-import { Store as Merchant, IResendStorePayload, IResendStoreResponse, ICalculateSupplierStoreResponse } from '../models';
+import { Store as Merchant, IResendStorePayload, IResendStoreResponse, ICalculateSupplierStoreResponse, ICheckOwnerPhoneResponse } from '../models';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
 
 /**
  *
@@ -65,6 +66,22 @@ export class MerchantApiService {
      * @memberof MerchantApiService
      */
     private readonly _resendStoresEndpoint = '/resend-stores';
+
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantApiService
+     */
+    private readonly _checkOwnerPhoneEndpoint = '/check-owner-phone';
+
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantApiService
+     */
+    private readonly _numberOfEmployeeEndpoint = '/number-of-employees';
 
     /**
      *
@@ -265,6 +282,18 @@ export class MerchantApiService {
     resendStore(payload: IResendStorePayload): Observable<Array<IResendStoreResponse>> {
         this._url = this._$helper.handleApiRouter(this._resendStoresEndpoint);
         return this.http.post<Array<IResendStoreResponse>>(`${this._url}`, payload);
+    }
+
+    checkOwnerPhone(phoneNumber: string, supplierId: number): Observable<ICheckOwnerPhoneResponse> {
+        this._url = this._$helper.handleApiRouter(this._checkOwnerPhoneEndpoint);
+        return this.http.post<ICheckOwnerPhoneResponse>(`${this._url}`, { mobilePhoneNumber: phoneNumber, supplierId });
+    }
+
+    getNumberOfEmployee(): Observable<Array<{ amount: string }>> {
+        this._url = this._$helper.handleApiRouter(this._numberOfEmployeeEndpoint);
+
+        const newParams = this._$helper.handleParams(this._url, {}, { paginate: false });
+        return this.http.get<Array<{ amount: string }>>(this._url, { params: newParams });
     }
 
     // findStoreById(id: string): Observable<IStoreEdit> {

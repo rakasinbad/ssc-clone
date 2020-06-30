@@ -238,8 +238,8 @@ deploy_demo:
         - logrocket upload dist/supplier-center/ --release=${CI_COMMIT_TAG}_${CI_COMMIT_SHORT_SHA} --apikey=$LOGROCKET_API_KEY
         - rm dist/supplier-center/*.map
         - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
-        - ssh -i ~/.ssh/id_rsa deploy@10.0.30.220 -o StrictHostKeyChecking=no -t "rsync -avz /usr/share/nginx/html/ /usr/share/nginx/html-backup"
-        - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.30.220:/usr/share/nginx/html
+        - ssh -i ~/.ssh/id_rsa deploy@10.0.30.27 -o StrictHostKeyChecking=no -t "rsync -avz /var/www/seller-demo.sinbad.web.id/ /var/www/seller-center-bak"
+        - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.30.27:/var/www/seller-demo.sinbad.web.id
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
           when: always

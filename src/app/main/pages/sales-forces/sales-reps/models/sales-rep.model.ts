@@ -33,7 +33,7 @@ export class SalesRep implements ISalesRep {
             user,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;
@@ -59,6 +59,7 @@ export class SalesRep implements ISalesRep {
 type AddForm = 'fullName' | 'mobilePhoneNo' | 'idNo';
 
 interface ISalesRepForm {
+    userCode: string;
     status: EStatus;
     image: string;
     supplierId: string;
@@ -74,7 +75,10 @@ interface ISalesRepOldPasswordForm {
 export type SalesRepForm = Required<Pick<User, AddForm> & ISalesRepForm>;
 
 export type SalesRepFormPatch = Partial<
-    Pick<SalesRepForm, 'fullName' | 'mobilePhoneNo' | 'idNo' | 'status' | 'image' | 'saleTeamId'>
+    Pick<
+        SalesRepForm,
+        'userCode' | 'fullName' | 'mobilePhoneNo' | 'idNo' | 'status' | 'image' | 'saleTeamId'
+    >
 >;
 
 export type SalesRepFormPasswordPut = Required<Pick<SalesRepForm, 'password' | 'confPassword'>>;
@@ -82,5 +86,5 @@ export type SalesRepFormPasswordPut = Required<Pick<SalesRepForm, 'password' | '
 export enum SalesRepBatchActions {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
-    DELETE = 'delete'
+    DELETE = 'delete',
 }
