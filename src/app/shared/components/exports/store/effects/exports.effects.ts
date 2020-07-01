@@ -265,6 +265,26 @@ export class ExportsEffects {
         { dispatch: false }
     );
 
+    showExportHistory$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                // Hanya untuk action start export success.
+                ofType(ExportActions.showExportHistory),
+                tap(({ payload: page }) => {
+                    setTimeout(() => {
+                        // Kemudian, memunculkan dialog log export-nya.
+                        this.matDialog.open(ExportsComponent, {
+                            disableClose: true,
+                            width: '70vw',
+                            height: '85vh',
+                            panelClass: ['sinbad-export-dialog-container'],
+                        });
+                    }, 500);
+                })
+            ),
+        { dispatch: false }
+    );
+
     prepareExportFailure$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -615,11 +635,20 @@ export class ExportsEffects {
         User,
         IQueryParams & ExportConfiguration & { formData: ExportFormData }
     ]): Observable<AnyAction> => {
-        return of(
-            ExportActions.startExportRequest({
-                payload: queryParams,
-            })
-        );
+        if (queryParams.formData.viewHistory) {
+            // Kemudian, memunculkan dialog log export-nya.
+            return of(
+                ExportActions.showExportHistory({
+                    payload: queryParams.page
+                })
+            );
+        } else {
+            return of(
+                ExportActions.startExportRequest({
+                    payload: queryParams,
+                })
+            );
+        }
     };
 
     processStartExportRequest = ([userData, queryParams]: [

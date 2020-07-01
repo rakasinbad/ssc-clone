@@ -25,6 +25,7 @@ export interface ExportFormData {
     dateGte?: string;
     dateLte?: string;
     status?: string;
+    viewHistory?: boolean;
 }
 
 export interface ExportConfiguration {
