@@ -51,6 +51,10 @@ const exportReducer = createReducer(
         isRequesting: true,
         exportPage: payload.page
     })),
+    on(ExportActions.showExportHistory, (state, { payload }) => ({
+        ...state,
+        exportPage: payload
+    })),
     on(ExportActions.startExportFailure, state => ({
         ...state,
         isRequesting: false

@@ -169,6 +169,18 @@
     </div>
 
     <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="end center">
+        <!-- VIEW EXPORT -->
+        <button
+            type="button"
+            mat-flat-button
+            class="sinbad-yellow"
+            (click)="onViewHistory()"
+            aria-label="View History"
+        >
+            View History
+        </button>
+        <!-- / VIEW EXPORT -->
+        <!-- START EXPORT -->
         <button
             type="submit"
             mat-flat-button
@@ -179,5 +191,6 @@
         >
             Start Export
         </button>
+        <!-- / START EXPORT -->
     </div>
 </div>
