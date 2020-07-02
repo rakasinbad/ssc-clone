@@ -293,15 +293,15 @@ export class VoucherGeneralInformationComponent
                     })
                 ],
             ],
-            maxVoucherRedemption: [
-                '',
-                [
-                    RxwebValidators.numeric({
-                        allowDecimal: false,
-                        message: 'This field must be numeric.',
-                    }),
-                ],
-            ],
+            // maxVoucherRedemption: [
+            //     '',
+            //     [
+            //         RxwebValidators.numeric({
+            //             allowDecimal: false,
+            //             message: 'This field must be numeric.',
+            //         }),
+            //     ],
+            // ],
             activeStartDate: [
                 { value: '', disabled: true },
                 [
