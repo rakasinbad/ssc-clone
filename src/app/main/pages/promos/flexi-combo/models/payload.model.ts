@@ -37,7 +37,7 @@ export class CreateFlexiComboDto {
     externalId: string;
     firstBuy: boolean;
     image: string;
-    maxRedemptionPerUser: number;
+    maxRedemptionPerStore: number;
     name: string;
     platform: PlatformSinbad;
     promoBudget: number;
@@ -58,7 +58,7 @@ export class CreateFlexiComboDto {
             externalId,
             firstBuy,
             image,
-            maxRedemptionPerUser,
+            maxRedemptionPerStore,
             name,
             platform,
             promoBudget,
@@ -78,7 +78,7 @@ export class CreateFlexiComboDto {
         this.externalId = externalId;
         this.firstBuy = firstBuy;
         this.image = image;
-        this.maxRedemptionPerUser = maxRedemptionPerUser;
+        this.maxRedemptionPerStore = maxRedemptionPerStore;
         this.name = name;
         this.platform = platform;
         this.promoBudget = promoBudget;
@@ -100,7 +100,7 @@ export class PatchFlexiComboDto {
     externalId?: string;
     firstBuy?: boolean;
     image?: string;
-    maxRedemptionPerUser?: number;
+    maxRedemptionPerStore?: number;
     name?: string;
     platform?: PlatformSinbad;
     promoBudget?: number;
@@ -121,7 +121,7 @@ export class PatchFlexiComboDto {
             externalId,
             firstBuy,
             image,
-            maxRedemptionPerUser,
+            maxRedemptionPerStore,
             name,
             platform,
             promoBudget,
@@ -165,8 +165,8 @@ export class PatchFlexiComboDto {
             this.image = image;
         }
 
-        if (typeof maxRedemptionPerUser !== 'undefined') {
-            this.maxRedemptionPerUser = maxRedemptionPerUser;
+        if (typeof maxRedemptionPerStore !== 'undefined') {
+            this.maxRedemptionPerStore = maxRedemptionPerStore;
         }
 
         if (typeof name !== 'undefined') {
