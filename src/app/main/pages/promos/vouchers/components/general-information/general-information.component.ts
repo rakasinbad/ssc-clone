@@ -281,7 +281,7 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             maxRedemptionPerBuyer: [
-                '',
+                '1',
                 [
                     RxwebValidators.numeric({
                         allowDecimal: false,
@@ -293,6 +293,7 @@ export class VoucherGeneralInformationComponent
                     })
                 ],
             ],
+
             // maxVoucherRedemption: [
             //     '',
             //     [
@@ -302,6 +303,7 @@ export class VoucherGeneralInformationComponent
             //         }),
             //     ],
             // ],
+
             activeStartDate: [
                 { value: '', disabled: true },
                 [
