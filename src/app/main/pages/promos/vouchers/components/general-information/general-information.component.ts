@@ -281,7 +281,7 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             maxRedemptionPerBuyer: [
-                '',
+                '1',
                 [
                     RxwebValidators.numeric({
                         allowDecimal: false,
@@ -300,6 +300,10 @@ export class VoucherGeneralInformationComponent
                         allowDecimal: false,
                         message: 'This field must be numeric.',
                     }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: 'Allowed minimum value is 1'
+                    })
                 ],
             ],
             activeStartDate: [
