@@ -556,6 +556,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._unSubs$.next();
+        this._unSubs$.complete();
 
         // Hide footer action
         this.store.dispatch(UiActions.hideFooterAction());
@@ -581,15 +583,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Reset urban state
         this.store.dispatch(DropdownActions.resetUrbansState());
 
+        // Reset Store Edit
+        this.store.dispatch(StoreActions.resetStoreEdit());
+
         // Reset province state
         // this.store.dispatch(DropdownActions.resetProvinceState());
 
         this.tempInvoiceGroupName = ['-'];
         this.tempCreditLimitAmount = [false];
         this.tempTermOfPayment = [false];
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -1505,6 +1507,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private createCreditLimitForm(): FormGroup {
         return this.formBuilder.group({
             allowCreditLimit: false,
+            id: [''],
+            creditLimitStoreId: [''],
             invoiceGroup: [{ value: '', disabled: true }],
             creditLimitGroup: [{ value: '', disabled: true }],
             creditLimit: [
@@ -2190,6 +2194,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     this.formCreditLimits.push(
                                         this.formBuilder.group({
                                             allowCreditLimit: false,
+                                            id: [''],
+                                            creditLimitStoreId: [''],
                                             invoiceGroup: row.id,
                                             creditLimitGroup: [
                                                 {
@@ -2996,6 +3002,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                             this.formCreditLimits.push(
                                                 this.formBuilder.group({
                                                     allowCreditLimit: true,
+                                                    id: row.id,
                                                     creditLimitStoreId: row.id,
                                                     invoiceGroup: row.invoiceGroupId,
                                                     creditLimitGroup: row.creditLimitGroupId,
@@ -3032,6 +3039,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                             this.formCreditLimits.push(
                                                 this.formBuilder.group({
                                                     allowCreditLimit: false,
+                                                    id: row.id,
                                                     creditLimitStoreId: row.id,
                                                     invoiceGroup: row.invoiceGroupId,
                                                     creditLimitGroup: [
@@ -3058,15 +3066,26 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                             this.handleNotAllowCreditPatch(idx);
                                         }
                                     } else {
-                                        (this.formCreditLimits.at(idx) as FormGroup).addControl(
-                                            'creditLimitStoreId',
-                                            this.formBuilder.control(row.id)
-                                        );
+                                        // (this.formCreditLimits.at(idx) as FormGroup).addControl(
+                                        //     'creditLimitStoreId',
+                                        //     this.formBuilder.control(row.id)
+                                        // );
 
-                                        this.formCreditLimits
-                                            .at(idx)
-                                            .get('invoiceGroup')
-                                            .patchValue(row.invoiceGroupId);
+                                        // (this.formCreditLimits.at(idx) as FormGroup).addControl(
+                                        //     'id',
+                                        //     this.formBuilder.control(row.id)
+                                        // );
+
+                                        // this.formCreditLimits
+                                        //     .at(idx)
+                                        //     .get('invoiceGroup')
+                                        //     .patchValue(row.invoiceGroupId);
+
+                                        this.formCreditLimits.at(idx).patchValue({
+                                            creditLimitStoreId: row.id,
+                                            id: row.id,
+                                            invoiceGroup: row.invoiceGroupId,
+                                        });
 
                                         if (row.allowCreditLimit) {
                                             this.handleAllowCreditPatch(idx, row);
@@ -3136,15 +3155,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             body.storeInfo.payment.creditLimit &&
                             body.storeInfo.payment.creditLimit.length > 0
                                 ? body.storeInfo.payment.creditLimit.map((row) => {
-                                      return {
-                                          allowCreditLimit: row.allowCreditLimit,
-                                          invoiceGroupId: row.invoiceGroup,
-                                          creditLimitGroupId: row.creditLimitGroup,
-                                          creditLimit: row.creditLimit,
-                                          termOfPayment: row.termOfPayment,
-                                      };
-                                  })
-                                : [];
+                                    return {
+                                        id: row.id,
+                                        allowCreditLimit: row.allowCreditLimit,
+                                        invoiceGroupId: row.invoiceGroup,
+                                        creditLimitGroupId: row.creditLimitGroup,
+                                        creditLimit: row.creditLimit,
+                                        termOfPayment: row.termOfPayment,
+                                    };
+                                }) : [];
 
                         const urban = body.storeInfo.address.urban as Urban;
 
@@ -3261,7 +3280,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     typeof allowCredit !== 'boolean'
                                 ) {
                                     delete payload.creditLimit[idx];
-                                    payload.creditLimit[idx] = null;
+                                    // payload.creditLimit[idx] = null;
 
                                     // delete payload.creditLimit[idx].allowCreditLimit;
                                     // delete payload.creditLimit[idx].invoiceGroupId;
@@ -3333,6 +3352,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                           return {
                               allowCreditLimit: row.allowCreditLimit,
                               id: row.creditLimitStoreId,
+                            //   creditLimitStoreId: row.creditLimitStoreId,
                               invoiceGroupId: row.invoiceGroup,
                               creditLimitGroupId: row.creditLimitGroup,
                               creditLimit: row.creditLimit,
@@ -3445,8 +3465,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         (typeof allowCredit === 'boolean' && !allowCredit) ||
                         typeof allowCredit !== 'boolean'
                     ) {
-                        delete payload.creditLimit[idx];
-                        payload.creditLimit[idx] = null;
+                        delete payload.creditLimit[idx].creditLimit;
+                        delete payload.creditLimit[idx].creditLimitGroupId;
+                        delete payload.creditLimit[idx].termOfPayment;
+                        // delete payload.creditLimit[idx];
+                        // payload.creditLimit[idx] = null;
                         // delete payload.creditLimit[idx].invoiceGroupId;
                         // delete payload.creditLimit[idx].creditLimitGroupId;
                         // delete payload.creditLimit[idx].creditLimit;
@@ -3458,7 +3481,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 }
 
-                const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
+                // payload.creditLimit = payload.creditLimit.filter((_, idx) => !disallowCredit.includes(idx));
+
+                const newPCreditLimit = payload.creditLimit.filter((x) => !!x.allowCreditLimit);
 
                 if (newPCreditLimit && !newPCreditLimit.length) {
                     delete payload.creditLimit;
