@@ -25,6 +25,8 @@ export class OrderApiService {
      */
     private readonly _endpoint = '/order-parcels';
 
+    private readonly _listEndpoint = '/oms';
+
     /**
      * Creates an instance of OrderApiService.
      * @param {HttpClient} http
@@ -36,6 +38,8 @@ export class OrderApiService {
     }
 
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
+        const newParam: IQueryParams = {};
+        
         const newArg = supplierId
             ? [
                   {
@@ -45,20 +49,35 @@ export class OrderApiService {
               ]
             : [];
 
-        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+        if (params['listEndpoint']) {
+            this._url = this._$helper.handleApiRouter(this._listEndpoint);
+
+            Object.keys(params).forEach(p => {
+                if (p !== 'listEndpoint') {
+                    newParam[p] = params[p];
+                }
+            });
+        } else {
+            this._url = this._$helper.handleApiRouter(this._endpoint);
+        }
+
+        const newParams = this._$helper.handleParams(this._url, newParam, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
     }
 
     findById(id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.get(`${this._url}/${id}`);
     }
 
     patch(body: any, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch(`${this._url}/${id}`, body);
     }
 
     patchCustom<T>(body: T, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch(`${this._url}/${id}`, body);
     }
 }

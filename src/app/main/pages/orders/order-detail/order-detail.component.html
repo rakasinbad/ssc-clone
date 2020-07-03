@@ -1498,7 +1498,7 @@
                             <table class="info-group-1">
                                 <tr>
                                     <td class="info-title">Gross Original:</td>
-                                    <td>Rp0,00</td>
+                                    <td>{{ ((+(order$ | async)?.parcelNettPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
@@ -1508,49 +1508,28 @@
 
                                 <tr>
                                     <td class="info-title">Promo Original:</td>
-                                    <td>Rp0,00</td>
+                                    <td>{{ ((+(order$ | async)?.parcelPromo || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Voucher Original:</td>
-                                    <td>Rp0,00</td>
+                                    <td>{{ ((+(order$ | async)?.parcelVoucher || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Untaxed Original:</td>
-                                    <td>
-                                        {{
-                                            +(order$ | async)?.parcelGrossPrice > 0
-                                                ? (+(order$ | async)?.parcelGrossPrice
-                                                  | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelGrossPrice
-                                        }}
-                                    </td>
+                                    <td>{{ ((+(order$ | async)?.parcelGrossPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Tax Original:</td>
-                                    <td>
-                                        {{
-                                            +(order$ | async)?.parcelTaxes > 0
-                                                ? (+(order$ | async)?.parcelTaxes
-                                                  | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelTaxes
-                                        }}
-                                    </td>
+                                    <td>{{ ((+(order$ | async)?.parcelTaxes || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tfoot>
                                     <tr>
                                         <td class="info-title">Total Original:</td>
-                                        <td>
-                                            {{
-                                                +(order$ | async)?.parcelNettPrice > 0
-                                                    ? (+(order$ | async)?.parcelNettPrice
-                                                      | price: 'full':'IDR':'narrow':'1.2-2')
-                                                    : +(order$ | async)?.parcelNettPrice
-                                            }}
-                                        </td>
+                                        <td>{{ ((+(order$ | async)?.parcelFinalPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1660,7 +1639,7 @@
                             <table class="info-group-1">
                                 <tr>
                                     <td class="info-title">Gross:</td>
-                                    <td>Rp0,00</td>
+                                    <td>{{ ((+(order$ | async)?.parcelNettPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
@@ -1670,49 +1649,28 @@
 
                                 <tr>
                                     <td class="info-title">Promo:</td>
-                                    <td>Rp0,00</td>
+                                    <td>{{ ((+(order$ | async)?.parcelPromo || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Voucher:</td>
-                                    <td>Rp0,00</td>
+                                    <td>{{ ((+(order$ | async)?.parcelVoucher || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Untaxed:</td>
-                                    <td>
-                                        {{
-                                            +(order$ | async)?.parcelGrossPrice > 0
-                                                ? (+(order$ | async)?.parcelGrossPrice
-                                                  | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelGrossPrice
-                                        }}
-                                    </td>
+                                    <td>{{ ((+(order$ | async)?.parcelGrossPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Tax:</td>
-                                    <td>
-                                        {{
-                                            +(order$ | async)?.parcelTaxes > 0
-                                                ? (+(order$ | async)?.parcelTaxes
-                                                  | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelTaxes
-                                        }}
-                                    </td>
+                                    <td>{{ ((+(order$ | async)?.parcelTaxes || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                 </tr>
 
                                 <tfoot>
                                     <tr>
                                         <td class="info-title">Total:</td>
-                                        <td>
-                                            {{
-                                                +(order$ | async)?.parcelNettPrice > 0
-                                                    ? (+(order$ | async)?.parcelNettPrice
-                                                      | price: 'full':'IDR':'narrow':'1.2-2')
-                                                    : +(order$ | async)?.parcelNettPrice
-                                            }}
-                                        </td>
+                                        <td>{{ ((+(order$ | async)?.parcelFinalPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
                                     </tr>
                                 </tfoot>
                             </table>
