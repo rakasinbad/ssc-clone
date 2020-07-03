@@ -7,6 +7,7 @@ import {
     SecurityContext,
     ViewChild,
     ViewEncapsulation,
+    ChangeDetectorRef,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -162,6 +163,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
@@ -737,6 +739,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.completedOrder = +completedOrder;
                     this.pendingOrder = +pendingOrder;
                     this.canceledOrder = +canceledOrder;
+
+                    this.cdRef.markForCheck();
                 }
             );
     }
