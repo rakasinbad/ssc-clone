@@ -7,6 +7,7 @@ import {
     SecurityContext,
     ViewChild,
     ViewEncapsulation,
+    ChangeDetectorRef,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -52,6 +53,16 @@ import { OrderSelectors } from './store/selectors';
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    allOrder: number;
+    newOrder: number;
+    packedOrder: number;
+    shippedOrder: number;
+    deliveredOrder: number;
+    completedOrder: number;
+    pendingOrder: number;
+    canceledOrder: number;
+    selectedTab: string;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -152,6 +163,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
@@ -219,6 +231,19 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get searchStatus(): string {
         return localStorage.getItem('filter.order') || '';
+    }
+
+    onSelectedTab(index: number): void {
+        switch (index) {
+            case 1: this.selectedTab = 'confirm'; this._onRefreshTable(); break;
+            case 2: this.selectedTab = 'packing'; this._onRefreshTable(); break;
+            case 3: this.selectedTab = 'shipping'; this._onRefreshTable(); break;
+            case 4: this.selectedTab = 'delivered'; this._onRefreshTable(); break;
+            case 5: this.selectedTab = 'done'; this._onRefreshTable(); break;
+            case 6: this.selectedTab = 'pending'; this._onRefreshTable(); break;
+            case 7: this.selectedTab = 'cancel'; this._onRefreshTable(); break;
+            default: this.selectedTab = ''; this._onRefreshTable(); break;
+        }
     }
 
     safeValue(item: any): any {
@@ -348,7 +373,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onRemoveSearchStatus(): void {
-        this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
+        // this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
     }
 
     onRemoveSearchOrder(): void {
@@ -368,21 +393,21 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         switch (lifeCycle) {
             case LifecyclePlatform.AfterViewInit:
                 // Set default first status active
-                this.store.dispatch(
-                    UiActions.setCustomToolbarActive({
-                        payload: 'all-status',
-                    })
-                );
+                // this.store.dispatch(
+                //     UiActions.setCustomToolbarActive({
+                //         payload: 'all-status',
+                //     })
+                // );
 
                 // Register to navigation [FuseNavigation]
-                this.store.dispatch(
-                    UiActions.registerNavigation({
-                        payload: { key: 'customNavigation', navigation: this.statusOrder },
-                    })
-                );
+                // this.store.dispatch(
+                //     UiActions.registerNavigation({
+                //         payload: { key: 'customNavigation', navigation: this.statusOrder },
+                //     })
+                // );
 
                 // Show custom toolbar
-                this.store.dispatch(UiActions.showCustomToolbar());
+                // this.store.dispatch(UiActions.showCustomToolbar());
 
                 this.sort.sortChange
                     .pipe(takeUntil(this._unSubs$))
@@ -475,119 +500,119 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this._initStatusOrder();
 
-                combineLatest([
-                    this.store.select(OrderSelectors.getTotalAllOrder),
-                    this.store.select(OrderSelectors.getTotalNewOrder),
-                    this.store.select(OrderSelectors.getTotalPackedOrder),
-                    this.store.select(OrderSelectors.getTotalShippedOrder),
-                    this.store.select(OrderSelectors.getTotalDeliveredOrder),
-                    this.store.select(OrderSelectors.getTotalCompletedOrder),
-                    this.store.select(OrderSelectors.getTotalPendingOrder),
-                    this.store.select(OrderSelectors.getTotalCanceledOrder),
-                ])
-                    .pipe(takeUntil(this._unSubs$))
-                    .subscribe(
-                        ([
-                            allOrder,
-                            newOrder,
-                            packedOrder,
-                            shippedOrder,
-                            deliveredOrder,
-                            completedOrder,
-                            pendingOrder,
-                            canceledOrder,
-                        ]) => {
-                            if (typeof allOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'all-status',
-                                    { title: `All (${allOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                // combineLatest([
+                //     this.store.select(OrderSelectors.getTotalAllOrder),
+                //     this.store.select(OrderSelectors.getTotalNewOrder),
+                //     this.store.select(OrderSelectors.getTotalPackedOrder),
+                //     this.store.select(OrderSelectors.getTotalShippedOrder),
+                //     this.store.select(OrderSelectors.getTotalDeliveredOrder),
+                //     this.store.select(OrderSelectors.getTotalCompletedOrder),
+                //     this.store.select(OrderSelectors.getTotalPendingOrder),
+                //     this.store.select(OrderSelectors.getTotalCanceledOrder),
+                // ])
+                //     .pipe(takeUntil(this._unSubs$))
+                //     .subscribe(
+                //         ([
+                //             allOrder,
+                //             newOrder,
+                //             packedOrder,
+                //             shippedOrder,
+                //             deliveredOrder,
+                //             completedOrder,
+                //             pendingOrder,
+                //             canceledOrder,
+                //         ]) => {
+                //             if (typeof allOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'all-status',
+                //                     { title: `All (${allOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof newOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'confirm',
-                                    { title: `New Order (${newOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                //             if (typeof newOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'confirm',
+                //                     { title: `New Order (${newOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof packedOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'packing',
-                                    { title: `Packed (${packedOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                //             if (typeof packedOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'packing',
+                //                     { title: `Packed (${packedOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof shippedOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'shipping',
-                                    { title: `Shipped (${shippedOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                //             if (typeof shippedOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'shipping',
+                //                     { title: `Shipped (${shippedOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof deliveredOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'delivered',
-                                    { title: `Delivered (${deliveredOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                //             if (typeof deliveredOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'delivered',
+                //                     { title: `Delivered (${deliveredOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof completedOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'done',
-                                    { title: `Done (${completedOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                //             if (typeof completedOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'done',
+                //                     { title: `Done (${completedOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof pendingOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'pending',
-                                    { title: `Pending (${pendingOrder})` },
-                                    'customNavigation'
-                                );
-                            }
+                //             if (typeof pendingOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'pending',
+                //                     { title: `Pending (${pendingOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
 
-                            if (typeof canceledOrder !== 'undefined') {
-                                this._updateStatus(
-                                    'cancel',
-                                    { title: `Canceled (${canceledOrder})` },
-                                    'customNavigation'
-                                );
-                            }
-                        }
-                    );
+                //             if (typeof canceledOrder !== 'undefined') {
+                //                 this._updateStatus(
+                //                     'cancel',
+                //                     { title: `Canceled (${canceledOrder})` },
+                //                     'customNavigation'
+                //                 );
+                //             }
+                //         }
+                //     );
 
                 this._initTable();
 
-                this.store
-                    .select(UiSelectors.getCustomToolbarActive)
-                    .pipe(
-                        distinctUntilChanged(),
-                        debounceTime(1000),
-                        filter((v) => !!v),
-                        takeUntil(this._unSubs$)
-                    )
-                    .subscribe((v) => {
-                        const currFilter = localStorage.getItem('filter.order');
+                // this.store
+                //     .select(UiSelectors.getCustomToolbarActive)
+                //     .pipe(
+                //         distinctUntilChanged(),
+                //         debounceTime(1000),
+                //         filter((v) => !!v),
+                //         takeUntil(this._unSubs$)
+                //     )
+                //     .subscribe((v) => {
+                //         const currFilter = localStorage.getItem('filter.order');
 
-                        if (v !== 'all-status') {
-                            localStorage.setItem('filter.order', v);
-                            this.filterStatus = v;
-                        } else {
-                            localStorage.removeItem('filter.order');
-                            this.filterStatus = '';
-                        }
+                //         if (v !== 'all-status') {
+                //             localStorage.setItem('filter.order', v);
+                //             this.filterStatus = v;
+                //         } else {
+                //             localStorage.removeItem('filter.order');
+                //             this.filterStatus = '';
+                //         }
 
-                        if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
-                            this.store.dispatch(OrderActions.filterOrder({ payload: v }));
-                        }
-                    });
+                //         if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
+                //             this.store.dispatch(OrderActions.filterOrder({ payload: v }));
+                //         }
+                //     });
 
                 // Filter by search column
                 // this.search.valueChanges
@@ -630,11 +655,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         data['paginate'] = true;
+        data['listEndpoint'] = true;
 
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
-        }
+        // if (this.sort.direction) {
+        //     data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+        //     data['sortBy'] = this.sort.active;
+        // }
 
         const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
 
@@ -654,29 +680,19 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         }
 
-        if (this.filterStatus) {
-            if (
-                this.filterStatus === 'confirm' ||
-                this.filterStatus === 'packing' ||
-                this.filterStatus === 'shipping' ||
-                this.filterStatus === 'delivered' ||
-                this.filterStatus === 'done' ||
-                this.filterStatus === 'pending' ||
-                this.filterStatus === 'cancel'
-            ) {
-                if (data['search'] && data['search'].length > 0) {
-                    data['search'].push({
+        if (this.selectedTab) {
+            if (data['search'] && data['search'].length > 0) {
+                data['search'].push({
+                    fieldName: 'status',
+                    keyword: this.selectedTab,
+                });
+            } else {
+                data['search'] = [
+                    {
                         fieldName: 'status',
-                        keyword: this.filterStatus.replace(/-/g, ' '),
-                    });
-                } else {
-                    data['search'] = [
-                        {
-                            fieldName: 'status',
-                            keyword: this.filterStatus.replace(/-/g, ' '),
-                        },
-                    ];
-                }
+                        keyword: this.selectedTab,
+                    },
+                ];
             }
         }
 
@@ -685,22 +701,59 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
+
+        this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
         this._initTable();
     }
 
     private _initStatusOrder(): void {
         this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+
+        combineLatest([
+            this.store.select(OrderSelectors.getTotalAllOrder),
+            this.store.select(OrderSelectors.getTotalNewOrder),
+            this.store.select(OrderSelectors.getTotalPackedOrder),
+            this.store.select(OrderSelectors.getTotalShippedOrder),
+            this.store.select(OrderSelectors.getTotalDeliveredOrder),
+            this.store.select(OrderSelectors.getTotalCompletedOrder),
+            this.store.select(OrderSelectors.getTotalPendingOrder),
+            this.store.select(OrderSelectors.getTotalCanceledOrder),
+        ])
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(
+                ([
+                    allOrder,
+                    newOrder,
+                    packedOrder,
+                    shippedOrder,
+                    deliveredOrder,
+                    completedOrder,
+                    pendingOrder,
+                    canceledOrder,
+                ]) => {
+                    this.allOrder = +allOrder;
+                    this.newOrder = +newOrder;
+                    this.packedOrder = +packedOrder;
+                    this.shippedOrder = +shippedOrder;
+                    this.deliveredOrder = +deliveredOrder;
+                    this.completedOrder = +completedOrder;
+                    this.pendingOrder = +pendingOrder;
+                    this.canceledOrder = +canceledOrder;
+
+                    this.cdRef.markForCheck();
+                }
+            );
     }
 
     private _updateStatus(id: string, properties: Partial<FuseNavigation>, key?: string): void {
-        this.store.dispatch(
-            UiActions.updateItemNavigation({
-                payload: {
-                    id,
-                    properties,
-                    key,
-                },
-            })
-        );
+        // this.store.dispatch(
+        //     UiActions.updateItemNavigation({
+        //         payload: {
+        //             id,
+        //             properties,
+        //             key,
+        //         },
+        //     })
+        // );
     }
 }
