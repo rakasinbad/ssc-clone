@@ -22,6 +22,7 @@ import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-d
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { SelectionList } from 'app/shared/components/multiple-selection/models';
+import { HashTable } from 'app/shared/models/hashtable.model';
 
 @Component({
     selector: 'select-store-segmentation-clusters',
@@ -52,6 +53,8 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     // Untuk keperluan handle dialog.
     dialog: ApplyDialogService<MultipleSelectionComponent>;
+    // Untuk menampung nilai-nilai yang sudah muncul di available selection.
+    cachedEntities: HashTable<Entity> = {};
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -149,6 +152,8 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
     }
 
     private requestEntity(params: IQueryParams): void {
+        this.toggleLoading(true);
+
         of(null).pipe(
             // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
@@ -176,7 +181,6 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
                 return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
-                        tap(() => this.toggleLoading(true)),
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
                     );
             }),
@@ -188,14 +192,23 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
                     this.rawAvailableEntities$.next(response);
                     this.availableEntities$.next((response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'store-segmentation-groups' })));
                     this.totalEntities$.next((response as Array<Entity>).length);
+
+                    for (const entity of (response as Array<Entity>)) {
+                        this.upsertEntity(entity);
+                    }
                 } else {
                     this.rawAvailableEntities$.next(response.data);
                     this.availableEntities$.next(response.data.map(d => ({ id: d.id, label: d.name, group: 'store-segmentation-groups' })));
                     this.totalEntities$.next(response.total);
+
+                    for (const entity of (response.data as unknown as Array<Entity>)) {
+                        this.upsertEntity(entity);
+                    }
                 }
 
             },
             error: (err) => {
+                this.toggleLoading(false);
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
@@ -220,6 +233,10 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
 
         // Memulai request data store entity.
         this.requestEntity(params);
+    }
+
+    private upsertEntity(entity: Entity): void {
+        this.cachedEntities[String(entity.id)] = entity;
     }
 
     getFormError(form: any): string {
@@ -250,8 +267,8 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
         // Mengirim nilai tersebut melalui subject.
         if (event) {
             const eventIds = event.map(e => e.id);
-            const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            // const rawEntities = this.rawAvailableEntities$.value;
+            this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
         }
     }
 
@@ -260,12 +277,7 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
             paginate: false,
         };
 
-        queryParams['search'] = [
-            {
-                fieldName: 'name',
-                keyword: value
-            }
-        ];
+        queryParams['keyword'] = value;
 
         this.requestEntity(queryParams);
     }

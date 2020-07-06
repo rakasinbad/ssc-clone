@@ -257,6 +257,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 this.cdRef.markForCheck();
             },
             error: (err) => {
+                this.toggleLoading(false);
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
