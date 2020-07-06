@@ -181,8 +181,8 @@ deploy_development:
         - chmod 600 ~/.ssh/id_rsa
         - chmod 600 ~/.ssh/id_rsa.pub
     script:
-#        - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
-        - rm dist/supplier-center/*.map
+        # - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
+        # - rm dist/supplier-center/*.map
         - ssh -i ~/.ssh/id_rsa deploy@10.0.50.30 -o StrictHostKeyChecking=no -t "find /var/www/seller-center-bak -type f -mmin +20 -delete"
         - ssh -i ~/.ssh/id_rsa deploy@10.0.50.30 -o StrictHostKeyChecking=no -t "rsync -avz /var/www/seller-dev.sinbad.web.id/ /var/www/seller-center-bak"
         - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.50.30:/var/www/seller-dev.sinbad.web.id
