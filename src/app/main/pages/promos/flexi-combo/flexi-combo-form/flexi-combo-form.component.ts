@@ -691,7 +691,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreType').clearValidators();
             this.form.get('chosenStoreGroup').clearValidators();
             this.form.get('chosenStoreChannel').clearValidators();
-            this.form.get('chosenCluster').clearValidators();
+            this.form.get('chosenStoreCluster').clearValidators();
         } else if (ev.value === SegmentationBase.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
 
@@ -751,7 +751,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.form.get('chosenStoreType').updateValueAndValidity();
         this.form.get('chosenStoreGroup').updateValueAndValidity();
         this.form.get('chosenStoreChannel').updateValueAndValidity();
-        this.form.get('chosenCluster').updateValueAndValidity();
+        this.form.get('chosenStoreCluster').updateValueAndValidity();
     }
 
     /**
