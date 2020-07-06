@@ -192,7 +192,7 @@
                     <mat-cell *matCellDef="let row">
                         <ng-container *ngIf="row?.status">
                             <mat-icon
-                                class="active-icon s-16"
+                                class="active-icon s-24"
                                 [matTooltip]="row?.status | titlecase"
                                 svgIcon="sinbad-check-active"
                                 *ngIf="row?.status === 'active'"
@@ -200,7 +200,7 @@
                             </mat-icon>
 
                             <mat-icon
-                                class="active-icon s-16"
+                                class="active-icon s-24"
                                 [matTooltip]="row?.status | titlecase"
                                 svgIcon="sinbad-check-inactive"
                                 *ngIf="row?.status === 'inactive'"

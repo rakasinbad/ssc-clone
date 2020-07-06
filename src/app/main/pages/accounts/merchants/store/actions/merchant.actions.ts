@@ -568,6 +568,8 @@ export const resetStoreEmployee = createAction('[Store Employee Page] Reset Stor
 
 export const resetGoPage = createAction('[Accounts Page] Reset Go Page State');
 
+export const resetStoreEdit = createAction('[Accounts Page] Reset Store Edit');
+
 // -----------------------------------------------------------------------------------------------------
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
