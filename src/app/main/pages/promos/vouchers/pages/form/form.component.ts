@@ -252,6 +252,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             startDate: ((generalInformationValue.activeStartDate as unknown) as moment.Moment).toISOString(),
             endDate: ((generalInformationValue.activeEndDate as unknown) as moment.Moment).toISOString(),
             description: generalInformationValue.description,
+            shortDescription: generalInformationValue.shortDescription,
             // CONDITION SETTINGS
             base: eligibleProductValue.base === 'sku'
                     ? 'sku'

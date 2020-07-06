@@ -239,6 +239,7 @@ export class VoucherGeneralInformationComponent
                     activeStartDate: moment(voucher.startDate).toDate(),
                     activeEndDate: moment(voucher.endDate).toDate(),
                     description: voucher.description,
+                    shortDescription: voucher.shortDescription,
                 });
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
@@ -320,6 +321,7 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             description: [''],
+            shortDescription: [''],
         });
     }
 

@@ -8,6 +8,7 @@ interface IVoucherGeneralInformation {
     activeStartDate: string;
     activeEndDate: string;
     description: string;
+    shortDescription: string;
 }
 
 export class VoucherGeneralInformation implements IVoucherGeneralInformation {
@@ -20,6 +21,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     activeStartDate: string;
     activeEndDate: string;
     description: string;
+    shortDescription: string;
 
     constructor(data: IVoucherGeneralInformation) {
         const {
@@ -30,6 +32,8 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
             maxRedemptionPerBuyer,
             activeStartDate,
             activeEndDate,
+            description,
+            shortDescription
         } = data;
 
         this.id = id;
@@ -39,5 +43,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.maxRedemptionPerBuyer = maxRedemptionPerBuyer;
         this.activeStartDate = activeStartDate;
         this.activeEndDate = activeEndDate;
+        this.description = description;
+        this.shortDescription = shortDescription;
     }
 }
