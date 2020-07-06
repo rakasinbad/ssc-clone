@@ -676,6 +676,29 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._unSubs$.next();
+        this._unSubs$.complete();
+
+        this.reset$.next(null);
+        this.reset$.complete();
+
+        this.isCheckingOwnerPhone$.next(false);
+        this.isCheckingOwnerPhone$.complete();
+
+        this.uploadOwnerTaxPhoto$.next(null);
+        this.uploadIdentityPhoto$.next(null);
+        this.uploadIdentityPhotoSelfie$.next(null);
+        this.uploadStoreTaxPhoto$.next(null);
+        this.uploadStorePhoto$.next(null);
+
+        this.uploadOwnerTaxPhoto$.complete();
+        this.uploadIdentityPhoto$.complete();
+        this.uploadIdentityPhotoSelfie$.complete();
+        this.uploadStoreTaxPhoto$.complete();
+        this.uploadStorePhoto$.complete();
+
+        // Reset selected Supplier Store
+        this.store.dispatch(StoreActions.deselectSupplierStore());
 
         // Hide footer action
         this.store.dispatch(UiActions.hideFooterAction());
@@ -707,26 +730,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tempInvoiceGroupName = ['-'];
         this.tempCreditLimitAmount = [false];
         this.tempTermOfPayment = [false];
-        this.isCheckingOwnerPhone$.next(false);
-        this.isCheckingOwnerPhone$.complete();
-
-        this.reset$.next(null);
-        this.reset$.complete();
-
-        this.uploadOwnerTaxPhoto$.next(null);
-        this.uploadIdentityPhoto$.next(null);
-        this.uploadIdentityPhotoSelfie$.next(null);
-        this.uploadStoreTaxPhoto$.next(null);
-        this.uploadStorePhoto$.next(null);
-
-        this.uploadOwnerTaxPhoto$.complete();
-        this.uploadIdentityPhoto$.complete();
-        this.uploadIdentityPhotoSelfie$.complete();
-        this.uploadStoreTaxPhoto$.complete();
-        this.uploadStorePhoto$.complete();
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -1775,8 +1778,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private createCreditLimitForm(): FormGroup {
         return this.formBuilder.group({
             allowCreditLimit: false,
+            id: [''],
+            creditLimitStoreId: [''],
             invoiceGroup: [{ value: '', disabled: true }],
-            creditLimitGroup: [{ value: '', disabled: true }],
             creditLimit: [
                 { value: '', disabled: true },
                 [
@@ -1787,6 +1791,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                 ],
             ],
+            creditLimitGroup: [{ value: '', disabled: true }],
             termOfPayment: [
                 { value: '', disabled: true },
                 [
@@ -2605,10 +2610,13 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         .pipe(takeUntil(this._unSubs$))
         .subscribe(([_, invoiceGroups, data]) => {
             if (this.pageType === 'new') {
-                this.restoreInvoiceGroups(invoiceGroups);
+                if (invoiceGroups) {
+                    this.restoreInvoiceGroups(invoiceGroups);
+                }
             } else if (this.pageType === 'edit') {
-                if (data) {
+                if (data && invoiceGroups) {
                     this.disableStoreInformationForm();
+                    this.restoreInvoiceGroups(invoiceGroups);
                     this.restoreFormData(data);
                 }
             }
@@ -2634,6 +2642,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.formCreditLimits.push(
                             this.formBuilder.group({
                                 allowCreditLimit: false,
+                                id: [''],
+                                creditLimitStoreId: [''],
                                 invoiceGroup: row.id,
                                 creditLimitGroup: [
                                     {
@@ -2747,94 +2757,130 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (data['store']['creditLimitStores'] && data['store']['creditLimitStores'].length > 0) {
             const creditLimitStores = data['store']['creditLimitStores'] as Array<CreditLimitStore>;
+            const availableCreditLimitStores: Array<any> = this.formCreditLimits.getRawValue();
 
             for (const [idx, row] of creditLimitStores.entries()) {
                 if (typeof row.allowCreditLimit === 'boolean') {
-                    this.tempInvoiceGroupName[idx] = !row.invoiceGroup ? '-' : row.invoiceGroup.name;
+                    const foundIdx = availableCreditLimitStores.findIndex(cl => cl.invoiceGroup === row.invoiceGroupId);
 
-                    if (idx > 0) {
-                        if (row.allowCreditLimit) {
-                            this.formCreditLimits.push(
-                                this.formBuilder.group({
-                                    allowCreditLimit: true,
-                                    creditLimitStoreId: row.id,
-                                    invoiceGroup: row.invoiceGroupId,
-                                    creditLimitGroup: row.creditLimitGroupId,
-                                    creditLimit: [
-                                        '',
-                                        // [
-                                        //     RxwebValidators.numeric({
-                                        //         acceptValue:
-                                        //             NumericValueType.PositiveNumber,
-                                        //         allowDecimal: true,
-                                        //         message: this._$errorMessage.getErrorMessageNonState(
-                                        //             'default',
-                                        //             'pattern'
-                                        //         )
-                                        //     })
-                                        // ]
-                                    ],
-                                    termOfPayment: [
-                                        row.termOfPayment,
-                                        [
-                                            RxwebValidators.digit({
-                                                message: this._$errorMessage.getErrorMessageNonState(
-                                                    'default',
-                                                    'numeric'
-                                                ),
-                                            }),
-                                        ],
-                                    ],
-                                })
-                            );
+                    if (foundIdx >= 0) {
+                        this.tempInvoiceGroupName[foundIdx] = !row.invoiceGroup ? '-' : row.invoiceGroup.name;
 
-                            this.handleAllowCreditPatch(idx, row);
+                        const allowCreditLimit = !!row.allowCreditLimit;
+
+                        this.formCreditLimits.get(String(foundIdx)).patchValue({
+                            allowCreditLimit,
+                            id: row.id,
+                            creditLimitStoreId: row.id,
+                            invoiceGroup: row.invoiceGroupId,
+                            creditLimit: '',
+                            creditLimitGroup: allowCreditLimit ? row.creditLimitGroupId : '',
+                            termOfPayment: allowCreditLimit ? row.termOfPayment : '',
+                        });
+
+                        if (allowCreditLimit) {
+                            this.formCreditLimits.get([String(foundIdx), 'termOfPayment']).setValidators([
+                                RxwebValidators.digit({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'numeric'
+                                    ),
+                                }),
+                            ]);
+
+                            this.handleAllowCreditPatch(foundIdx, row);
                         } else {
-                            this.formCreditLimits.push(
-                                this.formBuilder.group({
-                                    allowCreditLimit: false,
-                                    creditLimitStoreId: row.id,
-                                    invoiceGroup: row.invoiceGroupId,
-                                    creditLimitGroup: [
-                                        {
-                                            value: '',
-                                            disabled: true,
-                                        },
-                                    ],
-                                    creditLimit: [
-                                        {
-                                            value: '',
-                                            disabled: true,
-                                        },
-                                    ],
-                                    termOfPayment: [
-                                        {
-                                            value: '',
-                                            disabled: true,
-                                        },
-                                    ],
-                                })
-                            );
+                            this.formCreditLimits.get([String(foundIdx), 'creditLimit']).disable();
+                            this.formCreditLimits.get([String(foundIdx), 'creditLimitGroup']).disable();
+                            this.formCreditLimits.get([String(foundIdx), 'termOfPayment']).disable();
 
-                            this.handleNotAllowCreditPatch(idx);
-                        }
-                    } else {
-                        (this.formCreditLimits.at(idx) as FormGroup).addControl(
-                            'creditLimitStoreId',
-                            this.formBuilder.control(row.id)
-                        );
-
-                        this.formCreditLimits
-                            .at(idx)
-                            .get('invoiceGroup')
-                            .patchValue(row.invoiceGroupId);
-
-                        if (row.allowCreditLimit) {
-                            this.handleAllowCreditPatch(idx, row);
-                        } else {
-                            this.handleNotAllowCreditPatch(idx);
+                            this.handleNotAllowCreditPatch(foundIdx);
                         }
                     }
+
+                    // if (idx > 0) {
+                    //     if (row.allowCreditLimit) {
+                    //         this.formCreditLimits.push(
+                    //             this.formBuilder.group({
+                    //                 allowCreditLimit: true,
+                    //                 creditLimitStoreId: row.id,
+                    //                 invoiceGroup: row.invoiceGroupId,
+                    //                 creditLimitGroup: row.creditLimitGroupId,
+                    //                 creditLimit: [
+                    //                     '',
+                    //                     // [
+                    //                     //     RxwebValidators.numeric({
+                    //                     //         acceptValue:
+                    //                     //             NumericValueType.PositiveNumber,
+                    //                     //         allowDecimal: true,
+                    //                     //         message: this._$errorMessage.getErrorMessageNonState(
+                    //                     //             'default',
+                    //                     //             'pattern'
+                    //                     //         )
+                    //                     //     })
+                    //                     // ]
+                    //                 ],
+                    //                 termOfPayment: [
+                    //                     row.termOfPayment,
+                    //                     [
+                    //                         RxwebValidators.digit({
+                    //                             message: this._$errorMessage.getErrorMessageNonState(
+                    //                                 'default',
+                    //                                 'numeric'
+                    //                             ),
+                    //                         }),
+                    //                     ],
+                    //                 ],
+                    //             })
+                    //         );
+
+                    //         this.handleAllowCreditPatch(idx, row);
+                    //     } else {
+                    //         this.formCreditLimits.push(
+                    //             this.formBuilder.group({
+                    //                 allowCreditLimit: false,
+                    //                 creditLimitStoreId: row.id,
+                    //                 invoiceGroup: row.invoiceGroupId,
+                    //                 creditLimitGroup: [
+                    //                     {
+                    //                         value: '',
+                    //                         disabled: true,
+                    //                     },
+                    //                 ],
+                    //                 creditLimit: [
+                    //                     {
+                    //                         value: '',
+                    //                         disabled: true,
+                    //                     },
+                    //                 ],
+                    //                 termOfPayment: [
+                    //                     {
+                    //                         value: '',
+                    //                         disabled: true,
+                    //                     },
+                    //                 ],
+                    //             })
+                    //         );
+
+                    //         this.handleNotAllowCreditPatch(idx);
+                    //     }
+                    // } else {
+                    //     (this.formCreditLimits.at(idx) as FormGroup).addControl(
+                    //         'creditLimitStoreId',
+                    //         this.formBuilder.control(row.id)
+                    //     );
+
+                    //     this.formCreditLimits
+                    //         .at(idx)
+                    //         .get('invoiceGroup')
+                    //         .patchValue(row.invoiceGroupId);
+
+                    //     if (row.allowCreditLimit) {
+                    //         this.handleAllowCreditPatch(idx, row);
+                    //     } else {
+                    //         this.handleNotAllowCreditPatch(idx);
+                    //     }
+                    // }
                 }
             }
         }
