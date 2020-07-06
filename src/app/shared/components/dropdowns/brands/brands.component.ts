@@ -23,6 +23,7 @@ import { SelectionList } from 'app/shared/components/multiple-selection/models';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { HashTable } from 'app/shared/models/hashtable.model';
 
 @Component({
     selector: 'select-brands',
@@ -59,6 +60,8 @@ export class BrandsDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // Untuk menyimpan search.
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
+    // Untuk menampung nilai-nilai yang sudah muncul di available selection.
+    cachedEntities: HashTable<Entity> = {};
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -213,9 +216,17 @@ export class BrandsDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
                     addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'brands' }));
+
+                    for (const entity of (response as Array<Entity>)) {
+                        this.upsertEntity(entity);
+                    }
                 } else {
                     addedRawAvailableEntities = response.data;
                     addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'brands' }));
+
+                    for (const entity of (response.data as Array<Entity>)) {
+                        this.upsertEntity(entity);
+                    }
                 }
 
                 // Mengambil nilai dari subject sebelumnya.
@@ -242,6 +253,7 @@ export class BrandsDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 this.cdRef.markForCheck();
             },
             error: (err) => {
+                this.toggleLoading(false);
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
@@ -273,6 +285,10 @@ export class BrandsDropdownComponent implements OnInit, OnChanges, AfterViewInit
         this.requestEntity(params);
     }
 
+    private upsertEntity(entity: Entity): void {
+        this.cachedEntities[String(entity.id)] = entity;
+    }
+
     getFormError(form: any): string {
         // console.log('get error');
         return this.errorMessage$.getFormError(form);
@@ -301,8 +317,8 @@ export class BrandsDropdownComponent implements OnInit, OnChanges, AfterViewInit
         // Mengirim nilai tersebut melalui subject.
         if (event) {
             const eventIds = event.map(e => e.id);
-            const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            // const rawEntities = this.rawAvailableEntities$.value;
+            this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
         }
     }
 
