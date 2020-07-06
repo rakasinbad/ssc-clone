@@ -3271,38 +3271,55 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         //     delete payload.hierarchy;
                         // }
 
-                        if (payload.creditLimit && payload.creditLimit.length > 0) {
-                            for (const [idx, row] of payload.creditLimit.entries()) {
-                                const allowCredit = payload.creditLimit[idx].allowCreditLimit;
+                        // if (payload.creditLimit && payload.creditLimit.length > 0) {
+                        //     for (const [idx, row] of payload.creditLimit.entries()) {
+                        //         const allowCredit = payload.creditLimit[idx].allowCreditLimit;
 
-                                if (
-                                    (typeof allowCredit === 'boolean' && !allowCredit) ||
-                                    typeof allowCredit !== 'boolean'
-                                ) {
-                                    delete payload.creditLimit[idx];
-                                    // payload.creditLimit[idx] = null;
+                        //         if (
+                        //             (typeof allowCredit === 'boolean' && !allowCredit) ||
+                        //             typeof allowCredit !== 'boolean'
+                        //         ) {
+                        //             delete payload.creditLimit[idx];
+                        //             // payload.creditLimit[idx] = null;
 
-                                    // delete payload.creditLimit[idx].allowCreditLimit;
-                                    // delete payload.creditLimit[idx].invoiceGroupId;
-                                    // delete payload.creditLimit[idx].creditLimitGroupId;
-                                    // delete payload.creditLimit[idx].creditLimit;
-                                    // delete payload.creditLimit[idx].termOfPayment;
+                        //             // delete payload.creditLimit[idx].allowCreditLimit;
+                        //             // delete payload.creditLimit[idx].invoiceGroupId;
+                        //             // delete payload.creditLimit[idx].creditLimitGroupId;
+                        //             // delete payload.creditLimit[idx].creditLimit;
+                        //             // delete payload.creditLimit[idx].termOfPayment;
 
-                                    // payload.creditLimit[idx].creditLimitGroupId = null;
-                                    // payload.creditLimit[idx].creditLimit = 0;
-                                    // payload.creditLimit[idx].termOfPayment = 0;
-                                }
+                        //             // payload.creditLimit[idx].creditLimitGroupId = null;
+                        //             // payload.creditLimit[idx].creditLimit = 0;
+                        //             // payload.creditLimit[idx].termOfPayment = 0;
+                        //         }
+                        //     }
+
+                        //     const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
+
+                        //     if (newPCreditLimit && !newPCreditLimit.length) {
+                        //         delete payload.creditLimit;
+                        //     }
+                        // } else {
+                        //     if (payload.creditLimit && !payload.creditLimit.length) {
+                        //         delete payload.creditLimit;
+                        //     }
+                        // }
+
+                        for (const [idx, _] of payload.creditLimit.entries()) {
+                            const id = payload.creditLimit[idx].id;
+                            const allowCredit = payload.creditLimit[idx].allowCreditLimit;
+            
+                            if (!allowCredit) {
+                                delete payload.creditLimit[idx].creditLimit;
+                                delete payload.creditLimit[idx].creditLimitGroupId;
+                                delete payload.creditLimit[idx].termOfPayment;
                             }
 
-                            const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
+                            if (!id) {
+                                delete payload.creditLimit[idx].id;
+                            }
 
-                            if (newPCreditLimit && !newPCreditLimit.length) {
-                                delete payload.creditLimit;
-                            }
-                        } else {
-                            if (payload.creditLimit && !payload.creditLimit.length) {
-                                delete payload.creditLimit;
-                            }
+                            payload.creditLimit[idx].creditLimit = Number(payload.creditLimit[idx].creditLimit).toFixed(2);
                         }
 
                         this.store.dispatch(StoreActions.createStoreRequest({ payload }));
@@ -3349,17 +3366,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             const newCreditLimit =
                 body.storeInfo.payment.creditLimit && body.storeInfo.payment.creditLimit.length > 0
                     ? body.storeInfo.payment.creditLimit.map((row) => {
-                          return {
-                              allowCreditLimit: row.allowCreditLimit,
-                              id: row.creditLimitStoreId,
-                            //   creditLimitStoreId: row.creditLimitStoreId,
-                              invoiceGroupId: row.invoiceGroup,
-                              creditLimitGroupId: row.creditLimitGroup,
-                              creditLimit: row.creditLimit,
-                              termOfPayment: row.termOfPayment,
-                          };
-                      })
-                    : [];
+                        return {
+                            allowCreditLimit: row.allowCreditLimit,
+                            id: row.creditLimitStoreId,
+                            // creditLimitStoreId: row.creditLimitStoreId,
+                            invoiceGroupId: row.invoiceGroup,
+                            creditLimitGroupId: row.creditLimitGroup,
+                            creditLimit: row.creditLimit,
+                            termOfPayment: row.termOfPayment,
+                        };
+                    }) : [];
 
             const urban = body.storeInfo.address.urban as Urban;
 
@@ -3457,41 +3473,50 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             //     delete payload.hierarchy;
             // }
 
-            if (payload.creditLimit && payload.creditLimit.length > 0) {
-                for (const [idx, row] of payload.creditLimit.entries()) {
-                    const allowCredit = payload.creditLimit[idx].allowCreditLimit;
+            // if (payload.creditLimit && payload.creditLimit.length > 0) {
+            //     for (const [idx, row] of payload.creditLimit.entries()) {
+            //         const allowCredit = payload.creditLimit[idx].allowCreditLimit;
 
-                    if (
-                        (typeof allowCredit === 'boolean' && !allowCredit) ||
-                        typeof allowCredit !== 'boolean'
-                    ) {
-                        delete payload.creditLimit[idx].creditLimit;
-                        delete payload.creditLimit[idx].creditLimitGroupId;
-                        delete payload.creditLimit[idx].termOfPayment;
-                        // delete payload.creditLimit[idx];
-                        // payload.creditLimit[idx] = null;
-                        // delete payload.creditLimit[idx].invoiceGroupId;
-                        // delete payload.creditLimit[idx].creditLimitGroupId;
-                        // delete payload.creditLimit[idx].creditLimit;
-                        // delete payload.creditLimit[idx].termOfPayment;
+            //         if (!allowCredit) {
+            //             delete payload.creditLimit[idx].creditLimit;
+            //             delete payload.creditLimit[idx].creditLimitGroupId;
+            //             delete payload.creditLimit[idx].termOfPayment;
+            //             // delete payload.creditLimit[idx];
+            //             // payload.creditLimit[idx] = null;
+            //             // delete payload.creditLimit[idx].invoiceGroupId;
+            //             // delete payload.creditLimit[idx].creditLimitGroupId;
+            //             // delete payload.creditLimit[idx].creditLimit;
+            //             // delete payload.creditLimit[idx].termOfPayment;
 
-                        // payload.creditLimit[idx].creditLimitGroupId = null;
-                        // payload.creditLimit[idx].creditLimit = 0;
-                        // payload.creditLimit[idx].termOfPayment = 0;
-                    }
+            //             // payload.creditLimit[idx].creditLimitGroupId = null;
+            //             // payload.creditLimit[idx].creditLimit = 0;
+            //             // payload.creditLimit[idx].termOfPayment = 0;
+            //         }
+            //     }
+
+            //     // payload.creditLimit = payload.creditLimit.filter((_, idx) => !disallowCredit.includes(idx));
+
+            //     const newPCreditLimit = payload.creditLimit.filter((x) => !!x.allowCreditLimit);
+
+            //     if (newPCreditLimit && !newPCreditLimit.length) {
+            //         delete payload.creditLimit;
+            //     }
+            // } else {
+            //     if (payload.creditLimit && !payload.creditLimit.length) {
+            //         delete payload.creditLimit;
+            //     }
+            // }
+
+            for (const [idx, _] of payload.creditLimit.entries()) {
+                const allowCredit = payload.creditLimit[idx].allowCreditLimit;
+
+                if (!allowCredit) {
+                    delete payload.creditLimit[idx].creditLimit;
+                    delete payload.creditLimit[idx].creditLimitGroupId;
+                    delete payload.creditLimit[idx].termOfPayment;
                 }
 
-                // payload.creditLimit = payload.creditLimit.filter((_, idx) => !disallowCredit.includes(idx));
-
-                const newPCreditLimit = payload.creditLimit.filter((x) => !!x.allowCreditLimit);
-
-                if (newPCreditLimit && !newPCreditLimit.length) {
-                    delete payload.creditLimit;
-                }
-            } else {
-                if (payload.creditLimit && !payload.creditLimit.length) {
-                    delete payload.creditLimit;
-                }
+                payload.creditLimit[idx].creditLimit = Number(payload.creditLimit[idx].creditLimit).toFixed(2);
             }
 
             this.store.dispatch(
