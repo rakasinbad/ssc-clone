@@ -24,6 +24,7 @@ import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { HashTable } from 'app/shared/models/hashtable.model';
 
 @Component({
     selector: 'select-warehouse-catalogues',
@@ -54,6 +55,8 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     // Untuk keperluan handle dialog.
     dialog: ApplyDialogService<MultipleSelectionComponent>;
+    // Untuk menampung nilai-nilai yang sudah muncul di available selection.
+    cachedEntities: HashTable<Entity> = {};
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -160,6 +163,8 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
     }
 
     private requestEntity(params: IQueryParams): void {
+        this.toggleLoading(true);
+
         of(null).pipe(
             // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
@@ -186,7 +191,6 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
                 return this.entityApi$
                     .find<IPaginatedResponse<WarehouseCatalogue>>(newQuery)
                     .pipe(
-                        tap(() => this.toggleLoading(true)),
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
             }),
@@ -200,16 +204,25 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
                         ({ id: d.warehouseId, label: d.warehouse.name, group: 'warehouse-catalogues' }))
                     );
                     this.totalEntities$.next((response as Array<WarehouseCatalogue>).length);
+
+                    for (const entity of (response as Array<WarehouseCatalogue>)) {
+                        this.upsertEntity(entity);
+                    }
                 } else {
                     this.rawAvailableEntities$.next(response.data.map(d => (d.warehouse as unknown as Entity)));
                     this.availableEntities$.next(response.data.map(d =>
                         ({ id: d.warehouseId, label: d.warehouse.name, group: 'warehouse-catalogues' }))
                     );
                     this.totalEntities$.next(response.total);
+
+                    for (const entity of (response.data as unknown as Array<WarehouseCatalogue>)) {
+                        this.upsertEntity(entity);
+                    }
                 }
 
             },
             error: (err) => {
+                this.toggleLoading(false);
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
@@ -234,6 +247,10 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
 
         // Memulai request data store entity.
         this.requestEntity(params);
+    }
+
+    private upsertEntity(entity: WarehouseCatalogue): void {
+        this.cachedEntities[String(entity.warehouseId)] = entity as unknown as Entity;
     }
 
     getFormError(form: any): string {
@@ -264,8 +281,8 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
         // Mengirim nilai tersebut melalui subject.
         if (event) {
             const eventIds = event.map(e => e.id);
-            const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            // const rawEntities = this.rawAvailableEntities$.value;
+            this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
         }
     }
 
@@ -274,12 +291,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
             paginate: false,
         };
 
-        queryParams['search'] = [
-            {
-                fieldName: 'name',
-                keyword: value
-            }
-        ];
+        queryParams['keyword'] = value;
 
         this.requestEntity(queryParams);
     }

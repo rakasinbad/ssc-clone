@@ -22,6 +22,7 @@ import { MultipleSelectionComponent } from 'app/shared/components/multiple-selec
 import { SelectionList } from 'app/shared/components/multiple-selection/models';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
+import { HashTable } from 'app/shared/models/hashtable.model';
 
 @Component({
     selector: 'select-store-segmentation',
@@ -58,6 +59,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     // Untuk menyimpan search.
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
+    // Untuk menampung nilai-nilai yang sudah muncul di available selection.
+    cachedEntities: HashTable<Entity> = {};
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -222,10 +225,18 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
+                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+
+                    for (const entity of (response as Array<Entity>)) {
+                        this.upsertEntity(entity);
+                    }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
+                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+
+                    for (const entity of (response.data as Array<Entity>)) {
+                        this.upsertEntity(entity);
+                    }
                 }
 
                 // Mengambil nilai dari subject sebelumnya.
@@ -252,6 +263,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 this.cdRef.markForCheck();
             },
             error: (err) => {
+                this.toggleLoading(false);
                 HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
@@ -281,6 +293,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
         // Memulai request data store entity.
         this.requestEntity(params);
+    }
+
+    private upsertEntity(entity: Entity): void {
+        this.cachedEntities[String(entity.id)] = entity;
     }
 
     getFormError(form: any): string {
