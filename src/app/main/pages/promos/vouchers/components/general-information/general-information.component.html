@@ -347,6 +347,39 @@
                 </span>
             </div>
             <!-- / DESCRIPTION -->
+
+            <!-- SHORT DESCRIPTION -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="start"
+                    [fxFlex]="labelLength"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('shortDescription'))"
+                    [class.mt-20]="!isViewMode()"
+                >
+                    Short Description
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <textarea
+                        matInput
+                        rows="10"
+                        name="shortDescription"
+                        formControlName="shortDescription"
+                    ></textarea>
+                    <mat-error *ngIf="hasError(form.get('shortDescription'))">
+                        {{ getFormError(form.get('shortDescription')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('shortDescription').value || '-' }}
+                </span>
+            </div>
+            <!-- / SHORT DESCRIPTION -->
         </form>
     </div>
 </div>

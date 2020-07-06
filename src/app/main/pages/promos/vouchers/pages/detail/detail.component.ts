@@ -181,6 +181,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     activeStartDate,
                     activeEndDate,
                     description,
+                    shortDescription,
                     // imageSuggestion,
                     // isAllowCombineWithVoucher,
                     // isFirstBuy,
@@ -197,6 +198,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     activeStartDate,
                     activeEndDate,
                     description,
+                    shortDescription,
                     // imageSuggestion,
                     // isAllowCombineWithVoucher,
                     // isFirstBuy,
@@ -330,6 +332,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
             startDate: ((formValue.activeStartDate as unknown) as moment.Moment).toISOString(),
             endDate: ((formValue.activeEndDate as unknown) as moment.Moment).toISOString(),
             description: formValue.description,
+            shortDescription: formValue.shortDescription,
         };
 
         this.VoucherStore.dispatch(
