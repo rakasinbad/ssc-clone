@@ -10,7 +10,7 @@ import {
     TemplateRef
 } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-import { MatPaginator, MatSort, PageEvent, MatCheckboxChange } from '@angular/material';
+import { MatPaginator, MatSort, PageEvent, MatCheckboxChange, MatCheckbox } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -42,6 +42,7 @@ import { SelectionModel, SelectionChange } from '@angular/cdk/collections';
 
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { HashTable2 } from 'app/shared/models/hashtable2.model';
 
 @Component({
     selector: 'app-merchants',
@@ -86,14 +87,25 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             ],
             onActionSelected: action => {
                 if (action.id === 'verify') {
-                    this.onVerifyStores();
+                    if (this.selected.length === 1) {
+                        this.onUpdateApprovalStatus(this.selected.toArray()[0], 'verified');
+                    } else if (this.selected.length > 1) {
+                        this.onVerifyStores();
+                    }
                 } else if (action.id === 'resend') {
-                    this.onResendStores();
+                    if (this.selected.length === 1) {
+                        this.onResendStore(this.selected.toArray()[0]);
+                    } else if (this.selected.length > 1) {
+                        this.onResendStores();
+                    }
                 } else if (action.id === 'reject') {
-                    this.onRejectStores();
+                    if (this.selected.length === 1) {
+                        this.onRejectStore(this.selected.toArray()[0]);
+                    } else if (this.selected.length > 1) {
+                        this.onRejectStores();
+                    }
                 } else if (action.id === 'reset-selection') {
-                    this.selection.clear();
-                    this.selectedIds = [];
+                    this.selected.clear();
                 }
             },
             show: false
@@ -202,6 +214,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         type: ButtonDesignType.MAT_STROKED_BUTTON
     };
 
+    // Untuk keperluan checkbox.
+    selected: HashTable2<SupplierStore> = new HashTable2([], 'id');
+
     // tslint:disable-next-line: no-inferrable-types
     storeStatus: string = '';
     totalStores$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
@@ -211,8 +226,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     totalPending$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
     totalUpdating$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
 
+    dataSource: Array<SupplierStore> = [];
     dataSource$: Observable<Array<SupplierStore>>;
     selectedRowIndex$: Observable<string>;
+    // tslint:disable-next-line: no-inferrable-types
+    totalDataSource: number = 0;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -225,6 +243,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('reject', { static: false }) reject: TemplateRef<any>;
     @ViewChild('resendStore', { static: false }) resendStore: TemplateRef<any>;
     @ViewChild('approveStores', { static: false }) approveStores: TemplateRef<any>;
+    @ViewChild('headCheckbox', { static: false, read: MatCheckbox }) headCheckbox: MatCheckbox;
 
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
@@ -407,7 +426,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this.dialogStoreType = this.applyDialogFactory$.open(
                     {
-                        title: `Mass Reject (${this.selection.selected.length} ${this.selection.selected.length === 1 ? 'store' : 'stores'})`,
+                        title: `Mass Reject (${this.selected.length} ${this.selected.length === 1 ? 'store' : 'stores'})`,
                         template: this.reject,
                         isApplyEnabled: true,
                     },
@@ -430,7 +449,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                             // Menyiapkan payload-nya.
                             const payload = {
                                 approvalStatus: 'rejected',
-                                supplierStores: this.selection.selected.map(selected => ({ supplierStoreId: selected.id })),
+                                supplierStores: this.selected.toArray().map(selected => ({ supplierStoreId: selected.id })),
                                 rejection: {
                                     reasons: formValue.reason,
                                     rejectedField: {
@@ -569,7 +588,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                             // Menyiapkan payload-nya.
                             const payload = {
                                 approvalStatus: 'verified',
-                                supplierStores: this.selection.selected.map(selected => ({ supplierStoreId: selected.id })),
+                                supplierStores: this.selected.toArray().map(selected => ({ supplierStoreId: selected.id })),
                             };
 
                             this.store.dispatch(StoreActions.updateStoreRequest({
@@ -621,7 +640,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         
                         if (value === 'apply') {
                             this.store.dispatch(StoreActions.resendStoresRequest({
-                                payload: this.selection.selected
+                                payload: this.selected.toArray()
                             }));
                         }
         
@@ -778,9 +797,137 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     //     return numSelected === numRows;
     // }
 
+    onAllRowsSelected(): void {
+        HelperService.debug('onAllRowsSelected', { dataSource: this.dataSource, totalDataSource: this.totalDataSource });
+
+        if (this.headCheckbox.checked) {
+            this.selected.upsert(this.dataSource);
+        } else {
+            this.selected.remove(this.dataSource.map(store => store.id));
+        }
+
+        this.updateBatchActions();
+    }
+
+    onRowSelected(ev: MatCheckboxChange, row: SupplierStore): void {
+        HelperService.debug('onRowSelected', { ev, row });
+
+        if (ev.checked) {
+            this.selected.upsert(row);
+        } else {
+            this.selected.remove(row.id);
+        }
+
+        this.updateBatchActions();
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    private updateBatchActions(): void {
+        // tslint:disable-next-line: no-inferrable-types
+        let hasRejected: boolean = false;
+        // tslint:disable-next-line: no-inferrable-types
+        let hasPending: boolean = false;
+        // tslint:disable-next-line: no-inferrable-types
+        let hasGuest: boolean = false;
+        // tslint:disable-next-line: no-inferrable-types
+        let hasUpdating: boolean = false;
+        // tslint:disable-next-line: no-inferrable-types
+        let hasVerified: boolean = false;
+
+        for (const selected of this.selected.toArray()) {
+            switch (selected.outerStore['approvalStatus']) {
+                case 'rejected': {
+                    hasRejected = true;
+                    break;
+                }
+                case 'pending': {
+                    hasPending = true;
+                    break;
+                }
+                case 'guest': {
+                    hasGuest = true;
+                    break;
+                }
+                case 'updating': {
+                    hasUpdating = true;
+                    break;
+                }
+                case 'verified': {
+                    hasVerified = true;
+                    break;
+                }
+            }
+        }
+
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            batchAction: {
+                ...this.cardHeaderConfig.batchAction,
+                actions: [],
+                show: false
+            }
+        };
+
+        // Re-semd
+        if (!hasPending && !hasVerified && !hasGuest && !hasUpdating && (hasRejected)) {
+            this.cardHeaderConfig = {
+                ...this.cardHeaderConfig,
+                batchAction: {
+                    ...this.cardHeaderConfig.batchAction,
+                    actions: [
+                        ...this.cardHeaderConfig.batchAction.actions,
+                        {
+                            id: 'resend',
+                            label: 'Re-send',
+                        }
+                    ]
+                }
+            };
+        }
+
+        // Verify
+        if (!hasVerified && !hasRejected && (hasGuest || hasUpdating || hasPending)) {
+            this.cardHeaderConfig = {
+                ...this.cardHeaderConfig,
+                batchAction: {
+                    ...this.cardHeaderConfig.batchAction,
+                    actions: [
+                        ...this.cardHeaderConfig.batchAction.actions,
+                        {
+                            id: 'verify',
+                            label: 'Verify',
+                        }, {
+                            id: 'reject',
+                            label: 'Reject',
+                        }
+                    ]
+                }
+            };
+        }
+
+        // Show reset selection
+        if (this.selected.length > 0) {
+            this.cardHeaderConfig = {
+                ...this.cardHeaderConfig,
+                batchAction: {
+                    ...this.cardHeaderConfig.batchAction,
+                    actions: [
+                        ...this.cardHeaderConfig.batchAction.actions,
+                        {
+                            id: 'reset-selection',
+                            label: 'Reset Selection'
+                        }
+                    ],
+                    show: true
+                }
+            };
+        }
+
+        this.cdRef.markForCheck();
+    }
 
     private updateDisplayedColumns(hasUpdateAccess: boolean): void {
         if (hasUpdateAccess) {
@@ -931,10 +1078,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                             }
                         });
 
+                        this.dataSource = value;
                         // this.selection.select(...selected);
                     }),
                 );
-                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
+                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore)
+                .pipe(
+                    tap(value => this.totalDataSource = value)
+                );
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
                 this.isLoading$ = combineLatest([
                     this.store.select(StoreSelectors.getIsLoading),
@@ -1071,10 +1222,13 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     takeUntil(this._unSubs$)
                 ).subscribe(([trigger, dataSource]) => {
                     if (trigger === 'empty') {
-                        this.selection.clear();
+                        this.selected.clear();
                     } else if (trigger === 'all') {
-                        dataSource.forEach(source => this.selection.select(source));
+                        this.selected.upsert(dataSource);
                     }
+
+                    this.updateBatchActions();
+                    this.cdRef.markForCheck();
                 });
 
                 this.search.valueChanges
@@ -1094,6 +1248,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         if (isRefresh) {
                             this.store.dispatch(StoreActions.setRefreshStatus({ refreshStatus: false }));
                             this.store.dispatch(StoreActions.fetchCalculateSupplierStoresRequest());
+                            this.selected.clear();
+                            this.updateBatchActions();
                             this._onRefreshTable();
                         }
                     });
