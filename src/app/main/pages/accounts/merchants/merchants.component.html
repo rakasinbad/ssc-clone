@@ -39,19 +39,18 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
-                        <!-- <mat-checkbox
-                            (change)="$event ? handleCheckbox() : null"
-                            (click)="handleCheckbox($event)"
-                            [checked]="isAllSelected()"
-                            [indeterminate]="!isAllSelected()"
-                        ></mat-checkbox> -->
-                        <mat-checkbox [disabled]="true"></mat-checkbox>
+                        <mat-checkbox #headCheckbox
+                            (change)="$event ? onAllRowsSelected() : null"
+                            [indeterminate]="selected.length > 0 && selected.length !== totalDataSource"
+                            [checked]="selected.length > 0 && selected.length === totalDataSource"
+                        ></mat-checkbox>
+                        <!-- <mat-checkbox [disabled]="true"></mat-checkbox> -->
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <mat-checkbox
                             (click)="$event.stopPropagation()"
-                            (change)="selectSupplierStore($event, row)"
-                            [checked]="selectedIds.includes(+row.id)"
+                            (change)="$event ? onRowSelected($event, row) : null"
+                            [checked]="selected.isAvailable(row.id)"
                         ></mat-checkbox>
                     </mat-cell>
                 </ng-container>
@@ -441,7 +440,7 @@
     <mat-table
         class="sinbad-table grey-300-border mx-16"
         style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
-        [dataSource]="selection.selected"
+        [dataSource]="selected.toArray()"
         fusePerfectScrollbar
     >
         <!-- Store Name Column -->
@@ -501,7 +500,7 @@
     <mat-table
         class="sinbad-table grey-300-border mx-16"
         style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
-        [dataSource]="isMassAction ? selection.selected : [selectedSupplierStore]"
+        [dataSource]="isMassAction ? selected.toArray() : [selectedSupplierStore]"
         fusePerfectScrollbar
     >
         <!-- Store Name Column -->
