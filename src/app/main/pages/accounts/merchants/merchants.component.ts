@@ -106,6 +106,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 } else if (action.id === 'reset-selection') {
                     this.selected.clear();
+                    this.updateBatchActions();
+                    this.updateHeadCheckbox();
+                } else if (action.id === 'view-selection') {
+                    this.viewSelection();
                 }
             },
             show: false
@@ -243,6 +247,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('reject', { static: false }) reject: TemplateRef<any>;
     @ViewChild('resendStore', { static: false }) resendStore: TemplateRef<any>;
     @ViewChild('approveStores', { static: false }) approveStores: TemplateRef<any>;
+    @ViewChild('viewSelected', { static: false }) viewSelected: TemplateRef<any>;
     @ViewChild('headCheckbox', { static: false, read: MatCheckbox }) headCheckbox: MatCheckbox;
 
     // @ViewChild('filter', { static: true })
@@ -539,6 +544,27 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    viewSelection(): void {
+        if (this.selected.length === 0) {
+            return;
+        }
+
+        this.applyDialogFactory$.open(
+            {
+                title: `View Selection (${this.selected.length} store(s))`,
+                template: this.viewSelected,
+                isApplyEnabled: false,
+                showApplyButton: false,
+            },
+            {
+                disableClose: true,
+                width: '60vw',
+                minWidth: '60vw',
+                maxWidth: '60vw',
+                panelClass: 'dialog-container-no-padding'
+            }
+        );
+    }
 
     onUpdateApprovalStatus(item: SupplierStore, approvalStatus: TApprovalStatus): void {
         if (!item || !item.id) {
@@ -798,7 +824,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // }
 
     onAllRowsSelected(): void {
-        HelperService.debug('onAllRowsSelected', { dataSource: this.dataSource, totalDataSource: this.totalDataSource });
+        HelperService.debug('[BEFORE] onAllRowsSelected', { selected: this.selected, dataSource: this.dataSource, totalDataSource: this.totalDataSource });
 
         if (this.headCheckbox.checked) {
             this.selected.upsert(this.dataSource);
@@ -806,6 +832,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selected.remove(this.dataSource.map(store => store.id));
         }
 
+        HelperService.debug('[AFTER] onAllRowsSelected', { selected: this.selected, dataSource: this.dataSource, totalDataSource: this.totalDataSource });
+        this.updateHeadCheckbox();
         this.updateBatchActions();
     }
 
@@ -818,12 +846,46 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selected.remove(row.id);
         }
 
+        this.updateHeadCheckbox();
         this.updateBatchActions();
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    private tickHeadCheckbox(checked: boolean, indeterminate: boolean): void {
+        if (this.headCheckbox) {
+            this.headCheckbox.checked = checked;
+            this.headCheckbox.indeterminate = indeterminate;
+        }
+    }
+
+    private updateHeadCheckbox(): void {
+        if (this.headCheckbox) {
+            const selectedIds = this.selected.toArray().map(s => s.id);
+            const dataSourceIds = this.dataSource.map(source => source.id);
+            const totalSelectedOnPage = dataSourceIds.filter(id => selectedIds.includes(id)).length;
+
+            if (this.selected.length === 0) {
+                this.tickHeadCheckbox(false, false);
+            } else if (this.selected.length === this.dataSource.length) {
+                if (totalSelectedOnPage === 0) {
+                    this.tickHeadCheckbox(false, false);
+                } else {
+                    this.tickHeadCheckbox(true, false);
+                }
+            } else if (this.selected.length !== this.dataSource.length) {
+                if (totalSelectedOnPage === 0) {
+                    this.tickHeadCheckbox(false, false);
+                } else if (totalSelectedOnPage === this.dataSource.length) {
+                    this.tickHeadCheckbox(true, false);
+                } else {
+                    this.tickHeadCheckbox(false, true);
+                }
+            }
+        }
+    }
 
     private updateBatchActions(): void {
         // tslint:disable-next-line: no-inferrable-types
@@ -919,6 +981,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         {
                             id: 'reset-selection',
                             label: 'Reset Selection'
+                        },
+                        {
+                            id: 'view-selection',
+                            label: 'View Selection'
                         }
                     ],
                     show: true
@@ -1079,12 +1145,15 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         });
 
                         this.dataSource = value;
+                        this.updateHeadCheckbox();
                         // this.selection.select(...selected);
                     }),
                 );
                 this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore)
                 .pipe(
-                    tap(value => this.totalDataSource = value)
+                    tap(value => {
+                        this.totalDataSource = value;
+                    })
                 );
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
                 this.isLoading$ = combineLatest([
@@ -1159,7 +1228,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         }
                     };
 
-                    // Re-semd
+                    // Re-send
                     if (!hasPending && !hasVerified && !hasGuest && !hasUpdating && (hasRejected)) {
                         this.cardHeaderConfig = {
                             ...this.cardHeaderConfig,

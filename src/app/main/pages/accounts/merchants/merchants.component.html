@@ -41,8 +41,8 @@
                     <mat-header-cell *matHeaderCellDef>
                         <mat-checkbox #headCheckbox
                             (change)="$event ? onAllRowsSelected() : null"
-                            [indeterminate]="selected.length > 0 && selected.length !== totalDataSource"
-                            [checked]="selected.length > 0 && selected.length === totalDataSource"
+                            [indeterminate]="selected.length > 0 && selected.length !== dataSource.length"
+                            [checked]="selected.length > 0 && selected.length === dataSource.length"
                         ></mat-checkbox>
                         <!-- <mat-checkbox [disabled]="true"></mat-checkbox> -->
                     </mat-header-cell>
@@ -438,7 +438,7 @@
 </div>
 <ng-template #approveStores>
     <mat-table
-        class="sinbad-table grey-300-border mx-16"
+        class="h-240 sinbad-table grey-300-border mx-16"
         style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
         [dataSource]="selected.toArray()"
         fusePerfectScrollbar
@@ -496,9 +496,68 @@
     </mat-table>
     <p class="text-right mb-0 mr-20 mt-40 text-semibold">Are you sure want to change these stores approval status?</p>
 </ng-template>
+<ng-template #viewSelected>
+    <mat-table
+        class="h-240 sinbad-table grey-300-border mx-16 mb-16"
+        style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
+        [dataSource]="selected.toArray()"
+        fusePerfectScrollbar
+    >
+        <!-- Store Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>
+                Store Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="my-12" style="word-break: break-word;">
+                    {{ row?.store?.name || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Owner Name Column -->
+        <ng-container matColumnDef="owner-name">
+            <mat-header-cell *matHeaderCellDef>
+                Owner Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="my-12" style="word-break: break-word;">
+                    {{ row?.store?.owner?.fullName || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- City Column -->
+        <ng-container matColumnDef="city">
+            <mat-header-cell *matHeaderCellDef>
+                City
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="my-12" style="word-break: break-word;">
+                    {{ row?.store?.urban?.city || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Owner Phone Number Column -->
+        <ng-container matColumnDef="owner-phone-no">
+            <mat-header-cell *matHeaderCellDef>
+                Phone Number
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="my-12" style="word-break: break-word;">
+                    {{ row?.store?.owner?.mobilePhoneNo || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="resendStoreColumns; sticky: true"></mat-header-row>
+        <mat-row class="sinbad-white-bg" *matRowDef="let row; columns: resendStoreColumns"></mat-row>
+    </mat-table>
+</ng-template>
 <ng-template #resendStore>
     <mat-table
-        class="sinbad-table grey-300-border mx-16"
+        class="h-240 sinbad-table grey-300-border mx-16"
         style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
         [dataSource]="isMassAction ? selected.toArray() : [selectedSupplierStore]"
         fusePerfectScrollbar
