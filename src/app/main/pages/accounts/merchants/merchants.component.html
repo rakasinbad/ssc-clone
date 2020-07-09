@@ -491,6 +491,46 @@
             </mat-cell>
         </ng-container>
 
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>
+                Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row?.status">
+                    <mat-icon
+                        class="active-icon s-24"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-active"
+                        *ngIf="row?.status === 'active'"
+                    >
+                    </mat-icon>
+
+                    <mat-icon
+                        class="active-icon s-24"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-inactive"
+                        *ngIf="row?.status === 'inactive'"
+                    >
+                    </mat-icon>
+                </ng-container>
+
+                <ng-container *ngIf="!row?.status">
+                    -
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Supplier's Status Column -->
+        <ng-container matColumnDef="supplier-status">
+            <mat-header-cell *matHeaderCellDef>
+                Supplier<br/>Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ (row?.outerStore?.approvalStatus | titlecase) || '-' }}
+            </mat-cell>
+        </ng-container>
+
         <mat-header-row *matHeaderRowDef="resendStoreColumns; sticky: true"></mat-header-row>
         <mat-row class="sinbad-white-bg" *matRowDef="let row; columns: resendStoreColumns"></mat-row>
     </mat-table>
@@ -498,7 +538,7 @@
 </ng-template>
 <ng-template #viewSelected>
     <mat-table
-        class="h-240 sinbad-table grey-300-border mx-16 mb-16"
+        class="h-500 sinbad-table grey-300-border mx-16 mb-16"
         style="flex: 1 1 auto; border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
         [dataSource]="selected.toArray()"
         fusePerfectScrollbar
@@ -548,6 +588,46 @@
                 <p class="my-12" style="word-break: break-word;">
                     {{ row?.store?.owner?.mobilePhoneNo || '-' }}
                 </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>
+                Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row?.status">
+                    <mat-icon
+                        class="active-icon s-24"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-active"
+                        *ngIf="row?.status === 'active'"
+                    >
+                    </mat-icon>
+
+                    <mat-icon
+                        class="active-icon s-24"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-inactive"
+                        *ngIf="row?.status === 'inactive'"
+                    >
+                    </mat-icon>
+                </ng-container>
+
+                <ng-container *ngIf="!row?.status">
+                    -
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Supplier's Status Column -->
+        <ng-container matColumnDef="supplier-status">
+            <mat-header-cell *matHeaderCellDef>
+                Supplier<br/>Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ (row?.outerStore?.approvalStatus | titlecase) || '-' }}
             </mat-cell>
         </ng-container>
 
@@ -607,6 +687,46 @@
                 <p class="my-12" style="word-break: break-word;">
                     {{ row?.store?.owner?.mobilePhoneNo || '-' }}
                 </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef>
+                Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row?.status">
+                    <mat-icon
+                        class="active-icon s-24"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-active"
+                        *ngIf="row?.status === 'active'"
+                    >
+                    </mat-icon>
+
+                    <mat-icon
+                        class="active-icon s-24"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-inactive"
+                        *ngIf="row?.status === 'inactive'"
+                    >
+                    </mat-icon>
+                </ng-container>
+
+                <ng-container *ngIf="!row?.status">
+                    -
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Supplier's Status Column -->
+        <ng-container matColumnDef="supplier-status">
+            <mat-header-cell *matHeaderCellDef>
+                Supplier<br/>Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ (row?.outerStore?.approvalStatus | titlecase) || '-' }}
             </mat-cell>
         </ng-container>
 
