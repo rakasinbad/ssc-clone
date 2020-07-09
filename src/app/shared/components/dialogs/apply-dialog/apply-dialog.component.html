@@ -8,7 +8,7 @@
         </mat-toolbar-row>
     </mat-toolbar>
 
-    <div mat-dialog-content class="pt-16 px-0 m-0 mat-typography">
+    <div mat-dialog-content [ngClass]="data?.contentClass || defaultContentClass">
         <ng-container [ngTemplateOutlet]="data.template"></ng-container>
     </div>
 

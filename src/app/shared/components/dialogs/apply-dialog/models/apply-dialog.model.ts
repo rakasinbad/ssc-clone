@@ -8,4 +8,5 @@ export interface ApplyDialog {
     showCloseButton?: boolean;
     applyValue?: string;
     closeValue?: string;
+    contentClass?: Array<string>;
 }

@@ -43,6 +43,7 @@ import { SelectionModel, SelectionChange } from '@angular/cdk/collections';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { HashTable2 } from 'app/shared/models/hashtable2.model';
+import { CardHeaderActionConfig } from 'app/shared/components/card-header/models/card-header.model';
 
 @Component({
     selector: 'app-merchants',
@@ -204,7 +205,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'name',
         'owner-name',
         'city',
-        'owner-phone-no'
+        'owner-phone-no',
+        'status',
+        'supplier-status'
     ];
     importBtnConfig: IButtonImportConfig = {
         id: 'import-journey-plan',
@@ -555,12 +558,16 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 template: this.viewSelected,
                 isApplyEnabled: false,
                 showApplyButton: false,
+                contentClass: [
+                    'h-532', 'pt-16', 'px-0', 'm-0', 'mat-typography'
+                ],
             },
             {
                 disableClose: true,
-                width: '60vw',
-                minWidth: '60vw',
-                maxWidth: '60vw',
+                minWidth: '70vw',
+                maxWidth: '90vw',
+                width: '90vw',
+                height: '600px',
                 panelClass: 'dialog-container-no-padding'
             }
         );
@@ -826,7 +833,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     onAllRowsSelected(): void {
         HelperService.debug('[BEFORE] onAllRowsSelected', { selected: this.selected, dataSource: this.dataSource, totalDataSource: this.totalDataSource });
 
-        if (this.headCheckbox.checked) {
+        if (this.headCheckbox.checked || this.headCheckbox.indeterminate) {
             this.selected.upsert(this.dataSource);
         } else {
             this.selected.remove(this.dataSource.map(store => store.id));
@@ -862,29 +869,31 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private updateHeadCheckbox(): void {
-        if (this.headCheckbox) {
-            const selectedIds = this.selected.toArray().map(s => s.id);
-            const dataSourceIds = this.dataSource.map(source => source.id);
-            const totalSelectedOnPage = dataSourceIds.filter(id => selectedIds.includes(id)).length;
-
-            if (this.selected.length === 0) {
-                this.tickHeadCheckbox(false, false);
-            } else if (this.selected.length === this.dataSource.length) {
-                if (totalSelectedOnPage === 0) {
+        setTimeout(() => {
+            if (this.headCheckbox) {
+                const selectedIds = this.selected.toArray().map(s => s.id);
+                const dataSourceIds = this.dataSource.map(source => source.id);
+                const totalSelectedOnPage = dataSourceIds.filter(id => selectedIds.includes(id)).length;
+    
+                if (this.selected.length === 0) {
                     this.tickHeadCheckbox(false, false);
-                } else {
-                    this.tickHeadCheckbox(true, false);
-                }
-            } else if (this.selected.length !== this.dataSource.length) {
-                if (totalSelectedOnPage === 0) {
-                    this.tickHeadCheckbox(false, false);
-                } else if (totalSelectedOnPage === this.dataSource.length) {
-                    this.tickHeadCheckbox(true, false);
-                } else {
-                    this.tickHeadCheckbox(false, true);
+                } else if (this.selected.length === this.dataSource.length) {
+                    if (totalSelectedOnPage === 0) {
+                        this.tickHeadCheckbox(false, false);
+                    } else {
+                        this.tickHeadCheckbox(true, false);
+                    }
+                } else if (this.selected.length !== this.dataSource.length) {
+                    if (totalSelectedOnPage === 0) {
+                        this.tickHeadCheckbox(false, false);
+                    } else if (totalSelectedOnPage === this.dataSource.length) {
+                        this.tickHeadCheckbox(true, false);
+                    } else {
+                        this.tickHeadCheckbox(false, true);
+                    }
                 }
             }
-        }
+        }, 100);
     }
 
     private updateBatchActions(): void {
@@ -898,6 +907,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         let hasUpdating: boolean = false;
         // tslint:disable-next-line: no-inferrable-types
         let hasVerified: boolean = false;
+        // Untuk menyimpan action yang akan dimunculkan di card header.
+        let newActions: Array<CardHeaderActionConfig> = [];
 
         for (const selected of this.selected.toArray()) {
             switch (selected.outerStore['approvalStatus']) {
@@ -935,62 +946,52 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Re-semd
         if (!hasPending && !hasVerified && !hasGuest && !hasUpdating && (hasRejected)) {
-            this.cardHeaderConfig = {
-                ...this.cardHeaderConfig,
-                batchAction: {
-                    ...this.cardHeaderConfig.batchAction,
-                    actions: [
-                        ...this.cardHeaderConfig.batchAction.actions,
-                        {
-                            id: 'resend',
-                            label: 'Re-send',
-                        }
-                    ]
+            newActions = [
+                ...newActions,
+                {
+                    id: 'resend',
+                    label: 'Re-send',
                 }
-            };
+            ];
         }
 
         // Verify
         if (!hasVerified && !hasRejected && (hasGuest || hasUpdating || hasPending)) {
-            this.cardHeaderConfig = {
-                ...this.cardHeaderConfig,
-                batchAction: {
-                    ...this.cardHeaderConfig.batchAction,
-                    actions: [
-                        ...this.cardHeaderConfig.batchAction.actions,
-                        {
-                            id: 'verify',
-                            label: 'Verify',
-                        }, {
-                            id: 'reject',
-                            label: 'Reject',
-                        }
-                    ]
+            newActions = [
+                ...newActions,
+                {
+                    id: 'verify',
+                    label: 'Verify',
+                }, {
+                    id: 'reject',
+                    label: 'Reject',
                 }
-            };
+            ];
         }
 
         // Show reset selection
         if (this.selected.length > 0) {
-            this.cardHeaderConfig = {
-                ...this.cardHeaderConfig,
-                batchAction: {
-                    ...this.cardHeaderConfig.batchAction,
-                    actions: [
-                        ...this.cardHeaderConfig.batchAction.actions,
-                        {
-                            id: 'reset-selection',
-                            label: 'Reset Selection'
-                        },
-                        {
-                            id: 'view-selection',
-                            label: 'View Selection'
-                        }
-                    ],
-                    show: true
+            newActions = [
+                ...newActions,
+                {
+                    id: 'reset-selection',
+                    label: 'Reset Selection'
+                },
+                {
+                    id: 'view-selection',
+                    label: 'View Selection'
                 }
-            };
+            ];
         }
+
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            batchAction: {
+                ...this.cardHeaderConfig.batchAction,
+                actions: newActions,
+                show: hasVerified || hasRejected || hasGuest || hasUpdating || hasPending,
+            }
+        };
 
         this.cdRef.markForCheck();
     }
