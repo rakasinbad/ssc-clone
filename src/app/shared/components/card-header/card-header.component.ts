@@ -19,6 +19,7 @@ import { ExportActions } from '../exports/store/actions';
 import { fromExport } from '../exports/store/reducers';
 import { IButtonImportConfig } from '../import-advanced/models';
 import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-header.model';
+import { ButtonDesignType } from 'app/shared/models/button.model';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -292,6 +293,19 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                     // Memeriksa konfigurasi label untuk permission tombol "Import".
                     if (this.config.import.permissions) {
                         this.importPermissions = this.config.import.permissions;
+                    }
+
+                    if (this.config.import.useAdvanced) {
+                        this.importBtnConfig = {
+                            id: 'import-oms',
+                            cssClass: ['w-92', 'h-32'],
+                            dialogConf: {
+                                title: 'Import',
+                                cssToolbar: 'fuse-white-bg'
+                            },
+                            title: 'Import',
+                            type: ButtonDesignType.MAT_STROKED_BUTTON
+                        };
                     }
                 }
 

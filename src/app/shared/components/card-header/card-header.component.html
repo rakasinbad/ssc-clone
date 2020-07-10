@@ -131,17 +131,27 @@
             </ng-template>
             <ng-template [ngxPermissionsOnly]="importPermissions">
                 <!-- IMPORT BUTTON -->
-                <button
-                    mat-stroked-button
-                    *ngIf="importPermissions"
-                    color="primary"
-                    [ngClass]="buttonClasses"
-                    class="grey-300-border"
-                    fxFlexAlign="center"
-                    (click)="onImportClicked()"
-                >
-                    {{ importTitle }}
-                </button>
+                <ng-container *ngIf="config?.import?.useAdvanced; else useSimple;">
+                    <sinbad-import-advanced
+                        *ngIf="importPermissions"
+                        fxFlexAlign="center"
+                        [pageType]="config?.import?.pageType || ''"
+                        [btnConfig]="importBtnConfig"
+                    ></sinbad-import-advanced>
+                </ng-container>
+                <ng-template #useSimple>
+                    <button
+                        mat-stroked-button
+                        *ngIf="importPermissions"
+                        color="primary"
+                        [ngClass]="buttonClasses"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        (click)="onImportClicked()"
+                    >
+                        {{ importTitle }}
+                    </button>
+                </ng-template>
                 <!-- / IMPORT BUTTON -->
             </ng-template>
             <ng-template [ngxPermissionsOnly]="filterListPermissions">
