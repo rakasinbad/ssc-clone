@@ -686,3 +686,12 @@ mat-header-row {
         padding: 0;
     }
 }
+
+.datepicker-red {
+    .mat-datepicker-toggle {
+        /* Set color icon in datepicker */
+        .mat-icon-button {
+            color: sinbad-color('red', '50');
+        }
+    }
+}
