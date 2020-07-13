@@ -92,6 +92,13 @@ export class FlexiComboApiService {
             });
         }
 
+        if (params['data']) {
+            newArg.push({
+                key: 'data',
+                value: params['data'],
+            });
+        }
+
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });

@@ -57,7 +57,7 @@ export const reducer = createReducer(
     on(FlexiComboActions.fetchFlexiComboRequest, (state, { payload }) => ({
         ...state,
         isLoading: true,
-        selectedId: payload,
+        selectedId: payload.id,
     })),
     on(FlexiComboActions.fetchFlexiComboSuccess, (state, { payload }) =>
         adapter.addOne(payload, { ...state, isLoading: false })

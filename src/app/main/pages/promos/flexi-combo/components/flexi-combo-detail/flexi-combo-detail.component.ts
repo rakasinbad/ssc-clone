@@ -19,6 +19,7 @@ import { FlexiCombo } from '../../models';
 import { FlexiComboActions } from '../../store/actions';
 import * as fromFlexiCombos from '../../store/reducers';
 import { FlexiComboSelectors } from '../../store/selectors';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
     selector: 'app-flexi-combo-detail',
@@ -101,7 +102,10 @@ export class FlexiComboDetailComponent implements OnInit, OnDestroy {
 
                 this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
 
-                this.store.dispatch(FlexiComboActions.fetchFlexiComboRequest({ payload: id }));
+                const parameter: IQueryParams = {};
+                parameter['splitRequest'] = true;
+
+                this.store.dispatch(FlexiComboActions.fetchFlexiComboRequest({ payload: { id, parameter } }));
 
                 this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
                 break;

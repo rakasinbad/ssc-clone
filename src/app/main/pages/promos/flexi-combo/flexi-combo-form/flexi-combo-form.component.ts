@@ -64,6 +64,7 @@ import { ConditionDto, CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } fro
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 import { FlexiComboSelectors } from '../store/selectors';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 type TmpKey = 'imgSuggestion';
 
@@ -1933,7 +1934,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         },
                     ];
 
-                    this.store.dispatch(FlexiComboActions.fetchFlexiComboRequest({ payload: id }));
+                    const parameter: IQueryParams = {};
+                    parameter['splitRequest'] = true;
+
+                    this.store.dispatch(FlexiComboActions.fetchFlexiComboRequest({ payload: { id, parameter } }));
 
                     this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading).pipe(
                         tap((isLoading) => {
