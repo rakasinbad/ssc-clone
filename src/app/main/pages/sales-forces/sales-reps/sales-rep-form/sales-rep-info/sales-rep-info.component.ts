@@ -38,6 +38,7 @@ import {
     distinctUntilChanged,
     filter,
     map,
+    tap,
     takeUntil,
     withLatestFrom,
 } from 'rxjs/operators';
@@ -304,6 +305,8 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'salesTeam':
                 {
                     if (this.autoSalesTeam && this.autoSalesTeam.panel && this.triggerSalesTeam) {
+                        // this.store.dispatch(FormActions.setFormStatusInvalid());
+
                         fromEvent(this.autoSalesTeam.panel.nativeElement, 'scroll')
                             .pipe(
                                 map((x) => this.autoSalesTeam.panel.nativeElement.scrollTop),
@@ -311,7 +314,9 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                                     this.store.select(TeamSelectors.selectTotal),
                                     this.store.select(TeamSelectors.getTotalItem)
                                 ),
-                                takeUntil(this.triggerSalesTeam.panelClosingActions)
+                                takeUntil(this.triggerSalesTeam.panelClosingActions.pipe(
+                                    tap(() => this.form.updateValueAndValidity())
+                                ))
                             )
                             .subscribe(([x, skip, total]) => {
                                 const scrollTop = this.autoSalesTeam.panel.nativeElement.scrollTop;
@@ -432,7 +437,18 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
-                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(100),
+                        map(status => {
+                            if (!(this.form.get('team').value instanceof Team) || (this.autoSalesTeam as MatAutocomplete).isOpen) {
+                                return 'INVALID';
+                            }
+
+                            return status;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
                     .subscribe((status) => {
                         this._setFormStatus(status);
                     });
