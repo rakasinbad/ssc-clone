@@ -264,7 +264,7 @@ strong {
 @for $lineHeight from 1 through 60 {
 
     .line-height-#{$lineHeight * 2} {
-        line-height: #{$lineHeight * 2}px;
+        line-height: #{$lineHeight * 2}px !important;
     }
 }
 
