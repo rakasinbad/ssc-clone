@@ -30,7 +30,7 @@ export const fetchFlexiCombosSuccess = createAction(
 
 export const fetchFlexiComboRequest = createAction(
     '[Flexi Combo] Fetch Flexi Combo Request',
-    props<{ payload: string }>()
+    props<{ payload: { id: string, parameter?: IQueryParams } }>()
 );
 
 export const fetchFlexiComboFailure = createAction(
