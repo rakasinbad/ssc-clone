@@ -41,6 +41,7 @@ export class CreateFlexiComboDto {
     name: string;
     platform: PlatformSinbad;
     promoBudget: number;
+    shortDescription: string;
     startDate: string;
     status: EStatus;
     supplierId: string;
@@ -62,6 +63,7 @@ export class CreateFlexiComboDto {
             name,
             platform,
             promoBudget,
+            shortDescription,
             startDate,
             status,
             supplierId,
@@ -82,6 +84,7 @@ export class CreateFlexiComboDto {
         this.name = name;
         this.platform = platform;
         this.promoBudget = promoBudget;
+        this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         this.startDate = startDate;
         this.status = status;
         this.supplierId = supplierId;
@@ -104,6 +107,7 @@ export class PatchFlexiComboDto {
     name?: string;
     platform?: PlatformSinbad;
     promoBudget?: number;
+    shortDescription?: string;
     startDate?: string;
     status?: EStatus;
     supplierId?: string;
@@ -125,6 +129,7 @@ export class PatchFlexiComboDto {
             name,
             platform,
             promoBudget,
+            shortDescription,
             startDate,
             status,
             supplierId,
@@ -180,6 +185,11 @@ export class PatchFlexiComboDto {
         if (typeof promoBudget !== 'undefined') {
             this.promoBudget = promoBudget;
         }
+
+        if (typeof shortDescription !== 'undefined') {
+            this.shortDescription = (shortDescription && shortDescription.trim()) || null;
+        }
+
         if (typeof startDate !== 'undefined') {
             this.startDate = startDate;
         }
