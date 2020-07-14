@@ -49,6 +49,7 @@ import {
     LifecyclePlatform,
 } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
@@ -64,7 +65,6 @@ import { ConditionDto, CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } fro
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 import { FlexiComboSelectors } from '../store/selectors';
-import { IQueryParams } from 'app/shared/models/query.model';
 
 type TmpKey = 'imgSuggestion';
 
@@ -1937,7 +1937,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     const parameter: IQueryParams = {};
                     parameter['splitRequest'] = true;
 
-                    this.store.dispatch(FlexiComboActions.fetchFlexiComboRequest({ payload: { id, parameter } }));
+                    this.store.dispatch(
+                        FlexiComboActions.fetchFlexiComboRequest({ payload: { id, parameter } })
+                    );
 
                     this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading).pipe(
                         tap((isLoading) => {
@@ -2099,6 +2101,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     }),
                 ],
             ],
+            shortDescription: null,
             imgSuggestion: [
                 null,
                 [
@@ -2188,6 +2191,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const promoBudgetCtrl = this.form.get('promoBudget');
         const startDateCtrl = this.form.get('startDate');
         const endDateCtrl = this.form.get('endDate');
+        const shortDescriptionCtrl = this.form.get('shortDescription');
         const voucherCombineCtrl = this.form.get('allowCombineWithVoucher');
         const firstBuyCtrl = this.form.get('firstBuy');
         const triggerBaseCtrl = this.form.get('base');
@@ -2236,6 +2240,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle End Date
         if (row.endDate) {
             endDateCtrl.setValue(moment(row.endDate));
+        }
+
+        // Handle Short Description
+        if (row.shortDescription) {
+            shortDescriptionCtrl.setValue(row.shortDescription);
         }
 
         // Handle Allow Combine with Voucher
@@ -2683,6 +2692,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenWarehouse,
             conditions,
             endDate,
+            shortDescription,
             firstBuy,
             imgSuggestion,
             maxRedemption,
@@ -2825,6 +2835,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 name: promoName,
                 platform,
                 promoBudget,
+                shortDescription: shortDescription || null,
                 startDate: newStartDate,
                 status: EStatus.ACTIVE,
                 supplierId: null,
@@ -2871,6 +2882,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 name: promoName,
                 platform,
                 promoBudget,
+                shortDescription,
                 startDate: newStartDate,
                 status: EStatus.ACTIVE,
                 supplierId: null,
