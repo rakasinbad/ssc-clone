@@ -186,6 +186,28 @@
         fxLayoutGap="15px"
     >
         <div class="label" fxFlexAlign="center" fxFlex="10">
+            Short Description
+        </div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.shortDescription || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
             Image Suggestion
         </div>
 
