@@ -263,6 +263,7 @@ export class FlexiCombo implements ITimestamp {
     promoStores?: IPromoStore[];
     promoTypes?: IPromoType[];
     promoWarehouses?: IPromoWarehouse[];
+    shortDescription: string;
     startDate: string;
     status: EStatus;
     supplierId: string;
@@ -301,6 +302,7 @@ export class FlexiCombo implements ITimestamp {
             promoStores,
             promoTypes,
             promoWarehouses,
+            shortDescription,
             startDate,
             status,
             supplierId,
@@ -328,6 +330,7 @@ export class FlexiCombo implements ITimestamp {
         this.name = name ? String(name).trim() : null;
         this.platform = platform;
         this.promoBudget = promoBudget;
+        this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         this.startDate = startDate;
         this.status = status;
         this.supplierId = supplierId;

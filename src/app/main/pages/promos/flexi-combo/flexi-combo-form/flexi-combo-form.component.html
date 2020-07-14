@@ -286,6 +286,34 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="10"
+                                [class.sinbad-red-fg]="hasError('shortDescription')"
+                            >
+                                Short Description
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea
+                                    matInput
+                                    rows="5"
+                                    name="shortDescription"
+                                    formControlName="shortDescription"
+                                ></textarea>
+
+                                <mat-error *ngIf="hasError('shortDescription', true)">
+                                    {{ getErrorMessage('shortDescription') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('endDate')"
                             >
                                 Image<br />Suggestion
