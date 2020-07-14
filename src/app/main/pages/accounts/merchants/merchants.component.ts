@@ -392,7 +392,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 approvalStatus: 'rejected',
                                 rejection: {
                                     reasons: formValue.reason,
-                                    rejectedField: {
+                                    rejectedFields: {
                                         fullName: formValue.fullName,
                                         name: formValue.name,
                                         mobilePhoneNo: formValue.mobilePhoneNo,
@@ -460,7 +460,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 supplierStores: this.selected.toArray().map(selected => ({ supplierStoreId: selected.id })),
                                 rejection: {
                                     reasons: formValue.reason,
-                                    rejectedField: {
+                                    rejectedFields: {
                                         fullName: formValue.fullName,
                                         name: formValue.name,
                                         mobilePhoneNo: formValue.mobilePhoneNo,
