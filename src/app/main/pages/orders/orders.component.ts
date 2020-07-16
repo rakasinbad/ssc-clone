@@ -655,7 +655,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         data['paginate'] = true;
-        data['listEndpoint'] = true;
+        // data['listEndpoint'] = true;
 
         // if (this.sort.direction) {
         //     data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
