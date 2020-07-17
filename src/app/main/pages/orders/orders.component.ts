@@ -1,13 +1,13 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
     ViewEncapsulation,
-    ChangeDetectorRef,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -33,7 +33,7 @@ import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -235,14 +235,45 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onSelectedTab(index: number): void {
         switch (index) {
-            case 1: this.selectedTab = 'confirm'; this._onRefreshTable(); break;
-            case 2: this.selectedTab = 'packing'; this._onRefreshTable(); break;
-            case 3: this.selectedTab = 'shipping'; this._onRefreshTable(); break;
-            case 4: this.selectedTab = 'delivered'; this._onRefreshTable(); break;
-            case 5: this.selectedTab = 'done'; this._onRefreshTable(); break;
-            case 6: this.selectedTab = 'pending'; this._onRefreshTable(); break;
-            case 7: this.selectedTab = 'cancel'; this._onRefreshTable(); break;
-            default: this.selectedTab = ''; this._onRefreshTable(); break;
+            case 1:
+                this.selectedTab = 'confirm';
+                this._onRefreshTable();
+                break;
+
+            case 2:
+                this.selectedTab = 'pending';
+                this._onRefreshTable();
+                break;
+
+            case 3:
+                this.selectedTab = 'packing';
+                this._onRefreshTable();
+                break;
+
+            case 4:
+                this.selectedTab = 'shipping';
+                this._onRefreshTable();
+                break;
+
+            case 5:
+                this.selectedTab = 'delivered';
+                this._onRefreshTable();
+                break;
+
+            case 6:
+                this.selectedTab = 'done';
+                this._onRefreshTable();
+                break;
+
+            case 7:
+                this.selectedTab = 'cancel';
+                this._onRefreshTable();
+                break;
+
+            default:
+                this.selectedTab = '';
+                this._onRefreshTable();
+                break;
         }
     }
 
