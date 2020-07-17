@@ -27,6 +27,15 @@ export const statusOrder: Array<FuseNavigation> = [
         },
     },
     {
+        id: 'pending',
+        title: 'Pending (-)',
+        type: 'item',
+        function: (store) => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'pending' }));
+            store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+        },
+    },
+    {
         id: 'packing',
         title: 'Packed (-)',
         // title: 'Packing',
@@ -77,15 +86,6 @@ export const statusOrder: Array<FuseNavigation> = [
         type: 'item',
         function: (store) => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'done' }));
-            store.dispatch(OrderActions.fetchCalculateOrdersRequest());
-        },
-    },
-    {
-        id: 'pending',
-        title: 'Pending (-)',
-        type: 'item',
-        function: (store) => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'pending' }));
             store.dispatch(OrderActions.fetchCalculateOrdersRequest());
         },
     },
