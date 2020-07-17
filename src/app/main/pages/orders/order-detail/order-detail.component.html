@@ -312,6 +312,10 @@
                                                         New Order
                                                     </ng-container>
 
+                                                    <ng-container *ngSwitchCase="'pending'">
+                                                        Pending
+                                                    </ng-container>
+
                                                     <ng-container *ngSwitchCase="'packing'">
                                                         Packed
                                                     </ng-container>
@@ -326,10 +330,6 @@
 
                                                     <ng-container *ngSwitchCase="'done'">
                                                         Done
-                                                    </ng-container>
-
-                                                    <ng-container *ngSwitchCase="'pending'">
-                                                        Pending
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'cancel'">
@@ -429,6 +429,10 @@
                                         New Order
                                     </ng-container>
 
+                                    <ng-container *ngSwitchCase="'pending'">
+                                        Pending
+                                    </ng-container>
+
                                     <ng-container *ngSwitchCase="'packing'">
                                         Packed
                                     </ng-container>
@@ -443,10 +447,6 @@
 
                                     <ng-container *ngSwitchCase="'done'">
                                         Done
-                                    </ng-container>
-
-                                    <ng-container *ngSwitchCase="'pending'">
-                                        Pending
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'cancel'">
@@ -581,6 +581,13 @@
                                         <li>6</li>
                                         <li>7</li>
                                     </ul> -->
+                            </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'pending'"
+                            >
+                                <div class="header">Pending</div>
                             </div>
 
                             <div
@@ -796,13 +803,6 @@
 
                             <div
                                 class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'pending'"
-                            >
-                                <div class="header">Pending</div>
-                            </div>
-
-                            <div
-                                class="status secondary-text"
                                 [class.active]="(order$ | async)?.status === 'cancel'"
                             >
                                 <div class="header">Cancel</div>
@@ -829,6 +829,10 @@
                             New Order
                         </ng-container>
 
+                        <ng-container *ngSwitchCase="'pending'">
+                            Pending
+                        </ng-container>
+
                         <ng-container *ngSwitchCase="'packing'">
                             Packed
                         </ng-container>
@@ -843,10 +847,6 @@
 
                         <ng-container *ngSwitchCase="'done'">
                             Done
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'pending'">
-                            Pending
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'cancel'">
@@ -906,6 +906,29 @@
 
                                             <div class="time line-height-8">
                                                 <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'pending'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Pending
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>-</small> -->
                                             </div>
                                         </div>
                                     </div>
@@ -994,29 +1017,6 @@
                                         <div class="content" fxFlex="90">
                                             <div class="label">
                                                 Done
-                                            </div>
-
-                                            <div class="time line-height-8">
-                                                <!-- <small>-</small> -->
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'pending'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
-                                        <div class="indicator" fxLayout="column">
-                                            <div class="circle"></div>
-                                        </div>
-
-                                        <div class="v-line"></div>
-
-                                        <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Pending
                                             </div>
 
                                             <div class="time line-height-8">
@@ -1498,7 +1498,12 @@
                             <table class="info-group-1">
                                 <tr>
                                     <td class="info-title">Gross Original:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelNettPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelNettPrice || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
@@ -1508,28 +1513,53 @@
 
                                 <tr>
                                     <td class="info-title">Promo Original:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelPromo || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelPromo || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Voucher Original:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelVoucher || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelVoucher || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Untaxed Original:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelGrossPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelGrossPrice || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Tax Original:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelTaxes || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelTaxes || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tfoot>
                                     <tr>
                                         <td class="info-title">Total Original:</td>
-                                        <td>{{ ((+(order$ | async)?.parcelFinalPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                        <td>
+                                            {{
+                                                +(order$ | async)?.parcelFinalPrice || 0
+                                                    | price: 'full':'IDR':'narrow':'1.2-2'
+                                            }}
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -1639,7 +1669,12 @@
                             <table class="info-group-1">
                                 <tr>
                                     <td class="info-title">Gross:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelNettPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelNettPrice || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
@@ -1649,28 +1684,53 @@
 
                                 <tr>
                                     <td class="info-title">Promo:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelPromo || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelPromo || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Voucher:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelVoucher || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelVoucher || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Untaxed:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelGrossPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelGrossPrice || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tr>
                                     <td class="info-title">Tax:</td>
-                                    <td>{{ ((+(order$ | async)?.parcelTaxes || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                    <td>
+                                        {{
+                                            +(order$ | async)?.parcelTaxes || 0
+                                                | price: 'full':'IDR':'narrow':'1.2-2'
+                                        }}
+                                    </td>
                                 </tr>
 
                                 <tfoot>
                                     <tr>
                                         <td class="info-title">Total:</td>
-                                        <td>{{ ((+(order$ | async)?.parcelFinalPrice || 0) | price: 'full':'IDR':'narrow':'1.2-2') }}</td>
+                                        <td>
+                                            {{
+                                                +(order$ | async)?.parcelFinalPrice || 0
+                                                    | price: 'full':'IDR':'narrow':'1.2-2'
+                                            }}
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </table>
