@@ -62,7 +62,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.outerStore?.externalId || '-' }}
+                            {{ row?.store?.externalId || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -74,7 +74,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.outerStore?.name || '-' }}
+                            {{ row?.store?.name || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -86,7 +86,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.outerStore?.urban?.city || '-' }}
+                            {{ row?.store?.urban?.city || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -98,7 +98,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.outerStore?.address || '-' }}
+                            {{ row?.store?.address || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -110,7 +110,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.outerStore?.phoneNo || '-' }}
+                            {{ row?.store?.phoneNo || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
