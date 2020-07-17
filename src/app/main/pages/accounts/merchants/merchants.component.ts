@@ -1070,11 +1070,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             case LifecyclePlatform.OnDestroy:
-                // Reset breadcrumb state
-                this.store.dispatch(UiActions.resetBreadcrumb());
+                this._unSubs$.next();
+                this._unSubs$.complete();
 
-                // Reset core state stores
-                this.store.dispatch(StoreActions.resetStore());
+                this.trigger$.next('');
+                this.trigger$.complete();
 
                 this.totalStores$.next('');
                 this.totalVerified$.next('');
@@ -1090,11 +1090,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.totalPending$.complete();
                 this.totalUpdating$.complete();
 
-                this.trigger$.next('');
-                this.trigger$.complete();
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
 
-                this._unSubs$.next();
-                this._unSubs$.complete();
+                // Reset core state stores
+                this.store.dispatch(StoreActions.resetStore());
                 break;
 
             default:
