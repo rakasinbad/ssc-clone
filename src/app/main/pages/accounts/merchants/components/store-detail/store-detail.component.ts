@@ -18,7 +18,7 @@ export class StoreDetailComponent implements OnInit {
     labelFlex: string = '25';
     // tslint:disable-next-line: no-inferrable-types
     valueFlex: string = 'grow';
-    
+
     selectedPhoto: string;
     dialogPreviewPhoto: ApplyDialogService;
     @ViewChild('previewPhoto', { static: false }) previewPhoto: TemplateRef<any>;
