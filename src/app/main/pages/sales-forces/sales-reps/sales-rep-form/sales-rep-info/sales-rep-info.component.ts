@@ -9,13 +9,13 @@ import {
     Output,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
     MatAutocomplete,
     MatAutocompleteSelectedEvent,
-    MatAutocompleteTrigger
+    MatAutocompleteTrigger,
 } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -38,8 +38,9 @@ import {
     distinctUntilChanged,
     filter,
     map,
+    tap,
     takeUntil,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
@@ -58,7 +59,7 @@ type TmpAutoCompleteKey = 'salesTeam';
     styleUrls: ['./sales-rep-info.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
@@ -66,8 +67,8 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     field: Record<TmpAutoCompleteKey, { highlight: string; typing: boolean }> = {
         salesTeam: {
             highlight: '',
-            typing: false
-        }
+            typing: false,
+        },
     };
     // highlight: Record<TmpAutoCompleteKey, string> = { salesTeam: '' };
 
@@ -236,7 +237,7 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                                     name: file.name,
                                     url: this.domSanitizer.bypassSecurityTrustUrl(
                                         window.URL.createObjectURL(file)
-                                    )
+                                    ),
                                 });
 
                                 if (photoField.invalid) {
@@ -304,14 +305,18 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'salesTeam':
                 {
                     if (this.autoSalesTeam && this.autoSalesTeam.panel && this.triggerSalesTeam) {
+                        // this.store.dispatch(FormActions.setFormStatusInvalid());
+
                         fromEvent(this.autoSalesTeam.panel.nativeElement, 'scroll')
                             .pipe(
-                                map(x => this.autoSalesTeam.panel.nativeElement.scrollTop),
+                                map((x) => this.autoSalesTeam.panel.nativeElement.scrollTop),
                                 withLatestFrom(
                                     this.store.select(TeamSelectors.selectTotal),
                                     this.store.select(TeamSelectors.getTotalItem)
                                 ),
-                                takeUntil(this.triggerSalesTeam.panelClosingActions)
+                                takeUntil(this.triggerSalesTeam.panelClosingActions.pipe(
+                                    tap(() => this.form.updateValueAndValidity())
+                                ))
                             )
                             .subscribe(([x, skip, total]) => {
                                 const scrollTop = this.autoSalesTeam.panel.nativeElement.scrollTop;
@@ -324,7 +329,7 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                                 if (atBottom && skip && total && skip < total) {
                                     const data: IQueryParams = {
                                         limit: 10,
-                                        skip: skip
+                                        skip: skip,
                                     };
 
                                     data['paginate'] = true;
@@ -333,13 +338,13 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                                         data['search'] = [
                                             {
                                                 fieldName: 'keyword',
-                                                keyword: this.field.salesTeam.highlight
-                                            }
+                                                keyword: this.field.salesTeam.highlight,
+                                            },
                                         ];
 
                                         this.store.dispatch(
                                             TeamActions.fetchTeamRequest({
-                                                payload: data
+                                                payload: data,
                                             })
                                         );
                                     }
@@ -392,7 +397,7 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Handle trigger autocomplete sales team force selected from options
                 this.triggerSalesTeam.panelClosingActions
                     .pipe(takeUntil(this._unSubs$))
-                    .subscribe(e => {
+                    .subscribe((e) => {
                         const teamField = this.form.get('team');
 
                         if (
@@ -432,8 +437,19 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
-                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-                    .subscribe(status => {
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(100),
+                        map(status => {
+                            if (!(this.form.get('team').value instanceof Team) || (this.autoSalesTeam as MatAutocomplete).isOpen) {
+                                return 'INVALID';
+                            }
+
+                            return status;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe((status) => {
                         this._setFormStatus(status);
                     });
 
@@ -441,7 +457,7 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.form
                     .get('name')
                     .valueChanges.pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this.fullNameValue.emit(v);
                     });
 
@@ -449,7 +465,7 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.form
                     .get('phone')
                     .valueChanges.pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         this.phoneValue.emit(v);
                     });
 
@@ -457,17 +473,17 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.form
                     .get('team')
                     .valueChanges.pipe(
-                        filter(v => {
+                        filter((v) => {
                             this.field.salesTeam.highlight = v;
                             return v.length >= 3;
                         }),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         if (v) {
                             const data: IQueryParams = {
                                 limit: 10,
-                                skip: 0
+                                skip: 0,
                             };
 
                             data['paginate'] = true;
@@ -475,8 +491,8 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             data['search'] = [
                                 {
                                     fieldName: 'keyword',
-                                    keyword: v
-                                }
+                                    keyword: v,
+                                },
                             ];
 
                             this.field.salesTeam.highlight = v;
@@ -489,10 +505,10 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store
                     .select(FormSelectors.getIsClickSaveButton)
                     .pipe(
-                        filter(isClick => !!isClick),
+                        filter((isClick) => !!isClick),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(isClick => {
+                    .subscribe((isClick) => {
                         this._onSubmit();
                     });
                 return;
@@ -510,6 +526,17 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             this.tmp['photo'] = new FormControl({ value: '', disabled: true });
 
             this.form = this.formBuilder.group({
+                id: [
+                    null,
+                    [
+                        RxwebValidators.required({
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
                 name: [
                     '',
                     [
@@ -517,16 +544,16 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
+                            ),
                         }),
                         RxwebValidators.alpha({
                             allowWhiteSpace: true,
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'pattern'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 phone: [
                     '',
@@ -535,19 +562,19 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
+                            ),
                         }),
                         RxwebValidators.pattern({
                             expression: {
-                                mobilePhone: /^08[0-9]{8,12}$/
+                                mobilePhone: /^08[0-9]{8,12}$/,
                             },
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'mobile_phone_pattern',
                                 '08'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 newPassword: [
                     '',
@@ -556,7 +583,7 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
+                            ),
                         }),
                         RxwebValidators.password({
                             validation: {
@@ -565,14 +592,14 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                                 lowerCase: true,
                                 upperCase: true,
                                 specialCharacter: true,
-                                minLength: 8
+                                minLength: 8,
                             },
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'password_unmeet_specification'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 confirmPassword: [
                     '',
@@ -582,9 +609,9 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'confirm_password'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 photo: [
                     '',
@@ -595,9 +622,9 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'default',
                                 'file_size_lte',
                                 { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 identityId: [
                     '',
@@ -606,37 +633,37 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
+                            ),
                         }),
                         RxwebValidators.digit({
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'pattern'
-                            )
+                            ),
                         }),
                         RxwebValidators.minLength({
                             value: 16,
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'pattern'
-                            )
+                            ),
                         }),
                         RxwebValidators.maxLength({
                             value: 16,
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'pattern'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 team: [
                     '',
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
                 ],
-                status: ''
+                status: '',
             });
         } else {
             this._initEditForm();
@@ -647,35 +674,43 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.tmp['photo'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.formBuilder.group({
+            id: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             name: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
                     RxwebValidators.alpha({
                         allowWhiteSpace: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             phone: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
                     RxwebValidators.pattern({
                         expression: {
-                            mobilePhone: /^08[0-9]{8,12}$/
+                            mobilePhone: /^08[0-9]{8,12}$/,
                         },
                         message: this._$errorMessage.getErrorMessageNonState(
                             'default',
                             'mobile_phone_pattern',
                             '08'
-                        )
-                    })
-                ]
+                        ),
+                    }),
+                ],
             ],
             photo: [
                 '',
@@ -686,45 +721,46 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                             'default',
                             'file_size_lte',
                             { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
-                        )
-                    })
-                ]
+                        ),
+                    }),
+                ],
             ],
             identityId: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minLength({
                         value: 16,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxLength({
                         value: 16,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             team: [
                 '',
                 RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                })
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
             ],
-            status: ''
+            status: '',
         });
 
         this.store
             .select(SalesRepSelectors.getSelectedItem)
             .pipe(
-                filter(v => !!v),
+                filter((v) => !!v),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(row => {
+            .subscribe((row) => {
+                const idField = this.form.get('id');
                 const nameField = this.form.get('name');
                 const phoneField = this.form.get('phone');
                 const identityIdField = this.form.get('identityId');
@@ -732,6 +768,14 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 const statusField = this.form.get('status');
 
                 if (row.user) {
+                    if (row.user.userCode) {
+                        idField.setValue(row.user.userCode);
+                    }
+
+                    if (idField.invalid) {
+                        idField.markAsTouched();
+                    }
+
                     if (row.user.fullName) {
                         nameField.setValue(row.user.fullName);
                     }
@@ -785,11 +829,12 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.pageType === 'new') {
             const canCreate = this.ngxPermissions.hasPermission('SRM.SR.CREATE');
 
-            canCreate.then(hasAccess => {
+            canCreate.then((hasAccess) => {
                 if (hasAccess) {
                     const team = body.team as Team;
 
                     const payload: SalesRepForm = {
+                        userCode: body.id,
                         fullName: body.name,
                         mobilePhoneNo: body.phone,
                         password: body.newPassword,
@@ -798,14 +843,14 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                         image: body.photo,
                         status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE,
                         supplierId: null,
-                        saleTeamId: team.id
+                        saleTeamId: team.id,
                     };
 
                     this.store.dispatch(SalesRepActions.createSalesRepRequest({ payload }));
                 } else {
                     this._$notice.open('Sorry, permission denied!', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 }
             });
@@ -814,19 +859,24 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.pageType === 'edit') {
             const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
 
-            canUpdate.then(hasAccess => {
+            canUpdate.then((hasAccess) => {
                 if (hasAccess) {
                     const { id } = this.route.snapshot.params;
                     const team = body.team as Team;
 
                     const payload: SalesRepFormPatch = {
+                        userCode: body.id,
                         fullName: body.name,
                         mobilePhoneNo: body.phone,
                         idNo: body.identityId,
                         image: body.photo,
                         saleTeamId: team.id,
-                        status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE
+                        status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE,
                     };
+
+                    if (!body.id) {
+                        delete payload.userCode;
+                    }
 
                     if (!body.name) {
                         delete payload.fullName;
@@ -851,14 +901,14 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (Object.keys(payload).length > 0) {
                         this.store.dispatch(
                             SalesRepActions.updateSalesRepRequest({
-                                payload: { body: payload, id }
+                                payload: { body: payload, id },
                             })
                         );
                     }
                 } else {
                     this._$notice.open('Sorry, permission denied!', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 }
             });

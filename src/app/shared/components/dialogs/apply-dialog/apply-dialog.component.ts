@@ -1,6 +1,5 @@
 import { Component, ViewEncapsulation, Inject, TemplateRef, EventEmitter, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'apply-dialog',
@@ -9,6 +8,10 @@ import { BehaviorSubject } from 'rxjs';
     encapsulation: ViewEncapsulation.None,
 })
 export class ApplyDialogComponent<T> {
+    defaultContentClass: Array<string> = [
+        'pt-16', 'px-0', 'm-0', 'mat-typography'
+    ];
+
     @Output() closed: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(
@@ -19,12 +22,16 @@ export class ApplyDialogComponent<T> {
                 template: TemplateRef<any>,
                 isApplyEnabled: boolean,
                 showApplyButton: boolean,
+                showCloseButton: boolean,
+                applyValue: string,
+                closeValue: string,
+                contentClass?: Array<string>,
                 context: T,
             },
     ) {}
 
     onApply(): void {
-        this.matDialogRef.close('apply');
+        this.matDialogRef.close(typeof this.data.applyValue !== undefined ? this.data.applyValue : 'apply');
     }
 
     onClose(): void {

@@ -72,6 +72,11 @@ export const startExportSuccess = createAction(
     props<{ payload: { message: string } }>()
 );
 
+export const showExportHistory = createAction(
+    '[Export Page] Show Export History',
+    props<{ payload: string }>()
+);
+
 export const truncateExportFilter = createAction('[Export Page] Truncate Export Filter');
 
 export const truncateExportLogs = createAction('[Export Page] Truncate Export Logs');

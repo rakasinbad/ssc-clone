@@ -14,8 +14,24 @@ import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 
+export interface ICheckOwnerPhoneResponse {
+    message: string;
+    storeId: TNullable<string>;
+    availability: boolean;
+    user: TNullable<{
+        userId: TNullable<string>,
+        userName: TNullable<string>,
+        taxNumber: TNullable<string>,
+        mobilePhoneNumber: TNullable<string>,
+        idNumber: TNullable<string>,
+        idNumberPicture: TNullable<string>,
+        selfiePicture: TNullable<string>,
+    }>;
+}
+
 export interface ICalculateSupplierStoreResponse {
     totalStores: string;
+    totalVerified: string;
     totalGuest: string;
     totalRejected: string;
     totalPending: string;

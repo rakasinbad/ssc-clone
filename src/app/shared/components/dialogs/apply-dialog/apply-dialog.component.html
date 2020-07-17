@@ -2,13 +2,13 @@
     <mat-toolbar class="m-0 fuse-white-bg">
         <mat-toolbar-row class="pr-8" fxFlex fxLayout="row" fxLayoutAlign="space-between center">
             <span class="title dialog-title">{{ data.title }}</span>
-            <button mat-icon-button aria-label="Close Dialog" (click)="onClose()">
+            <button mat-icon-button aria-label="Close Dialog" *ngIf="data?.showCloseButton" (click)="onClose()">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-toolbar-row>
     </mat-toolbar>
 
-    <div mat-dialog-content class="pt-16 px-0 m-0 mat-typography">
+    <div mat-dialog-content [ngClass]="data?.contentClass || defaultContentClass">
         <ng-container [ngTemplateOutlet]="data.template"></ng-container>
     </div>
 

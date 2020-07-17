@@ -1,6 +1,8 @@
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
 
+export type TStoreSegmentation = 'type' | 'group' | 'channel' | 'cluster';
+
 export interface IStoreSegmentationType extends ITimestamp {
     id: string;
     supplierId: string;

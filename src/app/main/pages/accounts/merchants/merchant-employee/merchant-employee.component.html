@@ -1,12 +1,12 @@
 <div id="merchant-employee" class="page-layout carded fullwidth inner-scroll">
     <!-- TOP BACKGROUND -->
-    <div class="top-bg accent"></div>
+    <div class="top-bg h-168 accent"></div>
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
     <div class="center">
         <!-- HEADER -->
-        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+        <div class="header h-120 accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
                 <button
@@ -90,8 +90,9 @@
                         type="button"
                         (click)="onEdit(isEdit)"
                         *ngIf="!isEdit"
+                        class="sinbad-red-fg"
                     >
-                        <span>EDIT</span>
+                        <span>Edit</span>
                     </button>
 
                     <button
@@ -100,8 +101,9 @@
                         [disabled]="form.invalid || form.pristine"
                         form="account-form"
                         *ngIf="isEdit"
+                        class="sinbad-red-fg"
                     >
-                        <span>SAVE</span>
+                        <span>Save</span>
                     </button>
                 </ng-container>
             </ng-template>

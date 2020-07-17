@@ -1,0 +1,485 @@
+<div class="p-16 sinbad-content" *ngIf="supplierStore">
+    <!-- FOTO & FAKTUR AND SALES INFORMATION -->
+    <div
+        fxLayout="row"
+        fxLayoutGap="26px"
+        fxLayoutAlign="start stretch"
+    >
+        <!-- FOTO -->
+        <div class="img-container" fxFlex="20">
+            <img
+                [src]="supplierStore?.store?.imageUrl"
+                (click)="openPreviewPhoto(supplierStore?.store?.imageUrl, 'Store Photo')"
+                alt="Store Photo"
+                class="fit-image"
+                style="cursor: pointer;"
+            />
+        </div>
+        <!-- / FOTO -->
+        <!-- FAKTUR AND SALES INFORMATION -->
+        <div
+            fxLayout="column"
+            fxLayoutAlign="space-between stretch"
+            fxFlex
+        >
+            <!-- JUDUL -->
+            <span class="font-size-18 text-semibold">
+                Faktur and Sales Information
+            </span>
+            <!-- / JUDUL -->
+            <!-- INFORMASI -->
+            <div fxLayout="row wrap">
+                <div
+                    *ngFor="let sale of supplierStore?.outerStore?.sales; even as even;"
+                    fxLayout="column"
+                    fxLayoutAlign="start stretch"
+                    fxFlex="37"
+                >
+                    <div fxLayout="row" fxLayoutAlign="start stretch" *ngIf="even" fxFlex>
+                        <span fxFlex>Faktur {{ sale?.faktur?.name || '(none)' }}</span>
+                        <span fxFlex>{{ sale?.user?.fullName || '(none)' }}</span>
+                    </div> 
+                </div>
+                <div
+                    *ngFor="let sale of supplierStore?.outerStore?.sales; odd as odd;"
+                    fxLayout="column"
+                    fxLayoutAlign="start stretch"
+                    fxFlex="37"
+                >
+                    <div fxLayout="row" fxLayoutAlign="start stretch" *ngIf="odd" fxFlex>
+                        <span fxFlex>Faktur {{ sale?.faktur?.name || '(none)' }}</span>
+                        <span fxFlex>{{ sale?.user?.fullName || '(none)' }}</span>
+                    </div> 
+                </div>
+            </div>
+            <!-- / INFORMASI -->
+        </div>
+        <!-- / FAKTUR AND SALES INFORMATION -->
+    </div>
+    <!-- FOTO & FAKTUR AND SALES INFORMATION -->
+    <!-- INFORMATION WRAPPER -->
+    <div
+        class="mt-56"
+        fxLayout="row"
+        fxLayoutGap="26px"
+        fxLayoutAlign="start stretch"
+    >
+        <!-- OWNER INFORMATION -->
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxFlex
+        >
+            <!-- JUDUL -->
+            <span class="font-size-18 mb-20 text-semibold">
+                Owner Information
+            </span>
+            <!-- Owner Phone Number -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Owner Phone Number
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.legalInfo?.mobilePhoneNo }}
+                </p>
+            </div>
+            <!-- / Owner Phone Number -->
+            <!-- Owner Name -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Owner Name
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.legalInfo?.fullName }}
+                </p>
+            </div>
+            <!-- / Owner Name -->
+            <!-- Owner NPWP ID -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Owner NPWP ID
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.legalInfo?.taxNo }}
+                </p>
+            </div>
+            <!-- / Owner NPWP ID -->
+            <!-- KTP ID -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    KTP ID
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.legalInfo?.idNo }}
+                </p>
+            </div>
+            <!-- / KTP ID -->
+            <!-- Owner NPWP Photo -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Owner NPWP Photo
+                </p>
+                <div class="pt-16" [fxFlex]="valueFlex">
+                    <a
+                        style="cursor: pointer;"
+                        (click)="openPreviewPhoto(supplierStore?.outerStore?.store?.legalInfo?.taxImageUrl, 'Owner NPWP Photo')"
+                        class="font-size-14"
+                        *ngIf="supplierStore?.outerStore?.store?.legalInfo?.taxImageUrl; else noOwnerTaxPhoto;"
+                    >
+                        View
+                    </a>
+                </div>
+                <ng-template #noOwnerTaxPhoto>
+                    <p class="font-size-14" [fxFlex]="valueFlex">
+                        -
+                    </p>
+                </ng-template>
+            </div>
+            <!-- / Owner NPWP Photo -->
+            <!-- KTP Photo -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    KTP Photo
+                </p>
+                <div class="pt-16" [fxFlex]="valueFlex">
+                    <a
+                        style="cursor: pointer;"
+                        (click)="openPreviewPhoto(supplierStore?.outerStore?.store?.legalInfo?.idImageUrl, 'KTP Photo')"
+                        class="font-size-14"
+                        *ngIf="supplierStore?.outerStore?.store?.legalInfo?.idImageUrl; else noOwnerIdPhoto;"
+                    >
+                        View
+                    </a>
+                </div>
+                <ng-template #noOwnerIdPhoto>
+                    <p class="font-size-14" [fxFlex]="valueFlex">
+                        -
+                    </p>
+                </ng-template>
+            </div>
+            <!-- / KTP Photo -->
+            <!-- KTP Photo + Selfie -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    KTP Photo + Selfie
+                </p>
+                <div class="pt-16" [fxFlex]="valueFlex">
+                    <a
+                        style="cursor: pointer;"
+                        (click)="openPreviewPhoto(supplierStore?.outerStore?.store?.legalInfo?.selfieImageUrl, 'KTP Photo + Selfie')"
+                        class="font-size-14"
+                        *ngIf="supplierStore?.outerStore?.store?.legalInfo?.selfieImageUrl; else noOwnerSelfiePhoto;"
+                    >
+                        View
+                    </a>
+                </div>
+                <ng-template #noOwnerSelfiePhoto>
+                    <p class="font-size-14" [fxFlex]="valueFlex">
+                        -
+                    </p>
+                </ng-template>
+            </div>
+            <!-- / KTP Photo + Selfie -->
+            <!-- Date Created -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Date Created
+                </p>
+                <p class="font-size-14" *ngIf="supplierStore?.outerStore?.store?.legalInfo?.createdAt" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.legalInfo?.createdAt | date: 'dd/MM/yyyy HH:mm:ss' || '-' }}
+                </p>
+            </div>
+            <!-- / Date Created -->
+        </div>
+        <!-- / OWNER INFORMATION -->
+        <!-- STORE INFORMATION -->
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxFlex
+        >
+            <!-- JUDUL -->
+            <span class="font-size-18 mb-20 text-semibold">
+                Store Information
+            </span>
+            <!-- Store Name -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store Name
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.store?.name || '-' }}
+                </p>
+            </div>
+            <!-- / Store Name -->
+            <!-- Store NPWP ID -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store NPWP ID
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.store?.taxNo || '-' }}
+                </p>
+            </div>
+            <!-- / Store NPWP ID -->
+            <!-- Store Phone Number -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store Phone Number
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.store?.phoneNo || '-' }}
+                </p>
+            </div>
+            <!-- / Store Phone Number -->
+            <!-- Store NPWP Photo -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store NPWP Photo
+                </p>
+                <div class="pt-16" [fxFlex]="valueFlex">
+                    <a
+                        style="cursor: pointer;"
+                        (click)="openPreviewPhoto(supplierStore?.store?.taxImageUrl, 'Store NPWP Photo')"
+                        class="font-size-14"
+                        *ngIf="supplierStore?.store?.taxImageUrl; else noStoreTaxPhoto;"
+                    >
+                        View
+                    </a>
+                </div>
+                <ng-template #noStoreTaxPhoto>
+                    <p class="font-size-14" [fxFlex]="valueFlex">
+                        -
+                    </p>
+                </ng-template>
+            </div>
+            <!-- / Store NPWP Photo -->
+            <!-- Store Photo -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store Photo
+                </p>
+                <div class="pt-16" [fxFlex]="valueFlex">
+                    <a
+                        style="cursor: pointer;"
+                        (click)="openPreviewPhoto(supplierStore?.store?.imageUrl, 'Store Photo')"
+                        class="font-size-14"
+                        *ngIf="supplierStore?.store?.imageUrl; else noStorePhoto;"
+                    >
+                        View
+                    </a>
+                </div>
+                <ng-template #noStorePhoto>
+                    <p class="font-size-14" [fxFlex]="valueFlex">
+                        -
+                    </p>
+                </ng-template>
+            </div>
+            <!-- / Store Photo -->
+            <!-- Store Status -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store Status
+                </p>
+                <p
+                    class="font-size-14"
+                    [class.sinbad-green-fg]="supplierStore?.outerStore?.status === 'active'"
+                    [class.sinbad-red-fg]="supplierStore?.outerStore?.status === 'inactive'"
+                    [fxFlex]="valueFlex"
+                >
+                    {{ supplierStore?.outerStore?.status | titlecase }}
+                </p>
+            </div>
+            <!-- / Store Status -->
+            <!-- Date Created -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Date Created
+                </p>
+                <p class="font-size-14" *ngIf="supplierStore?.store?.createdAt" [fxFlex]="valueFlex">
+                    {{ (supplierStore?.store?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                </p>
+            </div>
+            <!-- / Date Created -->
+        </div>
+        <!-- / STORE INFORMATION -->
+    </div>
+    <div
+        class="mt-56"
+        fxLayout="row"
+        fxLayoutAlign="start stretch"
+    >
+        <!-- STORE ADDRESS -->
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxFlex
+        >
+            <!-- JUDUL -->
+            <span class="font-size-18 mb-20 text-semibold">
+                Store Address
+            </span>
+            <!-- District -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    District
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.urban?.district || '-' }}
+                </p>
+            </div>
+            <!-- / District -->
+            <!-- Urban -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Urban
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.urban?.urban || '-' }}
+                </p>
+            </div>
+            <!-- / Urban -->
+            <!-- Postcode -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Postcode
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.urban?.zipCode || '-' }}
+                </p>
+            </div>
+            <!-- / Postcode -->
+            <!-- Address -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Address
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.address }}
+                </p>
+            </div>
+            <!-- / Address -->
+            <!-- Notes Address -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Notes Address
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.noteAddress || '-' }}
+                </p>
+            </div>
+            <!-- / Notes Address -->
+            <!-- Latitude -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Latitude
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.latitude || '-' }}
+                </p>
+            </div>
+            <!-- / Latitude -->
+            <!-- Longitude -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Longitude
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.longitude || '-' }}
+                </p>
+            </div>
+            <!-- / Longitude -->
+        </div>
+        <!-- / STORE ADDRESS -->
+        <!-- PHYSICAL ADDRESS INFORMATION -->
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxFlex
+        >
+            <!-- JUDUL -->
+            <span class="font-size-18 mb-20 text-semibold">
+                Physical Store Information
+            </span>
+            <!-- Physical Store Size -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Physical Store Size
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.largeArea || '-' }}
+                </p>
+            </div>
+            <!-- / Physical Store Size -->
+            <!-- Number of Employee -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Number of Employee
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.numberOfEmployee || '-' }}
+                </p>
+            </div>
+            <!-- / Number of Employee -->
+            <!-- Top Brand Selling -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Top Brand Selling
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.topSellingBrand || '-' }}
+                </p>
+            </div>
+            <!-- / Top Brand Selling -->
+            <!-- The Most Wanted Brand -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    The Most Wanted Brand
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.mostWantedBrand || '-' }}
+                </p>
+            </div>
+            <!-- / The Most Wanted Brand -->
+            <!-- Vehicle Accessibility -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Vehicle Accessibility
+                </p>
+                <p class="font-size-14" [fxFlex]="valueFlex">
+                    {{ supplierStore?.outerStore?.store?.vehicleAccessibility?.name || '-' }}
+                </p>
+            </div>
+            <!-- / Vehicle Accessibility -->
+            <!-- Store Photo -->
+            <div fxLayout="row">
+                <p class="font-size-14" [fxFlex]="labelFlex">
+                    Store Photo
+                </p>
+                <div class="pt-16" [fxFlex]="valueFlex">
+                    <a
+                        style="cursor: pointer;"
+                        (click)="openPreviewPhoto(supplierStore?.store?.imageUrl, 'Store Photo')"
+                        class="font-size-14"
+                        *ngIf="supplierStore?.store?.imageUrl; else noStorePhoto;"
+                    >
+                        View
+                    </a>
+                </div>
+                <ng-template #noStorePhoto>
+                    <p class="font-size-14" [fxFlex]="valueFlex">
+                        -
+                    </p>
+                </ng-template>
+            </div>
+            <!-- / Store Photo -->
+        </div>
+        <!-- / PHYSICAL ADDRESS INFORMATION -->
+    </div>
+    <!-- / INFORMATION WRAPPER -->
+</div>
+<ng-template #previewPhoto>
+    <div class="px-8 pb-20" style="display: block; margin-left: auto; margin-right: auto;">
+        <img [src]="selectedPhoto" style="width: 100%; height: 100%; object-fit: cover;"/>
+    </div>
+</ng-template>

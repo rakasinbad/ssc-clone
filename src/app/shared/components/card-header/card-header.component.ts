@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { ButtonDesignType } from 'app/shared/models/button.model';
 import { TNullable } from 'app/shared/models/global.model';
 import { NgxPermissionsService } from 'ngx-permissions';
 
@@ -20,6 +19,7 @@ import { ExportActions } from '../exports/store/actions';
 import { fromExport } from '../exports/store/reducers';
 import { IButtonImportConfig } from '../import-advanced/models';
 import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-header.model';
+import { ButtonDesignType } from 'app/shared/models/button.model';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -27,25 +27,25 @@ import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-
     styleUrls: ['./card-header.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class CardHeaderComponent implements OnInit, OnChanges {
     importBtnConfig: IButtonImportConfig;
 
     selectedViewByClasses = {
         'red-fg': true,
-        'red-border': true
+        'red-border': true,
     };
 
     notSelectedViewByClasses = {
         'black-fg': true,
-        'grey-300-border': true
+        'grey-300-border': true,
     };
 
     // Class-class untuk mengatur ukuran tombol.
     buttonClasses = {
         'w-92': true,
-        'h-32': true
+        'h-32': true,
     };
 
     // Untuk meletakkan konfigurasi card header.
@@ -58,7 +58,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
         groupBy: {},
         import: {},
         search: {},
-        title: {}
+        title: {},
     };
 
     // Input untuk konfigurasi judul header.
@@ -196,144 +196,160 @@ export class CardHeaderComponent implements OnInit, OnChanges {
         private exportStore: NgRxStore<fromExport.State>
     ) {}
 
+    private updateCardHeader(): void {
+        if (this.config) {
+            setTimeout(() => {
+                // Memeriksa konfirugasi "Batch Actions".
+                if (this.config.batchAction) {
+                    if (this.config.batchAction.actions) {
+                        this.batchActions = this.config.batchAction.actions;
+                    } else {
+                        this.batchActions = [];
+                    }
+
+                    this.showBatchActions = !!this.config.batchAction.show;
+                }
+
+                // Memeriksa konfigurasi "title".
+                if (this.config.title) {
+                    // Memeriksa konfigurasi label untuk judul card.
+                    this.cardTitle = this.config.title.label || 'Untitled';
+                } else {
+                    this.cardTitle = 'Untitled';
+                }
+
+                // Memeriksa konfigurasi "Search".
+                if (this.config.search) {
+                    // Memeriksa konfigurasi placeholder-nya search.
+                    this.searchPlaceholder = this.config.search.placeholder || 'Search';
+
+                    // Memeriksa konfigurasi aktifnya fitur search.
+                    this.isSearchActive = !!this.config.search.active;
+
+                    // Memeriksa konfigurasi jeda (delay) sebelum event "changed" terkirim.
+                    if (this.config.search.threshold) {
+                        this.searchThreshold = this.config.search.threshold;
+                    } else {
+                        this.searchThreshold = 500;
+                    }
+
+                    // Memeriksa konfigurasi penggunaan border pada "Search".
+                    if (this.config.search.useBorder) {
+                        this.searchUseBorder = this.config.search.useBorder;
+                    }
+                }
+
+                // Memeriksa konfigurasi "View by".
+                if (this.config.viewBy) {
+                    // Memeriksa konfigurasi daftar pilihan view by.
+                    if (this.config.viewBy.list) {
+                        this.viewByList = this.config.viewBy.list;
+
+                        if (this.config.viewBy.list.length > 0) {
+                            this.onViewByChanged(this.config.viewBy.list[0]);
+                        }
+                    }
+                }
+
+                // Memeriksa konfigurasi tombol "Add".
+                if (this.config.add) {
+                    // Memeriksa konfigurasi label untuk judul tombol "Add".
+                    if (this.config.add.label) {
+                        this.addTitle = this.config.add.label;
+                    } else {
+                        this.addTitle = 'Add';
+                    }
+
+                    // Memeriksa konfigurasi label untuk permission tombol "Add".
+                    if (this.config.add.permissions) {
+                        this.addPermissions = this.config.add.permissions;
+                    }
+                }
+
+                // Memeriksa konfigurasi tombol "Export".
+                if (this.config.export) {
+                    // Memeriksa konfigurasi label untuk judul tombol "Export".
+                    if (this.config.export.label) {
+                        this.exportTitle = this.config.export.label;
+                    } else {
+                        this.exportTitle = 'Export';
+                    }
+
+                    // Memeriksa konfigurasi label untuk permission tombol "Export".
+                    if (this.config.export.permissions) {
+                        this.exportPermissions = this.config.export.permissions;
+                    }
+                }
+
+                // Memeriksa konfigurasi tombol "Import".
+                if (this.config.import) {
+                    // Memeriksa konfigurasi label untuk judul tombol "Import".
+                    if (this.config.import.label) {
+                        this.importTitle = this.config.import.label;
+                    } else {
+                        this.importTitle = 'Import';
+                    }
+
+                    // Memeriksa konfigurasi label untuk permission tombol "Import".
+                    if (this.config.import.permissions) {
+                        this.importPermissions = this.config.import.permissions;
+                    }
+
+                    if (this.config.import.useAdvanced) {
+                        this.importBtnConfig = {
+                            id: 'import-oms',
+                            cssClass: ['w-92', 'h-32'],
+                            dialogConf: {
+                                title: 'Import',
+                                cssToolbar: 'fuse-white-bg'
+                            },
+                            title: 'Import',
+                            type: ButtonDesignType.MAT_STROKED_BUTTON
+                        };
+                    }
+                }
+
+                // Memeriksa konfigurasi tombol "Filter List".
+                if (this.config.filter) {
+                    // Memeriksa konfigurasi label untuk judul tombol "Filter List".
+                    if (this.config.filter.label) {
+                        this.filterListTitle = this.config.filter.label;
+                    } else {
+                        this.filterListTitle = 'Filter';
+                    }
+
+                    // Memeriksa konfigurasi label untuk permission tombol "Filter List".
+                    if (this.config.filter.permissions) {
+                        this.filterListPermissions = this.config.filter.permissions;
+                    }
+                }
+
+                // Memeriksa konfigurasi tombol "Group By".
+                if (this.config.groupBy) {
+                    // Memeriksa konfigurasi label untuk judul tombol "Group By".
+                    if (this.config.groupBy.label) {
+                        this.groupByTitle = this.config.groupBy.label;
+                    } else {
+                        this.groupByTitle = 'Group By';
+                    }
+
+                    // Memeriksa konfigurasi label untuk permission tombol "Group By".
+                    if (this.config.groupBy.permissions) {
+                        this.groupByPermissions = this.config.groupBy.permissions;
+                    }
+                }
+
+                this.cd$.detectChanges();
+            }, 100);
+        }
+    }
+
     /**
      * ngOnInit.
      */
     ngOnInit(): void {
         // Memeriksa konfigurasi.
-        if (this.config) {
-            // Memeriksa konfirugasi "Batch Actions".
-            if (this.config.batchAction) {
-                if (this.config.batchAction.actions) {
-                    this.batchActions = this.config.batchAction.actions;
-                }
-
-                if (this.config.batchAction.show) {
-                    this.showBatchActions = this.config.batchAction.show;
-                }
-            }
-
-            // Memeriksa konfigurasi "title".
-            if (this.config.title) {
-                // Memeriksa konfigurasi label untuk judul card.
-                if (this.config.title.label) {
-                    this.cardTitle = this.config.title.label;
-                }
-            }
-
-            // Memeriksa konfigurasi "Search".
-            if (this.config.search) {
-                // Memeriksa konfigurasi placeholder-nya search.
-                if (this.config.search.placeholder) {
-                    this.searchPlaceholder = this.config.search.placeholder;
-                }
-
-                // Memeriksa konfigurasi aktifnya fitur search.
-                if (this.config.search.active) {
-                    this.isSearchActive = this.config.search.active;
-                }
-
-                // Memeriksa konfigurasi jeda (delay) sebelum event "changed" terkirim.
-                if (this.config.search.threshold) {
-                    this.searchThreshold = this.config.search.threshold;
-                }
-
-                // Memeriksa konfigurasi penggunaan border pada "Search".
-                if (this.config.search.useBorder) {
-                    this.searchUseBorder = this.config.search.useBorder;
-                }
-            }
-
-            // Memeriksa konfigurasi "View by".
-            if (this.config.viewBy) {
-                // Memeriksa konfigurasi daftar pilihan view by.
-                if (this.config.viewBy.list) {
-                    this.viewByList = this.config.viewBy.list;
-
-                    if (this.config.viewBy.list.length > 0) {
-                        this.onViewByChanged(this.config.viewBy.list[0]);
-                    }
-                }
-            }
-
-            // Memeriksa konfigurasi tombol "Add".
-            if (this.config.add) {
-                // Memeriksa konfigurasi label untuk judul tombol "Add".
-                if (this.config.add.label) {
-                    this.addTitle = this.config.add.label;
-                }
-
-                // Memeriksa konfigurasi label untuk permission tombol "Add".
-                if (this.config.add.permissions) {
-                    this.addPermissions = this.config.add.permissions;
-                }
-            }
-
-            // Memeriksa konfigurasi tombol "Export".
-            if (this.config.export) {
-                // Memeriksa konfigurasi label untuk judul tombol "Export".
-                if (this.config.export.label) {
-                    this.exportTitle = this.config.export.label;
-                }
-
-                // Memeriksa konfigurasi label untuk permission tombol "Export".
-                if (this.config.export.permissions) {
-                    this.exportPermissions = this.config.export.permissions;
-                }
-            }
-
-            // Memeriksa konfigurasi tombol "Import".
-            if (this.config.import) {
-                // Memeriksa konfigurasi label untuk judul tombol "Import".
-                if (this.config.import.label) {
-                    this.importTitle = this.config.import.label;
-                }
-
-                // Memeriksa konfigurasi label untuk permission tombol "Import".
-                if (this.config.import.permissions) {
-                    this.importPermissions = this.config.import.permissions;
-                }
-
-                if (this.config.import.useAdvanced) {
-                    this.importBtnConfig = {
-                        id: 'import-oms',
-                        cssClass: ['w-92', 'h-32'],
-                        dialogConf: {
-                            title: 'Import',
-                            cssToolbar: 'fuse-white-bg'
-                        },
-                        title: 'Import',
-                        type: ButtonDesignType.MAT_STROKED_BUTTON
-                    };
-                }
-            }
-
-            // Memeriksa konfigurasi tombol "Filter List".
-            if (this.config.filter) {
-                // Memeriksa konfigurasi label untuk judul tombol "Filter List".
-                if (this.config.filter.label) {
-                    this.filterListTitle = this.config.filter.label;
-                }
-
-                // Memeriksa konfigurasi label untuk permission tombol "Filter List".
-                if (this.config.filter.permissions) {
-                    this.filterListPermissions = this.config.filter.permissions;
-                }
-            }
-
-            // Memeriksa konfigurasi tombol "Group By".
-            if (this.config.groupBy) {
-                // Memeriksa konfigurasi label untuk judul tombol "Group By".
-                if (this.config.groupBy.label) {
-                    this.groupByTitle = this.config.groupBy.label;
-                }
-
-                // Memeriksa konfigurasi label untuk permission tombol "Group By".
-                if (this.config.groupBy.permissions) {
-                    this.groupByPermissions = this.config.groupBy.permissions;
-                }
-            }
-        }
+        this.updateCardHeader();
     }
 
     /**
@@ -386,8 +402,8 @@ export class CardHeaderComponent implements OnInit, OnChanges {
             this.exportStore.dispatch(
                 ExportActions.prepareExportCheck({
                     payload: {
-                        page: this.config.export.pageType
-                    }
+                        page: this.config.export.pageType,
+                    },
                 })
             );
         }
@@ -438,11 +454,9 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log(changes);
-        // if (this.config.batchAction) {
-        //     if (this.config.batchAction.show) {
-        //         this.showBatchActions = this.config.batchAction.show;
-        //     }
-        // }
+        if (changes.config) {
+            this.config = changes.config.currentValue;
+            this.updateCardHeader();
+        }
     }
 }

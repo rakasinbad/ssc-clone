@@ -625,13 +625,13 @@ mat-header-row {
     top: 0 !important;
 }
 
-.view-field {
-    .form-label {
-        font-weight: normal !important;
-        font-size: 14px !important;
-        color: sinbad-color('black', '80') !important;
-    }
+.form-label {
+    font-weight: normal !important;
+    font-size: 14px !important;
+    color: sinbad-color('black', '80') !important;
+}
 
+.view-field {
     span.form-value {
         font-weight: normal !important;
         font-size: 14px !important;
@@ -684,5 +684,14 @@ mat-header-row {
 .dialog-container-no-padding {
     .mat-dialog-container {
         padding: 0;
+    }
+}
+
+.datepicker-red {
+    .mat-datepicker-toggle {
+        /* Set color icon in datepicker */
+        .mat-icon-button {
+            color: sinbad-color('red', '50');
+        }
     }
 }
