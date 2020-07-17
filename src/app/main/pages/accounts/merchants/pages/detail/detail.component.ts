@@ -2,15 +2,16 @@ import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, AfterVie
 import { Router, ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, of, forkJoin } from 'rxjs';
 
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { fromMerchant } from '../../store/reducers';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { StoreSelectors } from '../../store/selectors';
-import { takeUntil, withLatestFrom, tap } from 'rxjs/operators';
+import { takeUntil, withLatestFrom, switchMap, map, retry, tap } from 'rxjs/operators';
 import { StoreActions } from '../../store/actions';
+import { StoreSegmentationTypesApiService } from 'app/shared/components/selection-tree/store-segmentation/services';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -39,6 +40,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         private router: Router,
         // private cdRef: ChangeDetectorRef,
         private store: NgRxStore<fromMerchant.FeatureState>,
+        private segmentation: StoreSegmentationTypesApiService,
     ) {}
 
     private createBreadcrumbs(): void {
@@ -140,15 +142,57 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
 
         // Mendapatkan supplier store yang terpilih.
         this.selectedSupplierStore$ = this.store.select(StoreSelectors.getSelectedSupplierStore).pipe(
-            tap(value => {
-                if (!value) {
-                    const { id } = this.route.snapshot.params;
+            takeUntil(this.subs$)
+        );
 
-                    this.store.dispatch(StoreActions.fetchSupplierStoreRequest({ payload: id }));
+        this.store.select(StoreSelectors.getSelectedSupplierStore).pipe(
+            tap((supplierStore) => {
+                if (supplierStore) {
+                    if (
+                        !supplierStore.outerStore.selectedStoreType
+                        && !supplierStore.outerStore.selectedStoreGroup
+                        && !supplierStore.outerStore.selectedStoreChannel
+                    ) {
+                        forkJoin({
+                            type: this.segmentation.resolve(supplierStore.outerStore['storeType']['typeId'], 'type').pipe(retry(3)),
+                            group: this.segmentation.resolve(supplierStore.outerStore['storeGroup']['groupId'], 'group').pipe(retry(3)),
+                            channel: this.segmentation.resolve(supplierStore.outerStore['storeChannel']['channelId'], 'channel').pipe(retry(3)),
+                            // cluster: this.segmentation.resolve(supplierStore.store['storeCluster']['clusterId'], 'cluster').pipe(retry(3)),
+                        }).pipe(
+                            tap(({ type, group, channel }) => {
+                                // Membuat SupplierStore baru.
+                                const newSupplierStore: SupplierStore = new SupplierStore(
+                                    supplierStore.id,
+                                    supplierStore.supplierId,
+                                    supplierStore.storeId,
+                                    supplierStore.status,
+                                    supplierStore.store,
+                                    supplierStore.owner,
+                                    supplierStore.createdAt,
+                                    supplierStore.updatedAt,
+                                    supplierStore.deletedAt,
+                                    {
+                                        ...supplierStore,
+                                        selectedStoreType: String(type.text || '').replace('class="my-12"', '') || '-',
+                                        selectedStoreGroup: String(group.text || '').replace('class="my-12"', '') || '-',
+                                        selectedStoreChannel: String(channel.text || '').replace('class="my-12"', '') || '-',
+                                        // selectedStoreCluster: cluster.text || '-',
+                                    }
+                                );
+    
+                                // Mengganti Supplier Store yang terpilih dengan yang terbaru (yang sudah ada data Store Classification-nya)
+                                this.store.dispatch(StoreActions.selectSupplierStore({ payload: newSupplierStore }));
+                            })
+                        ).subscribe();
+                    }
                 }
             }),
             takeUntil(this.subs$)
-        );
+        ).subscribe();
+
+        // Melakukan request ke back-end.
+        const { id } = this.route.snapshot.params;
+        this.store.dispatch(StoreActions.fetchSupplierStoreRequest({ payload: id }));
     }
 
     ngAfterViewInit(): void {
