@@ -1801,27 +1801,29 @@
                                                 </mat-select>
                                             </ng-template>
 
-                                            <mat-error
-                                                *ngIf="
-                                                    formCreditLimits.controls[i].get(
-                                                        'creditLimitGroup'
-                                                    ).errors &&
-                                                    (formCreditLimits.controls[i].get(
-                                                        'creditLimitGroup'
-                                                    ).dirty ||
+                                            <ng-container *ngIf="formCreditLimits.controls[i].get('creditLimitGroup')">
+                                                <mat-error
+                                                    *ngIf="
                                                         formCreditLimits.controls[i].get(
                                                             'creditLimitGroup'
-                                                        ).touched)
-                                                "
-                                            >
-                                                {{
-                                                    getErrorMessageArray(
-                                                        'storeInfo.payment.creditLimit',
-                                                        'creditLimitGroup',
-                                                        i
-                                                    )
-                                                }}
-                                            </mat-error>
+                                                        ).errors &&
+                                                        (formCreditLimits.controls[i].get(
+                                                            'creditLimitGroup'
+                                                        ).dirty ||
+                                                            formCreditLimits.controls[i].get(
+                                                                'creditLimitGroup'
+                                                            ).touched)
+                                                    "
+                                                >
+                                                    {{
+                                                        getErrorMessageArray(
+                                                            'storeInfo.payment.creditLimit',
+                                                            'creditLimitGroup',
+                                                            i
+                                                        )
+                                                    }}
+                                                </mat-error>
+                                            </ng-container>
                                         </mat-form-field>
 
                                         <button
