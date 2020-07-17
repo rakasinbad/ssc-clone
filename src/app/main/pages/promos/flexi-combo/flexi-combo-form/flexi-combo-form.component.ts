@@ -1351,7 +1351,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                this._customValidationMaxRebateLimit(idx, conditionBaseCtrl.value),
+                // NOTE E1AM-105
+                // this._customValidationMaxRebateLimit(idx, conditionBaseCtrl.value),
             ]);
         } else {
             benefitMaxRebateCtrl.clearValidators();
@@ -1667,7 +1668,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (benefitType === BenefitType.PERCENT) {
             const conditionBaseVal = this.conditionsCtrl[idx].get('conditionBase').value;
 
-            if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
+            // NOTE E1AM-105
+            /* if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
                 const conditionValue = this.conditionsCtrl[idx].get('conditionValue').value;
 
                 benefitMaxRebateCtrl.setValidators([
@@ -1679,6 +1681,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+
                     RxwebValidators.lessThan({
                         fieldName: 'conditionValue',
                         message: this._$errorMessage.getErrorMessageNonState(
@@ -1701,7 +1704,18 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                 ]);
-            }
+            } */
+
+            benefitMaxRebateCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+            ]);
         } else {
             benefitMaxRebateCtrl.clearValidators();
         }
