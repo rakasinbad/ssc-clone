@@ -74,7 +74,7 @@
                         >
                             <span
                                 class="red-500-fg"
-                            >* </span>Produk ID
+                            >* </span>Product ID
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
@@ -1122,7 +1122,11 @@
                                             fxLayoutAlign="space-between center"
                                             *ngIf="(!isViewMode()) || (isViewMode() && photo.value)"
                                         >
-                                            <p class="grey-400-fg" style="margin-bottom: 0px;">Photo {{ i }}</p>
+                                            <p
+                                                style="margin-bottom: 0px;"
+                                                [class.grey-400-fg]="!hasError(form.get(['productMedia', 'photos', i]), { ignoreTouched: true, ignoreDirty: true })"
+                                                [class.mat-error]="hasError(form.get(['productMedia', 'photos', i]), { ignoreTouched: true, ignoreDirty: true })"
+                                            >Photo {{ i }}</p>
                                             <button
                                                 class="red-fg"
                                                 matTooltip="Reset to original image"
@@ -1145,13 +1149,16 @@
                                     </ng-template>
                                 </div>
                             </div>
-                            <p
-                                fxFlexAlign="start"
-                                class="my-0"
-                                [class.mat-error]="!isViewMode() && hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
-                            >
-                                {{ getFormError(form.get('productMedia.photos.0')) }}
-                            </p>
+                            <ng-container *ngIf="!isViewMode()">
+                                <p
+                                    fxFlexAlign="start"
+                                    class="my-0"
+                                    *ngFor="let productPhoto of form.get('productMedia.photos').controls; index as $index;"
+                                    [class.mat-error]="hasError(form.get(['productMedia', 'photos', $index]), { ignoreTouched: true, ignoreDirty: true })"
+                                >
+                                    {{ getFormError(form.get(['productMedia', 'photos', $index])) }}
+                                </p>
+                            </ng-container>
                         </div>
                     </div>
                     <!-- / HARGA PRODUK -->
