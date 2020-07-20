@@ -9,6 +9,15 @@ export const locale = {
         ORDER_STATUS: 'Order Status',
         UPDATE_PRICE_TEMPLATE: 'Update Price',
         UPDATE_STOCK_TEMPLATE: 'Update Stock',
+        FORM: {
+            ...globalEnLang.FORM,
+            MAIN_PRODUCT_PHOTO: 'Main Product Photo',
+            PRODUCT_PHOTO_1: 'Product Photo #1',
+            PRODUCT_PHOTO_2: 'Product Photo #2',
+            PRODUCT_PHOTO_3: 'Product Photo #3',
+            PRODUCT_PHOTO_4: 'Product Photo #4',
+            PRODUCT_PHOTO_5: 'Product Photo #5',
+        },
         STATUS: {
             CATALOGUE: {
                 ALL: {
