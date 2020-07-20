@@ -35,6 +35,7 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import Quill from 'quill';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import * as numeral from 'numeral';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -538,13 +539,72 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                                 'product_photo',
                                 'min_1_photo'
                             )
-                        })
+                        }),
+                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
+                        RxwebValidators.maxLength({
+                            value: 1048576,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'main_product_photo',
+                                'file_size_lte',
+                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
                     ]),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null)
+                    this.fb.control(null, [
+                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
+                        RxwebValidators.maxLength({
+                            value: 1048576,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_photo_1',
+                                'file_size_lte',
+                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ]),
+                    this.fb.control(null, [
+                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
+                        RxwebValidators.maxLength({
+                            value: 1048576,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_photo_2',
+                                'file_size_lte',
+                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ]),
+                    this.fb.control(null, [
+                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
+                        RxwebValidators.maxLength({
+                            value: 1048576,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_photo_3',
+                                'file_size_lte',
+                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ]),
+                    this.fb.control(null, [
+                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
+                        RxwebValidators.maxLength({
+                            value: 1048576,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_photo_4',
+                                'file_size_lte',
+                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ]),
+                    this.fb.control(null, [
+                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
+                        RxwebValidators.maxLength({
+                            value: 1048576,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_photo_5',
+                                'file_size_lte',
+                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ])
                 ]),
                 oldPhotos: this.fb.array([
                     this.fb.group({ id: [null], value: [null] }),
