@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -198,14 +198,18 @@ export class AuthEffects {
                                 }
 
                                 // /pages/dashboard
-                                // if (!this._$auth.redirectUrl) {
-                                //     this.router.navigate(['/pages/account/stores'], {
-                                //         replaceUrl: true
-                                //     });
-                                // }
-                                this.router.navigate(['/pages/account/stores'], {
-                                    replaceUrl: true
-                                });
+                                if (!this._$auth.redirectUrl) {
+                                    this.router.navigate(['/pages/account/stores'], {
+                                        replaceUrl: true
+                                    });
+                                }  else {
+                                    this.router.navigate([this._$auth.redirectUrl], {
+                                        replaceUrl: true
+                                    });
+                                }
+                                // this.router.navigate(['/pages/account/stores'], {
+                                //     replaceUrl: true
+                                // });
                             }
                         });
 
@@ -431,14 +435,18 @@ export class AuthEffects {
                                 }
 
                                 // /pages/dashboard
-                                // if (!this._$auth.redirectUrl) {
-                                //     this.router.navigate(['/pages/account/stores'], {
-                                //         replaceUrl: true
-                                //     });
-                                // }
-                                this.router.navigate(['/pages/account/stores'], {
-                                    replaceUrl: true
-                                });
+                                if (!this._$auth.redirectUrl) {
+                                    this.router.navigate(['/pages/account/stores'], {
+                                        replaceUrl: true
+                                    });
+                                } else {
+                                    this.router.navigate([this._$auth.redirectUrl], {
+                                        replaceUrl: true
+                                    });
+                                }
+                                // this.router.navigate(['/pages/account/stores'], {
+                                //     replaceUrl: true
+                                // });
                             }
                         });
 
@@ -527,7 +535,18 @@ export class AuthEffects {
         private _$auth: AuthService,
         private _$navigation: NavigationService,
         private _$notice: NoticeService
-    ) {}
+    ) {
+        // NOTE Save return url
+        this.router.events.subscribe((ev) => {
+            // NOTE Get path url & exclude url error
+            if (ev instanceof NavigationEnd) {
+                if (!ev.url.includes('errors')) {
+                    // LoggerService.debug('Return URL', ev.url, true);
+                    this._$auth.redirectUrl = ev.url;
+                }
+            }
+        });
+    }
 
     private _handleErrMessage(resp: IErrorHandler): string {
         if (typeof resp.errors === 'string') {
