@@ -197,6 +197,7 @@ export class BrandsDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
+                newQuery['status'] = 'active';
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
