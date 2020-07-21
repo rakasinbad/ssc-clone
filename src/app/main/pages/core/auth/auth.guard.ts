@@ -55,7 +55,7 @@ export class AuthGuard implements CanActivate, CanLoad {
         route: Route,
         segments: UrlSegment[]
     ): Observable<boolean> | Promise<boolean> | boolean {
-        this._$auth.redirectUrl = route.path;
+        // this._$auth.redirectUrl = route.path;
 
         /* return this.store.select(AuthSelectors.getUserState).pipe(
             take(1),
