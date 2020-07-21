@@ -735,11 +735,11 @@ export class FlexiComboEffects {
                     if (dataTarget === 'store') {
                         promoStores = target as unknown as Array<IPromoStore>;
                     } else if (dataTarget === 'segmentation') {
-                        promoWarehouses = target as unknown as Array<IPromoWarehouse>;
-                        promoTypes = target as unknown as Array<IPromoType>;
-                        promoGroups = target as unknown as Array<IPromoGroup>;
-                        promoChannels = target as unknown as Array<IPromoChannel>;
-                        promoClusters = target as unknown as Array<IPromoCluster>;
+                        promoWarehouses = target['promoWarehouses'] as unknown as Array<IPromoWarehouse>;
+                        promoTypes = target['promoTypes'] as unknown as Array<IPromoType>;
+                        promoGroups = target['promoGroups'] as unknown as Array<IPromoGroup>;
+                        promoChannels = target['promoChannels'] as unknown as Array<IPromoChannel>;
+                        promoClusters = target['promoClusters'] as unknown as Array<IPromoCluster>;
                     }
 
                     return of(FlexiComboActions.fetchFlexiComboSuccess({
