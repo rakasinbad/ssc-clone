@@ -90,7 +90,7 @@ export class StoreSegmentationTypesApiService {
 
                 return {
                     data: types,
-                    text: types.map(t => t ? `<p class="my-12">${t.name}</p>` : '<p class="my-12">(unknown)</p>')
+                    text: types.reverse().map(t => t ? `<p class="my-12">${t.name}</p>` : '<p class="my-12">(unknown)</p>')
                                 .join('<span class="material-icons font-size-28">chevron_right</span>')
                 };
             })
