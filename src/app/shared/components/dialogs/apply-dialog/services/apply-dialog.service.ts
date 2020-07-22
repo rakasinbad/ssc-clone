@@ -31,6 +31,14 @@ export class ApplyDialogService<T = undefined> {
     setTemplate(template: TemplateRef<any>): void {
         this.dialogRef.componentInstance.data.template = template;
     }
+    
+    setApplyValue(value: string): void {
+        this.dialogRef.componentInstance.data.applyValue = value;
+    }
+
+    setCloseValue(value: string): void {
+        this.dialogRef.componentInstance.data.closeValue = value;
+    }
 
     enableApply(): void {
         setTimeout(() => {
@@ -53,6 +61,18 @@ export class ApplyDialogService<T = undefined> {
     hideApplyButton(): void {
         setTimeout(() => {
             this.dialogRef.componentInstance.data.showApplyButton = false;
+        });
+    }
+
+    showCloseButton(): void {
+        setTimeout(() => {
+            this.dialogRef.componentInstance.data.showCloseButton = true;
+        });
+    }
+
+    hideCloseButton(): void {
+        setTimeout(() => {
+            this.dialogRef.componentInstance.data.showCloseButton = false;
         });
     }
 }

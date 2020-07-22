@@ -4,13 +4,15 @@ import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
+    Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     SecurityContext,
+    SimpleChanges,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -42,11 +44,11 @@ import { FlexiComboSelectors } from '../../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
-    activeTab: string = 'all';
+    activeTab = 'all';
 
     displayedColumns = [
         // 'checkbox',
@@ -59,13 +61,15 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         'actions',
     ];
 
-    search: FormControl = new FormControl('');
+    // search: FormControl = new FormControl('');
     selection: SelectionModel<FlexiCombo>;
     eTriggerBase = TriggerBase;
 
     dataSource$: Observable<FlexiCombo[]>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+
+    @Input() keyword: string;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -105,6 +109,23 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         // Add 'implements AfterViewInit' to the class.
 
         this._initPage(LifecyclePlatform.AfterViewInit);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+        // Add '${implements OnChanges}' to the class.
+
+        for (const propName in changes) {
+            if (changes.hasOwnProperty(propName)) {
+                switch (propName) {
+                    case 'keyword':
+                        if (!changes['keyword'].isFirstChange()) {
+                            this._initTable();
+                        }
+                        return;
+                }
+            }
+        }
     }
 
     ngOnDestroy(): void {
@@ -226,7 +247,7 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
                 data['sortBy'] = this.sort.active;
             }
 
-            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.keyword);
 
             if (query) {
                 data['search'] = [

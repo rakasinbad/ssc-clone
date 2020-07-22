@@ -80,24 +80,23 @@
             <!-- BATCH BUTTON -->
             <button
                 mat-stroked-button
-                *ngIf="(config?.batchAction?.show || showBatchActions)"
+                *ngIf="(showBatchActions)"
                 color="primary"
                 [ngClass]="buttonClasses"
                 class="grey-300-border"
                 fxFlexAlign="center"
                 [matMenuTriggerFor]="actionMenu"
                 aria-label="Action Menu"
-                [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
             >
                 <span>Action</span>
                 <mat-icon>arrow_drop_down</mat-icon>
             </button>
-            <mat-menu #actionMenu="matMenu" [class.mr-0]="!(config?.batchAction?.show || showBatchActions)" [fxHide]="(config?.batchAction?.show || showBatchActions)">
+            <mat-menu #actionMenu="matMenu" [class.mr-0]="!(showBatchActions)" [fxHide]="(showBatchActions)">
                 <button
                     type="button"
                     mat-menu-item
                     class="sinbad-mat-menu-item"
-                    *ngFor="let action of batchActions"
+                    *ngFor="let action of (batchActions)"
                     [attr.aria-label]="action.label"
                     (click)="onActionSelected(action)"
                 >

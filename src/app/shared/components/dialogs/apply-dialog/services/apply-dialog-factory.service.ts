@@ -21,9 +21,14 @@ export class ApplyDialogFactoryService<T = undefined> {
                 ...options,
                 data: {
                     ...dialogData,
+                    applyValue: dialogData.applyValue ? dialogData.applyValue : 'apply',
+                    closeValue: dialogData.closeValue ? dialogData.closeValue : null,
                     showApplyButton: !dialogData.showApplyButton
                                     && dialogData.showApplyButton !== false ? true
                                     : dialogData.showApplyButton,
+                    showCloseButton: !dialogData.showCloseButton
+                                    && dialogData.showCloseButton !== false ? true
+                                    : dialogData.showCloseButton,
                 }
             }
         );

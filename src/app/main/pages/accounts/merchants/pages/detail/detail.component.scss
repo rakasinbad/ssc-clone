@@ -1,0 +1,14 @@
+merchant-detail-page {
+    .mat-tab-header-px-12 {
+        .mat-tab-header {
+            margin: 0 12px !important;
+        }
+    }
+
+    .mat-tab-body-content {
+        display: flex;
+        flex: 1;
+        overflow-y: scroll !important;
+        flex-direction: column;
+    }
+}

@@ -5,4 +5,8 @@ export interface ApplyDialog {
     template: TemplateRef<any>;
     isApplyEnabled: boolean;
     showApplyButton?: boolean;
+    showCloseButton?: boolean;
+    applyValue?: string;
+    closeValue?: string;
+    contentClass?: Array<string>;
 }

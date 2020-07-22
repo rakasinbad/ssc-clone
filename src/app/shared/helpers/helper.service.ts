@@ -359,8 +359,8 @@ export class HelperService {
             // Error message related to HTTP.
             if (error.httpError.error) {
                 if (error.httpError.error.code || error.httpError.error.message) {
-                    errId = `ERROR_NET_HTTP_${ error.httpError.error.code || 'UNKNOWN'}`,
-                    message = 'Network related issue';
+                    errId = `ERROR_NET_HTTP_${ errId !== '(none)' ? errId : error.httpError.error.code || 'UNKNOWN'}`,
+                    message = +error.httpError.error.code >= 500 ? 'Network related issue' : 'Client related issue';
                 }
             }
         } else if (error.error) {
@@ -416,6 +416,7 @@ export class HelperService {
                     environment: environment.environment.toUpperCase(),
                     version: environment.appVersion,
                     commitHash: environment.appHash,
+                    tagTime: sessionId,
                 },
                 extra: { tagTime: sessionId, requestId },
             });
@@ -576,20 +577,49 @@ export class HelperService {
     numberOfEmployee(): { id: string; label: string }[] {
         return [
             {
-                id: '1',
-                label: '1 Orang',
+                id: '1 - 10',
+                label: '1 - 10',
             },
             {
-                id: '2-10',
-                label: '2-10 Orang',
+                id: '11 - 20',
+                label: '11 - 20',
             },
             {
-                id: '11-20',
-                label: '11-20 Orang',
+                id: '20 - 50',
+                label: '20 - 50',
             },
             {
-                id: '>50',
-                label: '> 50 Orang',
+                id: '50 - 100',
+                label: '50 - 100',
+            },
+            {
+                id: '> 100',
+                label: '> 100',
+            },
+        ];
+    }
+
+    storeStatuses(): Array<{ id: string; label: string }> {
+        return [
+            {
+                id: 'guest',
+                label: 'Guest',
+            },
+            {
+                id: 'verified',
+                label: 'Verified',
+            },
+            {
+                id: 'rejected',
+                label: 'Rejected',
+            },
+            {
+                id: 'pending',
+                label: 'Pending',
+            },
+            {
+                id: 'updating',
+                label: 'Updating',
             },
         ];
     }

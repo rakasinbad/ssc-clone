@@ -276,6 +276,10 @@ export class ExportFilterComponent implements OnInit {
         this.matDialogRef.close();
     }
 
+    onViewHistory(): void {
+        this.matDialogRef.close({ page: this.data.page, payload: { viewHistory: true } });
+    }
+
     onSubmit(): void {
         // Memeriksa apakah form sudah terpenuhi aturannya atau belum.
         if (this.form.invalid) {
