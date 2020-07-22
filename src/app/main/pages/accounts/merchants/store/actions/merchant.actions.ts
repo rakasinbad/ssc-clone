@@ -86,6 +86,25 @@ export const fetchStoreSuccess = createAction(
 // );
 
 // -----------------------------------------------------------------------------------------------------
+// Fetch Supplier Store
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchSupplierStoreRequest = createAction(
+    '[Supplier Store API] Fetch Supplier Store Request',
+    props<{ payload: string }>()
+);
+
+export const fetchSupplierStoreFailure = createAction(
+    '[Supplier Store API] Fetch Supplier Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchSupplierStoreSuccess = createAction(
+    '[Supplier Store API] Fetch Supplier Store Success',
+    props<{ payload: SupplierStore }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Fetch Store Edit
 // -----------------------------------------------------------------------------------------------------
 
@@ -184,6 +203,11 @@ export const createStoreSuccess = createAction(
 // [CRUD - UPDATE STORE] Stores
 // -----------------------------------------------------------------------------------------------------
 
+export const confirmUpdateApprovalStatusStore = createAction(
+    '[Stores API] Confirm Update Approval Status Store',
+    props<{ payload: { approvalStatus: any; supplierStore: SupplierStore } }>()
+);
+
 export const confirmUpdateStore = createAction(
     '[Stores API] Confirm Update Store',
     props<{ payload: { body: any; id: string } }>()
@@ -191,7 +215,7 @@ export const confirmUpdateStore = createAction(
 
 export const updateStoreRequest = createAction(
     '[Stores API] Update Store Request',
-    props<{ payload: { body: any; id: string } }>()
+    props<{ payload: { body: any; id: string, isSupplierStore?: boolean } }>()
 );
 
 export const updateStoreFailure = createAction(
@@ -576,6 +600,10 @@ export const resetStoreEdit = createAction('[Accounts Page] Reset Store Edit');
 
 export const selectSupplierStore = createAction('[Stores Page] Select Supplier Store',
     props<{ payload: SupplierStore }>()
+);
+
+export const setRefreshStatus = createAction('[Store Page] Set Refresh Status',
+    props<{ refreshStatus: boolean }>()
 );
 
 export const deselectSupplierStore = createAction('[Stores Page] Deselect Supplier Store');

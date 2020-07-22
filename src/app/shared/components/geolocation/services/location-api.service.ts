@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
  *
  *
  * @export
- * @class AssociationApiService
+ * @class LocationApiService
  */
 @Injectable({
     providedIn: 'root'

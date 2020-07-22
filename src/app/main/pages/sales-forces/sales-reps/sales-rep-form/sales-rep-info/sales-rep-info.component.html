@@ -51,6 +51,32 @@
                         class="custom-field__label"
                         fxFlexAlign="center"
                         fxFlex="13"
+                        [class.mat-error]="hasError('id')"
+                    >
+                        *Sales Rep ID
+                    </label>
+
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input type="text" matInput formControlName="id" />
+
+                            <mat-error *ngIf="hasError('id', true)">
+                                {{ getErrorMessage('id') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
                         [class.mat-error]="hasError('name')"
                     >
                         *Sales Rep Name
@@ -221,7 +247,7 @@
                                 [href]="sanitize(salesRep?.user?.imageUrl)"
                                 target="_blank"
                                 *ngIf="salesRep?.user?.imageUrl"
-                                style="position: relative;top: 0.8em"
+                                style="position: relative; top: 0.8em;"
                             >
                                 <mat-icon>remove_red_eye</mat-icon>
                             </a>

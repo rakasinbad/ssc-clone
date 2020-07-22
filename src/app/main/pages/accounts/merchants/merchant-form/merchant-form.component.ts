@@ -6,73 +6,84 @@ import {
     Component,
     OnDestroy,
     OnInit,
+    TemplateRef,
     ViewChild,
     ViewEncapsulation,
-    TemplateRef,
 } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import {
     MatAutocomplete,
     MatAutocompleteSelectedEvent,
     MatAutocompleteTrigger,
     MatSelectChange,
     MatSlideToggleChange,
+    MatDialog,
 } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
+import {
+    StoreSegmentationChannel,
+    StoreSegmentationCluster,
+    StoreSegmentationGroup,
+} from 'app/main/pages/catalogues/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
+import { CreditLimitGroup, CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
+import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/models';
+import { StoreSegmentationTypesApiService } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/services';
+import { SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
+import { StoreSegmentationTreeComponent } from 'app/shared/components/selection-tree/store-segmentation/store-segmentation.component';
+import { ErrorMessageService, HelperService, TUploadPhotoType } from 'app/shared/helpers';
 import { Cluster } from 'app/shared/models/cluster.model';
-// import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+import { ErrorHandler, IPaginatedResponse, TNullable, FormStatus } from 'app/shared/models/global.model';
 import { District, Province, Urban } from 'app/shared/models/location.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { StoreGroup } from 'app/shared/models/store-group.model';
-// import { StoreSegment } from 'app/shared/models/store-segment.model';
 import { StoreType } from 'app/shared/models/store-type.model';
+import { UserSupplier, SupplierStore } from 'app/shared/models/supplier.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
 import * as numeral from 'numeral';
-import { fromEvent, Observable, Subject, of, BehaviorSubject, combineLatest } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, of, Subject, forkJoin, throwError, combineLatest } from 'rxjs';
 import {
+    catchError,
     debounceTime,
     distinctUntilChanged,
     filter,
     map,
-    takeUntil,
-    withLatestFrom,
-    tap,
     switchMap,
     take,
-    catchError,
+    takeUntil,
+    tap,
+    withLatestFrom,
+    concatMap,
+    flatMap,
+    exhaustMap,
 } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { Store as Merchant, StoreSetting } from '../models';
+import { Store as Merchant, StoreSetting, ICheckOwnerPhoneResponse } from '../models';
 import { StoreActions, StoreSettingActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors, StoreSettingSelectors } from '../store/selectors';
-import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
-import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
-import { UserSupplier } from 'app/shared/models/supplier.model';
-import { IPaginatedResponse, ErrorHandler, TNullable } from 'app/shared/models/global.model';
-import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/models';
-import { StoreSegmentationTypesApiService } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/services';
-import { StoreSegmentationTreeComponent } from 'app/shared/components/selection-tree/store-segmentation/store-segmentation.component';
-import { SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
+import { MerchantApiService } from '../services';
 import {
-    StoreSegmentationGroup,
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-} from 'app/main/pages/catalogues/models';
+    StoreSegmentationTypesApiService as StoreSegmentationApiService
+} from 'app/shared/components/selection-tree/store-segmentation/services/store-segmentation-api.service';
+
+import { PhotoUploadApiService, UploadPhotoApiPayload } from 'app/shared/helpers';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
+// import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+// import { StoreSegment } from 'app/shared/models/store-segment.model';
 interface RecordedSelection<T> {
     lastSaved: T;
     current: T;
@@ -88,14 +99,21 @@ interface RecordedSelection<T> {
 })
 export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
-    tmpPhoto: FormControl;
+    currentStoreId: string;
+    
+    tmpOwnerTaxPhoto: FormControl;  
     tmpIdentityPhoto: FormControl;
     tmpIdentityPhotoSelfie: FormControl;
+
+    tmpStoreTaxPhoto: FormControl;
+    tmpStorePhoto: FormControl;
+
     storeIdType: FormControl = new FormControl('manual');
     storeIdNextNumber: string;
     userId: string;
     pageType: string;
-    numberOfEmployees: { id: string; label: string }[];
+    numberOfEmployees: { amount: string }[];
+    storeStatuses: { id: string; label: string }[];
     tempInvoiceGroupName: Array<string>;
     tempCreditLimitAmount: Array<boolean>;
     tempTermOfPayment: Array<boolean>;
@@ -108,7 +126,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     isDistrictTyping: boolean;
     isUrbanTyping: boolean;
 
-    stores$: Observable<Merchant>;
+    isCheckingOwnerPhone$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    stores$: Observable<SupplierStore>;
     provinces$: Observable<Province[]>;
     cities$: Observable<Urban[]>;
     districts$: Observable<Array<District>>;
@@ -125,11 +144,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     creditLimitGroups$: Observable<CreditLimitGroup[]>;
     // d2Source$: DistrictDataSource;
 
+    reset$: BehaviorSubject<string> = new BehaviorSubject<string>('reset');
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
     storeSetting$: Observable<StoreSetting>;
     // Untuk keperluan handle dialog.
     dialogStoreType: ApplyDialogService<StoreSegmentationTreeComponent>;
+    newPhoto: string;
+    oldPhoto: string;
+    dialogPreviewPhoto: ApplyDialogService;
+    dialogUploadPhotoProgress: ApplyDialogService;
 
     private _unSubs$: Subject<void> = new Subject<void>();
     private _selectedDistrict: string;
@@ -143,16 +167,23 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     selectedStoreType$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
         RecordedSelection<string>
-    >({ lastSaved: 'Choose Store Type', current: '' });
+    >({ lastSaved: 'Choose Store Type', current: 'Choose Store Type' });
     selectedStoreGroup$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
         RecordedSelection<string>
-    >({ lastSaved: 'Choose Store Group', current: '' });
+    >({ lastSaved: 'Choose Store Group', current: 'Choose Store Group' });
     selectedStoreChannel$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
         RecordedSelection<string>
-    >({ lastSaved: 'Choose Store Channel', current: '' });
+    >({ lastSaved: 'Choose Store Channel', current: 'Choose Store Channel' });
     selectedStoreCluster$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<
         RecordedSelection<string>
-    >({ lastSaved: 'Choose Store Cluster', current: '' });
+    >({ lastSaved: 'Choose Store Cluster', current: 'Choose Store Cluster' });
+
+    // Untuk menyimpan progress.
+    uploadOwnerTaxPhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
+    uploadIdentityPhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
+    uploadIdentityPhotoSelfie$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
+    uploadStoreTaxPhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
+    uploadStorePhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
 
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
@@ -180,6 +211,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('selectStoreCluster', { static: false }) selectStoreCluster: TemplateRef<
         StoreSegmentationTreeComponent
     >;
+    @ViewChild('previewPhoto', { static: false }) previewPhoto: TemplateRef<any>;
+    @ViewChild('uploadPhotos', { static: false }) uploadPhotos: TemplateRef<any>;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -188,11 +221,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromMerchant.FeatureState>,
-        private applyDialogFactory$: ApplyDialogFactoryService<StoreSegmentationTreeComponent>,
+        private applyDialogFactory$: ApplyDialogFactoryService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
         private _$helper: HelperService,
-        private _$typeApi: StoreSegmentationTypesApiService
+        private _$typeApi: StoreSegmentationTypesApiService,
+        private _$merchantApi: MerchantApiService,
+        private _$segmentation: StoreSegmentationApiService,
+        private _$photo: PhotoUploadApiService,
+        private matDialog: MatDialog,
     ) {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -319,8 +356,56 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 
-            this.stores$ = this.store.select(StoreSelectors.getStoreEdit);
-            this.store.dispatch(StoreActions.fetchStoreEditRequest({ payload: id }));
+            this.store.select(StoreSelectors.getSelectedSupplierStore).pipe(
+                switchMap(supplierStore => {
+                    if (supplierStore) {
+                        return forkJoin({
+                            type: this._$segmentation.resolve(supplierStore.outerStore['storeType']['typeId'], 'type'),
+                            group: this._$segmentation.resolve(supplierStore.outerStore['storeGroup']['groupId'], 'group'),
+                            channel: this._$segmentation.resolve(supplierStore.outerStore['storeChannel']['channelId'], 'channel'),
+                            cluster: this._$segmentation.resolve(supplierStore.outerStore['storeCluster']['clusterId'], 'cluster'),
+            
+                        }).pipe(
+                            map(({ type, group, channel, cluster }) => {
+                                if (type.text) {
+                                    this.selectedStoreType$.next({
+                                        lastSaved: type.text,
+                                        current: type.text
+                                    });
+                                }
+
+                                if (group.text) {
+                                    this.selectedStoreGroup$.next({
+                                        lastSaved: group.text,
+                                        current: group.text
+                                    });
+                                }
+
+                                if (channel.text) {
+                                    this.selectedStoreChannel$.next({
+                                        lastSaved: channel.text,
+                                        current: channel.text
+                                    });
+                                }
+
+                                if (cluster.text) {
+                                    this.selectedStoreCluster$.next({
+                                        lastSaved: cluster.text,
+                                        current: cluster.text
+                                    });
+                                }
+
+                                return supplierStore;
+                            })
+                        );
+                    }
+
+                    return of(supplierStore);
+                }),
+                takeUntil(this._unSubs$)
+            ).subscribe();
+
+            this.store.dispatch(StoreActions.fetchSupplierStoreRequest({ payload: id }));
         }
 
         this.initForm();
@@ -388,7 +473,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         // Get data number of employee (local)
-        this.numberOfEmployees = this._$helper.numberOfEmployee();
+        this._$merchantApi.getNumberOfEmployee().subscribe(response => {
+            this.numberOfEmployees = response;
+        });
+
+        // Get a list of store statuses (local)
+        this.storeStatuses = this._$helper.storeStatuses();
 
         this.store.dispatch(FormActions.resetFormStatus());
 
@@ -397,8 +487,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .get('storeInfo.address.district')
             .valueChanges.pipe(
                 filter((v) => {
-                    this.districtHighlight = v;
-                    return v.length >= 3;
+                    if (v) {
+                        this.districtHighlight = v;
+                        return v.length >= 3;
+                    }
+
+                    return false;
                 }),
                 takeUntil(this._unSubs$)
             )
@@ -454,12 +548,32 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .select(FormSelectors.getIsClickResetButton)
             .pipe(
                 filter((isClick) => !!isClick),
+                exhaustMap(() => {
+                    const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
+                        DeleteConfirmationComponent,
+                        {
+                            data: {
+                                title: 'Cancel changes',
+                                message: `Are you sure want to reset the form? It will lose your changes.`,
+                                id: 'reset',
+                            },
+                            disableClose: true,
+                        }
+                    );
+    
+                    return dialogRef.afterClosed();
+                }),
                 takeUntil(this._unSubs$)
             )
-            .subscribe((isClick) => {
-                if (isClick) {
+            .subscribe((value) => {
+                if (value === 'reset') {
+                    const supplierId = this.form.get('supplierId').value;
+
                     this.form.reset();
-                    this.tmpPhoto.reset();
+                    this.resetTemporaryPhotoForms();
+
+                    this.form.get('supplierId').setValue(supplierId);
+                    this.reset$.next('reset');
                     this.store.dispatch(FormActions.resetClickResetButton());
                 }
             });
@@ -469,11 +583,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
                 filter((isClick) => !!isClick),
+                withLatestFrom(this.store.select(StoreSelectors.getSelectedSupplierStore)),
                 takeUntil(this._unSubs$)
             )
-            .subscribe((isClick) => {
+            .subscribe(([isClick, supplierStore]) => {
                 if (isClick) {
-                    this.onSubmit();
+                    if (this.pageType === 'edit') {
+                        this.onSubmit(supplierStore.id);
+                    } else {
+                        this.onSubmit();
+                    }
                 }
             });
 
@@ -560,6 +679,27 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unSubs$.next();
         this._unSubs$.complete();
 
+        this.reset$.next(null);
+        this.reset$.complete();
+
+        this.isCheckingOwnerPhone$.next(false);
+        this.isCheckingOwnerPhone$.complete();
+
+        this.uploadOwnerTaxPhoto$.next(null);
+        this.uploadIdentityPhoto$.next(null);
+        this.uploadIdentityPhotoSelfie$.next(null);
+        this.uploadStoreTaxPhoto$.next(null);
+        this.uploadStorePhoto$.next(null);
+
+        this.uploadOwnerTaxPhoto$.complete();
+        this.uploadIdentityPhoto$.complete();
+        this.uploadIdentityPhotoSelfie$.complete();
+        this.uploadStoreTaxPhoto$.complete();
+        this.uploadStorePhoto$.complete();
+
+        // Reset selected Supplier Store
+        this.store.dispatch(StoreActions.deselectSupplierStore());
+
         // Hide footer action
         this.store.dispatch(UiActions.hideFooterAction());
 
@@ -605,6 +745,91 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get creditLimitControls(): AbstractControl[] {
         return (this.form.get('storeInfo.payment.creditLimit') as FormArray).controls;
+    }
+
+    openPreviewPhoto(newPhoto: string, oldPhoto: string, type: string): void {
+        this.newPhoto = newPhoto;
+        this.oldPhoto = oldPhoto;
+
+        this.dialogPreviewPhoto = this.applyDialogFactory$.open(
+            {
+                title: `Preview Photo ${'(' + type + ')'}`,
+                template: this.previewPhoto,
+                isApplyEnabled: false,
+                showApplyButton: false,
+            },
+            {
+                disableClose: false,
+                width: '80vw',
+                minWidth: '80vw',
+                maxWidth: '80vw',
+            }
+        );
+
+        this.dialogPreviewPhoto.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG PREVIEW PHOTO CLOSED', value);
+            },
+        });
+    }
+
+    checkOwnerPhone(): AsyncValidatorFn {
+        return (control: AbstractControl): Observable<ValidationErrors | null> => {
+            return control.valueChanges.pipe(
+                distinctUntilChanged(),
+                debounceTime(500),
+                take(1),
+                switchMap(value => {
+                    if (!value) {
+                        this.disableStoreInformationForm();
+                        this.resetStoreInformationForm();
+
+                        return of({
+                            required: true
+                        });
+                    }
+
+                    this.isCheckingOwnerPhone$.next(true);
+                    const supplierId = +(this.form.get('supplierId').value);
+
+                    return this._$merchantApi.checkOwnerPhone(value, supplierId).pipe(
+                        map(response => {
+                            this.isCheckingOwnerPhone$.next(false);
+
+                            if (response.storeId) {
+                                this.disableStoreInformationForm();
+                                this.resetStoreInformationForm();
+                                this.loadStoreInformationForm(response);
+
+                                // Tidak bisa menambahkan nomor telepon yang sudah terdaftar di supplier tersebut.
+                                // 1 nomor telepon pemilik toko tidak boleh didaftarkan di supplier yang sama (untuk saat ini).
+                                if (!response.availability) {
+                                    return {
+                                        notAvailable: {
+                                            message: 'This phone number is already registered by this supplier.',
+                                            refValues: [value]
+                                        }
+                                    };
+                                }
+                            } else {
+                                this.enableStoreInformationForm();
+                                this.resetStoreInformationForm();
+                            }
+
+                            return null;
+                        }),
+                        catchError(() => {
+                            this.isCheckingOwnerPhone$.next(false);
+                            return of({
+                                internalError: {
+                                    message: 'There\'s an internal error. Please try again later.'
+                                }
+                            });
+                        })
+                    );
+                })
+            );
+        };
     }
 
     onSelectStoreType(): void {
@@ -662,7 +887,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.selectedStoreType$.next({
             lastSaved: this.selectedStoreType$.value.lastSaved,
-            current: $event.selectedString,
+            current: $event.selectedString ? $event.selectedString : this.selectedStoreType$.value.lastSaved,
         });
     }
 
@@ -721,7 +946,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.selectedStoreGroup$.next({
             lastSaved: this.selectedStoreGroup$.value.lastSaved,
-            current: $event.selectedString,
+            current: $event.selectedString ? $event.selectedString : this.selectedStoreGroup$.value.lastSaved
         });
     }
 
@@ -780,7 +1005,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.selectedStoreChannel$.next({
             lastSaved: this.selectedStoreChannel$.value.lastSaved,
-            current: $event.selectedString,
+            current: $event.selectedString ? $event.selectedString : this.selectedStoreChannel$.value.lastSaved,
         });
     }
 
@@ -839,7 +1064,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.selectedStoreCluster$.next({
             lastSaved: this.selectedStoreCluster$.value.lastSaved,
-            current: $event.selectedString,
+            current: $event.selectedString ? $event.selectedString : this.selectedStoreCluster$.value.lastSaved,
         });
     }
 
@@ -969,6 +1194,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
+        if (typeof item === 'string') {
+            return item;
+        }
+
         return HelperService.truncateText(
             `${item.province.name}, ${item.city}, ${item.district}`,
             40,
@@ -979,6 +1208,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     onDisplayUrban(item: Urban): string {
         if (!item) {
             return;
+        }
+
+        if (typeof item === 'string') {
+            return item;
         }
 
         return item.urban;
@@ -992,15 +1225,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
             if (file) {
                 switch (type) {
-                    case 'photo':
+                    case 'owner-tax-photo':
                         {
-                            const photoField = this.form.get('profileInfo.photos');
+                            const photoField = this.form.get('profileInfo.taxPhoto');
 
                             const fileReader = new FileReader();
 
                             fileReader.onload = () => {
                                 photoField.setValue(fileReader.result);
-                                this.tmpPhoto.setValue(file.name);
+                                this.tmpOwnerTaxPhoto.setValue(file.name);
 
                                 if (photoField.invalid) {
                                     photoField.markAsTouched();
@@ -1008,14 +1241,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             };
 
                             fileReader.readAsDataURL(file);
-
-                            // setTimeout(() => console.log(this.form, this.tmpPhoto), 200);
                         }
                         break;
 
-                    case 'identityPhoto':
+                    case 'owner-identity-photo':
                         {
-                            const photoField = this.form.get('storeInfo.legalInfo.identityPhoto');
+                            const photoField = this.form.get('profileInfo.identityPhoto');
 
                             const fileReader = new FileReader();
 
@@ -1032,10 +1263,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         }
                         break;
 
-                    case 'identityPhotoSelfie':
+                    case 'owner-identity-selfie-photo':
                         {
                             const photoField = this.form.get(
-                                'storeInfo.legalInfo.identityPhotoSelfie'
+                                'profileInfo.identityPhotoSelfie'
                             );
 
                             const fileReader = new FileReader();
@@ -1043,6 +1274,48 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             fileReader.onload = () => {
                                 photoField.setValue(fileReader.result);
                                 this.tmpIdentityPhotoSelfie.setValue(file.name);
+
+                                if (photoField.invalid) {
+                                    photoField.markAsTouched();
+                                }
+                            };
+
+                            fileReader.readAsDataURL(file);
+                        }
+                        break;
+
+                    case 'store-tax-photo':
+                        {
+                            const photoField = this.form.get(
+                                'storeInfo.taxPhoto'
+                            );
+
+                            const fileReader = new FileReader();
+
+                            fileReader.onload = () => {
+                                photoField.setValue(fileReader.result);
+                                this.tmpStoreTaxPhoto.setValue(file.name);
+
+                                if (photoField.invalid) {
+                                    photoField.markAsTouched();
+                                }
+                            };
+
+                            fileReader.readAsDataURL(file);
+                        }
+                        break;
+
+                    case 'store-photo':
+                        {
+                            const photoField = this.form.get(
+                                'storeInfo.photo'
+                            );
+
+                            const fileReader = new FileReader();
+
+                            fileReader.onload = () => {
+                                photoField.setValue(fileReader.result);
+                                this.tmpStorePhoto.setValue(file.name);
 
                                 if (photoField.invalid) {
                                     photoField.markAsTouched();
@@ -1511,7 +1784,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             id: [''],
             creditLimitStoreId: [''],
             invoiceGroup: [{ value: '', disabled: true }],
-            creditLimitGroup: [{ value: '', disabled: true }],
             creditLimit: [
                 { value: '', disabled: true },
                 [
@@ -1522,6 +1794,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                 ],
             ],
+            creditLimitGroup: [{ value: '', disabled: true }],
             termOfPayment: [
                 { value: '', disabled: true },
                 [
@@ -1818,33 +2091,35 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initForm(): void {
-        this.tmpPhoto = new FormControl({ value: '', disabled: true });
+        this.tmpOwnerTaxPhoto = new FormControl({ value: '', disabled: true });
         this.tmpIdentityPhoto = new FormControl({ value: '', disabled: true });
         this.tmpIdentityPhotoSelfie = new FormControl({ value: '', disabled: true });
+        this.tmpStoreTaxPhoto = new FormControl({ value: '', disabled: true });
+        this.tmpStorePhoto = new FormControl({ value: '', disabled: true });
 
-        if (this.pageType === 'new') {
-            this.form = this.formBuilder.group({
-                profileInfo: this.formBuilder.group({
-                    // username: [
-                    //     '',
-                    //     [
-                    //         RxwebValidators.required({
-                    //             message: this._$errorMessage.getErrorMessageNonState(
-                    //                 'username',
-                    //                 'required'
-                    //             )
-                    //         })
-                    //     ]
-                    // ],
-                    phoneNumber: [
-                        '',
-                        [
-                            // RxwebValidators.required({
-                            //     message: this._$errorMessage.getErrorMessageNonState(
-                            //         'default',
-                            //         'required'
-                            //     )
-                            // }),
+        // Inisialisasi form.
+        this.form = this.formBuilder.group({
+            storeId: ['', []],
+            supplierId: ['', [
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            profileInfo: this.formBuilder.group({
+                // Nomor Telepon Pemilik Toko
+                phoneNumber: [
+                    '',
+                    {
+                        validators: [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
                             // RxwebValidators.pattern({
                             //     expression: {
                             //         mobilePhone: /^08[0-9]{8,12}$/,
@@ -1856,19 +2131,476 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //     ),
                             // }),
                         ],
+                        asyncValidators: [this.checkOwnerPhone()]
+                    },
+                ],
+                // Nama Pemilik Toko
+                name: [{ value: null, disabled: true }, [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        )
+                    }),
+                ]],
+                // Nomor Pokok Wajib Pajak (NPWP) Pemilik Toko
+                taxId: [{ value: null, disabled: true }, [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.minLength({
+                            value: 15,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
+                        RxwebValidators.maxLength({
+                            value: 15,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
                     ],
-                    photos: [
+                ],
+                // Nomor KTP Pemilik Toko
+                identityId: [{ value: null, disabled: true }, [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.digit({
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
+                        RxwebValidators.minLength({
+                            value: 16,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
+                        RxwebValidators.maxLength({
+                            value: 16,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
+                    ],
+                ],
+                // Foto NPWP Pemilik Toko
+                taxPhoto: [{ value: null, disabled: true }, [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.fileSize({
+                            maxSize: Math.floor(5 * 1048576),
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'file_size_lte',
+                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ],
+                ],
+                oldTaxPhoto: [null],
+                // Foto KTP Pemilik Toko
+                identityPhoto: [{ value: null, disabled: true }, [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.fileSize({
+                            maxSize: Math.floor(5 * 1048576),
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'file_size_lte',
+                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ],
+                ],
+                oldIdentityPhoto: [null],
+                // Foto KTP + Selfie Pemilik Toko
+                identityPhotoSelfie: [{ value: null, disabled: true }, [
+                        RxwebValidators.fileSize({
+                            maxSize: Math.floor(5 * 1048576),
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'file_size_lte',
+                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ],
+                ],
+                oldIdentityPhotoSelfie: [null],
+            }),
+            storeInfo: this.formBuilder.group({
+                approvalStatus: ['guest'],
+                storeId: this.formBuilder.group({
+                    id: [
                         '',
                         [
-                            RxwebValidators.fileSize({
-                                maxSize: Math.floor(5 * 1048576),
+                            // RxwebValidators.required({
+                            //     message: this._$errorMessage.getErrorMessageNonState(
+                            //         'default',
+                            //         'required'
+                            //     ),
+                            // }),
+                        ],
+                    ],
+                    storeName: [
+                        '',
+                        [
+                            RxwebValidators.required({
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
-                                    'file_size_lte',
-                                    { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                    'required'
                                 ),
                             }),
                         ],
+                    ],
+                }),
+                // Nomor Pokok Wajib Pajak (NPWP) Toko
+                taxId: [
+                    '',
+                    [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.minLength({
+                            value: 15,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
+                        RxwebValidators.maxLength({
+                            value: 15,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            ),
+                        }),
+                    ],
+                ],
+                // Nomor Telepon Toko
+                phoneNumber: [
+                    '',
+                    [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        // RxwebValidators.pattern({
+                        //     expression: {
+                        //         mobilePhone: /^08[0-9]{8,12}$/,
+                        //     },
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'mobile_phone_pattern',
+                        //         '08'
+                        //     ),
+                        // }),
+                    ],
+                ],
+                // Foto NPWP Toko
+                taxPhoto: [
+                    null,
+                    [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.fileSize({
+                            maxSize: Math.floor(5 * 1048576),
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'file_size_lte',
+                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ],
+                ],
+                oldTaxPhoto: [null],
+                // Foto NPWP Toko
+                photo: [
+                    null,
+                    [
+                        // RxwebValidators.required({
+                        //     message: this._$errorMessage.getErrorMessageNonState(
+                        //         'default',
+                        //         'required'
+                        //     )
+                        // }),
+                        RxwebValidators.fileSize({
+                            maxSize: Math.floor(5 * 1048576),
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'file_size_lte',
+                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                            ),
+                        }),
+                    ],
+                ],
+                oldPhoto: [null],
+                status: ['', [
+                    // RxwebValidators.required({
+                    //     message: this._$errorMessage.getErrorMessageNonState(
+                    //         'default',
+                    //         'required'
+                    //     ),
+                    // }),
+                ]],
+                address: this.formBuilder.group({
+                    // province: [
+                    //     '',
+                    //     [
+                    //         RxwebValidators.required({
+                    //             message: this._$errorMessage.getErrorMessageNonState(
+                    //                 'default',
+                    //                 'required'
+                    //             )
+                    //         })
+                    //     ]
+                    // ],
+                    // city: [
+                    //     { value: '', disabled: true },
+                    //     [
+                    //         RxwebValidators.required({
+                    //             message: this._$errorMessage.getErrorMessageNonState(
+                    //                 'default',
+                    //                 'required'
+                    //             )
+                    //         })
+                    //     ]
+                    // ],
+                    district: [
+                        { value: '', disabled: false },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                        ],
+                    ],
+                    urban: [
+                        { value: '', disabled: false },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                        ],
+                    ],
+                    postcode: [
+                        { value: '', disabled: true },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                            RxwebValidators.digit({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                ),
+                            }),
+                            RxwebValidators.minLength({
+                                value: 5,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                ),
+                            }),
+                            RxwebValidators.maxLength({
+                                value: 5,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                ),
+                            }),
+                        ],
+                    ],
+                    address: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                        ],
+                    ],
+                    notes: ['', []],
+                    geolocation: this.formBuilder.group({
+                        lng: [
+                            '',
+                            [
+                                RxwebValidators.longitude({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    ),
+                                }),
+                            ],
+                        ],
+                        lat: [
+                            '',
+                            [
+                                RxwebValidators.latitude({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    ),
+                                }),
+                            ],
+                        ],
+                    }),
+                }),
+                // legalInfo: this.formBuilder.group({
+                //     name: [
+                //         '',
+                //         [
+                //             RxwebValidators.required({
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'required'
+                //                 ),
+                //             }),
+                //             // RxwebValidators.alpha({
+                //             //     allowWhiteSpace: true,
+                //             //     message: this._$errorMessage.getErrorMessageNonState(
+                //             //         'default',
+                //             //         'pattern'
+                //             //     ),
+                //             // }),
+                //         ],
+                //     ],
+                //     identityId: [
+                //         '',
+                //         [
+                //             // RxwebValidators.required({
+                //             //     message: this._$errorMessage.getErrorMessageNonState(
+                //             //         'default',
+                //             //         'required'
+                //             //     )
+                //             // }),
+                //             RxwebValidators.digit({
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'pattern'
+                //                 ),
+                //             }),
+                //             RxwebValidators.minLength({
+                //                 value: 16,
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'pattern'
+                //                 ),
+                //             }),
+                //             RxwebValidators.maxLength({
+                //                 value: 16,
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'pattern'
+                //                 ),
+                //             }),
+                //         ],
+                //     ],
+                //     identityPhoto: [
+                //         '',
+                //         [
+                //             // RxwebValidators.required({
+                //             //     message: this._$errorMessage.getErrorMessageNonState(
+                //             //         'default',
+                //             //         'required'
+                //             //     )
+                //             // }),
+                //             RxwebValidators.fileSize({
+                //                 maxSize: Math.floor(5 * 1048576),
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'file_size_lte',
+                //                     { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                //                 ),
+                //             }),
+                //         ],
+                //     ],
+                //     identityPhotoSelfie: [
+                //         '',
+                //         [
+                //             RxwebValidators.fileSize({
+                //                 maxSize: Math.floor(5 * 1048576),
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'file_size_lte',
+                //                     { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                //                 ),
+                //             }),
+                //         ],
+                //     ],
+                //     npwpId: [
+                //         '',
+                //         [
+                //             // RxwebValidators.required({
+                //             //     message: this._$errorMessage.getErrorMessageNonState(
+                //             //         'default',
+                //             //         'required'
+                //             //     )
+                //             // }),
+                //             RxwebValidators.minLength({
+                //                 value: 15,
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'pattern'
+                //                 ),
+                //             }),
+                //             RxwebValidators.maxLength({
+                //                 value: 15,
+                //                 message: this._$errorMessage.getErrorMessageNonState(
+                //                     'default',
+                //                     'pattern'
+                //                 ),
+                //             }),
+                //         ],
+                //     ],
+                // }),
+                physicalStoreInfo: this.formBuilder.group({
+                    numberOfEmployee: [''],
+                    vehicleAccessibility: [''],
+                }),
+                storeClassification: this.formBuilder.group({
+                    storeType: [
+                        '',
                         // [
                         //     RxwebValidators.required({
                         //         message: this._$errorMessage.getErrorMessageNonState(
@@ -1878,1210 +2610,236 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         //     })
                         // ]
                     ],
-                    npwpId: [
+                    storeGroup: [
                         '',
-                        [
-                            // RxwebValidators.required({
-                            //     message: this._$errorMessage.getErrorMessageNonState(
-                            //         'default',
-                            //         'required'
-                            //     )
-                            // }),
-                            RxwebValidators.minLength({
-                                value: 15,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                ),
-                            }),
-                            RxwebValidators.maxLength({
-                                value: 15,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                ),
-                            }),
-                        ],
+                        // [
+                        //     RxwebValidators.required({
+                        //         message: this._$errorMessage.getErrorMessageNonState(
+                        //             'default',
+                        //             'required'
+                        //         )
+                        //     })
+                        // ]
                     ],
-                }),
-                storeInfo: this.formBuilder.group({
-                    storeId: this.formBuilder.group({
-                        id: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        storeName: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                    }),
-                    address: this.formBuilder.group({
-                        // province: [
-                        //     '',
-                        //     [
-                        //         RxwebValidators.required({
-                        //             message: this._$errorMessage.getErrorMessageNonState(
-                        //                 'default',
-                        //                 'required'
-                        //             )
-                        //         })
-                        //     ]
-                        // ],
-                        // city: [
-                        //     { value: '', disabled: true },
-                        //     [
-                        //         RxwebValidators.required({
-                        //             message: this._$errorMessage.getErrorMessageNonState(
-                        //                 'default',
-                        //                 'required'
-                        //             )
-                        //         })
-                        //     ]
-                        // ],
-                        district: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        urban: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        // district: [
-                        //     { value: '', disabled: true },
-                        //     [
-                        //         RxwebValidators.required({
-                        //             message: this._$errorMessage.getErrorMessageNonState(
-                        //                 'default',
-                        //                 'required'
-                        //             )
-                        //         })
-                        //     ]
-                        // ],
-                        // urban: [
-                        //     { value: '', disabled: true },
-                        //     [
-                        //         RxwebValidators.required({
-                        //             message: this._$errorMessage.getErrorMessageNonState(
-                        //                 'default',
-                        //                 'required'
-                        //             )
-                        //         })
-                        //     ]
-                        // ],
-                        postcode: [
-                            { value: '', disabled: true },
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                                RxwebValidators.digit({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.minLength({
-                                    value: 5,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.maxLength({
-                                    value: 5,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        notes: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        geolocation: this.formBuilder.group({
-                            lng: [
-                                '',
-                                [
-                                    RxwebValidators.longitude({
-                                        message: this._$errorMessage.getErrorMessageNonState(
-                                            'default',
-                                            'pattern'
-                                        ),
-                                    }),
-                                ],
-                            ],
-                            lat: [
-                                '',
-                                [
-                                    RxwebValidators.latitude({
-                                        message: this._$errorMessage.getErrorMessageNonState(
-                                            'default',
-                                            'pattern'
-                                        ),
-                                    }),
-                                ],
-                            ],
-                        }),
-                    }),
-                    legalInfo: this.formBuilder.group({
-                        name: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                                // RxwebValidators.alpha({
-                                //     allowWhiteSpace: true,
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'pattern'
-                                //     ),
-                                // }),
-                            ],
-                        ],
-                        identityId: [
-                            '',
-                            [
-                                // RxwebValidators.required({
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'required'
-                                //     )
-                                // }),
-                                RxwebValidators.digit({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.minLength({
-                                    value: 16,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.maxLength({
-                                    value: 16,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        identityPhoto: [
-                            '',
-                            [
-                                // RxwebValidators.required({
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'required'
-                                //     )
-                                // }),
-                                RxwebValidators.fileSize({
-                                    maxSize: Math.floor(5 * 1048576),
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'file_size_lte',
-                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    ),
-                                }),
-                            ],
-                        ],
-                        identityPhotoSelfie: [
-                            '',
-                            [
-                                RxwebValidators.fileSize({
-                                    maxSize: Math.floor(5 * 1048576),
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'file_size_lte',
-                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    ),
-                                }),
-                            ],
-                        ],
-                        npwpId: [
-                            '',
-                            [
-                                // RxwebValidators.required({
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'required'
-                                //     )
-                                // }),
-                                RxwebValidators.minLength({
-                                    value: 15,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.maxLength({
-                                    value: 15,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                            ],
-                        ],
-                    }),
-                    physicalStoreInfo: this.formBuilder.group({
-                        numberOfEmployee: [''],
-                        vehicleAccessibility: [''],
-                    }),
-                    storeClassification: this.formBuilder.group({
-                        storeType: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        storeGroup: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        storeChannel: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        storeCluster: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        // storeSegment: [
-                        //     ''
-                        //     // [
-                        //     //     RxwebValidators.required({
-                        //     //         message: this._$errorMessage.getErrorMessageNonState(
-                        //     //             'default',
-                        //     //             'required'
-                        //     //         )
-                        //     //     })
-                        //     // ]
-                        // ],
-                        // hierarchy: ['']
-                    }),
-                    payment: this.formBuilder.group({
-                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()]),
-                    }),
-                }),
-            });
-
-            this.store
-                .select(DropdownSelectors.getInvoiceGroupDropdownState)
-                .pipe(takeUntil(this._unSubs$))
-                .subscribe((data) => {
-                    if (data && data.length > 0) {
-                        this.restoreInvoiceGroups(data);
-                        // for (const [idx, row] of data.entries()) {
-                        //     if (row.id) {
-                        //         this.tempInvoiceGroupName[idx] = row.name || '-';
-
-                        //         if (idx > 0) {
-                        //             this.formCreditLimits.push(
-                        //                 this.formBuilder.group({
-                        //                     allowCreditLimit: false,
-                        //                     id: [''],
-                        //                     creditLimitStoreId: [''],
-                        //                     invoiceGroup: row.id,
-                        //                     creditLimitGroup: [
-                        //                         {
-                        //                             value: '',
-                        //                             disabled: true,
-                        //                         },
-                        //                     ],
-                        //                     creditLimit: [
-                        //                         {
-                        //                             value: '',
-                        //                             disabled: true,
-                        //                         },
-                        //                     ],
-                        //                     termOfPayment: [
-                        //                         {
-                        //                             value: '',
-                        //                             disabled: true,
-                        //                         },
-                        //                     ],
-                        //                 })
-                        //             );
-                        //         } else {
-                        //             this.formCreditLimits.at(idx).get('allowCreditLimit').reset();
-
-                        //             this.formCreditLimits
-                        //                 .at(idx)
-                        //                 .get('allowCreditLimit')
-                        //                 .patchValue(false);
-
-                        //             this.formCreditLimits
-                        //                 .at(idx)
-                        //                 .get('invoiceGroup')
-                        //                 .patchValue(row.id);
-
-                        //             this.formCreditLimits.at(idx).get('creditLimit').reset();
-
-                        //             this.formCreditLimits.at(idx).get('termOfPayment').reset();
-
-                        //             this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
-                        //         }
-                        //     }
-                        // }
-                    }
-                });
-        } else if (this.pageType === 'edit') {
-            this.form = this.formBuilder.group({
-                profileInfo: this.formBuilder.group({
-                    // username: [
-                    //     '',
-                    //     [
-                    //         RxwebValidators.required({
-                    //             message: this._$errorMessage.getErrorMessageNonState(
-                    //                 'username',
-                    //                 'required'
-                    //             )
-                    //         })
-                    //     ]
+                    storeChannel: [
+                        '',
+                        // [
+                        //     RxwebValidators.required({
+                        //         message: this._$errorMessage.getErrorMessageNonState(
+                        //             'default',
+                        //             'required'
+                        //         )
+                        //     })
+                        // ]
+                    ],
+                    storeCluster: [
+                        '',
+                        // [
+                        //     RxwebValidators.required({
+                        //         message: this._$errorMessage.getErrorMessageNonState(
+                        //             'default',
+                        //             'required'
+                        //         )
+                        //     })
+                        // ]
+                    ],
+                    // storeSegment: [
+                    //     ''
+                    //     // [
+                    //     //     RxwebValidators.required({
+                    //     //         message: this._$errorMessage.getErrorMessageNonState(
+                    //     //             'default',
+                    //     //             'required'
+                    //     //         )
+                    //     //     })
+                    //     // ]
                     // ],
-                    phoneNumber: [
-                        '',
-                        [
-                            // RxwebValidators.required({
-                            //     message: this._$errorMessage.getErrorMessageNonState(
-                            //         'default',
-                            //         'required'
-                            //     )
-                            // }),
-                            // RxwebValidators.pattern({
-                            //     expression: {
-                            //         mobilePhone: /^08[0-9]{8,12}$/,
-                            //     },
-                            //     message: this._$errorMessage.getErrorMessageNonState(
-                            //         'default',
-                            //         'mobile_phone_pattern',
-                            //         '08'
-                            //     ),
-                            // }),
-                        ],
-                    ],
-                    photos: [
-                        '',
-                        [
-                            RxwebValidators.fileSize({
-                                maxSize: Math.floor(5 * 1048576),
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'file_size_lte',
-                                    { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                ),
-                            }),
-                            // RxwebValidators.required({
-                            //     message: this._$errorMessage.getErrorMessageNonState(
-                            //         'default',
-                            //         'required'
-                            //     )
-                            // })
-                        ],
-                    ],
-                    npwpId: [
-                        '',
-                        [
-                            // RxwebValidators.required({
-                            //     message: this._$errorMessage.getErrorMessageNonState(
-                            //         'default',
-                            //         'required'
-                            //     )
-                            // }),
-                            RxwebValidators.minLength({
-                                value: 15,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                ),
-                            }),
-                            RxwebValidators.maxLength({
-                                value: 15,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                ),
-                            }),
-                        ],
-                    ],
+                    // hierarchy: ['']
                 }),
-                storeInfo: this.formBuilder.group({
-                    storeId: this.formBuilder.group({
-                        id: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        storeName: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                    }),
-                    address: this.formBuilder.group({
-                        // province: [
-                        //     '',
-                        //     [
-                        //         RxwebValidators.required({
-                        //             message: this._$errorMessage.getErrorMessageNonState(
-                        //                 'default',
-                        //                 'required'
-                        //             )
-                        //         })
-                        //     ]
-                        // ],
-                        // city: [
-                        //     { value: '', disabled: true },
-                        //     [
-                        //         RxwebValidators.required({
-                        //             message: this._$errorMessage.getErrorMessageNonState(
-                        //                 'default',
-                        //                 'required'
-                        //             )
-                        //         })
-                        //     ]
-                        // ],
-                        district: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        urban: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        postcode: [
-                            { value: '', disabled: true },
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                                RxwebValidators.digit({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.minLength({
-                                    value: 5,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.maxLength({
-                                    value: 5,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        notes: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        geolocation: this.formBuilder.group({
-                            lng: [
-                                '',
-                                [
-                                    RxwebValidators.longitude({
-                                        message: this._$errorMessage.getErrorMessageNonState(
-                                            'default',
-                                            'pattern'
-                                        ),
-                                    }),
-                                ],
-                            ],
-                            lat: [
-                                '',
-                                [
-                                    RxwebValidators.latitude({
-                                        message: this._$errorMessage.getErrorMessageNonState(
-                                            'default',
-                                            'pattern'
-                                        ),
-                                    }),
-                                ],
-                            ],
-                        }),
-                    }),
-                    legalInfo: this.formBuilder.group({
-                        name: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    ),
-                                }),
-                                // RxwebValidators.alpha({
-                                //     allowWhiteSpace: true,
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'pattern'
-                                //     ),
-                                // }),
-                            ],
-                        ],
-                        identityId: [
-                            '',
-                            [
-                                // RxwebValidators.required({
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'required'
-                                //     )
-                                // }),
-                                RxwebValidators.digit({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.minLength({
-                                    value: 16,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.maxLength({
-                                    value: 16,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                            ],
-                        ],
-                        identityPhoto: [
-                            '',
-                            [
-                                // RxwebValidators.required({
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'required'
-                                //     )
-                                // }),
-                                RxwebValidators.fileSize({
-                                    maxSize: Math.floor(5 * 1048576),
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'file_size_lte',
-                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    ),
-                                }),
-                            ],
-                        ],
-                        identityPhotoSelfie: [
-                            '',
-                            [
-                                RxwebValidators.fileSize({
-                                    maxSize: Math.floor(5 * 1048576),
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'file_size_lte',
-                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                                    ),
-                                }),
-                            ],
-                        ],
-                        npwpId: [
-                            '',
-                            [
-                                // RxwebValidators.required({
-                                //     message: this._$errorMessage.getErrorMessageNonState(
-                                //         'default',
-                                //         'required'
-                                //     )
-                                // }),
-                                RxwebValidators.minLength({
-                                    value: 15,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                                RxwebValidators.maxLength({
-                                    value: 15,
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'pattern'
-                                    ),
-                                }),
-                            ],
-                        ],
-                    }),
-                    physicalStoreInfo: this.formBuilder.group({
-                        numberOfEmployee: [''],
-                        vehicleAccessibility: [''],
-                    }),
-                    storeClassification: this.formBuilder.group({
-                        storeType: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        storeGroup: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        storeChannel: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        storeCluster: [
-                            '',
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        // storeSegment: [
-                        //     ''
-                        //     // [
-                        //     //     RxwebValidators.required({
-                        //     //         message: this._$errorMessage.getErrorMessageNonState(
-                        //     //             'default',
-                        //     //             'required'
-                        //     //         )
-                        //     //     })
-                        //     // ]
-                        // ],
-                        // hierarchy: ['']
-                    }),
-                    payment: this.formBuilder.group({
-                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()]),
-                    }),
+                payment: this.formBuilder.group({
+                    creditLimit: this.formBuilder.array([this.createCreditLimitForm()]),
                 }),
-            });
+            }),
+        });
 
-            /* withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-                    map(([data, userSupplier]) => {
-                        if (!userSupplier) {
-                            this.router.navigateByUrl('/pages/account/stores');
-                        } else if (userSupplier.supplierId) {
-                            if (data && data.supplierStores) {
-                                const idx = data.supplierStores.findIndex(
-                                    r => r.supplierId === userSupplier.supplierId
-                                );
+        combineLatest([
+            this.reset$,
+            this.store.select(DropdownSelectors.getInvoiceGroupDropdownState),
+            this.store.select(StoreSelectors.getSelectedSupplierStore)
+        ])
+        .pipe(takeUntil(this._unSubs$))
+        .subscribe(([_, invoiceGroups, data]) => {
+            if (this.pageType === 'new') {
+                if (invoiceGroups) {
+                    this.restoreInvoiceGroups(invoiceGroups);
+                }
+            } else if (this.pageType === 'edit') {
+                if (data && invoiceGroups) {
+                    this.disableStoreInformationForm();
+                    this.restoreInvoiceGroups(invoiceGroups);
+                    this.restoreFormData(data);
+                }
+            }
+        });
 
-                                if (idx === -1) {
-                                    this.router.navigateByUrl('/pages/account/stores');
-                                }
-                            }
-                        }
+        this.createFormListener();
 
-                        return data;
-                    }), */
+        this.store.select(AuthSelectors.getUserSupplier)
+        .pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(({ supplierId }) => {
+            this.form.get('supplierId').patchValue(supplierId);
+        });
+    }
 
-            combineLatest([
-                this.store.select(StoreSelectors.getStoreEdit),
-                this.store.select(DropdownSelectors.getInvoiceGroupDropdownState),
-            ]).pipe(
-                filter(([merchant, invoiceGroups]) => !!merchant && invoiceGroups.length > 0),
-                takeUntil(this._unSubs$)
-            ).subscribe(([data, invoiceGroups]) => {
-                // Menyiapkan form untuk Invoice Group.
-                this.restoreInvoiceGroups(invoiceGroups);
+    // private restoreInvoiceGroups(data: Array<InvoiceGroup>): void {
+    //     if (data && data.length > 0) {
+    //         for (const [idx, row] of data.entries()) {
+    //             if (row.id) {
+    //                 this.tempInvoiceGroupName[idx] = row.name || '-';
 
-                if (data.phoneNo) {
-                    this.form.get('profileInfo.phoneNumber').setValue(data.phoneNo);
+    //                 if (idx > 0) {
+    //                     this.formCreditLimits.push(
+    //                         this.formBuilder.group({
+    //                             allowCreditLimit: false,
+    //                             id: [''],
+    //                             creditLimitStoreId: [''],
+    //                             invoiceGroup: row.id,
+    //                             creditLimitGroup: [
+    //                                 {
+    //                                     value: '',
+    //                                     disabled: true,
+    //                                 },
+    //                             ],
+    //                             creditLimit: [
+    //                                 {
+    //                                     value: '',
+    //                                     disabled: true,
+    //                                 },
+    //                             ],
+    //                             termOfPayment: [
+    //                                 {
+    //                                     value: '',
+    //                                     disabled: true,
+    //                                 },
+    //                             ],
+    //                         })
+    //                     );
+    //                 } else {
+    //                     this.formCreditLimits.at(idx).get('allowCreditLimit').reset();
+
+    //                     this.formCreditLimits
+    //                         .at(idx)
+    //                         .get('allowCreditLimit')
+    //                         .patchValue(false);
+
+    //                     this.formCreditLimits
+    //                         .at(idx)
+    //                         .get('invoiceGroup')
+    //                         .patchValue(row.id);
+
+    //                     this.formCreditLimits.at(idx).get('creditLimit').reset();
+
+    //                     this.formCreditLimits.at(idx).get('termOfPayment').reset();
+
+    //                     this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    private restoreFormData(data: SupplierStore): void {
+        this.currentStoreId = `Current Store ID: ${data['outerStore']['externalId']}`;
+
+        this.form.get('supplierId').disable();
+
+        this.form.get('profileInfo.phoneNumber').disable();
+
+        this.form.patchValue({
+            // supplierId: data['supplierId'],
+            storeId: data.store.id,
+            // Informasi Pemilik Toko
+            profileInfo: {
+                // Informasi pemilik toko akan di-load setelah isi nomor telepon dan hanya read-only.
+                phoneNumber: data.store.legalInfo.mobilePhoneNo,
+                name: data.store.legalInfo.fullName,
+                taxId: data.store.legalInfo.taxNo,
+                identityId: data.store.legalInfo.idNo,
+                taxPhoto: data.store.legalInfo.taxImageUrl,
+                oldTaxPhoto: data.store.legalInfo.taxImageUrl,
+                identityPhoto: data.store.legalInfo.idImageUrl,
+                oldIdentityPhoto: data.store.legalInfo.idImageUrl,
+                identityPhotoSelfie: data.store.legalInfo.selfieImageUrl,
+                oldIdentityPhotoSelfie: data.store.legalInfo.selfieImageUrl,
+            },
+            // Informasi Toko
+            storeInfo: {
+                approvalStatus: data['outerStore']['approvalStatus'],
+                storeId: {
+                    // id: data['outerStore']['externalId'],
+                    storeName: data['outerStore']['name'],
+                },
+                taxId: data['outerStore']['taxNo'],
+                phoneNumber: data['outerStore']['phoneNo'],
+                taxPhoto: data['outerStore']['taxImageUrl'],
+                oldTaxPhoto: data['outerStore']['taxImageUrl'],
+                photo: data['outerStore']['imageUrl'],
+                oldPhoto: data['outerStore']['imageUrl'],
+                status: data['outerStore']['status'],
+                address: {
+                    district: data['outerStore']['urban']['district'],
+                    urban: data['outerStore']['urban']['urban'],
+                    postcode: data['outerStore']['urban']['zipCode'],
+                    address: data['outerStore']['address'],
+                    notes: data['outerStore']['noteAddress'],
+                    geolocation: {
+                        lng: data['outerStore']['longitude'],
+                        lat: data['outerStore']['latitude'],
+                    },
+                },
+                physicalStoreInfo: {
+                    numberOfEmployee: data['outerStore']['numberOfEmployee'],
+                    vehicleAccessibility: data['outerStore']['vehicleAccessibilityId'],
+                },
+                storeClassification: {
+                    storeType: data['outerStore']['storeType']['typeId'],
+                    storeGroup: data['outerStore']['storeGroup']['groupId'],
+                    storeChannel: data['outerStore']['storeChannel']['channelId'],
+                    storeCluster: data['outerStore']['storeCluster']['clusterId'],
+                },
+                payment: {
+                    creditLimit: [],
                 }
 
-                if (this.form.get('profileInfo.phoneNumber').invalid) {
-                    this.form.get('profileInfo.phoneNumber').markAsTouched();
-                }
+            }
+        });
 
-                if (data.longitude) {
-                    this.form
-                        .get('storeInfo.address.geolocation.lng')
-                        .setValue(data.longitude);
-                }
+        if (data['store']['creditLimitStores'] && data['store']['creditLimitStores'].length > 0) {
+            const creditLimitStores = data['store']['creditLimitStores'] as Array<CreditLimitStore>;
+            const availableCreditLimitStores: Array<any> = this.formCreditLimits.getRawValue();
 
-                if (this.form.get('storeInfo.address.geolocation.lng').invalid) {
-                    this.form.get('storeInfo.address.geolocation.lng').markAsTouched();
-                }
+            for (const [idx, row] of creditLimitStores.entries()) {
+                if (typeof row.allowCreditLimit === 'boolean') {
+                    const foundIdx = availableCreditLimitStores.findIndex(cl => cl.invoiceGroup === row.invoiceGroupId);
 
-                if (data.latitude) {
-                    this.form
-                        .get('storeInfo.address.geolocation.lat')
-                        .setValue(data.latitude);
-                }
-
-                if (this.form.get('storeInfo.address.geolocation.lat').invalid) {
-                    this.form.get('storeInfo.address.geolocation.lat').markAsTouched();
-                }
-
-                if (data.imageUrl) {
-                    this.form.get('profileInfo.photos').clearValidators();
-                    this.form.get('profileInfo.photos').setValidators([
-                        RxwebValidators.fileSize({
-                            maxSize: Math.floor(5 * 1048576),
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'file_size_lte',
-                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
-                    ]);
-                    this.form.get('profileInfo.photos').updateValueAndValidity();
-                }
-
-                if (data.taxNo) {
-                    this.form.get('profileInfo.npwpId').setValue(data.taxNo);
-                }
-
-                if (this.form.get('profileInfo.npwpId').invalid) {
-                    this.form.get('profileInfo.npwpId').markAsTouched();
-                }
-
-                if (data.externalId) {
-                    this.form.get('storeInfo.storeId.id').setValue(data.externalId);
-                }
-
-                if (this.form.get('storeInfo.storeId.id').invalid) {
-                    this.form.get('storeInfo.storeId.id').markAsTouched();
-                }
-
-                if (data.name) {
-                    this.form.get('storeInfo.storeId.storeName').setValue(data.name);
-                }
-
-                if (this.form.get('storeInfo.storeId.storeName').invalid) {
-                    this.form.get('storeInfo.storeId.storeName').markAsTouched();
-                }
-
-                if (data.owner) {
-                    const ownerName = data.owner.fullName || '';
-                    const ownerIdNo = data.owner.idNo || '';
-                    const ownerIdImgUrl = data.owner.idImageUrl || '';
-                    const ownerSelfieImgUrl = data.owner.selfieImageUrl || '';
-                    const ownerNpwpNo = data.owner.taxNo || '';
-                    const ownerId = data.owner.id || '';
-
-                    if (ownerId) {
-                        this.userId = ownerId;
-                    }
-
-                    if (ownerName) {
-                        this.form.get('storeInfo.legalInfo.name').setValue(ownerName);
-                    }
-
-                    if (this.form.get('storeInfo.legalInfo.name').invalid) {
-                        this.form.get('storeInfo.legalInfo.name').markAsTouched();
-                    }
-
-                    if (ownerIdNo) {
-                        this.form.get('storeInfo.legalInfo.identityId').setValue(ownerIdNo);
-                    }
-
-                    if (this.form.get('storeInfo.legalInfo.identityId').invalid) {
-                        this.form.get('storeInfo.legalInfo.identityId').markAsTouched();
-                    }
-
-                    if (ownerIdImgUrl) {
-                        this.form
-                            .get('storeInfo.legalInfo.identityPhoto')
-                            .clearValidators();
-                        this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
-                            RxwebValidators.fileSize({
-                                maxSize: Math.floor(5 * 1048576),
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'file_size_lte',
-                                    {
-                                        size: numeral(5 * 1048576).format(
-                                            '0.0 b',
-                                            Math.floor
-                                        ),
-                                    }
-                                ),
-                            }),
-                        ]);
-
-                        this.form
-                            .get('storeInfo.legalInfo.identityPhoto')
-                            .updateValueAndValidity();
-                    }
-
-                    // else {
-                    //     this.form
-                    //         .get('storeInfo.legalInfo.identityPhoto')
-                    //         .clearValidators();
-                    //     this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
-                    //         RxwebValidators.required({
-                    //             message: this._$errorMessage.getErrorMessageNonState(
-                    //                 'default',
-                    //                 'required'
-                    //             )
-                    //         }),
-                    //         RxwebValidators.fileSize({
-                    //             maxSize: Math.floor(5 * 1048576),
-                    //             message: this._$errorMessage.getErrorMessageNonState(
-                    //                 'default',
-                    //                 'file_size_lte',
-                    //                 {
-                    //                     size: numeral(5 * 1048576).format(
-                    //                         '0.0 b',
-                    //                         Math.floor
-                    //                     )
-                    //                 }
-                    //             )
-                    //         })
-                    //     ]);
-
-                    //     this.form
-                    //         .get('storeInfo.legalInfo.identityPhoto')
-                    //         .updateValueAndValidity();
-                    // }
-
-                    if (this.form.get('storeInfo.legalInfo.identityPhoto').invalid) {
-                        this.form.get('storeInfo.legalInfo.identityPhoto').markAsTouched();
-                    }
-
-                    if (ownerSelfieImgUrl) {
-                        this.form
-                            .get('storeInfo.legalInfo.identityPhotoSelfie')
-                            .clearValidators();
-                        this.form
-                            .get('storeInfo.legalInfo.identityPhotoSelfie')
-                            .setValidators([
-                                RxwebValidators.fileSize({
-                                    maxSize: Math.floor(5 * 1048576),
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'file_size_lte',
-                                        {
-                                            size: numeral(5 * 1048576).format(
-                                                '0.0 b',
-                                                Math.floor
-                                            ),
-                                        }
-                                    ),
-                                }),
-                            ]);
-                        this.form
-                            .get('storeInfo.legalInfo.identityPhotoSelfie')
-                            .updateValueAndValidity();
-                    }
-
-                    if (this.form.get('storeInfo.legalInfo.identityPhotoSelfie').invalid) {
-                        this.form
-                            .get('storeInfo.legalInfo.identityPhotoSelfie')
-                            .markAsTouched();
-                    }
-
-                    if (ownerNpwpNo) {
-                        this.form.get('storeInfo.legalInfo.npwpId').setValue(ownerNpwpNo);
-                    }
-
-                    if (this.form.get('storeInfo.legalInfo.npwpId').invalid) {
-                        this.form.get('storeInfo.legalInfo.npwpId').markAsTouched();
-                    }
-                }
-
-                if (data.urban) {
-                    if (data.urban.province) {
-                        const provinceId = data.urban.province.id;
-                        const city = data.urban.city;
-                        const district = data.urban.district;
-                        const urbanId = data.urban.id;
-                        const zipCode = data.urban.zipCode;
-
-                        if (provinceId) {
-                            this.form
-                                .get('storeInfo.address.district')
-                                .setValue(data.urban);
-
-                            this.form.get('storeInfo.address.urban').setValue(data.urban);
-
-                            this.form.get('storeInfo.address.postcode').setValue(zipCode);
-
-                            // this.form
-                            //     .get('storeInfo.address.province')
-                            //     .patchValue(provinceId);
-                            /* this.store
-                                .select(DropdownSelectors.getProvinceDropdownState)
-                                .pipe(takeUntil(this._unSubs$))
-                                .subscribe(hasProvinces => {
-                                    if (hasProvinces && hasProvinces.length > 0) {
-                                        this.populateCity(
-                                            provinceId,
-                                            city,
-                                            district,
-                                            urbanId,
-                                            zipCode
-                                        );
-                                    }
-                                }); */
-                        }
-                    }
-                }
-
-                if (data.address) {
-                    this.form.get('storeInfo.address.notes').setValue(data.address);
-                }
-
-                if (this.form.get('storeInfo.address.notes').invalid) {
-                    this.form.get('storeInfo.address.notes').markAsTouched();
-                }
-
-                // if (data.largeArea) {
-                //     this.form
-                //         .get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                //         .patchValue(data.largeArea);
-                // }
-
-                if (data.numberOfEmployee) {
-                    this.form
-                        .get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                        .patchValue(data.numberOfEmployee);
-                }
-
-                if (data.vehicleAccessibilityId) {
-                    this.form
-                        .get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                        .patchValue(data.vehicleAccessibilityId);
-
-                    if (
-                        this.form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                            .invalid
-                    ) {
-                        this.form
-                            .get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                            .markAsTouched();
-                    }
-                }
-
-                if (data.storeType && data.storeType.id) {
-                    this.form
-                        .get('storeInfo.storeClassification.storeType')
-                        .patchValue(data.storeType.id);
-
-                    if (this.form.get('storeInfo.storeClassification.storeType').invalid) {
-                        this.form
-                            .get('storeInfo.storeClassification.storeType')
-                            .markAsTouched();
-                    }
-                }
-
-                if (data.storeGroup && data.storeGroup.id) {
-                    this.form
-                        .get('storeInfo.storeClassification.storeGroup')
-                        .patchValue(data.storeGroup.id);
-
-                    if (this.form.get('storeInfo.storeClassification.storeGroup').invalid) {
-                        this.form
-                            .get('storeInfo.storeClassification.storeGroup')
-                            .markAsTouched();
-                    }
-                }
-
-                if (data.storeClusters && data.storeClusters.length > 0) {
-                    this.form
-                        .get('storeInfo.storeClassification.storeCluster')
-                        .patchValue(data.storeClusters[0].cluster.id);
-
-                    if (
-                        this.form.get('storeInfo.storeClassification.storeCluster').invalid
-                    ) {
-                        this.form
-                            .get('storeInfo.storeClassification.storeCluster')
-                            .markAsTouched();
-                    }
-                }
-
-                // if (data.storeSegment && data.storeSegment.id) {
-                //     this.form
-                //         .get('storeInfo.storeClassification.storeSegment')
-                //         .patchValue(data.storeSegment.id);
-
-                //     if (
-                //         this.form.get('storeInfo.storeClassification.storeSegment').invalid
-                //     ) {
-                //         this.form
-                //             .get('storeInfo.storeClassification.storeSegment')
-                //             .markAsTouched();
-                //     }
-                // }
-
-                // if (data.hierarchy && data.hierarchy.id) {
-                //     this.form
-                //         .get('storeInfo.storeClassification.hierarchy')
-                //         .patchValue(data.hierarchy.id);
-
-                //     if (this.form.get('storeInfo.storeClassification.hierarchy').invalid) {
-                //         this.form
-                //             .get('storeInfo.storeClassification.hierarchy')
-                //             .markAsTouched();
-                //     }
-                // }
-
-                // Mendapatkan data Credit Limit Store.
-                const { creditLimitStores } = data;
-
-                // Melakukan looping untuk setiap Invoice Group-nya supplier.
-                for (const [idx, invoiceGroup] of invoiceGroups.entries()) {
-                    // Mencari index array dari Credit Limit Store berdasarkan ID Invoice Group-nya.
-                    const foundIdx = creditLimitStores.findIndex(cl => cl.invoiceGroupId === invoiceGroup.id);
-
-                    // Jika ada index-nya, 
                     if (foundIdx >= 0) {
-                        // Mengambil nama Invoice Group-nya.
-                        this.tempInvoiceGroupName[foundIdx] = invoiceGroup.name || '-';
+                        this.tempInvoiceGroupName[foundIdx] = !row.invoiceGroup ? '-' : row.invoiceGroup.name;
 
-                        // Mendapatkan alloCreditLimit dari creditLimitStore-nya.
-                        const allowCreditLimit = !!data.creditLimitStores[foundIdx].allowCreditLimit;
+                        const allowCreditLimit = !!row.allowCreditLimit;
 
-                        this.formCreditLimits.at(foundIdx).patchValue({
+                        this.formCreditLimits.get(String(foundIdx)).patchValue({
                             allowCreditLimit,
-                            id: creditLimitStores[foundIdx].id,
-                            creditLimitStoreId: creditLimitStores[foundIdx].id,
-                            invoiceGroup: creditLimitStores[foundIdx].invoiceGroupId,
+                            id: row.id,
+                            creditLimitStoreId: row.id,
+                            invoiceGroup: row.invoiceGroupId,
                             creditLimit: '',
-                            creditLimitGroup: allowCreditLimit ? creditLimitStores[foundIdx].creditLimitGroupId : '',
-                            termOfPayment: allowCreditLimit ? creditLimitStores[foundIdx].termOfPayment : '',
+                            creditLimitGroup: allowCreditLimit ? row.creditLimitGroupId : '',
+                            termOfPayment: allowCreditLimit ? row.termOfPayment : '',
                         });
 
                         if (allowCreditLimit) {
-                            this.formCreditLimits.at(foundIdx).get('termOfPayment').setValidators([
+                            this.formCreditLimits.get([String(foundIdx), 'termOfPayment']).setValidators([
                                 RxwebValidators.digit({
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
@@ -3090,310 +2848,261 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 }),
                             ]);
 
-                            this.handleAllowCreditPatch(foundIdx, creditLimitStores[foundIdx]);
+                            this.handleAllowCreditPatch(foundIdx, row);
                         } else {
-                            this.formCreditLimits.at(foundIdx).get('creditLimit').disable();
-                            this.formCreditLimits.at(foundIdx).get('creditLimitGroup').disable();
-                            this.formCreditLimits.at(foundIdx).get('termOfPayment').disable();
+                            this.formCreditLimits.get([String(foundIdx), 'creditLimit']).disable();
+                            this.formCreditLimits.get([String(foundIdx), 'creditLimitGroup']).disable();
+                            this.formCreditLimits.get([String(foundIdx), 'termOfPayment']).disable();
 
                             this.handleNotAllowCreditPatch(foundIdx);
                         }
                     }
+
+                    // if (idx > 0) {
+                    //     if (row.allowCreditLimit) {
+                    //         this.formCreditLimits.push(
+                    //             this.formBuilder.group({
+                    //                 allowCreditLimit: true,
+                    //                 creditLimitStoreId: row.id,
+                    //                 invoiceGroup: row.invoiceGroupId,
+                    //                 creditLimitGroup: row.creditLimitGroupId,
+                    //                 creditLimit: [
+                    //                     '',
+                    //                     // [
+                    //                     //     RxwebValidators.numeric({
+                    //                     //         acceptValue:
+                    //                     //             NumericValueType.PositiveNumber,
+                    //                     //         allowDecimal: true,
+                    //                     //         message: this._$errorMessage.getErrorMessageNonState(
+                    //                     //             'default',
+                    //                     //             'pattern'
+                    //                     //         )
+                    //                     //     })
+                    //                     // ]
+                    //                 ],
+                    //                 termOfPayment: [
+                    //                     row.termOfPayment,
+                    //                     [
+                    //                         RxwebValidators.digit({
+                    //                             message: this._$errorMessage.getErrorMessageNonState(
+                    //                                 'default',
+                    //                                 'numeric'
+                    //                             ),
+                    //                         }),
+                    //                     ],
+                    //                 ],
+                    //             })
+                    //         );
+
+                    //         this.handleAllowCreditPatch(idx, row);
+                    //     } else {
+                    //         this.formCreditLimits.push(
+                    //             this.formBuilder.group({
+                    //                 allowCreditLimit: false,
+                    //                 creditLimitStoreId: row.id,
+                    //                 invoiceGroup: row.invoiceGroupId,
+                    //                 creditLimitGroup: [
+                    //                     {
+                    //                         value: '',
+                    //                         disabled: true,
+                    //                     },
+                    //                 ],
+                    //                 creditLimit: [
+                    //                     {
+                    //                         value: '',
+                    //                         disabled: true,
+                    //                     },
+                    //                 ],
+                    //                 termOfPayment: [
+                    //                     {
+                    //                         value: '',
+                    //                         disabled: true,
+                    //                     },
+                    //                 ],
+                    //             })
+                    //         );
+
+                    //         this.handleNotAllowCreditPatch(idx);
+                    //     }
+                    // } else {
+                    //     (this.formCreditLimits.at(idx) as FormGroup).addControl(
+                    //         'creditLimitStoreId',
+                    //         this.formBuilder.control(row.id)
+                    //     );
+
+                    //     this.formCreditLimits
+                    //         .at(idx)
+                    //         .get('invoiceGroup')
+                    //         .patchValue(row.invoiceGroupId);
+
+                    //     if (row.allowCreditLimit) {
+                    //         this.handleAllowCreditPatch(idx, row);
+                    //     } else {
+                    //         this.handleNotAllowCreditPatch(idx);
+                    //     }
+                    // }
                 }
-            });
+            }
         }
+
+        this.form.markAllAsTouched();
+        this.form.updateValueAndValidity();
     }
 
-    private onSubmit(): void {
+    private createFormListener(): void {
+        (this.form.statusChanges as Observable<FormStatus>)
+        .pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(status => HelperService.debug('PERIOD TARGET PROMO FORM STATUS CHANGED', status)),
+            takeUntil(this._unSubs$)
+        ).subscribe();
+
+        (this.form.valueChanges)
+        .pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO FORM VALUE CHANGED', { form: this.form, value })),
+            takeUntil(this._unSubs$)
+        ).subscribe();
+
+        this.form.get('storeInfo.storeId.id').valueChanges
+        .pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(value => HelperService.debug('STORE ID VALUE CHANGED', { form: this.form, value })),
+            takeUntil(this._unSubs$)
+        ).subscribe(value => {
+            const prefix = String(value).match(/[a-zA-Z]+/);
+
+            if (!this.storeIdNextNumber) {
+                return;
+            }
+
+            if (prefix) {
+                // Tidak boleh menentukan ID store secara manual dengan prefix yang sama dengan auto generate.
+                if (this.storeIdNextNumber.match(prefix[0]) && this.storeIdType.value !== 'auto') {
+                    this.form.get('storeInfo.storeId.id').setErrors({
+                        forbiddenPrefix: {
+                            message: 'This Store ID prefix can\'t be assigned manually.',
+                            refValues: [value]
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private resetTemporaryPhotoForms(): void {
+        this.tmpOwnerTaxPhoto.reset();
+        this.tmpIdentityPhoto.reset();
+        this.tmpIdentityPhotoSelfie.reset();
+        this.tmpStoreTaxPhoto.reset();
+        this.tmpStorePhoto.reset();
+    }
+
+    private resetStoreInformationForm(): void {
+        this.form.get('storeId').reset();
+        this.form.get('profileInfo.name').reset();
+        this.form.get('profileInfo.taxId').reset();
+        this.form.get('profileInfo.identityId').reset();
+        this.form.get('profileInfo.taxPhoto').reset();
+        this.form.get('profileInfo.identityPhoto').reset();
+        this.form.get('profileInfo.identityPhotoSelfie').reset();
+
+        this.tmpOwnerTaxPhoto.reset();
+        this.tmpIdentityPhoto.reset();
+        this.tmpIdentityPhotoSelfie.reset();
+    }
+
+    private enableStoreInformationForm(): void {
+        this.form.get('profileInfo.name').enable();
+        this.form.get('profileInfo.taxId').enable();
+        this.form.get('profileInfo.identityId').enable();
+        this.form.get('profileInfo.taxPhoto').enable();
+        this.form.get('profileInfo.identityPhoto').enable();
+        this.form.get('profileInfo.identityPhotoSelfie').enable();
+    }
+
+    private disableStoreInformationForm(): void {
+        this.form.get('profileInfo.name').disable();
+        this.form.get('profileInfo.taxId').disable();
+        this.form.get('profileInfo.identityId').disable();
+        this.form.get('profileInfo.taxPhoto').disable();
+        this.form.get('profileInfo.identityPhoto').disable();
+        this.form.get('profileInfo.identityPhotoSelfie').disable();
+    }
+
+    private loadStoreInformationForm(value: ICheckOwnerPhoneResponse): void {
+        this.form.get('storeId').patchValue(value.storeId);
+        this.form.get('profileInfo.name').patchValue(value.user.userName);
+        this.form.get('profileInfo.taxId').patchValue(value.user.taxNumber);
+        this.form.get('profileInfo.identityId').patchValue(value.user.idNumber);
+        // this.form.get('profileInfo.taxPhoto').patchValue(value.user);
+        this.form.get('profileInfo.identityPhoto').patchValue(value.user.idNumberPicture);
+        this.form.get('profileInfo.identityPhotoSelfie').patchValue(value.user.selfiePicture);
+
+        this.form.updateValueAndValidity();
+        this.cdRef.detectChanges();
+    }
+
+    private onSubmit(id?: string): void {
         if (this.form.invalid) {
             return;
         }
 
         const body = this.form.getRawValue();
 
-        if (this.pageType === 'new') {
-            // this.ngxPermissions.hasPermission();
-            this.store
-                .select(AuthSelectors.getUserSupplier)
-                .pipe(takeUntil(this._unSubs$))
-                .subscribe(({ supplierId }) => {
-                    if (supplierId) {
-                        // const createUser = new FormUser(
-                        //     body.storeInfo.legalInfo.name,
-                        //     body.storeInfo.legalInfo.npwpId,
-                        //     body.storeInfo.legalInfo.identityPhoto,
-                        //     body.storeInfo.legalInfo.identityPhotoSelfie,
-                        //     body.profileInfo.phoneNumber,
-                        //     'active',
-                        //     ['1']
-                        // );
-                        // const createCluser = new FormCluster(
-                        //     body.storeInfo.storeClassification.storeCluster
-                        // );
-                        // const createBrand = new FormBrand(user.data.userBrands[0].brandId);
-                        // const payload = new FormStore(
-                        //     body.storeInfo.storeId.id,
-                        //     body.storeInfo.storeId.storeName,
-                        //     body.profileInfo.photos,
-                        //     body.profileInfo.npwpId,
-                        //     body.storeInfo.address.notes,
-                        //     body.profileInfo.phoneNumber,
-                        //     'active',
-                        //     body.storeInfo.storeClassification.storeType,
-                        //     body.storeInfo.storeClassification.storeGroup,
-                        //     body.storeInfo.storeClassification.storeSegment,
-                        //     body.storeInfo.address.urban,
-                        //     createUser,
-                        //     createCluser,
-                        //     createBrand,
-                        //     body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-                        //     body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                        //     body.storeInfo.physicalStoreInfo.vehicleAccessibility
-                        // );
-
-                        // console.log('SUBMIT CREATE 1', body);
-                        // console.log('SUBMIT CREATE 2', payload);
-
-                        const newCreditLimit =
-                            body.storeInfo.payment.creditLimit &&
-                            body.storeInfo.payment.creditLimit.length > 0
-                                ? body.storeInfo.payment.creditLimit.map((row) => {
-                                    return {
-                                        id: row.id,
-                                        allowCreditLimit: row.allowCreditLimit,
-                                        invoiceGroupId: row.invoiceGroup,
-                                        creditLimitGroupId: row.creditLimitGroup,
-                                        creditLimit: row.creditLimit,
-                                        termOfPayment: row.termOfPayment,
-                                    };
-                                }) : [];
-
-                        const urban = body.storeInfo.address.urban as Urban;
-
-                        const payload = {
-                            externalId: body.storeInfo.storeId.id,
-                            name: body.storeInfo.storeId.storeName,
-                            image: body.profileInfo.photos,
-                            taxNo: body.profileInfo.npwpId,
-                            address: body.storeInfo.address.notes,
-                            longitude: body.storeInfo.address.geolocation.lng,
-                            latitude: body.storeInfo.address.geolocation.lat,
-                            phoneNo: body.profileInfo.phoneNumber,
-                            numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                            status: 'active',
-                            type: {
-                                typeId: body.storeInfo.storeClassification.storeType,
-                            },
-                            group: {
-                                groupId: body.storeInfo.storeClassification.storeGroup,
-                            },
-                            channel: {
-                                clusterId: body.storeInfo.storeClassification.storeChannel,
-                            },
-                            cluster: {
-                                clusterId: body.storeInfo.storeClassification.storeCluster,
-                            },
-                            // storeTypeId: body.storeInfo.storeClassification.storeType,
-                            // storeGroupId: body.storeInfo.storeClassification.storeGroup,
-                            // storeSegmentId: body.storeInfo.storeClassification.storeSegment,
-                            vehicleAccessibilityId:
-                                body.storeInfo.physicalStoreInfo.vehicleAccessibility,
-                            urbanId: urban.id,
-                            user: {
-                                idNo: body.storeInfo.legalInfo.identityId || '',
-                                fullName: body.storeInfo.legalInfo.name,
-                                taxNo: body.storeInfo.legalInfo.npwpId || '',
-                                idImage: body.storeInfo.legalInfo.identityPhoto,
-                                selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
-                                phone: body.profileInfo.phoneNumber,
-                                status: 'active',
-                                roles: [1],
-                            },
-                            // hierarchy: {
-                            //     hierarchyId: body.storeInfo.storeClassification.hierarchy
-                            // },
-                            supplier: {
-                                supplierId: supplierId,
-                            },
-                            creditLimit: newCreditLimit,
-                        };
-
-                        if (this.storeIdType.value === 'auto') {
-                            delete payload.externalId;
-                        }
-
-                        if (!body.storeInfo.address.geolocation.lng) {
-                            delete payload.longitude;
-                        }
-
-                        if (!body.storeInfo.address.geolocation.lat) {
-                            delete payload.latitude;
-                        }
-
-                        if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
-                            delete payload.numberOfEmployee;
-                        }
-
-                        if (!body.storeInfo.physicalStoreInfo.vehicleAccessibility) {
-                            delete payload.vehicleAccessibilityId;
-                        }
-
-                        // if (!body.storeInfo.storeClassification.storeType) {
-                        //     delete payload.storeTypeId;
-                        // }
-
-                        // if (!body.storeInfo.storeClassification.storeGroup) {
-                        //     delete payload.storeGroupId;
-                        // }
-
-                        if (!body.storeInfo.storeClassification.storeType) {
-                            delete payload.type;
-                        }
-
-                        if (!body.storeInfo.storeClassification.storeGroup) {
-                            delete payload.group;
-                        }
-
-                        if (!body.storeInfo.storeClassification.storeChannel) {
-                            delete payload.channel;
-                        }
-
-                        if (!body.storeInfo.storeClassification.storeCluster) {
-                            delete payload.cluster;
-                        }
-
-                        // if (!body.storeInfo.storeClassification.storeCluster) {
-                        //     delete payload.cluster;
-                        // }
-
-                        // if (!body.storeInfo.storeClassification.storeSegment) {
-                        //     delete payload.storeSegmentId;
-                        // }
-
-                        // if (!body.storeInfo.storeClassification.hierarchy) {
-                        //     delete payload.hierarchy;
-                        // }
-
-                        // if (payload.creditLimit && payload.creditLimit.length > 0) {
-                        //     for (const [idx, row] of payload.creditLimit.entries()) {
-                        //         const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-
-                        //         if (
-                        //             (typeof allowCredit === 'boolean' && !allowCredit) ||
-                        //             typeof allowCredit !== 'boolean'
-                        //         ) {
-                        //             delete payload.creditLimit[idx];
-                        //             // payload.creditLimit[idx] = null;
-
-                        //             // delete payload.creditLimit[idx].allowCreditLimit;
-                        //             // delete payload.creditLimit[idx].invoiceGroupId;
-                        //             // delete payload.creditLimit[idx].creditLimitGroupId;
-                        //             // delete payload.creditLimit[idx].creditLimit;
-                        //             // delete payload.creditLimit[idx].termOfPayment;
-
-                        //             // payload.creditLimit[idx].creditLimitGroupId = null;
-                        //             // payload.creditLimit[idx].creditLimit = 0;
-                        //             // payload.creditLimit[idx].termOfPayment = 0;
-                        //         }
-                        //     }
-
-                        //     const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
-
-                        //     if (newPCreditLimit && !newPCreditLimit.length) {
-                        //         delete payload.creditLimit;
-                        //     }
-                        // } else {
-                        //     if (payload.creditLimit && !payload.creditLimit.length) {
-                        //         delete payload.creditLimit;
-                        //     }
-                        // }
-
-                        for (const [idx, _] of payload.creditLimit.entries()) {
-                            const id = payload.creditLimit[idx].id;
-                            const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-            
-                            if (!allowCredit) {
-                                payload.creditLimit[idx].creditLimit = 0;
-                                delete payload.creditLimit[idx].creditLimitGroupId;
-                                delete payload.creditLimit[idx].termOfPayment;
-                            } else {
-                                payload.creditLimit[idx].creditLimit = Number(payload.creditLimit[idx].creditLimit).toFixed(2);
-                            }
-
-                            if (!id) {
-                                delete payload.creditLimit[idx].id;
-                            }
-                        }
-
-                        this.store.dispatch(StoreActions.createStoreRequest({ payload }));
-                    }
-                });
-        }
-
-        if (this.pageType === 'edit') {
-            /* this.store
-                .select(BrandStoreSelectors.getEditBrandStore)
-                .pipe(takeUntil(this._unSubs$))
-                .subscribe(data => {
-                    if (data) {
-
-                    } else {
-
-                    }
-                }); */
-
-            const { id } = this.route.snapshot.params;
-
-            // const createCluser = new FormCluster(body.storeInfo.storeClassification.storeCluster);
-
-            // const payload = new FormStoreEdit(
-            //     body.storeInfo.storeId.id,
-            //     body.storeInfo.storeId.storeName,
-            //     body.profileInfo.photos,
-            //     body.profileInfo.npwpId,
-            //     body.storeInfo.address.notes,
-            //     body.profileInfo.phoneNumber,
-            //     body.storeInfo.storeClassification.storeType,
-            //     body.storeInfo.storeClassification.storeGroup,
-            //     body.storeInfo.storeClassification.storeSegment,
-            //     body.storeInfo.address.urban,
-            //     createCluser,
-            //     body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-            //     body.storeInfo.physicalStoreInfo.numberOfEmployee,
-            //     body.storeInfo.physicalStoreInfo.vehicleAccessibility
-            // );
-
-            // console.log('SUBMIT UPDATE 1', body);
-            // console.log('SUBMIT UPDATE 2', payload);
-
+        if (body.supplierId) {
             const newCreditLimit =
-                body.storeInfo.payment.creditLimit && body.storeInfo.payment.creditLimit.length > 0
+                body.storeInfo.payment.creditLimit &&
+                body.storeInfo.payment.creditLimit.length > 0
                     ? body.storeInfo.payment.creditLimit.map((row) => {
-                        return {
+                        const CL = {
                             allowCreditLimit: row.allowCreditLimit,
-                            id: row.creditLimitStoreId,
-                            // creditLimitStoreId: row.creditLimitStoreId,
                             invoiceGroupId: row.invoiceGroup,
                             creditLimitGroupId: row.creditLimitGroup,
                             creditLimit: row.creditLimit,
                             termOfPayment: row.termOfPayment,
                         };
+
+                        if (this.pageType === 'edit') {
+                            CL['id'] = row.creditLimitStoreId;
+                        }
+
+                        return CL;
                     }) : [];
 
             const urban = body.storeInfo.address.urban as Urban;
 
             const payload = {
-                externalId: body.storeInfo.storeId.id,
+                // Untuk override endpoint bahwa add store ini hit-nya ke /supplier-stores.
+                supplierStore: true,
+                storeId: body.storeId,
                 name: body.storeInfo.storeId.storeName,
-                image: body.profileInfo.photos,
-                taxNo: body.profileInfo.npwpId,
-                address: body.storeInfo.address.notes,
+                externalId: body.storeInfo.storeId.id,
+                taxNo: body.storeInfo.taxId,
+                address: body.storeInfo.address.address,
+                noteAddress: body.storeInfo.address.notes,
                 longitude: body.storeInfo.address.geolocation.lng,
                 latitude: body.storeInfo.address.geolocation.lat,
-                phoneNo: body.profileInfo.phoneNumber,
+                phoneNo: body.storeInfo.phoneNumber,
+                image: body.storeInfo.photo,
                 numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                // storeTypeId: body.storeInfo.storeClassification.storeType,
-                // storeGroupId: body.storeInfo.storeClassification.storeGroup,
+                status: body.storeInfo.status || 'inactive',
+                vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
+                approvalStatus: body.storeInfo.approvalStatus ? body.storeInfo.approvalStatus : 'guest',
+                urbanId: urban.id,
+                user: {
+                    idNo: body.profileInfo.identityId || '',
+                    fullName: body.profileInfo.name,
+                    taxNo: body.profileInfo.taxId || '',
+                    // idImage: body.profileInfo.identityPhoto,
+                    // selfieImage: body.profileInfo.identityPhotoSelfie,
+                    phone: body.profileInfo.phoneNumber,
+                    status: 'active',
+                    roles: [1],
+                },
                 type: {
                     typeId: body.storeInfo.storeClassification.storeType,
                 },
@@ -3406,23 +3115,21 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 cluster: {
                     clusterId: body.storeInfo.storeClassification.storeCluster,
                 },
-                // storeSegmentId: body.storeInfo.storeClassification.storeSegment,
-                vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
-                urbanId: urban.id,
-                user: {
-                    id: this.userId,
-                    idNo: body.storeInfo.legalInfo.identityId || '',
-                    fullName: body.storeInfo.legalInfo.name,
-                    taxNo: body.storeInfo.legalInfo.npwpId || '',
-                    idImage: body.storeInfo.legalInfo.identityPhoto,
-                    selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
-                    phone: body.profileInfo.phoneNumber,
+                supplier: {
+                    supplierId: body.supplierId,
                 },
-                // hierarchy: {
-                //     hierarchyId: body.storeInfo.storeClassification.hierarchy
-                // },
                 creditLimit: newCreditLimit,
             };
+
+            // Hapus payload user jika nomor telepon sudah dimiliki user tertentu.
+            // Ketika mode edit, payload user tidak usah dikirim.
+            if (body.storeId || this.pageType === 'edit') {
+                delete payload.user;
+            }
+
+            if (this.storeIdType.value === 'auto' || !payload.externalId) {
+                delete payload.externalId;
+            }
 
             if (!body.storeInfo.address.geolocation.lng) {
                 delete payload.longitude;
@@ -3440,6 +3147,14 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 delete payload.vehicleAccessibilityId;
             }
 
+            // if (!body.storeInfo.storeClassification.storeType) {
+            //     delete payload.storeTypeId;
+            // }
+
+            // if (!body.storeInfo.storeClassification.storeGroup) {
+            //     delete payload.storeGroupId;
+            // }
+
             if (!body.storeInfo.storeClassification.storeType) {
                 delete payload.type;
             }
@@ -3456,14 +3171,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 delete payload.cluster;
             }
 
-            // if (!body.storeInfo.storeClassification.storeType) {
-            //     delete payload.storeTypeId;
-            // }
-
-            // if (!body.storeInfo.storeClassification.storeGroup) {
-            //     delete payload.storeGroupId;
-            // }
-
             // if (!body.storeInfo.storeClassification.storeCluster) {
             //     delete payload.cluster;
             // }
@@ -3476,60 +3183,226 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             //     delete payload.hierarchy;
             // }
 
-            // if (payload.creditLimit && payload.creditLimit.length > 0) {
-            //     for (const [idx, row] of payload.creditLimit.entries()) {
-            //         const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-
-            //         if (!allowCredit) {
-            //             delete payload.creditLimit[idx].creditLimit;
-            //             delete payload.creditLimit[idx].creditLimitGroupId;
-            //             delete payload.creditLimit[idx].termOfPayment;
-            //             // delete payload.creditLimit[idx];
-            //             // payload.creditLimit[idx] = null;
-            //             // delete payload.creditLimit[idx].invoiceGroupId;
-            //             // delete payload.creditLimit[idx].creditLimitGroupId;
-            //             // delete payload.creditLimit[idx].creditLimit;
-            //             // delete payload.creditLimit[idx].termOfPayment;
-
-            //             // payload.creditLimit[idx].creditLimitGroupId = null;
-            //             // payload.creditLimit[idx].creditLimit = 0;
-            //             // payload.creditLimit[idx].termOfPayment = 0;
-            //         }
-            //     }
-
-            //     // payload.creditLimit = payload.creditLimit.filter((_, idx) => !disallowCredit.includes(idx));
-
-            //     const newPCreditLimit = payload.creditLimit.filter((x) => !!x.allowCreditLimit);
-
-            //     if (newPCreditLimit && !newPCreditLimit.length) {
-            //         delete payload.creditLimit;
-            //     }
-            // } else {
-            //     if (payload.creditLimit && !payload.creditLimit.length) {
-            //         delete payload.creditLimit;
-            //     }
-            // }
-
-            for (const [idx, _] of payload.creditLimit.entries()) {
-                const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-                const creditLimitId = payload.creditLimit[idx].id;
-
-                if (!allowCredit) {
+            for (const [idx, row] of payload.creditLimit.entries()) {
+                // Jika allow credit-nya true, tapi nilai credit limit-nya tidak valid.
+                if (!row.creditLimit) {
                     payload.creditLimit[idx].creditLimit = 0;
-                    delete payload.creditLimit[idx].creditLimitGroupId;
-                    delete payload.creditLimit[idx].termOfPayment;
-                } else {
-                    payload.creditLimit[idx].creditLimit = Number(payload.creditLimit[idx].creditLimit).toFixed(2);
                 }
 
-                if (!creditLimitId) {
-                    delete payload.creditLimit[idx].id;
+                // Term of payment akan diatur nilainya menjadi nol jika nilainya dianggap tidak valid.
+                if (!row.termOfPayment) {
+                    payload.creditLimit[idx].termOfPayment = 0;
+                }
+
+                if (!row.creditLimitGroupId) {
+                    payload.creditLimit[idx].creditLimitGroupId = null;
                 }
             }
 
-            this.store.dispatch(
-                StoreActions.updateStoreRequest({ payload: { id, body: payload } })
-            );
+            // Untuk dikirim ke service dan akan di-upload fotonya.
+            const uploadPhotos: Array<UploadPhotoApiPayload> = [];
+
+            if (body.profileInfo.taxPhoto !== body.profileInfo.oldTaxPhoto
+                && !String(body.profileInfo.taxPhoto).startsWith('http')
+            ) {
+                this.uploadOwnerTaxPhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.profileInfo.taxPhoto,
+                    type: 'userTax',
+                    oldLink: body.profileInfo.oldTaxPhoto
+                });
+            }
+
+            // Hanya upload foto jika user memasukkan foto baru.
+            if (body.profileInfo.identityPhoto !== body.profileInfo.oldIdentityPhoto
+                && !String(body.profileInfo.identityPhoto).startsWith('http')
+            ) {
+                this.uploadIdentityPhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.profileInfo.identityPhoto,
+                    type: 'idCard',
+                    oldLink: body.profileInfo.oldIdentityPhoto
+                });
+            }
+
+            if (body.profileInfo.identityPhotoSelfie !== body.profileInfo.oldIdentityPhotoSelfie
+                && !String(body.profileInfo.identityPhotoSelfie).startsWith('http')
+            ) {
+                this.uploadIdentityPhotoSelfie$.next('pending');
+                uploadPhotos.push({
+                    image: body.profileInfo.identityPhotoSelfie,
+                    type: 'selfie',
+                    oldLink: body.profileInfo.oldIdentityPhotoSelfie
+                });
+            }
+
+            if (body.storeInfo.taxPhoto !== body.storeInfo.oldTaxPhoto
+                && !String(body.storeInfo.taxPhoto).startsWith('http')
+            ) {
+                this.uploadStoreTaxPhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.storeInfo.taxPhoto,
+                    type: 'storeTax',
+                    oldLink: body.storeInfo.oldTaxPhoto
+                });
+            }
+
+            if (body.storeInfo.photo !== body.storeInfo.oldPhoto
+                && !String(body.storeInfo.photo).startsWith('http')
+            ) {
+                this.uploadStorePhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.storeInfo.photo,
+                    type: 'storePhoto',
+                    oldLink: body.storeInfo.oldPhoto
+                });
+            }
+
+            if (uploadPhotos.length === 0) {
+                if (!id) {
+                    this.store.dispatch(StoreActions.createStoreRequest({ payload }));
+                } else {
+                    this.store.dispatch(StoreActions.updateStoreRequest({ payload: { body: payload, id } }));
+                }
+            } else {
+                // Menyimpan jumlah foto yang ter-upload.
+                // tslint:disable-next-line: no-inferrable-types
+                // const uploadedPhotos: Array<{ type: TUploadPhotoType, url: string }> = [];
+
+                this.showPhotoUploadProgress();
+
+                of<UploadPhotoApiPayload>(...uploadPhotos).pipe(
+                    concatMap((photoPayload: UploadPhotoApiPayload) => {
+                        // Set upload state-nya.
+                        this.setUploatState(photoPayload.type, 'uploading');
+
+                        return this._$photo
+                            .upload(photoPayload.image, photoPayload.type, photoPayload.oldLink)
+                            .pipe(
+                                tap(response => {
+                                    this.setUploatState(photoPayload.type, 'success');
+
+                                    switch (photoPayload.type) {
+                                        case 'idCard': {
+                                            payload.user['idImageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'selfie': {
+                                            payload.user['selfieImageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'userTax': {
+                                            payload.user['taxImageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'storePhoto': {
+                                            payload['imageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'storeTax': {
+                                            payload['taxImageUrl'] = response.url;
+                                            break;
+                                        }
+                                    }
+
+                                    // uploadedPhotos.push({
+                                    //     type: photoPayload.type,
+                                    //     url: response.url
+                                    // });
+                                }),
+                                catchError(err => {
+                                    // Ubah state type tersebut menjadi failed.
+                                    this.setUploatState(photoPayload.type, 'failed');
+
+                                    // Memunculkan notifikasi error.
+                                    this._$helper.showErrorNotification({
+                                        id: `ERR_UPLOAD_${String(photoPayload.type).toUpperCase()}_FAILED`,
+                                        errors: err,
+                                    });
+
+                                    // Mengembalikan nilai error-nya.
+                                    return throwError(err);
+                                })
+                            );
+                    })
+                ).subscribe({
+                    next: value => {
+                        HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL SUCCESS', value);
+                    },
+                    error: err => {
+                        HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL ERROR', err);
+                        // Reset tombol "Save" form-nya.
+                        this.store.dispatch(FormActions.resetClickSaveButton());
+                        // Menunjukkan tombol close dialog.
+                        this.dialogUploadPhotoProgress.showCloseButton();
+                        // Menutup otomatis dialog-nya.
+                        setTimeout(() => {
+                            if (this.dialogUploadPhotoProgress) {
+                                this.dialogUploadPhotoProgress.close();
+                            }
+                        }, 10000);
+                    },
+                    complete: () => {
+                        HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL COMPLETE');
+
+                        setTimeout(() => {
+                            if (this.dialogUploadPhotoProgress) {
+                                this.dialogUploadPhotoProgress.close();
+                            }
+
+                            if (!id) {
+                                this.store.dispatch(StoreActions.createStoreRequest({ payload }));
+                            } else {
+                                this.store.dispatch(StoreActions.updateStoreRequest({ payload: { body: payload, id } }));
+                            }
+                        }, 3000);
+                    }
+                });
+            }
+        }
+    }
+
+    private showPhotoUploadProgress(): void {
+        this.dialogUploadPhotoProgress = this.applyDialogFactory$.open(
+            {
+                title: 'Upload Photo(s)',
+                template: this.uploadPhotos,
+                isApplyEnabled: false,
+                showApplyButton: false,
+                showCloseButton: false
+            },
+            {
+                disableClose: true,
+                width: '40vw',
+                height: '512px',
+                minWidth: '40vw',
+                maxWidth: '40vw',
+            }
+        );
+    }
+
+    private setUploatState(type: TUploadPhotoType, state: string): void {
+        switch (type) {
+            case 'idCard': {
+                this.uploadIdentityPhoto$.next(state);
+                break;
+            }
+            case 'selfie': {
+                this.uploadIdentityPhotoSelfie$.next(state);
+                break;
+            }
+            case 'userTax': {
+                this.uploadOwnerTaxPhoto$.next(state);
+                break;
+            }
+            case 'storePhoto': {
+                this.uploadStorePhoto$.next(state);
+                break;
+            }
+            case 'storeTax': {
+                this.uploadStoreTaxPhoto$.next(state);
+                break;
+            }
         }
     }
 

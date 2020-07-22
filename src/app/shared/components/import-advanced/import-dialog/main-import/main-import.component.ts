@@ -44,6 +44,13 @@ export class MainImportComponent implements OnInit, OnDestroy {
     templates$: Observable<Array<IConfigTemplate>>;
     isLoading$: Observable<boolean>;
 
+    importToSupplierStore: Array<string> = [
+        'update_address',
+        'update_basic_info',
+        'update_credit_limit',
+        'update_status',
+    ];
+
     @Input() pageType: string;
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -329,16 +336,30 @@ export class MainImportComponent implements OnInit, OnDestroy {
                 break;
 
             case 'stores':
-                this.store.dispatch(
-                    ImportAdvancedActions.importConfirmRequest({
-                        payload: {
-                            file,
-                            page: this.pageType,
-                            type: mode,
-                            endpoint: 'import-stores'
-                        }
-                    })
-                );
+                if (this.importToSupplierStore.includes(mode)) {
+                    this.store.dispatch(
+                        ImportAdvancedActions.importConfirmRequest({
+                            payload: {
+                                file,
+                                page: this.pageType,
+                                type: mode,
+                                endpoint: 'import-supplier-stores'
+                            }
+                        })
+                    );
+                } else {
+                    this.store.dispatch(
+                        ImportAdvancedActions.importConfirmRequest({
+                            payload: {
+                                file,
+                                page: this.pageType,
+                                type: mode,
+                                endpoint: 'import-stores'
+                            }
+                        })
+                    );
+                }
+
                 break;
 
             case 'portfolios':
