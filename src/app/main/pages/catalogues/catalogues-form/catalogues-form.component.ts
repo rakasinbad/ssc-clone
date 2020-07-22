@@ -14,7 +14,8 @@ import {
     FormArray,
     FormBuilder,
     FormGroup,
-    ValidationErrors
+    ValidationErrors,
+    ValidatorFn
 } from '@angular/forms';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -202,6 +203,29 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.store.dispatch(FormActions.resetFormStatus());
     }
 
+    private fileSizeValidator(fieldName: string, maxSize: number = 0): ValidatorFn {
+        return (control: AbstractControl): {[key: string]: any} | null => {
+            if (!(control.value instanceof File)) {
+                return null;
+            }
+            
+            if ((control.value as File).size > maxSize) {
+                return {
+                    fileSize: {
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            fieldName,
+                            'file_size_lte',
+                            { size: numeral(maxSize).format('0[.]0 b', Math.floor) }
+                        ),
+                        value: 1,
+                    }
+                };
+            }
+
+            return null;
+        };
+    }
+
     private onSubmit(): void {
         /** Membuat status form menjadi invalid. (Tidak bisa submit lagi) */
         this.store.dispatch(FormActions.setFormStatusInvalid());
@@ -251,7 +275,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
              */
             catalogueImages: formValues.productMedia.photos
                 .filter(photo => photo)
-                .map(photo => ({ base64: photo })),
+                .map(photo => ({ base64: photo.base64 })),
             /**
              * PENGIRIMAN
              */
@@ -536,75 +560,37 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     this.fb.control(null, [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
-                                'product_photo',
+                                'main_product_photo',
                                 'min_1_photo'
                             )
                         }),
-                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
-                        RxwebValidators.maxLength({
-                            value: 1048576,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'main_product_photo',
-                                'file_size_lte',
-                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
+                        this.fileSizeValidator('main_product_photo', 1 * 1048576),
                     ]),
                     this.fb.control(null, [
-                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
-                        RxwebValidators.maxLength({
-                            value: 1048576,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'product_photo_1',
-                                'file_size_lte',
-                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
+                        this.fileSizeValidator('product_photo_1', 1 * 1048576),
                     ]),
                     this.fb.control(null, [
-                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
-                        RxwebValidators.maxLength({
-                            value: 1048576,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'product_photo_2',
-                                'file_size_lte',
-                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
+                        this.fileSizeValidator('product_photo_2', 1 * 1048576),
                     ]),
                     this.fb.control(null, [
-                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
-                        RxwebValidators.maxLength({
-                            value: 1048576,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'product_photo_3',
-                                'file_size_lte',
-                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
+                        this.fileSizeValidator('product_photo_3', 1 * 1048576),
                     ]),
                     this.fb.control(null, [
-                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
-                        RxwebValidators.maxLength({
-                            value: 1048576,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'product_photo_4',
-                                'file_size_lte',
-                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
+                        this.fileSizeValidator('product_photo_4', 1 * 1048576),
                     ]),
                     this.fb.control(null, [
-                        // NOTE: Perlu investigasi lebih lanjut karena fileSize-nya RxwebValidators kadang tidak work.
-                        RxwebValidators.maxLength({
-                            value: 1048576,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'product_photo_5',
-                                'file_size_lte',
-                                { size: numeral(1 * 1048576).format('0.0 b', Math.floor) }
-                            ),
-                        }),
+                        this.fileSizeValidator('product_photo_5', 1 * 1048576),
                     ])
+                ]),
+                tmpPhotos: this.fb.array([
+                    this.fb.group({ id: [null], value: [null] }, { validators: [
+
+                    ]}),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] })
                 ]),
                 oldPhotos: this.fb.array([
                     this.fb.group({ id: [null], value: [null] }),
@@ -1411,13 +1397,14 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         const inputEl = $event.target as HTMLInputElement;
 
         if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0];
+            const file = inputEl.files[0] as File;
 
             const photo = (this.form.get('productMedia.photos') as FormArray).controls[index];
             const fileReader = new FileReader();
 
             fileReader.onload = () => {
-                photo.patchValue(fileReader.result);
+                file['base64'] = fileReader.result;
+                photo.patchValue(file);
                 this.form.markAsTouched();
                 this._cd.markForCheck();
             };
