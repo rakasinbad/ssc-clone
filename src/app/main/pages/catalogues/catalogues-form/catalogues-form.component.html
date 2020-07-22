@@ -1042,6 +1042,7 @@
                                         hidden
                                         #photos
                                         type="file"
+                                        accept=".bmp, .jpg, .jpeg, .png"
                                         (change)="onFileBrowse($event, i)"
                                     />
                                     <ng-container *ngIf="!photo.value && !isViewMode(); else hasPhoto;">
@@ -1063,7 +1064,7 @@
                                             fxLayoutAlign="space-between start"
                                             *ngIf="photo.value"
                                         >
-                                            <img class="fit-image" [src]="photo.value" *ngIf="photo.value"/>
+                                            <img class="fit-image" [src]="photo.value.base64" *ngIf="photo.value"/>
                                             <button
                                                 class="red-fg"
                                                 mat-icon-button
