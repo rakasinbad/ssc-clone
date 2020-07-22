@@ -218,7 +218,7 @@
                         District
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.urban?.district || '-' }}
+                        {{ supplierStore?.outerStore?.urban?.district || '-' }}
                     </p>
                 </div>
                 <!-- / District -->
@@ -228,7 +228,7 @@
                         Urban
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.urban?.urban || '-' }}
+                        {{ supplierStore?.outerStore?.urban?.urban || '-' }}
                     </p>
                 </div>
                 <!-- / Urban -->
@@ -238,7 +238,7 @@
                         Postcode
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.urban?.zipCode || '-' }}
+                        {{ supplierStore?.outerStore?.urban?.zipCode || '-' }}
                     </p>
                 </div>
                 <!-- / Postcode -->
@@ -248,7 +248,7 @@
                         Address
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.address }}
+                        {{ supplierStore?.outerStore?.address }}
                     </p>
                 </div>
                 <!-- / Address -->
@@ -258,7 +258,7 @@
                         Notes Address
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.noteAddress || '-' }}
+                        {{ supplierStore?.outerStore?.noteAddress || '-' }}
                     </p>
                 </div>
                 <!-- / Notes Address -->
@@ -268,7 +268,7 @@
                         Latitude
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.latitude || '-' }}
+                        {{ supplierStore?.outerStore?.latitude || '-' }}
                     </p>
                 </div>
                 <!-- / Latitude -->
@@ -278,7 +278,7 @@
                         Longitude
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.longitude || '-' }}
+                        {{ supplierStore?.outerStore?.longitude || '-' }}
                     </p>
                 </div>
                 <!-- / Longitude -->
@@ -310,7 +310,7 @@
                         Store Name
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.name || '-' }}
+                        {{ supplierStore?.outerStore?.name || '-' }}
                     </p>
                 </div>
                 <!-- / Store Name -->
@@ -320,7 +320,7 @@
                         Store NPWP ID
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.taxNo || '-' }}
+                        {{ supplierStore?.outerStore?.taxNo || '-' }}
                     </p>
                 </div>
                 <!-- / Store NPWP ID -->
@@ -330,7 +330,7 @@
                         Store Phone Number
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.phoneNo || '-' }}
+                        {{ supplierStore?.outerStore?.phoneNo || '-' }}
                     </p>
                 </div>
                 <!-- / Store Phone Number -->
@@ -342,9 +342,9 @@
                     <div class="field-value" [fxFlex]="valueFlex">
                         <a
                             style="cursor: pointer;"
-                            (click)="openPreviewPhoto(supplierStore?.store?.taxImageUrl, 'Store NPWP Photo')"
+                            (click)="openPreviewPhoto(supplierStore?.outerStore?.taxImageUrl, 'Store NPWP Photo')"
                             class="font-size-14"
-                            *ngIf="supplierStore?.store?.taxImageUrl; else noStoreTaxPhoto;"
+                            *ngIf="supplierStore?.outerStore?.taxImageUrl; else noStoreTaxPhoto;"
                         >
                             View
                         </a>
@@ -364,9 +364,9 @@
                     <div class="field-value" [fxFlex]="valueFlex">
                         <a
                             style="cursor: pointer;"
-                            (click)="openPreviewPhoto(supplierStore?.store?.imageUrl, 'Store Photo')"
+                            (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl, 'Store Photo')"
                             class="font-size-14"
-                            *ngIf="supplierStore?.store?.imageUrl; else noStorePhoto;"
+                            *ngIf="supplierStore?.outerStore?.imageUrl; else noStorePhoto;"
                         >
                             View
                         </a>
@@ -385,11 +385,11 @@
                     </p>
                     <p
                         class="font-size-14"
-                        [class.sinbad-green-fg]="supplierStore?.store?.status === 'active'"
-                        [class.sinbad-red-fg]="supplierStore?.store?.status === 'inactive'"
+                        [class.sinbad-green-fg]="supplierStore?.outerStore?.status === 'active'"
+                        [class.sinbad-red-fg]="supplierStore?.outerStore?.status === 'inactive'"
                         [fxFlex]="valueFlex"
                     >
-                        {{ (supplierStore?.store?.status | titlecase) || '-' }}
+                        {{ (supplierStore?.outerStore?.status | titlecase) || '-' }}
                     </p>
                 </div>
                 <!-- / Store Status -->
@@ -398,8 +398,8 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Date Created
                     </p>
-                    <p class="font-size-14 field-value" *ngIf="supplierStore?.store?.createdAt" [fxFlex]="valueFlex">
-                        {{ (supplierStore?.store?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                    <p class="font-size-14 field-value" *ngIf="supplierStore?.outerStore?.createdAt" [fxFlex]="valueFlex">
+                        {{ (supplierStore?.outerStore?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
                     </p>
                 </div>
                 <!-- / Date Created -->
@@ -522,7 +522,7 @@
                         Physical Store Size
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.largeArea || '-' }}
+                        {{ supplierStore?.outerStore?.largeArea || '-' }}
                     </p>
                 </div>
                 <!-- / Physical Store Size -->
@@ -532,7 +532,7 @@
                         Number of Employee
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.numberOfEmployee || '-' }}
+                        {{ supplierStore?.outerStore?.numberOfEmployee || '-' }}
                     </p>
                 </div>
                 <!-- / Number of Employee -->
@@ -542,7 +542,7 @@
                         Top Brand Selling
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.topSellingBrand || '-' }}
+                        {{ supplierStore?.outerStore?.topSellingBrand || '-' }}
                     </p>
                 </div>
                 <!-- / Top Brand Selling -->
@@ -552,7 +552,7 @@
                         The Most Wanted Brand
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.mostWantedBrand || '-' }}
+                        {{ supplierStore?.outerStore?.mostWantedBrand || '-' }}
                     </p>
                 </div>
                 <!-- / The Most Wanted Brand -->
@@ -562,7 +562,7 @@
                         Vehicle Accessibility
                     </p>
                     <p class="font-size-14 field-value" [fxFlex]="valueFlex">
-                        {{ supplierStore?.store?.vehicleAccessibility?.name || '-' }}
+                        {{ supplierStore?.outerStore?.vehicleAccessibility?.name || '-' }}
                     </p>
                 </div>
                 <!-- / Vehicle Accessibility -->
@@ -574,9 +574,9 @@
                     <div class="field-value" [fxFlex]="valueFlex">
                         <a
                             style="cursor: pointer;"
-                            (click)="openPreviewPhoto(supplierStore?.store?.imageUrl, 'Store Photo')"
+                            (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl, 'Store Photo')"
                             class="font-size-14"
-                            *ngIf="supplierStore?.store?.imageUrl; else noStorePhoto;"
+                            *ngIf="supplierStore?.outerStore?.imageUrl; else noStorePhoto;"
                         >
                             View
                         </a>

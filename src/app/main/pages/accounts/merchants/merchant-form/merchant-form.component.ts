@@ -2915,6 +2915,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         ).subscribe(value => {
             const prefix = String(value).match(/[a-zA-Z]+/);
 
+            if (!this.storeIdNextNumber) {
+                return;
+            }
+
             if (prefix) {
                 // Tidak boleh menentukan ID store secara manual dengan prefix yang sama dengan auto generate.
                 if (this.storeIdNextNumber.match(prefix[0]) && this.storeIdType.value !== 'auto') {
@@ -3119,43 +3123,19 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             //     delete payload.hierarchy;
             // }
 
-            if (payload.creditLimit && payload.creditLimit.length > 0) {
-                for (const [idx, row] of payload.creditLimit.entries()) {
-                    const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-
-                    if (typeof allowCredit === 'boolean') {
-                        // Jika allow credit-nya true, tapi nilai credit limit-nya tidak valid.
-                        if (!payload.creditLimit[idx].creditLimit) {
-                            payload.creditLimit[idx].creditLimit = 0;
-                        }
-
-                        if (this.pageType === 'new' && !allowCredit) {
-                            delete payload.creditLimit[idx];
-                            payload.creditLimit[idx] = null;
-                        }
-
-                        // delete payload.creditLimit[idx].allowCreditLimit;
-                        // delete payload.creditLimit[idx].invoiceGroupId;
-                        // delete payload.creditLimit[idx].creditLimitGroupId;
-                        // delete payload.creditLimit[idx].creditLimit;
-                        // delete payload.creditLimit[idx].termOfPayment;
-
-                        // payload.creditLimit[idx].creditLimitGroupId = null;
-                        // payload.creditLimit[idx].creditLimit = 0;
-                        // payload.creditLimit[idx].termOfPayment = 0;
-                    }
+            for (const [idx, row] of payload.creditLimit.entries()) {
+                // Jika allow credit-nya true, tapi nilai credit limit-nya tidak valid.
+                if (!row.creditLimit) {
+                    payload.creditLimit[idx].creditLimit = 0;
                 }
 
-                const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
-
-                payload.creditLimit = newPCreditLimit;
-
-                if (newPCreditLimit && !newPCreditLimit.length) {
-                    delete payload.creditLimit;
+                // Term of payment akan diatur nilainya menjadi nol jika nilainya dianggap tidak valid.
+                if (!row.termOfPayment) {
+                    payload.creditLimit[idx].termOfPayment = 0;
                 }
-            } else {
-                if (payload.creditLimit && !payload.creditLimit.length) {
-                    delete payload.creditLimit;
+
+                if (!row.creditLimitGroupId) {
+                    payload.creditLimit[idx].creditLimitGroupId = null;
                 }
             }
 
