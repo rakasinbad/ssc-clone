@@ -161,24 +161,16 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
                         }).pipe(
                             tap(({ type, group, channel }) => {
                                 // Membuat SupplierStore baru.
-                                const newSupplierStore: SupplierStore = new SupplierStore(
-                                    supplierStore.id,
-                                    supplierStore.supplierId,
-                                    supplierStore.storeId,
-                                    supplierStore.status,
-                                    supplierStore.store,
-                                    supplierStore.owner,
-                                    supplierStore.createdAt,
-                                    supplierStore.updatedAt,
-                                    supplierStore.deletedAt,
-                                    {
-                                        ...supplierStore,
+                                const newSupplierStore: SupplierStore = {
+                                    ...supplierStore,
+                                    outerStore: {
+                                        ...supplierStore.outerStore,
                                         selectedStoreType: String(type.text || '').replace('class="my-12"', '') || '-',
                                         selectedStoreGroup: String(group.text || '').replace('class="my-12"', '') || '-',
                                         selectedStoreChannel: String(channel.text || '').replace('class="my-12"', '') || '-',
                                         // selectedStoreCluster: cluster.text || '-',
                                     }
-                                );
+                                };
     
                                 // Mengganti Supplier Store yang terpilih dengan yang terbaru (yang sudah ada data Store Classification-nya)
                                 this.store.dispatch(StoreActions.selectSupplierStore({ payload: newSupplierStore }));
