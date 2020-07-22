@@ -3213,177 +3213,151 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             }
 
-                    payload.creditLimit = newCreditLimit;
+            // Hanya upload foto jika user memasukkan foto baru.
+            if (body.profileInfo.identityPhoto !== body.profileInfo.oldIdentityPhoto
+                && !String(body.profileInfo.identityPhoto).startsWith('http')
+            ) {
+                this.uploadIdentityPhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.profileInfo.identityPhoto,
+                    type: 'idCard',
+                    oldLink: body.profileInfo.oldIdentityPhoto
+                });
+            }
 
-                    if (newCreditLimit && !newCreditLimit.length) {
-                        delete payload.creditLimit;
-                    }
+            if (body.profileInfo.identityPhotoSelfie !== body.profileInfo.oldIdentityPhotoSelfie
+                && !String(body.profileInfo.identityPhotoSelfie).startsWith('http')
+            ) {
+                this.uploadIdentityPhotoSelfie$.next('pending');
+                uploadPhotos.push({
+                    image: body.profileInfo.identityPhotoSelfie,
+                    type: 'selfie',
+                    oldLink: body.profileInfo.oldIdentityPhotoSelfie
+                });
+            }
 
-                    if (!creditLimitId) {
-                        delete payload.creditLimit[idx].id;
-                    }
-                }
+            if (body.storeInfo.taxPhoto !== body.storeInfo.oldTaxPhoto
+                && !String(body.storeInfo.taxPhoto).startsWith('http')
+            ) {
+                this.uploadStoreTaxPhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.storeInfo.taxPhoto,
+                    type: 'storeTax',
+                    oldLink: body.storeInfo.oldTaxPhoto
+                });
+            }
 
-                // Untuk dikirim ke service dan akan di-upload fotonya.
-                const uploadPhotos: Array<UploadPhotoApiPayload> = [];
+            if (body.storeInfo.photo !== body.storeInfo.oldPhoto
+                && !String(body.storeInfo.photo).startsWith('http')
+            ) {
+                this.uploadStorePhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.storeInfo.photo,
+                    type: 'storePhoto',
+                    oldLink: body.storeInfo.oldPhoto
+                });
+            }
 
-                if (body.profileInfo.taxPhoto !== body.profileInfo.oldTaxPhoto
-                    && !String(body.profileInfo.taxPhoto).startsWith('http')
-                ) {
-                    this.uploadOwnerTaxPhoto$.next('pending');
-                    uploadPhotos.push({
-                        image: body.profileInfo.taxPhoto,
-                        type: 'userTax',
-                        oldLink: body.profileInfo.oldTaxPhoto
-                    });
-                }
-
-                // Hanya upload foto jika user memasukkan foto baru.
-                if (body.profileInfo.identityPhoto !== body.profileInfo.oldIdentityPhoto
-                    && !String(body.profileInfo.identityPhoto).startsWith('http')
-                ) {
-                    this.uploadIdentityPhoto$.next('pending');
-                    uploadPhotos.push({
-                        image: body.profileInfo.identityPhoto,
-                        type: 'idCard',
-                        oldLink: body.profileInfo.oldIdentityPhoto
-                    });
-                }
-
-                if (body.profileInfo.identityPhotoSelfie !== body.profileInfo.oldIdentityPhotoSelfie
-                    && !String(body.profileInfo.identityPhotoSelfie).startsWith('http')
-                ) {
-                    this.uploadIdentityPhotoSelfie$.next('pending');
-                    uploadPhotos.push({
-                        image: body.profileInfo.identityPhotoSelfie,
-                        type: 'selfie',
-                        oldLink: body.profileInfo.oldIdentityPhotoSelfie
-                    });
-                }
-
-                if (body.storeInfo.taxPhoto !== body.storeInfo.oldTaxPhoto
-                    && !String(body.storeInfo.taxPhoto).startsWith('http')
-                ) {
-                    this.uploadStoreTaxPhoto$.next('pending');
-                    uploadPhotos.push({
-                        image: body.storeInfo.taxPhoto,
-                        type: 'storeTax',
-                        oldLink: body.storeInfo.oldTaxPhoto
-                    });
-                }
-
-                if (body.storeInfo.photo !== body.storeInfo.oldPhoto
-                    && !String(body.storeInfo.photo).startsWith('http')
-                ) {
-                    this.uploadStorePhoto$.next('pending');
-                    uploadPhotos.push({
-                        image: body.storeInfo.photo,
-                        type: 'storePhoto',
-                        oldLink: body.storeInfo.oldPhoto
-                    });
-                }
-
-                if (uploadPhotos.length === 0) {
-                    if (!id) {
-                        this.store.dispatch(StoreActions.createStoreRequest({ payload }));
-                    } else {
-                        this.store.dispatch(StoreActions.updateStoreRequest({ payload: { body: payload, id } }));
-                    }
+            if (uploadPhotos.length === 0) {
+                if (!id) {
+                    this.store.dispatch(StoreActions.createStoreRequest({ payload }));
                 } else {
-                    // Menyimpan jumlah foto yang ter-upload.
-                    // tslint:disable-next-line: no-inferrable-types
-                    // const uploadedPhotos: Array<{ type: TUploadPhotoType, url: string }> = [];
-
-                    this.showPhotoUploadProgress();
-
-                    of<UploadPhotoApiPayload>(...uploadPhotos).pipe(
-                        concatMap((photoPayload: UploadPhotoApiPayload) => {
-                            // Set upload state-nya.
-                            this.setUploatState(photoPayload.type, 'uploading');
-
-                            return this._$photo
-                                .upload(photoPayload.image, photoPayload.type, photoPayload.oldLink)
-                                .pipe(
-                                    tap(response => {
-                                        this.setUploatState(photoPayload.type, 'success');
-
-                                        switch (photoPayload.type) {
-                                            case 'idCard': {
-                                                payload.user['idImageUrl'] = response.url;
-                                                break;
-                                            }
-                                            case 'selfie': {
-                                                payload.user['selfieImageUrl'] = response.url;
-                                                break;
-                                            }
-                                            case 'userTax': {
-                                                payload.user['taxImageUrl'] = response.url;
-                                                break;
-                                            }
-                                            case 'storePhoto': {
-                                                payload['imageUrl'] = response.url;
-                                                break;
-                                            }
-                                            case 'storeTax': {
-                                                payload['taxImageUrl'] = response.url;
-                                                break;
-                                            }
-                                        }
-
-                                        // uploadedPhotos.push({
-                                        //     type: photoPayload.type,
-                                        //     url: response.url
-                                        // });
-                                    }),
-                                    catchError(err => {
-                                        // Ubah state type tersebut menjadi failed.
-                                        this.setUploatState(photoPayload.type, 'failed');
-
-                                        // Memunculkan notifikasi error.
-                                        this._$helper.showErrorNotification({
-                                            id: `ERR_UPLOAD_${String(photoPayload.type).toUpperCase()}_FAILED`,
-                                            errors: err,
-                                        });
-
-                                        // Mengembalikan nilai error-nya.
-                                        return throwError(err);
-                                    })
-                                );
-                        })
-                    ).subscribe({
-                        next: value => {
-                            HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL SUCCESS', value);
-                        },
-                        error: err => {
-                            HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL ERROR', err);
-                            // Reset tombol "Save" form-nya.
-                            this.store.dispatch(FormActions.resetClickSaveButton());
-                            // Menunjukkan tombol close dialog.
-                            this.dialogUploadPhotoProgress.showCloseButton();
-                            // Menutup otomatis dialog-nya.
-                            setTimeout(() => {
-                                if (this.dialogUploadPhotoProgress) {
-                                    this.dialogUploadPhotoProgress.close();
-                                }
-                            }, 10000);
-                        },
-                        complete: () => {
-                            HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL COMPLETE');
-
-                            setTimeout(() => {
-                                if (this.dialogUploadPhotoProgress) {
-                                    this.dialogUploadPhotoProgress.close();
-                                }
-
-                                if (!id) {
-                                    this.store.dispatch(StoreActions.createStoreRequest({ payload }));
-                                } else {
-                                    this.store.dispatch(StoreActions.updateStoreRequest({ payload: { body: payload, id } }));
-                                }
-                            }, 3000);
-                        }
-                    });
+                    this.store.dispatch(StoreActions.updateStoreRequest({ payload: { body: payload, id } }));
                 }
+            } else {
+                // Menyimpan jumlah foto yang ter-upload.
+                // tslint:disable-next-line: no-inferrable-types
+                // const uploadedPhotos: Array<{ type: TUploadPhotoType, url: string }> = [];
+
+                this.showPhotoUploadProgress();
+
+                of<UploadPhotoApiPayload>(...uploadPhotos).pipe(
+                    concatMap((photoPayload: UploadPhotoApiPayload) => {
+                        // Set upload state-nya.
+                        this.setUploatState(photoPayload.type, 'uploading');
+
+                        return this._$photo
+                            .upload(photoPayload.image, photoPayload.type, photoPayload.oldLink)
+                            .pipe(
+                                tap(response => {
+                                    this.setUploatState(photoPayload.type, 'success');
+
+                                    switch (photoPayload.type) {
+                                        case 'idCard': {
+                                            payload.user['idImageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'selfie': {
+                                            payload.user['selfieImageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'userTax': {
+                                            payload.user['taxImageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'storePhoto': {
+                                            payload['imageUrl'] = response.url;
+                                            break;
+                                        }
+                                        case 'storeTax': {
+                                            payload['taxImageUrl'] = response.url;
+                                            break;
+                                        }
+                                    }
+
+                                    // uploadedPhotos.push({
+                                    //     type: photoPayload.type,
+                                    //     url: response.url
+                                    // });
+                                }),
+                                catchError(err => {
+                                    // Ubah state type tersebut menjadi failed.
+                                    this.setUploatState(photoPayload.type, 'failed');
+
+                                    // Memunculkan notifikasi error.
+                                    this._$helper.showErrorNotification({
+                                        id: `ERR_UPLOAD_${String(photoPayload.type).toUpperCase()}_FAILED`,
+                                        errors: err,
+                                    });
+
+                                    // Mengembalikan nilai error-nya.
+                                    return throwError(err);
+                                })
+                            );
+                    })
+                ).subscribe({
+                    next: value => {
+                        HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL SUCCESS', value);
+                    },
+                    error: err => {
+                        HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL ERROR', err);
+                        // Reset tombol "Save" form-nya.
+                        this.store.dispatch(FormActions.resetClickSaveButton());
+                        // Menunjukkan tombol close dialog.
+                        this.dialogUploadPhotoProgress.showCloseButton();
+                        // Menutup otomatis dialog-nya.
+                        setTimeout(() => {
+                            if (this.dialogUploadPhotoProgress) {
+                                this.dialogUploadPhotoProgress.close();
+                            }
+                        }, 10000);
+                    },
+                    complete: () => {
+                        HelperService.debug('[STORE FORM] UPLOAD PHOTO SEQUENTIAL COMPLETE');
+
+                        setTimeout(() => {
+                            if (this.dialogUploadPhotoProgress) {
+                                this.dialogUploadPhotoProgress.close();
+                            }
+
+                            if (!id) {
+                                this.store.dispatch(StoreActions.createStoreRequest({ payload }));
+                            } else {
+                                this.store.dispatch(StoreActions.updateStoreRequest({ payload: { body: payload, id } }));
+                            }
+                        }, 3000);
+                    }
+                });
             }
         }
     }
