@@ -2975,6 +2975,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         ).subscribe(value => {
             const prefix = String(value).match(/[a-zA-Z]+/);
 
+            if (!this.storeIdNextNumber) {
+                return;
+            }
+
             if (prefix) {
                 // Tidak boleh menentukan ID store secara manual dengan prefix yang sama dengan auto generate.
                 if (this.storeIdNextNumber.match(prefix[0]) && this.storeIdType.value !== 'auto') {
@@ -3179,26 +3183,35 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             //     delete payload.hierarchy;
             // }
 
-            if (payload.creditLimit && payload.creditLimit.length > 0) {
-                for (const [idx, row] of payload.creditLimit.entries()) {
-                    const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-
-                    if (typeof allowCredit === 'boolean') {
-                        // Jika allow credit-nya true, tapi nilai credit limit-nya tidak valid.
-                        if (!payload.creditLimit[idx].creditLimit) {
-                            payload.creditLimit[idx].creditLimit = 0;
-                        }
-
-                        if (this.pageType === 'new' && !allowCredit) {
-                            delete payload.creditLimit[idx];
-                            payload.creditLimit[idx] = null;
-                        }
-                    }
+            for (const [idx, row] of payload.creditLimit.entries()) {
+                // Jika allow credit-nya true, tapi nilai credit limit-nya tidak valid.
+                if (!row.creditLimit) {
+                    payload.creditLimit[idx].creditLimit = 0;
                 }
 
-                for (const [idx, _] of payload.creditLimit.entries()) {
-                    const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-                    const creditLimitId = payload.creditLimit[idx].id;
+                // Term of payment akan diatur nilainya menjadi nol jika nilainya dianggap tidak valid.
+                if (!row.termOfPayment) {
+                    payload.creditLimit[idx].termOfPayment = 0;
+                }
+
+                if (!row.creditLimitGroupId) {
+                    payload.creditLimit[idx].creditLimitGroupId = null;
+                }
+            }
+
+            // Untuk dikirim ke service dan akan di-upload fotonya.
+            const uploadPhotos: Array<UploadPhotoApiPayload> = [];
+
+            if (body.profileInfo.taxPhoto !== body.profileInfo.oldTaxPhoto
+                && !String(body.profileInfo.taxPhoto).startsWith('http')
+            ) {
+                this.uploadOwnerTaxPhoto$.next('pending');
+                uploadPhotos.push({
+                    image: body.profileInfo.taxPhoto,
+                    type: 'userTax',
+                    oldLink: body.profileInfo.oldTaxPhoto
+                });
+            }
 
                     payload.creditLimit = newCreditLimit;
 
