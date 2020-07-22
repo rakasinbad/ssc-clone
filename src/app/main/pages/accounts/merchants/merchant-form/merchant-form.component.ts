@@ -10,7 +10,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, AsyncValidatorFn, ValidationErrors, ValidatorFn } from '@angular/forms';
 import {
     MatAutocomplete,
     MatAutocompleteSelectedEvent,
@@ -46,7 +46,7 @@ import { StoreGroup } from 'app/shared/models/store-group.model';
 import { StoreType } from 'app/shared/models/store-type.model';
 import { UserSupplier, SupplierStore } from 'app/shared/models/supplier.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
-import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
+import { DropdownActions, FormActions, UiActions, WarehouseActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
 import * as numeral from 'numeral';
@@ -73,7 +73,7 @@ import { Store as Merchant, StoreSetting, ICheckOwnerPhoneResponse } from '../mo
 import { StoreActions, StoreSettingActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors, StoreSettingSelectors } from '../store/selectors';
-import { MerchantApiService } from '../services';
+import { MerchantApiService, WarehouseApiService } from '../services';
 import {
     StoreSegmentationTypesApiService as StoreSegmentationApiService
 } from 'app/shared/components/selection-tree/store-segmentation/services/store-segmentation-api.service';
@@ -81,6 +81,7 @@ import {
 import { PhotoUploadApiService, UploadPhotoApiPayload } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { Warehouse, WarehouseDropdown } from '../models/warehouse.model';
 
 // import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 // import { StoreSegment } from 'app/shared/models/store-segment.model';
@@ -185,6 +186,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     uploadStoreTaxPhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
     uploadStorePhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
 
+    availableWarehouses: Array<WarehouseDropdown> = [];
+
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
     triggerDistrict: MatAutocompleteTrigger;
@@ -230,6 +233,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private _$segmentation: StoreSegmentationApiService,
         private _$photo: PhotoUploadApiService,
         private matDialog: MatDialog,
+        private warehouseService: WarehouseApiService
     ) {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -1077,6 +1081,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         return `${item.urban}`;
     }
 
+    warehouseValidator(): ValidatorFn {
+        return (control: AbstractControl): {[key: string]: any} | null => {
+            const isWarehouseSelected: boolean = (control.value instanceof Warehouse);
+
+            if (!isWarehouseSelected && this.availableWarehouses.length > 1) {
+                return {
+                    multipleWarehouses: {
+                        message: 'This store is within the coverage area of multiple warehouses. Please choose ONE of the listed warehouses.',
+                        value: control.value
+                    }
+                };
+            }
+
+            if (isWarehouseSelected) {
+                return null;
+            }
+        };
+    }
+
     getErrorMessage(field: string): string {
         if (field) {
             const { errors } = this.form.get(field);
@@ -1712,6 +1735,65 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+    private requestWarehouse(): void {
+        of(null)
+            .pipe(
+                // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+                // delay(1000),
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<
+                    [null, UserSupplier],
+                    Observable<Array<WarehouseDropdown>>
+                >(([_, userSupplier]) => {
+                    // Jika user tidak ada data supplier.
+                    if (!userSupplier) {
+                        throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                    }
+
+                    // Mengambil ID supplier-nya.
+                    const { supplierId } = userSupplier;
+                    const urbanId = this.form.get('storeInfo.address.urban').value;
+
+                    // Melakukan request data warehouse.
+                    return this.warehouseService
+                        .find<Array<WarehouseDropdown>>(+supplierId, +urbanId)
+                        .pipe(
+                            tap((response) =>
+                                HelperService.debug('FIND WAREHOUSE', {
+                                    supplierId,
+                                    urbanId,
+                                    response,
+                                })
+                            )
+                        );
+                }),
+                take(1),
+                catchError((err) => {
+                    throw err;
+                })
+            )
+            .subscribe({
+                next: (response) => {
+                    HelperService.debug('WAREHOUSE RESPONSE', response);
+                    this.availableWarehouses = response;
+
+                    if (this.availableWarehouses.length === 1) {
+
+                    }
+                },
+                error: (err) => {
+                    HelperService.debug('ERROR FIND WAREHOUSE', { error: err });
+                    this._$helper.showErrorNotification(new ErrorHandler(err));
+                },
+                complete: () => {
+                    HelperService.debug('FIND WAREHOUSE COMPLETED');
+                },
+            });
+      }
+    
     private requestStoreType(params: IQueryParams): void {
         of(null)
             .pipe(
@@ -2401,6 +2483,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         ],
                     ],
                     notes: ['', []],
+                    warehouse: ['', [
+                        RxwebValidators.required({
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        this.warehouseValidator()
+                    ]],
                     geolocation: this.formBuilder.group({
                         lng: [
                             '',
