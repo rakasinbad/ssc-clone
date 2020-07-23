@@ -1740,7 +1740,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
-    private requestWarehouse(urbanId: number): void {
+    private requestWarehouse(urbanId: number, resetValue: boolean = true): void {
         if (urbanId) {
             this.isWarehouseLoading$.next(true);
             this.form.get('storeInfo.address.warehouse').disable();
@@ -1749,6 +1749,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 .pipe(
                     // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
                     // delay(1000),
+                    debounceTime(1000),
                     withLatestFrom<any, UserSupplier>(
                         this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
                     ),
@@ -1794,7 +1795,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.form.get('storeInfo.address.warehouse').setValue(this.availableWarehouses[0].id);
                         } else {
                             this.form.get('storeInfo.address.warehouse').enable();
-                            this.form.get('storeInfo.address.warehouse').setValue('');
+                            if (resetValue) {
+                                this.form.get('storeInfo.address.warehouse').setValue('');
+                            }
                             this.form.get('storeInfo.address.warehouse').markAsTouched();
                         }
                     },
@@ -2846,6 +2849,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         lng: data['outerStore']['longitude'],
                         lat: data['outerStore']['latitude'],
                     },
+                    warehouse: data['outerStore']['warehouseId']
                 },
                 physicalStoreInfo: {
                     numberOfEmployee: data['outerStore']['numberOfEmployee'],
@@ -2906,94 +2910,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.handleNotAllowCreditPatch(foundIdx);
                         }
                     }
-
-                    // if (idx > 0) {
-                    //     if (row.allowCreditLimit) {
-                    //         this.formCreditLimits.push(
-                    //             this.formBuilder.group({
-                    //                 allowCreditLimit: true,
-                    //                 creditLimitStoreId: row.id,
-                    //                 invoiceGroup: row.invoiceGroupId,
-                    //                 creditLimitGroup: row.creditLimitGroupId,
-                    //                 creditLimit: [
-                    //                     '',
-                    //                     // [
-                    //                     //     RxwebValidators.numeric({
-                    //                     //         acceptValue:
-                    //                     //             NumericValueType.PositiveNumber,
-                    //                     //         allowDecimal: true,
-                    //                     //         message: this._$errorMessage.getErrorMessageNonState(
-                    //                     //             'default',
-                    //                     //             'pattern'
-                    //                     //         )
-                    //                     //     })
-                    //                     // ]
-                    //                 ],
-                    //                 termOfPayment: [
-                    //                     row.termOfPayment,
-                    //                     [
-                    //                         RxwebValidators.digit({
-                    //                             message: this._$errorMessage.getErrorMessageNonState(
-                    //                                 'default',
-                    //                                 'numeric'
-                    //                             ),
-                    //                         }),
-                    //                     ],
-                    //                 ],
-                    //             })
-                    //         );
-
-                    //         this.handleAllowCreditPatch(idx, row);
-                    //     } else {
-                    //         this.formCreditLimits.push(
-                    //             this.formBuilder.group({
-                    //                 allowCreditLimit: false,
-                    //                 creditLimitStoreId: row.id,
-                    //                 invoiceGroup: row.invoiceGroupId,
-                    //                 creditLimitGroup: [
-                    //                     {
-                    //                         value: '',
-                    //                         disabled: true,
-                    //                     },
-                    //                 ],
-                    //                 creditLimit: [
-                    //                     {
-                    //                         value: '',
-                    //                         disabled: true,
-                    //                     },
-                    //                 ],
-                    //                 termOfPayment: [
-                    //                     {
-                    //                         value: '',
-                    //                         disabled: true,
-                    //                     },
-                    //                 ],
-                    //             })
-                    //         );
-
-                    //         this.handleNotAllowCreditPatch(idx);
-                    //     }
-                    // } else {
-                    //     (this.formCreditLimits.at(idx) as FormGroup).addControl(
-                    //         'creditLimitStoreId',
-                    //         this.formBuilder.control(row.id)
-                    //     );
-
-                    //     this.formCreditLimits
-                    //         .at(idx)
-                    //         .get('invoiceGroup')
-                    //         .patchValue(row.invoiceGroupId);
-
-                    //     if (row.allowCreditLimit) {
-                    //         this.handleAllowCreditPatch(idx, row);
-                    //     } else {
-                    //         this.handleNotAllowCreditPatch(idx);
-                    //     }
-                    // }
                 }
             }
         }
 
+        this.requestWarehouse(+data['outerStore']['urbanId'] || null, false);
         this.form.markAllAsTouched();
         this.form.updateValueAndValidity();
     }
