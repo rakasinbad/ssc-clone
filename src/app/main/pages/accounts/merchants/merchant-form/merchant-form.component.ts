@@ -187,6 +187,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     uploadStorePhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
 
     availableWarehouses: Array<WarehouseDropdown> = [];
+    isWarehouseLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
@@ -1083,7 +1084,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     warehouseValidator(): ValidatorFn {
         return (control: AbstractControl): {[key: string]: any} | null => {
-            const isWarehouseSelected: boolean = (control.value instanceof Warehouse);
+            const isWarehouseSelected: boolean = !!control.value;
 
             if (!isWarehouseSelected && this.availableWarehouses.length > 1) {
                 return {
@@ -1552,10 +1553,14 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 {
                     const value = (ev.option.value as Urban) || '';
 
+                    this.availableWarehouses = [];
+                    this.form.get('storeInfo.address.warehouse').reset();
+
                     if (!value) {
                         this.form.get('storeInfo.address.postcode').reset();
                     } else {
                         this.form.get('storeInfo.address.postcode').setValue(value.zipCode);
+                        this.requestWarehouse(+value.id);
                     }
 
                     this._selectedUrban = value ? JSON.stringify(value) : '';
@@ -1735,64 +1740,76 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
-    private requestWarehouse(): void {
-        of(null)
-            .pipe(
-                // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-                // delay(1000),
-                withLatestFrom<any, UserSupplier>(
-                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-                ),
-                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-                switchMap<
-                    [null, UserSupplier],
-                    Observable<Array<WarehouseDropdown>>
-                >(([_, userSupplier]) => {
-                    // Jika user tidak ada data supplier.
-                    if (!userSupplier) {
-                        throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                    }
+    private requestWarehouse(urbanId: number): void {
+        if (urbanId) {
+            this.isWarehouseLoading$.next(true);
+            this.form.get('storeInfo.address.warehouse').disable();
 
-                    // Mengambil ID supplier-nya.
-                    const { supplierId } = userSupplier;
-                    const urbanId = this.form.get('storeInfo.address.urban').value;
+            of(null)
+                .pipe(
+                    // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+                    // delay(1000),
+                    withLatestFrom<any, UserSupplier>(
+                        this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                    ),
+                    tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                    switchMap<
+                        [null, UserSupplier],
+                        Observable<Array<WarehouseDropdown>>
+                    >(([_, userSupplier]) => {
+                        // Jika user tidak ada data supplier.
+                        if (!userSupplier) {
+                            throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                        }
+    
+                        // Mengambil ID supplier-nya.
+                        const { supplierId } = userSupplier;
+    
+                        // Melakukan request data warehouse.
+                        return this.warehouseService
+                            .find<Array<WarehouseDropdown>>(+supplierId, +urbanId)
+                            .pipe(
+                                tap((response) =>
+                                    HelperService.debug('FIND WAREHOUSE', {
+                                        supplierId,
+                                        urbanId,
+                                        response,
+                                    })
+                                )
+                            );
+                    }),
+                    take(1),
+                    catchError((err) => {
+                        throw err;
+                    })
+                )
+                .subscribe({
+                    next: (response) => {
+                        this.isWarehouseLoading$.next(false);
+                        HelperService.debug('WAREHOUSE RESPONSE', response);
+                        this.availableWarehouses = response;
 
-                    // Melakukan request data warehouse.
-                    return this.warehouseService
-                        .find<Array<WarehouseDropdown>>(+supplierId, +urbanId)
-                        .pipe(
-                            tap((response) =>
-                                HelperService.debug('FIND WAREHOUSE', {
-                                    supplierId,
-                                    urbanId,
-                                    response,
-                                })
-                            )
-                        );
-                }),
-                take(1),
-                catchError((err) => {
-                    throw err;
-                })
-            )
-            .subscribe({
-                next: (response) => {
-                    HelperService.debug('WAREHOUSE RESPONSE', response);
-                    this.availableWarehouses = response;
-
-                    if (this.availableWarehouses.length === 1) {
-
-                    }
-                },
-                error: (err) => {
-                    HelperService.debug('ERROR FIND WAREHOUSE', { error: err });
-                    this._$helper.showErrorNotification(new ErrorHandler(err));
-                },
-                complete: () => {
-                    HelperService.debug('FIND WAREHOUSE COMPLETED');
-                },
-            });
-      }
+                        if (this.availableWarehouses.length === 1) {
+                            this.form.get('storeInfo.address.warehouse').disable();
+                            this.form.get('storeInfo.address.warehouse').setValue(this.availableWarehouses[0].id);
+                        } else {
+                            this.form.get('storeInfo.address.warehouse').enable();
+                            this.form.get('storeInfo.address.warehouse').setValue('');
+                            this.form.get('storeInfo.address.warehouse').markAsTouched();
+                        }
+                    },
+                    error: (err) => {
+                        this.isWarehouseLoading$.next(false);
+                        HelperService.debug('ERROR FIND WAREHOUSE', { error: err });
+                        this._$helper.showErrorNotification(new ErrorHandler(err));
+                    },
+                    complete: () => {
+                        this.isWarehouseLoading$.next(false);
+                        HelperService.debug('FIND WAREHOUSE COMPLETED');
+                    },
+                });
+        }
+    }
     
     private requestStoreType(params: IQueryParams): void {
         of(null)
@@ -2485,6 +2502,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     notes: ['', []],
                     warehouse: ['', [
                         RxwebValidators.required({
+                            conditionalExpression: (x: Urban | string) => !!x && this.availableWarehouses.length === 0,
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'required'
@@ -3134,6 +3152,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     status: 'active',
                     roles: [1],
                 },
+                warehouseId: this.availableWarehouses.length === 1 ? null : body.storeInfo.address.warehouse,
                 type: {
                     typeId: body.storeInfo.storeClassification.storeType,
                 },
