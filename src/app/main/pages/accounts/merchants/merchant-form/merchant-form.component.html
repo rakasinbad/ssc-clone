@@ -1278,7 +1278,7 @@
                                     *Warehouse
                                 </label>
 
-                                <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-form-field appearance="outline" [fxFlex]="!isWarehouseLoading$ && _selectedUrban && availableWarehouses.length === 0 ? 30 : 50">
                                     <mat-select
                                         [formControl]="form.get('storeInfo.address.warehouse')"
                                         placeholder="Choose Warehouse"
@@ -1297,13 +1297,13 @@
                                     >
                                         {{ getErrorMessage('storeInfo.address.warehouse') }}
                                     </mat-error>
-                                    <mat-hint *ngIf="form.get('storeInfo.address.warehouse').value && availableWarehouses.length === 1">
+                                    <mat-hint *ngIf="form.get('storeInfo.address.warehouse').value && (availableWarehouses?.length || 0) === 1">
                                         The location of store is within the coverage area of a specific warehouse and cannot be changed.
                                     </mat-hint>
                                 </mat-form-field>
 
                                 <mat-spinner
-                                    *ngIf="isWarehouseLoading$ | async"
+                                    *ngIf="isWarehouseLoading$"
                                     class="ml-24 mb-24"
                                     fxFlexAlign="center"
                                     color="accent"
@@ -1311,6 +1311,35 @@
                                     [strokeWidth]="5"
                                     [mode]="'indeterminate'"
                                 ></mat-spinner>
+
+                                <div
+                                    class="mb-24"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between stretch"
+                                    fxFlex="20"
+                                    *ngIf="!isWarehouseLoading$ && _selectedUrban && availableWarehouses.length === 0"
+                                >
+                                    <a
+                                        style="text-decoration: none;"
+                                        target="_blank"
+                                        href="/pages/logistics/warehouse-coverages"
+                                        fxFlex="70"
+                                    >
+                                        <button
+                                            mat-flat-button
+                                            class="h-48 ml-12 sinbad-yellow"
+                                            color="accent"
+                                            type="button"
+                                            fxFlexAlign="center"
+                                        >
+                                            Go to Warehouse
+                                        </button>
+                                    </a>
+
+                                    <button mat-icon-button fxFlex aria-label="Refresh warehouse">
+                                        <mat-icon>refresh</mat-icon>
+                                    </button>
+                                </div>
                             </div>
                             <!-- / WAREHOUSE -->
                         </ng-container>

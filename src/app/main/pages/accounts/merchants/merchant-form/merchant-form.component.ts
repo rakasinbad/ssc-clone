@@ -158,7 +158,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _unSubs$: Subject<void> = new Subject<void>();
     private _selectedDistrict: string;
-    private _selectedUrban: string;
+    _selectedUrban: string;
     private _timer: Array<NodeJS.Timer> = [];
 
     selectedStoreType: Array<StoreSegmentationType> = [];
@@ -187,7 +187,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     uploadStorePhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
 
     availableWarehouses: Array<WarehouseDropdown> = [];
-    isWarehouseLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    // tslint:disable-next-line: no-inferrable-types
+    isWarehouseLoading$: boolean = false;
 
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
@@ -1742,7 +1743,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     private requestWarehouse(urbanId: number, resetValue: boolean = true): void {
         if (urbanId) {
-            this.isWarehouseLoading$.next(true);
+            this.isWarehouseLoading$ = true;
             this.form.get('storeInfo.address.warehouse').disable();
 
             of(null)
@@ -1786,7 +1787,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 )
                 .subscribe({
                     next: (response) => {
-                        this.isWarehouseLoading$.next(false);
+                        this.isWarehouseLoading$ = false;
                         HelperService.debug('WAREHOUSE RESPONSE', response);
                         this.availableWarehouses = response;
 
@@ -1802,12 +1803,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         }
                     },
                     error: (err) => {
-                        this.isWarehouseLoading$.next(false);
+                        this.isWarehouseLoading$ = false;
                         HelperService.debug('ERROR FIND WAREHOUSE', { error: err });
                         this._$helper.showErrorNotification(new ErrorHandler(err));
                     },
                     complete: () => {
-                        this.isWarehouseLoading$.next(false);
+                        this.isWarehouseLoading$ = false;
                         HelperService.debug('FIND WAREHOUSE COMPLETED');
                     },
                 });
