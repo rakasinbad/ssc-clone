@@ -1,6 +1,38 @@
 import { EStatus, TNullable } from 'app/shared/models/global.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 
+export interface IWarehouseDropdown {
+    id: string;
+    urbanId: string;
+    sinbadCode: string;
+    supplierCode: string;
+    name: string;
+}
+
+export class WarehouseDropdown implements IWarehouseDropdown {
+    id: string;
+    urbanId: string;
+    sinbadCode: string;
+    supplierCode: string;
+    name: string;
+
+    constructor(data: IWarehouseDropdown) {
+        const {
+            id,
+            urbanId,
+            sinbadCode,
+            supplierCode,
+            name,
+        } = data;
+
+        this.id = id;
+        this.urbanId = urbanId;
+        this.sinbadCode = sinbadCode;
+        this.supplierCode = supplierCode;
+        this.name = name;
+    }
+}
+
 export interface IWarehouse extends ITimestamp {
     readonly id: NonNullable<string>;
     address: string;

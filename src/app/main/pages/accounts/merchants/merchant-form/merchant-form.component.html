@@ -1262,6 +1262,57 @@
                                 </mat-form-field>
                             </div>
                             <!-- / LONGITUDE -->
+                            <!-- WAREHOUSE -->
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                            >
+                                <label class="form-label"
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="
+                                        hasError('storeInfo.address.warehouse')
+                                    "
+                                >
+                                    *Warehouse
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <mat-select
+                                        [formControl]="form.get('storeInfo.address.warehouse')"
+                                        placeholder="Choose Warehouse"
+                                    >
+                                        <mat-option>None</mat-option>
+                                        <mat-option
+                                            *ngFor="let row of availableWarehouses"
+                                            [value]="row.id"
+                                        >
+                                            {{ row?.name || '-' }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error
+                                        *ngIf="hasError('storeInfo.address.warehouse', true)"
+                                    >
+                                        {{ getErrorMessage('storeInfo.address.warehouse') }}
+                                    </mat-error>
+                                    <mat-hint *ngIf="form.get('storeInfo.address.warehouse').value && availableWarehouses.length === 1">
+                                        The location of store is within the coverage area of a specific warehouse and cannot be changed.
+                                    </mat-hint>
+                                </mat-form-field>
+
+                                <mat-spinner
+                                    *ngIf="isWarehouseLoading$ | async"
+                                    class="ml-24 mb-24"
+                                    fxFlexAlign="center"
+                                    color="accent"
+                                    [diameter]="40"
+                                    [strokeWidth]="5"
+                                    [mode]="'indeterminate'"
+                                ></mat-spinner>
+                            </div>
+                            <!-- / WAREHOUSE -->
                         </ng-container>
                         <!-- <div
                             class="custom-field sinbad-button"
