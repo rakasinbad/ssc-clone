@@ -1737,6 +1737,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     //             break;
     //     }
     // }
+    prepareRequestWarehouse(): void {
+        if (this._selectedUrban) {
+            const urban = JSON.parse(this._selectedUrban);
+
+            if (urban.id) {
+                this.requestWarehouse(urban.id, true);
+            }
+        }
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
