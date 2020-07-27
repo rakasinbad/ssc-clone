@@ -198,7 +198,7 @@
 
                 <mat-menu #moreMenu="matMenu">
                     <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
-                        <button
+                        <!-- <button
                             type="button"
                             mat-menu-item
                             class="sinbad-mat-menu-item"
@@ -207,7 +207,7 @@
                         >
                             <mat-icon>info</mat-icon>
                             <span>Detail</span>
-                        </button>
+                        </button> -->
 
                         <button
                             type="button"
@@ -264,7 +264,11 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns" class="flexi-combo-list"></mat-row>
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="flexi-combo-list"
+        [routerLink]="[row?.id, 'detail']"
+    ></mat-row>
     <mat-footer-row
         *matFooterRowDef="['no-record']"
         [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
