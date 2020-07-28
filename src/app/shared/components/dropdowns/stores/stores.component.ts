@@ -219,14 +219,14 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
+                    addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
 
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
+                    addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
 
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
