@@ -198,12 +198,12 @@ export class AuthEffects {
                                 }
 
                                 // /pages/dashboard
-                                if (!this._$auth.redirectUrl) {
-                                    this.router.navigate(['/pages/account/stores'], {
+                                if (!this._$auth.redirectUrl || this._$auth.redirectUrl === '/auth/login') {
+                                    this.router.navigateByUrl('/pages/account/stores', {
                                         replaceUrl: true
                                     });
                                 }  else {
-                                    this.router.navigate([this._$auth.redirectUrl], {
+                                    this.router.navigateByUrl(this._$auth.redirectUrl, {
                                         replaceUrl: true
                                     });
                                 }
@@ -435,12 +435,12 @@ export class AuthEffects {
                                 }
 
                                 // /pages/dashboard
-                                if (!this._$auth.redirectUrl) {
-                                    this.router.navigate(['/pages/account/stores'], {
+                                if (!this._$auth.redirectUrl || this._$auth.redirectUrl === '/auth/login') {
+                                    this.router.navigateByUrl('/pages/account/stores', {
                                         replaceUrl: true
                                     });
                                 } else {
-                                    this.router.navigate([this._$auth.redirectUrl], {
+                                    this.router.navigateByUrl(this._$auth.redirectUrl, {
                                         replaceUrl: true
                                     });
                                 }
