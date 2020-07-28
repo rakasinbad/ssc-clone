@@ -14,9 +14,7 @@ import { Auth } from './models';
  * @export
  * @class AuthService
  */
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
     /**
      *
@@ -53,7 +51,7 @@ export class AuthService {
         private _$helper: HelperService,
         private _$navigation: NavigationService
     ) {
-        this.redirectUrl = null;
+        // this.redirectUrl = null;
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
@@ -87,7 +85,7 @@ export class AuthService {
     login(username: string, password: string): Observable<Auth> {
         return this.http
             .post<Auth>(this._url, { username, password })
-            .pipe(map(item => new Auth(item.user, item.token)));
+            .pipe(map((item) => new Auth(item.user, item.token)));
     }
 
     assignRolePrivileges(data: Auth): void {
@@ -95,11 +93,11 @@ export class AuthService {
 
         // Restructure for assign to ngxRoles
         const newRoles = roles
-            .map(role => {
+            .map((role) => {
                 const { privileges } = role;
                 const newPrivileges =
                     privileges && privileges.length > 0
-                        ? privileges.map(privilege => {
+                        ? privileges.map((privilege) => {
                               return String(privilege.privilege).toUpperCase();
                           })
                         : null;
@@ -108,10 +106,8 @@ export class AuthService {
                 this.ngxPermissions.addPermission(newPrivileges);
 
                 return {
-                    role: String(role.role)
-                        .toUpperCase()
-                        .replace(/\s+/g, '_'),
-                    privileges: newPrivileges ? newPrivileges : []
+                    role: String(role.role).toUpperCase().replace(/\s+/g, '_'),
+                    privileges: newPrivileges ? newPrivileges : [],
                 };
             })
             .reduce((obj, item) => ((obj[item.role] = item.privileges), obj), {});
