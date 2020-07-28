@@ -8,8 +8,8 @@
         <!-- FOTO -->
         <div class="img-container" fxFlex="20">
             <img
-                [src]="supplierStore?.store?.imageUrl"
-                (click)="openPreviewPhoto(supplierStore?.store?.imageUrl, 'Store Photo')"
+                [src]="supplierStore?.outerStore?.imageUrl"
+                (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl, 'Store Photo')"
                 alt="Store Photo"
                 class="fit-image"
                 style="cursor: pointer;"
@@ -30,7 +30,7 @@
             <!-- INFORMASI -->
             <div fxLayout="row wrap">
                 <div
-                    *ngFor="let sale of supplierStore?.store?.sales; even as even;"
+                    *ngFor="let sale of supplierStore?.outerStore?.sales; even as even;"
                     fxLayout="column"
                     fxLayoutAlign="start stretch"
                     fxFlex="37"
@@ -41,7 +41,7 @@
                     </div> 
                 </div>
                 <div
-                    *ngFor="let sale of supplierStore?.store?.sales; odd as odd;"
+                    *ngFor="let sale of supplierStore?.outerStore?.sales; odd as odd;"
                     fxLayout="column"
                     fxLayoutAlign="start stretch"
                     fxFlex="37"
