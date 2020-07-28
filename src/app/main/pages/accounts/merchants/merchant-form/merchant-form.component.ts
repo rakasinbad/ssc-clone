@@ -2292,7 +2292,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 oldIdentityPhotoSelfie: [null],
             }),
             storeInfo: this.formBuilder.group({
-                approvalStatus: ['guest'],
+                approvalStatus: ['verified'],
                 storeId: this.formBuilder.group({
                     id: [
                         '',
