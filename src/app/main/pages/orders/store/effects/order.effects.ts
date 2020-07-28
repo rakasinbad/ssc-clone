@@ -597,8 +597,7 @@ export class OrderEffects {
                 ofType(OrderActions.fetchOrdersFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message = resp.errors.error.message || resp.errors.message;
-
+                    const message = resp.errors.error ? resp.errors.error.message : resp.errors.message;
                     this._$log.generateGroup('[REQUEST FETCH ORDERS FAILURE]', {
                         response: {
                             type: 'log',
