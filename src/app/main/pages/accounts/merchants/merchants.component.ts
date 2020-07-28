@@ -533,7 +533,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         
                         if (value === 'apply') {
                             this.store.dispatch(StoreActions.resendStoresRequest({
-                                payload: item
+                                payload: [item]
                             }));
                         }
         
