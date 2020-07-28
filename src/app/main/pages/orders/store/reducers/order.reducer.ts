@@ -14,7 +14,8 @@ interface OrderState extends EntityState<any> {
     totalStatus: IStatusOMS;
 }
 
-interface ErrorState extends EntityState<IErrorHandler> {}
+interface ErrorState extends EntityState<IErrorHandler> {
+}
 
 export interface State {
     isRefresh?: boolean;
@@ -29,7 +30,7 @@ export interface FeatureState extends fromRoot.State {
 }
 
 const adapterOrder = createEntityAdapter<any>({
-    selectId: (row) => row.id,
+    selectId: (row) => row.id
 });
 const initialOrderState = adapterOrder.getInitialState({
     selectedOrderId: null,
@@ -43,7 +44,8 @@ const initialOrderState = adapterOrder.getInitialState({
         totalCompletedOrder: '0',
         totalPendingOrder: '0',
         totalCanceledOrder: '0',
-    },
+        totalPayNowPendingPayment: 0
+    }
 });
 
 const adapterError = createEntityAdapter<IErrorHandler>();
@@ -53,7 +55,7 @@ const initialState: State = {
     isLoading: false,
     source: 'fetch',
     orders: initialOrderState,
-    errors: initialErrorState,
+    errors: initialErrorState
 };
 
 const orderReducer = createReducer(
@@ -67,7 +69,7 @@ const orderReducer = createReducer(
         OrderActions.importRequest,
         (state) => ({
             ...state,
-            isLoading: true,
+            isLoading: true
         })
     ),
     on(
@@ -82,24 +84,24 @@ const orderReducer = createReducer(
             ...state,
             isLoading: false,
             isRefresh: undefined,
-            errors: adapterError.upsertOne(payload, state.errors),
+            errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
     on(OrderActions.exportSuccess, (state) => ({
         ...state,
         isLoading: false,
-        errors: adapterError.removeOne('exportFailure', state.errors),
+        errors: adapterError.removeOne('exportFailure', state.errors)
     })),
     on(OrderActions.importSuccess, (state) => ({
         ...state,
         isLoading: false,
         isRefresh: true,
-        errors: adapterError.removeOne('importFailure', state.errors),
+        errors: adapterError.removeOne('importFailure', state.errors)
     })),
     on(OrderActions.updateDeliveredQtyRequest, OrderActions.updateInvoicedQtyRequest, (state) => ({
         ...state,
         isLoading: true,
-        isRefresh: false,
+        isRefresh: false
     })),
     on(
         OrderActions.updateDeliveredQtyFailure,
@@ -108,65 +110,77 @@ const orderReducer = createReducer(
             ...state,
             isLoading: false,
             isRefresh: true,
-            errors: adapterError.upsertOne(payload, state.errors),
+            errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
     on(OrderActions.fetchCalculateOrdersSuccess, (state, { payload }) => ({
         ...state,
         orders: {
             ...state.orders,
-            totalStatus: payload,
+            totalStatus: payload['data']
         },
-        errors: adapterError.removeOne('fetchCalculateOrdersFailure', state.errors),
+        errors: adapterError.removeOne('fetchCalculateOrdersFailure', state.errors)
     })),
     on(OrderActions.fetchOrderSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         isRefresh: undefined,
         orders: adapterOrder.addOne(payload, { ...state.orders, selectedOrderId: payload.id }),
-        errors: adapterError.removeOne('fetchOrderFailure', state.errors),
+        errors: adapterError.removeOne('fetchOrderFailure', state.errors)
     })),
-    on(OrderActions.fetchOrdersSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        isRefresh: undefined,
-        orders: adapterOrder.addAll(payload.data, { ...state.orders, total: payload.total }),
-        errors: adapterError.removeOne('fetchOrdersFailure', state.errors),
-    })),
+    on(OrderActions.fetchOrdersSuccess, (state, { payload }) => {
+        const filteredData = payload.data[0]['isPendingBilling'] === true ? [] : payload.data;
+        if (payload.data[0]['isPendingBilling'] === true) {
+            // tslint:disable-next-line:prefer-for-of
+            for (let i = 0; i < payload.data.length; i++) {
+                if (payload.data[i]['billing'] === null) {
+                    filteredData.push(payload.data[i]);
+                }
+            }
+        }
+        const payloadTotal: number = payload.data[0]['isPendingBilling'] === true ? filteredData.length : payload.total;
+        return {
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            orders: adapterOrder.addAll(filteredData, { ...state.orders, total: payloadTotal }),
+            errors: adapterError.removeOne('fetchOrdersFailure', state.errors)
+        };
+    }),
     on(OrderActions.updateDeliveredQtySuccess, (state) => ({
         ...state,
         isLoading: false,
         isRefresh: true,
         orders: initialState.orders,
-        errors: adapterError.removeOne('updateDeliveredQtyFailure', state.errors),
+        errors: adapterError.removeOne('updateDeliveredQtyFailure', state.errors)
     })),
     on(OrderActions.updateInvoicedQtySuccess, (state) => ({
         ...state,
         isLoading: false,
         isRefresh: true,
         orders: initialState.orders,
-        errors: adapterError.removeOne('updateInvoicedQtyFailure', state.errors),
+        errors: adapterError.removeOne('updateInvoicedQtyFailure', state.errors)
     })),
     on(OrderActions.updateCancelStatusSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         orders: adapterOrder.updateOne(payload, state.orders),
-        errors: adapterError.removeOne('updateCancelStatusFailure', state.errors),
+        errors: adapterError.removeOne('updateCancelStatusFailure', state.errors)
     })),
     on(OrderActions.updateStatusOrderSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         orders: adapterOrder.updateOne(payload, state.orders),
-        errors: adapterError.removeOne('updateStatusOrderFailure', state.errors),
+        errors: adapterError.removeOne('updateStatusOrderFailure', state.errors)
     })),
     on(OrderActions.filterOrder, (state, { payload }) => ({
         ...state,
-        isRefresh: true,
+        isRefresh: true
     })),
     on(OrderActions.resetOrders, (state) => ({
         ...state,
         orders: initialState.orders,
-        errors: adapterError.removeOne('fetchOrdersFailure', state.errors),
+        errors: adapterError.removeOne('fetchOrdersFailure', state.errors)
     }))
     // on(OrderActions.generateOrdersDemo, (state, { payload }) => ({
     //     ...state,
@@ -188,5 +202,5 @@ export const {
     selectAll: selectAllOrder,
     selectEntities: selectOrderEntities,
     selectIds: selectOrderIds,
-    selectTotal: selectOrderTotal,
+    selectTotal: selectOrderTotal
 } = adapterOrder.getSelectors(getOrdersState);
