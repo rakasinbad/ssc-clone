@@ -121,6 +121,10 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
 
     getRejectedFields(value: SupplierStore): string {
         const rejectedFields: Array<string> = [];
+
+        if (!value.outerStore.rejectedFields) {
+            return '-';
+        }
         
         if (value.outerStore.rejectedFields.fullName) {
             rejectedFields.push('Owner Store Name');
