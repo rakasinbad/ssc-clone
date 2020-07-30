@@ -312,6 +312,10 @@
                                                         New Order
                                                     </ng-container>
 
+                                                    <ng-container *ngSwitchCase="'waiting_for_payment'">
+                                                        Pending Payment
+                                                    </ng-container>
+
                                                     <ng-container *ngSwitchCase="'pending'">
                                                         Pending
                                                     </ng-container>
@@ -427,6 +431,10 @@
 
                                     <ng-container *ngSwitchCase="'confirm'">
                                         New Order
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchCase="'waiting_for_payment'">
+                                        Pending Payment
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'pending'">
@@ -829,6 +837,11 @@
                             New Order
                         </ng-container>
 
+
+                        <ng-container *ngSwitchCase="'waiting_for_payment'">
+                            Pending Payment
+                        </ng-container>
+
                         <ng-container *ngSwitchCase="'pending'">
                             Pending
                         </ng-container>
@@ -902,6 +915,29 @@
                                         <div class="content" fxFlex="90">
                                             <div class="label">
                                                 New Order
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'waiting_for_payment'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Pending Payment
                                             </div>
 
                                             <div class="time line-height-8">
