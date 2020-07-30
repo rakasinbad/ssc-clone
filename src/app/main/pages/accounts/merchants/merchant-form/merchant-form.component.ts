@@ -3110,7 +3110,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     groupId: body.storeInfo.storeClassification.storeGroup,
                 },
                 channel: {
-                    clusterId: body.storeInfo.storeClassification.storeChannel,
+                    channelId: body.storeInfo.storeClassification.storeChannel,
                 },
                 cluster: {
                     clusterId: body.storeInfo.storeClassification.storeCluster,
