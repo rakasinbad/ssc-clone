@@ -1809,6 +1809,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 this.form.get('storeInfo.address.warehouse').setValue('');
                             }
                             this.form.get('storeInfo.address.warehouse').markAsTouched();
+
+                            if (this.availableWarehouses.length === 0) {
+                                this.form.get('storeInfo.address.warehouse').setErrors({
+                                    noWarehouses: {
+                                        message: `
+                                            The store is not located within any warehouse coverage area.
+                                            Please create a new warehouse by clicking the “Go To Warehouse” button.
+                                            Once it’s done, hit the refresh button.
+                                        `,
+                                    }
+                                });
+                            }
                         }
                     },
                     error: (err) => {

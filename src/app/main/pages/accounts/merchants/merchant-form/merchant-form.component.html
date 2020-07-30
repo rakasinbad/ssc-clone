@@ -1265,6 +1265,7 @@
                             <!-- WAREHOUSE -->
                             <div
                                 class="custom-field"
+                                [class.no-warehouses]="form.get('storeInfo.address.warehouse').errors?.noWarehouses"
                                 fxLayout="row"
                                 fxLayoutAlign="start center"
                             >
@@ -1325,10 +1326,10 @@
                                                 color="accent"
                                                 type="button"
                                                 fxFlexAlign="center"
-                                                matTooltip="Open Warehouse Coverage"
+                                                matTooltip="Go To Warehouse"
                                                 matTooltipClass="font-size-18"
                                             >
-                                                <mat-icon>keyboard_return</mat-icon>
+                                                <mat-icon>arrow_forward</mat-icon>
                                             </button>
                                         </a>
                                         <!-- / OPEN TAB "WAREHOUSE COVERAGE" -->
