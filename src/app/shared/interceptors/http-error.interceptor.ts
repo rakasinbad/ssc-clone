@@ -19,8 +19,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
         return next.handle(req).pipe(
             catchError((err: HttpErrorResponse) => {
                 let errMsg: any = 'An Error Occurred!';
-                if (err.error instanceof ErrorEvent) {
 
+                if (err.error instanceof ErrorEvent) {
                     // A client-side or network error occurred. Handle it accordingly.
                     // client-side error
                     errMsg = `Error: ${err.error.message}`;
@@ -55,6 +55,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                             value: err
                         }
                     });
+
                     errMsg = {
                         code: err.status,
                         url: err.url,
@@ -64,6 +65,7 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                         httpError: err,
                     };
                 }
+
                 return throwError(errMsg);
             })
         );

@@ -7,7 +7,6 @@ export interface IQueryParams {
     sortBy?: string;
     paginate?: boolean;
     search?: IQuerySearchParams[];
-    isWaitingForPayment?: boolean;
 }
 
 export interface IQuerySearchParams {
