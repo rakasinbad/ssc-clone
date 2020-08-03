@@ -23,9 +23,9 @@ export class OrderApiService {
      * @private
      * @memberof OrderApiService
      */
-    private readonly _endpoint = '/order-parcels';
+    private readonly _endpoint = '/payment/v1/order/parcel';
 
-    private readonly _listEndpoint = '/oms';
+    private readonly _listEndpoint = '/payment/v1/order/oms';
 
     /**
      * Creates an instance of OrderApiService.
@@ -39,7 +39,7 @@ export class OrderApiService {
 
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
         const newParam: IQueryParams = {};
-        
+
         const newArg = supplierId
             ? [
                   {

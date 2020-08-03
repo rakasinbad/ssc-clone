@@ -111,7 +111,7 @@ const paymentStatusReducer = createReducer(
         ...state,
         paymentStatuses: {
             ...state.paymentStatuses,
-            totalStatus: payload
+            totalStatus: payload['data']
         },
         errors: adapterError.removeOne('fetchCalculateOrdersByPaymentFailure', state.errors)
     })),

@@ -29,7 +29,7 @@ export class CalculateOrderApiService {
      * @private
      * @memberof CalculateOrderApiService
      */
-    private readonly _endpoint = '/calculate-orders';
+    private readonly _endpoint = '/payment/v1/order/calculate-orders';
 
     /**
      * Creates an instance of CalculateOrderApiService.

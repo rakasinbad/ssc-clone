@@ -282,8 +282,51 @@
                     </p>
                 </div>
                 <!-- / Longitude -->
+                <!-- Warehouse -->
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Warehouse
+                    </p>
+                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        {{ supplierStore?.store?.warehouses[0]?.name || '-' }}
+                    </p>
+                </div>
+                <!-- / Warehouse -->
             </div>
             <!-- / STORE ADDRESS -->
+            <!-- STORE REJECTED -->
+            <div
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="26px"
+                fxFlex
+            >
+                <!-- JUDUL -->
+                <span class="font-size-18 text-semibold">
+                    Store Rejected
+                </span>
+                <!-- District -->
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Reject List
+                    </p>
+                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        {{ supplierStore?.outerStore?.rejectedFieldsString || '-' }}
+                    </p>
+                </div>
+                <!-- / District -->
+                <!-- Urban -->
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Reason
+                    </p>
+                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        {{ supplierStore?.outerStore?.rejectionSupplierStores[0]?.reasons || '-' }}
+                    </p>
+                </div>
+                <!-- / Urban -->
+            </div>
+            <!-- / STORE REJECTED -->
         </div>
         <!-- / INFORMATION WRAPPER (LEFT) -->
         <!-- INFORMATION WRAPPER (RIGHT) -->
@@ -407,17 +450,17 @@
             <!-- / STORE INFORMATION -->
             <!-- STORE CLASSIFICATION -->
             <div
+                class="mb-44"
                 fxLayout="column"
                 fxLayoutAlign="start stretch"
-                fxLayoutGap="26px"
                 fxFlex
             >
                 <!-- JUDUL -->
-                <span class="font-size-18 text-semibold">
+                <span class="font-size-18 mb-24 text-semibold">
                     Store Classification
                 </span>
                 <!-- Store Type -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div class="h-48" fxLayout="row" fxLayoutAlign="start center">
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Type
                     </p>
@@ -446,7 +489,7 @@
                 </div>
                 <!-- / Store Type -->
                 <!-- Store Group -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div class="h-48" fxLayout="row" fxLayoutAlign="start center">
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Group
                     </p>
@@ -475,7 +518,7 @@
                 </div>
                 <!-- / Store Group -->
                 <!-- Store Channel -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div class="h-48" fxLayout="row" fxLayoutAlign="start center">
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Channel
                     </p>

@@ -7,7 +7,7 @@ import {
     Router,
     RouterStateSnapshot,
     UrlSegment,
-    UrlTree
+    UrlTree,
 } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -18,9 +18,7 @@ import { AuthService } from './auth.service';
 import { fromAuth } from './store/reducers';
 import { AuthSelectors } from './store/selectors';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate, CanLoad {
     constructor(
         private router: Router,
@@ -33,20 +31,18 @@ export class AuthGuard implements CanActivate, CanLoad {
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-        this._$auth.redirectUrl = state.url;
-
         return this.store.select(AuthSelectors.getUserState).pipe(
             take(1),
-            map(user => {
+            map((user) => {
                 const isLoggedIn = !!(user && user.token);
 
                 // console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
 
-                if (isLoggedIn) {
-                    return true;
+                if (!isLoggedIn) {
+                    this.router.navigateByUrl('/auth/login');
                 }
 
-                return this.router.createUrlTree(['/auth']);
+                return isLoggedIn;
             })
         );
     }
@@ -55,7 +51,15 @@ export class AuthGuard implements CanActivate, CanLoad {
         route: Route,
         segments: UrlSegment[]
     ): Observable<boolean> | Promise<boolean> | boolean {
-        this._$auth.redirectUrl = route.path;
+        // return this.store.select(AuthSelectors.getUserState).pipe(
+        //     take(1),
+        //     map((user) => {
+        //         const isLoggedIn = !!(user && user.token);
+        //         console.log('AUTH_CANLOAD', { isLoggedIn, user });
+        //         return isLoggedIn;
+        //     })
+        // );
+        // this._$auth.redirectUrl = route.path;
 
         /* return this.store.select(AuthSelectors.getUserState).pipe(
             take(1),
@@ -74,7 +78,7 @@ export class AuthGuard implements CanActivate, CanLoad {
 
         return this.store.select(AuthSelectors.getUserState).pipe(
             take(1),
-            exhaustMap(user => {
+            exhaustMap((user) => {
                 const isLoggedIn = !!(user && user.token);
 
                 // console.log('[canLoad] AUTH GUARD 1', route.path, isLoggedIn, user);
@@ -82,7 +86,7 @@ export class AuthGuard implements CanActivate, CanLoad {
                 return this.storage
                     .get('user')
                     .toPromise()
-                    .then(session => {
+                    .then((session) => {
                         // console.log('[canLoad] AUTH GUARD 2', route.path, isLoggedIn, session);
 
                         return session ? [isLoggedIn, true] : [isLoggedIn, false];

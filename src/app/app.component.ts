@@ -7,7 +7,7 @@ import {
     Inject,
     OnDestroy,
     OnInit,
-    PLATFORM_ID
+    PLATFORM_ID,
 } from '@angular/core';
 import { MatSnackBarConfig } from '@angular/material';
 import { SwUpdate } from '@angular/service-worker';
@@ -42,13 +42,13 @@ if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
         release: `${environment.appVersion}_${environment.appHash}`,
         network: {
-            requestSanitizer: request => {
+            requestSanitizer: (request) => {
                 // Menghapus header authorization dari LogRocket.
                 request.headers['authorization'] = null;
                 request.headers['Authorization'] = null;
                 return request;
             },
-            responseSanitizer: response => {
+            responseSanitizer: (response) => {
                 if (response.body) {
                     if (((response.body as unknown) as IAuth).token) {
                         // Menghapus token dari body response.
@@ -57,8 +57,8 @@ if (environment.logRocketId) {
                 }
 
                 return response;
-            }
-        }
+            },
+        },
     });
 }
 
@@ -66,7 +66,7 @@ if (environment.logRocketId) {
     selector: 'app',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, OnDestroy {
     idleState = 'Not started.';
@@ -125,6 +125,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Use a language
         this._translateService.use('id');
 
+        // Move to lifecycle AuthEffect
         if (isPlatformBrowser(this.platformId)) {
             this.store.dispatch(AuthActions.authAutoLogin());
         }
@@ -151,7 +152,7 @@ export class AppComponent implements OnInit, OnDestroy {
             // console.log('You gone idle!');
             this.idleState = 'You gone idle!';
         });
-        this.idle.onTimeoutWarning.subscribe(countdown => {
+        this.idle.onTimeoutWarning.subscribe((countdown) => {
             // console.log(`You will timeout in ${countdown} seconds`);
             this.idleState = 'You will timeout in ' + countdown + ' seconds';
         });
@@ -211,7 +212,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (this.swUpdate.isEnabled) {
             // Allow the app to stabilize first, before starting polling for updates with `interval()`.
-            const appIsStable$ = this.appRef.isStable.pipe(first(isStable => isStable === true));
+            const appIsStable$ = this.appRef.isStable.pipe(first((isStable) => isStable === true));
             const everySixHours$ = interval(6 * 60 * 60 * 1000);
             const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
 
@@ -231,7 +232,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.store
             .select(AuthSelectors.getUserState)
             .pipe(distinctUntilChanged(), takeUntil(this._unsubscribeAll))
-            .subscribe(user => {
+            .subscribe((user) => {
                 if (user) {
                     // Sets a timeout period of 30 seconds
                     this.idle.setTimeout(30);
@@ -241,7 +242,7 @@ export class AppComponent implements OnInit, OnDestroy {
             });
 
         if (this.swUpdate.isEnabled) {
-            this.swUpdate.available.pipe(takeUntil(this._unsubscribeAll)).subscribe(update => {
+            this.swUpdate.available.pipe(takeUntil(this._unsubscribeAll)).subscribe((update) => {
                 console.groupCollapsed('SW Update');
                 console.log(update);
                 console.groupEnd();
@@ -264,7 +265,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
-                        duration: 30000
+                        duration: 30000,
                     },
                     true
                 );
@@ -283,7 +284,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // this.store.dispatch(NetworkActions.networkStatusRequest());
 
         // Subscribe to config changes
-        this._fuseConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
+        this._fuseConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe((config) => {
             this.fuseConfig = config;
 
             // Boxed
@@ -329,7 +330,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private onReload(): void {
         if (this.swUpdate.isEnabled) {
-            this.swUpdate.activated.pipe(takeUntil(this._unsubscribeAll)).subscribe(update => {
+            this.swUpdate.activated.pipe(takeUntil(this._unsubscribeAll)).subscribe((update) => {
                 console.groupCollapsed('SW Activated');
                 console.log(update);
                 console.groupEnd();
@@ -361,8 +362,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 ReactiveFormConfig.set({
                     allowDecimalSymbol: '.',
                     validationMessage: {
-                        required: 'This field is required'
-                    }
+                        required: 'This field is required',
+                    },
                 });
 
                 this._$navigation.initNavigation();

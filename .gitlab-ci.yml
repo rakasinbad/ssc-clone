@@ -20,7 +20,7 @@ start_runner_development:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 start_runner_staging:
     stage: start_instance
@@ -38,7 +38,7 @@ start_runner_staging:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 start_runner_demo:
     stage: start_instance
@@ -56,7 +56,7 @@ start_runner_demo:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 start_runner_production:
     stage: start_instance
@@ -74,7 +74,7 @@ start_runner_production:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 build_development:
     stage: build

@@ -119,6 +119,56 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
     }
 
+    getRejectedFields(value: SupplierStore): string {
+        const rejectedFields: Array<string> = [];
+
+        if (!value.outerStore.rejectedFields) {
+            return '-';
+        }
+        
+        if (value.outerStore.rejectedFields.fullName) {
+            rejectedFields.push('Owner Store Name');
+        }
+
+        if (value.outerStore.rejectedFields.idImageUrl) {
+            rejectedFields.push('Picture (Owner KTP)');
+        }
+
+        if (value.outerStore.rejectedFields.idNo) {
+            rejectedFields.push('KTP Number');
+        }
+
+        if (value.outerStore.rejectedFields.imageUrl) {
+            rejectedFields.push('Picture (Toko)');
+        }
+
+        if (value.outerStore.rejectedFields.mobilePhoneNo) {
+            rejectedFields.push('Store Phone Number');
+        }
+
+        if (value.outerStore.rejectedFields.name) {
+            rejectedFields.push('Store Name');
+        }
+
+        if (value.outerStore.rejectedFields.phoneNo) {
+            rejectedFields.push('Store Phone Number');
+        }
+
+        if (value.outerStore.rejectedFields.selfieImageUrl) {
+            rejectedFields.push('Picture (Selfie with KTP)');
+        }
+
+        if (value.outerStore.rejectedFields.taxImageUrl) {
+            rejectedFields.push('Picture (Owner NPWP)');
+        }
+
+        if (value.outerStore.rejectedFields.taxNo) {
+            rejectedFields.push('Owner NPWP Number');
+        }
+
+        return rejectedFields.join(', ');
+    }
+
     onSelectedTab(index: number): void {
         switch (index) {
             case 0: this.section = 'store'; break;
@@ -169,6 +219,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
                                         selectedStoreGroup: String(group.text || '').replace('class="my-12"', '') || '-',
                                         selectedStoreChannel: String(channel.text || '').replace('class="my-12"', '') || '-',
                                         // selectedStoreCluster: cluster.text || '-',
+                                        rejectedFieldsString: this.getRejectedFields(supplierStore),
                                     }
                                 };
     
