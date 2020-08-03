@@ -725,8 +725,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                         fieldName: 'status',
                         keyword: this.selectedTab
                     });
-                }else{
-                    data['limit'] = 900;
                 }
             } else {
                 if (this.selectedTab !== 'waiting_for_payment') {
@@ -736,8 +734,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             keyword: this.selectedTab
                         }
                     ];
-                }else{
-                    data['limit'] = 900;
                 }
             }
         }

@@ -121,25 +121,20 @@ const orderReducer = createReducer(
         },
         errors: adapterError.removeOne('fetchCalculateOrdersFailure', state.errors)
     })),
-    on(OrderActions.fetchOrderSuccess, (state, { payload }) => {
-
-        return {
-            ...state,
-            isLoading: false,
-            isRefresh: undefined,
-            orders: adapterOrder.addOne(payload['data'], { ...state.orders, selectedOrderId: payload['data']['id'] }),
-            errors: adapterError.removeOne('fetchOrderFailure', state.errors)
-        };
-    }),
+    on(OrderActions.fetchOrderSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: undefined,
+        orders: adapterOrder.addOne(payload, { ...state.orders, selectedOrderId: payload.id }),
+        errors: adapterError.removeOne('fetchOrderFailure', state.errors)
+    })),
     on(OrderActions.fetchOrdersSuccess, (state, { payload }) => {
         const filteredData = payload.data[0]['isPendingBilling'] === true ? [] : payload.data;
         if (payload.data[0]['isPendingBilling'] === true) {
             // tslint:disable-next-line:prefer-for-of
             for (let i = 0; i < payload.data.length; i++) {
-                if (payload.data[i]['billing'] !== null) {
-                    if (payload.data[i]['billing']['payNowPendingPayment'] === true) {
-                        filteredData.push(payload.data[i]);
-                    }
+                if (payload.data[i]['billing'] === null) {
+                    filteredData.push(payload.data[i]);
                 }
             }
         }
