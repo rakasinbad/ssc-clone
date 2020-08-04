@@ -411,7 +411,7 @@ export class HelperService {
 
     reportError(message: string, requestId: string, sessionId: string): void {
         if (environment.logRocketId) {
-            LogRocket.captureMessage(message, {
+            LogRocket.captureMessage(`${message} - Session: ${sessionId}`, {
                 tags: {
                     environment: environment.environment.toUpperCase(),
                     version: environment.appVersion,
