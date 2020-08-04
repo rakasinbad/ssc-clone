@@ -670,11 +670,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         HelperService.debug('onSelectionChanged', $event);
 
         if ($event.isSelected) {
-            this.disabledOptions.push($event);
+            // this.disabledOptions.push($event);
 
-            this.form.get('isUniqueCoverage').setValue('');
+            // this.form.get('isUniqueCoverage').setValue('');
 
-            this.checkAvailabilityWarehouseCoverage('coverages', +$event.id, $event);
+            // this.checkAvailabilityWarehouseCoverage('coverages', +$event.id, $event);
             // this.locationStore.dispatch(
             //     WarehouseCoverageActions.checkAvailabilityWarehouseCoverageRequest({
             //         payload: {
