@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -19,7 +19,7 @@ import {
     retry,
     switchMap,
     take,
-    tap
+    tap,
 } from 'rxjs/operators';
 
 import { AuthService } from '../../auth.service';
@@ -86,7 +86,7 @@ export class AuthEffects {
 
                 if (session && session.user && session.token) {
                     return AuthActions.authAutoLoginSuccess({
-                        payload: new Auth(session.user, session.token)
+                        payload: new Auth(session.user, session.token),
                     });
                 }
 
@@ -153,14 +153,14 @@ export class AuthEffects {
         () =>
             this.actions$.pipe(
                 ofType(AuthActions.authAutoLoginSuccess),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     const { user, token } = resp;
                     let sessionId = HelperService.generateRandomString(32);
 
                     forkJoin({
                         user: this.storage.has('user'),
-                        session: this.storage.get<string>('session', { type: 'string' })
+                        session: this.storage.get<string>('session', { type: 'string' }),
                     })
                         .pipe(take(1))
                         .subscribe({
@@ -189,24 +189,31 @@ export class AuthEffects {
                                         mobilePhoneNo: user.mobilePhoneNo,
                                         userSuppliers: user.userSuppliers
                                             .map(
-                                                u =>
+                                                (u) =>
                                                     `[${[u.supplierId, u.supplier.name].join(':')}]`
                                             )
                                             .join(','),
-                                        userData: JSON.stringify(user)
+                                        userData: JSON.stringify(user),
                                     });
                                 }
 
                                 // /pages/dashboard
-                                // if (!this._$auth.redirectUrl) {
-                                //     this.router.navigate(['/pages/account/stores'], {
-                                //         replaceUrl: true
+                                // if (
+                                //     !this._$auth.redirectUrl ||
+                                //     this._$auth.redirectUrl === '/auth/login'
+                                // ) {
+                                //     this.router.navigateByUrl('/pages/account/stores', {
+                                //         replaceUrl: true,
+                                //     });
+                                // } else {
+                                //     this.router.navigateByUrl(this._$auth.redirectUrl, {
+                                //         replaceUrl: true,
                                 //     });
                                 // }
-                                this.router.navigate(['/pages/account/stores'], {
-                                    replaceUrl: true
-                                });
-                            }
+                                // this.router.navigate(['/pages/account/stores'], {
+                                //     replaceUrl: true
+                                // });
+                            },
                         });
 
                     // this.storage.has('user').subscribe(result => {
@@ -250,7 +257,7 @@ export class AuthEffects {
             this.actions$.pipe(
                 ofType(AuthActions.authLoginRequest),
                 debounceTime(debounce, scheduler),
-                map(action => action.payload),
+                map((action) => action.payload),
                 // concatMap(payload =>
                 //     of(payload).pipe(
                 //         tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
@@ -261,29 +268,29 @@ export class AuthEffects {
                     if (this._isOnline) {
                         return this._$auth.login(username, password).pipe(
                             retry(3),
-                            switchMap(resp => {
+                            switchMap((resp) => {
                                 const { user, token } = resp;
                                 const { userSuppliers } = user;
 
                                 if (!userSuppliers && userSuppliers.length < 1) {
                                     return throwError({
-                                        error: { message: 'Need Set Supplier!' }
+                                        error: { message: 'Need Set Supplier!' },
                                     });
                                 }
 
                                 return of(
                                     AuthActions.authLoginSuccess({
-                                        payload: resp
+                                        payload: resp,
                                     })
                                 );
                             }),
-                            catchError(err =>
+                            catchError((err) =>
                                 of(
                                     AuthActions.authLoginFailure({
                                         payload: {
                                             id: 'authLoginFailure',
-                                            errors: err
-                                        }
+                                            errors: err,
+                                        },
                                     })
                                 )
                             )
@@ -294,8 +301,8 @@ export class AuthEffects {
                         AuthActions.authLoginFailure({
                             payload: {
                                 id: 'authLoginFailure',
-                                errors: 'Offline'
-                            }
+                                errors: 'Offline',
+                            },
                         })
                     );
 
@@ -367,13 +374,13 @@ export class AuthEffects {
         () =>
             this.actions$.pipe(
                 ofType(AuthActions.authLoginFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -384,8 +391,8 @@ export class AuthEffects {
         () =>
             this.actions$.pipe(
                 ofType(AuthActions.authLoginSuccess),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     const { user, token } = resp;
                     let sessionId = HelperService.generateRandomString(32);
 
@@ -393,7 +400,7 @@ export class AuthEffects {
 
                     forkJoin({
                         user: this.storage.has('user'),
-                        session: this.storage.get<string>('session', { type: 'string' })
+                        session: this.storage.get<string>('session', { type: 'string' }),
                     })
                         .pipe(take(1))
                         .subscribe({
@@ -422,24 +429,30 @@ export class AuthEffects {
                                         mobilePhoneNo: user.mobilePhoneNo,
                                         userSuppliers: user.userSuppliers
                                             .map(
-                                                u =>
+                                                (u) =>
                                                     `[${[u.supplierId, u.supplier.name].join(':')}]`
                                             )
                                             .join(','),
-                                        userData: JSON.stringify(user)
+                                        userData: JSON.stringify(user),
                                     });
                                 }
 
-                                // /pages/dashboard
-                                // if (!this._$auth.redirectUrl) {
-                                //     this.router.navigate(['/pages/account/stores'], {
-                                //         replaceUrl: true
-                                //     });
-                                // }
-                                this.router.navigate(['/pages/account/stores'], {
-                                    replaceUrl: true
-                                });
-                            }
+                                if (
+                                    !this._$auth.redirectUrl ||
+                                    this._$auth.redirectUrl === '/auth/login'
+                                ) {
+                                    this.router.navigateByUrl('/pages/account/stores', {
+                                        replaceUrl: true,
+                                    });
+                                } else {
+                                    this.router.navigateByUrl(this._$auth.redirectUrl, {
+                                        replaceUrl: true,
+                                    });
+                                }
+                                // this.router.navigate(['/pages/account/stores'], {
+                                //     replaceUrl: true
+                                // });
+                            },
                         });
 
                     // this._$navigation.initNavigation();
@@ -504,12 +517,12 @@ export class AuthEffects {
 
                             this.router.navigate(['/auth/login'], { replaceUrl: true });
                         },
-                        error: err => {
+                        error: (err) => {
                             this._$notice.open('Something wrong with sessions storage', 'error', {
                                 verticalPosition: 'bottom',
-                                horizontalPosition: 'right'
+                                horizontalPosition: 'right',
                             });
-                        }
+                        },
                     });
                 })
             ),
@@ -527,7 +540,18 @@ export class AuthEffects {
         private _$auth: AuthService,
         private _$navigation: NavigationService,
         private _$notice: NoticeService
-    ) {}
+    ) {
+        // NOTE Save return url
+        this.router.events.subscribe((ev) => {
+            // NOTE Get path url & exclude url error
+            if (ev instanceof NavigationEnd) {
+                if (!ev.url.includes('errors') && !ev.url.includes('auth/login')) {
+                    // LoggerService.debug('Return URL', ev.url, true);
+                    this._$auth.redirectUrl = ev.url;
+                }
+            }
+        });
+    }
 
     private _handleErrMessage(resp: IErrorHandler): string {
         if (typeof resp.errors === 'string') {

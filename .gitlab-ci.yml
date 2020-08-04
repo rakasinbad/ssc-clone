@@ -20,7 +20,7 @@ start_runner_development:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 start_runner_staging:
     stage: start_instance
@@ -38,7 +38,7 @@ start_runner_staging:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 start_runner_demo:
     stage: start_instance
@@ -56,7 +56,7 @@ start_runner_demo:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
 
 start_runner_production:
     stage: start_instance
@@ -74,7 +74,87 @@ start_runner_production:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)(|-\d+)$/'
           when: always
     tags:
-        - docker
+        - sinbad-aws-docker-runner-2
+
+install_deps_development:
+    stage: install_deps
+    image: node:12-alpine
+    cache:
+        key: ssc_deps_dev
+        paths:
+            - node_modules/
+    script:
+        - >
+            if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
+                npm ci
+            fi;
+    tags:
+        - sinbad-aws-docker-runner-2
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
+          when: always
+
+install_deps_staging:
+    stage: install_deps
+    image: node:12-alpine
+    cache:
+        key: ssc_deps_stg
+        paths:
+            - node_modules/
+    script:
+        - >
+            if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
+                npm ci
+            fi;
+    tags:
+        - sinbad-aws-docker-runner-2
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
+          when: always
+
+install_deps_demo:
+    stage: install_deps
+    image: node:12-alpine
+    cache:
+        key: ssc_deps_demo
+        paths:
+            - node_modules/
+    script:
+        - >
+            if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
+                npm ci
+            fi;
+    tags:
+        - sinbad-aws-docker-runner-2
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
+          when: always
+
+install_deps_production:
+    stage: install_deps
+    image: node:12-alpine
+    cache:
+        key: ssc_deps_prod
+        paths:
+            - node_modules/
+    script:
+        - >
+            if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
+                npm ci
+            fi;
+    tags:
+        - sinbad-aws-docker-runner-2
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)(|-\d+)$/'
+          when: always
 
 install_deps_development:
     stage: install_deps

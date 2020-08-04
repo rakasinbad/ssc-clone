@@ -10,7 +10,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, AsyncValidatorFn, ValidationErrors, ValidatorFn } from '@angular/forms';
 import {
     MatAutocomplete,
     MatAutocompleteSelectedEvent,
@@ -46,7 +46,7 @@ import { StoreGroup } from 'app/shared/models/store-group.model';
 import { StoreType } from 'app/shared/models/store-type.model';
 import { UserSupplier, SupplierStore } from 'app/shared/models/supplier.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
-import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
+import { DropdownActions, FormActions, UiActions, WarehouseActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
 import * as numeral from 'numeral';
@@ -73,7 +73,7 @@ import { Store as Merchant, StoreSetting, ICheckOwnerPhoneResponse } from '../mo
 import { StoreActions, StoreSettingActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors, StoreSettingSelectors } from '../store/selectors';
-import { MerchantApiService } from '../services';
+import { MerchantApiService, WarehouseApiService } from '../services';
 import {
     StoreSegmentationTypesApiService as StoreSegmentationApiService
 } from 'app/shared/components/selection-tree/store-segmentation/services/store-segmentation-api.service';
@@ -81,6 +81,7 @@ import {
 import { PhotoUploadApiService, UploadPhotoApiPayload } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { Warehouse, WarehouseDropdown } from '../models/warehouse.model';
 
 // import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 // import { StoreSegment } from 'app/shared/models/store-segment.model';
@@ -157,7 +158,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _unSubs$: Subject<void> = new Subject<void>();
     private _selectedDistrict: string;
-    private _selectedUrban: string;
+    _selectedUrban: string;
     private _timer: Array<NodeJS.Timer> = [];
 
     selectedStoreType: Array<StoreSegmentationType> = [];
@@ -184,6 +185,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     uploadIdentityPhotoSelfie$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
     uploadStoreTaxPhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
     uploadStorePhoto$: BehaviorSubject<string> = new BehaviorSubject<string>('none');
+
+    availableWarehouses: Array<WarehouseDropdown> = [];
+    // tslint:disable-next-line: no-inferrable-types
+    isWarehouseLoading$: boolean = false;
 
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
@@ -230,6 +235,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private _$segmentation: StoreSegmentationApiService,
         private _$photo: PhotoUploadApiService,
         private matDialog: MatDialog,
+        private warehouseService: WarehouseApiService
     ) {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -1080,6 +1086,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         return `${item.urban}`;
     }
 
+    warehouseValidator(): ValidatorFn {
+        return (control: AbstractControl): {[key: string]: any} | null => {
+            const isWarehouseSelected: boolean = !!control.value;
+
+            if (!isWarehouseSelected && this.availableWarehouses.length > 1) {
+                return {
+                    multipleWarehouses: {
+                        message: 'This store is within the coverage area of multiple warehouses. Please choose ONE of the listed warehouses.',
+                        value: control.value
+                    }
+                };
+            }
+
+            if (isWarehouseSelected) {
+                return null;
+            }
+        };
+    }
+
     getErrorMessage(field: string): string {
         if (field) {
             const { errors } = this.form.get(field);
@@ -1532,10 +1557,14 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 {
                     const value = (ev.option.value as Urban) || '';
 
+                    this.availableWarehouses = [];
+                    this.form.get('storeInfo.address.warehouse').reset();
+
                     if (!value) {
                         this.form.get('storeInfo.address.postcode').reset();
                     } else {
                         this.form.get('storeInfo.address.postcode').setValue(value.zipCode);
+                        this.requestWarehouse(+value.id);
                     }
 
                     this._selectedUrban = value ? JSON.stringify(value) : '';
@@ -1711,10 +1740,105 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     //             break;
     //     }
     // }
+    prepareRequestWarehouse(): void {
+        if (this._selectedUrban) {
+            const urban = JSON.parse(this._selectedUrban);
+
+            if (urban.id) {
+                this.requestWarehouse(urban.id, true);
+            }
+        }
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+    private requestWarehouse(urbanId: number, resetValue: boolean = true): void {
+        if (urbanId) {
+            this.isWarehouseLoading$ = true;
+            this.form.get('storeInfo.address.warehouse').disable();
+
+            of(null)
+                .pipe(
+                    // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+                    // delay(1000),
+                    debounceTime(1000),
+                    withLatestFrom<any, UserSupplier>(
+                        this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                    ),
+                    tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                    switchMap<
+                        [null, UserSupplier],
+                        Observable<Array<WarehouseDropdown>>
+                    >(([_, userSupplier]) => {
+                        // Jika user tidak ada data supplier.
+                        if (!userSupplier) {
+                            throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                        }
+    
+                        // Mengambil ID supplier-nya.
+                        const { supplierId } = userSupplier;
+    
+                        // Melakukan request data warehouse.
+                        return this.warehouseService
+                            .find<Array<WarehouseDropdown>>(+supplierId, +urbanId)
+                            .pipe(
+                                tap((response) =>
+                                    HelperService.debug('FIND WAREHOUSE', {
+                                        supplierId,
+                                        urbanId,
+                                        response,
+                                    })
+                                )
+                            );
+                    }),
+                    take(1),
+                    catchError((err) => {
+                        throw err;
+                    })
+                )
+                .subscribe({
+                    next: (response) => {
+                        this.isWarehouseLoading$ = false;
+                        HelperService.debug('WAREHOUSE RESPONSE', response);
+                        this.availableWarehouses = response;
+
+                        if (this.availableWarehouses.length === 1) {
+                            this.form.get('storeInfo.address.warehouse').disable();
+                            this.form.get('storeInfo.address.warehouse').setValue(this.availableWarehouses[0].id);
+                        } else {
+                            this.form.get('storeInfo.address.warehouse').enable();
+                            if (resetValue) {
+                                this.form.get('storeInfo.address.warehouse').setValue('');
+                            }
+                            this.form.get('storeInfo.address.warehouse').markAsTouched();
+
+                            if (this.availableWarehouses.length === 0) {
+                                this.form.get('storeInfo.address.warehouse').setErrors({
+                                    noWarehouses: {
+                                        message: `
+                                            The store is not located within any warehouse coverage area.
+                                            Please create a new warehouse by clicking the “Go To Warehouse” button.
+                                            Once it’s done, hit the refresh button.
+                                        `,
+                                    }
+                                });
+                            }
+                        }
+                    },
+                    error: (err) => {
+                        this.isWarehouseLoading$ = false;
+                        HelperService.debug('ERROR FIND WAREHOUSE', { error: err });
+                        this._$helper.showErrorNotification(new ErrorHandler(err));
+                    },
+                    complete: () => {
+                        this.isWarehouseLoading$ = false;
+                        HelperService.debug('FIND WAREHOUSE COMPLETED');
+                    },
+                });
+        }
+    }
+    
     private requestStoreType(params: IQueryParams): void {
         of(null)
             .pipe(
@@ -2461,6 +2585,16 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         ],
                     ],
                     notes: ['', []],
+                    warehouse: ['', [
+                        RxwebValidators.required({
+                            conditionalExpression: (x: Urban | string) => !!x && this.availableWarehouses.length === 0,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        this.warehouseValidator()
+                    ]],
                     geolocation: this.formBuilder.group({
                         lng: [
                             '',
@@ -2797,6 +2931,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         lng: data['outerStore']['longitude'],
                         lat: data['outerStore']['latitude'],
                     },
+                    warehouse: data['outerStore']['warehouseId']
                 },
                 physicalStoreInfo: {
                     numberOfEmployee: data['outerStore']['numberOfEmployee'],
@@ -2857,94 +2992,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             this.handleNotAllowCreditPatch(foundIdx);
                         }
                     }
-
-                    // if (idx > 0) {
-                    //     if (row.allowCreditLimit) {
-                    //         this.formCreditLimits.push(
-                    //             this.formBuilder.group({
-                    //                 allowCreditLimit: true,
-                    //                 creditLimitStoreId: row.id,
-                    //                 invoiceGroup: row.invoiceGroupId,
-                    //                 creditLimitGroup: row.creditLimitGroupId,
-                    //                 creditLimit: [
-                    //                     '',
-                    //                     // [
-                    //                     //     RxwebValidators.numeric({
-                    //                     //         acceptValue:
-                    //                     //             NumericValueType.PositiveNumber,
-                    //                     //         allowDecimal: true,
-                    //                     //         message: this._$errorMessage.getErrorMessageNonState(
-                    //                     //             'default',
-                    //                     //             'pattern'
-                    //                     //         )
-                    //                     //     })
-                    //                     // ]
-                    //                 ],
-                    //                 termOfPayment: [
-                    //                     row.termOfPayment,
-                    //                     [
-                    //                         RxwebValidators.digit({
-                    //                             message: this._$errorMessage.getErrorMessageNonState(
-                    //                                 'default',
-                    //                                 'numeric'
-                    //                             ),
-                    //                         }),
-                    //                     ],
-                    //                 ],
-                    //             })
-                    //         );
-
-                    //         this.handleAllowCreditPatch(idx, row);
-                    //     } else {
-                    //         this.formCreditLimits.push(
-                    //             this.formBuilder.group({
-                    //                 allowCreditLimit: false,
-                    //                 creditLimitStoreId: row.id,
-                    //                 invoiceGroup: row.invoiceGroupId,
-                    //                 creditLimitGroup: [
-                    //                     {
-                    //                         value: '',
-                    //                         disabled: true,
-                    //                     },
-                    //                 ],
-                    //                 creditLimit: [
-                    //                     {
-                    //                         value: '',
-                    //                         disabled: true,
-                    //                     },
-                    //                 ],
-                    //                 termOfPayment: [
-                    //                     {
-                    //                         value: '',
-                    //                         disabled: true,
-                    //                     },
-                    //                 ],
-                    //             })
-                    //         );
-
-                    //         this.handleNotAllowCreditPatch(idx);
-                    //     }
-                    // } else {
-                    //     (this.formCreditLimits.at(idx) as FormGroup).addControl(
-                    //         'creditLimitStoreId',
-                    //         this.formBuilder.control(row.id)
-                    //     );
-
-                    //     this.formCreditLimits
-                    //         .at(idx)
-                    //         .get('invoiceGroup')
-                    //         .patchValue(row.invoiceGroupId);
-
-                    //     if (row.allowCreditLimit) {
-                    //         this.handleAllowCreditPatch(idx, row);
-                    //     } else {
-                    //         this.handleNotAllowCreditPatch(idx);
-                    //     }
-                    // }
                 }
             }
         }
 
+        this.requestWarehouse(+data['outerStore']['urbanId'] || null, false);
         this.form.markAllAsTouched();
         this.form.updateValueAndValidity();
     }
@@ -3103,6 +3155,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     status: 'active',
                     roles: [1],
                 },
+                warehouseId: this.availableWarehouses.length === 1 ? null : body.storeInfo.address.warehouse,
                 type: {
                     typeId: body.storeInfo.storeClassification.storeType,
                 },
@@ -3110,7 +3163,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     groupId: body.storeInfo.storeClassification.storeGroup,
                 },
                 channel: {
-                    clusterId: body.storeInfo.storeClassification.storeChannel,
+                    channelId: body.storeInfo.storeClassification.storeChannel,
                 },
                 cluster: {
                     clusterId: body.storeInfo.storeClassification.storeCluster,
