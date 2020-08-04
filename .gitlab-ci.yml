@@ -79,9 +79,6 @@ start_runner_production:
 install_deps_development:
     stage: install_deps
     image: node:12-alpine
-    before_script:
-        - apk update
-        - apk add git python3 make g++
     cache:
         key: ssc_deps_dev
         paths:
@@ -89,6 +86,8 @@ install_deps_development:
     script:
         - >
             if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
                 npm ci
             fi;
     tags:
@@ -100,9 +99,6 @@ install_deps_development:
 install_deps_staging:
     stage: install_deps
     image: node:12-alpine
-    before_script:
-        - apk update
-        - apk add git python3 make g++
     cache:
         key: ssc_deps_stg
         paths:
@@ -110,6 +106,8 @@ install_deps_staging:
     script:
         - >
             if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
                 npm ci
             fi;
     tags:
@@ -121,9 +119,6 @@ install_deps_staging:
 install_deps_demo:
     stage: install_deps
     image: node:12-alpine
-    before_script:
-        - apk update
-        - apk add git python3 make g++
     cache:
         key: ssc_deps_demo
         paths:
@@ -131,6 +126,8 @@ install_deps_demo:
     script:
         - >
             if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
                 npm ci
             fi;
     tags:
@@ -142,9 +139,6 @@ install_deps_demo:
 install_deps_production:
     stage: install_deps
     image: node:12-alpine
-    before_script:
-        - apk update
-        - apk add git python3 make g++
     cache:
         key: ssc_deps_prod
         paths:
@@ -152,6 +146,8 @@ install_deps_production:
     script:
         - >
             if ((git diff HEAD~ --name-only | grep package-lock.json) || (git log -1 --pretty=%B | egrep "(u|U)pdate(|d) package(|-lock.json)")); then
+                apk update
+                apk add git python3 make g++
                 npm ci
             fi;
     tags:
@@ -167,10 +163,10 @@ build_development:
         key: ssc_deps_dev
         paths:
             - node_modules/
-    before_script:
-        - apk update
-        - apk add git
-        - npm install
+    # before_script:
+    #     - apk update
+    #     - apk add git
+    #     - npm install
     script:
         - echo "Commit tag -> $CI_COMMIT_TAG"
         - echo "Commit short hash -> $CI_COMMIT_SHORT_SHA"
