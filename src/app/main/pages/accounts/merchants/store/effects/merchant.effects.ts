@@ -52,25 +52,31 @@ export class MerchantEffects {
             ofType(StoreActions.fetchCalculateSupplierStoresRequest),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([_, userData]) => {
-                return this._$merchantApi.getTotalApprovalStatus(userData.supplierId).pipe(
-                    map((resp) => {
-                        this._$log.generateGroup(`[RESPONSE REQUEST CALCULATE SUPPLIER STORE]`, {
-                            response: {
-                                type: 'log',
-                                value: resp,
-                            },
-                        });
-
-                        return StoreActions.fetchCalculateSupplierStoresSuccess({ payload: resp });
-                    }),
-                    catchError((err) =>
-                        of(
-                            StoreActions.fetchCalculateSupplierStoresFailure({
-                                payload: { id: 'fetchCalculateSupplierStoresFailure', errors: err },
-                            })
+                if (userData) {
+                    return this._$merchantApi.getTotalApprovalStatus(userData.supplierId).pipe(
+                        map((resp) => {
+                            this._$log.generateGroup(`[RESPONSE REQUEST CALCULATE SUPPLIER STORE]`, {
+                                response: {
+                                    type: 'log',
+                                    value: resp,
+                                },
+                            });
+    
+                            return StoreActions.fetchCalculateSupplierStoresSuccess({ payload: resp });
+                        }),
+                        catchError((err) =>
+                            of(
+                                StoreActions.fetchCalculateSupplierStoresFailure({
+                                    payload: { id: 'fetchCalculateSupplierStoresFailure', errors: err },
+                                })
+                            )
                         )
-                    )
-                );
+                    );
+                } else {
+                    return of(StoreActions.fetchCalculateSupplierStoresFailure({
+                        payload: { id: 'fetchCalculateSupplierStoresFailure', errors: 'No Supplier ID' },
+                    }));
+                }
             })
         )
     );

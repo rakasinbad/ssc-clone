@@ -1262,6 +1262,99 @@
                                 </mat-form-field>
                             </div>
                             <!-- / LONGITUDE -->
+                            <!-- WAREHOUSE -->
+                            <div
+                                class="custom-field"
+                                [class.no-warehouses]="form.get('storeInfo.address.warehouse').errors?.noWarehouses"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                            >
+                                <label class="form-label"
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="
+                                        hasError('storeInfo.address.warehouse')
+                                    "
+                                >
+                                    *Warehouse
+                                </label>
+                                <!-- FORM FIELD WRAPPER -->
+                                <div fxFlex="50" fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="26px">
+                                    <!-- FORM FIELD -->
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <mat-select
+                                            [formControl]="form.get('storeInfo.address.warehouse')"
+                                            placeholder="Choose Warehouse"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="let row of availableWarehouses"
+                                                [value]="row.id"
+                                            >
+                                                {{ row?.name || '-' }}
+                                            </mat-option>
+                                        </mat-select>
+    
+                                        <mat-error
+                                            *ngIf="hasError('storeInfo.address.warehouse', true)"
+                                        >
+                                            {{ getErrorMessage('storeInfo.address.warehouse') }}
+                                        </mat-error>
+                                        <mat-hint *ngIf="form.get('storeInfo.address.warehouse').value && (availableWarehouses?.length || 0) === 1">
+                                            The location of store is within the coverage area of a specific warehouse and cannot be changed.
+                                        </mat-hint>
+                                    </mat-form-field>
+                                    <!-- / FORM FIELD -->
+                                    <!-- WRAPPER -->
+                                    <div
+                                        class="mb-24"
+                                        fxLayout="row"
+                                        fxLayoutAlign="end stretch"
+                                        fxFlex="20"
+                                        *ngIf="!isWarehouseLoading$ && _selectedUrban && availableWarehouses.length === 0"
+                                    >
+                                        <!-- OPEN TAB "WAREHOUSE COVERAGE" -->
+                                        <a
+                                            style="text-decoration: none;"
+                                            target="_blank"
+                                            href="/pages/logistics/warehouse-coverages"
+                                            fxFlex="70"
+                                        >
+                                            <button
+                                                mat-flat-button
+                                                class="h-44 ml-12 sinbad-yellow"
+                                                color="accent"
+                                                type="button"
+                                                fxFlexAlign="center"
+                                                matTooltip="Go To Warehouse"
+                                                matTooltipClass="font-size-18"
+                                            >
+                                                <mat-icon>arrow_forward</mat-icon>
+                                            </button>
+                                        </a>
+                                        <!-- / OPEN TAB "WAREHOUSE COVERAGE" -->
+                                        <!-- REFRESH "WAREHOUSE COVERAGE" -->
+                                        <button class="h-44" mat-icon-button (click)="prepareRequestWarehouse()" fxFlex="nogrow" aria-label="Refresh warehouse">
+                                            <mat-icon>refresh</mat-icon>
+                                        </button>
+                                        <!-- / REFRESH "WAREHOUSE COVERAGE" -->
+                                    </div>
+                                    <!-- WRAPPER -->
+                                </div>
+                                <!-- / FORM FIELD WRAPPER -->
+                                <!-- LOADING SPINNER -->
+                                <mat-spinner
+                                    *ngIf="isWarehouseLoading$"
+                                    class="ml-24 mb-24"
+                                    fxFlexAlign="center"
+                                    color="accent"
+                                    [diameter]="40"
+                                    [strokeWidth]="5"
+                                    [mode]="'indeterminate'"
+                                ></mat-spinner>
+                                <!-- / LOADING SPINNER -->
+                            </div>
+                            <!-- / WAREHOUSE -->
                         </ng-container>
                         <!-- <div
                             class="custom-field sinbad-button"

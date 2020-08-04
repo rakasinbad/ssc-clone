@@ -28,7 +28,11 @@ export class BrandsApiService {
         if (!params['supplierId'] && !params['noSupplierId']) {
             throw new Error('ERR_BRAND_REQUIRES_SUPPLIERID');
         }
-        
+
+        if (params['status'] !== null || typeof params['status'] !== 'undefined') {
+            newArgs.push({ key: 'status', value: params['status'] });
+        }
+
         if (params['supplierId'] && !params['noSupplierId']) {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
