@@ -4,12 +4,12 @@
         <!-- TABLES -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig">
-                <div fxLayout="row" fxLayout="start center" fxLayoutGap="16px" first-bottom-left>
-                    <button mat-flat-button class="sinbad-red">Add Group</button>
-                    <button mat-flat-button class="sinbad-red">Add Direct</button>
-                    <p>
+                <div class="h-32" fxLayout="row" fxLayout="start center" fxLayoutGap="16px" first-bottom-left>
+                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red">Add Group</button>
+                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red">Add Direct</button>
+                    <span fxFlexAlign="center">
                         <a (click)="openPortfolioExplanation()" class="sinbad-red-fg" style="cursor: pointer;">What is this?</a>
-                    </p>
+                    </span>
                 </div>
             </sinbad-card-header>
 
