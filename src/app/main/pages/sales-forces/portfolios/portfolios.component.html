@@ -4,9 +4,11 @@
         <!-- TABLES -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig">
-                <p last-bottom-left>
+                <div fxLayout="row" fxLayout="start center" fxLayoutGap="16px" first-bottom-left>
+                    <button mat-flat-button class="sinbad-red">Add Group</button>
+                    <button mat-flat-button class="sinbad-red">Add Direct</button>
                     <a (click)="openPortfolioExplanation()" class="sinbad-red-fg" style="cursor: pointer;">What is this?</a>
-                </p>
+                </div>
             </sinbad-card-header>
 
             <mat-table class="portfolios-table grey-300-border mx-12" #table [dataSource]="portfolios" matSort
