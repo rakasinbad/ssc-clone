@@ -10,7 +10,8 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    TemplateRef
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
@@ -35,6 +36,7 @@ import { Portfolio } from './models/portfolios.model';
 import { PortfolioActions } from './store/actions';
 import { CoreFeatureState } from './store/reducers';
 import { PortfolioSelector } from './store/selectors';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 
 @Component({
     selector: 'app-portfolios',
@@ -111,6 +113,10 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    // ViewChild untuk penjelasan singkat mengenai Portfolio.
+    @ViewChild('portfolioExplanation', { static: false })
+    portfolioExplanation: TemplateRef<any>;
+
     constructor(
         private _cd: ChangeDetectorRef,
         private portfolioStore: NgRxStore<CoreFeatureState>,
@@ -118,6 +124,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         private router: Router,
         private readonly sanitizer: DomSanitizer,
         private ngxPermissionsService: NgxPermissionsService,
+        private applyDialogFactory: ApplyDialogFactoryService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         this.portfolioStore.dispatch(
@@ -252,6 +259,25 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     /**
      * PUBLIC FUNCTIONS
      */
+    openPortfolioExplanation(): void {
+        this.applyDialogFactory.open(
+            {
+                title: 'Portfolio',
+                template: this.portfolioExplanation,
+                isApplyEnabled: true,
+                showApplyButton: false,
+            },
+            {
+                disableClose: false,
+                width: '75vw',
+                minWidth: '75vw',
+                maxWidth: '75vw',
+                height: '80vh',
+                panelClass: 'dialog-container-no-padding'
+            }
+        );
+    }
+
     exportPortfolio(): void {
         this.portfolioStore.dispatch(PortfolioActions.exportPortfoliosRequest());
     }
