@@ -77,6 +77,54 @@ const routes: Routes = [
         }
     },
     {
+        path: 'srtarget',
+        loadChildren: () =>
+            import('./srtarget/journey-plans.module').then(m => m.JourneyPlansModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ]
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true
+                }
+            }
+        }
+    },
+    {
+        path: 'workday-setting',
+        loadChildren: () =>
+            import('./workday-setting/journey-plans.module').then(m => m.JourneyPlansModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ]
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true
+                }
+            }
+        }
+    },
+    {
         path: 'associations',
         loadChildren: () =>
             import('./associations/associations.module').then(m => m.AssociationsModule),
