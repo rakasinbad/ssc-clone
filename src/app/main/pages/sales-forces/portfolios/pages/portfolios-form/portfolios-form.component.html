@@ -4,12 +4,12 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center p-32" fxLayout="column" fxLayoutAlign="space-between none" fxLayoutGap="10px">
+    <div class="center p-16" fxLayout="column" fxLayoutAlign="space-between none" fxLayoutGap="10px">
         <!-- CONTENT CARD (INFORMASI PORTFOLIO TOKO) -->
         <div class="content-card p-16" fxLayout="column" fxLayoutAlign="start none" fxLayoutGap="25px">
-            <div>
-                <div class="font-weight-600 font-size-24 line-height-20">Informasi Portfolio Toko</div>
-            </div>
+            <span class="font-weight-600 font-size-24 line-height-20">
+                {{ formTitle }}
+            </span>
         
             <div class="pt-0 line-height-1.75">
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex fxLayoutGap="5px" novalidate>
@@ -42,7 +42,7 @@
                         </mat-form-field>
                     </div>
                     <!-- / PORTFOLIO NAME -->
-                    <!-- INVOICE GROUP (GRUP FAKTUR) -->
+                    <!-- WAREHOUSE -->
                     <div
                         class="custom-field"
                         fxLayout="row"
@@ -52,18 +52,18 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="hasError(form.get('invoiceGroup'))"
+                            [class.mat-error]="hasError(form.get('warehouse'))"
                         >
                             <span
                                 class="red-500-fg"
-                            >* </span>Faktur
+                            >* </span>Warehouse
                         </label>
-                
+
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
                             <mat-select
-                                #invoiceGroup
-                                name="invoiceGroup"
-                                formControlName="invoiceGroup"
+                                #warehouse
+                                name="warehouse"
+                                formControlName="warehouse"
                                 (selectionChange)="invoiceGroupSub.next($event.value)"
                             >
                                 <mat-option
@@ -78,40 +78,7 @@
                             </mat-error>
                         </mat-form-field>
                     </div>
-                    <!-- / INVOICE GROUP (GRUP FAKTUR) -->
-                    <!-- PORTFOLIO TYPE -->
-                    <!-- <div
-                        class="custom-field mt-16"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between start"
-                    >
-                        <label
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            class="pr-0 pt-12"
-                            [class.mat-error]="hasError(form.get('type'))"
-                        >
-                            <span
-                                class="red-500-fg"
-                            >* </span>Portfolio Type
-                        </label>
-
-                        <div fxFlex="80" fxFlexAlign="center" fxLayout="column" fxLayoutAlign="start stretch">
-                            <mat-radio-group formControlName="type" fxLayout="row" fxLayoutGap="50px" fxFlex="80">
-                                <mat-radio-button value="direct">Direct</mat-radio-button>
-                                <mat-radio-button value="group">Group</mat-radio-button>
-                            </mat-radio-group>
-
-                            <mat-error *ngIf="hasError(form.get('type'))">
-                                {{ getFormError(form.get('type')) }}
-                            </mat-error>
-
-                            <mat-hint *ngIf="form.get('type').value === 'direct'">
-                                Only a store allowed to be added for Portfolio Type direct.
-                            </mat-hint>
-                        </div>
-                    </div> -->
-                    <!-- / PORTFOLIO TYPE -->
+                    <!-- / WAREHOUSE -->
                 </form>
             </div>
 
@@ -122,22 +89,17 @@
                 <div class="font-weight-600 font-size-24 line-height-20">Find Store</div>
             </div>
 
-            <div class="content-card mat-elevation-z1">
-                <mat-tab-group color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
-                    <!-- IN PORTFOLIO -->
-                    <mat-tab label="In Portfolio">
-                    </mat-tab>
-                    <!-- / IN PORTFOLIO -->
-                    <!-- OUT OF PORTFOLIO -->
-                    <mat-tab label="Out of Portfolio">
-    
-                    </mat-tab>
-                    <!-- / OUT OF PORTFOLIO -->
-                </mat-tab-group>
-    
-                <div class="content-card p-16">
-                    <app-portfolios-selected-stores></app-portfolios-selected-stores>
-                </div>
+            <mat-tab-group color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
+                <!-- IN PORTFOLIO -->
+                <mat-tab label="In Portfolio"></mat-tab>
+                <!-- / IN PORTFOLIO -->
+                <!-- OUT OF PORTFOLIO -->
+                <mat-tab label="Out of Portfolio"></mat-tab>
+                <!-- / OUT OF PORTFOLIO -->
+            </mat-tab-group>
+
+            <div class="content-card">
+                <app-portfolios-selected-stores></app-portfolios-selected-stores>
             </div>
         </div>
         <!-- / CONTENT CARD (INFORMASI PRODUK) -->

@@ -51,6 +51,7 @@ import { IPortfolioAddForm } from '../../models/portfolios.model';
 import { PortfolioActions, StoreActions } from '../../store/actions';
 import { CoreFeatureState } from '../../store/reducers';
 import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../store/selectors';
+import { Warehouse } from '../../models';
 
 @Component({
     selector: 'app-portfolios-form',
@@ -72,8 +73,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     portfolioId: string;
     // Untuk menyimpan form yang akan dikirim ke server.
     form: FormGroup;
-    // Untuk menyimpan Invoice Group.
-    invoiceGroups: Array<InvoiceGroup>;
+    // Untuk menyimpan Warehouse.
+    warehouses: Array<Warehouse>;
     // Untuk menyimpan Observable status loading dari state portfolio.
     isPortfolioLoading$: Observable<boolean>;
     // Untuk menyimpan Observable status loading dari state store-nya portfolio.
@@ -146,6 +147,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     @ViewChild('invoiceGroup', { static: false }) invoiceGroup: MatSelect;
     invoiceGroupSub: Subject<string> = new Subject<string>();
 
+    // Untuk menyimpan judul form.
+    // tslint:disable-next-line: no-inferrable-types
+    formTitle: string = 'Store Portfolio Information';
+
     constructor(
         private portfolioStore: NgRxStore<CoreFeatureState>,
         private shopStore: NgRxStore<CoreFeatureState>,
@@ -163,6 +168,13 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     ) {
         // Mengambil ID portfolio dari param URL.
         this.portfolioId = this.route.snapshot.params.id;
+        const { portfolio } = this.route.snapshot.params;
+
+        if (portfolio === 'direct') {
+            this.formTitle = 'Direct Store Portfolio Information';
+        } else {
+            this.formTitle = 'Store Portfolio Information';
+        }
 
         // Menyiapkan breadcrumb yang ingin ditampilkan.
         // const breadcrumbs = [
@@ -225,7 +237,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         // Mengambil data Invoice Group dari state.
         this.dropdownStore
-            .select(DropdownSelectors.getInvoiceGroupDropdownState)
+        .select(DropdownSelectors.getInvoiceGroupDropdownState)
             .pipe(takeUntil(this.subs$))
             .subscribe(invoiceGroups => {
                 if (invoiceGroups.length === 0) {
