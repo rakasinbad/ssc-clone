@@ -20,7 +20,6 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { Store } from 'app/main/pages/accounts/merchants/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { fromDropdown } from 'app/shared/store/reducers';
@@ -144,8 +143,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     // @ViewChild('listStore', { static: false }) listStore: CdkScrollable;
 
-    @ViewChild('invoiceGroup', { static: false }) invoiceGroup: MatSelect;
-    invoiceGroupSub: Subject<string> = new Subject<string>();
+    // Untuk binding ke element MatSelect-nya Warehouse.
+    @ViewChild('warehouse', { static: false }) warehouse: MatSelect;
+    // Untuk menyimpan warehouse yang terpilih.
+    warehouseSub: Subject<string> = new Subject<string>();
 
     // Untuk menyimpan judul form.
     // tslint:disable-next-line: no-inferrable-types
