@@ -23,7 +23,7 @@ export class OrderApiService {
      * @private
      * @memberof OrderApiService
      */
-    private readonly _endpoint = '/payment/v1/order/parcel';
+    private readonly _endpoint = '/order-parcels';
 
     private readonly _listEndpoint = '/payment/v1/order/oms';
 
