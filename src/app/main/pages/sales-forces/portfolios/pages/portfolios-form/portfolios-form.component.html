@@ -42,6 +42,43 @@
                         </mat-form-field>
                     </div>
                     <!-- / PORTFOLIO NAME -->
+                    <!-- INVOICE GROUP (FAKTUR) -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('invoiceGroup'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Faktur
+                        </label>
+
+                        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
+                            <mat-select
+                                #invoiceGroup
+                                name="invoiceGroup"
+                                formControlName="invoiceGroup"
+                                (selectionChange)="invoiceGroupSub.next($event.value)"
+                            >
+                                <mat-option
+                                    *ngFor="let invoiceGroup of invoiceGroups"
+                                    [value]="invoiceGroup.id"
+                                >
+                                    {{ invoiceGroup.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError(form.get('invoiceGroup'))">
+                                {{ getFormError(form.get('invoiceGroup')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / INVOICE GROUP (FAKTUR) -->
                     <!-- WAREHOUSE -->
                     <div
                         class="custom-field"
@@ -59,26 +96,15 @@
                             >* </span>Warehouse
                         </label>
 
-                        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
-                            <mat-select
-                                #warehouse
-                                name="warehouse"
-                                formControlName="warehouse"
-                                (selectionChange)="invoiceGroupSub.next($event.value)"
-                            >
-                                <mat-option
-                                    *ngFor="let invoiceGroup of invoiceGroups"
-                                    [value]="invoiceGroup.id"
-                                >
-                                    {{ invoiceGroup.name }}
-                                </mat-option>
-                            </mat-select>
-                            <mat-error *ngIf="hasError(form.get('invoiceGroup'))">
-                                {{ getFormError(form.get('invoiceGroup')) }}
-                            </mat-error>
-                        </mat-form-field>
+                        <select-single-warehouse
+                            [required]="true"
+                            (selected)="onSelectedWarehouse($event)"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                        ></select-single-warehouse>
                     </div>
                     <!-- / WAREHOUSE -->
+
                 </form>
             </div>
 

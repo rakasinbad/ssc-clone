@@ -49,8 +49,9 @@ import { locale as indonesian } from '../../i18n/id';
 import { IPortfolioAddForm } from '../../models/portfolios.model';
 import { PortfolioActions, StoreActions } from '../../store/actions';
 import { CoreFeatureState } from '../../store/reducers';
-import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../store/selectors';
+import { PortfolioSelector, PortfolioStoreSelector, StoreSelector, WarehouseSelector } from '../../store/selectors';
 import { Warehouse } from '../../models';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
 @Component({
     selector: 'app-portfolios-form',
@@ -72,8 +73,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     portfolioId: string;
     // Untuk menyimpan form yang akan dikirim ke server.
     form: FormGroup;
-    // Untuk menyimpan Warehouse.
-    warehouses: Array<Warehouse>;
+    // Untuk menyimpan Invoice Group.
+    invoiceGroups: Array<InvoiceGroup>;
     // Untuk menyimpan Observable status loading dari state portfolio.
     isPortfolioLoading$: Observable<boolean>;
     // Untuk menyimpan Observable status loading dari state store-nya portfolio.
@@ -143,10 +144,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     // @ViewChild('listStore', { static: false }) listStore: CdkScrollable;
 
-    // Untuk binding ke element MatSelect-nya Warehouse.
-    @ViewChild('warehouse', { static: false }) warehouse: MatSelect;
+    // Untuk binding ke element MatSelect-nya Invoice Group.
+    @ViewChild('invoiceGroup', { static: false }) invoiceGroup: MatSelect;
     // Untuk menyimpan warehouse yang terpilih.
-    warehouseSub: Subject<string> = new Subject<string>();
+    invoiceGroupSub: Subject<string> = new Subject<string>();
 
     // Untuk menyimpan judul form.
     // tslint:disable-next-line: no-inferrable-types
@@ -413,6 +414,11 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     //     this.onRefreshListStoreTable();
     // }
+
+    onSelectedWarehouse(value: Warehouse): void {
+        this.form.patchValue({ warehouse: value });
+        this.form.updateValueAndValidity();
+    }
 
     updateSelectedTab(tabId: number): void {
         if (tabId === 0) {
@@ -756,6 +762,14 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             ],
             type: [
                 { value: 'group', disabled: false },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            warehouse: [
+                { value: '', disabled: false },
                 [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
