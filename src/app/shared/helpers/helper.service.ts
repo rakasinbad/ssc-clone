@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { ElementRef, Inject, Injectable } from '@angular/core';
 import { MatSnackBarConfig } from '@angular/material';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -21,6 +21,7 @@ import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import * as moment from 'moment';
+import { IHeaderRequest } from '../models/header.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -432,6 +433,18 @@ export class HelperService {
         } */
 
         return `${HelperService._host}${endpoint}`;
+    }
+
+    handleHeaders(headers: IHeaderRequest): HttpHeaders {
+        let newHeaders = new HttpHeaders();
+
+        if (headers) {
+            for (const key of Object.keys(headers)) {
+                newHeaders = newHeaders.set(key, headers[key]);
+            }
+        }
+
+        return newHeaders;
     }
 
     handleParams(url: string, params: IQueryParams, ...args): HttpParams {
