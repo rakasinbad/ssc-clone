@@ -1,2 +1,14 @@
-<iframe id="srtarget" src="http://localhost:3000/salesreptarget" style="width: 100%; height: 100%;">
+<!-- <iframe
+    id="srtarget"
+    src="https://micro-dev.sinbad.web.id/salesreptarget?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1OTY3ODIzMTEsInVpZCI6IjE3IiwicGhuIjpudWxsLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMzAvIiwiaXNzIjoiSkhOT2lEbk94MEs2dGZPRmxXaUNOTjVoREtOeUFMT3EiLCJzdWIiOiJhNmRmZDAyNy1jZDMwLTRhNDUtODM3NC1hOGJlNWM0MjhhZWMiLCJqdGkiOiI0YjRjNjg1Mi01ZmI3LTRjMDYtYTIxNi05NWM4OWNlOWFiMTgifQ.V8M4iw9u26qL-23FVN6t9NN8Ou-B_pE-_b8m7D_zuBQ"
+    style="width: 100%; height: 100%;"
+>
+</iframe> -->
+
+<iframe id="srtarget" [src]="url" style="width: 100%; height: 100%;" *ngIf="url">
+    <p>Iframe not supported.</p>
 </iframe>
+
+<mat-spinner *ngIf="!url"></mat-spinner>
+
+<!-- <span [innerHTML]="iframeST | safe: 'html'" style="width: 100%; height: 100%;"></span> -->
