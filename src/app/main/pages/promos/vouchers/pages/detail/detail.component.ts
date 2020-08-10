@@ -356,7 +356,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     : formValue.base === 'brand'
                     ? 'brand'
                     : formValue.base === 'faktur'
-                    ? 'invoiceGroup'
+                    ? 'invoice_group'
                     : 'unknown',
             dataBase: {},
         };
@@ -370,7 +370,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
             payload.dataBase = {
                 brandId: formValue.chosenBrand.map((brand) => brand.id),
             };
-        } else if (payload.base === 'invoiceGroup') {
+        } else if (payload.base === 'invoice_group') {
             payload.dataBase = {
                 invoiceGroupId: formValue.chosenFaktur.map((faktur) => faktur.id),
             };
