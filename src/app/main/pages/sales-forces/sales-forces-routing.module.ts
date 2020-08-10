@@ -77,6 +77,30 @@ const routes: Routes = [
         },
     },
     {
+        path: 'workday-setting',
+        loadChildren: () =>
+            import('./workday-setting/workday-setting.module').then((m) => m.WorkdaySettingModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN',
+                ],
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
         path: 'sr-target',
         loadChildren: () => import('./sr-target/sr-target.module').then((m) => m.SrTargetModule),
         canLoad: [AuthGuard, NgxPermissionsGuard],
