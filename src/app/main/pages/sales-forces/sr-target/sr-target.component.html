@@ -1,0 +1,7 @@
+<iframe id="srtarget" [src]="url" style="width: 100%; height: 100%;" *ngIf="url">
+    <p>Iframe not supported.</p>
+</iframe>
+
+<div class="loader" *ngIf="!url">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
