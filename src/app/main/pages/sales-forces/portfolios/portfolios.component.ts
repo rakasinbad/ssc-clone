@@ -61,10 +61,10 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.search.setValue(value);
             }
         },
-        add: {
-            permissions: ['SRM.PFO.CREATE'],
-            onClick: () => this.addPortfolio()
-        },
+        // add: {
+        //     permissions: ['SRM.PFO.CREATE'],
+        //     onClick: () => this.addPortfolio()
+        // },
         export: {
             permissions: ['SRM.PFO.EXPORT'],
             useAdvanced: true,
