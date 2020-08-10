@@ -7,14 +7,6 @@ import { SrTargetComponent } from './sr-target.component';
 
 @NgModule({
     declarations: [SrTargetComponent],
-    imports: [
-        SrTargetRoutingModule,
-        SharedModule,
-        MaterialModule,
-
-        // Third Party (Ngrx: https://ngrx.io)
-        // StoreModule.forFeature(),
-        // EffectsModule.forFeature([]),
-    ],
+    imports: [SrTargetRoutingModule, SharedModule, MaterialModule],
 })
 export class SrTargetModule {}
