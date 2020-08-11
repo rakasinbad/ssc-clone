@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -13,6 +13,7 @@ import * as fromRoot from 'app/store/app.reducer';
 })
 export class WorkdaySettingComponent implements OnInit {
     url: SafeResourceUrl;
+    isLoading = true;
 
     private readonly breadcrumbs: IBreadcrumbs[] = [
         {
@@ -27,6 +28,7 @@ export class WorkdaySettingComponent implements OnInit {
     ];
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private store: Store<fromRoot.State>,
         private storage: StorageMap
@@ -39,6 +41,13 @@ export class WorkdaySettingComponent implements OnInit {
             this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
                 `https://micro-dev.sinbad.web.id/salessetting?token=${data.token}`
             );
+
+            this.cdRef.detectChanges();
         });
+    }
+
+    onLoad(): void {
+        this.isLoading = false;
+        this.cdRef.detectChanges();
     }
 }
