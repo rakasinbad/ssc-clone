@@ -54,8 +54,8 @@ export class PortfoliosApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (!isNaN(params['invoiceGroupId'])) {
-            newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
+        if (!isNaN(params['warehouseId'])) {
+            newArgs.push({ key: 'warehouseId', value: params['warehouseId'] });
         }
 
         if (params['request'] === 'associations') {

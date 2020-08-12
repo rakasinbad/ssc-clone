@@ -4,9 +4,9 @@
         <!-- TABLES -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig">
-                <div class="h-32" fxLayout="row start center" fxLayoutGap="16px" first-bottom-left>
-                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red">Add Group</button>
-                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red">Add Direct</button>
+                <div class="h-32" fxLayout="row" fxLayout="start center" fxLayoutGap="16px" first-bottom-left>
+                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red" [routerLink]="'/pages/sales-force/portfolio/group/add'">Add Group</button>
+                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red" [routerLink]="'/pages/sales-force/portfolio/direct/add'">Add Direct</button>
                     <span fxFlexAlign="center">
                         <a (click)="openPortfolioExplanation()" class="sinbad-red-fg" style="cursor: pointer;">What is this?</a>
                     </span>
