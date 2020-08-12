@@ -435,12 +435,12 @@ export class HelperService {
         return `${HelperService._host}${endpoint}`;
     }
 
-    handleHeaders(headers: IHeaderRequest): HttpHeaders {
+    handleHeaders(queryParams: IQueryParams): HttpHeaders {
         let newHeaders = new HttpHeaders();
 
-        if (headers) {
-            for (const key of Object.keys(headers)) {
-                newHeaders = newHeaders.set(key, headers[key]);
+        if (queryParams['headers']) {
+            for (const key of Object.keys(queryParams['headers'])) {
+                newHeaders = newHeaders.set(key, queryParams['headers'][key]);
             }
         }
 
@@ -525,7 +525,7 @@ export class HelperService {
 
         if (args && args.length > 0) {
             args.forEach((arg) => {
-                if (arg.key && arg.value) {
+                if (arg.key && arg.key !== 'headers' && arg.value) {
                     newParams = newParams.append(arg.key, arg.value);
                 } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
                     newParams = newParams.append(arg.key, '');
