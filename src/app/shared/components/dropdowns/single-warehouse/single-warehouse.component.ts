@@ -338,10 +338,12 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
             tap(value => HelperService.debug('SINGLE WAREHOUSE GET SELECTED WAREHOUSE', value)),
             takeUntil(this.subs$)
         ).subscribe(warehouse => {
-            this.entityForm.setValue(warehouse);
-            this.selectedEntity$.next(warehouse);
-            this.triggerEntity.closePanel();
-            this.cdRef.detectChanges();
+            if (warehouse) {
+                this.entityForm.setValue(warehouse);
+                this.selectedEntity$.next(warehouse);
+                this.triggerEntity.closePanel();
+                this.cdRef.detectChanges();
+            }
         });
     }
 
@@ -370,6 +372,8 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
 
         this.subs$.next();
         this.subs$.complete();
+
+        this.singleWarehouse.selectWarehouse(null);
 
         this.totalEntities$.next(null);
         this.totalEntities$.complete();
