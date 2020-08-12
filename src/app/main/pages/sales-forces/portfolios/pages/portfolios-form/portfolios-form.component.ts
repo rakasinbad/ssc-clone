@@ -142,16 +142,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioId = this.route.snapshot.params.id;
         const { portfolio } = this.route.snapshot.params;
 
-        if (portfolio === 'direct') {
-            this.formTitle = 'Direct Store Portfolio Information';
-            this.portfolioType = portfolio;
-        } else {
-            if (portfolio === 'group') {
-                this.portfolioType = portfolio;
-            }
-
-            this.formTitle = 'Store Portfolio Information';
-        }
+        this.updatePortfolioType(portfolio);
 
         // Mengambil data Invoice Group dari state.
         this.dropdownStore
@@ -406,13 +397,27 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         const stores = this.form.get('stores').value;
         const removedStores = this.form.get('removedStores').value;
 
+        // Yang pastinya kalau form-nya invalid, tetap invalid.
         if (form.invalid) {
             this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
-        } else if ((stores.length > 0 || removedStores.length > 0) && this.disabledStores.length === 0) {
-            this.portfolioStore.dispatch(FormActions.setFormStatusValid());
-        } else {
-            this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
+            return;
         }
+
+        // Jika portfolio-nya direct, maka form-nya selalu valid, selama form mandatory-nya valid juga.
+        if (this.portfolioType === 'direct') {
+            this.portfolioStore.dispatch(FormActions.setFormStatusValid());
+            return;
+        }
+        
+        // Jika portfolio-nya selain direct, maka harus ada toko yang ditambah ataupun dihapus ...
+        // ... dan juga tidak ada toko yang sedang dicek keberadaannya lokasinya di portfolio tertentu.
+        if ((stores.length > 0 || removedStores.length > 0) && this.disabledStores.length === 0) {
+            this.portfolioStore.dispatch(FormActions.setFormStatusValid());
+            return;
+        }
+
+        // Selalu invalid jika tidak masuk ke pemeriksaan manapun.
+        this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
     }
 
     clearAllStores(): void {
@@ -541,6 +546,19 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             stores: $event.added,
             removedStores: $event.removed
         });
+    }
+
+    private updatePortfolioType(portfolio: string): void {
+        if (portfolio === 'direct') {
+            this.formTitle = 'Direct Store Portfolio Information';
+            this.portfolioType = portfolio;
+        } else {
+            if (portfolio === 'group') {
+                this.portfolioType = portfolio;
+            }
+
+            this.formTitle = 'Store Portfolio Information';
+        }
     }
 
     private setupBreadcrumb(): void {
@@ -761,6 +779,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                     stores: this.initialPortfolioStores$.value,
                     total: this.totalInitialPortfolioStores$.value
                 });
+
+                this.updatePortfolioType(portfolio.type);
             }
         });
 
@@ -1095,7 +1115,9 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
         this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
 
+        this.portfolioStore.dispatch(StoreActions.truncateAllStores());
         this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
+
         this.portfolioStore.dispatch(PortfolioActions.resetSelectedInvoiceGroupId());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
