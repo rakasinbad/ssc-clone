@@ -9,7 +9,7 @@ import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, 
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { Warehouse as Entity } from './models';
-import { WarehousesApiService as EntitiesApiService } from './services';
+import { WarehousesApiService as EntitiesApiService, SingleWarehouseDropdownService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
@@ -89,6 +89,7 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
         private ngZone: NgZone,
+        private singleWarehouse: SingleWarehouseDropdownService,
     ) {
         this.selectedEntity$.pipe(
             tap(x => HelperService.debug('SELECTED ENTITY', x)),
@@ -226,10 +227,9 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
             this.selectedEntity$.next(null);
             return;
         }
-        
-        const rawEntities = this.entities.toArray();
+
         const selectedId = (event.option.value as Selection).id;
-        const selectedEntity = rawEntities[selectedId];
+        const selectedEntity = this.entities.get(selectedId);
 
         if (!selectedEntity) {
             this.selectedEntity$.next(null);
@@ -333,6 +333,16 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
 
     ngOnInit(): void {
         this.initForm();
+
+        this.singleWarehouse.getSelectedWarehouse().pipe(
+            tap(value => HelperService.debug('SINGLE WAREHOUSE GET SELECTED WAREHOUSE', value)),
+            takeUntil(this.subs$)
+        ).subscribe(warehouse => {
+            this.entityForm.setValue(warehouse);
+            this.selectedEntity$.next(warehouse);
+            this.triggerEntity.closePanel();
+            this.cdRef.detectChanges();
+        });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
