@@ -208,14 +208,12 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             data[fil.id] = fil.value.value;
         }
 
-        // Mengambil nilai dari search bar dan melakukan 'sanitasi' untuk menghindari injection.
-        const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
         // Jika hasil sanitasi lolos, maka akan melanjutkan pencarian.
-        if (searchValue) {
+        if (this.search.value) {
             data['search'] = [
                 {
                     fieldName: 'keyword',
-                    keyword: searchValue
+                    keyword: this.search.value
                 }
                 // {
                 //     fieldName: 'name',
