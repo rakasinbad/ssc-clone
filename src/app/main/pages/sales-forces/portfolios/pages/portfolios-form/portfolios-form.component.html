@@ -47,6 +47,7 @@
                         class="custom-field"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
+                        [fxHide]="portfolioType === 'direct'"
                     >
                         <label
                             fxFlexAlign="center"
@@ -97,6 +98,7 @@
                         </label>
 
                         <select-single-warehouse
+                            #selectWarehouse
                             [required]="true"
                             (selected)="onSelectedWarehouse($event)"
                             fxFlexAlign="center"
@@ -115,17 +117,33 @@
                 <div class="font-weight-600 font-size-24 line-height-20">Find Store</div>
             </div>
 
-            <mat-tab-group color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
+            <mat-tab-group class="mb-0" color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
                 <!-- IN PORTFOLIO -->
                 <mat-tab label="In Portfolio"></mat-tab>
                 <!-- / IN PORTFOLIO -->
                 <!-- OUT OF PORTFOLIO -->
-                <mat-tab label="Out of Portfolio"></mat-tab>
+                <mat-tab label="Out Portfolio"></mat-tab>
                 <!-- / OUT OF PORTFOLIO -->
             </mat-tab-group>
 
             <div class="content-card">
-                <app-portfolios-selected-stores></app-portfolios-selected-stores>
+                <sinbad-multiple-selection
+                    [disableClearAll]="false"
+                    [enableSelectAll]="false"
+                    [disabledOptions]="disabledStores.toArray()"
+                    [warnedOptions]="conflictedStores.toArray()"
+                    [initialSelectedOptions]="(initialPortfolioStores$ | async)"
+                    [totalInitialSelectedOptions]="(totalInitialPortfolioStores$ | async)"
+                    [availableOptions]="(availableStores$ | async)"
+                    [totalAvailableOptions]="(totalAvailableStores$ | async)"
+                    [isAvailableOptionsLoading]="(isAvailableStoresLoading$ | async)"
+                    [isSelectedOptionsLoading]="(isSelectedStoresLoading$ | async)"
+                    (availableReachedBottom)="requestStore('', true)"
+                    (selectionListChanged)="onSelectedStoresChanged($event)"
+                    (selectionStateChanged)="onSelectedStoreChanged($event)"
+                    (clearAll)="clearAllStores()"
+                    (search)="searchStore($event)"
+                ></sinbad-multiple-selection>
             </div>
         </div>
         <!-- / CONTENT CARD (INFORMASI PRODUK) -->
