@@ -42,9 +42,9 @@ export class PortfolioStoresComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this.stores$ = this.shopStore
-            .select(StoreSelector.getAllStores)
-            .pipe(takeUntil(this.subs$));
+        // this.stores$ = this.shopStore
+        //     .select(StoreSelector.getAllStores)
+        //     .pipe(takeUntil(this.subs$));
     }
 
     ngOnDestroy(): void {
