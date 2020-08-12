@@ -754,7 +754,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
                 this.totalInitialPortfolioStores$.next(portfolio.storePortfolios.length);
 
+                this.singleWarehouseService.selectWarehouse(portfolio.warehouse);
+
                 HelperService.debug('GET STORE OF PORTFOLIO', {
+                    portfolio,
                     stores: this.initialPortfolioStores$.value,
                     total: this.totalInitialPortfolioStores$.value
                 });

@@ -3,6 +3,7 @@ import { TNullable } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
+import { Warehouse } from './warehouse.model';
 
 type TPortfolioType = 'multi' | 'single' | 'group' | 'direct';
 
@@ -32,6 +33,7 @@ interface IPortfolio extends ITimestamp {
     isSelected?: boolean;
     stores?: Array<Store>;
     storePortfolios: Array<StorePortfolio>;
+    warehouse?: Warehouse;
     totalTargetSales?: number;
     actualTargetSales?: number;
     source?: 'fetch' | 'list';
@@ -66,6 +68,7 @@ export class Portfolio implements IPortfolio {
     storeQty?: number;
     stores?: Array<Store>;
     storePortfolios: Array<StorePortfolio>;
+    warehouse?: Warehouse;
     isSelected?: boolean;
     totalTargetSales?: number;
     actualTargetSales?: number;
@@ -88,6 +91,7 @@ export class Portfolio implements IPortfolio {
             isSelected = false,
             stores = [],
             storePortfolios = [],
+            warehouse = {},
             source = 'fetch',
             totalTargetSales,
             actualTargetSales
@@ -107,6 +111,7 @@ export class Portfolio implements IPortfolio {
         this.actualTargetSales = actualTargetSales;
         this.totalTargetSales = totalTargetSales;
         this.source = source;
+        this.warehouse = !warehouse || Object.keys(warehouse).length === 0 ? warehouse as Warehouse : new Warehouse(warehouse as Warehouse);
 
         this.stores =
             Array.isArray(stores) && stores.length > 0
