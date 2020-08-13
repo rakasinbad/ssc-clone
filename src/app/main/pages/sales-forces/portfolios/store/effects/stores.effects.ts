@@ -135,12 +135,23 @@ export class StoreEffects {
 
         return this.storesService.findStores(newQuery).pipe(
             catchOffline(),
-            switchMap(response =>
-                of(
+            switchMap(response => {
+                return of(
                     StoreActions.fetchStoresSuccess({
                         payload: {
                             stores: queryParams.paginate
-                                ? response.data.map(store => new StorePortfolio({ ...store, storeType: `store-${queryParams['type']}` }))
+                                ? response.data.map(store => {
+                                    if (!store['externalId']) {
+                                        return new StorePortfolio({
+                                            ...store,
+                                            externalId: store['storeCode'],
+                                            storeName: store['name'],
+                                            storeType: `store-${queryParams['type']}`
+                                        });
+                                    }
+
+                                    return new StorePortfolio({ ...store, storeType: `store-${queryParams['type']}` });
+                                })
                                 : ((response as unknown) as Array<StorePortfolio>).map(
                                     store => new StorePortfolio({ ...store, storeType: `store-${queryParams['type']}` })
                                 ),
@@ -149,7 +160,7 @@ export class StoreEffects {
                         }
                     })
                 )
-            ),
+            }),
             catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
         );
     };

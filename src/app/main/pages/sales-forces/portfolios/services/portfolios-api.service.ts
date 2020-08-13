@@ -59,6 +59,10 @@ export class PortfoliosApiService {
         }
 
         if (params['request'] === 'associations') {
+            if (!isNaN(params['invoiceGroupId'])) {
+                newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
+            }
+
             this._url = this.helper$.handleApiRouter(this._associationEndpoint);
         } else {
             this._url = this.helper$.handleApiRouter(this._endpoint);
