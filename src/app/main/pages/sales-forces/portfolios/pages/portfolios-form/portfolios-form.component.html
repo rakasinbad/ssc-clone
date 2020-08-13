@@ -117,13 +117,17 @@
                 <div class="font-weight-600 font-size-24 line-height-20">Find Store</div>
             </div>
 
-            <mat-tab-group class="mb-0" color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
-                <!-- IN PORTFOLIO -->
-                <mat-tab label="In Portfolio"></mat-tab>
+            <mat-tab-group *ngIf="portfolioType === 'group'" class="mb-0 sinbad-white sinbad-mat-tab-group narrow" color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
+                <!-- IN PORTFOLIO / LIST STORE -->
+                <mat-tab  label="In Portfolio"></mat-tab>
                 <!-- / IN PORTFOLIO -->
                 <!-- OUT OF PORTFOLIO -->
                 <mat-tab label="Out Portfolio"></mat-tab>
                 <!-- / OUT OF PORTFOLIO -->
+            </mat-tab-group>
+
+            <mat-tab-group *ngIf="portfolioType === 'direct'" class="mb-0 sinbad-white sinbad-mat-tab-group narrow" color="accent">
+                <mat-tab label="List Store"></mat-tab>
             </mat-tab-group>
 
             <div class="content-card">
