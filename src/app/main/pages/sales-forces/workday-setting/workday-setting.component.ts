@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -7,9 +7,9 @@ import { UiActions } from 'app/shared/store/actions';
 import * as fromRoot from 'app/store/app.reducer';
 
 @Component({
+    selector: 'app-workday-setting',
     templateUrl: './workday-setting.component.html',
     styleUrls: ['./workday-setting.component.scss'],
-    encapsulation: ViewEncapsulation.None,
 })
 export class WorkdaySettingComponent implements OnInit {
     url: SafeResourceUrl;
@@ -28,7 +28,6 @@ export class WorkdaySettingComponent implements OnInit {
     ];
 
     constructor(
-        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private store: Store<fromRoot.State>,
         private storage: StorageMap
@@ -41,13 +40,10 @@ export class WorkdaySettingComponent implements OnInit {
             this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
                 `https://micro-dev.sinbad.web.id/salessetting?token=${data.token}`
             );
-
-            this.cdRef.detectChanges();
         });
     }
 
     onLoad(): void {
         this.isLoading = false;
-        this.cdRef.detectChanges();
     }
 }
