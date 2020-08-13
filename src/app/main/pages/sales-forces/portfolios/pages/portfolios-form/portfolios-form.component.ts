@@ -144,6 +144,12 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         this.updatePortfolioType(portfolio);
 
+        if (portfolio === 'group') {
+            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
+        } else {
+            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'out-portfolio' }));
+        }
+
         // Mengambil data Invoice Group dari state.
         this.dropdownStore
             .select(DropdownSelectors.getInvoiceGroupDropdownState)
@@ -195,9 +201,6 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             })
         );
 
-        // Mengubah tipe store entity menjadi in-portfolio.
-        this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
-
         // Mengatur ulang status form.
         this.portfolioStore.dispatch(FormActions.resetFormStatus());
 
@@ -211,7 +214,11 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     updateSelectedTab(tabId: number): void {
         if (tabId === 0) {
-            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
+            if (this.portfolioType === 'group') {
+                this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
+            } else {
+                this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'out-portfolio' }));
+            }
         } else if (tabId === 1) {
             this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'out-portfolio' }));
         }
