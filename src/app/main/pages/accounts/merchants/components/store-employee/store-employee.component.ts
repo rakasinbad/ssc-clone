@@ -14,7 +14,7 @@ import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { Role } from 'app/shared/models/role.model';
 import { UiActions } from 'app/shared/store/actions';
 import { StoreActions } from '../../store/actions';
-import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
+import { takeUntil, distinctUntilChanged, tap } from 'rxjs/operators';
 import { StoreSelectors } from '../../store/selectors';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
@@ -34,6 +34,8 @@ export class StoreEmployeeComponent implements OnInit, AfterViewInit, OnDestroy 
     
     @Input() supplierStore: SupplierStore;
     private subs$: Subject<void> = new Subject<void>();
+
+    supplierStoreId: string;
 
     displayedColumns = [
         'name',
@@ -61,7 +63,9 @@ export class StoreEmployeeComponent implements OnInit, AfterViewInit, OnDestroy 
         private ngxPermissions: NgxPermissionsService,
         private store: NgRxStore<fromMerchant.FeatureState>,
         private _$notice: NoticeService
-    ) {}
+    ) {
+        this.supplierStoreId = this.route.snapshot.params.id;
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
@@ -129,7 +133,11 @@ export class StoreEmployeeComponent implements OnInit, AfterViewInit, OnDestroy 
         ); */
 
                 this.auth$ = this.store.select(AuthSelectors.getUserState);
-                this.dataSource$ = this.store.select(StoreSelectors.getAllStoreEmployee);
+                this.dataSource$ = this.store.select(
+                    StoreSelectors.getAllStoreEmployee
+                ).pipe(
+                    tap(value => HelperService.debug('[STORE EMPLOYEE] GET ALL STORE EMPLOYEES', value))
+                );
                 this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
                 this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);

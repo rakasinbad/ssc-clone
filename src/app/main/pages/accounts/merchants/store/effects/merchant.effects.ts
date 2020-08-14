@@ -847,10 +847,10 @@ export class MerchantEffects {
                 map((action) => action.payload),
                 withLatestFrom(this.store.select(getParams)),
                 tap(([resp, params]) => {
-                    const { storeId } = params;
+                    const { supplierStoreId } = params;
 
                     this.router
-                        .navigate(['/pages/account/stores', storeId, 'detail'])
+                        .navigate(['/pages/account/stores', supplierStoreId, 'detail'])
                         .finally(() => {
                             this._$notice.open('Data berhasil diupdate', 'success', {
                                 verticalPosition: 'bottom',

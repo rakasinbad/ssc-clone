@@ -30,6 +30,8 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
     // tslint:disable-next-line: no-inferrable-types
     section: string = 'store';
 
+    supplierStoreId: string;
+
     formMode: IFormMode = 'view';
     isLoading$: Observable<boolean>;
     isEditLocation$: Observable<boolean>;
@@ -64,6 +66,8 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
                 // url: '/pages/catalogues'
             },
         ];
+
+        this.supplierStoreId = this.route.snapshot.params.id;
 
         // Memunculkan breadcrumb.
         this.store.dispatch(
