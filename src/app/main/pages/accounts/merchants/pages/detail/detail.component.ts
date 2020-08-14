@@ -53,7 +53,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
             },
             {
                 title: 'Store',
-                translate: 'BREADCRUMBS.CATALOGUE',
+                // translate: 'BREADCRUMBS.CATALOGUE',
                 active: false,
                 // url: '/pages/catalogues'
             },
