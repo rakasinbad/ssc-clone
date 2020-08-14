@@ -141,10 +141,10 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
     }
 
     goEmployeePage(): void {
-        const { storeId } = this.route.snapshot.params;
+        const { supplierStoreId } = this.route.snapshot.params;
 
         this.store.dispatch(StoreActions.goPage({ payload: 'employee' }));
-        this.router.navigate(['/pages/account/stores', storeId, 'detail']);
+        this.router.navigate(['/pages/account/stores', supplierStoreId, 'detail']);
     }
 
     onEdit(isEdit: boolean): void {
