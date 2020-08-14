@@ -113,7 +113,7 @@ const routes: Routes = [
         }
     },
     {
-        path: ':storeId/:id/employee',
+        path: ':supplierStoreId/:storeId/:id/employee',
         component: MerchantEmployeeComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
