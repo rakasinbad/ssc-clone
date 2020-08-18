@@ -18,4 +18,5 @@ export const environment = {
         // 'promo',
         // 'warehouse',
     ],
+    microSiteHost: 'https://micro-stg.sinbad.web.id',
 };
