@@ -5,6 +5,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import * as fromRoot from 'app/store/app.reducer';
+import { environment } from 'environments/environment';
 
 @Component({
     selector: 'app-workday-setting',
@@ -38,7 +39,7 @@ export class WorkdaySettingComponent implements OnInit {
 
         this.storage.get('user').subscribe((data: any) => {
             this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
-                `https://micro-dev.sinbad.web.id/salessetting?token=${data.token}`
+                `${environment.microSiteHost}/salessetting?token=${data.token}`
             );
         });
     }
