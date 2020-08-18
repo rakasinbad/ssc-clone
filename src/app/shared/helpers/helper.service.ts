@@ -451,9 +451,6 @@ export class HelperService {
         let newParams = new HttpParams();
 
         if (params) {
-            if (params.isWaitingForPayment){
-                newParams = newParams.set('is_waiting_for_payment', params.isWaitingForPayment.toString());
-            }
             if (params.paginate) {
                 if (!newParams.has('$limit')) {
                     newParams = !params.limit

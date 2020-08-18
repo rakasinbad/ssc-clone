@@ -42,8 +42,4 @@ export class WorkdaySettingComponent implements OnInit {
             );
         });
     }
-
-    onLoad(): void {
-        this.isLoading = false;
-    }
 }
