@@ -4,14 +4,14 @@
     fxLayoutAlign="start start"
 >
     <!-- "FILTER LIST" BUTTON -->
-    <button
+    <!-- <button
         fxFlex="none"
         mat-flat-button
         color="primary"
         (click)="openFilter()"
     >
         Filter List
-    </button>
+    </button> -->
     <!-- / "FILTER LIST" BUTTON -->
 
     <!-- FILTER LISTS -->
@@ -62,14 +62,14 @@
                 [disableRipple]="true"
                 (selectionChange)="selectedStoreSub$.next($event)"
             >
-                <mat-list-option
+                <!-- <mat-list-option
                     *ngFor="let store of (availableStores$ | async)"
                     [checkboxPosition]="'before'"
                     [value]="store"
                     [selected]="store?.isSelected"
                 >
                     {{ printStoreName(store) }}
-                </mat-list-option>
+                </mat-list-option> -->
 
                 <!-- LOADING OPTION -->
                 <mat-option
@@ -119,7 +119,7 @@
                 [disableRipple]="true"
                 (selectionChange)="selectedStoreSub$.next($event)"
             >
-                <ng-container *ngFor="let store of (selectedStores$ | async)" class="relative">
+                <!-- <ng-container *ngFor="let store of (selectedStores$ | async)" class="relative">
                     <mat-list-option
                         *ngIf="!store?.deletedAt"
                         [class.yellow-800]="!!store.portfolio"
@@ -133,7 +133,7 @@
                     <div class="loader" *ngIf="store?.isLoading">
                         <mat-spinner color="accent"></mat-spinner>
                     </div>
-                </ng-container>
+                </ng-container> -->
             </mat-selection-list>
             <!-- / LIST -->
             <!-- LOADER -->
