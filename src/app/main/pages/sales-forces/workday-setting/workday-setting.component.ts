@@ -13,6 +13,7 @@ import * as fromRoot from 'app/store/app.reducer';
 })
 export class WorkdaySettingComponent implements OnInit {
     url: SafeResourceUrl;
+    isLoading = true;
 
     private readonly breadcrumbs: IBreadcrumbs[] = [
         {
