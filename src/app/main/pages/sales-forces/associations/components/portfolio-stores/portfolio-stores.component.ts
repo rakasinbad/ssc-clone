@@ -13,7 +13,7 @@ import { Store } from 'app/main/pages/accounts/merchants/models';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { Portfolio } from '../../../portfolios/models';
+import { Portfolio, StorePortfolio } from '../../../portfolios/models';
 import { StoreActions } from '../../../portfolios/store/actions';
 import { CoreFeatureState as PortfolioCoreFeatureState } from '../../../portfolios/store/reducers';
 import { StoreSelector } from '../../../portfolios/store/selectors';
@@ -31,7 +31,7 @@ export class PortfolioStoresComponent implements OnInit, OnDestroy {
     private subs$: Subject<void> = new Subject<void>();
 
     // Untuk menyimpan daftar store.
-    stores$: Observable<Array<Store>>;
+    stores$: Observable<Array<StorePortfolio>>;
 
     // Untuk menyimpan nama-nama kolom yang ingin ditampilkan.
     displayedColumns: Array<string> = ['code', 'name', 'segment', 'type'];

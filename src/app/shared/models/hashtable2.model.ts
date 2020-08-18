@@ -36,6 +36,14 @@ export class HashTable2<T> implements IHashTable<T> {
         return Object.keys(this).filter((key) => key !== '__internalId__').length;
     }
 
+    get(id: string): T {
+        if (id === '__internalId__') {
+            return null;
+        }
+
+        return this[id];
+    }
+
     upsert(data: T | Array<T>): void {
         if (!Array.isArray(data)) {
             this[data[this.__internalId__]] = data;
