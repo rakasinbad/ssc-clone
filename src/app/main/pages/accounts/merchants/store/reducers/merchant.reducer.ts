@@ -347,6 +347,10 @@ const brandStoreReducer = createReducer(
         // employees: { ...state.employees, selectedEmployeeId: null },
         errors: adapterError.removeOne('fetchStoreEmployeeFailure', state.errors),
     })),
+    on(StoreActions.resetStoreEdit, (state) => ({
+        ...state,
+        store: null
+    })),
     on(StoreActions.selectSupplierStore, (state, { payload }) => ({
         ...state,
         selectedSupplierStore: payload,

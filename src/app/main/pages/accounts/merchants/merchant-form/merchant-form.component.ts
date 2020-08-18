@@ -730,6 +730,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Reset urban state
         this.store.dispatch(DropdownActions.resetUrbansState());
 
+        // Reset Store Edit
+        this.store.dispatch(StoreActions.resetStoreEdit());
+
         // Reset province state
         // this.store.dispatch(DropdownActions.resetProvinceState());
 
@@ -2154,6 +2157,63 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         return source.filter((r) => String(r.urban).toLowerCase().includes(filterValue));
     }
 
+    private restoreInvoiceGroups(data: Array<InvoiceGroup>): void {
+        if (data && data.length > 0) {
+            for (const [idx, row] of data.entries()) {
+                if (row.id) {
+                    this.tempInvoiceGroupName[idx] = row.name || '-';
+
+                    if (idx > 0) {
+                        this.formCreditLimits.push(
+                            this.formBuilder.group({
+                                allowCreditLimit: false,
+                                id: [''],
+                                creditLimitStoreId: [''],
+                                invoiceGroup: row.id,
+                                creditLimitGroup: [
+                                    {
+                                        value: '',
+                                        disabled: true,
+                                    },
+                                ],
+                                creditLimit: [
+                                    {
+                                        value: '',
+                                        disabled: true,
+                                    },
+                                ],
+                                termOfPayment: [
+                                    {
+                                        value: '',
+                                        disabled: true,
+                                    },
+                                ],
+                            })
+                        );
+                    } else {
+                        this.formCreditLimits.at(idx).get('allowCreditLimit').reset();
+
+                        this.formCreditLimits
+                            .at(idx)
+                            .get('allowCreditLimit')
+                            .patchValue(false);
+
+                        this.formCreditLimits
+                            .at(idx)
+                            .get('invoiceGroup')
+                            .patchValue(row.id);
+
+                        this.formCreditLimits.at(idx).get('creditLimit').reset();
+
+                        this.formCreditLimits.at(idx).get('termOfPayment').reset();
+
+                        this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
+                    }
+                }
+            }
+        }
+    }
+
     private initForm(): void {
         this.tmpOwnerTaxPhoto = new FormControl({ value: '', disabled: true });
         this.tmpIdentityPhoto = new FormControl({ value: '', disabled: true });
@@ -2766,62 +2826,62 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    private restoreInvoiceGroups(data: Array<InvoiceGroup>): void {
-        if (data && data.length > 0) {
-            for (const [idx, row] of data.entries()) {
-                if (row.id) {
-                    this.tempInvoiceGroupName[idx] = row.name || '-';
+    // private restoreInvoiceGroups(data: Array<InvoiceGroup>): void {
+    //     if (data && data.length > 0) {
+    //         for (const [idx, row] of data.entries()) {
+    //             if (row.id) {
+    //                 this.tempInvoiceGroupName[idx] = row.name || '-';
 
-                    if (idx > 0) {
-                        this.formCreditLimits.push(
-                            this.formBuilder.group({
-                                allowCreditLimit: false,
-                                id: [''],
-                                creditLimitStoreId: [''],
-                                invoiceGroup: row.id,
-                                creditLimitGroup: [
-                                    {
-                                        value: '',
-                                        disabled: true,
-                                    },
-                                ],
-                                creditLimit: [
-                                    {
-                                        value: '',
-                                        disabled: true,
-                                    },
-                                ],
-                                termOfPayment: [
-                                    {
-                                        value: '',
-                                        disabled: true,
-                                    },
-                                ],
-                            })
-                        );
-                    } else {
-                        this.formCreditLimits.at(idx).get('allowCreditLimit').reset();
+    //                 if (idx > 0) {
+    //                     this.formCreditLimits.push(
+    //                         this.formBuilder.group({
+    //                             allowCreditLimit: false,
+    //                             id: [''],
+    //                             creditLimitStoreId: [''],
+    //                             invoiceGroup: row.id,
+    //                             creditLimitGroup: [
+    //                                 {
+    //                                     value: '',
+    //                                     disabled: true,
+    //                                 },
+    //                             ],
+    //                             creditLimit: [
+    //                                 {
+    //                                     value: '',
+    //                                     disabled: true,
+    //                                 },
+    //                             ],
+    //                             termOfPayment: [
+    //                                 {
+    //                                     value: '',
+    //                                     disabled: true,
+    //                                 },
+    //                             ],
+    //                         })
+    //                     );
+    //                 } else {
+    //                     this.formCreditLimits.at(idx).get('allowCreditLimit').reset();
 
-                        this.formCreditLimits
-                            .at(idx)
-                            .get('allowCreditLimit')
-                            .patchValue(false);
+    //                     this.formCreditLimits
+    //                         .at(idx)
+    //                         .get('allowCreditLimit')
+    //                         .patchValue(false);
 
-                        this.formCreditLimits
-                            .at(idx)
-                            .get('invoiceGroup')
-                            .patchValue(row.id);
+    //                     this.formCreditLimits
+    //                         .at(idx)
+    //                         .get('invoiceGroup')
+    //                         .patchValue(row.id);
 
-                        this.formCreditLimits.at(idx).get('creditLimit').reset();
+    //                     this.formCreditLimits.at(idx).get('creditLimit').reset();
 
-                        this.formCreditLimits.at(idx).get('termOfPayment').reset();
+    //                     this.formCreditLimits.at(idx).get('termOfPayment').reset();
 
-                        this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
-                    }
-                }
-            }
-        }
-    }
+    //                     this.formCreditLimits.at(idx).get('creditLimitGroup').reset();
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     private restoreFormData(data: SupplierStore): void {
         this.currentStoreId = `Current Store ID: ${data['outerStore']['externalId']}`;
@@ -3353,203 +3413,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             }
         }
-
-        // if (this.pageType === 'new') {
-        //     // this.ngxPermissions.hasPermission();
-        //     this.store
-        //         .select(AuthSelectors.getUserSupplier)
-        //         .pipe(takeUntil(this._unSubs$))
-        //         .subscribe(({ supplierId }) => {
-        //             if (supplierId) {
-                        
-        //             }
-        //         });
-        // }
-
-        // if (this.pageType === 'edit') {
-        //     /* this.store
-        //         .select(BrandStoreSelectors.getEditBrandStore)
-        //         .pipe(takeUntil(this._unSubs$))
-        //         .subscribe(data => {
-        //             if (data) {
-
-        //             } else {
-
-        //             }
-        //         }); */
-
-        //     const { id } = this.route.snapshot.params;
-
-        //     // const createCluser = new FormCluster(body.storeInfo.storeClassification.storeCluster);
-
-        //     // const payload = new FormStoreEdit(
-        //     //     body.storeInfo.storeId.id,
-        //     //     body.storeInfo.storeId.storeName,
-        //     //     body.profileInfo.photos,
-        //     //     body.profileInfo.npwpId,
-        //     //     body.storeInfo.address.notes,
-        //     //     body.profileInfo.phoneNumber,
-        //     //     body.storeInfo.storeClassification.storeType,
-        //     //     body.storeInfo.storeClassification.storeGroup,
-        //     //     body.storeInfo.storeClassification.storeSegment,
-        //     //     body.storeInfo.address.urban,
-        //     //     createCluser,
-        //     //     body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-        //     //     body.storeInfo.physicalStoreInfo.numberOfEmployee,
-        //     //     body.storeInfo.physicalStoreInfo.vehicleAccessibility
-        //     // );
-
-        //     // console.log('SUBMIT UPDATE 1', body);
-        //     // console.log('SUBMIT UPDATE 2', payload);
-
-        //     const newCreditLimit =
-        //         body.storeInfo.payment.creditLimit && body.storeInfo.payment.creditLimit.length > 0
-        //             ? body.storeInfo.payment.creditLimit.map((row) => {
-        //                   return {
-        //                       allowCreditLimit: row.allowCreditLimit,
-        //                       id: row.creditLimitStoreId,
-        //                       invoiceGroupId: row.invoiceGroup,
-        //                       creditLimitGroupId: row.creditLimitGroup,
-        //                       creditLimit: row.creditLimit,
-        //                       termOfPayment: row.termOfPayment,
-        //                   };
-        //               })
-        //             : [];
-
-        //     const urban = body.storeInfo.address.urban as Urban;
-
-        //     const payload = {
-        //         externalId: body.storeInfo.storeId.id,
-        //         name: body.storeInfo.storeId.storeName,
-        //         image: body.profileInfo.photos,
-        //         taxNo: body.profileInfo.npwpId,
-        //         address: body.storeInfo.address.notes,
-        //         longitude: body.storeInfo.address.geolocation.lng,
-        //         latitude: body.storeInfo.address.geolocation.lat,
-        //         phoneNo: body.profileInfo.phoneNumber,
-        //         numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-        //         // storeTypeId: body.storeInfo.storeClassification.storeType,
-        //         // storeGroupId: body.storeInfo.storeClassification.storeGroup,
-        //         type: {
-        //             typeId: body.storeInfo.storeClassification.storeType,
-        //         },
-        //         group: {
-        //             groupId: body.storeInfo.storeClassification.storeGroup,
-        //         },
-        //         channel: {
-        //             clusterId: body.storeInfo.storeClassification.storeChannel,
-        //         },
-        //         cluster: {
-        //             clusterId: body.storeInfo.storeClassification.storeCluster,
-        //         },
-        //         // storeSegmentId: body.storeInfo.storeClassification.storeSegment,
-        //         vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
-        //         urbanId: urban.id,
-        //         user: {
-        //             id: this.userId,
-        //             idNo: body.storeInfo.legalInfo.identityId || '',
-        //             fullName: body.storeInfo.legalInfo.name,
-        //             taxNo: body.storeInfo.legalInfo.npwpId || '',
-        //             idImage: body.storeInfo.legalInfo.identityPhoto,
-        //             selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
-        //             phone: body.profileInfo.phoneNumber,
-        //         },
-        //         // hierarchy: {
-        //         //     hierarchyId: body.storeInfo.storeClassification.hierarchy
-        //         // },
-        //         creditLimit: newCreditLimit,
-        //     };
-
-        //     if (!body.storeInfo.address.geolocation.lng) {
-        //         delete payload.longitude;
-        //     }
-
-        //     if (!body.storeInfo.address.geolocation.lat) {
-        //         delete payload.latitude;
-        //     }
-
-        //     if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
-        //         delete payload.numberOfEmployee;
-        //     }
-
-        //     if (!body.storeInfo.physicalStoreInfo.vehicleAccessibility) {
-        //         delete payload.vehicleAccessibilityId;
-        //     }
-
-        //     if (!body.storeInfo.storeClassification.storeType) {
-        //         delete payload.type;
-        //     }
-
-        //     if (!body.storeInfo.storeClassification.storeGroup) {
-        //         delete payload.group;
-        //     }
-
-        //     if (!body.storeInfo.storeClassification.storeChannel) {
-        //         delete payload.channel;
-        //     }
-
-        //     if (!body.storeInfo.storeClassification.storeCluster) {
-        //         delete payload.cluster;
-        //     }
-
-        //     // if (!body.storeInfo.storeClassification.storeType) {
-        //     //     delete payload.storeTypeId;
-        //     // }
-
-        //     // if (!body.storeInfo.storeClassification.storeGroup) {
-        //     //     delete payload.storeGroupId;
-        //     // }
-
-        //     // if (!body.storeInfo.storeClassification.storeCluster) {
-        //     //     delete payload.cluster;
-        //     // }
-
-        //     // if (!body.storeInfo.storeClassification.storeSegment) {
-        //     //     delete payload.storeSegmentId;
-        //     // }
-
-        //     // if (!body.storeInfo.storeClassification.hierarchy) {
-        //     //     delete payload.hierarchy;
-        //     // }
-
-        //     if (payload.creditLimit && payload.creditLimit.length > 0) {
-        //         for (const [idx, row] of payload.creditLimit.entries()) {
-        //             const allowCredit = payload.creditLimit[idx].allowCreditLimit;
-
-        //             if (
-        //                 (typeof allowCredit === 'boolean' && !allowCredit) ||
-        //                 typeof allowCredit !== 'boolean'
-        //             ) {
-        //                 delete payload.creditLimit[idx];
-        //                 payload.creditLimit[idx] = null;
-        //                 // delete payload.creditLimit[idx].invoiceGroupId;
-        //                 // delete payload.creditLimit[idx].creditLimitGroupId;
-        //                 // delete payload.creditLimit[idx].creditLimit;
-        //                 // delete payload.creditLimit[idx].termOfPayment;
-
-        //                 // payload.creditLimit[idx].creditLimitGroupId = null;
-        //                 // payload.creditLimit[idx].creditLimit = 0;
-        //                 // payload.creditLimit[idx].termOfPayment = 0;
-        //             }
-        //         }
-
-        //         const newPCreditLimit = payload.creditLimit.filter((x) => !!x);
-
-        //         payload.creditLimit = newPCreditLimit;
-
-        //         if (newPCreditLimit && !newPCreditLimit.length) {
-        //             delete payload.creditLimit;
-        //         }
-        //     } else {
-        //         if (payload.creditLimit && !payload.creditLimit.length) {
-        //             delete payload.creditLimit;
-        //         }
-        //     }
-
-        //     this.store.dispatch(
-        //         StoreActions.updateStoreRequest({ payload: { id, body: payload } })
-        //     );
-        // }
     }
 
     private showPhotoUploadProgress(): void {

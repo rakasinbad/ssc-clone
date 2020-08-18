@@ -161,11 +161,10 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/portfolio',
             },
             {
-                id: 'srtarget',
+                id: 'sr-target',
                 title: 'SR Target',
-                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
-                url: '/pages/sales-force/srtarget',
+                url: '/pages/sales-force/sr-target',
             },
             {
                 id: 'association',
@@ -185,7 +184,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Workday Setting',
                 type: 'item',
                 url: '/pages/sales-force/workday-setting',
-            }
+            },
         ],
     },
     {

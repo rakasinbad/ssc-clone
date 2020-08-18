@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 import { Store } from 'app/main/pages/accounts/merchants/models';
 
-import { Filter } from '../../models';
+import { Filter, StorePortfolio } from '../../models';
 import { StoreActions } from '../actions';
 
 // Set reducer's feature key
@@ -10,7 +10,7 @@ export const featureKey = 'stores';
 /**
  * Interface's state.
  */
-export interface State extends EntityState<Store> {
+export interface State extends EntityState<StorePortfolio> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
@@ -24,7 +24,7 @@ export const adapterFilter: EntityAdapter<Filter> = createEntityAdapter<Filter>(
 });
 
 // Entity Adapter for the Entity State.
-export const adapter: EntityAdapter<Store> = createEntityAdapter<Store>({
+export const adapter: EntityAdapter<StorePortfolio> = createEntityAdapter<StorePortfolio>({
     selectId: portfolio => portfolio.id
 });
 
@@ -86,6 +86,7 @@ export const reducer = createReducer(
     on(StoreActions.truncateAllStores, state =>
         adapter.removeAll({
             ...state,
+            total: 0,
             selectedIds: []
         })
     )

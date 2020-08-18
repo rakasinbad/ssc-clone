@@ -75,10 +75,9 @@
         >
             <mat-tab [label]="'All (' + allOrder + ')'"></mat-tab>
             <mat-tab [label]="'New Order (' + newOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Pending Payment (' + pendingPayment + ')'"></mat-tab>
             <mat-tab [label]="'Pending (' + pendingOrder + ')'"></mat-tab>
             <mat-tab [label]="'Packed (' + packedOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Shipped (' + shippedOrder + ')'"></mat-tab>cd
+            <mat-tab [label]="'Shipped (' + shippedOrder + ')'"></mat-tab>
             <mat-tab [label]="'Delivered (' + deliveredOrder + ')'"></mat-tab>
             <mat-tab [label]="'Done (' + completedOrder + ')'"></mat-tab>
             <mat-tab [label]="'Canceled (' + canceledOrder + ')'"></mat-tab>
@@ -224,10 +223,6 @@
 
                                 <ng-container *ngSwitchCase="'confirm'">
                                     New Order
-                                </ng-container>
-
-                                <ng-container *ngSwitchCase="'waiting_for_payment'">
-                                    Pending Payment
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'packing'">

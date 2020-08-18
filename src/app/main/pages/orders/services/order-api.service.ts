@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -23,9 +23,9 @@ export class OrderApiService {
      * @private
      * @memberof OrderApiService
      */
-    private readonly _endpoint = '/payment/v1/order/parcel';
+    private readonly _endpoint = '/order-parcels';
 
-    private readonly _listEndpoint = '/payment/v1/order/oms';
+    private readonly _listEndpoint = '/oms';
 
     /**
      * Creates an instance of OrderApiService.
@@ -39,7 +39,8 @@ export class OrderApiService {
 
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
         const newParam: IQueryParams = {};
-
+        let newParams: HttpParams = null;
+        
         const newArg = supplierId
             ? [
                   {
@@ -50,18 +51,18 @@ export class OrderApiService {
             : [];
 
         if (params['listEndpoint']) {
-            this._url = this._$helper.handleApiRouter(this._listEndpoint);
-
             Object.keys(params).forEach(p => {
                 if (p !== 'listEndpoint') {
                     newParam[p] = params[p];
                 }
             });
+
+            this._url = this._$helper.handleApiRouter(this._listEndpoint);
+            newParams = this._$helper.handleParams(this._url, newParam, ...newArg);
         } else {
             this._url = this._$helper.handleApiRouter(this._endpoint);
+            newParams = this._$helper.handleParams(this._url, params, ...newArg);
         }
-
-        const newParams = this._$helper.handleParams(this._url, newParam, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
     }

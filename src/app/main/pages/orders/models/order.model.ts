@@ -7,5 +7,4 @@ export interface IStatusOMS {
     totalCompletedOrder: string;
     totalPendingOrder: string;
     totalCanceledOrder: string;
-    totalPayNowPendingPayment: number;
 }
