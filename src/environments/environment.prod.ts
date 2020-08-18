@@ -16,4 +16,5 @@ export const environment = {
         'dashboard',
         'period-target-promo', // Period Target Promo
     ],
+    microSiteHost: 'https://micro.sinbad.web.id',
 };
