@@ -19,6 +19,7 @@ export const environment = {
     pageSizeTable: [5, 10, 25, 50, 100],
     host: 'https://kong-dev.sinbad.web.id',
     hiddenMenu: [],
+    microSiteHost: 'https://micro-dev.sinbad.web.id',
 };
 
 /*
