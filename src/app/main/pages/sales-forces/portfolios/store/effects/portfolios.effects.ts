@@ -456,23 +456,23 @@ export class PortfoliosEffects {
     processPortfolioStoresRequest = (queryParams: IQueryParams): Observable<AnyAction> => {
         return this.portfoliosService.findPortfolioStores(queryParams).pipe(
             catchOffline(),
-            switchMap(response => {
-                return of(
+            switchMap(response =>
+                of(
                     PortfolioActions.fetchPortfolioStoresSuccess({
                         payload: {
                             stores: queryParams.paginate
                                 ? response.data.map(store => new Store(store))
                                 : ((response as unknown) as Array<Store>).map(
-                                    store => new Store(store)
-                                ),
+                                      store => new Store(store)
+                                  ),
                             total: queryParams.paginate
                                 ? response.total
                                 : ((response as unknown) as Array<Store>).length,
                             source: 'fetch'
                         }
                     })
-                );
-            }),
+                )
+            ),
             catchError(err => this.sendErrorToState(err, 'fetchPortfolioStoresFailure'))
         );
     };

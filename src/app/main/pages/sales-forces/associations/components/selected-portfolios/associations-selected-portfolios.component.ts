@@ -267,7 +267,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     }
 
     showStore(portfolio: Portfolio): void {
-        const query: IQueryParams = { paginate: true, limit: 50, skip: 0 };
+        const query: IQueryParams = { paginate: false, limit: 100, skip: 0 };
         query['portfolioId'] = portfolio.id;
         query['noSupplierId'] = true;
 
@@ -279,10 +279,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
 
         this.matDialog.open(PortfolioStoresComponent, {
             data: portfolio,
-            width: '100vw',
-            height: '650px',
-            minHeight: '650px',
-            maxHeight: '650px',
+            width: '100vw'
         });
     }
 

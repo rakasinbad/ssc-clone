@@ -73,10 +73,6 @@ export class AssociationApiService {
             });
         }
 
-        if (!isNaN(params['invoiceGroupId'])) {
-            newArg.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
-        }
-
         if (params['type']) {
             newArg.push({
                 key: 'type',

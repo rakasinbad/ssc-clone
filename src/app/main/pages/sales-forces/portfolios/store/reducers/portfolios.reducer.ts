@@ -5,7 +5,6 @@ import { environment } from 'environments/environment';
 
 import { Portfolio } from '../../models/portfolios.model';
 import { PortfolioActions } from '../actions';
-import { Warehouse } from '../../models';
 
 // Set reducer's feature key
 export const featureKey = 'portfolios';
@@ -27,7 +26,6 @@ interface PortfolioStoreState extends EntityState<Store> {
     isLoading: boolean;
     needRefresh: boolean;
     total: number;
-    lastFetch: string;
 }
 
 export const adapterPortfolioStore: EntityAdapter<Store> = createEntityAdapter<Store>({
@@ -38,7 +36,6 @@ export const adapterPortfolioStore: EntityAdapter<Store> = createEntityAdapter<S
 const initialPortfolioStoreState = adapterPortfolioStore.getInitialState({
     isLoading: false,
     needRefresh: false,
-    lastFetch: null,
     total: 0,
     limit: environment.pageSize,
     skip: 0,
@@ -53,7 +50,6 @@ export interface State extends EntityState<Portfolio> {
     needRefresh: boolean;
     selectedIds: Array<string>;
     selectedInvoiceGroupId: string;
-    selectedWarehouse: Warehouse;
     urlExport: string;
     search: string;
     stores: PortfolioStoreState;
@@ -74,7 +70,6 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     needRefresh: false,
     selectedIds: [],
     selectedInvoiceGroupId: null,
-    selectedWarehouse: null,
     urlExport: null,
     search: null,
     stores: initialPortfolioStoreState,
@@ -136,8 +131,7 @@ export const reducer = createReducer(
         ...state,
         stores: {
             ...state.stores,
-            isLoading: true,
-            lastFetch: new Date().toISOString()
+            isLoading: true
         }
     })),
     on(PortfolioActions.fetchPortfolioStoresSuccess, (state, { payload }) => ({
@@ -145,7 +139,6 @@ export const reducer = createReducer(
         stores: adapterPortfolioStore.addAll(payload.stores, {
             ...state.stores,
             isLoading: false,
-            lastFetch: new Date().toISOString(),
             total: payload.total
         })
     })),
@@ -156,14 +149,6 @@ export const reducer = createReducer(
     on(PortfolioActions.resetSelectedInvoiceGroupId, state => ({
         ...state,
         selectedInvoiceGroupId: null
-    })),
-    on(PortfolioActions.selectWarehouse, (state, { warehouse }) => ({
-        ...state,
-        selectedWarehouse: warehouse
-    })),
-    on(PortfolioActions.resetSelectedWarehouse, (state) => ({
-        ...state,
-        selectedWarehouse: null
     })),
     on(PortfolioActions.setPortfolioEntityType, (state, { payload }) => ({
         ...state,

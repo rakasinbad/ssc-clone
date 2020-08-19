@@ -54,15 +54,11 @@ export class PortfoliosApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (!isNaN(params['warehouseId'])) {
-            newArgs.push({ key: 'warehouseId', value: params['warehouseId'] });
+        if (!isNaN(params['invoiceGroupId'])) {
+            newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
         }
 
         if (params['request'] === 'associations') {
-            if (!isNaN(params['invoiceGroupId'])) {
-                newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
-            }
-
             this._url = this.helper$.handleApiRouter(this._associationEndpoint);
         } else {
             this._url = this.helper$.handleApiRouter(this._endpoint);

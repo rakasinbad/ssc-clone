@@ -5,23 +5,19 @@ import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
 import { IPortfolioAddForm, Portfolio } from '../../models/portfolios.model';
-import { Warehouse } from '../../models';
 
 export type requestActionNames =
     | 'exportPortfoliosRequest'
     | 'fetchPortfolioRequest'
-    | 'fetchPortfoliosRequest'
-    | 'fetchPortfolioStoresRequest'
-;
+    | 'fetchPortfoliosRequest';
 
 export type failureActionNames =
     | 'createPortfolioFailure'
+    | 'patchPortfolioFailure'
     | 'exportPortfoliosFailure'
     | 'fetchPortfolioFailure'
     | 'fetchPortfoliosFailure'
-    | 'fetchPortfolioStoresFailure'
-    | 'patchPortfolioFailure'
-;
+    | 'fetchPortfolioStoresFailure';
 
 /** PORTFOLIO */
 export const fetchPortfolioRequest = createAction(
@@ -180,13 +176,6 @@ export const setSelectedInvoiceGroupId = createAction(
 export const resetSelectedInvoiceGroupId = createAction(
     '[Portfolios Page] Reset Selected Invoice Group ID'
 );
-
-export const selectWarehouse = createAction(
-    '[Portfolios Page] Select Warehouse',
-    props<{ warehouse: Warehouse }>()
-);
-
-export const resetSelectedWarehouse = createAction('[Portfolios Page] Reset Selected Warehouse');
 
 export const confirmRemoveAllSelectedStores = createAction(
     '[Portfolios Page] Confirm to Remove All Selected Stores'

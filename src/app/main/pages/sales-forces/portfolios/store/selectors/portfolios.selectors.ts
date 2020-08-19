@@ -31,11 +31,6 @@ export const getSelectedInvoiceGroupId = createSelector(
     state => state.selectedInvoiceGroupId
 );
 
-export const getSelectedWarehouse = createSelector(
-    getPortfolioEntity,
-    state => state.selectedWarehouse
-);
-
 export const getTotalPortfolios = createSelector(getPortfolioEntity, state => state.total);
 
 export const getAllPortfolios = createSelector(getPortfolioEntity, selectAllPortfolios);

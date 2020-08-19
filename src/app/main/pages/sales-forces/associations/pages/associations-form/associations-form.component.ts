@@ -714,12 +714,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                 // tslint:disable-next-line: max-line-length
                 tap(() =>
                     this.debug(
-                        `combineLatest([
-                            this.salesRepForm$,
-                            this.invoiceGroupForm$,
-                            this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),
-                            this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),
-                        ])`
+                        'combineLatest([this.salesRepForm$,this.invoiceGroupForm$,this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),])'
                     )
                 ),
                 filter(([salesRep, invoiceGroup]) => {
@@ -788,7 +783,6 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                         associatedPortfolioGroupQuery['userId'] = salesRep.userId;
                         // associatedPortfolioGroupQuery['combined'] = true;
                         associatedPortfolioGroupQuery['associated'] = false;
-                        associatedPortfolioGroupQuery['invoiceGroupId'] = invoiceGroup.id;
 
                         this.associationStore.dispatch(
                             AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({

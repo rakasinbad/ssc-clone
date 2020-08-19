@@ -21,7 +21,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p>
-                    {{ row?.externalId || '-' }}
+                    {{ row?.storeCode || '-' }}
                 </p>
             </mat-cell>
         </ng-container>
@@ -32,7 +32,7 @@
                 Store Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p>{{ row?.storeName || '(no name)' }}</p>
+                <p>{{ row?.name || '(no name)' }}</p>
             </mat-cell>
         </ng-container>
 
@@ -42,7 +42,7 @@
                 Origin Portfolio Code
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p class="word-wrap">{{ row?.portfolioCode || '-' }}</p>
+                <p class="word-wrap">{{ row?.portfolio?.code || '-' }}</p>
             </mat-cell>
         </ng-container>
 
@@ -52,7 +52,7 @@
                 Origin Portfolio Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p class="word-wrap">{{ row?.portfolioName || '(no name)' }}</p>
+                <p class="word-wrap">{{ row?.portfolio?.name || '(no name)' }}</p>
             </mat-cell>
         </ng-container>
 

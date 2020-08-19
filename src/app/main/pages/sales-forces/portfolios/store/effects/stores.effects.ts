@@ -18,7 +18,6 @@ import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/ope
 import { StoresApiService } from '../../services';
 import { PortfolioActions, portfolioFailureActionNames, StoreActions } from '../actions';
 import { CoreFeatureState } from '../reducers';
-import { StorePortfolio } from '../../models';
 
 type AnyAction = { payload: any } & TypedAction<any>;
 
@@ -68,51 +67,51 @@ export class StoreEffects {
         )
     );
 
-    // checkStoreAtInvoiceGroupRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(StoreActions.checkStoreAtInvoiceGroupRequest),
-    //         map(action => action.payload),
-    //         switchMap<{ storeId: string; invoiceGroupId: string }, Observable<AnyAction>>(payload =>
-    //             this.checkStoreAtInvoiceGroup(payload.storeId, payload.invoiceGroupId)
-    //         ),
-    //         catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
-    //     )
-    // );
+    checkStoreAtInvoiceGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.checkStoreAtInvoiceGroupRequest),
+            map(action => action.payload),
+            switchMap<{ storeId: string; invoiceGroupId: string }, Observable<AnyAction>>(payload =>
+                this.checkStoreAtInvoiceGroup(payload.storeId, payload.invoiceGroupId)
+            ),
+            catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
+        )
+    );
 
-    // checkStoreAtInvoiceGroupSuccess$ = createEffect(
-    //     () =>
-    //         this.actions$.pipe(
-    //             ofType(StoreActions.checkStoreAtInvoiceGroupSuccess),
-    //             map(action => action.payload),
-    //             tap(({ portfolioId, code, name, storeId }) => {
-    //                 this.portfolioStore.dispatch(
-    //                     PortfolioActions.updateStore({
-    //                         payload: {
-    //                             id: storeId,
-    //                             changes: {
-    //                                 portfolio: portfolioId ? { code, name, id: portfolioId } : null
-    //                             }
-    //                         }
-    //                     })
-    //                 );
-    //             })
-    //         ),
-    //     { dispatch: false }
-    // );
+    checkStoreAtInvoiceGroupSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.checkStoreAtInvoiceGroupSuccess),
+                map(action => action.payload),
+                tap(({ portfolioId, code, name, storeId }) => {
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.updateStore({
+                            payload: {
+                                id: storeId,
+                                changes: {
+                                    portfolio: portfolioId ? { code, name, id: portfolioId } : null
+                                }
+                            }
+                        })
+                    );
+                })
+            ),
+        { dispatch: false }
+    );
 
-    // checkStoreAtInvoiceGroup = (storeId: string, invoiceGroupId: string): Observable<AnyAction> => {
-    //     return this.storesService.checkStoreAtInvoiceGroup(storeId, invoiceGroupId).pipe(
-    //         catchOffline(),
-    //         switchMap(response =>
-    //             of(
-    //                 StoreActions.checkStoreAtInvoiceGroupSuccess({
-    //                     payload: { ...response, storeId }
-    //                 })
-    //             )
-    //         ),
-    //         catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
-    //     );
-    // };
+    checkStoreAtInvoiceGroup = (storeId: string, invoiceGroupId: string): Observable<AnyAction> => {
+        return this.storesService.checkStoreAtInvoiceGroup(storeId, invoiceGroupId).pipe(
+            catchOffline(),
+            switchMap(response =>
+                of(
+                    StoreActions.checkStoreAtInvoiceGroupSuccess({
+                        payload: { ...response, storeId }
+                    })
+                )
+            ),
+            catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
+        );
+    };
 
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
@@ -127,7 +126,9 @@ export class StoreEffects {
         return userData;
     };
 
-    processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<
+        AnyAction
+    > => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
@@ -135,32 +136,21 @@ export class StoreEffects {
 
         return this.storesService.findStores(newQuery).pipe(
             catchOffline(),
-            switchMap(response => {
-                return of(
+            switchMap(response =>
+                of(
                     StoreActions.fetchStoresSuccess({
                         payload: {
                             stores: queryParams.paginate
-                                ? response.data.map(store => {
-                                    if (!store['externalId']) {
-                                        return new StorePortfolio({
-                                            ...store,
-                                            externalId: store['storeCode'],
-                                            storeName: store['name'],
-                                            storeType: `store-${queryParams['type']}`
-                                        });
-                                    }
-
-                                    return new StorePortfolio({ ...store, storeType: `store-${queryParams['type']}` });
-                                })
-                                : ((response as unknown) as Array<StorePortfolio>).map(
-                                    store => new StorePortfolio({ ...store, storeType: `store-${queryParams['type']}` })
-                                ),
+                                ? response.data.map(store => new Store(store))
+                                : ((response as unknown) as Array<Store>).map(
+                                      store => new Store(store)
+                                  ),
                             total: response.total,
                             source: 'fetch'
                         }
                     })
                 )
-            }),
+            ),
             catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
         );
     };

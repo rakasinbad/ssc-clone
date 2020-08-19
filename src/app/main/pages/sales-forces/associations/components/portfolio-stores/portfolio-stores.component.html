@@ -16,8 +16,9 @@
 <mat-dialog-content class="mat-typography">
     <mat-table
         matSort
-        class="my-40 h-400 grey-300-border stores-table"
-        style="flex: 1 1 auto; border: 1px solid; border-radius: 4px; overflow: auto; -webkit-overflow-scrolling: touch; background: #fafafa !important;"
+        class="my-40 grey-300-border stores-table"
+        [style.border]="'1px solid'"
+        [style.border-radius]="'4px'"
         [dataSource]="(stores$ | async)"
         [@animateStagger]="{ value: '50' }"
         fusePerfectScrollbar
@@ -40,7 +41,7 @@
                 Store Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p>{{ row?.storeName || '(no name)' }}</p>
+                <p>{{ row?.name || '(no name)' }}</p>
             </mat-cell>
         </ng-container>
 
@@ -64,16 +65,9 @@
             </mat-cell>
         </ng-container>
 
-        <mat-header-row
-            *matHeaderRowDef="displayedColumns; sticky: true"
-            style="background: white; height: 40px !important; min-height: 40px !important; max-height: 40px !important;"
-        ></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-        <mat-row
-            class="pt-12"
-            style="background: white; height: 40px !important; min-height: 40px !important; max-height: 40px !important;"
-            *matRowDef="let row; columns: displayedColumns"
-        ></mat-row>
+        <mat-row class="pt-12" *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
 </mat-dialog-content>
 

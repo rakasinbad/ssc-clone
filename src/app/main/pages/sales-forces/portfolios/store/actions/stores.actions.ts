@@ -1,8 +1,9 @@
 import { createAction, props } from '@ngrx/store';
+import { Store } from 'app/main/pages/accounts/merchants/models';
 import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { Filter, StorePortfolio } from '../../models';
+import { Filter } from '../../models';
 
 export type requestActionNames = 'fetchStoresRequest';
 
@@ -34,7 +35,7 @@ export const fetchStoresFailure = createAction(
 
 export const fetchStoresSuccess = createAction(
     '[Portfolios API] Fetch Stores Success',
-    props<{ payload: { stores?: Array<StorePortfolio>; source: TSource; total?: number } }>()
+    props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()
 );
 
 export const checkStoreAtInvoiceGroupRequest = createAction(
@@ -67,7 +68,7 @@ export const setStoreEntityType = createAction(
 
 export const addSelectedStores = createAction(
     '[Portfolios Page] Add Selected Stores',
-    props<{ payload: Array<StorePortfolio> }>()
+    props<{ payload: Array<Store> }>()
 );
 
 export const removeSelectedStores = createAction(

@@ -32,7 +32,7 @@ const routes: Routes = [
         }
     },
     {
-        path: ':portfolio/add',
+        path: 'add',
         component: PortfoliosFormComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {

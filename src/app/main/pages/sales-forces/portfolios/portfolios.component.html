@@ -3,15 +3,7 @@
     <div class="center p-8" fxLayout="column" fxLayoutGap="20px">
         <!-- TABLES -->
         <div class="content-card">
-            <sinbad-card-header [config]="cardHeaderConfig">
-                <div class="h-32" fxLayout="row" fxLayout="start center" fxLayoutGap="16px" first-bottom-left>
-                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red" [routerLink]="'/pages/sales-force/portfolio/group/add'">Add Group</button>
-                    <button fxFlexAlign="center" mat-flat-button class="h-32 sinbad-red" [routerLink]="'/pages/sales-force/portfolio/direct/add'">Add Direct</button>
-                    <span fxFlexAlign="center">
-                        <a (click)="openPortfolioExplanation()" class="sinbad-red-fg" style="cursor: pointer;">What is this?</a>
-                    </span>
-                </div>
-            </sinbad-card-header>
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table class="portfolios-table grey-300-border mx-12" #table [dataSource]="portfolios" matSort
                 [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
@@ -115,47 +107,3 @@
     </div>
     <!-- / CONTENT -->
 </div>
-
-<ng-template #portfolioExplanation>
-    <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="32px" fxFlex>
-        <!-- Group -->
-        <div class="ml-16" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-            <!-- TITLE -->
-            <p class="text-semibold">
-                Group
-            </p>
-            <!-- / TITLE -->
-            <!-- DESCRIPTION -->
-            <p>
-                Preset your portfolio with stores in it.
-                You can create connection between sales rep and stores through portfolio group.
-            </p>
-            <!-- / DESCRIPTION -->
-            <!-- ILLUSTRATION -->
-            <div class="p-8 text-center sinbad-black-10-border" style="border: 1px solid; border-radius: 4px;" fxFlex>
-                <img class="w-85-p h-85-p" src="assets/images/sales-force/portfolios/group_portfolio.png" />
-            </div>
-            <!-- / ILLUSTRATION -->
-        </div>
-        <!-- / Group -->
-        <!-- Direct -->
-        <div class="mr-16" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-            <!-- TITLE -->
-            <p class="text-semibold">
-                Direct
-            </p>
-            <!-- / TITLE -->
-            <!-- DESCRIPTION -->
-            <p>
-                Create portfolio (platform), so the salesman can only create toko in restricted area.
-            </p>
-            <!-- / DESCRIPTION -->
-            <!-- ILLUSTRATION -->
-            <div class="p-8 text-center sinbad-black-10-border" style="border: 1px solid; border-radius: 4px;" fxFlex>
-                <img class="mt-24 w-85-p h-85-p" src="assets/images/sales-force/portfolios/direct_portfolio.png" />
-            </div>
-            <!-- / ILLUSTRATION -->
-        </div>
-        <!-- / Direct -->
-    </div>
-</ng-template>
