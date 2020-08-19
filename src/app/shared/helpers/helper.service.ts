@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { ElementRef, Inject, Injectable } from '@angular/core';
 import { MatSnackBarConfig } from '@angular/material';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -21,6 +21,7 @@ import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import * as moment from 'moment';
+import { IHeaderRequest } from '../models/header.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -434,10 +435,25 @@ export class HelperService {
         return `${HelperService._host}${endpoint}`;
     }
 
+    handleHeaders(queryParams: IQueryParams): HttpHeaders {
+        let newHeaders = new HttpHeaders();
+
+        if (queryParams['headers']) {
+            for (const key of Object.keys(queryParams['headers'])) {
+                newHeaders = newHeaders.set(key, queryParams['headers'][key]);
+            }
+        }
+
+        return newHeaders;
+    }
+
     handleParams(url: string, params: IQueryParams, ...args): HttpParams {
         let newParams = new HttpParams();
 
         if (params) {
+            if (params.isWaitingForPayment){
+                newParams = newParams.set('is_waiting_for_payment', params.isWaitingForPayment.toString());
+            }
             if (params.paginate) {
                 if (!newParams.has('$limit')) {
                     newParams = !params.limit
@@ -512,7 +528,7 @@ export class HelperService {
 
         if (args && args.length > 0) {
             args.forEach((arg) => {
-                if (arg.key && arg.value) {
+                if (arg.key && arg.key !== 'headers' && arg.value) {
                     newParams = newParams.append(arg.key, arg.value);
                 } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
                     newParams = newParams.append(arg.key, '');
