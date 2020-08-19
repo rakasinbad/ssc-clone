@@ -27,6 +27,7 @@ import { SearchBarModule } from './search-bar/search-bar.module';
 import { SelectionTreeModule } from './selection-tree/selection-tree/selection-tree.module';
 import { StoreSegmentationTreeModule } from './selection-tree/store-segmentation/store-segmentation.module';
 import { SinbadFilterModule } from './sinbad-filter/sinbad-filter.module';
+import { SingleWarehouseDropdownModule } from './dropdowns/single-warehouse/single-warehouse.module';
 
 @NgModule({
     imports: [
@@ -56,6 +57,7 @@ import { SinbadFilterModule } from './sinbad-filter/sinbad-filter.module';
         StoreSegmentationDropdownModule,
         BrandsDropdownModule,
         FakturDropdownModule,
+        SingleWarehouseDropdownModule,
 
         // Global filter sidebar
         SinbadFilterModule,
@@ -86,6 +88,7 @@ import { SinbadFilterModule } from './sinbad-filter/sinbad-filter.module';
         StoreSegmentationDropdownModule,
         BrandsDropdownModule,
         FakturDropdownModule,
+        SingleWarehouseDropdownModule,
 
         // Global filter sidebar
         SinbadFilterModule,
