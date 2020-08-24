@@ -5,6 +5,8 @@ import { HelperService } from 'app/shared/helpers';
 import { IPaginatedResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
+import { IHeaderRequest } from 'app/shared/models/header.model';
+import { StorePortfolio } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -17,13 +19,20 @@ export class StoresApiService {
 
     constructor(private http: HttpClient, private helper$: HelperService) {}
 
-    findStores(params: IQueryParams): Observable<IPaginatedResponse<Store>> {
+    findStores(params: IQueryParams): Observable<IPaginatedResponse<StorePortfolio>> {
         const newArgs = [];
 
         if (!isNaN(params['portfolioId'])) {
             newArgs.push({
                 key: 'portfolioId',
                 value: params['portfolioId']
+            });
+        }
+
+        if (params['keyword']) {
+            newArgs.push({
+                key: 'keyword',
+                value: params['keyword']
             });
         }
 
@@ -44,10 +53,10 @@ export class StoresApiService {
                     break;
             }
 
-            if (!isNaN(params['invoiceGroupId'])) {
+            if (!isNaN(params['warehouseId'])) {
                 newArgs.push({
-                    key: 'invoiceGroupId',
-                    value: params['invoiceGroupId']
+                    key: 'warehouseId',
+                    value: params['warehouseId']
                 });
             }
 
@@ -77,21 +86,31 @@ export class StoresApiService {
             this._url = this.helper$.handleApiRouter(this._storeEndpoint);
         }
 
+        const newHeaders = this.helper$.handleHeaders(params);
+
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 
-        return this.http.get<IPaginatedResponse<Store>>(this._url, { params: newParams });
+        return this.http.get<IPaginatedResponse<StorePortfolio>>(this._url, { params: newParams, headers: newHeaders });
     }
 
-    checkStoreAtInvoiceGroup(
-        storeId: string,
-        invoiceGroupId: string
+    isStoreAtPortfolio(
+        storeId: number,
+        warehouseId: number,
+        invoiceGroupId?: number
     ): Observable<{ message: string; portfolioId?: string; name?: string; code?: string }> {
         this._url = this.helper$.handleApiRouter(this._storePortfolioListsEndpoint);
+
+        const payload = { storeId, warehouseId };
+
+        if (invoiceGroupId) {
+            payload['invoiceGroupId'] = invoiceGroupId;
+        }
+
         return this.http.post<{
             message: string;
             portfolioId?: string;
             name?: string;
             code?: string;
-        }>(this._url, { storeId, invoiceGroupId });
+        }>(this._url, payload);
     }
 }

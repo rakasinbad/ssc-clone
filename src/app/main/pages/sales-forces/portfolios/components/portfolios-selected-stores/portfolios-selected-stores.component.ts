@@ -32,7 +32,7 @@ import {
     withLatestFrom
 } from 'rxjs/operators';
 
-import { Filter } from '../../models';
+import { Filter, Warehouse, StorePortfolio } from '../../models';
 import { PortfolioActions, StoreActions } from '../../store/actions';
 import { CoreFeatureState } from '../../store/reducers';
 import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../store/selectors';
@@ -56,9 +56,9 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     search: FormControl = new FormControl('');
 
     // Untuk menyimpan daftar toko yang tersedia untuk dipilih.
-    availableStores$: Observable<Array<Store>>;
+    availableStores$: Observable<Array<StorePortfolio>>;
     // Untuk menyimpan daftar toko, baik calon untuk portofolio maupun yang sudah menjadi bagian portofolio.
-    selectedStores$: Observable<Array<Store>>;
+    selectedStores$: Observable<Array<StorePortfolio>>;
     // Untuk menyimpan filter pencarian toko yang sedang aktif.
     filters$: Observable<Array<Filter>>;
     // Untuk menyimpan jumlah toko yang tersedia.
@@ -199,7 +199,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     private requestStore(
         filters: Array<Filter>,
         storeType?: string,
-        invoiceGroupId?: string,
+        warehouseId?: string,
         skip?: number
     ): void {
         const data: IQueryParams = { paginate: true, limit: 20, skip: !skip ? 0 : skip };
@@ -226,7 +226,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             data['type'] = storeType;
         }
 
-        data['invoiceGroupId'] = invoiceGroupId;
+        data['warehouseId'] = warehouseId;
 
         this.shopStore.dispatch(
             StoreActions.fetchStoresRequest({
@@ -239,19 +239,8 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         return store;
     }
 
-    showTooltip(store: Store): string | null {
-        const storeName = `${store.storeCode || '-'} - ${store.name || '-'}`;
-        const isTruncated = this.printStoreName(store).endsWith('...');
-
-        if (isTruncated) {
-            return storeName;
-        }
-
-        return null;
-    }
-
-    printStoreName(store: Store): string {
-        const storeName = `${store.externalId || '-'} - ${store.name || '-'}`;
+    printStoreName(store: StorePortfolio): string {
+        const storeName = `${store.externalId || '-'} - ${store.storeName || '-'}`;
 
         // if (this.screenWidth <= 1280) {
         //     return HelperService.truncateText(storeName, 35, 'end');
@@ -284,11 +273,11 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         this.portfolioStore.dispatch(PortfolioActions.confirmRemoveAllSelectedStores());
     }
 
-    checkSelectedInvoiceGroupId(invoiceGroupId: string): boolean {
+    checkSelectedWarehouse(warehouse: Warehouse): boolean {
         // Hanya meneruskan observable ini jika sudah memilih Invoice Group.
-        if (!invoiceGroupId) {
+        if (!warehouse) {
             this.noticeSvc.open(
-                'Please select one of Invoice Group to view available stores.',
+                'Please select one of Warehouse to view available stores.',
                 'info',
                 {
                     horizontalPosition: 'right',
@@ -314,76 +303,76 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         this.filters$ = combineLatest([
             this.shopStore.select(StoreSelector.getAllFilters),
             this.shopStore.select(StoreSelector.getStoreEntityType),
-            this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
+            this.portfolioStore.select(PortfolioSelector.getSelectedWarehouse)
         ]).pipe(
             tap(() => this.shopStore.dispatch(StoreActions.truncateAllStores())),
-            map(([filters, type, invoiceGroupId]) => ({
+            map(([filters, type, warehouse]) => ({
                 filters,
                 type: type === 'all' ? 'in-portfolio' : type,
-                invoiceGroupId
+                warehouse
             })),
-            filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
-            tap(({ filters, type, invoiceGroupId }) =>
-                this.requestStore(filters, type, invoiceGroupId)
+            filter(({ warehouse }) => this.checkSelectedWarehouse(warehouse)),
+            tap(({ filters, type, warehouse }) =>
+                this.requestStore(filters, type, warehouse.id)
             ),
             map(({ filters }) => filters),
             takeUntil(this.subs$)
         );
 
         // TODO: Menampilkan toko yang sudah terasosiasi atau akan terasosiasi.
-        this.selectedStores$ = combineLatest([
-            this.portfolioStore.select(PortfolioStoreSelector.getAllPortfolioStores),
-            this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStores)
-        ]).pipe(
-            tap(() => this.debug('SELECTED STORES CHECK', {})),
-            map<Array<Array<Store>>, Array<Store>>(([portfolioStore, selectedStore]) => {
-                // Mendapatkan ID store dari store-nya portfolio.
-                const portfolioStoreIds = portfolioStore.map(pStore => pStore.id);
-                // Mendapatkan ID store dari store yang terpilih.
-                const selectedStoreIds = selectedStore.map(sStore => sStore.id);
-                // Menggabungkan store dari store-nya portfolio dengan store yang terpilih.
-                const mergedStores = selectedStore.concat(portfolioStore);
+        // this.selectedStores$ = combineLatest([
+        //     this.portfolioStore.select(PortfolioStoreSelector.getAllPortfolioStores),
+        //     this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStores)
+        // ]).pipe(
+        //     tap(() => this.debug('SELECTED STORES CHECK', {})),
+        //     map<Array<Array<Store>>, Array<Store>>(([portfolioStore, selectedStore]) => {
+        //         // Mendapatkan ID store dari store-nya portfolio.
+        //         const portfolioStoreIds = portfolioStore.map(pStore => pStore.id);
+        //         // Mendapatkan ID store dari store yang terpilih.
+        //         const selectedStoreIds = selectedStore.map(sStore => sStore.id);
+        //         // Menggabungkan store dari store-nya portfolio dengan store yang terpilih.
+        //         const mergedStores = selectedStore.concat(portfolioStore);
 
-                return mergedStores.map(store => {
-                    const newStore = new Store(store);
+        //         return mergedStores.map(store => {
+        //             const newStore = new Store(store);
 
-                    if (portfolioStoreIds.includes(store.id)) {
-                        newStore.setSource = 'list';
-                    } else if (selectedStoreIds.includes(store.id)) {
-                        newStore.setSource = 'fetch';
-                    }
+        //             if (portfolioStoreIds.includes(store.id)) {
+        //                 newStore.setSource = 'list';
+        //             } else if (selectedStoreIds.includes(store.id)) {
+        //                 newStore.setSource = 'fetch';
+        //             }
 
-                    return newStore;
-                });
-                // .sort((a, b) => (+a.id) - (+b.id));
+        //             return newStore;
+        //         });
+        //         // .sort((a, b) => (+a.id) - (+b.id));
 
-                // selectedStore.concat(portfolioStore.map(store => {
-                //     const newStore = new Store(store);
-                //     newStore.setSource = 'list';
+        //         // selectedStore.concat(portfolioStore.map(store => {
+        //         //     const newStore = new Store(store);
+        //         //     newStore.setSource = 'list';
 
-                //     return newStore;
-                // }))
-            }),
-            // withLatestFrom(this.shopStore.select(StoreSelector.getSelectedStoreIds)),
-            // map<[Array<Store>, Array<string>], Array<Store>>(([portfolioStores, listStoreIds]) => {
-            //     const newPortfolioStore = portfolioStores
-            //                                 // Hanya mengambil toko yang bukan sebagai calon toko baru untuk portfolio dan tidak ditandai untuk dihapus.
-            //                                 .filter(portfolioStore => !listStoreIds.includes(portfolioStore.id) && !portfolioStore.deletedAt)
-            //                                 .map(store => {
-            //                                     const newStore = new Store(store);
-            //                                     newStore.setSelectedStore = true;
+        //         //     return newStore;
+        //         // }))
+        //     }),
+        //     // withLatestFrom(this.shopStore.select(StoreSelector.getSelectedStoreIds)),
+        //     // map<[Array<Store>, Array<string>], Array<Store>>(([portfolioStores, listStoreIds]) => {
+        //     //     const newPortfolioStore = portfolioStores
+        //     //                                 // Hanya mengambil toko yang bukan sebagai calon toko baru untuk portfolio dan tidak ditandai untuk dihapus.
+        //     //                                 .filter(portfolioStore => !listStoreIds.includes(portfolioStore.id) && !portfolioStore.deletedAt)
+        //     //                                 .map(store => {
+        //     //                                     const newStore = new Store(store);
+        //     //                                     newStore.setSelectedStore = true;
 
-            //                                     return newStore;
-            //                                 });
+        //     //                                     return newStore;
+        //     //                                 });
 
-            //     // this.portfolioStores = new MatTableDataSource(newPortfolioStore);
-            //     // this.portfolioStoreSelection = new SelectionModel<Store>(true, newPortfolioStore);
-            //     // this.portfolioStoreSelection.clear();
+        //     //     // this.portfolioStores = new MatTableDataSource(newPortfolioStore);
+        //     //     // this.portfolioStoreSelection = new SelectionModel<Store>(true, newPortfolioStore);
+        //     //     // this.portfolioStoreSelection.clear();
 
-            //     return newPortfolioStore.sort((a, b) => (+a.id) - (+b.id));
-            // }),
-            takeUntil(this.subs$)
-        );
+        //     //     return newPortfolioStore.sort((a, b) => (+a.id) - (+b.id));
+        //     // }),
+        //     takeUntil(this.subs$)
+        // );
 
         // this.availableStores$ = this.shopStore.select(
         //     StoreSelector.getAllStores
@@ -405,52 +394,52 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         //     takeUntil(this.subs$)
         // );
 
-        this.availableStores$ = combineLatest([
-            this.shopStore.select(StoreSelector.getAllStores),
-            this.selectedStores$
-        ]).pipe(
-            tap(() => this.debug('AVAILABLE STORES CHECK', {})),
-            withLatestFrom(this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)),
-            filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
-            map(([[availableStores, portfolioStores]]) => {
-                // Mengambil ID dari store yang sudah terasosiasi dengan portfolio.
-                const portfolioStoreIds = portfolioStores.map(pStore => pStore.id);
+        // this.availableStores$ = combineLatest([
+        //     this.shopStore.select(StoreSelector.getAllStores),
+        //     this.selectedStores$
+        // ]).pipe(
+        //     tap(() => this.debug('AVAILABLE STORES CHECK', {})),
+        //     withLatestFrom(this.portfolioStore.select(PortfolioSelector.getSelectedWarehouse)),
+        //     filter(([_, warehouse]) => this.checkSelectedWarehouse(warehouse)),
+        //     map(([[availableStores, portfolioStores]]) => {
+        //         // Mengambil ID dari store yang sudah terasosiasi dengan portfolio.
+        //         const portfolioStoreIds = portfolioStores.map(pStore => pStore.id);
 
-                // Mengubah state toko tersebut tidak terpilih.
-                const newListStore = availableStores.map(store => {
-                    let newStore = new Store(store);
+        //         // Mengubah state toko tersebut tidak terpilih.
+        //         const newListStore = availableStores.map(store => {
+        //             let newStore = new StorePortfolio(store);
 
-                    // Hanya menandai toko yang ada di portfolio, namun tidak ditandai akan dihapus nantinya.
-                    if (portfolioStoreIds.includes(newStore.id)) {
-                        const selectedStore = portfolioStores.find(
-                            pStore => pStore.id === newStore.id
-                        );
+        //             // Hanya menandai toko yang ada di portfolio, namun tidak ditandai akan dihapus nantinya.
+        //             if (portfolioStoreIds.includes(newStore.id)) {
+        //                 const selectedStore = portfolioStores.find(
+        //                     pStore => pStore.id === newStore.id
+        //                 );
 
-                        if (selectedStore && newStore.source === 'list') {
-                            newStore = new Store(selectedStore);
-                            newStore.setSource = 'list';
-                            newStore.setSelectedStore = !!!selectedStore.deletedAt;
-                        } else if (selectedStore) {
-                            newStore = new Store(selectedStore);
-                            newStore.setSelectedStore = !!!selectedStore.deletedAt;
-                        }
-                    } else {
-                        newStore.setSelectedStore = false;
-                    }
+        //                 if (selectedStore && newStore.source === 'list') {
+        //                     newStore = new Store(selectedStore);
+        //                     newStore.setSource = 'list';
+        //                     newStore.setSelectedStore = !!!selectedStore.deletedAt;
+        //                 } else if (selectedStore) {
+        //                     newStore = new Store(selectedStore);
+        //                     newStore.setSelectedStore = !!!selectedStore.deletedAt;
+        //                 }
+        //             } else {
+        //                 newStore.setSelectedStore = false;
+        //             }
 
-                    return newStore;
-                });
+        //             return newStore;
+        //         });
 
-                // this.listStore = new MatTableDataSource(newListStore);
-                // this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
-                // this.listStoreSelection.clear();
+        //         // this.listStore = new MatTableDataSource(newListStore);
+        //         // this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
+        //         // this.listStoreSelection.clear();
 
-                // Mengembalikan daftar toko dengan state yang baru.
-                // return newListStore.sort(({ name: nameA }, { name: nameB }) => (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0);
-                return newListStore;
-            }),
-            takeUntil(this.subs$)
-        );
+        //         // Mengembalikan daftar toko dengan state yang baru.
+        //         // return newListStore.sort(({ name: nameA }, { name: nameB }) => (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0);
+        //         return newListStore;
+        //     }),
+        //     takeUntil(this.subs$)
+        // );
 
         // Mengambil jumlah store yang tersedia.
         this.totalAvailableStore$ = this.shopStore
@@ -485,28 +474,28 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                 withLatestFrom(
                     this.shopStore.select(StoreSelector.getAllFilters),
                     this.shopStore.select(StoreSelector.getStoreEntityType),
-                    this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
+                    this.portfolioStore.select(PortfolioSelector.getSelectedWarehouse)
                 ),
-                filter(([_, __, ___, invoiceGroupId]) =>
-                    this.checkSelectedInvoiceGroupId(invoiceGroupId)
+                filter(([_, __, ___, warehouse]) =>
+                    this.checkSelectedWarehouse(warehouse)
                 ),
                 tap(() => this.shopStore.dispatch(StoreActions.truncateAllStores())),
                 takeUntil(this.subs$)
             )
-            .subscribe(([_, filters, type, invoiceGroupId]) =>
-                this.requestStore(filters, type, invoiceGroupId)
+            .subscribe(([_, filters, type, warehouse]) =>
+                this.requestStore(filters, type, warehouse.id)
             );
 
         this.subs$.pipe(
             withLatestFrom(
                 this.shopStore.select(StoreSelector.getAllFilters),
                 this.shopStore.select(StoreSelector.getStoreEntityType),
-                this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),
+                this.portfolioStore.select(PortfolioSelector.getSelectedWarehouse),
                 this.totalAvailableStore$
             ),
-            tap(([text, filters, type, invoiceGroupId, totalAvailableStores]) => {
+            tap(([text, filters, type, warehouse, totalAvailableStores]) => {
                 if (text === 'LOAD_MORE_AVAILABLE_STORES') {
-                    this.requestStore(filters, type, invoiceGroupId, totalAvailableStores);
+                    this.requestStore(filters, type, warehouse.id, totalAvailableStores);
                 }
             }),
             takeUntil(this.subs$)

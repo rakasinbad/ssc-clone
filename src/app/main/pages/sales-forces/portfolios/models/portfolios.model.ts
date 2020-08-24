@@ -3,8 +3,19 @@ import { TNullable } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
+import { Warehouse } from './warehouse.model';
 
 type TPortfolioType = 'multi' | 'single' | 'group' | 'direct';
+
+interface StorePortfolio {
+    id: string;
+    portfolioId: string;
+    storeId: string;
+    store: Store;
+    target: number;
+    createdAt: string;
+    updatedAt: string;
+}
 
 interface IPortfolio extends ITimestamp {
     id: string;
@@ -21,6 +32,8 @@ interface IPortfolio extends ITimestamp {
     storeQty?: number;
     isSelected?: boolean;
     stores?: Array<Store>;
+    storePortfolios: Array<StorePortfolio>;
+    warehouse?: Warehouse;
     totalTargetSales?: number;
     actualTargetSales?: number;
     source?: 'fetch' | 'list';
@@ -34,7 +47,8 @@ interface IPortfolioStore {
 export interface IPortfolioAddForm {
     name: string;
     type: 'direct' | 'group';
-    invoiceGroupId: string;
+    invoiceGroupId?: string;
+    warehouseId: string;
     stores: Array<IPortfolioStore>;
     removedStore?: Array<{ storeId: string; portfolioId: string }>;
 }
@@ -53,6 +67,8 @@ export class Portfolio implements IPortfolio {
     invoiceGroup: TNullable<InvoiceGroup>;
     storeQty?: number;
     stores?: Array<Store>;
+    storePortfolios: Array<StorePortfolio>;
+    warehouse?: Warehouse;
     isSelected?: boolean;
     totalTargetSales?: number;
     actualTargetSales?: number;
@@ -74,6 +90,8 @@ export class Portfolio implements IPortfolio {
             storeQty = 0,
             isSelected = false,
             stores = [],
+            storePortfolios = [],
+            warehouse = {},
             source = 'fetch',
             totalTargetSales,
             actualTargetSales
@@ -93,11 +111,14 @@ export class Portfolio implements IPortfolio {
         this.actualTargetSales = actualTargetSales;
         this.totalTargetSales = totalTargetSales;
         this.source = source;
+        this.warehouse = !warehouse || Object.keys(warehouse).length === 0 ? warehouse as Warehouse : new Warehouse(warehouse as Warehouse);
 
         this.stores =
             Array.isArray(stores) && stores.length > 0
                 ? stores.map(store => new Store(store))
                 : stores;
+
+        this.storePortfolios = storePortfolios;
 
         this.user = user ? new User(user) : user;
 
