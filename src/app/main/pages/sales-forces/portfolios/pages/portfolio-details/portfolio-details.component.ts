@@ -238,15 +238,17 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
                 }
 
                 // Jika portfolio-nya bukan milik user (ID supplier tidak sama)
-                if (portfolio.invoiceGroup.supplierId !== userSupplier.supplierId) {
-                    // Munculkan error bahwa portfolio tidak ditemukan.
-                    this._notice.open('Portfolio not found.', 'error', {
-                        horizontalPosition: 'right',
-                        verticalPosition: 'bottom'
-                    });
+                if (portfolio.type === 'group') {
+                    if (portfolio.invoiceGroup.supplierId !== userSupplier.supplierId) {
+                        // Munculkan error bahwa portfolio tidak ditemukan.
+                        this._notice.open('Portfolio not found.', 'error', {
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom'
+                        });
 
-                    // Arahkan ke halaman depan portfolio.
-                    return this.router.navigate(['/pages/sales-force/portfolio']);
+                        // Arahkan ke halaman depan portfolio.
+                        return this.router.navigate(['/pages/sales-force/portfolio']);
+                    }
                 }
 
                 this.portfolio = portfolio;
