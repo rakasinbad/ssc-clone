@@ -26,9 +26,7 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <div class="h2">
-                        Order Detail
-                    </div>
+                    <div class="h2">Order Detail</div>
                     <div class="subtitle secondary-text">
                         <span>{{ (order$ | async)?.orderRef }}</span>
                     </div>
@@ -146,7 +144,7 @@
                                             <td class="info-title">Store Name</td>
                                             <td>
                                                 {{
-                                                    safeValue((order$ | async)?.order?.supplierStore?.name)
+                                                    safeValue((order$ | async)?.supplierStore?.name)
                                                 }}
                                             </td>
                                         </tr>
@@ -156,7 +154,7 @@
                                             <td>
                                                 {{
                                                     safeValue(
-                                                        (order$ | async)?.order?.supplierStore?.externalId
+                                                        (order$ | async)?.supplierStore?.externalId
                                                     )
                                                 }}
                                             </td>
@@ -167,7 +165,7 @@
                                             <td>
                                                 {{
                                                     safeValue(
-                                                        (order$ | async)?.order?.supplierStore?.address
+                                                        (order$ | async)?.supplierStore?.address
                                                     )
                                                 }}
                                             </td>
@@ -204,7 +202,7 @@
                                             <td>
                                                 {{
                                                     safeValue(
-                                                        (order$ | async)?.order?.supplierStore?.urban
+                                                        (order$ | async)?.supplierStore?.urban
                                                     )
                                                 }}
                                             </td>
@@ -429,13 +427,9 @@
                                         New Order
                                     </ng-container>
 
-                                    <ng-container *ngSwitchCase="'pending'">
-                                        Pending
-                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'pending'"> Pending </ng-container>
 
-                                    <ng-container *ngSwitchCase="'packing'">
-                                        Packed
-                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'packing'"> Packed </ng-container>
 
                                     <ng-container *ngSwitchCase="'shipping'">
                                         Shipped
@@ -445,17 +439,11 @@
                                         Delivered
                                     </ng-container>
 
-                                    <ng-container *ngSwitchCase="'done'">
-                                        Done
-                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'done'"> Done </ng-container>
 
-                                    <ng-container *ngSwitchCase="'cancel'">
-                                        Canceled
-                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'cancel'"> Canceled </ng-container>
 
-                                    <ng-container *ngSwitchDefault>
-                                        -
-                                    </ng-container>
+                                    <ng-container *ngSwitchDefault> - </ng-container>
                                 </ng-container>
                             </div>
                         </header>
@@ -821,41 +809,23 @@
 
                 <span class="h4">
                     <ng-container [ngSwitch]="(order$ | async)?.status">
-                        <ng-container *ngSwitchCase="'checkout'">
-                            Quotation
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'checkout'"> Quotation </ng-container>
 
-                        <ng-container *ngSwitchCase="'confirm'">
-                            New Order
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'confirm'"> New Order </ng-container>
 
-                        <ng-container *ngSwitchCase="'pending'">
-                            Pending
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'pending'"> Pending </ng-container>
 
-                        <ng-container *ngSwitchCase="'packing'">
-                            Packed
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'packing'"> Packed </ng-container>
 
-                        <ng-container *ngSwitchCase="'shipping'">
-                            Shipped
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'shipping'"> Shipped </ng-container>
 
-                        <ng-container *ngSwitchCase="'delivered'">
-                            Delivered
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'delivered'"> Delivered </ng-container>
 
-                        <ng-container *ngSwitchCase="'done'">
-                            Done
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'done'"> Done </ng-container>
 
-                        <ng-container *ngSwitchCase="'cancel'">
-                            Canceled
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'cancel'"> Canceled </ng-container>
 
-                        <ng-container *ngSwitchDefault>
-                            -
-                        </ng-container>
+                        <ng-container *ngSwitchDefault> - </ng-container>
                     </ng-container>
                 </span>
 
@@ -877,9 +847,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Quotation
-                                            </div>
+                                            <div class="label">Quotation</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>07-02-2019 20:11</small> -->
@@ -900,9 +868,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                New Order
-                                            </div>
+                                            <div class="label">New Order</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>07-02-2019 20:11</small> -->
@@ -923,9 +889,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Pending
-                                            </div>
+                                            <div class="label">Pending</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>-</small> -->
@@ -946,9 +910,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Packed
-                                            </div>
+                                            <div class="label">Packed</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>07-02-2019 20:11</small> -->
@@ -969,9 +931,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Shipped
-                                            </div>
+                                            <div class="label">Shipped</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>-</small> -->
@@ -992,9 +952,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Delivered
-                                            </div>
+                                            <div class="label">Delivered</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>-</small> -->
@@ -1015,9 +973,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Done
-                                            </div>
+                                            <div class="label">Done</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>-</small> -->
@@ -1038,9 +994,7 @@
                                         <div class="v-line"></div>
 
                                         <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Canceled
-                                            </div>
+                                            <div class="label">Canceled</div>
 
                                             <div class="time line-height-8">
                                                 <!-- <small>07-02-2019 20:11</small> -->
@@ -1248,11 +1202,9 @@
                 <mat-table class="order-lines-table" [dataSource]="dataSource">
                     <!-- Product Column -->
                     <ng-container matColumnDef="product">
-                        <mat-header-cell *matHeaderCellDef>
-                            Product
-                        </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
+                            <p style="word-break: break-word">
                                 {{ safeValue(row?.catalogue?.name) }}
                             </p>
                         </mat-cell>
@@ -1273,11 +1225,9 @@
 
                     <!-- Order Qty Column -->
                     <ng-container matColumnDef="order-qty">
-                        <mat-header-cell *matHeaderCellDef>
-                            Order Qty
-                        </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Order Qty </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
+                            <p style="word-break: break-word">
                                 {{
                                     +row?.qty > 0 || +row?.qty === 0
                                         ? (+row?.qty | number)
@@ -1348,11 +1298,9 @@
 
                     <!-- Unit Price Column -->
                     <ng-container matColumnDef="unit-price">
-                        <mat-header-cell *matHeaderCellDef>
-                            Unit Price
-                        </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
+                            <p style="word-break: break-word">
                                 {{
                                     +row?.grossPrice > 0
                                         ? (+row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2')
@@ -1364,11 +1312,9 @@
 
                     <!-- Discount Price Column -->
                     <ng-container matColumnDef="discount-price">
-                        <mat-header-cell *matHeaderCellDef>
-                            Discount Price
-                        </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
+                            <p style="word-break: break-word">
                                 {{
                                     +row?.cataloguePromo > 0
                                         ? (+row?.cataloguePromo
@@ -1387,9 +1333,7 @@
 
                     <!-- Gross Column -->
                     <ng-container matColumnDef="gross">
-                        <mat-header-cell *matHeaderCellDef>
-                            Gross Price
-                        </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p class="text-truncate">
                                 {{
