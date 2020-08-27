@@ -1,6 +1,6 @@
 @import 'src/@fuse/scss/fuse';
 
-app-associations-portfolio {
+associations-view-by-sales-rep {
     display: flex;
     flex: 1 1 auto;
     overflow: auto;
@@ -60,7 +60,7 @@ app-associations-portfolio {
         }
     }
 
-    .association-portfolio-table {
+    .associations-view-by-sales-rep-table {
         flex: 1 1 auto;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;

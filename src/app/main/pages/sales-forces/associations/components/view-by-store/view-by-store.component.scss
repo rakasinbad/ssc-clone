@@ -1,6 +1,12 @@
 @import 'src/@fuse/scss/fuse';
 
-app-associations {
+associations-view-by-store {
+    display: flex;
+    flex: 1 1 auto;
+    overflow: auto;
+    flex-direction: column;
+    border: 1px solid;
+
     #associations {
         .top-bg {
             @include media-breakpoint('lt-md') {
@@ -54,9 +60,10 @@ app-associations {
         }
     }
 
-    .association-sales-rep-table {
+    .associations-view-by-store-table {
         flex: 1 1 auto;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
@@ -64,6 +71,14 @@ app-associations {
         .mat-header-row,
         .mat-row {
             background: white;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+        }
+
+        mat-header-row {
+            border-top-width: 1px;
+            border-top-color: rgba(0, 0, 0, 0.12);
         }
 
         .mat-header-cell {
@@ -105,9 +120,24 @@ app-associations {
         min-height: 50px !important;
         max-height: 50px !important;
         min-width: 120px !important;
-        padding: 20px;
+        padding: 20px 40px 40px 40px;
         cursor: pointer;
         text-align: center;
+    }
+
+    .button-tab-custom-active {
+        min-height: 50px !important;
+        max-height: 50px !important;
+        min-width: 120px !important;
+        padding: 20px 40px 40px 40px;
+        cursor: pointer;
+        text-align: center;
+        color: #f34247;
+        border-bottom: 1px solid #f34247;
+
+        span {
+            color: #f34247;
+        }
     }
 
     .text-tab-custom {
