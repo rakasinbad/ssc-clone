@@ -13,18 +13,18 @@ import { Association, AssociationForm } from '../models';
  *
  *
  * @export
- * @class AssociationApiService
+ * @class SalesRepsApiService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class AssociationApiService {
+export class SalesRepsApiService {
     /**
      *
      *
      * @private
      * @type {string}
-     * @memberof AssociationApiService
+     * @memberof SalesRepsApiService
      */
     private _url: string;
 
@@ -32,15 +32,16 @@ export class AssociationApiService {
      *
      *
      * @private
-     * @memberof AssociationApiService
+     * @memberof SalesRepsApiService
      */
-    private readonly _endpoint = '/associations';
+    private readonly _endpoint = '/sales-reps';
+    private readonly _associationsEndpoint = '/associations';
 
     /**
-     * Creates an instance of AssociationApiService.
+     * Creates an instance of SalesRepsApiService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
-     * @memberof AssociationApiService
+     * @memberof SalesRepsApiService
      */
     constructor(
         private http: HttpClient,
@@ -51,14 +52,24 @@ export class AssociationApiService {
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        const newArg = [];
+        const newArg = supplierId
+            ? [
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
 
-        if (!supplierId) {
-            throw new Error('ASSOCIATION_API_REQUIRES_SUPPLIER_ID');
-        } else {
+        if (params['associated']) {
             newArg.push({
-                key: 'supplierId',
-                value: supplierId
+                key: 'associated',
+                value: 'true'
+            });
+        } else if (params.hasOwnProperty('associated') && !params['associated']) {
+            newArg.push({
+                key: 'associated',
+                value: 'false'
             });
         }
 
@@ -69,37 +80,32 @@ export class AssociationApiService {
             });
         }
 
-        if (params['warehouseId']) {
-            newArg.push({
-                key: 'warehouseId',
-                value: params['warehouseId']
-            });
-        }
-
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findById(id: string, supplierId?: string): Observable<Association> {
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+    findById<T>(id: string, supplierId?: string): Observable<T> {
+        const newArg = [];
+
+        if (!supplierId) {
+            throw new Error('SALES_REPS_API_REQUIRES_SUPPLIER_ID');
+        } else {
+            newArg.push({
+                key: 'supplierId',
+                value: supplierId
+            });
+        }
 
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<Association>(`${this._url}/${id}`, { params: newParams });
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
     createAssociation(body: AssociationForm): Observable<{ message: string }> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+        this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
         return this.http.post<{ message: string }>(this._url, body);
     }
 
@@ -131,7 +137,7 @@ export class AssociationApiService {
         }
 
         if (params['request'] === 'associations') {
-            this._url = this._$helper.handleApiRouter(this._endpoint);
+            this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
         } else {
             this._url = this._$helper.handleApiRouter(this._endpoint);
         }

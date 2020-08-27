@@ -4,24 +4,24 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-import { IAssociationStore } from '../models';
+import { StorePortfolio } from '../models';
 
 /**
  *
  *
  * @export
- * @class AssociationStoreApiService
+ * @class StorePortfolioApiService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class AssociationStoreApiService {
+export class StorePortfolioApiService {
     /**
      *
      *
      * @private
      * @type {string}
-     * @memberof AssociationStoreApiService
+     * @memberof StorePortfolioApiService
      */
     private _url: string;
 
@@ -29,29 +29,31 @@ export class AssociationStoreApiService {
      *
      *
      * @private
-     * @memberof AssociationStoreApiService
+     * @memberof StorePortfolioApiService
      */
     private readonly _endpoint = '/store-portfolio-lists';
 
     /**
-     * Creates an instance of AssociationStoreApiService.
+     * Creates an instance of StorePortfolioApiService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
-     * @memberof AssociationStoreApiService
+     * @memberof StorePortfolioApiService
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+        const newArg = [];
+
+        if (!supplierId) {
+            throw new Error('STORE_PORTFOLIO_API_REQUIRES_SUPPLIER_ID');
+        } else {
+            newArg.push({
+                key: 'supplierId',
+                value: supplierId
+            });
+        }
 
         if (params['portfolio'] !== undefined && params['associated'] !== undefined) {
             newArg.push(
@@ -76,7 +78,7 @@ export class AssociationStoreApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findById(id: string, supplierId?: string): Observable<IAssociationStore> {
+    findById(id: string, supplierId?: string): Observable<StorePortfolio> {
         const newArg = supplierId
             ? [
                   {
@@ -88,10 +90,10 @@ export class AssociationStoreApiService {
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<IAssociationStore>(`${this._url}/${id}`, { params: newParams });
+        return this.http.get<StorePortfolio>(`${this._url}/${id}`, { params: newParams });
     }
 
-    create<T>(body: T): Observable<IAssociationStore> {
-        return this.http.post<IAssociationStore>(this._url, body);
+    create<T>(body: T): Observable<StorePortfolio> {
+        return this.http.post<StorePortfolio>(this._url, body);
     }
 }
