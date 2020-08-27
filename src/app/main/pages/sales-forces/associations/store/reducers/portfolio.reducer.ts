@@ -1,27 +1,27 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { SalesRep } from '../../models';
-import { SalesRepActions } from '../actions';
+import { PortfolioActions } from '../actions';
+import { Portfolio } from '../../models';
 
 // Keyname for reducer
-const featureKey = 'salesReps';
+const featureKey = 'portfolios';
 
 /**
  *
  * Main interface for reducer
  * @interface State
- * @extends {EntityState<SalesRep>}
+ * @extends {EntityState<Portfolio>}
  */
-interface State extends EntityState<SalesRep> {
+interface State extends EntityState<Portfolio> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
     total: number;
 }
 
-// Adapter for salesReps state
-const adapter = createEntityAdapter<SalesRep>({ selectId: row => row.id });
+// Adapter for Portfolio state
+const adapter = createEntityAdapter<Portfolio>({ selectId: row => row.id });
 
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -34,23 +34,31 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(SalesRepActions.fetchSalesRepsRequest, state => ({
-        ...state,
-        isLoading: true,
-    })),
-    on(SalesRepActions.fetchSalesRepsFailure, state => ({
-        ...state,
-        isLoading: false
-    })),
-    on(SalesRepActions.fetchSalesRepsSuccess, (state, { payload }) =>
-        adapter.upsertMany(payload.data, {
+    on(
+        PortfolioActions.fetchPortfoliosRequest,
+        state => ({
+            ...state,
+            isLoading: true,
+            isRefresh: true,
+        })
+    ),
+    on(
+        PortfolioActions.fetchPortfoliosFailure,
+        state => ({
+            ...state,
+            isLoading: false,
+            isRefresh: true,
+        })
+    ),
+    on(PortfolioActions.fetchPortfoliosSuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, {
             ...state,
             isLoading: false,
             isRefresh: true,
             total: payload.total
         })
     ),
-    on(SalesRepActions.clearState, state =>
+    on(PortfolioActions.clearState, state =>
         adapter.removeAll({
             ...state,
             isLoading: false,

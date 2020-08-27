@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import * as fromAssociationCore from '../reducers';
-import * as fromAssociation from '../reducers/association.reducer';
+import * as fromStore from '../reducers/store.reducer';
 
 const getAssociationsCoreState = createFeatureSelector<
     fromAssociationCore.FeatureState,
@@ -10,7 +10,7 @@ const getAssociationsCoreState = createFeatureSelector<
 
 export const getAssociationEntitiesState = createSelector(
     getAssociationsCoreState,
-    state => state[fromAssociation.featureKey]
+    state => state[fromStore.featureKey]
 );
 
 export const {
@@ -18,7 +18,7 @@ export const {
     selectEntities,
     selectIds,
     selectTotal
-} = fromAssociation.adapter.getSelectors(getAssociationEntitiesState);
+} = fromStore.adapter.getSelectors(getAssociationEntitiesState);
 
 const getTotalItem = createSelector(getAssociationEntitiesState,
     state => state.total
