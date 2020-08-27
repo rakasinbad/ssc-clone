@@ -4,7 +4,7 @@ import { MatSelectionListChange, MatSelectionList, MatListOption } from '@angula
 import { tap, takeUntil, filter, map, debounceTime } from 'rxjs/operators';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
 import { HelperService } from 'app/shared/helpers';
-import { Selection, SelectionList } from './models';
+import { Selection, SelectionList, SelectionState } from './models';
 import { MultipleSelectionService } from './services/multiple-selection.service';
 
 @Component({
@@ -69,10 +69,14 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     @Output() search: EventEmitter<string> = new EventEmitter<string>();
     // Event untuk ketika salah satu list ada perubahan pemilihan (check-uncheck).
     @Output() selectionChanged: EventEmitter<Selection> = new EventEmitter<Selection>();
+    // Event untuk ketika salah satu list ada perubahan pemilihan (check-uncheck).
+    @Output() selectionStateChanged: EventEmitter<SelectionState> = new EventEmitter<SelectionState>();
     // Event untuk ketika ada perubahan dan mengirim nilai list yang terpilih dan tidak terpilih.
     @Output() selectionListChanged: EventEmitter<SelectionList> = new EventEmitter<SelectionList>();
     // Event untuk ketika menekan "Clear All".
     @Output() clearAll: EventEmitter<void> = new EventEmitter<void>();
+    // Event untuk ketika menekan informasi tambahan pada selection.
+    @Output() clickInfo: EventEmitter<Selection> = new EventEmitter<Selection>();
 
     // Untuk menangkap event yang terjadi saat meng-update list yang diklik.
     selectedOptionSub$: Subject<MatSelectionListChange> = new Subject<MatSelectionListChange>();
@@ -172,17 +176,21 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         }
     }
 
+    onInformationClicked(value: Selection): void {
+        this.clickInfo.emit(value);
+    }
+
     ngOnInit(): void {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['initialSelectedOptions']) {
             // Menggabungkan opsi yang tergabung antara initial selected options dengan selected options.
-            const initialOptions = this.initialSelectedOptions.map(selected => String(selected.id + selected.group));
+            const initialOptions = changes['initialSelectedOptions'].currentValue.map(selected => String(selected.id + selected.group));
             // Membuang opsi yang terpilih agar tidak terduplikasi dengan initial selected options.
             this.selectedOptions = this.selectedOptions.filter(selected => !initialOptions.includes(String(selected.id + selected.group)));
 
-            this.mergedSelectedOptions = this.initialSelectedOptions.concat(
+            this.mergedSelectedOptions = changes['initialSelectedOptions'].currentValue.concat(
                 this.selectedOptions
             ).filter(merged =>
                 this.removedOptions.length === 0
@@ -257,7 +265,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                     // Memastikan tidak meng-emit event load more kembali ketika sudah tidak ada yang bisa dimuat lagi.
                     if (this.totalAvailableOptions > this.availableOptions.length) {
                         // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
-                        elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop;
+                        elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop - 40;
     
                         // Meluncurkan 'emit' untuk memberitahu bahwa available list telah mencapai dasarnya.
                         this.availableReachedBottom.emit();
@@ -266,7 +274,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                     // Memastikan tidak meng-emit event load more kembali ketika sudah tidak ada yang bisa dimuat lagi.
                     if (this.totalInitialSelectedOptions > (this.mergedSelectedOptions.length + this.removedOptions.length)) {
                         // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
-                        elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop;
+                        elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop - 40;
     
                         // Meluncurkan 'emit' untuk memberitahu bahwa selection list telah mencapai dasarnya.
                         this.selectedReachedBottom.emit();
@@ -323,6 +331,9 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
                     // Mengirim event selectionChanged dengan membawa nilai option yang baru saya diklik.
                     this.selectionChanged.emit({ ...value, isSelected });
+
+                    // Mengirim event selectionStateChanged dengan membawa nilai option yang baru saya diklik.
+                    this.selectionStateChanged.emit({ checked: isSelected, data: value });
                 }
 
                 // Memeriksa apakah option berada di initial selection.
@@ -371,7 +382,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 this.totalSelectedOptions = (this.totalInitialSelectedOptions - removedLength) + addedLength;
 
                 // Mendeteksi adanya perubahan.
-                this.cdRef.markForCheck();
+                this.cdRef.detectChanges();
             }),
             takeUntil(this.subs$)
         ).subscribe();

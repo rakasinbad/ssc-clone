@@ -82,7 +82,24 @@
                         [selected]="isAvailableAtSelection(option)"
                         [disabled]="isDisabled(option)"
                     >
-                        {{ option?.label }}
+                        <!-- LABEL -->
+                        <span>{{ option?.label }}</span>
+                        <!-- / LABEL -->
+
+                        <!-- CLICKABLE INFORMATION -->
+                        <a
+                            *ngIf="option?.additionalInformation && option?.additionalInformation?.clickable"
+                            (click)="$event.stopPropagation(); onInformationClicked(option)"
+                        >
+                            {{ option?.additionalInformation?.text }}
+                        </a>
+                        <!-- CLICKABLE INFORMATION -->
+
+                        <!-- NOT CLICKABLE INFORMATION -->
+                        <span *ngIf="option?.additionalInformation && !option?.additionalInformation?.clickable">
+                            {{ option?.additionalInformation?.text }}
+                        </span>
+                        <!-- / NOT CLICKABLE INFORMATION -->
                     </mat-list-option>
                     <!-- LOADING OPTION -->
                     <mat-option
@@ -152,7 +169,24 @@
                         [value]="option"
                         [disabled]="isDisabled(option)"
                     >
-                        {{ option?.label }}
+                        <!-- LABEL -->
+                        <span>{{ option?.label }}</span>
+                        <!-- / LABEL -->
+
+                        <!-- CLICKABLE INFORMATION -->
+                        <a
+                            *ngIf="option?.additionalInformation && option?.additionalInformation?.clickable"
+                            (click)="$event.stopPropagation(); onInformationClicked(option)"
+                        >
+                            {{ option?.additionalInformation?.text }}
+                        </a>
+                        <!-- CLICKABLE INFORMATION -->
+
+                        <!-- NOT CLICKABLE INFORMATION -->
+                        <span *ngIf="option?.additionalInformation && !option?.additionalInformation?.clickable">
+                            {{ option?.additionalInformation?.text }}
+                        </span>
+                        <!-- / NOT CLICKABLE INFORMATION -->
                     </mat-list-option>
                     <!-- LOADING OPTION -->
                     <mat-option
