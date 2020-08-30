@@ -99,6 +99,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     isAvailableAssociationsLoading$: Observable<boolean>;
     // Untuk menyimpan status loading pada portfolio yang sudah ter-assign oleh SR.
     isSelectedAssociationsLoading$: Observable<boolean>;
+    // Untuk menyimpan state apakah ingin clear all atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    // isClearAll: boolean = false;
 
     constructor(
         private associationStore: NgRxStore<AssociationCoreFeatureState>,
@@ -283,7 +286,10 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     }).afterClosed()
                     .subscribe(confirmed => {
                         if (confirmed) {
+                            // this.isClearAll = true;
+
                             this.associationStore.dispatch(AssociationActions.clearState());
+                            this.associationStore.dispatch(PortfolioActions.clearState());
 
                             this.multipleSelection.clearAllSelectedOptions();
 
@@ -347,7 +353,10 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     }).afterClosed()
                     .subscribe(confirmed => {
                         if (confirmed) {
+                            // this.isClearAll = true;
+
                             this.associationStore.dispatch(AssociationActions.clearState());
+                            this.associationStore.dispatch(PortfolioActions.clearState());
 
                             this.multipleSelection.clearAllSelectedOptions();
 
@@ -531,6 +540,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     // warehouseId: selectedWarehouse.id,
                     userId,
                     warehouseId,
+                    keyword: this.search.value,
                     associated: true,
                     paginate: false,
                 } as IQueryParams

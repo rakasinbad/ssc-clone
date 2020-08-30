@@ -69,6 +69,13 @@ export class AssociationApiService {
             });
         }
 
+        if (params['keyword']) {
+            newArg.push({
+                key: 'keyword',
+                value: params['keyword']
+            });
+        }
+
         if (params['warehouseId']) {
             newArg.push({
                 key: 'warehouseId',
