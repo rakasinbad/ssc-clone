@@ -144,10 +144,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         this.updatePortfolioType(portfolio);
 
-        if (portfolio === 'group') {
-            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
-        } else {
+        if (portfolio === 'direct') {
             this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'out-portfolio' }));
+        } else {
+            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
         }
 
         // Mengambil data Invoice Group dari state.
