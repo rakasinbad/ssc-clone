@@ -541,7 +541,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     userId,
                     warehouseId,
                     keyword: this.search.value,
-                    associated: true,
+                    // associated: true,
                     paginate: false,
                 } as IQueryParams
             })
