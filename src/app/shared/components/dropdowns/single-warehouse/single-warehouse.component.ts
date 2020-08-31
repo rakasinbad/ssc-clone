@@ -114,7 +114,7 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
             });
         }
 
-        this.cdRef.markForCheck();
+        this.cdRef.detectChanges();
     }
 
     private requestEntity(params: IQueryParams): void {
@@ -368,10 +368,11 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
     }
 
     ngOnDestroy(): void {
-        this.cdRef.detach();
-
         this.subs$.next();
         this.subs$.complete();
+
+        this.cdRef.detach();
+        this.triggerEntity.closePanel();
 
         this.singleWarehouse.selectWarehouse(null);
 
