@@ -10,7 +10,7 @@ const getAssociationsCoreState = createFeatureSelector<
 
 export const getAssociationEntitiesState = createSelector(
     getAssociationsCoreState,
-    state => state.associations
+    state => state[fromAssociation.featureKey]
 );
 
 export const {
@@ -20,9 +20,13 @@ export const {
     selectTotal
 } = fromAssociation.adapter.getSelectors(getAssociationEntitiesState);
 
-const getTotalItem = createSelector(getAssociationEntitiesState, state => state.total);
+const getTotalItem = createSelector(getAssociationEntitiesState,
+    state => state.total
+);
 
-const getSelectedId = createSelector(getAssociationEntitiesState, state => state.selectedId);
+const getSelectedId = createSelector(getAssociationEntitiesState,
+    state => state.selectedId
+);
 
 const getSelectedItem = createSelector(
     selectEntities,
@@ -30,28 +34,18 @@ const getSelectedItem = createSelector(
     (entities, id) => entities[id]
 );
 
-const getIsLoading = createSelector(getAssociationEntitiesState, state => state.isLoading);
-
-export const getRequestingState = createSelector(
-    getAssociationEntitiesState,
-    state => state.isRequesting
+const getLoadingState = createSelector(getAssociationEntitiesState,
+    state => state.isLoading
 );
 
-const getSearchValue = createSelector(getAssociationEntitiesState, state => state.textSearch);
-
-export const getSelectedInvoiceGroup = createSelector(
-    getAssociationEntitiesState,
-    state => state.selectedInvoiceGroup
+const getRefreshState = createSelector(getAssociationEntitiesState,
+    state => state.isRefresh
 );
 
-export const getPortfolioEntityType = createSelector(
-    getAssociationEntitiesState,
-    state => state.portfolioType
-);
-
-export const getSelectedSalesRep = createSelector(
-    getAssociationEntitiesState,
-    state => state.selectedSalesRep
-);
-
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem, getSearchValue };
+export {
+    getLoadingState,
+    getRefreshState,
+    getSelectedId,
+    getSelectedItem,
+    getTotalItem
+};

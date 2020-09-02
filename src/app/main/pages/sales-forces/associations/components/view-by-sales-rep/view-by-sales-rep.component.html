@@ -1,0 +1,114 @@
+<mat-tab-group
+    color="accent" style="border-radius: 4px;"
+    class="sinbad-white sinbad-mat-tab-group narrow"
+    animationDuration="0ms"
+    (selectedIndexChange)="onSelectedTab($event)"
+>
+    <mat-tab label="All"></mat-tab>
+    <mat-tab label="with assignment"></mat-tab>
+    <mat-tab label="with no assignment"></mat-tab>
+</mat-tab-group>
+
+<mat-table class="associations-view-by-sales-rep-table" #table [dataSource]="dataSource$ | async" matSort
+    [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+    <!-- Checkbox Column -->
+    <!-- <ng-container matColumnDef="checkbox">
+        <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null" (click)="$event.stopPropagation()"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+        </mat-header-cell>
+
+        <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+        </mat-cell>
+    </ng-container> -->
+
+    <!-- "Sales Rep Code" Column -->
+    <ng-container matColumnDef="sales-rep-code">
+        <mat-header-cell *matHeaderCellDef>
+            Sales Rep Code
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.userCode || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Sales Rep Name" Column -->
+    <ng-container matColumnDef="sales-rep-name">
+        <mat-header-cell *matHeaderCellDef>
+            Sales Rep Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.fullName || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Portfolio Code" Column -->
+    <ng-container matColumnDef="portfolio-code">
+        <mat-header-cell *matHeaderCellDef>
+            Portfolio Code
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p [innerHTML]="(generatePortfolioCode(row?.portfolios) | safe: 'html')"></p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Portfolio Name" Column -->
+    <ng-container matColumnDef="portfolio-name">
+        <mat-header-cell *matHeaderCellDef>Portfolio Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p [innerHTML]="(generatePortfolioName(row?.portfolios) | safe: 'html')"></p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Store Qty" Column -->
+    <ng-container matColumnDef="store-qty">
+        <mat-header-cell *matHeaderCellDef>Store Qty</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="word-wrap">{{ row?.storeAmount || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Sales Target Column -->
+    <ng-container matColumnDef="sales-target">
+        <mat-header-cell *matHeaderCellDef>Sales Target</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-truncate">
+                {{ +row?.totalTargetSales > 0 ? (+row?.totalTargetSales | price: 'short') : +row?.totalTargetSales }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Date of Associate Column -->
+    <ng-container matColumnDef="date-associate">
+        <mat-header-cell *matHeaderCellDef>Date Of Associate</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-truncate">{{ (row?.lastAssociated | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+    <mat-row *matRowDef="let row; columns: displayedColumns" class="association"></mat-row>
+</mat-table>
+
+<div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    No records found
+</div>
+
+<mat-paginator [fxHide]="
+                        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                    " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts" showFirstLastButtons></mat-paginator>
+
+<!-- <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div> -->
