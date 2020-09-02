@@ -25,9 +25,7 @@
             >
                 <!-- Order Reference Column -->
                 <ng-container matColumnDef="order-reference">
-                    <mat-header-cell *matHeaderCellDef>
-                        Order Reference
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Order Reference </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.orderRef || '-' }}
@@ -37,9 +35,7 @@
 
                 <!-- Order Code Column -->
                 <ng-container matColumnDef="order-code">
-                    <mat-header-cell *matHeaderCellDef>
-                        Order Code
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.orderCode || '-' }}
@@ -49,9 +45,7 @@
 
                 <!-- Store Name Column -->
                 <ng-container matColumnDef="store-name">
-                    <mat-header-cell *matHeaderCellDef>
-                        Store Name
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Store Name </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.store?.name || '-' }}
@@ -61,15 +55,13 @@
 
                 <!-- Account Receivable Column -->
                 <ng-container matColumnDef="account-receivable">
-                    <mat-header-cell *matHeaderCellDef>
-                        Account Receivable
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Account Receivable </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="price text-word-break-break-word">
                             {{
-                                +row?.parcelNettPrice > 0
-                                    ? (row?.parcelNettPrice | price: 'short') || '-'
-                                    : row?.parcelNettPrice
+                                +row?.parcelFinalPrice > 0
+                                    ? (row?.parcelFinalPrice | price: 'short') || '-'
+                                    : row?.parcelFinalPrice
                             }}
                         </p>
                     </mat-cell>
@@ -77,9 +69,7 @@
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
-                    <mat-header-cell *matHeaderCellDef>
-                        Status
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p
                             [attr.data-content]="safeValue(row?.statusPayment)"
@@ -116,9 +106,7 @@
 
                 <!-- Payment Type Column -->
                 <ng-container matColumnDef="payment-type">
-                    <mat-header-cell *matHeaderCellDef>
-                        Payment Type
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Payment Type </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{
@@ -131,9 +119,7 @@
 
                 <!-- Payment Method Column -->
                 <ng-container matColumnDef="payment-method">
-                    <mat-header-cell *matHeaderCellDef>
-                        Payment Method
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Payment Method </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.paymentTypeSupplierMethod?.paymentMethod?.name || '-' }}
@@ -143,9 +129,7 @@
 
                 <!-- Order Date Column -->
                 <ng-container matColumnDef="order-date">
-                    <mat-header-cell *matHeaderCellDef>
-                        Date Order
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Date Order </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
@@ -155,9 +139,7 @@
 
                 <!-- Due Date Column -->
                 <ng-container matColumnDef="due-date">
-                    <mat-header-cell *matHeaderCellDef>
-                        Due Date
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Due Date </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="indicator-green text-word-break-break-word" *ngIf="!row?.dueDate">
                             {{ (row?.estDueDate | date: 'dd MMM yyyy') || '-' }}
@@ -171,9 +153,7 @@
 
                 <!-- Paid On Column -->
                 <ng-container matColumnDef="paid-on">
-                    <mat-header-cell *matHeaderCellDef>
-                        Paid On
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Paid On </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word" *ngIf="row?.statusPayment === 'paid'">
                             {{ (row?.paidTime | date: 'dd MMM yyyy') || '-' }}
@@ -187,9 +167,7 @@
 
                 <!-- Aging Day Column -->
                 <ng-container matColumnDef="aging-day">
-                    <mat-header-cell *matHeaderCellDef>
-                        Aging Day
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Aging Day </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ agingDate(row?.agingDay) }}
@@ -232,9 +210,7 @@
                         </button>
                     </mat-header-cell> -->
 
-                    <mat-header-cell *matHeaderCellDef>
-                        Actions
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div
                             fxFlex="row"
