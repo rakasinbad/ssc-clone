@@ -10,9 +10,7 @@ import { Observable } from 'rxjs';
  * @export
  * @class PaymentStatusApiService
  */
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PaymentStatusApiService {
     /**
      *
@@ -30,7 +28,8 @@ export class PaymentStatusApiService {
      * @memberof PaymentStatusApiService
      */
     // private readonly _endpoint = '/payment/v1/order/order-parcels';
-    private readonly _endpoint = '/order-parcels';
+    private readonly _endpoint = '/fms';
+    private readonly _endpointPatch = '/order-parcels';
 
     /**
      * Creates an instance of PaymentStatusApiService.
@@ -47,26 +46,28 @@ export class PaymentStatusApiService {
             ? [
                   {
                       key: 'supplierId',
-                      value: supplierId
+                      value: supplierId,
                   },
-                  {
+                  // Tidak dibutuhkan untuk endpoint terbaru (fms)
+                  /* {
                       key: 'type',
-                      value: 'payment'
+                      value: 'payment',
                   },
                   {
                       key: 'statusNe',
-                      value: 'checkout'
-                  }
+                      value: 'checkout',
+                  }, */
               ]
             : [
-                  {
+                  // Tidak dibutuhkan untuk endpoint terbaru (fms)
+                  /* {
                       key: 'type',
-                      value: 'payment'
+                      value: 'payment',
                   },
                   {
                       key: 'statusNe',
-                      value: 'checkout'
-                  }
+                      value: 'checkout',
+                  }, */
               ];
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
@@ -75,6 +76,8 @@ export class PaymentStatusApiService {
     }
 
     patch(body: any, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointPatch);
+
         return this.http.patch(`${this._url}/${id}`, body);
     }
 }
