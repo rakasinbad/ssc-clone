@@ -29,7 +29,8 @@ export class PaymentStatusApiService {
      * @private
      * @memberof PaymentStatusApiService
      */
-    private readonly _endpoint = '/payment/v1/order/order-parcels';
+    // private readonly _endpoint = '/payment/v1/order/order-parcels';
+    private readonly _endpoint = '/order-parcels';
 
     /**
      * Creates an instance of PaymentStatusApiService.
