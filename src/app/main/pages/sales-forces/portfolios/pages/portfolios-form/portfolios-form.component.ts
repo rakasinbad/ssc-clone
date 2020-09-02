@@ -768,12 +768,14 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         ).subscribe(portfolio => {
             if (portfolio) {
                 this.initialPortfolioStores$.next(
-                    portfolio.storePortfolios.map(store => ({
-                        id: store.storeId,
+                    portfolio.storePortfolios.filter(
+                        storePortfolio => !!storePortfolio.store
+                    ).map(storePortfolio => ({
+                        id: storePortfolio.storeId,
                         group: 'initial-portfolio-store',
-                        label: `${store.store.storeCode} - ${store.store.name}`,
+                        label: `${storePortfolio.store.storeCode} - ${storePortfolio.store.name}`,
                         isSelected: true,
-                        data: store
+                        data: storePortfolio
                     }) as Selection)
                 );
 
