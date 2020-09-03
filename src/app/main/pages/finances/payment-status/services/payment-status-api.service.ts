@@ -27,9 +27,9 @@ export class PaymentStatusApiService {
      * @private
      * @memberof PaymentStatusApiService
      */
-    private readonly _endpoint = '/payment/v1/order/order-parcels';
-    // private readonly _endpoint = '/fms';
     private readonly _endpointPatch = '/order-parcels';
+    // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
+    private readonly _endpointPayment = '/payment/v1/order/fms';
 
     /**
      * Creates an instance of PaymentStatusApiService.
@@ -38,36 +38,19 @@ export class PaymentStatusApiService {
      * @memberof PaymentStatusApiService
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+        this._url = this._$helper.handleApiRouter(this._endpointPayment);
     }
 
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointPayment);
         const newArg = supplierId
             ? [
                   {
                       key: 'supplierId',
-                      value: supplierId,
-                  },
-                  // Tidak dibutuhkan untuk endpoint terbaru (fms)
-                  /* {
-                      key: 'type',
-                      value: 'payment',
-                  },
-                  {
-                      key: 'statusNe',
-                      value: 'checkout',
-                  }, */
+                      value: supplierId
+                  }
               ]
             : [
-                  // Tidak dibutuhkan untuk endpoint terbaru (fms)
-                  /* {
-                      key: 'type',
-                      value: 'payment',
-                  },
-                  {
-                      key: 'statusNe',
-                      value: 'checkout',
-                  }, */
               ];
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
