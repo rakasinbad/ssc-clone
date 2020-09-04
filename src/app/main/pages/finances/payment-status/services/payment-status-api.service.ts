@@ -10,7 +10,9 @@ import { Observable } from 'rxjs';
  * @export
  * @class PaymentStatusApiService
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({
+    providedIn: 'root'
+})
 export class PaymentStatusApiService {
     /**
      *
@@ -27,9 +29,10 @@ export class PaymentStatusApiService {
      * @private
      * @memberof PaymentStatusApiService
      */
-    // private readonly _endpoint = '/payment/v1/order/order-parcels';
-    private readonly _endpoint = '/fms';
-    private readonly _endpointPatch = '/order-parcels';
+    private readonly _endpoint = '/order-parcels';
+    // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
+    private readonly _endpointPayment = '/payment/v1/order/fms';
+
 
     /**
      * Creates an instance of PaymentStatusApiService.
@@ -42,42 +45,23 @@ export class PaymentStatusApiService {
     }
 
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
+        const  _url = this._$helper.handleApiRouter(this._endpointPayment);
         const newArg = supplierId
             ? [
                   {
                       key: 'supplierId',
-                      value: supplierId,
-                  },
-                  // Tidak dibutuhkan untuk endpoint terbaru (fms)
-                  /* {
-                      key: 'type',
-                      value: 'payment',
-                  },
-                  {
-                      key: 'statusNe',
-                      value: 'checkout',
-                  }, */
+                      value: supplierId
+                  }
               ]
             : [
-                  // Tidak dibutuhkan untuk endpoint terbaru (fms)
-                  /* {
-                      key: 'type',
-                      value: 'payment',
-                  },
-                  {
-                      key: 'statusNe',
-                      value: 'checkout',
-                  }, */
               ];
 
-        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+        const newParams = this._$helper.handleParams(_url, params, ...newArg);
 
-        return this.http.get(this._url, { params: newParams });
+        return this.http.get(_url, { params: newParams });
     }
 
     patch(body: any, id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointPatch);
-
         return this.http.patch(`${this._url}/${id}`, body);
     }
 }

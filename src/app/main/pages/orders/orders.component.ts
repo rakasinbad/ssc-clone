@@ -50,6 +50,8 @@ import { OrderSelectors } from './store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
+
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
@@ -62,6 +64,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     completedOrder: number;
     pendingOrder: number;
     canceledOrder: number;
+    pendingPayment: number;
     selectedTab: string;
 
     // Untuk menentukan konfigurasi card header.
@@ -236,36 +239,41 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     onSelectedTab(index: number): void {
         switch (index) {
             case 1:
-                this.selectedTab = 'confirm';
-                this._onRefreshTable();
-                break;
-
-            case 2:
                 this.selectedTab = 'pending';
                 this._onRefreshTable();
                 break;
 
+            case 2:
+                this.selectedTab = 'pending_payment';
+                this._onRefreshTable();
+                break;
+
             case 3:
-                this.selectedTab = 'packing';
+                this.selectedTab = 'confirm';
                 this._onRefreshTable();
                 break;
 
             case 4:
-                this.selectedTab = 'shipping';
+                this.selectedTab = 'packing';
                 this._onRefreshTable();
                 break;
 
             case 5:
-                this.selectedTab = 'delivered';
+                this.selectedTab = 'shipping';
                 this._onRefreshTable();
                 break;
 
             case 6:
-                this.selectedTab = 'done';
+                this.selectedTab = 'delivered';
                 this._onRefreshTable();
                 break;
 
             case 7:
+                this.selectedTab = 'done';
+                this._onRefreshTable();
+                break;
+
+            case 8:
                 this.selectedTab = 'cancel';
                 this._onRefreshTable();
                 break;
@@ -282,7 +290,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onChangeCancelStatus(item: any): void {
-        if (!item || !item.id || item.status !== 'confirm') {
+        if (!item || !item.id || (item.status !== 'confirm' && item.status !== 'pending_payment')) {
             return;
         }
 
@@ -683,6 +691,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            // isWaitingForPayment: this.selectedTab === 'waiting_for_payment'
         };
 
         data['paginate'] = true;
@@ -710,6 +719,30 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 ];
             }
         }
+
+        // if (this.selectedTab) {
+        //     if (data['search'] && data['search'].length > 0) {
+        //         if (this.selectedTab !== 'waiting_for_payment') {
+        //             data['search'].push({
+        //                 fieldName: 'status',
+        //                 keyword: this.selectedTab
+        //             });
+        //         } else {
+        //             data['limit'] = 900;
+        //         }
+        //     } else {
+        //         if (this.selectedTab !== 'waiting_for_payment') {
+        //             data['search'] = [
+        //                 {
+        //                     fieldName: 'status',
+        //                     keyword: this.selectedTab
+        //                 }
+        //             ];
+        //         } else {
+        //             data['limit'] = 900;
+        //         }
+        //     }
+        // }
 
         if (this.selectedTab) {
             if (data['search'] && data['search'].length > 0) {
@@ -749,6 +782,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             this.store.select(OrderSelectors.getTotalCompletedOrder),
             this.store.select(OrderSelectors.getTotalPendingOrder),
             this.store.select(OrderSelectors.getTotalCanceledOrder),
+            this.store.select(OrderSelectors.getTotalPendingPayment)
         ])
             .pipe(takeUntil(this._unSubs$))
             .subscribe(
@@ -761,6 +795,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     completedOrder,
                     pendingOrder,
                     canceledOrder,
+                     pendingPayment
                 ]) => {
                     this.allOrder = +allOrder;
                     this.newOrder = +newOrder;
@@ -770,7 +805,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.completedOrder = +completedOrder;
                     this.pendingOrder = +pendingOrder;
                     this.canceledOrder = +canceledOrder;
-
+                    this.pendingPayment = +pendingPayment;
                     this.cdRef.markForCheck();
                 }
             );
