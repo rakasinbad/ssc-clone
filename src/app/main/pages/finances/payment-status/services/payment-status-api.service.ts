@@ -10,9 +10,7 @@ import { Observable } from 'rxjs';
  * @export
  * @class PaymentStatusApiService
  */
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PaymentStatusApiService {
     /**
      *
@@ -29,7 +27,7 @@ export class PaymentStatusApiService {
      * @private
      * @memberof PaymentStatusApiService
      */
-    private readonly _endpoint = '/order-parcels';
+    private readonly _endpointPatch = '/order-parcels';
     // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
     private readonly _endpointPayment = '/payment/v1/order/fms';
 
@@ -41,11 +39,11 @@ export class PaymentStatusApiService {
      * @memberof PaymentStatusApiService
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+        this._url = this._$helper.handleApiRouter(this._endpointPayment);
     }
 
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
-        const  _url = this._$helper.handleApiRouter(this._endpointPayment);
+        this._url = this._$helper.handleApiRouter(this._endpointPayment);
         const newArg = supplierId
             ? [
                   {
@@ -56,12 +54,14 @@ export class PaymentStatusApiService {
             : [
               ];
 
-        const newParams = this._$helper.handleParams(_url, params, ...newArg);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
-        return this.http.get(_url, { params: newParams });
+        return this.http.get(this._url, { params: newParams });
     }
 
     patch(body: any, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointPatch);
+
         return this.http.patch(`${this._url}/${id}`, body);
     }
 }

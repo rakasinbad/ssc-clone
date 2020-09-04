@@ -144,7 +144,7 @@
                                             <td class="info-title">Store Name</td>
                                             <td>
                                                 {{
-                                                safeValue((order$ | async)?.supplierStore?.name)
+                                                    safeValue((order$ | async)?.supplierStore?.name)
                                                 }}
                                             </td>
                                         </tr>
@@ -153,9 +153,9 @@
                                             <td class="info-title">Store ID</td>
                                             <td>
                                                 {{
-                                                safeValue(
-                                                    (order$ | async)?.supplierStore?.externalId
-                                                )
+                                                    safeValue(
+                                                        (order$ | async)?.supplierStore?.externalId
+                                                    )
                                                 }}
                                             </td>
                                         </tr>
@@ -164,9 +164,9 @@
                                             <td class="info-title">Store Address</td>
                                             <td>
                                                 {{
-                                                safeValue(
-                                                    (order$ | async)?.supplierStore?.address
-                                                )
+                                                    safeValue(
+                                                        (order$ | async)?.supplierStore?.address
+                                                    )
                                                 }}
                                             </td>
                                         </tr>
@@ -201,9 +201,9 @@
                                             <td class="info-title">Geo Coverage</td>
                                             <td>
                                                 {{
-                                                safeValue(
-                                                    (order$ | async)?.supplierStore?.urban
-                                                )
+                                                    safeValue(
+                                                        (order$ | async)?.supplierStore?.urban
+                                                    )
                                                 }}
                                             </td>
                                         </tr>
@@ -836,19 +836,13 @@
                     <ng-container [ngSwitch]="(order$ | async)?.status">
                         <ng-container *ngSwitchCase="'checkout'"> Quotation </ng-container>
 
-                        <ng-container *ngSwitchCase="'pending'">
-                            Pending
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'pending'"> Pending </ng-container>
 
-                         <ng-container *ngSwitchCase="'pending_payment'">
-                            Pending Payment
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'pending_payment'"> Pending Payment </ng-container>
 
                         <ng-container *ngSwitchCase="'confirm'"> New Order </ng-container>
 
-                        <ng-container *ngSwitchCase="'packing'">
-                            Packed
-                        </ng-container>
+                        <ng-container *ngSwitchCase="'packing'"> Packed </ng-container>
 
                         <ng-container *ngSwitchCase="'shipping'"> Shipped </ng-container>
 
@@ -1263,7 +1257,7 @@
                 <mat-table class="order-lines-table" [dataSource]="dataSource">
                     <!-- Product Column -->
                     <ng-container matColumnDef="product">
-                        <mat-header-cell *matHeaderCellDef> Product</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word">
                                 {{ safeValue(row?.catalogue?.name) }}
@@ -1286,7 +1280,7 @@
 
                     <!-- Order Qty Column -->
                     <ng-container matColumnDef="order-qty">
-                        <mat-header-cell *matHeaderCellDef> Order Qty</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Order Qty </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word">
                                 {{
@@ -1359,7 +1353,7 @@
 
                     <!-- Unit Price Column -->
                     <ng-container matColumnDef="unit-price">
-                        <mat-header-cell *matHeaderCellDef> Unit Price</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word">
                                 {{
@@ -1373,7 +1367,7 @@
 
                     <!-- Discount Price Column -->
                     <ng-container matColumnDef="discount-price">
-                        <mat-header-cell *matHeaderCellDef> Discount Price</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word">
                                 {{
@@ -1394,7 +1388,7 @@
 
                     <!-- Gross Column -->
                     <ng-container matColumnDef="gross">
-                        <mat-header-cell *matHeaderCellDef> Gross Price</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p class="text-truncate">
                                 {{
