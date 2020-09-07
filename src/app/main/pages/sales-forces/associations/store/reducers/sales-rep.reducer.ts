@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { SalesRep } from '../../../sales-reps/models';
+import { SalesRep } from '../../models';
 import { SalesRepActions } from '../actions';
 
 // Keyname for reducer
@@ -26,6 +26,7 @@ const adapter = createEntityAdapter<SalesRep>({ selectId: row => row.id });
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
+    isRefresh: false,
     selectedId: null,
     total: 0
 });
@@ -35,22 +36,29 @@ const reducer = createReducer<State>(
     initialState,
     on(SalesRepActions.fetchSalesRepsRequest, state => ({
         ...state,
-        isLoading: true
+        isLoading: true,
     })),
     on(SalesRepActions.fetchSalesRepsFailure, state => ({
         ...state,
         isLoading: false
     })),
-    on(SalesRepActions.fetchSalesRepsSuccess, (state, { payload }) => {
-        return adapter.upsertMany(payload.data, {
+    on(SalesRepActions.fetchSalesRepsSuccess, (state, { payload }) =>
+        adapter.upsertMany(payload.data, {
             ...state,
             isLoading: false,
+            isRefresh: true,
             total: payload.total
-        });
-    }),
-    on(SalesRepActions.clearState, state => {
-        return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
-    })
+        })
+    ),
+    on(SalesRepActions.clearState, state =>
+        adapter.removeAll({
+            ...state,
+            isLoading: false,
+            isRefresh: false,
+            selectedId: null,
+            total: 0
+        })
+    )
 );
 
 // Set anything for the export

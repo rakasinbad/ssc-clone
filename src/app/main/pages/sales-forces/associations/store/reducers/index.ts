@@ -1,22 +1,19 @@
 import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
-import * as fromAssociatedPortfolio from './associated-portfolio.reducer';
-import * as fromAssociatedStore from './associated-store.reducer';
-import * as fromAssociationStores from './association-store.reducer';
 import * as fromAssociations from './association.reducer';
+import * as fromPortfolio from './portfolio.reducer';
 import * as fromSalesRep from './sales-rep.reducer';
-import * as fromStore from './stores.reducer';
+import * as fromStorePortfolio from './store-portfolio.reducer';
+import * as fromStore from './store.reducer';
 
-// import * as fromSalesRepErrs from './error.reducer';
-const featureKey = 'associations';
+const featureKey = 'sf-associations';
 
 interface State {
     [fromAssociations.featureKey]: fromAssociations.State;
-    [fromAssociationStores.featureKey]: fromAssociationStores.State;
+    [fromPortfolio.featureKey]: fromPortfolio.State;
     [fromSalesRep.featureKey]: fromSalesRep.State;
-    [fromAssociatedPortfolio.featureKey]: fromAssociatedPortfolio.State;
-    [fromAssociatedStore.featureKey]: fromAssociatedStore.State;
+    [fromStorePortfolio.featureKey]: fromStorePortfolio.State;
     [fromStore.featureKey]: fromStore.State;
 }
 
@@ -27,17 +24,18 @@ interface FeatureState extends fromRoot.State {
 function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
         [fromAssociations.featureKey]: fromAssociations.reducer,
-        [fromAssociationStores.featureKey]: fromAssociationStores.reducer,
+        [fromPortfolio.featureKey]: fromPortfolio.reducer,
         [fromSalesRep.featureKey]: fromSalesRep.reducer,
-        [fromAssociatedPortfolio.featureKey]: fromAssociatedPortfolio.reducer,
-        [fromAssociatedStore.featureKey]: fromAssociatedStore.reducer,
-        [fromStore.featureKey]: fromStore.reducer
+        [fromStorePortfolio.featureKey]: fromStorePortfolio.reducer,
+        [fromStore.featureKey]: fromStore.reducer,
     })(state, action);
 }
 
 export {
-    fromAssociatedStore,
-    fromAssociatedPortfolio,
+    fromAssociations,
+    fromPortfolio,
+    fromSalesRep,
+    fromStorePortfolio,
     fromStore,
     featureKey,
     FeatureState,

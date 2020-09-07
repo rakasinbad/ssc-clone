@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 
 import { PortfolioActions } from '../../portfolios/store/actions';
 import { CoreFeatureState as PortfolioCoreFeatureState } from '../../portfolios/store/reducers';
-import { IAssociation, IAssociationForm } from '../models';
+import { Association, AssociationForm } from '../models';
 
 /**
  *
@@ -34,8 +34,7 @@ export class AssociationApiService {
      * @private
      * @memberof AssociationApiService
      */
-    private readonly _endpoint = '/sales-reps';
-    private readonly _associationsEndpoint = '/associations';
+    private readonly _endpoint = '/associations';
 
     /**
      * Creates an instance of AssociationApiService.
@@ -52,24 +51,14 @@ export class AssociationApiService {
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+        const newArg = [];
 
-        if (params['associated']) {
+        if (!supplierId) {
+            throw new Error('ASSOCIATION_API_REQUIRES_SUPPLIER_ID');
+        } else {
             newArg.push({
-                key: 'associated',
-                value: 'true'
-            });
-        } else if (params.hasOwnProperty('associated') && !params['associated']) {
-            newArg.push({
-                key: 'associated',
-                value: 'false'
+                key: 'supplierId',
+                value: supplierId
             });
         }
 
@@ -84,13 +73,27 @@ export class AssociationApiService {
             });
         }
 
+        if (params['keyword']) {
+            newArg.push({
+                key: 'keyword',
+                value: params['keyword']
+            });
+        }
+
+        if (params['warehouseId']) {
+            newArg.push({
+                key: 'warehouseId',
+                value: params['warehouseId']
+            });
+        }
+
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findById(id: string, supplierId?: string): Observable<IAssociation> {
+    findById(id: string, supplierId?: string): Observable<Association> {
         const newArg = supplierId
             ? [
                   {
@@ -103,11 +106,11 @@ export class AssociationApiService {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<IAssociation>(`${this._url}/${id}`, { params: newParams });
+        return this.http.get<Association>(`${this._url}/${id}`, { params: newParams });
     }
 
-    createAssociation(body: IAssociationForm): Observable<{ message: string }> {
-        this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
+    createAssociation(body: AssociationForm): Observable<{ message: string }> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.post<{ message: string }>(this._url, body);
     }
 
@@ -139,7 +142,7 @@ export class AssociationApiService {
         }
 
         if (params['request'] === 'associations') {
-            this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
+            this._url = this._$helper.handleApiRouter(this._endpoint);
         } else {
             this._url = this._$helper.handleApiRouter(this._endpoint);
         }

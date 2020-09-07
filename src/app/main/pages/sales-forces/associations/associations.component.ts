@@ -5,7 +5,8 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef
 } from '@angular/core';
 import { PageEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -24,6 +25,8 @@ import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { AssociationActions } from './store/actions';
 import * as fromAssociations from './store/reducers';
+import { AssociationService, AssociationViewBy } from './services';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-associations',
@@ -43,17 +46,22 @@ import * as fromAssociations from './store/reducers';
         ])
     ],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
+    // Untuk menyimpan View By yang terpilih.
+    // tslint:disable-next-line: no-inferrable-types
+    selectedViewBy: string = 'store';
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
             label: 'SR Assignment'
         },
-        // search: {
-        //     active: false
-        // },
+        search: {
+            active: false,
+            changed: (value: string) =>
+                this.associationService.setSearchValue(value)
+        },
         viewBy: {
             list: [
                 {
@@ -69,8 +77,10 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
                     label: 'Portfolio'
                 }
             ],
-            onChanged: (viewBy: { id: string; label: string }) =>
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: viewBy.id }))
+            onChanged: ({ id }: { id: string }) => {
+                this.associationService.selectViewBy(id as AssociationViewBy);
+                this.associationService.selectTab('all');
+            }
         },
         add: {
             permissions: ['SRM.ASC.CREATE'],
@@ -87,8 +97,6 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         //     pageType: 'sr-assignment'
         // }
     };
-
-    buttonViewByActive$: Observable<string>;
 
     private _unSubs$: Subject<void>;
 
@@ -107,10 +115,12 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     constructor(
         private router: Router,
-        private readonly sanitizer: DomSanitizer,
+        // private readonly sanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
-        private ngxPermissionsService: NgxPermissionsService,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private associationService: AssociationService,
+        // private ngxPermissionsService: NgxPermissionsService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private cdRef: ChangeDetectorRef,
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -126,6 +136,38 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     onChangePage($event: PageEvent): void {}
 
+    onSelectedTab(idx: number): void {
+        if (this.selectedViewBy === 'store') {
+            if (idx === 0) {
+                this.associationService.selectTab('all');
+            } else if (idx === 1) {
+                this.associationService.selectTab('store-assigned-to-sr-in-portfolio');
+            } else if (idx === 2) {
+                this.associationService.selectTab('store-assigned-to-sr-out-of-portfolio');
+            } else if (idx === 3) {
+                this.associationService.selectTab('store-not-assigned-to-sr-in-portfolio');
+            } else if (idx === 4) {
+                this.associationService.selectTab('store-not-assigned-to-sr-out-of-portfolio');
+            }
+        } else if (this.selectedViewBy === 'sales-rep') {
+            if (idx === 0) {
+                this.associationService.selectTab('all');
+            } else if (idx === 1) {
+                this.associationService.selectTab('sales-rep-with-assignment');
+            } else if (idx === 2) {
+                this.associationService.selectTab('sales-rep-without-assignment');
+            }
+        } else if (this.selectedViewBy === 'portfolio') {
+            if (idx === 0) {
+                this.associationService.selectTab('all');
+            } else if (idx === 1) {
+                this.associationService.selectTab('portfolio-assigned-to-sr');
+            } else if (idx === 2) {
+                this.associationService.selectTab('portfolio-not-assigned-to-sr');
+            }
+        }
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
@@ -136,12 +178,19 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         this._unSubs$ = new Subject();
 
         this._initPage();
-        this.buttonViewByActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class
+        this.associationService.getSelectedViewBy().pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(value => {
+            this.selectedViewBy = value;
+            this.cdRef.detectChanges();
+        });
+
+        setTimeout(() => this.associationService.selectViewBy('store'), 200);
     }
 
     ngOnDestroy(): void {
@@ -149,6 +198,11 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add 'implements OnDestroy' to the class.
         this._unSubs$.next();
         this._unSubs$.complete();
+
+        // Menghapus tab yang terpilih.
+        this.associationService.selectTab(null);
+        // Menghapus view by yang terpilih.
+        this.associationService.selectViewBy(null);
 
         // Reset core state sales reps
         this.store.dispatch(AssociationActions.clearState());

@@ -94,7 +94,7 @@ build_development:
         expire_in: 1 week
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -117,7 +117,7 @@ build_staging:
         expire_in: 1 week
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -140,7 +140,7 @@ build_demo:
         expire_in: 1 week
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -163,7 +163,7 @@ build_production:
         expire_in: 1 week
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)(|-\d+)$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -189,7 +189,7 @@ deploy_development:
         - rm -rf  ~/.ssh
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -220,7 +220,7 @@ deploy_staging:
         - rm -rf  ~/.ssh
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -251,7 +251,7 @@ deploy_demo:
         - rm -rf  ~/.ssh
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner
 
@@ -282,6 +282,6 @@ deploy_production:
         - rm -rf  ~/.ssh
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)(|-\d+)$/'
-          when: always
+          when: on_success
     tags:
         - sinbad-aws-docker-runner

@@ -13,8 +13,8 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { SalesRep } from '../../../sales-reps/models';
-import { SalesRepApiService } from '../../services';
+import { SalesRep } from '../../models';
+import { SalesRepsApiService } from '../../services';
 import { SalesRepActions } from '../actions';
 import * as fromSalesReps from '../reducers';
 
@@ -128,6 +128,6 @@ export class SalesRepEffects {
         private store: Store<fromSalesReps.FeatureState>,
         private storage: StorageMap,
         private _$notice: NoticeService,
-        private _$salesRepApi: SalesRepApiService
+        private _$salesRepApi: SalesRepsApiService
     ) {}
 }
