@@ -291,8 +291,6 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             this.associationStore.dispatch(AssociationActions.clearState());
                             this.associationStore.dispatch(PortfolioActions.clearState());
 
-                            this.multipleSelection.clearAllSelectedOptions();
-
                             this.form.patchValue({
                                 portfolios: [],
                                 removedPortfolios: [],
@@ -305,7 +303,13 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             this.associationService.selectWarehouse(value);
                             this.singleWarehouseService.selectWarehouse(value);
     
-                            this.requestAssociation(this.search.value);
+                            setTimeout(() => {
+                                this.multipleSelection.clearAllSelectedOptions();
+                                
+                                setTimeout(() => {
+                                    this.requestAssociation(this.search.value);
+                                }, 200);
+                            }, 300);
                         } else {
                             this.associationService.selectWarehouse(oldWarehouse);
                             this.singleWarehouseService.selectWarehouse(oldWarehouse);
@@ -358,8 +362,6 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             this.associationStore.dispatch(AssociationActions.clearState());
                             this.associationStore.dispatch(PortfolioActions.clearState());
 
-                            this.multipleSelection.clearAllSelectedOptions();
-
                             this.form.patchValue({
                                 portfolios: [],
                                 removedPortfolios: [],
@@ -372,7 +374,13 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             this.associationService.selectSalesRep(value);
                             this.singleSalesRep.selectSalesRep(value);
     
-                            this.requestAssociation(this.search.value);
+                            setTimeout(() => {
+                                this.multipleSelection.clearAllSelectedOptions();
+                                
+                                setTimeout(() => {
+                                    this.requestAssociation(this.search.value);
+                                }, 200);
+                            }, 300);
                         } else {
                             this.associationService.selectSalesRep(oldSalesRep);
                             this.singleSalesRep.selectSalesRep(oldSalesRep);
