@@ -156,7 +156,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public selectPromo: string;
     public selectNewStore = false;
     public selectActiveOutlet = false;
-    
+    public maxRedemStat = false;
+    public multiStat = false;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -1069,11 +1071,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Private methods
-    // -----------------------------------------------------------------------------------------------------
-
-     /**
+    /**
      *
      * Handle change event for General Information Promo Allocation
      * @param {MatRadioChange} ev
@@ -1105,6 +1103,31 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.selectActiveOutlet = false;
         }
     }
+
+    /**
+     *
+     * Handle change event for Multiplication
+     * @param {mat-checkbox} ev
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectMultiplication(event): void {
+        if (event.checked === true) {
+            this.maxRedemStat = true;
+            this.multiStat = true;
+            this.form.get('maxRedemption').setValue(1);
+        } else {
+            this.maxRedemStat = false;
+            this.multiStat = false;
+            this.form.get('maxRedemption').setValue('');
+        }
+    }
+    
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
 
     /**
      *
@@ -2228,6 +2251,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         this.conditionForm = this.form.get('conditions') as FormArray;
 
+        console.log('isi this.conditions->', this.conditions)
         if (this.pageType === 'edit') {
             this._initEditForm();
         }

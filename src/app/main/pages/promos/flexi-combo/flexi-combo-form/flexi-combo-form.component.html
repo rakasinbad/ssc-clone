@@ -185,18 +185,37 @@
                                 Max Redemption<br />per Buyer
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <input
-                                    matInput
-                                    name="maxRedemption"
-                                    mask="0*"
-                                    formControlName="maxRedemption"
-                                />
+                            <ng-container *ngIf="maxRedemStat === true">
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input
+                                        matInput
+                                        name="maxRedemption"
+                                        mask="0*"
+                                        formControlName="maxRedemption"
+                                        readonly
+                                    />
 
-                                <mat-error *ngIf="hasError('maxRedemption', true)">
-                                    {{ getErrorMessage('maxRedemption') }}
-                                </mat-error>
-                            </mat-form-field>
+                                    <mat-error *ngIf="hasError('maxRedemption', true)">
+                                        {{ getErrorMessage('maxRedemption') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+
+                            <ng-container *ngIf="maxRedemStat === false">
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input
+                                        matInput
+                                        name="maxRedemption"
+                                        mask="0*"
+                                        formControlName="maxRedemption"
+                                    />
+    
+                                    <mat-error *ngIf="hasError('maxRedemption', true)">
+                                        {{ getErrorMessage('maxRedemption') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+
                         </div>
 
                         <div *ngIf="selectPromo == 'promo_budget'"
@@ -496,6 +515,37 @@
                                 </mat-checkbox>
                             </div>
                         </div>
+
+                        <!-- START FIELD TIER MULTIPLICATION -->
+                        <div
+                        class="custom-field mt-12"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                    >
+                        <label fxFlexAlign="center" fxFlex="10"></label>
+
+                        <div fxFlexAlign="center" fxFlex="60">
+                            <mat-checkbox
+                                (change)="selectMultiplication($event)"
+                                formControlName="multiplication"
+                            >
+                                Multiplication
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="
+                                    This function allows you to set multiplication promo;&#10;promo that can give multiple benefits calculation."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                    <!-- ./ FIELD TIER MULTIPLICATION -->
+
                     </div>
                 </div>
             </mat-card>
@@ -1260,34 +1310,8 @@
                                                 </div>
                                                 <!-- ./ FIELD TIER BONUS QTY -->
 
-                                                <!-- START FIELD TIER MULTIPLICATION -->
-                                                <div
-                                                    class="custom-field mt-12"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                    *ngIf="isFirst"
-                                                >
-                                                    <label fxFlexAlign="center" fxFlex="16"></label>
+                                                
 
-                                                    <div fxFlexAlign="center" fxFlex="60">
-                                                        <mat-checkbox
-                                                            formControlName="multiplication"
-                                                        >
-                                                            Multiplication Only
-
-                                                            <mat-icon
-                                                                class="active-icon s-14 ml-8 cursor-pointer"
-                                                                color="accent"
-                                                                matTooltip="Once activated, the benefits that will be awarded&#10;to the customer will be following the multiplication&#10;of the inputted value in the quantity above as&#10;If the multiplication rule is activated, you won't be&#10;able to add more tier."
-                                                                matTooltipClass="tooltip-br"
-                                                            >
-                                                                help
-                                                            </mat-icon>
-                                                        </mat-checkbox>
-                                                    </div>
-                                                </div>
-                                                <!-- ./ FIELD TIER MULTIPLICATION -->
                                             </ng-container>
 
                                             <ng-container *ngSwitchCase="eBenefitType.AMOUNT">
@@ -1488,23 +1512,53 @@
                                     <!-- ./ FIELD-WRAPPER -->
 
                                     <!-- START CARD-INSTRUCTION -->
-                                    <card-instruction fxFlex="0 2 auto" *ngIf="isFirst">
-                                        <p class="title">Sample Case</p>
+                                    <ng-container *ngIf="multiStat === false">
+                                        <card-instruction fxFlex="0 2 auto" *ngIf="isFirst">
+                                            <p class="title">Sample Case</p>
 
-                                        <p>
-                                            Toko Maju Jaya ordered 5 pcs of SKU A.<br />
-                                            There are 2 condition and benefits available:
-                                            <br /><br />
-                                            Buy 5 SKU A, get 1 SKU A for free<br />
-                                            Buy 10 SKU A, get 3 SKU A for free
-                                            <br /><br />
-                                            If you choose non-cumulative:<br />
-                                            Toko Maju Jaya will get 3 SKU A bonus for free.
-                                            <br /><br />
-                                            If you choose cumulative:<br />
-                                            Toko Maju Jaya will get 4 SKU A bonus for free.
-                                        </p>
-                                    </card-instruction>
+                                            <p>
+                                                Toko Maju Jaya ordered 5 pcs of SKU A.<br />
+                                                There are 2 condition and benefits available:
+                                                <br /><br />
+                                                Buy 5 SKU A, get 1 SKU A for free<br />
+                                                Buy 10 SKU A, get 3 SKU A for free
+                                                <br /><br />
+                                                If you choose non-cumulative:<br />
+                                                Toko Maju Jaya will get 3 SKU A bonus for free.
+                                                <br /><br />
+                                                If you choose cumulative:<br />
+                                                Toko Maju Jaya will get 4 SKU A bonus for free.
+                                            </p>
+                                        </card-instruction>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="multiStat === true">
+                                        <card-instruction fxFlex="0 2 auto">
+                                            <p class="title">Instruction</p>
+
+                                            <p>
+                                                "Eligibility Condition"<br />
+                                                Defines the eligibility of the store to get <br />
+                                                the promo.
+                                                <br /><br />
+                                                "Buy Ratio Condition"<br />
+                                                Defines the calculation logic of the <br />
+                                                multiplication promo.
+                                                <br /><br />
+                                                Example: <br/>
+                                                1) For each n piece of SKU A bought by the <br/>
+                                                store, the user will get 1 piece of SKU B. <br/>
+                                                2) For each n purchase value of SKU A bought <br/>
+                                                by the store, the user will get a 1.000 price cut. <br/>
+                                                You should define the value of the "n".<br/>
+                                                <br /><br />
+                                                "Benefit"<br/>
+                                                Defines the bonus or price cut that will <br/>
+                                                be given to the stores.<br/>
+                                            </p>
+                                        </card-instruction>
+                                    </ng-container>
+
                                     <!-- ./ CARD-INSTRUCTION -->
                                 </div>
                             </div>
@@ -1513,12 +1567,7 @@
                     </div>
 
                     <div>
-                        <ng-container
-                            *ngIf="
-                                form.get('conditions').value
-                                    | canAddTier: pageType:conditionForm.controls
-                            "
-                        >
+                        <ng-container *ngIf="multiStat == false">
                             <button
                                 type="button"
                                 mat-button
@@ -1527,29 +1576,16 @@
                             >
                                 Add Tier
                             </button>
-                        </ng-container>
 
-                        <ng-container
-                            *ngIf="
-                                !(
-                                    form.get('conditions').value
-                                    | canAddTier: pageType:conditionForm.controls
-                                )
-                            "
-                        >
-                            <button type="button" mat-button color="accent" disabled>
-                                Add Tier
-                            </button>
-                        </ng-container>
-
-                        <mat-icon
-                            class="active-icon s-14 ml-8 cursor-pointer"
-                            color="accent"
-                            matTooltip="If the multiplication is activated, you&#10;cannot add another tier."
-                            matTooltipClass="tooltip-br"
-                        >
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="If the multiplication is activated, you&#10;cannot add another tier."
+                                matTooltipClass="tooltip-br"
+                            >
                             help
-                        </mat-icon>
+                            </mat-icon>
+                        </ng-container>
                     </div>
                 </div>
             </mat-card>
