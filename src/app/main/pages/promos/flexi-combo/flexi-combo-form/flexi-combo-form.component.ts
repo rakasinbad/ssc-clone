@@ -158,6 +158,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public selectActiveOutlet = false;
     public maxRedemStat = false;
     public multiStat = false;
+    public textCondition: string = "Condition";
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -1118,13 +1119,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.maxRedemStat = true;
             this.multiStat = true;
             this.form.get('maxRedemption').setValue(1);
+            this.textCondition = "Eligibility Condition";
         } else {
             this.maxRedemStat = false;
             this.multiStat = false;
             this.form.get('maxRedemption').setValue('');
+            this.textCondition = "Condition";
         }
     }
-    
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------

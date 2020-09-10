@@ -798,9 +798,17 @@
                                     fxLayout="row"
                                     fxLayoutAlign="space-between stretch"
                                 >
+
+                                <ng-container *ngIf="multiStat === false">
                                     <span class="box-title" fxFlexAlign="center">
-                                        {{ 'Tier ' + (conditionIdx + 1) }}
+                                        {{ 'Condition & Benefit ' + (conditionIdx + 1) }}
                                     </span>
+                                </ng-container>
+                                <ng-container *ngIf="multiStat === true">
+                                    <span class="box-title" fxFlexAlign="center">
+                                        Condition & Benefit
+                                    </span>
+                                </ng-container>
 
                                     <button
                                         type="button"
@@ -834,7 +842,7 @@
                                         "
                                     >
                                         <span class="field-title">
-                                            Condition
+                                            {{textCondition}}
 
                                             <mat-icon
                                                 class="active-icon s-14 ml-8 cursor-pointer"
