@@ -148,6 +148,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
+    public listPromoAlloc: any = [
+        { label: 'None', value: 'none', checked: true },
+        { label: 'Promo Budget', value: 'promo_budget', checked: false },
+        { label: 'Promo Slot', value: 'promo_slot', checked: false },
+    ];
+    public selectPromo: string;
+    public selectNewStore = false;
+    public selectActiveOutlet = false;
+    
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -1063,6 +1072,39 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+     /**
+     *
+     * Handle change event for General Information Promo Allocation
+     * @param {MatRadioChange} ev
+     * @param {number} idx
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectPromoAlloc(ev: MatRadioChange): void {
+        this.selectPromo = ev.value;
+    }
+
+     /**
+     *
+     * Handle change event for Segmentatio
+     * @param {mat-checkbox} ev
+     * @param {string and type} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    checkSegmentation(ev, type): void {
+        if (type === 'new_store' && ev.checked === true) {
+            this.selectActiveOutlet = true;
+        } else if (type === 'active_outlet' && ev.checked === true) {
+            this.selectNewStore = true;
+        } else {
+            this.selectNewStore = false;
+            this.selectActiveOutlet = false;
+        }
+    }
 
     /**
      *
@@ -2099,6 +2141,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     }),
                 ],
             ],
+            promoSlot: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
+            ],
             startDate: [
                 { value: null, disabled: true },
                 [
@@ -2192,6 +2244,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
+                // button promo allocation checke when edit
+                this.listPromoAlloc[0].checked = false;
+                this.listPromoAlloc[1].checked = true;
+                this.listPromoAlloc[2].checked = false;
                 this._setEditForm(row);
             });
     }

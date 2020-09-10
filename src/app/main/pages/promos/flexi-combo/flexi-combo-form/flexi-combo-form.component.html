@@ -28,6 +28,47 @@
                     </span>
 
                     <div class="form-box">
+
+                        <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="10"
+                        >
+                            <span class="sinbad-red-fg">*</span>
+                            Promo Allocation
+                        </label>
+
+                        <ng-container *ngIf="pageType !== 'edit'">
+                            <mat-radio-group aria-label="Select type" (change)="selectPromoAlloc($event)" style="margin-top: 3px;">
+                                <mat-radio-button
+                                    *ngFor="let option of listPromoAlloc"
+                                    [checked]="option.checked"
+                                    value="{{ option.value }}"
+                                >
+                                    {{ option.label }}</mat-radio-button
+                                >
+                            </mat-radio-group>
+                        </ng-container>
+                        <ng-container *ngIf="pageType === 'edit'">
+                            <mat-radio-group aria-label="Select type" style="margin-top: 3px;">
+                                <mat-radio-button
+                                    *ngFor="let option of listPromoAlloc"
+                                    [checked]="option.checked"
+                                    [disabled]="!option.checked"
+                                    value="{{ option.value }}"
+                                >
+                                    {{ option.label }}</mat-radio-button
+                                >
+                            </mat-radio-group>
+                        </ng-container>
+                        
+                    </div>
+
                         <div
                             class="custom-field"
                             fxLayout="row"
@@ -158,36 +199,63 @@
                             </mat-form-field>
                         </div>
 
-                        <div
-                            class="custom-field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
+                        <div *ngIf="selectPromo == 'promo_budget'"
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="10"
+                            [class.sinbad-red-fg]="hasError('promoBudget')"
                         >
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="10"
-                                [class.sinbad-red-fg]="hasError('promoBudget')"
-                            >
-                                Promo Budget
-                            </label>
+                            Promo Budget
+                        </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <input
-                                    matInput
-                                    name="promoBudget"
-                                    formControlName="promoBudget"
-                                    mask="separator.2"
-                                    thousandSeparator="."
-                                    prefix="Rp"
-                                    placeholder="Rp"
-                                />
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input
+                                matInput
+                                name="promoBudget"
+                                formControlName="promoBudget"
+                                mask="separator.2"
+                                thousandSeparator="."
+                                prefix="Rp"
+                                placeholder="Rp"
+                            />
 
-                                <mat-error *ngIf="hasError('promoBudget', true)">
-                                    {{ getErrorMessage('promoBudget') }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
+                            <mat-error *ngIf="hasError('promoBudget', true)">
+                                {{ getErrorMessage('promoBudget') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div *ngIf="selectPromo == 'promo_slot'"
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="10"
+                           
+                        >
+                            Promo Slot
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input
+                                matInput
+                                name="promoSlot"
+                                formControlName="promoSlot"
+                            />
+
+                            <mat-error *ngIf="hasError('promoSlot', true)">
+                                {{ getErrorMessage('promoSlot') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
 
                         <div
                             class="custom-field"
@@ -1774,6 +1842,32 @@
                                     </div>
                                 </select-store-segmentation>
                             </div>
+                            <div  
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10">
+                            </label>
+                            
+                            <mat-checkbox (change)="checkSegmentation($event,'new_store')" [disabled]="selectNewStore">
+                                New Store
+                                <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                            </mat-checkbox>
+
+                            <mat-checkbox (change)="checkSegmentation($event, 'active_outlet')" [disabled]="selectActiveOutlet">
+                                Active Outlet Only
+                            </mat-checkbox>
+                        </div>
                         </ng-container>
                     </div>
                 </div>
