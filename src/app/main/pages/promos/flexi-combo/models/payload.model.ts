@@ -1,6 +1,6 @@
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { BenefitType } from 'app/shared/models/benefit-type.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
 
@@ -10,6 +10,8 @@ interface IFlexiComboCondition {
     benefitType: string;
     conditionBase: string;
     conditionQty: number;
+    ratioBase: string;
+    ratioQty: number;
     multiplication: boolean;
 }
 
@@ -40,7 +42,6 @@ export class CreateFlexiComboDto {
     maxRedemptionPerStore: number;
     name: string;
     platform: PlatformSinbad;
-    promoBudget: number;
     shortDescription: string;
     startDate: string;
     status: EStatus;
@@ -48,6 +49,11 @@ export class CreateFlexiComboDto {
     target: string;
     type: string;
     voucherCombine: boolean;
+    promoBudget: number;
+    promoAllocationType: string;
+    promoSlot: number;
+    is_new_store: boolean;
+    is_active_store: boolean;
 
     constructor(data: CreateFlexiComboDto) {
         const {
@@ -70,6 +76,10 @@ export class CreateFlexiComboDto {
             target,
             type,
             voucherCombine,
+            promoSlot,
+            promoAllocationType,
+            is_new_store,
+            is_active_store
         } = data;
 
         this.base = base;
@@ -91,6 +101,10 @@ export class CreateFlexiComboDto {
         this.target = target;
         this.type = type;
         this.voucherCombine = voucherCombine;
+        this.promoSlot = promoSlot || null;
+        this.promoAllocationType = promoAllocationType || null;
+        this.is_new_store = is_new_store;
+        this.is_active_store = is_active_store;
     }
 }
 
@@ -114,6 +128,10 @@ export class PatchFlexiComboDto {
     target?: string;
     type?: string;
     voucherCombine?: boolean;
+    promoSlot?: number;
+    promoAllocationType?: string;
+    is_active_store?: boolean;
+    is_new_store?: boolean;
 
     constructor(data: PatchFlexiComboDto) {
         const {
@@ -136,6 +154,10 @@ export class PatchFlexiComboDto {
             target,
             type,
             voucherCombine,
+            promoAllocationType,
+            promoSlot,
+            is_new_store,
+            is_active_store
         } = data;
 
         if (typeof base !== 'undefined') {
@@ -186,6 +208,14 @@ export class PatchFlexiComboDto {
             this.promoBudget = promoBudget;
         }
 
+        if (typeof promoAllocationType !== 'undefined') {
+            this.promoAllocationType = promoAllocationType;
+        }
+
+        if (typeof promoSlot !== 'undefined') {
+            this.promoSlot = promoSlot;
+        }
+
         if (typeof shortDescription !== 'undefined') {
             this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         }
@@ -213,6 +243,14 @@ export class PatchFlexiComboDto {
         if (typeof voucherCombine !== 'undefined') {
             this.voucherCombine = voucherCombine;
         }
+
+        if (typeof is_new_store !== 'undefined') {
+            this.is_new_store = is_new_store;
+        }
+
+        if (typeof is_active_store !== 'undefined') {
+            this.is_active_store = is_active_store;
+        }
     }
 }
 
@@ -230,6 +268,9 @@ export class ConditionDto {
     conditionQty: string;
     conditionValue: number;
     multiplication: boolean;
+    ratioBase: RatioBaseCondition;
+    ratioQty: number;
+    ratioValue: number;
 
     constructor(data: ConditionDto) {
         const {
@@ -246,6 +287,9 @@ export class ConditionDto {
             conditionQty,
             conditionValue,
             multiplication,
+            ratioBase,
+            ratioQty,
+            ratioValue
         } = data;
 
         this.id = id;
@@ -261,5 +305,8 @@ export class ConditionDto {
         this.conditionQty = conditionQty;
         this.conditionValue = conditionValue;
         this.multiplication = multiplication;
+        this.ratioBase = ratioBase;
+        this.ratioQty = ratioQty;
+        this.ratioValue = ratioValue;
     }
 }

@@ -23,51 +23,48 @@
         >
             <mat-card class="mb-24">
                 <div fxLayout="column">
-                    <span class="mat-headline">
-                        General Information
-                    </span>
+                    <span class="mat-headline"> General Information </span>
 
                     <div class="form-box">
-
                         <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="10"
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
                         >
-                            <span class="sinbad-red-fg">*</span>
-                            Promo Allocation
-                        </label>
+                            <label fxFlexAlign="center" fxFlex="10">
+                                <span class="sinbad-red-fg">*</span>
+                                Promo Allocation
+                            </label>
 
-                        <ng-container *ngIf="pageType !== 'edit'">
-                            <mat-radio-group aria-label="Select type" (change)="selectPromoAlloc($event)" style="margin-top: 3px;">
-                                <mat-radio-button
-                                    *ngFor="let option of listPromoAlloc"
-                                    [checked]="option.checked"
-                                    value="{{ option.value }}"
+                            <ng-container *ngIf="pageType === 'new'">
+                                <mat-radio-group
+                                    formControlName="promoAllocationType"
+                                    aria-label="Select type"
+                                    (change)="selectPromoAlloc($event)"
+                                    style="margin-top: 3px"
                                 >
-                                    {{ option.label }}</mat-radio-button
-                                >
-                            </mat-radio-group>
-                        </ng-container>
-                        <ng-container *ngIf="pageType === 'edit'">
-                            <mat-radio-group aria-label="Select type" style="margin-top: 3px;">
-                                <mat-radio-button
-                                    *ngFor="let option of listPromoAlloc"
-                                    [checked]="option.checked"
-                                    [disabled]="!option.checked"
-                                    value="{{ option.value }}"
-                                >
-                                    {{ option.label }}</mat-radio-button
-                                >
-                            </mat-radio-group>
-                        </ng-container>
-                        
-                    </div>
+                                    <mat-radio-button
+                                        *ngFor="let option of promoAllocation"
+                                        [value]="option.id"
+                                    >
+                                        {{ option?.label }}
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                            </ng-container>
+                            <ng-container *ngIf="pageType === 'edit'">
+                                <mat-radio-group aria-label="Select type" style="margin-top: 3px">
+                                    <mat-radio-button
+                                        *ngFor="let option of listPromoAlloc"
+                                        [checked]="option.checked"
+                                        [disabled]="!option.checked"
+                                        value="{{ option.value }}"
+                                    >
+                                        {{ option.label }}</mat-radio-button
+                                    >
+                                </mat-radio-group>
+                            </ng-container>
+                        </div>
 
                         <div
                             class="custom-field"
@@ -209,72 +206,63 @@
                                         mask="0*"
                                         formControlName="maxRedemption"
                                     />
-    
+
                                     <mat-error *ngIf="hasError('maxRedemption', true)">
                                         {{ getErrorMessage('maxRedemption') }}
                                     </mat-error>
                                 </mat-form-field>
                             </ng-container>
-
                         </div>
 
-                        <div *ngIf="selectPromo == 'promo_budget'"
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="10"
-                            [class.sinbad-red-fg]="hasError('promoBudget')"
+                        <div
+                            *ngIf="selectPromo == 'promobudget'"
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
                         >
-                            Promo Budget
-                        </label>
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10"
+                                [class.sinbad-red-fg]="hasError('promoBudget')"
+                            >
+                                Promo Budget
+                            </label>
 
-                        <mat-form-field appearance="outline" fxFlex="50">
-                            <input
-                                matInput
-                                name="promoBudget"
-                                formControlName="promoBudget"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                prefix="Rp"
-                                placeholder="Rp"
-                            />
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="promoBudget"
+                                    formControlName="promoBudget"
+                                    mask="separator.2"
+                                    thousandSeparator="."
+                                    prefix="Rp"
+                                    placeholder="Rp"
+                                />
 
-                            <mat-error *ngIf="hasError('promoBudget', true)">
-                                {{ getErrorMessage('promoBudget') }}
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
+                                <mat-error *ngIf="hasError('promoBudget', true)">
+                                    {{ getErrorMessage('promoBudget') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
 
-                    <div *ngIf="selectPromo == 'promo_slot'"
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="10"
-                           
+                        <div
+                            *ngIf="selectPromo == 'promoslot'"
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
                         >
-                            Promo Slot
-                        </label>
+                            <label fxFlexAlign="center" fxFlex="10"> Promo Slot </label>
 
-                        <mat-form-field appearance="outline" fxFlex="50">
-                            <input
-                                matInput
-                                name="promoSlot"
-                                formControlName="promoSlot"
-                            />
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="promoSlot" formControlName="promoSlot" />
 
-                            <mat-error *ngIf="hasError('promoSlot', true)">
-                                {{ getErrorMessage('promoSlot') }}
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
+                                <mat-error *ngIf="hasError('promoSlot', true)">
+                                    {{ getErrorMessage('promoSlot') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
 
                         <div
                             class="custom-field"
@@ -471,7 +459,7 @@
                                         [href]="flexiCombo?.imageUrl"
                                         target="_blank"
                                         *ngIf="flexiCombo?.imageUrl"
-                                        style="position: relative; top: -0.78em;"
+                                        style="position: relative; top: -0.78em"
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
@@ -518,43 +506,40 @@
 
                         <!-- START FIELD TIER MULTIPLICATION -->
                         <div
-                        class="custom-field mt-12"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                    >
-                        <label fxFlexAlign="center" fxFlex="10"></label>
+                            class="custom-field mt-12"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="10"></label>
 
-                        <div fxFlexAlign="center" fxFlex="60">
-                            <mat-checkbox
-                                (change)="selectMultiplication($event)"
-                                formControlName="multiplication"
-                            >
-                                Multiplication
-
-                                <mat-icon
-                                    class="active-icon s-14 ml-8 cursor-pointer"
-                                    color="accent"
-                                    matTooltip="
-                                    This function allows you to set multiplication promo;&#10;promo that can give multiple benefits calculation."
-                                    matTooltipClass="tooltip-br"
+                            <!-- form control for multiplication di hold formControlName="multiplication" -->
+                            <div fxFlexAlign="center" fxFlex="60">
+                                <mat-checkbox
+                                    formControlName="multiplication"
+                                    (change)="selectMultiplication($event)"
                                 >
-                                    help
-                                </mat-icon>
-                            </mat-checkbox>
-                        </div>
-                    </div>
-                    <!-- ./ FIELD TIER MULTIPLICATION -->
+                                    Multiplication
 
+                                    <mat-icon
+                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                        color="accent"
+                                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                                        matTooltipClass="tooltip-br"
+                                    >
+                                        help
+                                    </mat-icon>
+                                </mat-checkbox>
+                            </div>
+                        </div>
+                        <!-- ./ FIELD TIER MULTIPLICATION -->
                     </div>
                 </div>
             </mat-card>
 
             <mat-card class="mb-24">
                 <div fxLayout="column">
-                    <span class="mat-headline">
-                        Trigger
-                    </span>
+                    <span class="mat-headline"> Trigger </span>
 
                     <div class="form-box">
                         <div
@@ -573,29 +558,6 @@
                                 Base
                             </label>
 
-                            <!-- <mat-form-field appearance="outline" fxFlex="50" class="form-info">
-                                <input matInput style="display: none;" />
-
-                                <ng-container *ngIf="triggerBase; else noTriggerBase">
-                                    <mat-radio-group formControlName="base">
-                                        <mat-radio-button
-                                            *ngFor="let row of triggerBase"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.label }}
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                </ng-container>
-
-                                <ng-template #noTriggerBase>
-                                    -
-                                </ng-template>
-
-                                <mat-hint class="mat-error" *ngIf="hasError('base', true)">
-                                    {{ getErrorMessage('base') }}
-                                </mat-hint>
-                            </mat-form-field> -->
-
                             <div fxFlexAlign="center" fxFlex="50" fxFill>
                                 <ng-container *ngIf="triggerBase; else noTriggerBase">
                                     <mat-radio-group
@@ -611,9 +573,7 @@
                                     </mat-radio-group>
                                 </ng-container>
 
-                                <ng-template #noTriggerBase>
-                                    -
-                                </ng-template>
+                                <ng-template #noTriggerBase> - </ng-template>
 
                                 <mat-hint class="mat-error" *ngIf="hasError('base', true)">
                                     {{ getErrorMessage('base') }}
@@ -716,9 +676,7 @@
                                 </div>
                             </ng-container>
 
-                            <ng-container *ngSwitchDefault>
-                                No trigger base found.
-                            </ng-container>
+                            <ng-container *ngSwitchDefault> No trigger base found. </ng-container>
                         </ng-container>
                     </div>
                 </div>
@@ -726,9 +684,7 @@
 
             <mat-card class="mb-24">
                 <div fxLayout="column">
-                    <span class="mat-headline">
-                        Condition & Benefit Settings
-                    </span>
+                    <span class="mat-headline"> Condition & Benefit Settings </span>
 
                     <div class="form-box">
                         <div
@@ -762,9 +718,7 @@
                                     </mat-radio-group>
                                 </ng-container>
 
-                                <ng-template #noCalculationMechanism>
-                                    -
-                                </ng-template>
+                                <ng-template #noCalculationMechanism> - </ng-template>
 
                                 <a href="javascript:;" (click)="openHint(whatIsThisHint)">
                                     What is this?
@@ -798,17 +752,16 @@
                                     fxLayout="row"
                                     fxLayoutAlign="space-between stretch"
                                 >
-
-                                <ng-container *ngIf="multiStat === false">
-                                    <span class="box-title" fxFlexAlign="center">
-                                        {{ 'Condition & Benefit ' + (conditionIdx + 1) }}
-                                    </span>
-                                </ng-container>
-                                <ng-container *ngIf="multiStat === true">
-                                    <span class="box-title" fxFlexAlign="center">
-                                        Condition & Benefit
-                                    </span>
-                                </ng-container>
+                                    <ng-container *ngIf="multiStat === false">
+                                        <span class="box-title" fxFlexAlign="center">
+                                            {{ 'Condition & Benefit ' + (conditionIdx + 1) }}
+                                        </span>
+                                    </ng-container>
+                                    <ng-container *ngIf="multiStat === true">
+                                        <span class="box-title" fxFlexAlign="center">
+                                            Condition & Benefit
+                                        </span>
+                                    </ng-container>
 
                                     <button
                                         type="button"
@@ -841,18 +794,34 @@
                                             isBenefitType(eBenefitType.AMOUNT, conditionIdx)
                                         "
                                     >
-                                        <span class="field-title">
-                                            {{textCondition}}
+                                        <ng-container *ngIf="multiStat === false">
+                                            <span class="field-title">
+                                                Condition
 
-                                            <mat-icon
-                                                class="active-icon s-14 ml-8 cursor-pointer"
-                                                color="accent"
-                                                matTooltip="Define the condition need to be&#10;fulfilled by your customer so that&#10;they will be eligible for the promo&#10;program."
-                                                matTooltipClass="tooltip-br"
-                                            >
-                                                help
-                                            </mat-icon>
-                                        </span>
+                                                <mat-icon
+                                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                                    color="accent"
+                                                    matTooltip="Define the condition need to be&#10;fulfilled by your customer so that&#10;they will be eligible for the promo&#10;program."
+                                                    matTooltipClass="tooltip-br"
+                                                >
+                                                    help
+                                                </mat-icon>
+                                            </span>
+                                        </ng-container>
+                                        <ng-container *ngIf="multiStat === true">
+                                            <span class="field-title">
+                                                Eligibility Condition
+
+                                                <mat-icon
+                                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                                    color="accent"
+                                                    matTooltip="Define the ratio of bonus calculation; for&#10;each piece or certain order value of bought SKU,&#10;users will get the determined&#10;quantity or price cut."
+                                                    matTooltipClass="tooltip-br"
+                                                >
+                                                    help
+                                                </mat-icon>
+                                            </span>
+                                        </ng-container>
 
                                         <!-- START FIELD TIER CONDITION BASE -->
                                         <div
@@ -899,9 +868,7 @@
                                                     </mat-radio-group>
                                                 </ng-container>
 
-                                                <ng-template #noConditionBase>
-                                                    -
-                                                </ng-template>
+                                                <ng-template #noConditionBase> - </ng-template>
 
                                                 <mat-hint
                                                     class="mat-error"
@@ -1070,6 +1037,210 @@
                                         </ng-container>
                                         <!-- ./ SWITCH CASE LAYOUT CONDITION VALUE -->
 
+                                        <!-- Ratio Buy condition when multiplication checklist -->
+                                        <ng-container *ngIf="multiStat === true">
+                                            <span class="field-title">
+                                                Buy Ratio Condition
+
+                                                <mat-icon
+                                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                                    color="accent"
+                                                    matTooltip="Define the ratio of bonus calculation;&#10;for each piece or certain order value&#10;of bought SKU, users will get the&#10;determined quantity or price cut."
+                                                    matTooltipClass="tooltip-br"
+                                                >
+                                                    help
+                                                </mat-icon>
+                                            </span>
+
+                                            <!-- START FIELD TIER Ratio Buy CONDITION BASE -->
+                                            <div
+                                                class="custom-field"
+                                                fxLayout="row"
+                                                fxLayoutAlign="start stretch"
+                                                fxLayoutGap="16px"
+                                            >
+                                                <label fxFlexAlign="center" fxFlex="16" fxFill>
+                                                    <span class="sinbad-red-fg">*</span>
+                                                    Base
+                                                </label>
+
+                                                <div fxFlexAlign="center" fxFlex="50" fxFill>
+                                                    <ng-container
+                                                        *ngIf="ratioBase; else noRatioConditionBase"
+                                                    >
+                                                        <mat-radio-group
+                                                            formControlName="ratioBase"
+                                                            (change)="
+                                                                onChangeRatioConditionBase(
+                                                                    $event,
+                                                                    conditionIdx
+                                                                )
+                                                            "
+                                                        >
+                                                            <mat-radio-button
+                                                                *ngFor="let row of ratioBase"
+                                                                [value]="row?.id"
+                                                            >
+                                                                {{ row?.label }}
+                                                            </mat-radio-button>
+                                                        </mat-radio-group>
+                                                    </ng-container>
+
+                                                    <ng-template #noRatioConditionBase>
+                                                        -
+                                                    </ng-template>
+
+                                                    <!-- <mat-hint
+                                                        class="mat-error"
+                                                        *ngIf="
+                                                            hasError(
+                                                                [
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'ratioBase'
+                                                                ],
+                                                                true
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            getErrorMessage(
+                                                                'ratioBase',
+                                                                'conditions',
+                                                                conditionIdx
+                                                            )
+                                                        }}
+                                                    </mat-hint> -->
+                                                </div>
+                                            </div>
+                                            <!-- ./ FIELD TIER CONDITION BASE -->
+
+                                            <!-- SWITCH CASE LAYOUT Ratio Buy CONDITION VALUE -->
+                                            <ng-container
+                                                [ngSwitch]="
+                                                    form.get([
+                                                        'conditions',
+                                                        conditionIdx,
+                                                        'ratioBase'
+                                                    ]).value
+                                                "
+                                            >
+                                                <ng-container
+                                                    *ngSwitchCase="eBuyRatioCondition.QTY"
+                                                >
+                                                    <!-- START FIELD TIER CONDITION VALUE (QTY) -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label fxFlexAlign="center" fxFlex="16">
+                                                            Qty >=
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'ratioQty' + conditionIdx
+                                                                "
+                                                                mask="0*"
+                                                                formControlName="ratioQty"
+                                                            />
+
+                                                            <!-- <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'ratioQty'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'ratioQty',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error> -->
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER CONDITION VALUE (QTY) -->
+                                                </ng-container>
+
+                                                <ng-container
+                                                    *ngSwitchCase="eBuyRatioCondition.ORDER_VALUE"
+                                                >
+                                                    <!-- START FIELD TIER CONDITION VALUE (ORDER VALUE) -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label fxFlexAlign="center" fxFlex="16">
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Order Value >=
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'ratioValue' + conditionIdx
+                                                                "
+                                                                formControlName="ratioValue"
+                                                                (change)="
+                                                                    onChangeOrderValueRatio(
+                                                                        conditionIdx
+                                                                    )
+                                                                "
+                                                                mask="separator.2"
+                                                                thousandSeparator="."
+                                                                prefix="Rp"
+                                                                placeholder="Rp"
+                                                            />
+
+                                                            <!-- <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'ratioValue'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'ratioValue',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error> -->
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER CONDITION VALUE (ORDER VALUE) -->
+                                                </ng-container>
+                                            </ng-container>
+                                            <!-- ./ SWITCH CASE LAYOUT Ratio Buy CONDITION VALUE -->
+                                        </ng-container>
+
                                         <span class="field-title">
                                             Benefit
 
@@ -1083,439 +1254,749 @@
                                             </mat-icon>
                                         </span>
 
-                                        <!-- START FIELD TIER BENEFIT TYPE -->
-                                        <div
-                                            class="custom-field"
-                                            fxLayout="row"
-                                            fxLayoutAlign="start stretch"
-                                            fxLayoutGap="16px"
-                                        >
-                                            <label
-                                                fxFlexAlign="center"
-                                                fxFlex="16"
-                                                [class.sinbad-red-fg]="
-                                                    hasError([
-                                                        'conditions',
-                                                        conditionIdx,
-                                                        'benefitType'
-                                                    ])
-                                                "
-                                                fxFill
+                                        <ng-container *ngIf="multiStat === false">
+                                            <!-- START FIELD TIER BENEFIT TYPE -->
+                                            <div
+                                                class="custom-field"
+                                                fxLayout="row"
+                                                fxLayoutAlign="start stretch"
+                                                fxLayoutGap="16px"
                                             >
-                                                <span class="sinbad-red-fg">*</span>
-                                                Benefit Type
-                                            </label>
-
-                                            <div fxFlexAlign="center" fxFlex="60" fxFill>
-                                                <ng-container
-                                                    *ngIf="benefitType; else noBenefitType"
-                                                >
-                                                    <mat-radio-group
-                                                        formControlName="benefitType"
-                                                        (change)="
-                                                            onChangeBenefitType(
-                                                                $event,
-                                                                conditionIdx
-                                                            )
-                                                        "
-                                                    >
-                                                        <mat-radio-button
-                                                            *ngFor="let row of benefitType"
-                                                            [value]="row?.id"
-                                                        >
-                                                            {{ row?.label }}
-                                                        </mat-radio-button>
-                                                    </mat-radio-group>
-                                                </ng-container>
-
-                                                <ng-template #noBenefitType>
-                                                    -
-                                                </ng-template>
-
-                                                <mat-hint
-                                                    class="mat-error"
-                                                    *ngIf="
-                                                        hasError(
-                                                            [
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitType'
-                                                            ],
-                                                            true
-                                                        )
-                                                    "
-                                                >
-                                                    {{
-                                                        getErrorMessage(
-                                                            'benefitType',
+                                                <label
+                                                    fxFlexAlign="center"
+                                                    fxFlex="16"
+                                                    [class.sinbad-red-fg]="
+                                                        hasError([
                                                             'conditions',
-                                                            conditionIdx
-                                                        )
-                                                    }}
-                                                </mat-hint>
-                                            </div>
-                                        </div>
-                                        <!-- ./ FIELD TIER BENEFIT TYPE -->
-
-                                        <!-- SWITCH CASE LAYOUT BENEFIT TYPE -->
-                                        <ng-container
-                                            [ngSwitch]="
-                                                form.get([
-                                                    'conditions',
-                                                    conditionIdx,
-                                                    'benefitType'
-                                                ]).value
-                                            "
-                                        >
-                                            <ng-container *ngSwitchCase="eBenefitType.QTY">
-                                                <!-- START FIELD TIER BONUS SKU -->
-                                                <div
-                                                    class="custom-field"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                >
-                                                    <label
-                                                        fxFlexAlign="center"
-                                                        fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                            hasError([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitCatalogueId'
-                                                            ])
-                                                        "
-                                                    >
-                                                        <span class="sinbad-red-fg">*</span>
-                                                        Bonus SKU
-                                                    </label>
-
-                                                    <select-catalogues
-                                                        mode="single"
-                                                        [disabled]="
-                                                            form.get([
-                                                                'conditions',
-                                                                0,
-                                                                'benefitCatalogueId'
-                                                            ]).disabled
-                                                        "
-                                                        [initialSelection]="
-                                                            form.get([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitCatalogueId'
-                                                            ]).value || null
-                                                        "
-                                                        [required]="true"
-                                                        (selected)="
-                                                            onBenefitSkuSelected($event, [
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitCatalogueId'
-                                                            ])
-                                                        "
-                                                        fxFlex="60"
-                                                    >
-                                                        <div error>
-                                                            {{
-                                                                getErrorMessage(
-                                                                    'benefitCatalogueId',
-                                                                    'conditions',
-                                                                    conditionIdx
-                                                                )
-                                                            }}
-                                                        </div>
-                                                    </select-catalogues>
-                                                </div>
-                                                <!-- ./ FIELD TIER BONUS SKU -->
-
-                                                <!-- START FIELD TIER APPLY SAME SKU -->
-                                                <div
-                                                    class="custom-field mt-12"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                    *ngIf="
-                                                        isFirst &&
-                                                        form.get('chosenSku').value?.length === 1
+                                                            conditionIdx,
+                                                            'benefitType'
+                                                        ])
                                                     "
+                                                    fxFill
                                                 >
-                                                    <label fxFlexAlign="center" fxFlex="16"></label>
+                                                    <span class="sinbad-red-fg">*</span>
+                                                    Benefit Type
+                                                </label>
 
-                                                    <div fxFlexAlign="center" fxFlex="60">
-                                                        <mat-checkbox
-                                                            formControlName="applySameSku"
+                                                <div fxFlexAlign="center" fxFlex="60" fxFill>
+                                                    <ng-container
+                                                        *ngIf="benefitType; else noBenefitType"
+                                                    >
+                                                        <mat-radio-group
+                                                            formControlName="benefitType"
                                                             (change)="
-                                                                onChangeApplySameSku(
+                                                                onChangeBenefitType(
                                                                     $event,
                                                                     conditionIdx
                                                                 )
                                                             "
                                                         >
-                                                            Apply Same SKU
-                                                        </mat-checkbox>
+                                                            <mat-radio-button
+                                                                *ngFor="let row of benefitType"
+                                                                [value]="row?.id"
+                                                            >
+                                                                {{ row?.label }}
+                                                            </mat-radio-button>
+                                                        </mat-radio-group>
+                                                    </ng-container>
+
+                                                    <ng-template #noBenefitType> - </ng-template>
+
+                                                    <mat-hint
+                                                        class="mat-error"
+                                                        *ngIf="
+                                                            hasError(
+                                                                [
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitType'
+                                                                ],
+                                                                true
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            getErrorMessage(
+                                                                'benefitType',
+                                                                'conditions',
+                                                                conditionIdx
+                                                            )
+                                                        }}
+                                                    </mat-hint>
+                                                </div>
+                                            </div>
+                                            <!-- ./ FIELD TIER BENEFIT TYPE -->
+
+                                            <!-- SWITCH CASE LAYOUT BENEFIT TYPE -->
+                                            <ng-container
+                                                [ngSwitch]="
+                                                    form.get([
+                                                        'conditions',
+                                                        conditionIdx,
+                                                        'benefitType'
+                                                    ]).value
+                                                "
+                                            >
+                                                <ng-container *ngSwitchCase="eBenefitType.QTY">
+                                                    <!-- START FIELD TIER BONUS SKU -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitCatalogueId'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Bonus SKU
+                                                        </label>
+
+                                                        <select-catalogues
+                                                            mode="single"
+                                                            [disabled]="
+                                                                form.get([
+                                                                    'conditions',
+                                                                    0,
+                                                                    'benefitCatalogueId'
+                                                                ]).disabled
+                                                            "
+                                                            [initialSelection]="
+                                                                form.get([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitCatalogueId'
+                                                                ]).value || null
+                                                            "
+                                                            [required]="true"
+                                                            (selected)="
+                                                                onBenefitSkuSelected($event, [
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitCatalogueId'
+                                                                ])
+                                                            "
+                                                            fxFlex="60"
+                                                        >
+                                                            <div error>
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitCatalogueId',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </div>
+                                                        </select-catalogues>
                                                     </div>
-                                                </div>
-                                                <!-- ./ FIELD TIER APPLY SAME SKU -->
+                                                    <!-- ./ FIELD TIER BONUS SKU -->
 
-                                                <!-- START FIELD TIER BONUS QTY -->
-                                                <div
-                                                    class="custom-field"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                >
-                                                    <label
-                                                        fxFlexAlign="center"
-                                                        fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                            hasError([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitBonusQty'
-                                                            ])
+                                                    <!-- START FIELD TIER APPLY SAME SKU -->
+                                                    <div
+                                                        class="custom-field mt-12"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                        *ngIf="
+                                                            isFirst &&
+                                                            form.get('chosenSku').value?.length ===
+                                                                1
                                                         "
                                                     >
-                                                        <span class="sinbad-red-fg">*</span>
-                                                        Bonus Qty
-                                                    </label>
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                        ></label>
 
-                                                    <mat-form-field
-                                                        appearance="outline"
-                                                        fxFlex="60"
+                                                        <div fxFlexAlign="center" fxFlex="60">
+                                                            <mat-checkbox
+                                                                formControlName="applySameSku"
+                                                                (change)="
+                                                                    onChangeApplySameSku(
+                                                                        $event,
+                                                                        conditionIdx
+                                                                    )
+                                                                "
+                                                            >
+                                                                Apply Same SKU
+                                                            </mat-checkbox>
+                                                        </div>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER APPLY SAME SKU -->
+
+                                                    <!-- START FIELD TIER BONUS QTY -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
                                                     >
-                                                        <input
-                                                            matInput
-                                                            [attr.name]="
-                                                                'benefitBonusQty' + conditionIdx
-                                                            "
-                                                            formControlName="benefitBonusQty"
-                                                            mask="0*"
-                                                            autocomplete="off"
-                                                        />
-
-                                                        <mat-error
-                                                            *ngIf="
-                                                                hasError(
-                                                                    [
-                                                                        'conditions',
-                                                                        conditionIdx,
-                                                                        'benefitBonusQty'
-                                                                    ],
-                                                                    true
-                                                                )
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitBonusQty'
+                                                                ])
                                                             "
                                                         >
-                                                            {{
-                                                                getErrorMessage(
-                                                                    'benefitBonusQty',
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Bonus Qty
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'benefitBonusQty' + conditionIdx
+                                                                "
+                                                                formControlName="benefitBonusQty"
+                                                                mask="0*"
+                                                                autocomplete="off"
+                                                            />
+
+                                                            <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'benefitBonusQty'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitBonusQty',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BONUS QTY -->
+                                                </ng-container>
+
+                                                <ng-container *ngSwitchCase="eBenefitType.AMOUNT">
+                                                    <!-- START FIELD TIER BENEFIT REBATE -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
                                                                     'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitRebate'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Rebate
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'benefitRebate' + conditionIdx
+                                                                "
+                                                                formControlName="benefitRebate"
+                                                                mask="separator.2"
+                                                                thousandSeparator="."
+                                                                prefix="Rp"
+                                                                placeholder="Rp"
+                                                                autocomplete="off"
+                                                            />
+
+                                                            <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'benefitRebate'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitRebate',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BENEFIT REBATE -->
+                                                </ng-container>
+
+                                                <ng-container *ngSwitchCase="eBenefitType.PERCENT">
+                                                    <!-- START FIELD TIER BENEFIT DISCOUNT -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitDiscount'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            % Discount
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                type="number"
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'benefitDiscount' + conditionIdx
+                                                                "
+                                                                formControlName="benefitDiscount"
+                                                                min="0"
+                                                                max="100"
+                                                                step="0.5"
+                                                                autocomplete="off"
+                                                            />
+
+                                                            <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'benefitDiscount'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitDiscount',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BENEFIT DISCOUNT -->
+
+                                                    <!-- START FIELD TIER BENEFIT MAX REBATE -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitMaxRebate'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Max Rebate
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'benefitMaxRebate' +
                                                                     conditionIdx
-                                                                )
-                                                            }}
-                                                        </mat-error>
-                                                    </mat-form-field>
-                                                </div>
-                                                <!-- ./ FIELD TIER BONUS QTY -->
+                                                                "
+                                                                formControlName="benefitMaxRebate"
+                                                                mask="separator.2"
+                                                                thousandSeparator="."
+                                                                prefix="Rp"
+                                                                placeholder="Rp"
+                                                                autocomplete="off"
+                                                            />
 
-                                                
-
+                                                            <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'benefitMaxRebate'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitMaxRebate',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BENEFIT MAX REBATE -->
+                                                </ng-container>
                                             </ng-container>
-
-                                            <ng-container *ngSwitchCase="eBenefitType.AMOUNT">
-                                                <!-- START FIELD TIER BENEFIT REBATE -->
-                                                <div
-                                                    class="custom-field"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                >
-                                                    <label
-                                                        fxFlexAlign="center"
-                                                        fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                            hasError([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitRebate'
-                                                            ])
-                                                        "
-                                                    >
-                                                        <span class="sinbad-red-fg">*</span>
-                                                        Rebate
-                                                    </label>
-
-                                                    <mat-form-field
-                                                        appearance="outline"
-                                                        fxFlex="60"
-                                                    >
-                                                        <input
-                                                            matInput
-                                                            [attr.name]="
-                                                                'benefitRebate' + conditionIdx
-                                                            "
-                                                            formControlName="benefitRebate"
-                                                            mask="separator.2"
-                                                            thousandSeparator="."
-                                                            prefix="Rp"
-                                                            placeholder="Rp"
-                                                            autocomplete="off"
-                                                        />
-
-                                                        <mat-error
-                                                            *ngIf="
-                                                                hasError(
-                                                                    [
-                                                                        'conditions',
-                                                                        conditionIdx,
-                                                                        'benefitRebate'
-                                                                    ],
-                                                                    true
-                                                                )
-                                                            "
-                                                        >
-                                                            {{
-                                                                getErrorMessage(
-                                                                    'benefitRebate',
-                                                                    'conditions',
-                                                                    conditionIdx
-                                                                )
-                                                            }}
-                                                        </mat-error>
-                                                    </mat-form-field>
-                                                </div>
-                                                <!-- ./ FIELD TIER BENEFIT REBATE -->
-                                            </ng-container>
-
-                                            <ng-container *ngSwitchCase="eBenefitType.PERCENT">
-                                                <!-- START FIELD TIER BENEFIT DISCOUNT -->
-                                                <div
-                                                    class="custom-field"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                >
-                                                    <label
-                                                        fxFlexAlign="center"
-                                                        fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                            hasError([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitDiscount'
-                                                            ])
-                                                        "
-                                                    >
-                                                        <span class="sinbad-red-fg">*</span>
-                                                        % Discount
-                                                    </label>
-
-                                                    <mat-form-field
-                                                        appearance="outline"
-                                                        fxFlex="60"
-                                                    >
-                                                        <input
-                                                            type="number"
-                                                            matInput
-                                                            [attr.name]="
-                                                                'benefitDiscount' + conditionIdx
-                                                            "
-                                                            formControlName="benefitDiscount"
-                                                            min="0"
-                                                            max="100"
-                                                            step="0.5"
-                                                            autocomplete="off"
-                                                        />
-
-                                                        <mat-error
-                                                            *ngIf="
-                                                                hasError(
-                                                                    [
-                                                                        'conditions',
-                                                                        conditionIdx,
-                                                                        'benefitDiscount'
-                                                                    ],
-                                                                    true
-                                                                )
-                                                            "
-                                                        >
-                                                            {{
-                                                                getErrorMessage(
-                                                                    'benefitDiscount',
-                                                                    'conditions',
-                                                                    conditionIdx
-                                                                )
-                                                            }}
-                                                        </mat-error>
-                                                    </mat-form-field>
-                                                </div>
-                                                <!-- ./ FIELD TIER BENEFIT DISCOUNT -->
-
-                                                <!-- START FIELD TIER BENEFIT MAX REBATE -->
-                                                <div
-                                                    class="custom-field"
-                                                    fxLayout="row"
-                                                    fxLayoutAlign="start stretch"
-                                                    fxLayoutGap="16px"
-                                                >
-                                                    <label
-                                                        fxFlexAlign="center"
-                                                        fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                            hasError([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'benefitMaxRebate'
-                                                            ])
-                                                        "
-                                                    >
-                                                        <span class="sinbad-red-fg">*</span>
-                                                        Max Rebate
-                                                    </label>
-
-                                                    <mat-form-field
-                                                        appearance="outline"
-                                                        fxFlex="60"
-                                                    >
-                                                        <input
-                                                            matInput
-                                                            [attr.name]="
-                                                                'benefitMaxRebate' + conditionIdx
-                                                            "
-                                                            formControlName="benefitMaxRebate"
-                                                            mask="separator.2"
-                                                            thousandSeparator="."
-                                                            prefix="Rp"
-                                                            placeholder="Rp"
-                                                            autocomplete="off"
-                                                        />
-
-                                                        <mat-error
-                                                            *ngIf="
-                                                                hasError(
-                                                                    [
-                                                                        'conditions',
-                                                                        conditionIdx,
-                                                                        'benefitMaxRebate'
-                                                                    ],
-                                                                    true
-                                                                )
-                                                            "
-                                                        >
-                                                            {{
-                                                                getErrorMessage(
-                                                                    'benefitMaxRebate',
-                                                                    'conditions',
-                                                                    conditionIdx
-                                                                )
-                                                            }}
-                                                        </mat-error>
-                                                    </mat-form-field>
-                                                </div>
-                                                <!-- ./ FIELD TIER BENEFIT MAX REBATE -->
-                                            </ng-container>
+                                            <!-- ./ SWITCH CASE LAYOUT BENEFIT TYPE -->
                                         </ng-container>
-                                        <!-- ./ SWITCH CASE LAYOUT BENEFIT TYPE -->
+
+                                        <ng-container *ngIf="multiStat === true">
+                                            <!-- START FIELD TIER BENEFIT TYPE -->
+                                            <div
+                                                class="custom-field"
+                                                fxLayout="row"
+                                                fxLayoutAlign="start stretch"
+                                                fxLayoutGap="16px"
+                                            >
+                                                <label
+                                                    fxFlexAlign="center"
+                                                    fxFlex="16"
+                                                    [class.sinbad-red-fg]="
+                                                        hasError([
+                                                            'conditions',
+                                                            conditionIdx,
+                                                            'benefitType'
+                                                        ])
+                                                    "
+                                                    fxFill
+                                                >
+                                                    <span class="sinbad-red-fg">*</span>
+                                                    Benefit Type
+                                                </label>
+
+                                                <div fxFlexAlign="center" fxFlex="60" fxFill>
+                                                    <ng-container
+                                                        *ngIf="benefitMultiType; else noBenefitType"
+                                                    >
+                                                        <mat-radio-group
+                                                            formControlName="benefitType"
+                                                            (change)="
+                                                                onChangeBenefitType(
+                                                                    $event,
+                                                                    conditionIdx
+                                                                )
+                                                            "
+                                                        >
+                                                            <mat-radio-button
+                                                                *ngFor="let row of benefitMultiType"
+                                                                [value]="row?.id"
+                                                            >
+                                                                {{ row?.label }}
+                                                            </mat-radio-button>
+                                                        </mat-radio-group>
+                                                    </ng-container>
+
+                                                    <!-- <ng-template #noBenefitType> - </ng-template> -->
+
+                                                    <mat-hint
+                                                        class="mat-error"
+                                                        *ngIf="
+                                                            hasError(
+                                                                [
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitType'
+                                                                ],
+                                                                true
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            getErrorMessage(
+                                                                'benefitType',
+                                                                'conditions',
+                                                                conditionIdx
+                                                            )
+                                                        }}
+                                                    </mat-hint>
+                                                </div>
+                                            </div>
+                                            <!-- ./ FIELD TIER BENEFIT TYPE -->
+
+                                            <!-- SWITCH CASE LAYOUT BENEFIT TYPE -->
+                                            <ng-container
+                                                [ngSwitch]="
+                                                    form.get([
+                                                        'conditions',
+                                                        conditionIdx,
+                                                        'benefitType'
+                                                    ]).value
+                                                "
+                                            >
+                                                <ng-container *ngSwitchCase="eBenefitType.QTY">
+                                                    <!-- START FIELD TIER BONUS SKU -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitCatalogueId'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Bonus SKU
+                                                        </label>
+
+                                                        <select-catalogues
+                                                            mode="single"
+                                                            [disabled]="
+                                                                form.get([
+                                                                    'conditions',
+                                                                    0,
+                                                                    'benefitCatalogueId'
+                                                                ]).disabled
+                                                            "
+                                                            [initialSelection]="
+                                                                form.get([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitCatalogueId'
+                                                                ]).value || null
+                                                            "
+                                                            [required]="true"
+                                                            (selected)="
+                                                                onBenefitSkuSelected($event, [
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitCatalogueId'
+                                                                ])
+                                                            "
+                                                            fxFlex="60"
+                                                        >
+                                                            <div error>
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitCatalogueId',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </div>
+                                                        </select-catalogues>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BONUS SKU -->
+
+                                                    <!-- START FIELD TIER APPLY SAME SKU -->
+                                                    <div
+                                                        class="custom-field mt-12"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                        *ngIf="
+                                                            isFirst &&
+                                                            form.get('chosenSku').value?.length ===
+                                                                1
+                                                        "
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                        ></label>
+
+                                                        <div fxFlexAlign="center" fxFlex="60">
+                                                            <mat-checkbox
+                                                                formControlName="applySameSku"
+                                                                (change)="
+                                                                    onChangeApplySameSku(
+                                                                        $event,
+                                                                        conditionIdx
+                                                                    )
+                                                                "
+                                                            >
+                                                                Apply Same SKU
+                                                            </mat-checkbox>
+                                                        </div>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER APPLY SAME SKU -->
+
+                                                    <!-- START FIELD TIER BONUS QTY -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitBonusQty'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Bonus Qty
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'benefitBonusQty' + conditionIdx
+                                                                "
+                                                                formControlName="benefitBonusQty"
+                                                                mask="0*"
+                                                                autocomplete="off"
+                                                            />
+
+                                                            <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'benefitBonusQty'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitBonusQty',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BONUS QTY -->
+                                                </ng-container>
+
+                                                <ng-container *ngSwitchCase="eBenefitType.AMOUNT">
+                                                    <!-- START FIELD TIER BENEFIT REBATE -->
+                                                    <div
+                                                        class="custom-field"
+                                                        fxLayout="row"
+                                                        fxLayoutAlign="start stretch"
+                                                        fxLayoutGap="16px"
+                                                    >
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'benefitRebate'
+                                                                ])
+                                                            "
+                                                        >
+                                                            <span class="sinbad-red-fg">*</span>
+                                                            Rebate
+                                                        </label>
+
+                                                        <mat-form-field
+                                                            appearance="outline"
+                                                            fxFlex="60"
+                                                        >
+                                                            <input
+                                                                matInput
+                                                                [attr.name]="
+                                                                    'benefitRebate' + conditionIdx
+                                                                "
+                                                                formControlName="benefitRebate"
+                                                                mask="separator.2"
+                                                                thousandSeparator="."
+                                                                prefix="Rp"
+                                                                placeholder="Rp"
+                                                                autocomplete="off"
+                                                            />
+
+                                                            <mat-error
+                                                                *ngIf="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'benefitRebate'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                "
+                                                            >
+                                                                {{
+                                                                    getErrorMessage(
+                                                                        'benefitRebate',
+                                                                        'conditions',
+                                                                        conditionIdx
+                                                                    )
+                                                                }}
+                                                            </mat-error>
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <!-- ./ FIELD TIER BENEFIT REBATE -->
+                                                </ng-container>
+
+                                            </ng-container>
+                                            <!-- ./ SWITCH CASE LAYOUT BENEFIT TYPE -->
+                                        </ng-container>
                                     </div>
                                     <!-- ./ FIELD-WRAPPER -->
 
@@ -1553,16 +2034,17 @@
                                                 Defines the calculation logic of the <br />
                                                 multiplication promo.
                                                 <br /><br />
-                                                Example: <br/>
-                                                1) For each n piece of SKU A bought by the <br/>
-                                                store, the user will get 1 piece of SKU B. <br/>
-                                                2) For each n purchase value of SKU A bought <br/>
-                                                by the store, the user will get a 1.000 price cut. <br/>
-                                                You should define the value of the "n".<br/>
+                                                Example: <br />
+                                                1) For each n piece of SKU A bought by the <br />
+                                                store, the user will get 1 piece of SKU B. <br />
+                                                2) For each n purchase value of SKU A bought <br />
+                                                by the store, the user will get a 1.000 price cut.
+                                                <br />
+                                                You should define the value of the "n".<br />
                                                 <br /><br />
-                                                "Benefit"<br/>
-                                                Defines the bonus or price cut that will <br/>
-                                                be given to the stores.<br/>
+                                                "Benefit"<br />
+                                                Defines the bonus or price cut that will <br />
+                                                be given to the stores.<br />
                                             </p>
                                         </card-instruction>
                                     </ng-container>
@@ -1591,7 +2073,7 @@
                                 matTooltip="If the multiplication is activated, you&#10;cannot add another tier."
                                 matTooltipClass="tooltip-br"
                             >
-                            help
+                                help
                             </mat-icon>
                         </ng-container>
                     </div>
@@ -1600,9 +2082,7 @@
 
             <mat-card class="mb-24">
                 <div fxLayout="column">
-                    <span class="mat-headline">
-                        Customer Segmentation Setting
-                    </span>
+                    <span class="mat-headline"> Customer Segmentation Setting </span>
 
                     <div class="form-box">
                         <div
@@ -1678,9 +2158,7 @@
                                 </ng-container>
 
                                 <ng-template #noSegmentBase>
-                                    <div fxFlexAlign="center" fxFlex="50">
-                                        -
-                                    </div>
+                                    <div fxFlexAlign="center" fxFlex="50">-</div>
                                 </ng-template>
 
                                 <mat-hint
@@ -1886,32 +2364,38 @@
                                     </div>
                                 </select-store-segmentation>
                             </div>
-                            <div  
-                            class="custom-field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px">
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="10">
-                            </label>
-                            
-                            <mat-checkbox (change)="checkSegmentation($event,'new_store')" [disabled]="selectNewStore">
-                                New Store
-                                <mat-icon
-                                class="active-icon s-14 ml-8 cursor-pointer"
-                                color="accent"
-                                matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
-                                matTooltipClass="tooltip-br"
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
                             >
-                                help
-                            </mat-icon>
-                            </mat-checkbox>
+                                <label fxFlexAlign="center" fxFlex="10"> </label>
 
-                            <mat-checkbox (change)="checkSegmentation($event, 'active_outlet')" [disabled]="selectActiveOutlet">
-                                Active Outlet Only
-                            </mat-checkbox>
-                        </div>
+                                <mat-checkbox
+                                    formControlName="is_new_store"
+                                    (change)="checkSegmentation($event, 'new_store')"
+                                    [disabled]="selectNewStore"
+                                >
+                                    New Store
+                                    <mat-icon
+                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                        color="accent"
+                                        matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                        matTooltipClass="tooltip-br"
+                                    >
+                                        help
+                                    </mat-icon>
+                                </mat-checkbox>
+
+                                <mat-checkbox
+                                    formControlName="is_active_store"
+                                    (change)="checkSegmentation($event, 'active_outlet')"
+                                    [disabled]="selectActiveOutlet"
+                                >
+                                    Active Outlet Only
+                                </mat-checkbox>
+                            </div>
                         </ng-container>
                     </div>
                 </div>
