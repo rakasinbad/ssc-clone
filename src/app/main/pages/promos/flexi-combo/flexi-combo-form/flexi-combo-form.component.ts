@@ -750,7 +750,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @memberof FlexiComboFormComponent
      */
     onChangeOrderValueRatio(idx: number): void {
-        console.log('isi idx onChangeOrderValueRatio->', idx)
         const prevIdx = idx > 0 ? idx - 1 : 0;
 
         // if (idx > 0) {
@@ -1181,7 +1180,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     selectPromoAlloc(ev: MatRadioChange): void {
         this.selectPromo = ev.value;
-        console.log('isi selectPromo=>', this.selectPromo)
         this.form.get('promoAllocationType').setValidators([
             RxwebValidators.required({
                 message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -1228,16 +1226,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (event.checked === true) {
             this.maxRedemStat = true;
             this.multiStat = true;
-            const conditions = this.conditions.getRawValue();
-            // Get conditions has checked multiplication
-            // conditions.filter(
-            //     (condition) => condition.multiplication === true
-            // );
             this.form.get('maxRedemption').setValue(1);
         } else {
             this.maxRedemStat = false;
             this.multiStat = false;
-            // this.form.get('multiplication').setValue(false);
             this.form.get('maxRedemption').setValue('');
         }
     }
@@ -2268,7 +2260,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 //     .subscribe((changes) => {
                 //         console.log(`Condition Changes`, changes);
                 //     });
-                console.log('isi form status changes->', this.form.statusChanges)
+
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -2474,7 +2466,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         this.conditionForm = this.form.get('conditions') as FormArray;
 
-        console.log('isi this.conditions->', this.conditions)
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
@@ -2491,6 +2482,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
+
                 // button promo allocation checke when edit
                 this.listPromoAlloc[0].checked = false;
                 this.listPromoAlloc[1].checked = true;
@@ -3016,7 +3008,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         const body = this.form.getRawValue();
-        console.log('isi body onsubmit->', body)
         const {
             allowCombineWithVoucher,
             base,
@@ -3150,7 +3141,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           sameObj['ratioBase'] = null;
                           sameObj['ratioQty'] = null;
                           sameObj['ratioValue'] = null;
-                        // this.form.get('chosenStoreCluster').setValue(null);
                       }
 
                       if (benefitType === BenefitType.QTY) {
@@ -3230,7 +3220,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             // console.log('[NEW] OnSubmit 1', body);
             // console.log('[NEW] OnSubmit 2', payload);
-            console.log('isi payload save add new->', payload)
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
