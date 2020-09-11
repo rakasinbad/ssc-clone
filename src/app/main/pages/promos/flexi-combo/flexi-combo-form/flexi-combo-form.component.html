@@ -53,7 +53,9 @@
                                 </mat-radio-group>
                             </ng-container>
                             <ng-container *ngIf="pageType === 'edit'">
-                                <mat-radio-group aria-label="Select type" style="margin-top: 3px">
+                                <mat-radio-group aria-label="Select type" 
+                                    formControlName="promoAllocationType" 
+                                    style="margin-top: 3px">
                                     <mat-radio-button
                                         *ngFor="let option of listPromoAlloc"
                                         [checked]="option.checked"

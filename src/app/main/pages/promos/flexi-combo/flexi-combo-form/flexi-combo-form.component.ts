@@ -499,7 +499,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (triggerBase === TriggerBase.SKU) {
             // Get Chosen SKU Field value
             const chosenSku = this.form.get('chosenSku').value;
-
             // Check chosen sku item is equal 1
             if (chosenSku && chosenSku.length === 1) {
                 return true;
@@ -3115,14 +3114,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           conditionObject = {
                               conditionValue,
                           };
-                      } else if (ratioBase === RatioBaseCondition.QTY) {
-                        conditionObject = {
-                            ratioQty,
-                        };
-                      } else if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
-                        conditionObject = {
-                            ratioValue,
-                        };
                       }
 
                       const sameObj = {
@@ -3137,11 +3128,19 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           sameObj['id'] = id;
                       }
 
-                      if (this.multiStat == false) {
-                          sameObj['ratioBase'] = null;
-                          sameObj['ratioQty'] = null;
-                          sameObj['ratioValue'] = null;
+                      if (ratioBase === RatioBaseCondition.QTY) {
+                            sameObj['ratioValue'] = null,
+                            ratioQty
+                      } else if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                        sameObj['ratioQty'] = null,
+                        ratioValue
                       }
+                    
+                      if (this.multiStat == false) {
+                        sameObj['ratioBase'] = null;
+                        sameObj['ratioQty'] = null;
+                        sameObj['ratioValue'] = null;
+                    }
 
                       if (benefitType === BenefitType.QTY) {
                           return {
@@ -3161,6 +3160,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                               benefitMaxRebate,
                           };
                       }
+
 
                       return condition;
                   })
