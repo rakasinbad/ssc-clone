@@ -1,5 +1,5 @@
 import { BenefitType } from 'app/shared/models/benefit-type.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus, TNullable } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
@@ -199,6 +199,9 @@ export interface IPromoCondition extends ITimestamp {
     conditionValue: number;
     multiplication: boolean;
     promoId: string;
+    ratioBase: RatioBaseCondition;
+    ratioQty: number;
+    ratioValue: number;
 }
 
 export interface IPromoGroup extends ITimestamp {
@@ -273,6 +276,8 @@ export class FlexiCombo implements ITimestamp {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    is_new_store: boolean;
+    is_active_store: boolean;
 
     constructor(data: FlexiCombo) {
         const {
@@ -312,6 +317,8 @@ export class FlexiCombo implements ITimestamp {
             createdAt,
             updatedAt,
             deletedAt,
+            is_new_store,
+            is_active_store
         } = data;
 
         this.id = id;
@@ -340,7 +347,9 @@ export class FlexiCombo implements ITimestamp {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
-
+        this.is_active_store = is_active_store;
+        this.is_new_store = is_new_store;
+        
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {
             this.promoBrands =

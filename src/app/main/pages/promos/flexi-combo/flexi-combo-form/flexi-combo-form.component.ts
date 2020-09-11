@@ -38,10 +38,10 @@ import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-d
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
 import { Brand } from 'app/shared/models/brand.model';
 import { CalculationMechanism } from 'app/shared/models/calculation-mechanism.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import {
     EStatus,
     IBreadcrumbs,
@@ -53,6 +53,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
@@ -88,10 +89,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     calculationMechanism = this._$helperService.calculationMechanism();
     conditionBase = this._$helperService.conditionBase();
     eConditionBase = ConditionBase;
+    ratioBase = this._$helperService.buyRatioCondition();
+    eBuyRatioCondition = RatioBaseCondition;
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
+    benefitMultiType = this._$helperService.benefitMultiType();
+    eBenefitMultiType = BenefitMultiType;
     segmentBase = this._$helperService.segmentationBase();
     eSegmentBase = SegmentationBase;
+    promoAllocation = this._$helperService.promoAllocation();
+    ePromoAllocation = PromoAllocation;
 
     minStartDate: Date = new Date();
     maxStartDate: Date = null;
@@ -148,6 +155,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
+    public listPromoAlloc: any = [
+        { label: 'None', value: 'none', checked: true },
+        { label: 'Promo Budget', value: 'promo_budget', checked: false },
+        { label: 'Promo Slot', value: 'promo_slot', checked: false },
+    ];
+    public selectPromo: string;
+    public selectNewStore = false;
+    public selectActiveOutlet = false;
+    public maxRedemStat = false;
+    public multiStat = false;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -173,7 +191,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
+        
         this._initPage();
     }
 
@@ -278,6 +296,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         return this.form.get(['conditions', idx, 'benefitType']).value;
     }
 
+    // getBenefitMultiType(idx: number): BenefitMultiType {
+    //     return this.form.get(['conditions', idx, 'benefitType']).value;
+    // }
+
     getChosenBrand(): Selection[] {
         return this.form.get('chosenBrand').value || [];
     }
@@ -327,12 +349,33 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     /**
      *
+     * Get buy ratio condition base value (Tier)
+     * @param {number} idx
+     * @returns {string}
+     * @memberof FlexiComboFormComponent
+     */
+    getBuyRatioConditionBase(idx: number): string {
+        return this.form.get(['conditions', idx, 'buyRatioCondition']).value;
+    }
+
+    /**
+     *
      * Get segmentation base value
      * @returns {string}
      * @memberof FlexiComboFormComponent
      */
     getSegmentationBase(): string {
         return this.form.get('segmentationBase').value;
+    }
+
+     /**
+     *
+     * Get segmentation base value
+     * @returns {string}
+     * @memberof FlexiComboFormComponent
+     */
+    getPromoAllocation(): string {
+        return this.form.get('promoAllocationType').value;
     }
 
     /**
@@ -456,7 +499,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (triggerBase === TriggerBase.SKU) {
             // Get Chosen SKU Field value
             const chosenSku = this.form.get('chosenSku').value;
-
             // Check chosen sku item is equal 1
             if (chosenSku && chosenSku.length === 1) {
                 return true;
@@ -473,6 +515,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     isBenefitType(benefitType: BenefitType, idx: number): boolean {
+        const benefitTypeCtrl = this.conditionsCtrl[idx].get('benefitType');
+
+        if (!benefitTypeCtrl) {
+            return false;
+        }
+
+        const benefitTypeVal = benefitTypeCtrl.value;
+
+        if (benefitTypeVal === benefitType) {
+            return true;
+        }
+
+        return false;
+    }
+
+    isBenefitMultiType(benefitType: BenefitMultiType, idx: number): boolean {
         const benefitTypeCtrl = this.conditionsCtrl[idx].get('benefitType');
 
         if (!benefitTypeCtrl) {
@@ -636,6 +694,28 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     /**
      *
+     * Handle change event for Buy Ratio Condition Base Field
+     * @param {MatRadioChange} ev
+     * @param {number} idx
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    onChangeRatioConditionBase(ev: MatRadioChange, idx: number): void {
+        const ratioBaseVal = ev.value;
+
+        if (!ratioBaseVal || typeof idx !== 'number') {
+            return;
+        }
+
+        // Handle validation for Ratio Buy Qty Field (Condition Base - Qty) (FormControl = ratioQty)
+        this._qtyValueValidationByRatioConditionBase(ratioBaseVal, idx);
+
+        // Handle validation for Ratio Buy Order Value Field (Condition Base - Order Value) (FormControl = ratioValue)
+        this._orderValueValidationByRatioConditionBase(ratioBaseVal, idx);
+    }
+
+    /**
+     *
      * Handle change event for Order Value Field
      * @param {number} idx
      * @memberof FlexiComboFormComponent
@@ -658,6 +738,34 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             // Revalidate Max Rebate Field
             this._benefitMaxRebateValidationByBenefitType(benefitTypeVal, idx);
         }
+
+        return;
+    }
+
+     /**
+     *
+     * Handle change event for Buy Ratio Order Value Field
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    onChangeOrderValueRatio(idx: number): void {
+        const prevIdx = idx > 0 ? idx - 1 : 0;
+
+        // if (idx > 0) {
+        //     // Revalidate Rebate Field
+        //     this._benefitRebateValidationNewTier(idx, prevIdx);
+
+        //     // Revalidate Max Rebate Field
+        //     this._benefitMaxRebateValidationNewTier(idx, prevIdx);
+        // } else {
+        //     const benefitTypeVal = this.conditionsCtrl[idx].get('benefitType').value;
+
+        //     // Revalidate Rebate Field
+        //     this._benefitRebateValidationByBenefitType(benefitTypeVal, idx);
+
+        //     // Revalidate Max Rebate Field
+        //     this._benefitMaxRebateValidationByBenefitType(benefitTypeVal, idx);
+        // }
 
         return;
     }
@@ -1057,6 +1165,71 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenWarehouse').setValue(newWarehouses);
+        }
+    }
+
+    /**
+     *
+     * Handle change event for General Information Promo Allocation
+     * @param {MatRadioChange} ev
+     * @param {number} idx
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectPromoAlloc(ev: MatRadioChange): void {
+        this.selectPromo = ev.value;
+        this.form.get('promoAllocationType').setValidators([
+            RxwebValidators.required({
+                message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            }),
+            RxwebValidators.choice({
+                minLength: 1,
+                message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            }),
+        ]);
+    }
+
+     /**
+     *
+     * Handle change event for Segmentatio
+     * @param {mat-checkbox} ev
+     * @param {string and type} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    checkSegmentation(ev, type): void {
+        if (type === 'new_store' && ev.checked === true) {
+            this.selectActiveOutlet = true;
+            // this.form.
+            // is_new_store
+        } else if (type === 'active_outlet' && ev.checked === true) {
+            this.selectNewStore = true;
+        } else {
+            this.selectNewStore = false;
+            this.selectActiveOutlet = false;
+        }
+    }
+
+    /**
+     *
+     * Handle change event for Multiplication
+     * @param {mat-checkbox} ev
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectMultiplication(event): void {
+        if (event.checked === true) {
+            this.maxRedemStat = true;
+            this.multiStat = true;
+            this.form.get('maxRedemption').setValue(1);
+        } else {
+            this.maxRedemStat = false;
+            this.multiStat = false;
+            this.form.get('maxRedemption').setValue('');
         }
     }
 
@@ -1551,6 +1724,36 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         qtyValueCtrl.updateValueAndValidity();
     }
 
+    
+    /**
+     *
+     * Handle validation for Qty Field by Buy Ratio Condition Base (FormControl = ratioQty)
+     * @private
+     * @param {RatioBaseCondition} conditionBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _qtyValueValidationByRatioConditionBase(ratioBase: RatioBaseCondition, idx: number): void {
+        const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
+
+        if (ratioBase === RatioBaseCondition.QTY) {
+            qtyValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+            ]);
+        } else {
+            qtyValueCtrl.clearValidators();
+        }
+
+        qtyValueCtrl.updateValueAndValidity();
+    }
+
     /**
      *
      * Handle validation for Order Value Field by Condition Base (FormControl = conditionValue) Tier
@@ -1563,6 +1766,35 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const orderValueCtrl = this.conditionsCtrl[idx].get('conditionValue');
 
         if (conditionBase === ConditionBase.ORDER_VALUE) {
+            orderValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+            ]);
+        } else {
+            orderValueCtrl.clearValidators();
+        }
+
+        orderValueCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Order Value Field by Ratio Condition Base (FormControl = ratioValue) 
+     * @private
+     * @param {RatioConditionBase} ratioBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _orderValueValidationByRatioConditionBase(ratioBase: RatioBaseCondition, idx: number): void {
+        const orderValueCtrl = this.conditionsCtrl[idx].get('ratioValue');
+
+        if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
             orderValueCtrl.setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -1868,6 +2100,43 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             benefitMaxRebate: null,
             multiplication: false,
             applySameSku: false,
+            ratioBase: [
+                (condition && condition.ratioBase) || ConditionBase.QTY || ConditionBase.ORDER_VALUE || null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            ratioValue: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
+            ],
+            ratioQty: [
+                null,
+                [
+                    // RxwebValidators.required({
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    // }),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'min_number',
+                            { minValue: 1 }
+                        ),
+                    }),
+                ],
+            ],
         });
     }
 
@@ -2089,7 +2358,25 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     }),
                 ],
             ],
+            promoAllocationType: [
+                PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             promoBudget: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
+            ],
+            promoSlot: [
                 null,
                 [
                     RxwebValidators.numeric({
@@ -2172,6 +2459,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStoreGroup: null,
             chosenStoreChannel: null,
             chosenStoreCluster: null,
+            is_new_store: false,
+            is_active_store: false
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
@@ -2192,6 +2481,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
+
+                // button promo allocation checke when edit
+                this.listPromoAlloc[0].checked = false;
+                this.listPromoAlloc[1].checked = true;
+                this.listPromoAlloc[2].checked = false;
                 this._setEditForm(row);
             });
     }
@@ -2220,6 +2514,18 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const chosenStoreGroupCtrl = this.form.get('chosenStoreGroup');
         const chosenStoreChannelCtrl = this.form.get('chosenStoreChannel');
         const chosenStoreClusterCtrl = this.form.get('chosenStoreCluster');
+        const activeStoreCtrl = this.form.get('is_active_store');
+        const newStoreCtrl = this.form.get('is_new_store');
+
+        // Handle Active Store
+        if (row.is_active_store) {
+            activeStoreCtrl.setValue (row.is_active_store);
+        }
+
+        // Handle New Store
+        if (row.is_new_store) {
+            newStoreCtrl.setValue (row.is_new_store);
+        }
 
         // Handle Promo Seller ID
         if (row.externalId) {
@@ -2357,6 +2663,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         benefitRebate: item.benefitRebate,
                         benefitDiscount: item.benefitDiscount,
                         benefitMaxRebate: item.benefitMaxRebate,
+                        ratioBase: item.ratioBase,
+                        ratioQty: item.ratioQty,
+                        ratioValue: item.ratioValue,
                     });
                 }),
                 ['id'],
@@ -2683,6 +2992,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             // Handle Benefit Max Rebate Field Validation
             this._benefitMaxRebateValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Ratio Buy Qty Field Validation
+            this._qtyValueValidationByRatioConditionBase(item.ratioBase, idx);
+
+             // Handle Ratio Buy Order Value Field Validation
+            this._orderValueValidationByRatioConditionBase(item.ratioBase, idx);
         }
     }
 
@@ -2716,6 +3031,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             promoName,
             segmentationBase,
             startDate,
+            promoAllocationType,
+            promoSlot,
+            is_new_store,
+            is_active_store
         } = body;
 
         const newChosenSku =
@@ -2780,6 +3099,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           benefitDiscount,
                           benefitMaxRebate,
                           id,
+                          ratioBase,
+                          ratioQty,
+                          ratioValue,
                       } = condition;
 
                       let conditionObject = {};
@@ -2796,14 +3118,29 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
                       const sameObj = {
                           conditionBase,
+                          ratioBase,
                           ...conditionObject,
                           benefitType,
-                          multiplication,
+                          multiplication: this.multiStat,
                       };
 
                       if (this.pageType === 'edit') {
                           sameObj['id'] = id;
                       }
+
+                      if (ratioBase === RatioBaseCondition.QTY) {
+                            sameObj['ratioValue'] = null,
+                            ratioQty
+                      } else if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                        sameObj['ratioQty'] = null,
+                        ratioValue
+                      }
+                    
+                      if (this.multiStat == false) {
+                        sameObj['ratioBase'] = null;
+                        sameObj['ratioQty'] = null;
+                        sameObj['ratioValue'] = null;
+                    }
 
                       if (benefitType === BenefitType.QTY) {
                           return {
@@ -2823,6 +3160,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                               benefitMaxRebate,
                           };
                       }
+
 
                       return condition;
                   })
@@ -2856,6 +3194,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 target: segmentationBase,
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
+                promoAllocationType,
+                promoSlot,
+                is_new_store,
+                is_active_store
             };
 
             if (base === TriggerBase.SKU) {
@@ -2878,7 +3220,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             // console.log('[NEW] OnSubmit 1', body);
             // console.log('[NEW] OnSubmit 2', payload);
-
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
@@ -2903,6 +3244,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 target: segmentationBase,
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
+                promoAllocationType,
+                promoSlot
             };
 
             if (!imgSuggestion) {
@@ -2934,41 +3277,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (Object.keys(payload.dataTarget).length < 1) {
                 payload.dataTarget = null;
             }
-
-            // console.log('[EDIT] OnSubmit 1', body);
-            // console.log('[EDIT] OnSubmit 2', payload);
-
-            // const payload = {
-            //     urbanId: urban.id,
-            //     warehouseValueId: body.whValue ? body.whValue : null,
-            //     warehouseTemperatureId: body.temperature ? body.temperature : null,
-            //     code: body.whId,
-            //     name: body.whName,
-            //     leadTime: body.leadTime,
-            //     longitude: body.lng,
-            //     latitude: body.lat,
-            //     noteAddress: body.notes,
-            //     address: body.address,
-            //     invoiceGroup: body.invoices,
-            //     // deletedInvoiceGroup: this._deletedInvoiceGroups,
-            //     status: 'active',
-            // };
-
-            // if (!body.longitude) {
-            //     delete payload.longitude;
-            // }
-
-            // if (!body.latitude) {
-            //     delete payload.latitude;
-            // }
-
-            // if (!body.address) {
-            //     delete payload.address;
-            // }
-
-            // if (!body.notes) {
-            //     delete payload.noteAddress;
-            // }
 
             if (id && Object.keys(payload).length > 0) {
                 this.store.dispatch(
