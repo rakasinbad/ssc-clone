@@ -3129,11 +3129,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                       }
 
                       if (ratioBase === RatioBaseCondition.QTY) {
-                            sameObj['ratioValue'] = null,
-                            ratioQty
+                        sameObj['ratioValue'] = null;
+                        sameObj['ratioQty'] = ratioQty;
                       } else if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
-                        sameObj['ratioQty'] = null,
-                        ratioValue
+                        sameObj['ratioQty'] = null;
+                        sameObj['ratioValue'] = ratioValue;
                       }
                     
                       if (this.multiStat == false) {

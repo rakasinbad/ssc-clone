@@ -100,6 +100,38 @@
         </mat-cell>
     </ng-container>
 
+        <!-- Promo Type Column -->
+        <ng-container matColumnDef="promo-type">
+            <mat-header-cell *matHeaderCellDef> Promo Type </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    Flexi
+                </p>
+            </mat-cell>
+        </ng-container>
+    
+         <!-- Promo Allocation Column -->
+         <ng-container matColumnDef="promo-allocation">
+            <mat-header-cell *matHeaderCellDef> Promo Allocation </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    Budget
+                    <!-- {{ row?.promoAllocationType || '-' }} -->
+                </p>
+            </mat-cell>
+        </ng-container>
+    
+         <!-- Allocation Value Column -->
+        <ng-container matColumnDef="allocation-value">
+            <mat-header-cell *matHeaderCellDef> Allocation Value </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    -
+                    <!-- {{ row?.allocationValue || '-' }} -->
+                </p>
+            </mat-cell>
+        </ng-container>
+
     <!-- Base Column -->
     <ng-container matColumnDef="base">
         <mat-header-cell *matHeaderCellDef>
