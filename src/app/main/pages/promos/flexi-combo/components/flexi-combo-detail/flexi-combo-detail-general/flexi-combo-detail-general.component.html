@@ -5,6 +5,40 @@
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Promo Allocation
+        </div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <mat-radio-group>
+                    <mat-radio-button
+                        *ngFor="let option of listPromoAlloc"
+                        [checked]="option.checked"
+                        [disabled]="!option.checked"
+                        value="{{ option.value }}"
+                        style="margin-left: 10px;"
+                    >
+                        {{ option.label }}</mat-radio-button
+                    >
+                </mat-radio-group>
+
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
     <div
         class="custom-field info-field"
         fxLayout="row"
@@ -93,7 +127,8 @@
         </div>
     </div>
 
-    <div
+    <!-- <ng-container *ngIf="{{ (flexiCombo$ | async)?.promoAllocationType }} == 'promo_budget'"> -->
+        <div
         class="custom-field info-field"
         fxLayout="row"
         fxLayoutAlign="start center"
@@ -103,17 +138,23 @@
             Promo Budget
         </div>
 
-        <div class="info" fxFlex="100">
-            <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (flexiCombo$ | async)?.promoBudget || '-' }}
-            </ng-container>
+            <div class="info" fxFlex="100">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    {{ (flexiCombo$ | async)?.promoBudget || '-' }}
+                </ng-container>
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader>
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+            </div>
         </div>
-    </div>
+    <!-- </ng-container> -->
+
+    <ng-container>
+
+    </ng-container>
+   
 
     <div
         class="custom-field info-field"
@@ -246,13 +287,45 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <mat-checkbox [checked]="(flexiCombo$ | async)?.voucherCombine">
+                <mat-checkbox [checked]="(flexiCombo$ | async)?.voucherCombine" [disabled]="true">
                     Allow Combine with Voucher
                 </mat-checkbox>
 
-                <mat-checkbox [checked]="(flexiCombo$ | async)?.firstBuy">
+                <mat-checkbox [checked]="(flexiCombo$ | async)?.firstBuy" [disabled]="true">
                     First Buy
                 </mat-checkbox>
+
+            </ng-container>
+
+            <ng-container *ngIf="isLoading$ | async">
+                <ngx-skeleton-loader
+                    [theme]="{ width: '150px', 'margin-bottom': '-5px', 'margin-right': '16px' }"
+                ></ngx-skeleton-loader>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                ></ngx-skeleton-loader>
+            </ng-container>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+
+                 <!-- berdasarkan hasil respon dari belakang multiplication -->
+                 <mat-checkbox [checked]="(flexiCombo$ | async)?.promoConditions[0].multiplication" 
+                 [disabled]="true">
+                    Multiplication
+                </mat-checkbox>
+
             </ng-container>
 
             <ng-container *ngIf="isLoading$ | async">

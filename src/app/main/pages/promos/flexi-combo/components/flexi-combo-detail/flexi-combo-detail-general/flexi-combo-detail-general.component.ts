@@ -19,6 +19,12 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
     flexiCombo$: Observable<FlexiCombo>;
     isLoading$: Observable<boolean>;
 
+    public listPromoAlloc: any = [
+        { label: 'None', value: 'none', checked: true },
+        { label: 'Promo Budget', value: 'promo_budget', checked: false },
+        { label: 'Promo Slot', value: 'promo_slot', checked: false },
+    ];
+
     constructor(private matDialog: MatDialog, private store: Store<fromFlexiCombos.FeatureState>) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -31,6 +37,19 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
 
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
+
+        this.flexiCombo$.subscribe(
+            (res) => {
+                for (let i = 0; i < 3; i++) {
+                    if (res.promoAllocationType == this.listPromoAlloc[i].value) {
+                        this.listPromoAlloc[i].checked = true;
+                    } else {
+                        this.listPromoAlloc[i].checked = false;
+                    }
+                }
+            }
+        );
+
     }
 
     // -----------------------------------------------------------------------------------------------------
