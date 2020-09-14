@@ -93,7 +93,7 @@ export class CreateFlexiComboDto {
         this.maxRedemptionPerStore = maxRedemptionPerStore;
         this.name = name;
         this.platform = platform;
-        this.promoBudget = promoBudget;
+       
         this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         this.startDate = startDate;
         this.status = status;
@@ -101,10 +101,15 @@ export class CreateFlexiComboDto {
         this.target = target;
         this.type = type;
         this.voucherCombine = voucherCombine;
-        this.promoSlot = promoSlot || null;
-        this.promoAllocationType = promoAllocationType || null;
+        this.promoAllocationType = promoAllocationType;
         this.is_new_store = is_new_store;
         this.is_active_store = is_active_store;
+
+        
+        if (this.promoAllocationType !== 'none'){
+            this.promoBudget = promoBudget || null;
+            this.promoSlot = promoSlot || null;
+        }
     }
 }
 
