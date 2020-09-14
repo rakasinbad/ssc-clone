@@ -93,7 +93,7 @@ export class CreateFlexiComboDto {
         this.maxRedemptionPerStore = maxRedemptionPerStore;
         this.name = name;
         this.platform = platform;
-        this.promoBudget = promoBudget;
+        this.promoBudget = promoBudget || null;
         this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         this.startDate = startDate;
         this.status = status;

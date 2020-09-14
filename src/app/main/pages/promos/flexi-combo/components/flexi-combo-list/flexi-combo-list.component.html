@@ -125,10 +125,27 @@
         <ng-container matColumnDef="allocation-value">
             <mat-header-cell *matHeaderCellDef> Allocation Value </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p class="text-word-break-break-word">
-                    -
-                    <!-- {{ row?.allocationValue || '-' }} -->
-                </p>
+                <!-- for promo type budget -->
+                <ng-container *ngIf="row.promoBudget !== null">
+                    <p class="text-word-break-break-word" thousandSeparator=".">
+                        Rp {{ row?.promoBudget | number }}
+                    </p>
+                </ng-container>
+
+                <!-- for promo type slot -->
+                <ng-container *ngIf="row.promoBudget == null">
+                    <p class="text-word-break-break-word">
+                        -
+                        <!-- {{ row?.allocationValue || '-' }} -->
+                    </p>
+                </ng-container>
+
+                <!-- for promo type none -->
+                <!-- <ng-container>
+                    <p class="text-word-break-break-word">
+                        -
+                    </p>
+                </ng-container> -->
             </mat-cell>
         </ng-container>
 
