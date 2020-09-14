@@ -2481,11 +2481,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
-
+                console.log('isi row edit ->', row)
                 // button promo allocation checke when edit
-                this.listPromoAlloc[0].checked = false;
-                this.listPromoAlloc[1].checked = true;
-                this.listPromoAlloc[2].checked = false;
+                // this.listPromoAlloc[0].checked = false;
+                // this.listPromoAlloc[1].checked = true;
+                // this.listPromoAlloc[2].checked = false;
                 this._setEditForm(row);
             });
     }
@@ -2516,6 +2516,18 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const chosenStoreClusterCtrl = this.form.get('chosenStoreCluster');
         const activeStoreCtrl = this.form.get('is_active_store');
         const newStoreCtrl = this.form.get('is_new_store');
+        const promoAllocationTypeCtrl = this.form.get('promoAllocationType');
+        const promoSlotCtrl = this.form.get('promoSlot');
+        
+        //  Handle Promo Allocation Type
+        if (row.promoAllocationType) {
+            promoAllocationTypeCtrl.setValue (row.promoAllocationType);
+        }
+        
+        //  Handle Promo Slot
+        if (row.promoSlot) {
+            promoSlotCtrl.setValue(row.promoSlot);
+        }
 
         // Handle Active Store
         if (row.is_active_store) {
@@ -2644,6 +2656,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (row.promoConditions && row.promoConditions.length > 0) {
             const newPromoConditions: ConditionDto[] = _.orderBy(
                 row.promoConditions.map((item) => {
+                    console.log('isi item edit->', item)
                     return new ConditionDto({
                         id: item.id,
                         conditionBase: item.conditionBase,
@@ -2998,6 +3011,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
              // Handle Ratio Buy Order Value Field Validation
             this._orderValueValidationByRatioConditionBase(item.ratioBase, idx);
+
         }
     }
 

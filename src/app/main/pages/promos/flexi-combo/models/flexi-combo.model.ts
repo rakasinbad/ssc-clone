@@ -278,6 +278,8 @@ export class FlexiCombo implements ITimestamp {
     deletedAt: TNullable<string>;
     is_new_store: boolean;
     is_active_store: boolean;
+    promoAllocationType: string;
+    promoSlot: number;
 
     constructor(data: FlexiCombo) {
         const {
@@ -318,7 +320,9 @@ export class FlexiCombo implements ITimestamp {
             updatedAt,
             deletedAt,
             is_new_store,
-            is_active_store
+            is_active_store,
+            promoAllocationType,
+            promoSlot
         } = data;
 
         this.id = id;
@@ -349,6 +353,8 @@ export class FlexiCombo implements ITimestamp {
         this.deletedAt = deletedAt;
         this.is_active_store = is_active_store;
         this.is_new_store = is_new_store;
+        this.promoAllocationType = promoAllocationType;
+        this.promoSlot = promoSlot;
         
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {

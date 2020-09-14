@@ -114,10 +114,26 @@
          <ng-container matColumnDef="promo-allocation">
             <mat-header-cell *matHeaderCellDef> Promo Allocation </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p class="text-word-break-break-word">
-                    Budget
-                    <!-- {{ row?.promoAllocationType || '-' }} -->
-                </p>
+                 <!-- for promo type none -->
+                <ng-container *ngIf="row.promoAllocationType === 'none'">
+                    <p class="text-word-break-break-word">
+                        None
+                    </p>
+                </ng-container>
+
+                <!-- for promo type budget -->
+                <ng-container *ngIf="row.promoAllocationType === 'promo_budget'">
+                    <p class="text-word-break-break-word" thousandSeparator=".">
+                       Budget
+                    </p>
+                </ng-container>
+
+                <!-- for promo type slot -->
+                <ng-container *ngIf="row.promoAllocationType === 'promo_slot'">
+                        <p class="text-word-break-break-word">
+                           Slot
+                        </p>
+                </ng-container>
             </mat-cell>
         </ng-container>
     
@@ -125,27 +141,26 @@
         <ng-container matColumnDef="allocation-value">
             <mat-header-cell *matHeaderCellDef> Allocation Value </mat-header-cell>
             <mat-cell *matCellDef="let row">
+                 <!-- for promo type none -->
+                 <ng-container *ngIf="row.promoAllocationType === 'none'">
+                    <p class="text-word-break-break-word">
+                        -
+                    </p>
+                </ng-container>
+
                 <!-- for promo type budget -->
-                <ng-container *ngIf="row.promoBudget !== null">
+                <ng-container *ngIf="row.promoAllocationType === 'promo_budget'">
                     <p class="text-word-break-break-word" thousandSeparator=".">
                         Rp {{ row?.promoBudget | number }}
                     </p>
                 </ng-container>
 
                 <!-- for promo type slot -->
-                <ng-container *ngIf="row.promoBudget == null">
+                <ng-container *ngIf="row.promoAllocationType === 'promo_slot'">
                     <p class="text-word-break-break-word">
-                        -
-                        <!-- {{ row?.allocationValue || '-' }} -->
+                        {{ row?.promoSlot || '-' }}
                     </p>
                 </ng-container>
-
-                <!-- for promo type none -->
-                <!-- <ng-container>
-                    <p class="text-word-break-break-word">
-                        -
-                    </p>
-                </ng-container> -->
             </mat-cell>
         </ng-container>
 
