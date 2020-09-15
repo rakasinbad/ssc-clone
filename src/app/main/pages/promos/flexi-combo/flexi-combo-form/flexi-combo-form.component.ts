@@ -2518,7 +2518,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         
         //  Handle Promo Allocation Type
         if (row.promoAllocationType) {
-            promoAllocationTypeCtrl.setValue (row.promoAllocationType);
+            promoAllocationTypeCtrl.setValue(row.promoAllocationType);
+            this.selectPromo = row.promoAllocationType;
         }
         
         //  Handle Promo Slot
