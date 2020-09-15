@@ -520,6 +520,7 @@
                                 <mat-checkbox
                                     formControlName="multiplication"
                                     (change)="selectMultiplication($event)"
+                                    [checked]="multiStat"
                                 >
                                     Multiplication
 
@@ -2102,47 +2103,6 @@
                                 <span class="sinbad-red-fg">*</span>
                                 Segmentation Base
                             </label>
-
-                            <!-- <mat-form-field
-                                appearance="outline"
-                                fxFlex="50"
-                                class="form-info"
-                                [class.mat-form-field-invalid]="hasError('segmentationBase', true)"
-                            >
-                                <input matInput style="display: none;" />
-
-                                <ng-container *ngIf="segmentBase; else noSegmentBase">
-                                    <mat-radio-group
-                                        formControlName="segmentationBase"
-                                        (change)="onChangeSegmentBase($event)"
-                                    >
-                                        <mat-radio-button>None</mat-radio-button>
-                                        <mat-radio-button
-                                            *ngFor="let row of segmentBase"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.label }}
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                </ng-container>
-
-                                <ng-template #noSegmentBase>
-                                    <div fxFlexAlign="center" fxFlex="50">
-                                        -
-                                    </div>
-                                </ng-template>
-
-                                <mat-hint
-                                    class="mat-error"
-                                    *ngIf="hasError('segmentationBase', true)"
-                                >
-                                    {{ getErrorMessage('segmentationBase') }}
-                                </mat-hint>
-
-                                <mat-error *ngIf="hasError('segmentationBase', true)">
-                                    {{ getErrorMessage('segmentationBase') }}
-                                </mat-error>
-                            </mat-form-field> -->
 
                             <div fxFlexAlign="center" fxFlex="50" fxFill>
                                 <ng-container *ngIf="segmentBase; else noSegmentBase">

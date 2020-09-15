@@ -53,7 +53,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
         );
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
 
-        console.log()
     }
 
     // -----------------------------------------------------------------------------------------------------

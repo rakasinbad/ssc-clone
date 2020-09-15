@@ -75,10 +75,6 @@ export class FlexiComboDetailCnbComponent implements OnInit {
     }
 
     isApplySameSku(sources: IPromoCatalogue[], benefitSku: string): boolean {
-
-        console.log('isi source ->', sources)
-        console.log('isi benefit->', benefitSku)
-
         if (!sources || !sources.length || sources.length > 1 || !benefitSku) {
             return false;
         }

@@ -801,6 +801,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreGroup').clearValidators();
             this.form.get('chosenStoreChannel').clearValidators();
             this.form.get('chosenStoreCluster').clearValidators();
+            this.selectNewStore = false;
+            this.selectActiveOutlet = false;
+            this.form.get('isNewStore').setValue(false);
+            this.form.get('isActiveStore').setValue(false);
         } else if (ev.value === SegmentationBase.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
 
@@ -1732,8 +1736,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @memberof FlexiComboFormComponent
      */
     private _qtyValueValidationByRatioConditionBase(ratioBase: RatioBaseCondition, idx: number): void {
+        // console.log('isi idx=>', idx)
+        // console.log('conditionsCtrl->', this.conditionsCtrl[idx])
         const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
-
+        // console.log('qtyValueCtrl-> ', qtyValueCtrl)
         if (ratioBase === RatioBaseCondition.QTY) {
             qtyValueCtrl.setValidators([
                 RxwebValidators.required({
@@ -2479,11 +2485,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
-                // console.log('isi row edit ->', row)
-                // button promo allocation checke when edit
-                // this.listPromoAlloc[0].checked = false;
-                // this.listPromoAlloc[1].checked = true;
-                // this.listPromoAlloc[2].checked = false;
+                // console.log('isi row edit ->', row)    
                 this._setEditForm(row);
             });
     }
@@ -2654,7 +2656,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (row.promoConditions && row.promoConditions.length > 0) {
             const newPromoConditions: ConditionDto[] = _.orderBy(
                 row.promoConditions.map((item) => {
-                    console.log('isi item edit->', item)
+                    // console.log('isi item edit->', item)
                     return new ConditionDto({
                         id: item.id,
                         conditionBase: item.conditionBase,
@@ -2675,7 +2677,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         benefitDiscount: item.benefitDiscount,
                         benefitMaxRebate: item.benefitMaxRebate,
                         ratioBase: item.ratioBase,
-                        ratioQty: item.ratioQty,
+                        ratioQty: Number(item.ratioQty),
                         ratioValue: item.ratioValue,
                     });
                 }),
@@ -2915,6 +2917,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 // Handle add new FormControl for setValue index item 1
                 this.conditions.push(this._createConditions());
             }
+
+            // console.log('isi item set edit->', item)
+            this.multiStat = item.multiplication;
 
             // if (idx !== limitIdx) {
             //     // Disable not last tier
