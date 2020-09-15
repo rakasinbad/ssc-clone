@@ -1202,8 +1202,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     checkSegmentation(ev, type): void {
         if (type === 'new_store' && ev.checked === true) {
             this.selectActiveOutlet = true;
-            // this.form.
-            // is_new_store
         } else if (type === 'active_outlet' && ev.checked === true) {
             this.selectNewStore = true;
         } else {
@@ -2459,8 +2457,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStoreGroup: null,
             chosenStoreChannel: null,
             chosenStoreCluster: null,
-            is_new_store: false,
-            is_active_store: false
+            isNewStore: false,
+            isActiveStore: false
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
@@ -2514,8 +2512,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const chosenStoreGroupCtrl = this.form.get('chosenStoreGroup');
         const chosenStoreChannelCtrl = this.form.get('chosenStoreChannel');
         const chosenStoreClusterCtrl = this.form.get('chosenStoreCluster');
-        const activeStoreCtrl = this.form.get('is_active_store');
-        const newStoreCtrl = this.form.get('is_new_store');
+        const activeStoreCtrl = this.form.get('isActiveStore');
+        const newStoreCtrl = this.form.get('isNewStore');
         const promoAllocationTypeCtrl = this.form.get('promoAllocationType');
         const promoSlotCtrl = this.form.get('promoSlot');
         
@@ -2530,13 +2528,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         // Handle Active Store
-        if (row.is_active_store) {
-            activeStoreCtrl.setValue (row.is_active_store);
+        if (row.isActiveStore) {
+            activeStoreCtrl.setValue (row.isActiveStore);
         }
 
         // Handle New Store
-        if (row.is_new_store) {
-            newStoreCtrl.setValue (row.is_new_store);
+        if (row.isNewStore) {
+            newStoreCtrl.setValue (row.isNewStore);
         }
 
         // Handle Promo Seller ID
@@ -3047,8 +3045,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             startDate,
             promoAllocationType,
             promoSlot,
-            is_new_store,
-            is_active_store
+            isNewStore,
+            isActiveStore
         } = body;
 
         const newChosenSku =
@@ -3210,8 +3208,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 voucherCombine: allowCombineWithVoucher,
                 promoAllocationType,
                 promoSlot,
-                is_new_store,
-                is_active_store
+                isNewStore,
+                isActiveStore
             };
 
             if (base === TriggerBase.SKU) {

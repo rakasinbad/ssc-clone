@@ -16,6 +16,9 @@ import {
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
 
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
+
 @Component({
     selector: 'app-flexi-combo-detail-customer',
     templateUrl: './flexi-combo-detail-customer.component.html',
@@ -43,8 +46,23 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
+        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
+            map((item) => {
+                console.log('isi item detail cs->', item)
+                    // this.typePromoAlloc = item.promoAllocationType;
+                    // for (let i = 0; i < 3; i++) {
+                    //     if (this.typePromoAlloc === this.listPromoAlloc[i].value) {
+                    //         this.listPromoAlloc[i].checked = true;
+                    //     } else {
+                    //         this.listPromoAlloc[i].checked = false;
+                    //     }
+                    // }
+                return item;
+            })
+        );
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
+
+        console.log()
     }
 
     // -----------------------------------------------------------------------------------------------------

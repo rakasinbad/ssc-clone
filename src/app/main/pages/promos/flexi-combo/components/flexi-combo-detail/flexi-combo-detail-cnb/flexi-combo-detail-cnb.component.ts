@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { BenefitType } from 'app/shared/models/benefit-type.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { Observable } from 'rxjs';
 
 import { FlexiCombo, IPromoCondition, IPromoCatalogue } from '../../../models';
@@ -26,6 +26,9 @@ export class FlexiComboDetailCnbComponent implements OnInit {
     eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
+
+    ratioConditionBase = this._$helperService.buyRatioCondition();
+    eBuyRatioCondition = RatioBaseCondition;
 
     constructor(
         private store: Store<fromFlexiCombos.FeatureState>,
