@@ -31,7 +31,6 @@ export class PaymentStatusApiService {
     // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
     private readonly _endpointPayment = '/payment/v1/order/fms';
 
-
     /**
      * Creates an instance of PaymentStatusApiService.
      * @param {HttpClient} http
@@ -51,8 +50,8 @@ export class PaymentStatusApiService {
                       value: supplierId
                   }
               ]
-            : [
-              ];
+            : [];
+
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 

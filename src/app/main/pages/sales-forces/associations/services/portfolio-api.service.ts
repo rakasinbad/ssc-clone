@@ -16,7 +16,7 @@ import { CoreFeatureState as PortfolioCoreFeatureState } from '../../portfolios/
 @Injectable({
     providedIn: 'root'
 })
-export class AssociatedPortfolioApiService {
+export class PortfolioApiService {
     /**
      *
      *
@@ -64,8 +64,8 @@ export class AssociatedPortfolioApiService {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
-        if (!isNaN(params['invoiceGroupId'])) {
-            newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
+        if (!isNaN(params['warehouseId'])) {
+            newArgs.push({ key: 'warehouseId', value: params['warehouseId'] });
         }
 
         if (!isNaN(params['userId'])) {
@@ -76,11 +76,8 @@ export class AssociatedPortfolioApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['associated']) {
-            newArgs.push({
-                key: 'associated',
-                value: params['associated']
-            });
+        if (typeof params['associated'] !== 'undefined') {
+            newArgs.push({ key: 'associated', value: params['associated'] });
         }
 
         this._url = this._$helper.handleApiRouter(this._portfolioEndpoint);

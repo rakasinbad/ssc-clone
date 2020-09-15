@@ -8,31 +8,23 @@ import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
-import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effects';
-import { StoreEffects as PortfolioStoreEffects } from '../portfolios/store/effects/stores.effects';
-import {
-    mainFeatureKey as PortfoliosMainFeatureKey,
-    reducers as PortfolioReducers
-} from '../portfolios/store/reducers';
 import { AssociationsRoutingModule } from './associations-routing.module';
 import { AssociationsComponent } from './associations.component';
-import { AssociationsFilterPortfoliosComponent } from './components/filter-portfolios/associations-filter-portfolios.component';
-import { AssociationHeaderSearchComponent } from './components/header-search/association-header-search.component';
 import { PortfolioStoresComponent } from './components/portfolio-stores/portfolio-stores.component';
-import { AssociationPortfolioComponent } from './components/portfolio/association-portfolio.component';
-import { AssociationSalesRepComponent } from './components/sales-rep/association-sales-rep.component';
-import { AssociationsSelectedPortfoliosComponent } from './components/selected-portfolios/associations-selected-portfolios.component';
-import { AssociationStoreComponent } from './components/store/association-store.component';
-import { AssociationViewByComponent } from './components/view-by/association-view-by.component';
 import { AssociationsFormComponent } from './pages/associations-form/associations-form.component';
+
+import { AssociationViewByPortfolioComponent } from './components/view-by-portfolio/view-by-portfolio.component';
+import { AssociationViewBySalesRepComponent } from './components/view-by-sales-rep/view-by-sales-rep.component';
+import { AssociationViewByStoreComponent } from './components/view-by-store/view-by-store.component';
+
 import {
-    AssociatedPortfoliosEffects,
-    AssociatedStoresEffects,
     AssociationEffects,
-    AssociationStoreEffects,
+    PortfolioEffects,
     SalesRepEffects,
-    StoresEffects
+    StorePortfolioEffects,
+    StoreEffects
 } from './store/effects';
+
 import {
     featureKey as AssociationMainFeatureKey,
     reducers as AssociationMainReducers
@@ -41,16 +33,12 @@ import {
 @NgModule({
     declarations: [
         AssociationsComponent,
-        AssociationHeaderSearchComponent,
-        AssociationViewByComponent,
         AssociationsFormComponent,
         // Main Component
-        AssociationSalesRepComponent,
-        AssociationPortfolioComponent,
-        AssociationStoreComponent,
+        AssociationViewBySalesRepComponent,
+        AssociationViewByPortfolioComponent,
+        AssociationViewByStoreComponent,
         // Sub-components
-        AssociationsSelectedPortfoliosComponent,
-        AssociationsFilterPortfoliosComponent,
         PortfolioStoresComponent
     ],
     imports: [
@@ -62,17 +50,12 @@ import {
         MaterialModule,
         NgxPermissionsModule.forChild(),
         StoreModule.forFeature(AssociationMainFeatureKey, AssociationMainReducers),
-        StoreModule.forFeature(PortfoliosMainFeatureKey, PortfolioReducers),
-        // StoreModule.forFeature(SalesRepMainFeatureKey, SalesRepMainReducers),
         EffectsModule.forFeature([
             AssociationEffects,
-            AssociationStoreEffects,
-            AssociatedPortfoliosEffects,
-            AssociatedStoresEffects,
-            PortfoliosEffects,
-            PortfolioStoreEffects,
-            StoresEffects,
-            SalesRepEffects
+            PortfolioEffects,
+            SalesRepEffects,
+            StoreEffects,
+            StorePortfolioEffects
         ])
     ],
     entryComponents: [PortfolioStoresComponent]
