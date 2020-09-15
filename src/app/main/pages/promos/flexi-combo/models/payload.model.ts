@@ -3,6 +3,7 @@ import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 
 interface IFlexiComboCondition {
     benefitBonusQty: string;
@@ -50,10 +51,10 @@ export class CreateFlexiComboDto {
     type: string;
     voucherCombine: boolean;
     promoBudget: number;
-    promoAllocationType: string;
+    promoAllocationType: PromoAllocation;
     promoSlot: number;
-    is_new_store: boolean;
-    is_active_store: boolean;
+    isNewStore: boolean;
+    isActiveStore: boolean;
 
     constructor(data: CreateFlexiComboDto) {
         const {
@@ -78,8 +79,8 @@ export class CreateFlexiComboDto {
             voucherCombine,
             promoSlot,
             promoAllocationType,
-            is_new_store,
-            is_active_store
+            isNewStore,
+            isActiveStore
         } = data;
 
         this.base = base;
@@ -102,8 +103,8 @@ export class CreateFlexiComboDto {
         this.type = type;
         this.voucherCombine = voucherCombine;
         this.promoAllocationType = promoAllocationType;
-        this.is_new_store = is_new_store;
-        this.is_active_store = is_active_store;
+        this.isNewStore = isNewStore;
+        this.isActiveStore = isActiveStore;
 
         
         if (this.promoAllocationType !== 'none'){
@@ -135,8 +136,8 @@ export class PatchFlexiComboDto {
     voucherCombine?: boolean;
     promoSlot?: number;
     promoAllocationType?: string;
-    is_active_store?: boolean;
-    is_new_store?: boolean;
+    isActiveStore?: boolean;
+    isNewStore?: boolean;
 
     constructor(data: PatchFlexiComboDto) {
         const {
@@ -161,8 +162,8 @@ export class PatchFlexiComboDto {
             voucherCombine,
             promoAllocationType,
             promoSlot,
-            is_new_store,
-            is_active_store
+            isNewStore,
+            isActiveStore
         } = data;
 
         if (typeof base !== 'undefined') {
@@ -249,12 +250,12 @@ export class PatchFlexiComboDto {
             this.voucherCombine = voucherCombine;
         }
 
-        if (typeof is_new_store !== 'undefined') {
-            this.is_new_store = is_new_store;
+        if (typeof isNewStore !== 'undefined') {
+            this.isNewStore = isNewStore;
         }
 
-        if (typeof is_active_store !== 'undefined') {
-            this.is_active_store = is_active_store;
+        if (typeof isActiveStore !== 'undefined') {
+            this.isActiveStore = isActiveStore;
         }
     }
 }
