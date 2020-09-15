@@ -14,7 +14,7 @@
         <div class="info" fxFlexAlign="center" fxFlex="100">
             <ng-container *ngIf="segmentBase; else noSegmentBase">
                 <mat-radio-group [value]="(flexiCombo$ | async)?.target">
-                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id">
+                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id" [disabled]="true">
                         {{ row?.label }}
                     </mat-radio-button>
                 </mat-radio-group>

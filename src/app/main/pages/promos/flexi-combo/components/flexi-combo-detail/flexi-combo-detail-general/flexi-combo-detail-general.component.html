@@ -13,18 +13,20 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Promo Allocation</div>
 
         <div class="info" fxFlex="100">
+            
             <ng-container *ngIf="!(isLoading$ | async)">
-                <mat-radio-group>
-                    <mat-radio-button
-                        *ngFor="let option of listPromoAlloc"
-                        [checked]="option.checked"
-                        [disabled]="!option.checked"
-                        value="{{ option.value }}"
-                        style="margin-left: 10px"
-                    >
-                        {{ option.label }}</mat-radio-button
-                    >
-                </mat-radio-group>
+                <ng-container *ngIf="promoAllocation; else noPromoAllocatione">
+                    <mat-radio-group [value]="(flexiCombo$ | async)?.promoAllocationType">
+                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" 
+                        style="margin-left:10px;" [disabled]="true">
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noPromoAllocatione>
+                    -
+                </ng-template>
             </ng-container>
 
             <ngx-skeleton-loader

@@ -33,12 +33,7 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
 
     promoAllocation = this._$helperService.promoAllocation();
     ePromoAllocation = PromoAllocation;
-
-    public listPromoAlloc: any = [
-        { label: 'None', value: 'none', checked: true },
-        { label: 'Promo Budget', value: 'promo_budget', checked: false },
-        { label: 'Promo Slot', value: 'promo_slot', checked: false },
-    ];
+    
     public typePromoAlloc: string;
     public subsFlexi: Subscription;
 
@@ -60,25 +55,12 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
         // this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
             map((item) => {
-                console.log('isi item->', item)
                     this.typePromoAlloc = item.promoAllocationType;
-                    for (let i = 0; i < 3; i++) {
-                        if (this.typePromoAlloc === this.listPromoAlloc[i].value) {
-                            this.listPromoAlloc[i].checked = true;
-                        } else {
-                            this.listPromoAlloc[i].checked = false;
-                        }
-                    }
                 return item;
             })
         );
 
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
-
-
-        
-        console.log('this.typePromoAlloc', this.typePromoAlloc)
-        console.log('this.listPromoAlloc[i]-<', this.listPromoAlloc)
 
         this.cdRef.detectChanges();
 

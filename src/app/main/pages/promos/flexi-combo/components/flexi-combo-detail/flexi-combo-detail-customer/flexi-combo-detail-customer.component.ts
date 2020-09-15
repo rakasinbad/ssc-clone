@@ -48,15 +48,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
 
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
             map((item) => {
-                console.log('isi item detail cs->', item)
-                    // this.typePromoAlloc = item.promoAllocationType;
-                    // for (let i = 0; i < 3; i++) {
-                    //     if (this.typePromoAlloc === this.listPromoAlloc[i].value) {
-                    //         this.listPromoAlloc[i].checked = true;
-                    //     } else {
-                    //         this.listPromoAlloc[i].checked = false;
-                    //     }
-                    // }
                 return item;
             })
         );

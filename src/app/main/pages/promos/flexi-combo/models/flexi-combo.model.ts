@@ -5,6 +5,7 @@ import { PlatformSinbad } from 'app/shared/models/platform.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 
 interface IFlexiComboCreationPayload {
     warehouseId: number;
@@ -278,7 +279,7 @@ export class FlexiCombo implements ITimestamp {
     deletedAt: TNullable<string>;
     isNewStore: boolean;
     isActiveStore: boolean;
-    promoAllocationType: string;
+    promoAllocationType: PromoAllocation;
     promoSlot: number;
 
     constructor(data: FlexiCombo) {

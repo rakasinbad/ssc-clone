@@ -2479,7 +2479,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
-                console.log('isi row edit ->', row)
+                // console.log('isi row edit ->', row)
                 // button promo allocation checke when edit
                 // this.listPromoAlloc[0].checked = false;
                 // this.listPromoAlloc[1].checked = true;
@@ -3257,7 +3257,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
                 promoAllocationType,
-                promoSlot
+                promoSlot,
+                isNewStore,
+                isActiveStore
             };
 
             if (!imgSuggestion) {

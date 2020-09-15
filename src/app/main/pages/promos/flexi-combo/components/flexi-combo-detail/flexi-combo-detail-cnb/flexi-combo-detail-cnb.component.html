@@ -73,10 +73,14 @@
             <div class="info" fxFlex="100">
                 <ng-container [ngSwitch]="condition?.conditionBase">
                     <ng-container *ngSwitchCase="eConditionBase.QTY">
-                        {{ condition?.conditionQty }}
+                        <p thousandSeparator=".">
+                            {{ condition?.conditionQty | number }}
+                        </p>
                     </ng-container>
                     <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
-                        {{ condition?.conditionValue }}
+                        <p thousandSeparator=".">
+                            Rp {{ (condition?.conditionValue | number) }}
+                        </p>
                     </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>
                 </ng-container>
@@ -209,10 +213,11 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                     *ngIf="isFirst"
+                    style="margin-top: 10px;"
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10"></div>
 
-                    <div class="info" fxFlex="100" style="margin-top: 10px; margin-bottom:-10px;">
+                    <div class="info" fxFlex="100" >
                         <mat-checkbox
                             [disabled]="true"
                             [checked]="

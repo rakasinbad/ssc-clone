@@ -3,6 +3,7 @@ import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 
 interface IFlexiComboCondition {
     benefitBonusQty: string;
@@ -50,7 +51,7 @@ export class CreateFlexiComboDto {
     type: string;
     voucherCombine: boolean;
     promoBudget: number;
-    promoAllocationType: string;
+    promoAllocationType: PromoAllocation;
     promoSlot: number;
     isNewStore: boolean;
     isActiveStore: boolean;
