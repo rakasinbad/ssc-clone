@@ -750,23 +750,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      */
     onChangeOrderValueRatio(idx: number): void {
         const prevIdx = idx > 0 ? idx - 1 : 0;
-
-        // if (idx > 0) {
-        //     // Revalidate Rebate Field
-        //     this._benefitRebateValidationNewTier(idx, prevIdx);
-
-        //     // Revalidate Max Rebate Field
-        //     this._benefitMaxRebateValidationNewTier(idx, prevIdx);
-        // } else {
-        //     const benefitTypeVal = this.conditionsCtrl[idx].get('benefitType').value;
-
-        //     // Revalidate Rebate Field
-        //     this._benefitRebateValidationByBenefitType(benefitTypeVal, idx);
-
-        //     // Revalidate Max Rebate Field
-        //     this._benefitMaxRebateValidationByBenefitType(benefitTypeVal, idx);
-        // }
-
         return;
     }
 
