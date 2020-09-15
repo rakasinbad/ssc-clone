@@ -1736,10 +1736,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @memberof FlexiComboFormComponent
      */
     private _qtyValueValidationByRatioConditionBase(ratioBase: RatioBaseCondition, idx: number): void {
-        // console.log('isi idx=>', idx)
-        // console.log('conditionsCtrl->', this.conditionsCtrl[idx])
         const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
-        // console.log('qtyValueCtrl-> ', qtyValueCtrl)
         if (ratioBase === RatioBaseCondition.QTY) {
             qtyValueCtrl.setValidators([
                 RxwebValidators.required({
@@ -2986,6 +2983,14 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
                 // Handle Benefit Max Rebate Field
                 this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
+            }
+
+            if (item.ratioBase === RatioBaseCondition.QTY) {
+                // Handle Ratio Qty 
+                this.conditions.at(idx).get('ratioQty').setValue(item.ratioQty);
+            } else if (item.ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                // Handle Ratio Value
+                this.conditions.at(idx).get('ratioValue').setValue(item.ratioValue);
             }
 
             // Handle Qty Field Validation
