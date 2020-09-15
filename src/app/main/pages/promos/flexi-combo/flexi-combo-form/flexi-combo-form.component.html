@@ -53,18 +53,18 @@
                                 </mat-radio-group>
                             </ng-container>
                             <ng-container *ngIf="pageType === 'edit'">
-                                <mat-radio-group aria-label="Select type" 
-                                    formControlName="promoAllocationType" 
-                                    style="margin-top: 3px">
-                                    <mat-radio-button
-                                        *ngFor="let option of listPromoAlloc"
-                                        [checked]="option.checked"
-                                        [disabled]="!option.checked"
-                                        value="{{ option.value }}"
-                                    >
-                                        {{ option.label }}</mat-radio-button
-                                    >
-                                </mat-radio-group>
+
+                                <ng-container *ngIf="promoAllocation; else noPromoAllocatione">
+                                    <mat-radio-group formControlName="promoAllocationType">
+                                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" 
+                                        style="margin-left:10px;" [disabled]="true">
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
+
+                                <ng-template #noPromoAllocatione> - </ng-template>
+
                             </ng-container>
                         </div>
 
@@ -1139,6 +1139,7 @@
                                                         fxLayoutGap="16px"
                                                     >
                                                         <label fxFlexAlign="center" fxFlex="16">
+                                                            <span class="sinbad-red-fg">*</span>
                                                             Qty >=
                                                         </label>
 
