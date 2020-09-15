@@ -42,7 +42,8 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         private _$errorMessage: ErrorMessageService,
         private _$helper: HelperService,
         private _$notice: NoticeService
-    ) {}
+    ) {
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -145,8 +146,7 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                     }
 
                     if (payload) {
-                        const dialogRef = this.matDialog.open<
-                            ChangeConfirmationComponent,
+                        const dialogRef = this.matDialog.open<ChangeConfirmationComponent,
                             any,
                             {
                                 id: string;
@@ -154,8 +154,7 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                                     statusPayment: string;
                                     paidTime: any;
                                 };
-                            }
-                        >(ChangeConfirmationComponent, {
+                            }>(ChangeConfirmationComponent, {
                             data: {
                                 title: 'Confirmation',
                                 message: 'Are you sure want to change ?',
@@ -235,5 +234,9 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
 
                 this._cd.markForCheck();
             });
+    }
+
+    private filterPaymentStatus(element, index, array): boolean{
+        return element.id !== 'all';
     }
 }

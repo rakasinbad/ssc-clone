@@ -43,7 +43,8 @@ const initialOrderState = adapterOrder.getInitialState({
         totalCompletedOrder: '0',
         totalPendingOrder: '0',
         totalCanceledOrder: '0',
-    },
+        totalPendingPaymentOrder: '0'
+    }
 });
 
 const adapterError = createEntityAdapter<IErrorHandler>();
@@ -111,19 +112,34 @@ const orderReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors),
         })
     ),
-    on(OrderActions.fetchCalculateOrdersSuccess, (state, { payload }) => ({
-        ...state,
-        orders: {
-            ...state.orders,
-            totalStatus: payload,
-        },
-        errors: adapterError.removeOne('fetchCalculateOrdersFailure', state.errors),
-    })),
+    on(OrderActions.fetchCalculateOrdersSuccess, (state, { payload }) => {
+        // console.log('payload', payload);
+        return ({
+            ...state,
+            orders: {
+                ...state.orders,
+                totalStatus: payload
+            },
+            errors: adapterError.removeOne('fetchCalculateOrdersFailure', state.errors)
+        });
+    }),
+    // on(OrderActions.fetchOrderSuccess, (state, { payload }) => {
+    //     return {
+    //         ...state,
+    //         isLoading: false,
+    //         isRefresh: undefined,
+    //         orders: adapterOrder.addOne({
+    //             ...payload['data'],
+    //             status: statusOrder(payload['data'])
+    //         }, { ...state.orders, selectedOrderId: payload['data']['id'] }),
+    //         errors: adapterError.removeOne('fetchOrderFailure', state.errors)
+    //     };
+    // }),
     on(OrderActions.fetchOrderSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         isRefresh: undefined,
-        orders: adapterOrder.addOne(payload, { ...state.orders, selectedOrderId: payload.id }),
+        orders: adapterOrder.addOne(payload['data'], { ...state.orders, selectedOrderId: payload['data']['id']  }),
         errors: adapterError.removeOne('fetchOrderFailure', state.errors),
     })),
     on(OrderActions.fetchOrdersSuccess, (state, { payload }) => ({
@@ -190,3 +206,19 @@ export const {
     selectIds: selectOrderIds,
     selectTotal: selectOrderTotal,
 } = adapterOrder.getSelectors(getOrdersState);
+
+
+// // tslint:disable-next-line:typedef
+// function statusOrder(payload) {
+//     let status: string = payload['status'];
+//     if (payload['paymentType']['id'] === 1) {
+//         if (payload['statusPayment'] === 'waiting_for_payment') {
+//             status = 'pay_now_pending_payment';
+//         }
+//
+//         if (payload['statusPayment'] === 'failed_payment') {
+//             status = 'cancel';
+//         }
+//     }
+//     return status;
+// }

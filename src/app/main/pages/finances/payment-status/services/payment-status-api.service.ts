@@ -27,7 +27,6 @@ export class PaymentStatusApiService {
      * @private
      * @memberof PaymentStatusApiService
      */
-
     private readonly _endpointPatch = '/order-parcels';
     // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
     private readonly _endpointPayment = '/payment/v1/order/fms';
@@ -52,6 +51,7 @@ export class PaymentStatusApiService {
                   }
               ]
             : [];
+
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
