@@ -1485,8 +1485,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:12,
+                RxwebValidators.maxNumber({
+                    value:999999999999,
                     message: 'Max input is 12 digit'
                 }),
 
@@ -1522,8 +1522,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:12,
+                RxwebValidators.maxNumber({
+                    value:999999999999,
                     message: 'Max input is 12 digit'
                 })
                 // NOTE E1AM-105
@@ -1559,8 +1559,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:12,
+                RxwebValidators.maxNumber({
+                    value:999999999999,
                     message: 'Max input is 12 digit'
                 }),
                 this._customValidationRebateLimit(idx, conditionBaseCtrl.value),
@@ -1714,8 +1714,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:8,
+                RxwebValidators.maxNumber({
+                    value:99999999,
                     message: 'Max input is 8 digit'
                 })
             ]);
@@ -1750,15 +1750,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                 }),
-                RxwebValidators.numeric({
-                    acceptValue: NumericValueType.PositiveNumber,
-                    allowDecimal: true,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                RxwebValidators.digit({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                 }),
-                RxwebValidators.maxLength({
-                    value:8,
-                    message: 'Max input is 8 digit'
-                })
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'})
             ]);
         } else {
             qtyValueCtrl.clearValidators();
@@ -1788,8 +1785,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:12,
+                RxwebValidators.maxNumber({
+                    value:999999999999,
                     message: 'Max input is 12 digit'
                 })
             ]);
@@ -1821,8 +1818,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:12,
+                RxwebValidators.maxNumber({
+                    value:999999999999,
                     message: 'Max input is 12 digit'
                 })
             ]);
@@ -1899,6 +1896,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                 }),
                 minNumberValidator,
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'
+                })
             ]);
         } else {
             benefitBonusQtyCtrl.clearValidators();
@@ -1968,11 +1969,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
-                RxwebValidators.maxLength({
-                    value:12,
+                RxwebValidators.maxNumber({
+                    value:999999999999,
                     message: 'Max input is 12 digit'
                 })
-                
             ]);
         } else {
             benefitMaxRebateCtrl.clearValidators();
@@ -2015,8 +2015,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             }
                         ),
                     }),
-                    RxwebValidators.maxLength({
-                        value:12,
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
                         message: 'Max input is 12 digit'
                     })
                 ]);
@@ -2030,10 +2030,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.maxLength({
-                        value:12,
-                        message: 'Max input is 12 digit'
-                    })
                 ]);
             }
         } else {
@@ -2071,8 +2067,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
-                    RxwebValidators.maxLength({
-                        value:8,
+                    RxwebValidators.maxNumber({
+                        value:99999999,
                         message: 'Max input is 8 digit'
                     })
                 ],
@@ -2088,8 +2084,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.maxLength({
-                        value:12,
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
                         message: 'Max input is 12 digit'
                     })
                 ],
@@ -2116,8 +2112,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
-                    RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: false,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
@@ -2127,8 +2125,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
-                    RxwebValidators.maxLength({
-                        value:8,
+                    RxwebValidators.maxNumber({
+                        value:99999999,
                         message: 'Max input is 8 digit'
                     })
                 ],
@@ -2141,8 +2139,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.maxLength({
-                        value:12,
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
                         message: 'Max input is 12 digit'
                     })
                 ],
@@ -2167,8 +2165,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.maxLength({
-                        value:12,
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
                         message: 'Max input is 12 digit'
                     })
                 ],
@@ -2190,8 +2188,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
-                    RxwebValidators.maxLength({
-                        value:8,
+                    RxwebValidators.maxNumber({
+                        value:99999999,
                         message: 'Max input is 8 digit'
                     })
                 ],
@@ -2433,8 +2431,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.maxLength({
-                        value:12,
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
                         message: 'Max input is 12 digit'
                     })
                 ],
@@ -2449,7 +2447,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         value:8,
                         message: 'Max input is 8 digit'
                     })
-                    // RxwebValidators.maxLength(8),
                 ],
                 // [
                 //     RxwebValidators.numeric({
@@ -2641,6 +2638,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle Promo Budget
         if (row.promoBudget) {
             promoBudgetCtrl.setValue(row.promoBudget);
+           
+
+            promoBudgetCtrl.setValidators([
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
+            ]);
+            // promoBudgetCtrl.clearValidators();
+            promoBudgetCtrl.updateValueAndValidity();
         }
 
         // Handle Start Date
@@ -3040,6 +3047,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (item.conditionBase === ConditionBase.QTY) {
                 // Handle Qty Field
                 this.conditions.at(idx).get('conditionQty').setValue(item.conditionQty);
+
             } else if (item.conditionBase === ConditionBase.ORDER_VALUE) {
                 // Handle Order Value Field
                 this.conditions.at(idx).get('conditionValue').setValue(item.conditionValue);
@@ -3068,6 +3076,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (item.ratioBase === RatioBaseCondition.QTY) {
                 // Handle Ratio Qty 
                 this.conditions.at(idx).get('ratioQty').setValue(item.ratioQty);
+                // const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
+                // qtyValueCtrl.clearValidators();
+                // this.form.get('ratioQty').updateValueAndValidity();
+
+
             } else if (item.ratioBase === RatioBaseCondition.ORDER_VALUE) {
                 // Handle Ratio Value
                 this.conditions.at(idx).get('ratioValue').setValue(item.ratioValue);
