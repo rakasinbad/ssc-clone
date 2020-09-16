@@ -684,12 +684,19 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!conditionBaseVal || typeof idx !== 'number') {
             return;
         }
-
+        
+        // const conditionBaseCtrl = this.conditionsCtrl[idx].get('conditionBase');
         // Handle validation for Qty Field (Condition Base - Qty) (FormControl = conditionQty)
         this._qtyValueValidationByConditionBase(conditionBaseVal, idx);
 
         // Handle validation for Order Value Field (Condition Base - Order Value) (FormControl = conditionValue)
         this._orderValueValidationByConditionBase(conditionBaseVal, idx);
+
+        //for handle validation benefit Rp / Amount if conditions change
+        const conditionType = this.conditionsCtrl[idx].get('conditionBase').value;
+        const benefitTypeVal = this.conditionsCtrl[idx].get('benefitType').value;
+        this._benefitRebateValidationByBenefitType(benefitTypeVal, idx);
+        
     }
 
     /**
@@ -1362,6 +1369,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             }
                         ),
                     }),
+                    
                 ]);
             } else {
                 conditionValueCtrl.setValidators([
@@ -1477,6 +1485,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:12,
+                    message: 'Max input is 12 digit'
+                }),
+
                 this._customValidationDiscountLimit(idx, conditionBaseCtrl.value),
             ]);
         } else {
@@ -1509,6 +1522,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:12,
+                    message: 'Max input is 12 digit'
+                })
                 // NOTE E1AM-105
                 // this._customValidationMaxRebateLimit(idx, conditionBaseCtrl.value),
             ]);
@@ -1541,6 +1558,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     acceptValue: NumericValueType.PositiveNumber,
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+                RxwebValidators.maxLength({
+                    value:12,
+                    message: 'Max input is 12 digit'
                 }),
                 this._customValidationRebateLimit(idx, conditionBaseCtrl.value),
             ]);
@@ -1693,6 +1714,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:8,
+                    message: 'Max input is 8 digit'
+                })
             ]);
         } else {
             qtyValueCtrl.clearValidators();
@@ -1730,6 +1755,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:8,
+                    message: 'Max input is 8 digit'
+                })
             ]);
         } else {
             qtyValueCtrl.clearValidators();
@@ -1759,6 +1788,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:12,
+                    message: 'Max input is 12 digit'
+                })
             ]);
         } else {
             orderValueCtrl.clearValidators();
@@ -1788,6 +1821,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:12,
+                    message: 'Max input is 12 digit'
+                })
             ]);
         } else {
             orderValueCtrl.clearValidators();
@@ -1931,6 +1968,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxLength({
+                    value:12,
+                    message: 'Max input is 12 digit'
+                })
+                
             ]);
         } else {
             benefitMaxRebateCtrl.clearValidators();
@@ -1949,10 +1991,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      */
     private _benefitRebateValidationByBenefitType(benefitType: BenefitType, idx: number): void {
         const benefitRebateCtrl = this.conditionsCtrl[idx].get('benefitRebate');
-
         if (benefitType === BenefitType.AMOUNT) {
             const conditionBaseVal = this.conditionsCtrl[idx].get('conditionBase').value;
-
             if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
                 const conditionValue = this.conditionsCtrl[idx].get('conditionValue').value;
 
@@ -1975,8 +2015,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             }
                         ),
                     }),
+                    RxwebValidators.maxLength({
+                        value:12,
+                        message: 'Max input is 12 digit'
+                    })
                 ]);
-            } else {
+            } else if (conditionBaseVal !== ConditionBase.ORDER_VALUE) {
                 benefitRebateCtrl.setValidators([
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -1986,6 +2030,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:12,
+                        message: 'Max input is 12 digit'
+                    })
                 ]);
             }
         } else {
@@ -2023,16 +2071,27 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
                 ],
             ],
             conditionValue: [
                 null,
                 [
+                    // RxwebValidators.digit({
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    // }),
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:12,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             benefitType: [
@@ -2068,6 +2127,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
                 ],
             ],
             benefitRebate: [
@@ -2078,6 +2141,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:12,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             benefitDiscount: null,
@@ -2100,6 +2167,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:12,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             ratioQty: [
@@ -2119,6 +2190,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
                 ],
             ],
         });
@@ -2358,6 +2433,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:12,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             promoSlot: [
@@ -2475,7 +2554,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
-                // console.log('isi row edit ->', row)    
                 this._setEditForm(row);
             });
     }
@@ -2657,7 +2735,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (row.promoConditions && row.promoConditions.length > 0) {
             const newPromoConditions: ConditionDto[] = _.orderBy(
                 row.promoConditions.map((item) => {
-                    // console.log('isi item edit->', item)
                     return new ConditionDto({
                         id: item.id,
                         conditionBase: item.conditionBase,
@@ -2919,7 +2996,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 this.conditions.push(this._createConditions());
             }
 
-            // console.log('isi item set edit->', item)
             this.multiStat = item.multiplication;
 
             // if (idx !== limitIdx) {
@@ -3480,7 +3556,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             const prevBenefitRebateVal = +prevBenefitRebateCtrl.value;
 
             let limitNumber = prevBenefitRebateVal;
-
             if (conditionBase === ConditionBase.ORDER_VALUE) {
                 const conditionValueCtrl = this.conditionsCtrl[idx].get('conditionValue');
                 const conditionValueVal = +conditionValueCtrl.value;
