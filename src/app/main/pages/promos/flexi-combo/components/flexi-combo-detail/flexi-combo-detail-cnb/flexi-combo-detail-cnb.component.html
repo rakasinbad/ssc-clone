@@ -166,7 +166,8 @@
             <div class="info" fxFlexAlign="center" fxFlex="100"></div>
         </div>
 
-        <div
+        <ng-container *ngIf="condition?.multiplication === false">
+            <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -190,7 +191,6 @@
                 <ng-template #noBenefitType> - </ng-template>
             </div>
         </div>
-
         <ng-container [ngSwitch]="condition?.benefitType">
             <!-- Benefit Type Qty -->
             <ng-container *ngSwitchCase="eBenefitType.QTY">
@@ -312,6 +312,114 @@
 
             <ng-container *ngSwitchDefault>-</ng-container>
         </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="condition?.multiplication === true">
+            <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Benefit Type</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="benefitMultiType; else noBenefitTypeMulti">
+                    <mat-radio-group [value]="condition?.benefitType">
+                        <mat-radio-button
+                            *ngFor="let row of benefitMultiType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noBenefitTypeMulti> - </ng-template>
+            </div>
+        </div>
+        
+        <ng-container [ngSwitch]="condition?.benefitType">
+            <!-- Benefit Type Qty -->
+            <ng-container *ngSwitchCase="eBenefitMultiType.QTY">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.catalogue?.name || '-' }}
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                    *ngIf="isFirst"
+                    style="margin-top: 10px;"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+                    <div class="info" fxFlex="100" >
+                        <mat-checkbox
+                            [disabled]="true"
+                            [checked]="
+                                isApplySameSku(
+                                    (flexiCombo$ | async)?.promoCatalogues,
+                                    condition?.benefitCatalogueId
+                                )
+                            "
+                        >
+                            Apply Some SKU
+                        </mat-checkbox>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitBonusQty || '-' }}
+                    </div>
+                </div>
+
+            </ng-container>
+            <!-- ./ Benefit Type Qty -->
+
+            <!-- Benefit Type Amount -->
+            <ng-container *ngSwitchCase="eBenefitMultiType.AMOUNT">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitRebate || '-' }}
+                    </div>
+                </div>
+            </ng-container>
+            <!-- ./ Benefit Type Amount -->
+
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
+    
+    </ng-container>
+
+        
     </div>
 </ng-container>
 
