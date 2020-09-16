@@ -5,7 +5,7 @@ import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
 import { Warehouse } from './warehouse.model';
 
-type TPortfolioType = 'multi' | 'single' | 'group' | 'direct';
+export type TPortfolioType = 'group' | 'direct';
 
 interface StorePortfolio {
     id: string;

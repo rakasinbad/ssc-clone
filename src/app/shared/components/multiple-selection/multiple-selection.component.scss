@@ -4,4 +4,11 @@ sinbad-multiple-selection {
     .content, .relative {
         position: relative;
     }
+
+    #available-selection-list, #selected-selection-list {
+        .mat-list-text {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
 }

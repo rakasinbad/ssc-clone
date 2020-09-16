@@ -1,16 +1,16 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import * as fromAssociationCore from '../reducers';
-import * as fromSalesReps from '../reducers/sales-rep.reducer';
+import * as fromSalesRep from '../reducers/sales-rep.reducer';
 
-const getAssociationCoreState = createFeatureSelector<
+const getAssociationsCoreState = createFeatureSelector<
     fromAssociationCore.FeatureState,
     fromAssociationCore.State
 >(fromAssociationCore.featureKey);
 
-export const getSalesRepEntitiesState = createSelector(
-    getAssociationCoreState,
-    state => state.salesReps
+export const getAssociationEntitiesState = createSelector(
+    getAssociationsCoreState,
+    state => state[fromSalesRep.featureKey]
 );
 
 export const {
@@ -18,11 +18,15 @@ export const {
     selectEntities,
     selectIds,
     selectTotal
-} = fromSalesReps.adapter.getSelectors(getSalesRepEntitiesState);
+} = fromSalesRep.adapter.getSelectors(getAssociationEntitiesState);
 
-const getTotalItem = createSelector(getSalesRepEntitiesState, state => state.total);
+const getTotalItem = createSelector(getAssociationEntitiesState,
+    state => state.total
+);
 
-const getSelectedId = createSelector(getSalesRepEntitiesState, state => state.selectedId);
+const getSelectedId = createSelector(getAssociationEntitiesState,
+    state => state.selectedId
+);
 
 const getSelectedItem = createSelector(
     selectEntities,
@@ -30,6 +34,18 @@ const getSelectedItem = createSelector(
     (entities, id) => entities[id]
 );
 
-const getLoadingState = createSelector(getSalesRepEntitiesState, state => state.isLoading);
+const getLoadingState = createSelector(getAssociationEntitiesState,
+    state => state.isLoading
+);
 
-export { getLoadingState, getSelectedId, getSelectedItem, getTotalItem };
+const getRefreshState = createSelector(getAssociationEntitiesState,
+    state => state.isRefresh
+);
+
+export {
+    getLoadingState,
+    getRefreshState,
+    getSelectedId,
+    getSelectedItem,
+    getTotalItem
+};

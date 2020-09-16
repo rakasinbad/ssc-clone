@@ -7,7 +7,7 @@ import { AssociationsFormComponent } from './pages/associations-form/association
 const routes: Routes = [
     { path: '', component: AssociationsComponent },
     { path: 'add', component: AssociationsFormComponent },
-    { path: ':id/edit', component: AssociationsFormComponent }
+    // { path: ':id/edit', component: AssociationsFormComponent }
     // { path: ':id/detail', component: AssociationsComponent },
 ];
 

@@ -36,6 +36,15 @@ export const statusOrder: Array<FuseNavigation> = [
         },
     },
     {
+        id: 'pending_payment',
+        title: 'Pending Payment (-)',
+        type: 'item',
+        function: (store) => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'pending_payment' }));
+            store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+        },
+    },
+    {
         id: 'packing',
         title: 'Packed (-)',
         // title: 'Packing',

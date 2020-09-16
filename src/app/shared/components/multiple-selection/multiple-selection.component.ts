@@ -75,6 +75,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     @Output() selectionListChanged: EventEmitter<SelectionList> = new EventEmitter<SelectionList>();
     // Event untuk ketika menekan "Clear All".
     @Output() clearAll: EventEmitter<void> = new EventEmitter<void>();
+    // Event untuk ketika menekan informasi tambahan pada selection.
+    @Output() clickInfo: EventEmitter<Selection> = new EventEmitter<Selection>();
 
     // Untuk menangkap event yang terjadi saat meng-update list yang diklik.
     selectedOptionSub$: Subject<MatSelectionListChange> = new Subject<MatSelectionListChange>();
@@ -174,17 +176,21 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         }
     }
 
+    onInformationClicked(value: Selection): void {
+        this.clickInfo.emit(value);
+    }
+
     ngOnInit(): void {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['initialSelectedOptions']) {
             // Menggabungkan opsi yang tergabung antara initial selected options dengan selected options.
-            const initialOptions = this.initialSelectedOptions.map(selected => String(selected.id + selected.group));
+            const initialOptions = changes['initialSelectedOptions'].currentValue.map(selected => String(selected.id + selected.group));
             // Membuang opsi yang terpilih agar tidak terduplikasi dengan initial selected options.
             this.selectedOptions = this.selectedOptions.filter(selected => !initialOptions.includes(String(selected.id + selected.group)));
 
-            this.mergedSelectedOptions = this.initialSelectedOptions.concat(
+            this.mergedSelectedOptions = changes['initialSelectedOptions'].currentValue.concat(
                 this.selectedOptions
             ).filter(merged =>
                 this.removedOptions.length === 0

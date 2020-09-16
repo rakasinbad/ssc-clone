@@ -50,7 +50,7 @@ import { IPortfolioAddForm } from '../../models/portfolios.model';
 import { PortfolioActions, StoreActions } from '../../store/actions';
 import { CoreFeatureState } from '../../store/reducers';
 import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../store/selectors';
-import { Warehouse, StorePortfolio } from '../../models';
+import { Warehouse, StorePortfolio, TPortfolioType } from '../../models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { HelperService } from 'app/shared/helpers';
 import { Selection, SelectionList, SelectionState } from 'app/shared/components/multiple-selection/models';
@@ -79,7 +79,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     // Untuk menyimpan ID portfolio yang sedang dibuka.
     portfolioId: string;
     // Untuk menyimpan tipe portfolio yang sedang diproses.
-    portfolioType: 'direct' | 'group';
+    portfolioType: TPortfolioType;
     // Untuk menyimpan form yang akan dikirim ke server.
     form: FormGroup;
     // Untuk menyimpan Invoice Group.
@@ -140,27 +140,23 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     ) {
         // Mengambil ID portfolio dari param URL.
         this.portfolioId = this.route.snapshot.params.id;
-        const { portfolio } = this.route.snapshot.params;
+        this.portfolioType = this.route.snapshot.params.portfolio as TPortfolioType;
 
-        this.updatePortfolioType(portfolio);
+        this.updatePortfolioType(this.portfolioType);
 
-        if (portfolio === 'group') {
-            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
-        } else {
+        if (this.portfolioType === 'direct') {
             this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'out-portfolio' }));
+        } else {
+            this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
         }
 
         // Mengambil data Invoice Group dari state.
         this.dropdownStore
             .select(DropdownSelectors.getInvoiceGroupDropdownState)
-            .pipe(takeUntil(this.subs$))
+            .pipe(
+                takeUntil(this.subs$)
+            )
             .subscribe(invoiceGroups => {
-                if (invoiceGroups.length === 0) {
-                    return this.dropdownStore.dispatch(
-                        DropdownActions.fetchDropdownInvoiceGroupRequest()
-                    );
-                }
-
                 this.invoiceGroups = invoiceGroups;
             });
 
@@ -478,7 +474,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                             limit: 20,
                             skip: takeSkip ? totalStores.length : 0,
                             keyword: search ? search : this.search.value,
-                            type: storeType,
+                            type: this.portfolioType === 'direct' ? 'out-portfolio' : storeType,
                             headers: {
                                 version: '2'
                             },
@@ -946,6 +942,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     ngAfterViewInit(): void {
+        this.dropdownStore.dispatch(DropdownActions.fetchDropdownInvoiceGroupRequest());
+
         // Mengambil ID portfolio dari state maupun URL.
         if (this.isEditMode) {
             this.portfolioStore
@@ -997,10 +995,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                         selectedInvoiceGroupId
                     })
                 ),
-                exhaustMap<
-                    { formInvoiceGroupId: string; selectedInvoiceGroupId: string },
-                    Observable<string | null>
-                >(({ formInvoiceGroupId, selectedInvoiceGroupId }) => {
+                exhaustMap<{ formInvoiceGroupId: string; selectedInvoiceGroupId: string }, Observable<string | null>>(({ formInvoiceGroupId, selectedInvoiceGroupId }) => {
                     // Memunculkan dialog ketika di state sudah ada invoice group yang terpilih dan pilihan tersebut berbeda dengan nilai yang sedang dipilih saat ini.
                     if (selectedInvoiceGroupId && formInvoiceGroupId !== selectedInvoiceGroupId) {
                         const dialogRef = this.matDialog.open<

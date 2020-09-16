@@ -5,29 +5,26 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
 import { AnyAction } from 'app/shared/models/actions.model';
 import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { User } from 'app/shared/models/user.model';
 import { FormActions } from 'app/shared/store/actions';
 import { Observable, of } from 'rxjs';
 import {
     catchError,
-    exhaustMap,
     finalize,
     map,
     switchMap,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
-import { Portfolio } from '../../../portfolios/models';
-import { AssociationApiService } from '../../services';
-import { AssociationActions, associationFailureActionNames } from '../actions';
+import { AssociationApiService, AssociationService } from '../../services';
+import { AssociationActions } from '../actions';
 import * as fromAssociation from '../reducers';
+import { Association } from '../../models';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { HelperService } from 'app/shared/helpers';
 
 @Injectable()
 export class AssociationEffects {
@@ -35,9 +32,10 @@ export class AssociationEffects {
         private actions$: Actions,
         private router: Router,
         private store: Store<fromAssociation.FeatureState>,
-        private storage: StorageMap,
+        private _$helper: HelperService,
         private _$notice: NoticeService,
-        private _$associationApi: AssociationApiService
+        private associationService: AssociationService,
+        private _$associationApi: AssociationApiService,
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -61,6 +59,18 @@ export class AssociationEffects {
         )
     );
 
+    createAssociationFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(AssociationActions.createAssociationFailure),
+                tap(() => {
+                    // Menghilangkan state loading
+                    this.associationService.setLoadingState(false);
+                })
+            ),
+        { dispatch: false }
+    );
+    
     createAssociationSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -71,6 +81,9 @@ export class AssociationEffects {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
+
+                    // Menghilangkan state loading
+                    this.associationService.setLoadingState(false);
 
                     // Kembali ke halaman association.
                     this.router.navigate(['/pages/sales-force/associations']);
@@ -83,15 +96,16 @@ export class AssociationEffects {
         this.actions$.pipe(
             ofType(AssociationActions.fetchAssociationsRequest),
             map(action => action.payload),
-            switchMap(payload =>
-                this._$associationApi.findAssociations<PaginateResponse<Portfolio>>(payload).pipe(
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId = null }]) =>
+                this._$associationApi.findAll<PaginateResponse<Association>>(payload, supplierId).pipe(
                     catchOffline(),
                     map(response =>
                         AssociationActions.fetchAssociationsSuccess({
                             payload: {
                                 data: response.data.map(
                                     resp =>
-                                        new Portfolio({ ...resp, storeQty: resp['storeAmount'] })
+                                        new Association({ ...resp })
                                 ),
                                 total: response.total
                             }
@@ -103,107 +117,12 @@ export class AssociationEffects {
         )
     );
 
-    /**
-     *
-     * [REQUEST] Association
-     * @memberof AssociationEffects
-     */
-    fetchAssociationRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(AssociationActions.fetchAssociationRequest),
-            map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            exhaustMap(([params, userSupplier]) => {
-                if (!userSupplier) {
-                    return this.storage
-                        .get('user')
-                        .toPromise()
-                        .then(user => (user ? [params, user] : [params, null]));
-                }
-
-                const { supplierId } = userSupplier;
-
-                return of([params, supplierId]);
-            }),
-            switchMap(([params, data]: [IQueryParams, string | Auth]) => {
-                if (!data) {
-                    return of(
-                        AssociationActions.fetchAssociationFailure({
-                            payload: new ErrorHandler({
-                                id: 'fetchAssociationFailure',
-                                errors: 'Not Found!'
-                            })
-                        })
-                    );
-                }
-
-                let supplierId;
-
-                if (typeof data === 'string') {
-                    supplierId = data;
-                } else {
-                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
-                }
-
-                return this._$associationApi
-                    .findAll<PaginateResponse<User>>(params, supplierId)
-                    .pipe(
-                        catchOffline(),
-                        map(resp => {
-                            const newResp = {
-                                data: resp.data || [],
-                                total: resp.total
-                            };
-
-                            return AssociationActions.fetchAssociationSuccess({
-                                payload: {
-                                    ...newResp,
-                                    data:
-                                        newResp.data && newResp.data.length > 0
-                                            ? newResp.data.map(r => new User(r))
-                                            : []
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                AssociationActions.fetchAssociationFailure({
-                                    payload: new ErrorHandler({
-                                        id: 'fetchAssociationFailure',
-                                        errors: err
-                                    })
-                                })
-                            )
-                        )
-                    );
-            })
-        )
-    );
-
-    fetchAssociationFailure$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(AssociationActions.fetchAssociationFailure),
-                map(action => action.payload),
-                tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
-
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
-                })
-            ),
-        { dispatch: false }
-    );
-
     sendErrorToState = (
         err: ErrorHandler | HttpErrorResponse | object,
-        dispatchTo: associationFailureActionNames
+        dispatchTo: AssociationActions.failureActionNames
     ): Observable<AnyAction> => {
+        this._$helper.showErrorNotification(new ErrorHandler(err as ErrorHandler));
+
         if (err instanceof ErrorHandler) {
             return of(
                 AssociationActions[dispatchTo]({
