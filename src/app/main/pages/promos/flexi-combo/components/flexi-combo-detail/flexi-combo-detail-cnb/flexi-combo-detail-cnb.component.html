@@ -274,7 +274,9 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
 
                     <div class="info" fxFlex="100">
-                        {{ condition?.benefitRebate || '-' }}
+                        <p thousandSeparator=".">
+                            {{ (condition?.benefitRebate | number )|| '-' }}
+                        </p>
                     </div>
                 </div>
             </ng-container>
@@ -408,7 +410,9 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
 
                     <div class="info" fxFlex="100">
-                        {{ condition?.benefitRebate || '-' }}
+                        <p thousandSeparator=".">
+                            {{ (condition?.benefitRebate | number )|| '-' }}
+                        </p>
                     </div>
                 </div>
             </ng-container>
