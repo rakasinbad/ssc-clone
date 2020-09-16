@@ -2363,12 +2363,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             promoSlot: [
                 null,
                 [
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
+                    // RxwebValidators.maxLength(8),
                 ],
+                // [
+                //     RxwebValidators.numeric({
+                //         acceptValue: NumericValueType.PositiveNumber,
+                //         allowDecimal: true,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                //     }),
+                // ],
             ],
             startDate: [
                 { value: null, disabled: true },
@@ -2513,11 +2523,21 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle Active Store
         if (row.isActiveStore) {
             activeStoreCtrl.setValue (row.isActiveStore);
+            if (row.isActiveStore == true) {
+                this.selectNewStore = true;
+            } else {
+                this.selectNewStore = false;
+            }
         }
 
         // Handle New Store
         if (row.isNewStore) {
             newStoreCtrl.setValue (row.isNewStore);
+            if (row.isNewStore === true) {
+                this.selectActiveOutlet = true;
+            } else {
+                this.selectActiveOutlet = false;
+            }
         }
 
         // Handle Promo Seller ID

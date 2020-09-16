@@ -254,11 +254,15 @@
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
+                            [class.sinbad-red-fg]="hasError('promoSlot')"
                         >
                             <label fxFlexAlign="center" fxFlex="10"> Promo Slot </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="promoSlot" formControlName="promoSlot" />
+                                <input matInput name="promoSlot" 
+                                    formControlName="promoSlot" 
+                                    mask="0*"
+                                />
 
                                 <mat-error *ngIf="hasError('promoSlot', true)">
                                     {{ getErrorMessage('promoSlot') }}
