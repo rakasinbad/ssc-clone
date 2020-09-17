@@ -67,9 +67,9 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price text-word-break-break-word">
                             {{
-                                +row?.parcelNettPrice > 0
-                                    ? (row?.parcelNettPrice | price: 'short') || '-'
-                                    : row?.parcelNettPrice
+                                +row?.billing.amount > 0
+                                    ? (+row?.billing.amount | price: 'short') || '-'
+                                    : row?.billing.amount
                             }}
                         </p>
                     </mat-cell>
