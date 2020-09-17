@@ -2030,6 +2030,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ]);
             }
         } else {
@@ -2534,7 +2538,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
-
+        // console.log('condition form ->', this.conditionForm)
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
