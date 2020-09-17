@@ -254,11 +254,15 @@
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
+                            [class.sinbad-red-fg]="hasError('promoSlot')"
                         >
                             <label fxFlexAlign="center" fxFlex="10"> Promo Slot </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="promoSlot" formControlName="promoSlot" />
+                                <input matInput name="promoSlot" 
+                                    formControlName="promoSlot" 
+                                    mask="0*"
+                                />
 
                                 <mat-error *ngIf="hasError('promoSlot', true)">
                                     {{ getErrorMessage('promoSlot') }}
@@ -1093,27 +1097,7 @@
                                                         -
                                                     </ng-template>
 
-                                                    <!-- <mat-hint
-                                                        class="mat-error"
-                                                        *ngIf="
-                                                            hasError(
-                                                                [
-                                                                    'conditions',
-                                                                    conditionIdx,
-                                                                    'ratioBase'
-                                                                ],
-                                                                true
-                                                            )
-                                                        "
-                                                    >
-                                                        {{
-                                                            getErrorMessage(
-                                                                'ratioBase',
-                                                                'conditions',
-                                                                conditionIdx
-                                                            )
-                                                        }}
-                                                    </mat-hint> -->
+                                                   
                                                 </div>
                                             </div>
                                             <!-- ./ FIELD TIER CONDITION BASE -->
@@ -1156,7 +1140,7 @@
                                                                 formControlName="ratioQty"
                                                             />
 
-                                                            <!-- <mat-error
+                                                            <mat-error
                                                                 *ngIf="
                                                                     hasError(
                                                                         [
@@ -1175,7 +1159,7 @@
                                                                         conditionIdx
                                                                     )
                                                                 }}
-                                                            </mat-error> -->
+                                                            </mat-error>
                                                         </mat-form-field>
                                                     </div>
                                                     <!-- ./ FIELD TIER CONDITION VALUE (QTY) -->
@@ -1217,7 +1201,7 @@
                                                                 placeholder="Rp"
                                                             />
 
-                                                            <!-- <mat-error
+                                                            <mat-error
                                                                 *ngIf="
                                                                     hasError(
                                                                         [
@@ -1236,7 +1220,7 @@
                                                                         conditionIdx
                                                                     )
                                                                 }}
-                                                            </mat-error> -->
+                                                            </mat-error>
                                                         </mat-form-field>
                                                     </div>
                                                     <!-- ./ FIELD TIER CONDITION VALUE (ORDER VALUE) -->

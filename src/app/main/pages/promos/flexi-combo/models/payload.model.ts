@@ -110,6 +110,9 @@ export class CreateFlexiComboDto {
         if (this.promoAllocationType !== 'none'){
             this.promoBudget = promoBudget || null;
             this.promoSlot = promoSlot || null;
+        } else if (this.promoAllocationType == 'none') {
+            this.promoBudget = null;
+            this.promoSlot = null;
         }
     }
 }
