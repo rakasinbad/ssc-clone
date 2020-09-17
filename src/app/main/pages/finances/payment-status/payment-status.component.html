@@ -122,8 +122,7 @@
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{
-                                row?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType
-                                    ?.name || '-'
+                                row?.paymentType?.name || '-'
                             }}
                         </p>
                     </mat-cell>
@@ -136,7 +135,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
-                            {{ row?.paymentTypeSupplierMethod?.paymentMethod?.name || '-' }}
+                            {{ row?.paymentChannel?.name || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>

@@ -34,6 +34,7 @@ export const getSelectedOrder = createSelector(
 export const getTotalStatus = createSelector(getOrderState, (state) => state.orders.totalStatus);
 
 export const getTotalAllOrder = createSelector(getTotalStatus, (state) => state.totalOrder);
+export const getTotalPendingPayment = createSelector(getTotalStatus, (state) => state.totalPendingPaymentOrder);
 export const getTotalNewOrder = createSelector(getTotalStatus, (state) => state.totalNewOrder);
 export const getTotalPackedOrder = createSelector(
     getTotalStatus,

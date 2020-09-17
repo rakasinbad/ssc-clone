@@ -57,7 +57,7 @@
             <mat-form-field appearance="outline" fxFlex="80">
                 <ng-container *ngIf="paymentStatuses; else noPaymentStatuses">
                     <mat-select formControlName="statusPayment" placeholder="Choose status">
-                        <mat-option *ngFor="let row of paymentStatuses" [value]="row?.id">
+                        <mat-option *ngFor="let row of paymentStatuses.filter(filterPaymentStatus)" [value]="row?.id">
                             {{ row?.label }}
                         </mat-option>
                     </mat-select>

@@ -74,8 +74,9 @@
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab [label]="'All (' + allOrder + ')'"></mat-tab>
-            <mat-tab [label]="'New Order (' + newOrder + ')'"></mat-tab>
             <mat-tab [label]="'Pending (' + pendingOrder + ')'"></mat-tab>
+            <mat-tab [label]="'Pending Payment (' + pendingPayment + ')'"></mat-tab>
+            <mat-tab [label]="'New Order (' + newOrder + ')'"></mat-tab>
             <mat-tab [label]="'Packed (' + packedOrder + ')'"></mat-tab>
             <mat-tab [label]="'Shipped (' + shippedOrder + ')'"></mat-tab>
             <mat-tab [label]="'Delivered (' + deliveredOrder + ')'"></mat-tab>
@@ -188,7 +189,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.paymentTypeSupplierMethod?.paymentMethod?.name) }}
+                            {{ safeValue(row?.paymentChannel?.name) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -221,6 +222,10 @@
                                     Quotation
                                 </ng-container>
 
+                                <ng-container *ngSwitchCase="'pending_payment'">
+                                    Pending Payment
+                                </ng-container>
+
                                 <ng-container *ngSwitchCase="'confirm'">
                                     New Order
                                 </ng-container>
@@ -245,9 +250,6 @@
                                     Done
                                 </ng-container>
 
-                                <ng-container *ngSwitchCase="'pending'">
-                                    Pending
-                                </ng-container>
 
                                 <ng-container *ngSwitchCase="'cancel'">
                                     Canceled
@@ -357,7 +359,8 @@
                                             row?.status !== 'done' &&
                                             row?.status !== 'cancel' &&
                                             row?.status !== 'checkout' &&
-                                            row?.status !== 'pending'
+                                            row?.status !== 'pending' &&
+                                            row?.status !== 'pending_payment'
                                         "
                                         (click)="onChangeStatus(row)"
                                     >
@@ -379,6 +382,7 @@
                                                 <ng-container *ngSwitchCase="'delivered'">
                                                     Done
                                                 </ng-container>
+
                                             </ng-container>
                                             <!--  {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }} -->
                                         </span>
@@ -389,7 +393,7 @@
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="Cancel"
-                                        *ngIf="row?.status === 'confirm'"
+                                        *ngIf="row?.status === 'confirm' || row?.status === 'pending_payment'"
                                         (click)="onChangeCancelStatus(row)"
                                     >
                                         <mat-icon>send</mat-icon>
@@ -499,6 +503,7 @@
                 showFirstLastButtons
             >
             </mat-paginator>
+
 
             <!-- <div
                 class="loader"
