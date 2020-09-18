@@ -165,6 +165,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public selectActiveOutlet = false;
     public maxRedemStat = false;
     public multiStat = false;
+    public disableMulti = false;
+    public maxRedemEdit: any;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -1240,7 +1242,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         } else {
             this.maxRedemStat = false;
             this.multiStat = false;
-            this.form.get('maxRedemption').setValue('');
+            if (this.pageType === 'new') {
+                this.form.get('maxRedemption').setValue('');
+            }
+
         }
     }
 
@@ -2436,6 +2441,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.digit({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             promoAllocationType: [
@@ -2656,6 +2665,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle Max Redemption per Buyer
         if (row.maxRedemptionPerStore) {
             maxRedemptionCtrl.setValue(row.maxRedemptionPerStore);
+            this.maxRedemEdit = row.maxRedemptionPerStore;
         }
 
         // Handle Promo Budget
@@ -2792,7 +2802,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ['id'],
                 ['asc']
             );
-
+                if (newPromoConditions.length > 1) {
+                    this.disableMulti = true;
+                }
             this._setEditConditionForm(row, newPromoConditions);
         }
 
@@ -3025,9 +3037,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 // Handle add new FormControl for setValue index item 1
                 this.conditions.push(this._createConditions());
             }
-
             this.multiStat = item.multiplication;
 
+            if (this.multiStat == true) {
+                this.maxRedemStat = true;
+            }
             // if (idx !== limitIdx) {
             //     // Disable not last tier
             //     this.conditionsCtrl[idx].disable({
