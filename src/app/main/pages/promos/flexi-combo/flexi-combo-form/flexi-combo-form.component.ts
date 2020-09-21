@@ -2398,6 +2398,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         },
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:20,
+                        message: 'Max input is 20 character'
+                    })
                     // RxwebValidators.alphaNumeric({
                     //     allowWhiteSpace: false,
                     //     message: this._$errorMessage.getErrorMessageNonState(
@@ -3037,6 +3041,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 // Handle add new FormControl for setValue index item 1
                 this.conditions.push(this._createConditions());
             }
+            
             this.multiStat = item.multiplication;
 
             if (this.multiStat == true) {
