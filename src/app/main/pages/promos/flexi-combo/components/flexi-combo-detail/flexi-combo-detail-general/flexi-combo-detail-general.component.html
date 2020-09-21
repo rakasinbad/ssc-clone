@@ -17,8 +17,7 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container *ngIf="promoAllocation; else noPromoAllocatione">
                     <mat-radio-group [value]="(flexiCombo$ | async)?.promoAllocationType">
-                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" 
-                        style="margin-left:10px;" [disabled]="true">
+                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" [disabled]="true">
                             {{ row?.label }}
                         </mat-radio-button>
                     </mat-radio-group>

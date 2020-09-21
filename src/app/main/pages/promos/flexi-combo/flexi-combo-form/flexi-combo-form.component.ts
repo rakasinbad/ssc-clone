@@ -165,6 +165,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public selectActiveOutlet = false;
     public maxRedemStat = false;
     public multiStat = false;
+    public disableMulti = false;
+    public maxRedemEdit: any;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -262,7 +264,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         let lastIdx = idx;
         let prevLastIdx = idx;
-
+        
         this.conditions.removeAt(idx);
 
         const conditions = this.conditions.getRawValue();
@@ -273,19 +275,29 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             prevLastIdx = nextIdx;
         }
 
-        if (idx === prevLastIdx) {
-            // Enable Last Tier
-            this.conditionsCtrl[lastIdx].enable({
+        if (this.pageType === 'new' && this.multiStat == true) {
+            this.conditionsCtrl[0].enable({
                 onlySelf: true,
             });
+
+            this.conditions.removeAt(1);
+
         } else {
-            if (lastIdx >= 1) {
-                while (idx <= lastIdx) {
-                    this._newTierValidation(idx);
-                    idx++;
+            if (idx === prevLastIdx) {
+                // Enable Last Tier
+                this.conditionsCtrl[lastIdx].enable({
+                    onlySelf: true,
+                });
+            } else {
+                if (lastIdx >= 1) {
+                    while (idx <= lastIdx) {
+                        this._newTierValidation(idx);
+                        idx++;
+                    }
                 }
             }
         }
+        
     }
 
     getApplyBonusSku(idx: number): Selection {
@@ -1218,10 +1230,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.maxRedemStat = true;
             this.multiStat = true;
             this.form.get('maxRedemption').setValue(1);
+
+            if (this.pageType === 'new') {
+                if (this.conditionsCtrl.length > 1) {
+                    for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
+                        this.deleteCondition(i);
+                    }
+                }
+            }
+            
         } else {
             this.maxRedemStat = false;
             this.multiStat = false;
-            this.form.get('maxRedemption').setValue('');
+            if (this.pageType === 'new') {
+                this.form.get('maxRedemption').setValue('');
+            }
+
         }
     }
 
@@ -2374,6 +2398,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         },
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:20,
+                        message: 'Max input is 20 character'
+                    })
                     // RxwebValidators.alphaNumeric({
                     //     allowWhiteSpace: false,
                     //     message: this._$errorMessage.getErrorMessageNonState(
@@ -2417,6 +2445,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.digit({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             promoAllocationType: [
@@ -2637,6 +2669,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle Max Redemption per Buyer
         if (row.maxRedemptionPerStore) {
             maxRedemptionCtrl.setValue(row.maxRedemptionPerStore);
+            this.maxRedemEdit = row.maxRedemptionPerStore;
         }
 
         // Handle Promo Budget
@@ -2773,7 +2806,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ['id'],
                 ['asc']
             );
-
+                if (newPromoConditions.length > 1) {
+                    this.disableMulti = true;
+                }
             this._setEditConditionForm(row, newPromoConditions);
         }
 
@@ -3006,9 +3041,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 // Handle add new FormControl for setValue index item 1
                 this.conditions.push(this._createConditions());
             }
-
+            
             this.multiStat = item.multiplication;
 
+            if (this.multiStat == true) {
+                this.maxRedemStat = true;
+            }
             // if (idx !== limitIdx) {
             //     // Disable not last tier
             //     this.conditionsCtrl[idx].disable({
