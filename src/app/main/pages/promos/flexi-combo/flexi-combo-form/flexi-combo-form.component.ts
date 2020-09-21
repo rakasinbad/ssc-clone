@@ -282,6 +282,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             this.conditions.removeAt(1);
 
+        } else if (this.pageType === 'edit' && this.multiStat == true) {
+            this.conditionsCtrl[0].enable({
+                onlySelf: true,
+            });
+
+            this.conditions.removeAt(1);
+
         } else {
             if (idx === prevLastIdx) {
                 // Enable Last Tier
@@ -1232,6 +1239,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('maxRedemption').setValue(1);
 
             if (this.pageType === 'new') {
+                if (this.conditionsCtrl.length > 1) {
+                    for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
+                        this.deleteCondition(i);
+                    }
+                }
+            } else if (this.pageType === 'edit') {
                 if (this.conditionsCtrl.length > 1) {
                     for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
                         this.deleteCondition(i);
