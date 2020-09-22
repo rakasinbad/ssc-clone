@@ -732,7 +732,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!ratioBaseVal || typeof idx !== 'number') {
             return;
         }
-
+        console.log('isi ratioBaseVal->', ratioBaseVal)
         // Handle validation for Ratio Buy Qty Field (Condition Base - Qty) (FormControl = ratioQty)
         this._qtyValueValidationByRatioConditionBase(ratioBaseVal, idx);
 
@@ -3127,16 +3127,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 // Handle Benefit Max Rebate Field
                 this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
             }
+            console.log('isi item ratioBase->', item.ratioBase)
+            console.log('isi RatioBaseCondition qty->', RatioBaseCondition.QTY)
+            console.log('isi RatioBaseCondition ordervalue->', RatioBaseCondition.ORDER_VALUE)
+
 
             if (item.ratioBase === RatioBaseCondition.QTY) {
+                this.conditions.at(idx).get('ratioBase').setValue(item.ratioBase);
                 // Handle Ratio Qty 
-                this.conditions.at(idx).get('ratioQty').setValue(item.ratioQty);
-                // const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
-                // qtyValueCtrl.clearValidators();
-                // this.form.get('ratioQty').updateValueAndValidity();
-
-
             } else if (item.ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                this.conditions.at(idx).get('ratioBase').setValue(item.ratioBase);
                 // Handle Ratio Value
                 this.conditions.at(idx).get('ratioValue').setValue(item.ratioValue);
             }
