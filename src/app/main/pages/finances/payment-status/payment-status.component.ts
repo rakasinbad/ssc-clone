@@ -243,8 +243,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
-
         this.table.nativeElement.scrollIntoView();
         // this.table.nativeElement.scrollTop = 0;
     }
@@ -260,6 +258,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/Payment+Status.zip',
             '_blank'
         );
+    }
+
+    onViewInvoice(): void {
+
     }
 
     onExport(ev: { action: string; payload: any }): void {

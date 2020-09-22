@@ -1,0 +1,56 @@
+<div id="invoices-view" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent with-navigation"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <div class="center content-card">
+        <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex>
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-icon-button
+                        class="mr-0 mr-sm-16"
+                        [routerLink]="['/pages/finances/payment-status']"
+                    >
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+
+                    <div
+                        fxLayout="column"
+                        fxLayoutAlign="start start"
+                        [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                    >
+                        <div class="h2">Invoices Detail</div>
+                    </div>
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="end end"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <button
+                        type="button"
+                        class="mr-0 mr-sm-16"
+                        mat-raised-button
+                        style="background-color: white"
+                        (click)="print()"
+                    >
+                        print
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="order-box info-box" fxFlex="30">
+            <mat-card>
+                <pdf-viewer
+                    src="https://realsport-assest.s3-ap-southeast-1.amazonaws.com/realsport-assest/SINBAD+-+PSBB+2+-+Week+21-29sept.pdf"
+                    [render-text]="true"
+                    style="display: block;">
+                </pdf-viewer>
+            </mat-card>
+        </div>
+    </div>
+
+</div>
