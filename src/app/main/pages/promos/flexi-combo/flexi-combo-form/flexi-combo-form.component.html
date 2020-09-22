@@ -1133,7 +1133,14 @@
                                                         fxLayoutAlign="start stretch"
                                                         fxLayoutGap="16px"
                                                     >
-                                                        <label fxFlexAlign="center" fxFlex="16">
+                                                        <label fxFlexAlign="center" fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                            hasError([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'ratioQty'
+                                                            ])
+                                                        ">
                                                             <span class="sinbad-red-fg">*</span>
                                                             Qty >=
                                                         </label>
@@ -1186,7 +1193,17 @@
                                                         fxLayoutAlign="start stretch"
                                                         fxLayoutGap="16px"
                                                     >
-                                                        <label fxFlexAlign="center" fxFlex="16">
+                                                        <label fxFlexAlign="center" fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                                    hasError(
+                                                                        [
+                                                                            'conditions',
+                                                                            conditionIdx,
+                                                                            'ratioValue'
+                                                                        ],
+                                                                        true
+                                                                    )
+                                                                ">
                                                             <span class="sinbad-red-fg">*</span>
                                                             Order Value >=
                                                         </label>
