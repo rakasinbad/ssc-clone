@@ -101,6 +101,7 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
+    <ng-container *ngIf="!(isLoading$ | async)">
         <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
             <div class="label" fxFlexAlign="center" fxFlex="10">
                 Max Promo Redemption<br />(transaction)
@@ -112,12 +113,12 @@
                 <br />(Rp)
             </div>
         </ng-container>
-        <ng-container *ngIf="typePromoAlloc !== 'promo_budget' && typePromoAlloc !== 'promo_slot'">
+        <ng-container *ngIf="typePromoAlloc == 'none'">
             <div class="label" fxFlexAlign="center" fxFlex="10">
                 Max Redemption<br />per Buyer
             </div>
         </ng-container>    
-
+    </ng-container> 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (flexiCombo$ | async)?.maxRedemptionPerStore || '-' }}
