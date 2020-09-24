@@ -4,20 +4,32 @@ import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { EStatus } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
 
-interface ICrossSellingCondition {
+//for benefit 
+interface ICrossSellingPromoBenefit {
     benefitBonusQty: string;
     benefitCatalogueId: string;
     benefitType: string;
-    conditionBase: string;
-    conditionQty: number;
 }
 
+//for choose sku group
 interface ICrossSellingBase {
     // brandId?: string[];
     catalogueId?: string[];
     invoiceGroupId?: string[];
 }
 
+//for cross selling group
+interface ICrossSellingGrouping {
+    baseGroup: ConditionBase;
+    fakturGroup: string;
+    triggerGroup: string;
+    skuGroupChoosen: string[]; //this is get data from ICrossSellingBase (choose sku)
+    relationGroup: string;
+    qtyGroup: number;
+    orderValueGroup: number;
+}
+
+//for customer segmentation setting
 interface ICrossSellingDataTarget {
     channelId?: string[];
     clusterId?: string[];
@@ -29,8 +41,9 @@ interface ICrossSellingDataTarget {
 
 export class CreateCrossSellingDto {
     base: string;
-    conditions: ICrossSellingCondition[];
     dataBase: ICrossSellingBase;
+    dataGroup: ICrossSellingGrouping[];
+    dataBenefit: ICrossSellingPromoBenefit[];
     dataTarget: ICrossSellingDataTarget;
     endDate: string;
     externalId: string;
@@ -39,7 +52,11 @@ export class CreateCrossSellingDto {
     maxRedemptionPerStore: number;
     name: string;
     platform: PlatformSinbad;
+    promoAllocationType: string;
     promoBudget: number;
+    planBudget: number;
+    promoSlot: number;
+    planSlot: number;
     shortDescription: string;
     startDate: string;
     status: EStatus;
@@ -50,7 +67,7 @@ export class CreateCrossSellingDto {
     constructor(data: CreateCrossSellingDto) {
         const {
             base,
-            conditions,
+            dataBenefit,
             dataBase,
             dataTarget,
             endDate,
@@ -60,7 +77,11 @@ export class CreateCrossSellingDto {
             maxRedemptionPerStore,
             name,
             platform,
+            promoAllocationType,
             promoBudget,
+            planBudget,
+            promoSlot,
+            planSlot,
             shortDescription,
             startDate,
             status,
@@ -70,7 +91,7 @@ export class CreateCrossSellingDto {
         } = data;
 
         this.base = base;
-        this.conditions = conditions;
+        this.dataBenefit = dataBenefit;
         this.dataBase = dataBase;
         this.dataTarget = dataTarget;
         this.endDate = endDate;
@@ -80,7 +101,11 @@ export class CreateCrossSellingDto {
         this.maxRedemptionPerStore = maxRedemptionPerStore;
         this.name = name;
         this.platform = platform;
-        this.promoBudget = promoBudget;
+        this.promoAllocationType = promoAllocationType;
+        this.promoBudget = promoBudget || null;
+        this.planBudget = planBudget || null;
+        this.promoSlot = promoSlot || null;
+        this.planSlot = planSlot || null;
         this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         this.startDate = startDate;
         this.status = status;
@@ -92,8 +117,9 @@ export class CreateCrossSellingDto {
 
 export class PatchCrossSellingDto {
     base?: string;
-    conditions?: ICrossSellingCondition[];
     dataBase?: ICrossSellingBase;
+    dataGroup: ICrossSellingGrouping[];
+    dataBenefit?: ICrossSellingPromoBenefit[];
     dataTarget?: ICrossSellingDataTarget;
     endDate?: string;
     externalId?: string;
@@ -102,7 +128,11 @@ export class PatchCrossSellingDto {
     maxRedemptionPerStore?: number;
     name?: string;
     platform?: PlatformSinbad;
+    promoAllocationType?: string;
     promoBudget?: number;
+    planBudget?: number;
+    promoSlot?: number;
+    planSlot?: number;
     shortDescription?: string;
     startDate?: string;
     status?: EStatus;
@@ -113,7 +143,7 @@ export class PatchCrossSellingDto {
     constructor(data: PatchCrossSellingDto) {
         const {
             base,
-            conditions,
+            dataBenefit,
             dataBase,
             dataTarget,
             endDate,
@@ -123,7 +153,11 @@ export class PatchCrossSellingDto {
             maxRedemptionPerStore,
             name,
             platform,
+            promoAllocationType,
             promoBudget,
+            promoSlot,
+            planBudget,
+            planSlot,
             shortDescription,
             startDate,
             status,
@@ -136,8 +170,8 @@ export class PatchCrossSellingDto {
             this.base = base;
         }
 
-        if (typeof conditions !== 'undefined') {
-            this.conditions = conditions;
+        if (typeof dataBenefit !== 'undefined') {
+            this.dataBenefit = dataBenefit;
         }
 
         if (typeof dataBase !== 'undefined') {
@@ -176,8 +210,24 @@ export class PatchCrossSellingDto {
             this.platform = platform;
         }
 
+        if (typeof promoAllocationType !== 'undefined') {
+            this.promoAllocationType = promoAllocationType;
+        }
+
         if (typeof promoBudget !== 'undefined') {
             this.promoBudget = promoBudget;
+        }
+
+        if (typeof promoSlot !== 'undefined') {
+            this.promoSlot = promoSlot;
+        }
+
+        if (typeof planBudget !== 'undefined') {
+            this.planBudget = planBudget;
+        }
+
+        if (typeof planSlot !== 'undefined') {
+            this.planSlot = planSlot;
         }
 
         if (typeof shortDescription !== 'undefined') {
@@ -207,7 +257,7 @@ export class PatchCrossSellingDto {
     }
 }
 
-export class ConditionDto {
+export class BenefitDto {
     readonly id?: string;
     benefitBonusQty: number;
     benefitCatalogueId: string;
@@ -216,11 +266,8 @@ export class ConditionDto {
     benefitRebate: number;
     benefitType: BenefitType;
     catalogue?: Selection;
-    conditionBase: ConditionBase;
-    conditionQty: string;
-    conditionValue: number;
 
-    constructor(data: ConditionDto) {
+    constructor(data: BenefitDto) {
         const {
             id,
             benefitBonusQty,
@@ -229,10 +276,7 @@ export class ConditionDto {
             benefitMaxRebate,
             benefitRebate,
             benefitType,
-            catalogue,
-            conditionBase,
-            conditionQty,
-            conditionValue,
+            catalogue
         } = data;
 
         this.id = id;
@@ -243,8 +287,5 @@ export class ConditionDto {
         this.benefitRebate = benefitRebate;
         this.benefitType = benefitType;
         this.catalogue = catalogue;
-        this.conditionBase = conditionBase;
-        this.conditionQty = conditionQty;
-        this.conditionValue = conditionValue;
     }
 }
