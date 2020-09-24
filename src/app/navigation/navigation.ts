@@ -243,6 +243,12 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/promos/voucher',
             },
+            {
+                id: 'cross-selling-promo',
+                title: 'Cross Selling Promo',
+                type: 'item',
+                url: '/pages/promos/cross-selling-promo',
+            },
         ],
     },
 ];
