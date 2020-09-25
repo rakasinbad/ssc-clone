@@ -102,12 +102,12 @@
         fxLayoutGap="15px"
     >
     <ng-container *ngIf="!(isLoading$ | async)">
-        <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
+        <ng-container *ngIf="typePromoAlloc == 'promo_slot'">
             <div class="label" fxFlexAlign="center" fxFlex="10">
                 Max Promo Redemption<br />(transaction)
             </div>
         </ng-container>
-        <ng-container *ngIf="typePromoAlloc == 'promo_slot'">
+        <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
             <div class="label" fxFlexAlign="center" fxFlex="10">
                 Max Promo Redemption
                 <br />(Rp)
