@@ -167,6 +167,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public multiStat = false;
     public disableMulti = false;
     public maxRedemEdit: any;
+    public ratioBaseEdit: string;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -1249,6 +1250,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
                         this.deleteCondition(i);
                     }
+                } else {
+                    if (this.ratioBaseEdit == null) {
+                        this.conditions.at(0).get('ratioBase').setValue('qty');
+                        this._qtyValueValidationByRatioConditionBaseEdit('qty', 0);
+                    } 
                 }
             }
             
@@ -1257,6 +1263,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.multiStat = false;
             if (this.pageType === 'new') {
                 this.form.get('maxRedemption').setValue('');
+            } else if (this.pageType === 'edit') {
+                if (this.ratioBaseEdit == null) {
+                    this.conditions.at(0).get('ratioBase').setValue('null');
+                    this._qtyValueValidationByRatioConditionBaseEdit(null, 0);
+                    this._orderValueValidationByRatioConditionBaseEdit(null, 0);
+                } else {
+                    // this.conditions.at(0).get('ratioBase').setValue('null');
+                    this._qtyValueValidationByRatioConditionBaseEdit(null, 0);
+                    this._orderValueValidationByRatioConditionBaseEdit(null, 0);
+                }
             }
 
         }
@@ -1803,6 +1819,37 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     /**
      *
+     * Handle validation for Qty Field by Buy Ratio Condition Base (FormControl = ratioQty)
+     * @private
+     * @param {RatioBaseCondition} conditionBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _qtyValueValidationByRatioConditionBaseEdit(ratioBase, idx: number): void {
+        const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
+        if (ratioBase === RatioBaseCondition.QTY) {
+            qtyValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.digit({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'})
+            ]);
+        } else if (ratioBase ==  null) {
+            qtyValueCtrl.clearValidators();
+        } else {
+            qtyValueCtrl.clearValidators();
+        }
+
+        qtyValueCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
      * Handle validation for Order Value Field by Condition Base (FormControl = conditionValue) Tier
      * @private
      * @param {ConditionBase} conditionBase
@@ -1860,6 +1907,41 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     message: 'Max input is 12 digit'
                 })
             ]);
+        } else {
+            orderValueCtrl.clearValidators();
+        }
+
+        orderValueCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Order Value Field by Ratio Condition Base (FormControl = ratioValue) 
+     * @private
+     * @param {RatioConditionBase} ratioBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _orderValueValidationByRatioConditionBaseEdit(ratioBase, idx: number): void {
+        const orderValueCtrl = this.conditionsCtrl[idx].get('ratioValue');
+
+        if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
+            orderValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
+            ]);
+        } else if (ratioBase == null) {
+            orderValueCtrl.clearValidators();
         } else {
             orderValueCtrl.clearValidators();
         }
@@ -2583,7 +2665,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
-        // console.log('condition form ->', this.conditionForm)
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
@@ -3129,17 +3210,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }
 
             if (item.ratioBase === RatioBaseCondition.QTY) {
+                this.conditions.at(idx).get('ratioBase').setValue(item.ratioBase);
                 // Handle Ratio Qty 
                 this.conditions.at(idx).get('ratioQty').setValue(item.ratioQty);
-                // const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
-                // qtyValueCtrl.clearValidators();
-                // this.form.get('ratioQty').updateValueAndValidity();
-
 
             } else if (item.ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                this.conditions.at(idx).get('ratioBase').setValue(item.ratioBase);
                 // Handle Ratio Value
                 this.conditions.at(idx).get('ratioValue').setValue(item.ratioValue);
-            }
+            } 
+
+            this.ratioBaseEdit = item.ratioBase;
 
             // Handle Qty Field Validation
             this._qtyValueValidationByConditionBase(item.conditionBase, idx);
