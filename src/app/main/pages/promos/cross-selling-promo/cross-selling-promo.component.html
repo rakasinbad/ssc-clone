@@ -1,0 +1,18 @@
+<div id="cross-selling" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- CENTER -->
+    <div class="center p-8">
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <sinbad-card-header
+                [config]="cardHeaderConfig"
+                (onClickAdd)="onClickAdd()"
+                (onSearchChanged)="keyword = $event"
+            ></sinbad-card-header>
+
+            <app-cross-selling-promo-list class="px-16" [keyword]="keyword"></app-cross-selling-promo-list>
+            <!-- <app-flexi-combo-list class="px-16" [keyword]="keyword"></app-flexi-combo-list> -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
