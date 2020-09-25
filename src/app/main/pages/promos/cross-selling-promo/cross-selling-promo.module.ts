@@ -5,18 +5,29 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { CrossSellingPromoNgrxModule } from './store';
 
 import { CrossSellingPromoRoutingModule } from './cross-selling-promo.routes';
 import { CrossSellingPromoComponent } from './cross-selling-promo.component';
 import { CrossSellingPromoListComponent } from './components/cross-selling-promo-list/cross-selling-promo-list.component';
 import { CrossSellingPromoDetailComponent } from './components/cross-selling-promo-detail/cross-selling-promo-detail.component';
+import { CrossSellingPromoFormComponent } from './components/cross-selling-promo-form/cross-selling-promo-form.component';
+import { CrossSellingDetailGnComponent } from './components/cross-selling-promo-detail/cross-selling-detail-gn/cross-selling-detail-gn.component';
+import { CrossSellingDetailCsgComponent } from './components/cross-selling-promo-detail/cross-selling-detail-csg/cross-selling-detail-csg.component';
+import { CrossSellingDetailBsComponent } from './components/cross-selling-promo-detail/cross-selling-detail-bs/cross-selling-detail-bs.component';
+import { CrossSellingDetailCsComponent } from './components/cross-selling-promo-detail/cross-selling-detail-cs/cross-selling-detail-cs.component';
 
 
 @NgModule({
   declarations: [
     CrossSellingPromoComponent,
       CrossSellingPromoListComponent,
-      CrossSellingPromoDetailComponent
+      CrossSellingPromoDetailComponent,
+      CrossSellingPromoFormComponent,
+      CrossSellingDetailGnComponent,
+      CrossSellingDetailCsgComponent,
+      CrossSellingDetailBsComponent,
+      CrossSellingDetailCsComponent
     ],
   imports: [
     CrossSellingPromoRoutingModule,
@@ -31,6 +42,9 @@ import { CrossSellingPromoDetailComponent } from './components/cross-selling-pro
 
     // Third Party (NgxPermissions: https://github.com/AlexKhymenko/ngx-permissions)
     NgxPermissionsModule.forChild(),
+
+    //NgRx Store
+    CrossSellingPromoNgrxModule
   ]
 })
 export class CrossSellingPromoModule { }

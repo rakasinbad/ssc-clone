@@ -29,10 +29,10 @@ import { merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
 
-// import { FlexiCombo } from '../../models';
-// import { FlexiComboActions } from '../../store/actions';
-// import * as fromFlexiCombos from '../../store/reducers';
-// import { FlexiComboSelectors } from '../../store/selectors';
+import { CrossSelling } from '../../models';
+import { CrossSellingPromoActions } from '../../store/actions';
+import * as crossSellingPromo from '../../store/reducers';
+import { CrossSellingPromoSelectors } from '../../store/selectors';
 
 export interface PeriodicElement {
     id: number;
@@ -87,10 +87,10 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
 
     dummyData = [];
 
-    // selection: SelectionModel<FlexiCombo>;
+    // selection: SelectionModel<CrossSelling>;
     eTriggerBase = TriggerBase;
 
-    // dataSource$: Observable<FlexiCombo[]>;
+    // dataSource$: Observable<CrossSelling[]>;
     // totalDataSource$: Observable<number>;
     totalDataSource: number;
     dataSource = new MatTableDataSource();
@@ -117,7 +117,7 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
         private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        // private store: Store<fromFlexiCombos.FeatureState>,
+        private store: Store<crossSellingPromo.FeatureState>,
         private _$notice: NoticeService
     ) {}
 

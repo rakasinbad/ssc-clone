@@ -13,8 +13,8 @@ import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model'
 import { UiActions } from 'app/shared/store/actions';
 import { Subject } from 'rxjs';
 
-// import { FlexiComboActions } from './store/actions';
-// import * as fromFlexiCombo from './store/reducers';
+import { CrossSellingPromoActions } from './store/actions';
+import * as crossSellingPromo from './store/reducers';
 
 @Component({
   selector: 'app-cross-selling-promo',
@@ -65,7 +65,7 @@ private breadCrumbs: IBreadcrumbs[] = [
 
 private unSubs$: Subject<void> = new Subject<void>();
 
-constructor(private router: Router) {}
+constructor(private router: Router, private store: Store<crossSellingPromo.FeatureState>) {}
 
   // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -86,7 +86,7 @@ constructor(private router: Router) {}
     }
 
     onClickAdd(): void {
-        // this.router.navigateByUrl('/pages/promos/flexi-combo/new');
+        // this.router.navigateByUrl('/pages/promos/cross-selling-promo/new');
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ constructor(private router: Router) {}
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
                 // Reset breadcrumb state
-                // this.store.dispatch(UiActions.resetBreadcrumb());
+                this.store.dispatch(UiActions.resetBreadcrumb());
 
                 // Reset core state flexiCombos
                 // this.store.dispatch(FlexiComboActions.clearState());
@@ -105,11 +105,11 @@ constructor(private router: Router) {}
 
             default:
                 // Set breadcrumbs
-                // this.store.dispatch(
+                this.store.dispatch(
                     UiActions.createBreadcrumb({
                         payload: this.breadCrumbs,
                     })
-                // );
+                );
                 break;
         }
     }
