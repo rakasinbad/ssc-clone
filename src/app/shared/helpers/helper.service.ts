@@ -22,6 +22,7 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import * as moment from 'moment';
 import { IHeaderRequest } from '../models/header.model';
+import { PromoAllocation, PromoAllocationCross } from '../models/promo-allocation.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -151,6 +152,36 @@ export class HelperService {
         {
             id: SegmentationBase.SEGMENTATION,
             label: 'Segmentation',
+        },
+    ];
+
+    // private static readonly _promoAllocation: { id: PromoAllocation; label: string }[] = [
+    //     {
+    //         id: PromoAllocation.NONE,
+    //         label: 'None',
+    //     },
+    //     {
+    //         id: PromoAllocation.PROMOBUDGET,
+    //         label: 'Promo Budget',
+    //     },
+    //     {
+    //         id: PromoAllocation.PROMOSLOT,
+    //         label: 'Promo Slot',
+    //     },
+    // ];
+
+    private static readonly _promoAllocationCross: { id: PromoAllocationCross; label: string }[] = [
+        {
+            id: PromoAllocationCross.NONE,
+            label: 'None',
+        },
+        {
+            id: PromoAllocationCross.PROMOBUDGET,
+            label: 'Max Promo Redemption (Rp)',
+        },
+        {
+            id: PromoAllocationCross.PROMOSLOT,
+            label: 'Max Promo Redemption (transaction)',
         },
     ];
 
@@ -670,6 +701,14 @@ export class HelperService {
 
     segmentationBase(): { id: SegmentationBase; label: string }[] {
         return HelperService._segmentationBase;
+    }
+
+    // promoAllocation(): { id: PromoAllocation; label: string }[] {
+    //     return HelperService._promoAllocation;
+    // }
+
+    promoAllocationCross(): { id: PromoAllocationCross; label: string }[] {
+        return HelperService._promoAllocationCross;
     }
 
     storeStatus(): { id: string; label: string }[] {
