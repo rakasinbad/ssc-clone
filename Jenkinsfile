@@ -95,7 +95,7 @@ pipeline {
         SSH_KEY = getSshKeyFromEnv(SINBAD_ENV)
         SSH_IP = getIpFromEnv(SINBAD_ENV)
         SSH_DIR = getDirFromEnv(SINBAD_ENV)
-        WOKRSPACE = "${env.WORKSPACE}"'
+        WOKRSPACE = "${env.WORKSPACE}"
     }
     stages {
         stage('Download ENV') {
