@@ -31,6 +31,7 @@ import { IStatusPayment } from '../../models';
 import { PaymentStatusApiService } from '../../services';
 import { PaymentStatusActions } from '../actions';
 import { fromPaymentStatus } from '../reducers';
+import { OrderActions } from '../../../../orders/store/actions';
 
 @Injectable()
 export class PaymentEffects {
@@ -544,6 +545,40 @@ export class PaymentEffects {
                 })
             ),
         { dispatch: false }
+    );
+
+    fetchInvoiceRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PaymentStatusActions.fetchInvoiceOrder),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$paymentStatusApi.findById(id, 'invoice').pipe(
+                    catchOffline(),
+                    map(resp => {
+                        this._$log.generateGroup('[RESPONSE REQUEST FETCH INVOICE]', {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return PaymentStatusActions.fetchInvoiceSuccess({
+                            payload: {
+                                fileName: resp.data.fileName,
+                                url: resp.data.url
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            PaymentStatusActions.fetchInvoiceFailed({
+                                payload: { id: 'fetchOrderFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
     );
 
     constructor(

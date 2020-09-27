@@ -9,6 +9,10 @@ import { LogService } from '../../../../../shared/helpers';
 import { fromPaymentStatus } from '../store/reducers';
 
 import printJS from 'print-js';
+import { PaymentStatusActions } from '../store/actions';
+import { combineLatest, Observable, ObservedValueOf, Subject } from 'rxjs';
+import { PaymentStatusSelectors } from '../store/selectors';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-invoices-view',
@@ -20,7 +24,10 @@ import printJS from 'print-js';
 })
 export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
 
-    private id: number;
+    private id: string;
+    isLoading$: Observable<boolean>;
+    invoice$: ObservedValueOf<Observable<{ fileName: string; url: string }>>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private route: ActivatedRoute,
@@ -33,6 +40,18 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit(): void {
+        this.store.dispatch(PaymentStatusActions.fetchInvoiceOrder({ payload: this.id }));
+        this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
+        combineLatest([
+            this.store.select(PaymentStatusSelectors.getInvoice)
+        ])
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(([invoice]) => {
+                if (typeof invoice !== 'undefined') {
+                    this.invoice$ = invoice;
+                    console.log(this.invoice$);
+                }
+            });
     }
 
     ngOnDestroy(): void {

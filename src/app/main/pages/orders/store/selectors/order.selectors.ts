@@ -68,3 +68,4 @@ export const getTotalCanceledOrder = createSelector(
 export const getIsRefresh = createSelector(getOrderState, (state) => state.isRefresh);
 
 export const getIsLoading = createSelector(getOrderState, (state) => state.isLoading);
+
