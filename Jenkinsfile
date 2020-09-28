@@ -132,19 +132,19 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh "echo ${GIT_TAG}_${GIT_COMMIT_SHORT} > VERSION"
+                    sh "echo ${GIT_TAG}_${GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
 
                     if (SINBAD_ENV != 'development') {
                         sh "npm install -g logrocket-cli"
                         sh "logrocket release ${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
-                        sh "logrocket upload ${WOKRSPACE}/ --release=${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
+                        sh "logrocket upload ${WOKRSPACE}/dist/supplier-center/ --release=${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
                     }
 
-                    sh '''    
-                        rm $WOKRSPACE/*.map
-                        ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "find /var/www/admin-panel-bak -type f -mmin +20 -delete"
-                        ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "rsync -avz /var/www/$SSH_DIR/ /var/www/admin-panel-bak"
-                        rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/$SSH_KEY -o StrictHostKeyChecking=no" $WOKRSPACE/ deploy@$SSH_IP:/var/www/admin-dev.sinbad.web.id
+                    sh '''
+                        if [ -f $WOKRSPACE/dist/supplier-center/*.map ]; then rm $WOKRSPACE/dist/supplier-center/*.map; fi && \
+                        ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "find /var/www/seller-center-bak -type f -mmin +20 -delete" && \
+                        ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "rsync -avz /var/www/$SSH_DIR/ /var/www/seller-center-bak" && \
+                        rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/$SSH_KEY -o StrictHostKeyChecking=no" $WOKRSPACE/dist/supplier-center/ deploy@$SSH_IP:/var/www/$SSH_DIR
                     '''
                 }
             }
