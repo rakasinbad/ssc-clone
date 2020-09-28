@@ -63,6 +63,8 @@ export class CreateCrossSellingDto {
     supplierId: string;
     target: string;
     type: string;
+    isNewStore: boolean;
+    isActiveStore: boolean;
 
     constructor(data: CreateCrossSellingDto) {
         const {
@@ -88,6 +90,8 @@ export class CreateCrossSellingDto {
             supplierId,
             target,
             type,
+            isNewStore,
+            isActiveStore
         } = data;
 
         this.base = base;
@@ -112,6 +116,8 @@ export class CreateCrossSellingDto {
         this.supplierId = supplierId;
         this.target = target;
         this.type = type;
+        this.isNewStore = isNewStore;
+        this.isActiveStore = isActiveStore;
     }
 }
 
@@ -139,6 +145,8 @@ export class PatchCrossSellingDto {
     supplierId?: string;
     target?: string;
     type?: string;
+    isActiveStore?: boolean;
+    isNewStore?: boolean;
 
     constructor(data: PatchCrossSellingDto) {
         const {
@@ -164,6 +172,8 @@ export class PatchCrossSellingDto {
             supplierId,
             target,
             type,
+            isNewStore,
+            isActiveStore
         } = data;
 
         if (typeof base !== 'undefined') {
@@ -252,6 +262,14 @@ export class PatchCrossSellingDto {
 
         if (typeof type !== 'undefined') {
             this.type = type;
+        }
+
+        if (typeof isNewStore !== 'undefined') {
+            this.isNewStore = isNewStore;
+        }
+
+        if (typeof isActiveStore !== 'undefined') {
+            this.isActiveStore = isActiveStore;
         }
 
     }

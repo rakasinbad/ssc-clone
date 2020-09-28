@@ -209,6 +209,18 @@ export interface IPromoWarehouse extends ITimestamp {
     warehouseId: string;
 }
 
+//for cross selling group
+export interface ICrossSellingGrouping extends ITimestamp {
+    readonly id: NonNullable<string>;
+    baseGroup: ConditionBase;
+    fakturGroup: string;
+    triggerGroup: string;
+    skuGroupChoosen: string[]; //this is get data from ICrossSellingBase (choose sku)
+    relationGroup: string;
+    qtyGroup: number;
+    orderValueGroup: number;
+}
+
 export class CrossSelling implements ITimestamp {
     readonly id: NonNullable<string>;
     supplierId: string;
@@ -241,6 +253,7 @@ export class CrossSelling implements ITimestamp {
     promoStores?: IPromoStore[];
     promoTypes?: IPromoType[];
     promoWarehouses?: IPromoWarehouse[];
+    promoCrossGroup?: ICrossSellingGrouping;
     shortDescription: string;
     startDate: string;
     status: EStatus;
@@ -249,6 +262,8 @@ export class CrossSelling implements ITimestamp {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    isNewStore: boolean;
+    isActiveStore: boolean;
 
     constructor(data: CrossSelling) {
         const {
@@ -291,6 +306,8 @@ export class CrossSelling implements ITimestamp {
             createdAt,
             updatedAt,
             deletedAt,
+            isNewStore,
+            isActiveStore,
         } = data;
 
         this.id = id;
@@ -322,6 +339,8 @@ export class CrossSelling implements ITimestamp {
         this.createdAt = createdAt || null;
         this.updatedAt = updatedAt || null;
         this.deletedAt = deletedAt || null;
+        this.isActiveStore = isActiveStore;
+        this.isNewStore = isNewStore;
 
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {

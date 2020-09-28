@@ -90,8 +90,8 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
     // selection: SelectionModel<CrossSelling>;
     eTriggerBase = TriggerBase;
 
-    // dataSource$: Observable<CrossSelling[]>;
-    // totalDataSource$: Observable<number>;
+    dataSource$: Observable<CrossSelling[]>;
+    totalDataSource$: Observable<number>;
     totalDataSource: number;
     dataSource = new MatTableDataSource();
 
@@ -171,7 +171,7 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
         }
 
         // this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        // this.store.dispatch(FlexiComboActions.confirmChangeStatus({ payload: item }));
+        // this.store.dispatch(CrossSellingPromoActions.confirmChangeStatus({ payload: item }));
     }
 
     onDelete(item): void {
@@ -180,7 +180,7 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
         }
 
         // this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        // this.store.dispatch(FlexiComboActions.confirmDeleteFlexiCombo({ payload: item }));
+        // this.store.dispatch(CrossSellingPromoActions.confirmDeleteFlexiCombo({ payload: item }));
     }
 
     onSelectedTab(ev: MatTabChangeEvent): void {
@@ -210,8 +210,8 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
                 break;
 
             case LifecyclePlatform.OnDestroy:
-                // Reset core state flexiCombos
-                // this.store.dispatch(FlexiComboActions.clearState());
+                // Reset core state CrossSellingPromoActions
+                this.store.dispatch(CrossSellingPromoActions.clearState());
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -223,9 +223,10 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
                 // this.selection = new SelectionModel<any>(true, []);
                 this.totalDataSource = this.dummyData.length;
                 this.dataSource.data = ELEMENT_DATA;
-                // this.dataSource$ = this.store.select(FlexiComboSelectors.selectAll);
-                // this.totalDataSource$ = this.store.select(FlexiComboSelectors.getTotalItem);
-                // this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
+
+                this.dataSource$ = this.store.select(CrossSellingPromoSelectors.selectAll);
+                this.totalDataSource$ = this.store.select(CrossSellingPromoSelectors.getTotalItem);
+                this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
 
                 this._initTable();
                 break;
@@ -291,11 +292,11 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
                 this.dataSource.data = ELEMENT_DATA;
             }
 
-            // this.store.dispatch(
-            //     FlexiComboActions.fetchFlexiCombosRequest({
-            //         payload: data,
-            //     })
-            // );
+            this.store.dispatch(
+                CrossSellingPromoActions.fetchCrossSellingPromosRequest({
+                    payload: data,
+                })
+            );
         }
     }
 

@@ -1,1 +1,339 @@
-<p>cross-selling-detail-csg works!</p>
+<div class="pb-16">
+    <span class="mat-headline"> Cross Selling Group </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <span class="box-title"> Group 1 </span>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container *ngIf="conditionBase; else noConditionBase">
+                     <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.base"> -->
+                        <mat-radio-group [value]="'qty'">
+                        <mat-radio-button
+                            *ngFor="let row of conditionBase"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noConditionBase> - </ng-template>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
+
+        <div class="info" fxFlex="100">
+            Unipro
+            <!-- {{ crossSellingPromo?.faktur || '-' }} -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Trigger</div>
+
+        <div class="info" fxFlex="100">SKU</div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="start" fxFlex="10">
+            <!-- <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base"> -->
+            <ng-container [ngSwitch]="'sku'">
+                <ng-container *ngSwitchCase="eTriggerBase.SKU"> 
+                    Chosen SKU
+                    <br/>
+                    (0
+                    <!-- {{
+                    (crossSellingPromo$ | async)?.promoCrossGroup?.skuGroupChoosen?.length
+                }} -->
+                Selected) 
+                </ng-container>
+                <ng-container *ngSwitchCase="eTriggerBase.BRAND"> Chosen Brand </ng-container>
+                <ng-container *ngSwitchCase="eTriggerBase.INVOICE"> Chosen Faktur </ng-container>
+                <ng-container *ngSwitchDefault>-</ng-container>
+            </ng-container>
+        </div>
+
+        <div class="info" fxFlex="90">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base">
+                    <ng-container *ngSwitchCase="eTriggerBase.SKU">
+                        <span>
+                            {{ getSkus((crossSellingPromo$ | async)?.promoCatalogues) || '-' }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eTriggerBase.BRAND">
+                        <span>
+                            {{ getBrands((crossSellingPromo$ | async)?.promoBrands) || '-' }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
+                        <span>
+                            {{
+                                getInvoiceGroups(
+                                    (crossSellingPromo$ | async)?.promoInvoiceGroups
+                                ) || '-'
+                            }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
+
+        <div class="info" fxFlex="100">AND</div>
+        <!-- <div class="info" fxFlex="100">{{(crossSellingPromo$ | async)?.promoCrossGroup?.relationGroup}}</div> -->
+    </div>  
+
+    <ng-container [ngSwitch]="'qty'">
+        <!-- Base Condition Type Qty -->
+        <ng-container *ngSwitchCase="eConditionBase.QTY">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
+
+                <div class="info" fxFlex="100">1</div>
+            </div>
+        </ng-container>
+        <!-- ./ Base Condition Type Qty -->
+
+        <!-- Base Condition Type Value -->
+        <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
+
+                <div class="info" fxFlex="100">
+                    <p thousandSeparator=".">1</p>
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Base Condition Type Amount -->
+
+        <ng-container *ngSwitchDefault>-</ng-container>
+    </ng-container>
+</div>
+
+<br />
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <span class="box-title"> Group 2 </span>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container *ngIf="conditionBase; else noConditionBase">
+                    <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.base"> -->
+                    <mat-radio-group [value]="'qty'">
+                        <mat-radio-button
+                            *ngFor="let row of conditionBase"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noConditionBase> - </ng-template>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
+
+        <div class="info" fxFlex="100">
+            Unipro
+            <!-- {{ crossSellingPromo?.faktur || '-' }} -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Trigger</div>
+
+        <div class="info" fxFlex="100">SKU</div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
+
+        <div class="info" fxFlex="100">AND</div>
+        <!-- <div class="info" fxFlex="100">{{(crossSellingPromo$ | async)?.promoCrossGroup?.relationGroup}}</div> -->
+    </div>  
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="start" fxFlex="10">
+            <!-- <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base"> -->
+            <ng-container [ngSwitch]="'sku'">
+                <ng-container *ngSwitchCase="eTriggerBase.SKU">
+                    Chosen SKU
+                    <br/>
+                    (0
+                        <!-- {{
+                        (crossSellingPromo$ | async)?.promoCrossGroup?.skuGroupChoosen?.length
+                    }} -->
+                    Selected)
+                </ng-container>
+                <ng-container *ngSwitchCase="eTriggerBase.BRAND"> Chosen Brand </ng-container>
+                <ng-container *ngSwitchCase="eTriggerBase.INVOICE"> Chosen Faktur </ng-container>
+                <ng-container *ngSwitchDefault>-</ng-container>
+            </ng-container>
+        </div>
+
+        <div class="info" fxFlex="90">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base">
+                    <ng-container *ngSwitchCase="eTriggerBase.SKU">
+                        <span>
+                            {{ getSkus((crossSellingPromo$ | async)?.promoCatalogues) || '-' }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eTriggerBase.BRAND">
+                        <span>
+                            {{ getBrands((crossSellingPromo$ | async)?.promoBrands) || '-' }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
+                        <span>
+                            {{
+                                getInvoiceGroups(
+                                    (crossSellingPromo$ | async)?.promoInvoiceGroups
+                                ) || '-'
+                            }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <ng-container [ngSwitch]="'qty'">
+        <!-- Base Condition Type Qty -->
+        <ng-container *ngSwitchCase="eConditionBase.QTY">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Qty >=</div>
+
+                <div class="info" fxFlex="100">1</div>
+            </div>
+        </ng-container>
+        <!-- ./ Base Condition Type Qty -->
+
+        <!-- Base Condition Type Value -->
+        <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
+
+                <div class="info" fxFlex="100">
+                    <p thousandSeparator=".">1</p>
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Base Condition Type Amount -->
+
+        <ng-container *ngSwitchDefault>-</ng-container>
+    </ng-container>
+</div>
