@@ -26,7 +26,7 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
 
     private id: string;
     isLoading$: Observable<boolean>;
-    invoice$: ObservedValueOf<Observable<{ fileName: string; url: string }>>;
+    invoice$: Observable<{ fileName: string; url: string }>;
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -40,18 +40,7 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit(): void {
-        this.store.dispatch(PaymentStatusActions.fetchInvoiceOrder({ payload: this.id }));
-        this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
-        combineLatest([
-            this.store.select(PaymentStatusSelectors.getInvoice)
-        ])
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(([invoice]) => {
-                if (typeof invoice !== 'undefined') {
-                    this.invoice$ = invoice;
-                    console.log(this.invoice$);
-                }
-            });
+        this.invoice$ =  this.store.select(PaymentStatusSelectors.getInvoice);
     }
 
     ngOnDestroy(): void {
@@ -60,7 +49,9 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
 
 
     print(): void {
-        printJS('https://realsport-assest.s3-ap-southeast-1.amazonaws.com/realsport-assest/SINBAD+-+PSBB+2+-+Week+21-29sept.pdf');
+        this.invoice$.subscribe((value) => {
+            printJS(value.url);
+        });
     }
 
 }

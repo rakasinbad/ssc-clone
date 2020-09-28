@@ -41,10 +41,10 @@
                 </div>
             </div>
         </div>
-        <div *ngIf="(isLoading$ | async) === false" class="order-box info-box" fxFlex="30">
-            <mat-card *ngIf="invoice$;else invoicePlaceholder">
+        <div class="order-box info-box" fxFlex="30">
+            <mat-card *ngIf="(invoice$ | async) as invoice; else invoicePlaceholder">
                 <pdf-viewer
-                    [src]="invoice$?.url"
+                    [src]="invoice?.url"
                     [render-text]="true"
                     style="display: block;">
                 </pdf-viewer>

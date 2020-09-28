@@ -561,7 +561,7 @@ export class PaymentEffects {
                                 value: resp
                             }
                         });
-
+                        this.router.navigate(['pages/finances/payment-status', id, 'view-invoices']);
                         return PaymentStatusActions.fetchInvoiceSuccess({
                             payload: {
                                 fileName: resp.data.fileName,
@@ -578,7 +578,41 @@ export class PaymentEffects {
                     )
                 );
             })
-        )
+        ),
+    );
+
+    fetchInvoiceFailed$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.fetchInvoiceFailed),
+                map(action => action.payload),
+                tap(resp => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     constructor(

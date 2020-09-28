@@ -23,6 +23,7 @@ export interface State {
     // selectedPaymentStatusId: string | number;
     source: TSource;
     paymentStatuses: PaymentStatusState;
+    invoiceFetching: boolean;
     invoice: {
         fileName: string;
         url: string;
@@ -59,6 +60,7 @@ export const initialState: State = {
     isLoading: false,
     // selectedPaymentStatusId: null,
     source: 'fetch',
+    invoiceFetching: false,
     invoice: {
         url: undefined,
         fileName: undefined
@@ -150,9 +152,13 @@ const paymentStatusReducer = createReducer(
         paymentStatuses: initialState.paymentStatuses,
         errors: adapterError.removeOne('fetchPaymentStatusesFailure', state.errors)
     })),
+    on(PaymentStatusActions.fetchInvoiceOrder, (state => ({
+        ...state,
+        invoiceFetching: true,
+    }))),
     on(PaymentStatusActions.fetchInvoiceSuccess, (state, { payload }) => ({
         ...state,
-        isLoading: false,
+        invoiceFetching: false,
         isRefresh: undefined,
         invoice: {
             fileName: payload.fileName,
@@ -162,7 +168,7 @@ const paymentStatusReducer = createReducer(
     })),
     on(PaymentStatusActions.fetchInvoiceFailed, (state, { payload }) => ({
         ...state,
-        isLoading: false,
+        invoiceFetching: false,
         isRefresh: undefined,
         invoice: null,
         errors: adapterError.removeOne('fetchOrdersFailure', state.errors),

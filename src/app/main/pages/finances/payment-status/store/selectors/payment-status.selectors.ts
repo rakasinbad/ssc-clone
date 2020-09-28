@@ -85,3 +85,4 @@ export const getIsLoading = createSelector(getPaymentStatusState, state => state
 
 
 export const getInvoice = createSelector(getPaymentStatusState, (state) => state.invoice);
+export const getInvoiceLoading = createSelector(getPaymentStatusState, (state) => state.invoiceFetching);
