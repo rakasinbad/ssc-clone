@@ -103,8 +103,8 @@ pipeline {
                 withAWS(credentials: "${AWS_CREDENTIAL}") {
                     s3Download(file: 'src/environments/environment.ts', bucket: 'sinbad-env', path: "${SINBAD_ENV}/${SINBAD_REPO}/environment.ts", force: true)
                 }
-                sh "sed -i 's/GIT_TAG/${GIT_TAG}/g' src/environments/environment.dev.ts"
-                sh "sed -i 's/GIT_COMMIT_SHORT/${GIT_COMMIT_SHORT}/g' src/environments/environment.dev.ts"
+                sh "sed -i 's/GIT_TAG/${GIT_TAG}/g' src/environments/environment.ts"
+                sh "sed -i 's/GIT_COMMIT_SHORT/${GIT_COMMIT_SHORT}/g' src/environments/environment.ts"
             }
         }
         stage('Install') {
@@ -116,15 +116,15 @@ pipeline {
             steps {
                 script{
                     if (SINBAD_ENV == 'production') {
-                        sh "npm run build-prod"
+                        sh "npm run build-production"
                     } else if (SINBAD_ENV == 'demo') {
                         sh "npm run build-demo"
                     } else if(SINBAD_ENV == 'release') {
                         sh "npm run build-release"
                     } else if(SINBAD_ENV == 'staging') {
-                        sh "npm run build-stg"
+                        sh "npm run build-staging"
                     } else {
-                        sh "npm run build-dev"
+                        sh "npm run build-development"
                     }
                 }
             }
