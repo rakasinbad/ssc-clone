@@ -1,1 +1,179 @@
-<p>cross-selling-detail-cs works!</p>
+<div class="pb-16">
+    <span class="mat-headline">
+        Customer Segmentation Setting
+    </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Segmentation Base
+        </div>
+
+        <div class="info" fxFlexAlign="center" fxFlex="100">
+            <ng-container *ngIf="segmentBase; else noSegmentBase">
+                <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.target"> -->
+                <mat-radio-group [value]="'segmentation'">
+                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id">
+                        {{ row?.label }}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </ng-container>
+
+            <ng-template #noSegmentBase>
+                -
+            </ng-template>
+        </div>
+    </div>
+
+    <ng-container [ngSwitch]="typeSegmentDummy">
+        <!-- Segmentation Base Direct Store -->
+        <ng-container *ngSwitchCase="eSegmentBase.STORE">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store<br />
+                    ({{ (crossSellingPromo$ | async)?.promoStores?.length }} 0 Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStores((crossSellingPromo$ | async)?.promoStores) || '-' }}
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Segmentation Base Direct Store -->
+
+        <!-- Segmentation Base Segmentation -->
+        <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Warehouse<br />
+                    ({{ (crossSellingPromo$ | async)?.promoWarehouses?.length }} 0 Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getWarehouses((crossSellingPromo$ | async)?.promoWarehouses) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Type<br />
+                    ({{ (crossSellingPromo$ | async)?.promoTypes?.length }} 0 Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreTypes((crossSellingPromo$ | async)?.promoTypes) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Group<br />
+                    ({{ (crossSellingPromo$ | async)?.promoGroups?.length }} 0 Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreGroups((crossSellingPromo$ | async)?.promoGroups) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Channel<br />
+                    ({{ (crossSellingPromo$ | async)?.promoChannels?.length }} 0 Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreChannels((crossSellingPromo$ | async)?.promoChannels) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Cluster<br />
+                    ({{ (crossSellingPromo$ | async)?.promoClusters?.length }} 0 Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreClusters((crossSellingPromo$ | async)?.promoClusters) || '-' }}
+                </div>
+            </div>
+        
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+                <div class="info" fxFlex="100">
+                    <ng-container *ngIf="!(isLoading$ | async)">
+                        <mat-checkbox
+                            [checked]="(crossSellingPromo$ | async)?.isNewStore"
+                            [disabled]="true"
+                        >
+                            New Store
+                        </mat-checkbox>
+
+                        <mat-checkbox [checked]="(crossSellingPromo$ | async)?.isActiveStore" [disabled]="true">
+                            Active Outlet Only
+                        </mat-checkbox>
+                    </ng-container>
+
+                    <ng-container *ngIf="isLoading$ | async">
+                        <ngx-skeleton-loader
+                            [theme]="{
+                                width: '150px',
+                                'margin-bottom': '-5px',
+                                'margin-right': '16px'
+                            }"
+                        ></ngx-skeleton-loader>
+
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        ></ngx-skeleton-loader>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Segmentation Base Segmentation -->
+
+        <ng-container *ngSwitchDefault>-</ng-container>
+    </ng-container>
+</div>

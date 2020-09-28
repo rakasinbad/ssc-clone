@@ -69,21 +69,21 @@ export class CrossSellingDetailBsComponent implements OnInit {
     //     return [];
     // }
 
-    isApplySameSku(sources: IPromoCatalogue[], benefitSku: string): boolean {
-        if (!sources || !sources.length || sources.length > 1 || !benefitSku) {
-            return false;
-        }
+    // isApplySameSku(sources: IPromoCatalogue[], benefitSku: string): boolean {
+    //     if (!sources || !sources.length || sources.length > 1 || !benefitSku) {
+    //         return false;
+    //     }
 
-        if (sources.length == 1) {
-            const idx = sources.findIndex((source) => source.id === benefitSku);
-            if (sources[0]['catalogue'].id == benefitSku ) {
-                return true;
-            } else {
-                return false
-            }
+    //     if (sources.length == 1) {
+    //         const idx = sources.findIndex((source) => source.id === benefitSku);
+    //         if (sources[0]['catalogue'].id == benefitSku ) {
+    //             return true;
+    //         } else {
+    //             return false
+    //         }
             
-        }
-        // return idx !== -1;
-    }
+    //     }
+    //     // return idx !== -1;
+    // }
 
 }

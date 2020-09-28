@@ -40,7 +40,7 @@ type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 export class CrossSellingPromoEffects {
 
     // -----------------------------------------------------------------------------------------------------
-    // @ CRUD methods [CREATE - FLEXI COMBO]
+    // @ CRUD methods [CREATE - Cross Selling Promo]
     // -----------------------------------------------------------------------------------------------------
 
     createCrossSellingPromoRequest$ = createEffect(() =>
@@ -98,6 +98,112 @@ export class CrossSellingPromoEffects {
                 tap(() => {
                     this.router.navigate(['/pages/promos/cross-selling-promo']).finally(() => {
                         this._$notice.open('Successfully created cross selling promo', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+     // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [Cross Selling Promo]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchCrossSellingPromosRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.fetchCrossSellingPromosRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([params, authState]: [IQueryParams, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, params])),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this._fetchCrossSellingPromosRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromosFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, params])),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this._fetchCrossSellingPromosRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromosFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    fetchCrossSellingPromosFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.fetchCrossSellingPromosFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [Cross Selling Promo]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchCrossSellingPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.fetchCrossSellingPromoRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([{ id, parameter }, authState]: [{ id: string, parameter?: IQueryParams }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of({ userData, id, parameter })),
+                        switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
+                            this._fetchCrossSellingPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of({ userData, id, parameter })),
+                        switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
+                            this._fetchCrossSellingPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    fetchCrossSellingPromoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.fetchCrossSellingPromoFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.router.navigateByUrl('/pages/promos/cross-selling-promo').finally(() => {
+                        this._$notice.open(message, 'error', {
                             verticalPosition: 'bottom',
                             horizontalPosition: 'right',
                         });

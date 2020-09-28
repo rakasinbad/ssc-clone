@@ -110,7 +110,7 @@ export const changeStatusSuccess = createAction(
 export const clearState = createAction('[Cross Selling] Reset Cross Selling Promo Core State');
 
 export type FailureActions =
-    | 'fetchCrossSellingPromoFailure'
+    | 'fetchCrossSellingPromosFailure'
     | 'fetchCrossSellingPromoFailure'
     | 'createCrossSellingPromoFailure'
     // | 'updateCrossSellingPromoFailure'
