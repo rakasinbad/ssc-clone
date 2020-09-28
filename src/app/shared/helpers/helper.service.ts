@@ -183,11 +183,11 @@ export class HelperService {
         },
         {
             id: PromoAllocation.PROMOBUDGET,
-            label: 'Promo Budget',
+            label: 'Max Promo Redemption (Rp)',
         },
         {
             id: PromoAllocation.PROMOSLOT,
-            label: 'Promo Slot',
+            label: 'Max Promo Redemption (transaction)',
         },
     ];
 
