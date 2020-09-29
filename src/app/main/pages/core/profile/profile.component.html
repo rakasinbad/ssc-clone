@@ -651,26 +651,26 @@
                                             fxFlexAlign="center"
                                             fxFlex="12"
                                             [class.mat-error]="
-                                                form.get('postcode').errors &&
-                                                !form.get('postcode').untouched &&
-                                                (form.get('postcode').dirty ||
-                                                    form.get('postcode').touched)
+                                                form.get('tax_no').errors &&
+                                                !form.get('tax_no').untouched &&
+                                                (form.get('tax_no').dirty ||
+                                                    form.get('tax_no').touched)
                                             "
                                         >
                                             <ng-container *ngIf="isEdit">
                                                 *
                                             </ng-container>
-                                            Kode Pos
+                                            NPWP
                                         </div>
 
                                         <div class="info" fxFlex="100">
                                             <ng-container
                                                 *ngIf="
-                                                    (!form.get('postcode')?.value && !isEdit) ||
+                                                    (!form.get('tax_no')?.value && !isEdit) ||
                                                     !isEdit
                                                 "
                                             >
-                                                {{ (profile$ | async)?.urban?.zipCode }}
+                                                {{ (profile$ | async)?.tax_no || '-' }}
                                             </ng-container>
 
                                             <mat-form-field
@@ -678,17 +678,18 @@
                                                 fxFlex="50"
                                                 [class.form-info]="!isEdit"
                                                 *ngIf="isEdit"
-                                                [fxHide]="!form.get('postcode')?.value && !isEdit"
+                                                [fxHide]="!form.get('tax_no')?.value && !isEdit"
                                             >
                                                 <input
                                                     matInput
-                                                    formControlName="postcode"
-                                                    mask="00000"
+                                                    formControlName="tax_no"
+                                                    mask="00.000.000.0-000.00"
                                                     [validation]="false"
                                                 />
                                             </mat-form-field>
                                         </div>
                                     </div>
+
 
                                     <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
                                     <div class="label" fxFlex="12">

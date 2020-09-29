@@ -27,6 +27,7 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
     private id: string;
     isLoading$: Observable<boolean>;
     invoice$: Observable<{ fileName: string; url: string }>;
+    private url: string;
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -36,22 +37,23 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
         private _$log: LogService,
         private store: Store<fromPaymentStatus.FeatureState>,
     ) {
-        this.id = this.route.snapshot.params['id'];
+        this.id = this.route.snapshot.params['id']; this.invoice$.subscribe((value) => {
+            printJS(value.url);
+        });
     }
 
     ngOnInit(): void {
-        this.invoice$ =  this.store.select(PaymentStatusSelectors.getInvoice);
+        this.invoice$ = this.store.select(PaymentStatusSelectors.getInvoice);
+        this.invoice$.subscribe((value) => {
+           this.url = value.url;
+        });
     }
 
-    ngOnDestroy(): void {
-
-    }
+    ngOnDestroy(): void {}
 
 
     print(): void {
-        this.invoice$.subscribe((value) => {
-            printJS(value.url);
-        });
+        printJS(this.url);
     }
 
 }
