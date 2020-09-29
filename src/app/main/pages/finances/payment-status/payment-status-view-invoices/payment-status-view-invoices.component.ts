@@ -9,6 +9,10 @@ import { LogService } from '../../../../../shared/helpers';
 import { fromPaymentStatus } from '../store/reducers';
 
 import printJS from 'print-js';
+import { PaymentStatusActions } from '../store/actions';
+import { combineLatest, Observable, ObservedValueOf, Subject } from 'rxjs';
+import { PaymentStatusSelectors } from '../store/selectors';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-invoices-view',
@@ -20,7 +24,11 @@ import printJS from 'print-js';
 })
 export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
 
-    private id: number;
+    private id: string;
+    isLoading$: Observable<boolean>;
+    invoice$: Observable<{ fileName: string; url: string }>;
+    private url: string;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private route: ActivatedRoute,
@@ -29,19 +37,23 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
         private _$log: LogService,
         private store: Store<fromPaymentStatus.FeatureState>,
     ) {
-        this.id = this.route.snapshot.params['id'];
+        this.id = this.route.snapshot.params['id']; this.invoice$.subscribe((value) => {
+            printJS(value.url);
+        });
     }
 
     ngOnInit(): void {
+        this.invoice$ = this.store.select(PaymentStatusSelectors.getInvoice);
+        this.invoice$.subscribe((value) => {
+           this.url = value.url;
+        });
     }
 
-    ngOnDestroy(): void {
-
-    }
+    ngOnDestroy(): void {}
 
 
     print(): void {
-        printJS('https://realsport-assest.s3-ap-southeast-1.amazonaws.com/realsport-assest/SINBAD+-+PSBB+2+-+Week+21-29sept.pdf');
+        printJS(this.url);
     }
 
 }

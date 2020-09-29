@@ -2,7 +2,6 @@
     <!-- TOP BACKGROUND -->
     <div class="top-bg accent with-navigation"></div>
     <!-- / TOP BACKGROUND -->
-
     <div class="center content-card">
         <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex>
@@ -42,15 +41,26 @@
                 </div>
             </div>
         </div>
-        <div class="order-box info-box" fxFlex="30">
-            <mat-card>
+        <div class="order-box info-box inner-scroll" fxFlex="30">
+            <mat-card *ngIf="(invoice$ | async) as invoice; else invoicePlaceholder">
                 <pdf-viewer
-                    src="https://realsport-assest.s3-ap-southeast-1.amazonaws.com/realsport-assest/SINBAD+-+PSBB+2+-+Week+21-29sept.pdf"
+                    [src]="invoice?.url"
+                    [fit-to-page]="true"
                     [render-text]="true"
-                    style="display: block;">
+                    style="display: block;height: 100vh;">
                 </pdf-viewer>
             </mat-card>
+          <ng-template #invoicePlaceholder>
+              <mat-card>
+                  <section class="mat-typography">
+                      <h1> Your desire invoice currently not available please check again later</h1>
+                  </section>
+              </mat-card>
+          </ng-template>
         </div>
     </div>
+</div>
 
+<div class="loader" *ngIf="(isLoading$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
 </div>

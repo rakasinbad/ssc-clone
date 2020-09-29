@@ -261,13 +261,17 @@
                                         <span>Update Status</span>
                                     </button>
                                     <button
+                                        (click)="onViewInvoice(row.id)"
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="View Invoice"
-                                        [routerLink]="['/pages/finances/payment-status/', row.id, 'view-invoices']"
+
                                     >
-                                        <span>View Invoice</span>
+<!--                                        <mat-spinner *ngIf="(invoiceFetching$ | async); else vieInvoiceText" color="accent" aria-setsize="10px"></mat-spinner>-->
+<!--                                        <ng-template #vieInvoiceText>-->
+                                            <span>View Invoice</span>
+<!--                                        </ng-template>-->
                                     </button>
                                 </ng-template>
 

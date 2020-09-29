@@ -183,7 +183,7 @@ const orderReducer = createReducer(
         ...state,
         orders: initialState.orders,
         errors: adapterError.removeOne('fetchOrdersFailure', state.errors),
-    }))
+    })),
     // on(OrderActions.generateOrdersDemo, (state, { payload }) => ({
     //     ...state,
     //     orders: adapterOrder.addAll(payload, state.orders)

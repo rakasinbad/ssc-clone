@@ -638,6 +638,59 @@
                                         </div>
                                     </div>
 
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('tax_no').errors &&
+                                                !form.get('tax_no').untouched &&
+                                                (form.get('tax_no').dirty ||
+                                                    form.get('tax_no').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            NPWP
+                                        </div>
+
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="
+                                                    (!form.get('tax_no')?.value && !isEdit) ||
+                                                    !isEdit
+                                                "
+                                            >
+                                                {{ (profile$ | async)?.tax_no || '-' }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('tax_no')?.value && !isEdit"
+                                            >
+                                                <input
+                                                    matInput
+                                                    formControlName="tax_no"
+                                                    mask="00.000.000.0-000.00"
+                                                    [validation]="false"
+                                                />
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+
+
                                     <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
                                     <div class="label" fxFlex="12">
                                         Penanggung Jawab

@@ -314,7 +314,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         if (this.isEdit) {
             const payload = {
                 urbanId: body.urban,
-                address: body.notes
+                address: body.notes,
+                tax_no: body.tax_no
             };
 
             if (!body.urban) {
@@ -401,7 +402,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                     })
                 ]
-            ]
+            ],
+            tax_no: ''
         });
 
         this.store
