@@ -134,10 +134,10 @@ pipeline {
                 script {
                     sh "echo ${GIT_TAG}_${GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
 
-                    if (SINBAD_ENV != 'development') {
-                        sh "logrocket release ${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
-                        sh "logrocket upload ${WOKRSPACE}/dist/supplier-center/ --release=${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
-                    }
+                    // if (SINBAD_ENV != 'development') {
+                    //     sh "logrocket release ${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
+                    //     sh "logrocket upload ${WOKRSPACE}/dist/supplier-center/ --release=${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
+                    // }
 
                     sh '''
                         if [ -f $WOKRSPACE/dist/supplier-center/*.map ]; then rm $WOKRSPACE/dist/supplier-center/*.map; fi && \
