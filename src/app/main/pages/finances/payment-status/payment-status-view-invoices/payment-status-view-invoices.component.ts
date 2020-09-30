@@ -37,12 +37,11 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
         private _$log: LogService,
         private store: Store<fromPaymentStatus.FeatureState>,
     ) {
-        this.id = this.route.snapshot.params['id']; this.invoice$.subscribe((value) => {
-            printJS(value.url);
-        });
+        this.id = this.route.snapshot.params['id'];
     }
 
     ngOnInit(): void {
+        this.store.dispatch(PaymentStatusActions.fetchInvoiceOrder({ payload: this.id }));
         this.invoice$ = this.store.select(PaymentStatusSelectors.getInvoice);
         this.invoice$.subscribe((value) => {
            this.url = value.url;
