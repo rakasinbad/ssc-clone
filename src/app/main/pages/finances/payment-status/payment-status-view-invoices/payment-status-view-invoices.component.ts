@@ -29,7 +29,7 @@ export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy{
     invoice$: Observable<{ fileName: string; url: string }>;
     private url: string;
     private _unSubs$: Subject<void> = new Subject<void>();
-    
+
     constructor(
         private route: ActivatedRoute,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,

@@ -45,8 +45,8 @@
             <mat-card *ngIf="(invoice$ | async) as invoice; else invoicePlaceholder">
                 <pdf-viewer
                     [src]="invoice?.url"
-                    [fit-to-page]="true"
                     [render-text]="true"
+                    [original-size]="false"
                     style="display: block;height: 100vh;">
                 </pdf-viewer>
             </mat-card>
