@@ -181,18 +181,7 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('maxRedemption')"
                             >
-                            
-                            <ng-container *ngIf="selectPromo == 'promo_slot'">
-                                Max Promo Redemption<br />(transaction)
-                            </ng-container>
-                            <ng-container *ngIf="selectPromo == 'promo_budget'">
-                                Max Promo Redemption<br />(Rp)
-                            </ng-container>
-                            <ng-container *ngIf="selectPromo !== 'promo_budget' 
-                                && selectPromo !== 'promo_slot'">
                                 Max Redemption<br />per Buyer
-                            </ng-container>
-
                             </label>
 
                             <ng-container *ngIf="maxRedemStat === true">
@@ -239,7 +228,7 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('promoBudget')"
                             >
-                                Promo Budget
+                                    Max Promo Redemption<br />(Rp)
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -267,7 +256,9 @@
                             fxLayoutGap="16px"
                             [class.sinbad-red-fg]="hasError('promoSlot')"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"> Promo Slot </label>
+                            <label fxFlexAlign="center" fxFlex="10"> 
+                                    Max Promo Redemption<br />(transaction)
+                            </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input matInput name="promoSlot" 
