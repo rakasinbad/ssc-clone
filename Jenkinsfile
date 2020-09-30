@@ -135,7 +135,6 @@ pipeline {
                     sh "echo ${GIT_TAG}_${GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
 
                     if (SINBAD_ENV != 'development') {
-                        sh "npm install -g logrocket-cli"
                         sh "logrocket release ${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
                         sh "logrocket upload ${WOKRSPACE}/dist/supplier-center/ --release=${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
                     }
