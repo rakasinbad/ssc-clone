@@ -167,7 +167,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public multiStat = false;
     public ratioBaseEdit: string;
     public firstBuyCheck = false;
-    public disableFirstBuy = false;
     public disableMulti = false;
 
     constructor(
