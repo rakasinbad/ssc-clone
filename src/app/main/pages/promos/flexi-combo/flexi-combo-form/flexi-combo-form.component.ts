@@ -165,9 +165,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public selectActiveOutlet = false;
     public maxRedemStat = false;
     public multiStat = false;
-    public disableMulti = false;
-    public maxRedemEdit: any;
     public ratioBaseEdit: string;
+    public firstBuyCheck = false;
+    public disableFirstBuy = false;
+    public disableMulti = false;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -315,10 +316,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     getBenefitType(idx: number): BenefitType {
         return this.form.get(['conditions', idx, 'benefitType']).value;
     }
-
-    // getBenefitMultiType(idx: number): BenefitMultiType {
-    //     return this.form.get(['conditions', idx, 'benefitType']).value;
-    // }
 
     getChosenBrand(): Selection[] {
         return this.form.get('chosenBrand').value || [];
@@ -1224,6 +1221,29 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
     }
 
+    
+    /**
+     *
+     * Handle change event for First Buy
+     * @param {mat-checkbox} ev
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    selectFirstBuy(event): void {
+        if (event.checked === true) {
+            this.maxRedemStat = true;
+            this.firstBuyCheck = true;
+            this.form.get('maxRedemption').setValue(1);
+        } else {
+            this.maxRedemStat = false;
+            this.firstBuyCheck = false;
+            if (this.pageType === 'new') {
+                this.form.get('maxRedemption').setValue('');
+            }
+        }
+    }
+
     /**
      *
      * Handle change event for Multiplication
@@ -1235,10 +1255,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     selectMultiplication(event): void {
         if (event.checked === true) {
-            this.maxRedemStat = true;
             this.multiStat = true;
-            this.form.get('maxRedemption').setValue(1);
-
             if (this.pageType === 'new') {
                 if (this.conditionsCtrl.length > 1) {
                     for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
@@ -1257,24 +1274,19 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     } 
                 }
             }
-            
         } else {
-            this.maxRedemStat = false;
             this.multiStat = false;
             if (this.pageType === 'new') {
-                this.form.get('maxRedemption').setValue('');
             } else if (this.pageType === 'edit') {
                 if (this.ratioBaseEdit == null) {
                     this.conditions.at(0).get('ratioBase').setValue('null');
                     this._qtyValueValidationByRatioConditionBaseEdit(null, 0);
                     this._orderValueValidationByRatioConditionBaseEdit(null, 0);
                 } else {
-                    // this.conditions.at(0).get('ratioBase').setValue('null');
                     this._qtyValueValidationByRatioConditionBaseEdit(null, 0);
                     this._orderValueValidationByRatioConditionBaseEdit(null, 0);
                 }
             }
-
         }
     }
 
@@ -2763,7 +2775,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle Max Redemption per Buyer
         if (row.maxRedemptionPerStore) {
             maxRedemptionCtrl.setValue(row.maxRedemptionPerStore);
-            this.maxRedemEdit = row.maxRedemptionPerStore;
         }
 
         // Handle Promo Budget
@@ -2804,6 +2815,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle First Buy
         if (row.firstBuy) {
             firstBuyCtrl.setValue(row.firstBuy);
+            this.firstBuyCheck = row.firstBuy;
         }
 
         // Handle Trigger Base
@@ -3138,7 +3150,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             
             this.multiStat = item.multiplication;
 
-            if (this.multiStat == true) {
+            if (this.firstBuyCheck == true) {
                 this.maxRedemStat = true;
             }
             // if (idx !== limitIdx) {
