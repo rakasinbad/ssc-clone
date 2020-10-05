@@ -315,7 +315,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             const payload = {
                 urbanId: body.urban,
                 address: body.notes,
-                tax_no: body.tax_no
+                taxNo: body.taxNo
             };
 
             if (!body.urban) {
@@ -403,7 +403,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
-            tax_no: ''
+            taxNo: ''
         });
 
         this.store
