@@ -670,7 +670,7 @@
                                                     !isEdit
                                                 "
                                             >
-                                                {{ (profile$ | async)?.taxNo || '-' }}
+                                                {{ (profile$ | async)?.taxNo | mask: "00.000.000.0-000.00" || '-' }}
                                             </ng-container>
 
                                             <mat-form-field

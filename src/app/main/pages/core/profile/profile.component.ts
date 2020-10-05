@@ -437,6 +437,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 this.form.get('notes').markAsTouched();
             }
         }
+
+        if (data.taxNo){
+            this.form.get('taxNo').setValue(data.taxNo);
+        }
     }
 
     private handleForm(): void {
