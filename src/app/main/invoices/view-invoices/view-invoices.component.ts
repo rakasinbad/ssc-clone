@@ -1,60 +1,64 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { fuseAnimations } from '../../../../../../@fuse/animations';
+import { fuseAnimations } from '../../../../@fuse/animations';
 import { MatTableDataSource } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { FuseTranslationLoaderService } from '../../../../../../@fuse/services/translation-loader.service';
+import { FuseTranslationLoaderService } from '../../../../@fuse/services/translation-loader.service';
 import { TranslateService } from '@ngx-translate/core';
-import { LogService } from '../../../../../shared/helpers';
-import { fromPaymentStatus } from '../store/reducers';
+
 
 import printJS from 'print-js';
-import { PaymentStatusActions } from '../store/actions';
 import { combineLatest, Observable, ObservedValueOf, Subject } from 'rxjs';
-import { PaymentStatusSelectors } from '../store/selectors';
 import { takeUntil } from 'rxjs/operators';
 import { Browser } from 'leaflet';
 import win = Browser.win;
 import { HttpClient } from '@angular/common/http';
+import { FuseConfigService } from '../../../../@fuse/services/config.service';
 
 @Component({
     selector: 'app-invoices-view',
-    templateUrl: './payment-status-view-invoices.component.html',
-    styleUrls: ['./payment-status-view-invoices.component.scss'],
+    templateUrl: './view-invoices.component.html',
+    styleUrls: ['./view-invoices.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PaymentStatusViewInvoicesComponent implements OnInit, OnDestroy {
+export class ViewInvoicesComponent implements OnInit, OnDestroy {
 
-    private id: string;
-    isLoading$: Observable<boolean>;
-    invoice$: Observable<{ fileName: string; url: string }>;
-    private url: string;
-    private fileName: string;
-    private _unSubs$: Subject<void> = new Subject<void>();
+     fileName: string;
+     url: string;
 
 
     constructor(
         private route: ActivatedRoute,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
-        private _$log: LogService,
-        private store: Store<fromPaymentStatus.FeatureState>,
-        private http: HttpClient
+        private http: HttpClient,
+        private _fuseConfigService: FuseConfigService,
     ) {
-        this.id = this.route.snapshot.params['id'];
-
+        // Configure the layout
+        this._fuseConfigService.config = {
+            layout: {
+                navbar: {
+                    hidden: true
+                },
+                toolbar: {
+                    hidden: true
+                },
+                footer: {
+                    hidden: true
+                },
+                sidepanel: {
+                    hidden: true
+                }
+            }
+        };
+        this.url = decodeURIComponent(this.route.snapshot.queryParamMap.get('url'));
     }
 
 
     ngOnInit(): void {
-        this.store.dispatch(PaymentStatusActions.fetchInvoiceOrder({ payload: this.id }));
-        this.invoice$ = this.store.select(PaymentStatusSelectors.getInvoice);
-        this.invoice$.subscribe((value) => {
-            this.url = value.url;
-            this.fileName = value.fileName;
-        });
+
     }
 
     ngOnDestroy(): void {

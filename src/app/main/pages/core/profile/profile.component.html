@@ -651,10 +651,10 @@
                                             fxFlexAlign="center"
                                             fxFlex="12"
                                             [class.mat-error]="
-                                                form.get('tax_no').errors &&
-                                                !form.get('tax_no').untouched &&
-                                                (form.get('tax_no').dirty ||
-                                                    form.get('tax_no').touched)
+                                                form.get('taxNo').errors &&
+                                                !form.get('taxNo').untouched &&
+                                                (form.get('taxNo').dirty ||
+                                                    form.get('taxNo').touched)
                                             "
                                         >
                                             <ng-container *ngIf="isEdit">
@@ -666,11 +666,11 @@
                                         <div class="info" fxFlex="100">
                                             <ng-container
                                                 *ngIf="
-                                                    (!form.get('tax_no')?.value && !isEdit) ||
+                                                    (!form.get('taxNo')?.value && !isEdit) ||
                                                     !isEdit
                                                 "
                                             >
-                                                {{ (profile$ | async)?.tax_no || '-' }}
+                                                {{ (profile$ | async)?.taxNo | mask: "00.000.000.0-000.00" || "00.000.000.0-000.00" }}
                                             </ng-container>
 
                                             <mat-form-field
@@ -678,11 +678,11 @@
                                                 fxFlex="50"
                                                 [class.form-info]="!isEdit"
                                                 *ngIf="isEdit"
-                                                [fxHide]="!form.get('tax_no')?.value && !isEdit"
+                                                [fxHide]="!form.get('taxNo')?.value && !isEdit"
                                             >
                                                 <input
                                                     matInput
-                                                    formControlName="tax_no"
+                                                    formControlName="taxNo"
                                                     mask="00.000.000.0-000.00"
                                                     [validation]="false"
                                                 />

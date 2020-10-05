@@ -561,7 +561,8 @@ export class PaymentEffects {
                                 value: resp
                             }
                         });
-                        this.router.navigate(['pages/finances/payment-status', id, 'view-invoices']);
+                        const url = this.router.createUrlTree(['invoices'], { queryParams: { url: resp.data.url } });
+                        window.open(url.toString(), '_blank');
                         return PaymentStatusActions.fetchInvoiceSuccess({
                             payload: {
                                 fileName: resp.data.fileName,
@@ -578,7 +579,7 @@ export class PaymentEffects {
                     )
                 );
             })
-        ),
+        )
     );
 
     fetchInvoiceFailed$ = createEffect(
@@ -627,5 +628,6 @@ export class PaymentEffects {
         private _$downloadApi: DownloadApiService,
         private _$paymentStatusApi: PaymentStatusApiService,
         private _$uploadApi: UploadApiService
-    ) {}
+    ) {
+    }
 }

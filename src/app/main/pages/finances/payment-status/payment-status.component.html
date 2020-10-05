@@ -68,7 +68,7 @@
                         <p class="price text-word-break-break-word">
                             {{
                                 +row?.billing.amount > 0
-                                    ? (+row?.billing.amount | price: 'short') || '-'
+                                    ? (+row?.billing.amount | price: 'full') || '-'
                                     : row?.billing.amount
                             }}
                         </p>
