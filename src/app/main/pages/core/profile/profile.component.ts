@@ -440,6 +440,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
         if (data.taxNo){
             this.form.get('taxNo').setValue(data.taxNo);
+        }else{
+            this.form.get('taxNo').setValue('"00000000000000"');
         }
     }
 
