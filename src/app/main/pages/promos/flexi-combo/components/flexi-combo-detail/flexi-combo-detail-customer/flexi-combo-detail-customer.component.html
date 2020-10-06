@@ -1,5 +1,7 @@
 <div class="pb-16">
-    <span class="mat-headline"> Customer Segmentation Setting </span>
+    <span class="mat-headline">
+        Customer Segmentation Setting
+    </span>
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
@@ -9,18 +11,22 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Segmentation Base</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Segmentation Base
+        </div>
 
         <div class="info" fxFlexAlign="center" fxFlex="100">
             <ng-container *ngIf="segmentBase; else noSegmentBase">
                 <mat-radio-group [value]="(flexiCombo$ | async)?.target">
-                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id" [disabled]="true">
+                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id">
                         {{ row?.label }}
                     </mat-radio-button>
                 </mat-radio-group>
             </ng-container>
 
-            <ng-template #noSegmentBase> - </ng-template>
+            <ng-template #noSegmentBase>
+                -
+            </ng-template>
         </div>
     </div>
 
@@ -124,44 +130,6 @@
 
                 <div class="info" fxFlex="90">
                     {{ getStoreClusters((flexiCombo$ | async)?.promoClusters) || '-' }}
-                </div>
-            </div>
-
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="10"></div>
-
-                <div class="info" fxFlex="100">
-                    <ng-container *ngIf="!(isLoading$ | async)">
-                        <mat-checkbox
-                            [checked]="(flexiCombo$ | async)?.isNewStore"
-                            [disabled]="true"
-                        >
-                            New Store
-                        </mat-checkbox>
-
-                        <mat-checkbox [checked]="(flexiCombo$ | async)?.isActiveStore" [disabled]="true">
-                            Active Outlet Only
-                        </mat-checkbox>
-                    </ng-container>
-
-                    <ng-container *ngIf="isLoading$ | async">
-                        <ngx-skeleton-loader
-                            [theme]="{
-                                width: '150px',
-                                'margin-bottom': '-5px',
-                                'margin-right': '16px'
-                            }"
-                        ></ngx-skeleton-loader>
-
-                        <ngx-skeleton-loader
-                            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                        ></ngx-skeleton-loader>
-                    </ng-container>
                 </div>
             </div>
         </ng-container>

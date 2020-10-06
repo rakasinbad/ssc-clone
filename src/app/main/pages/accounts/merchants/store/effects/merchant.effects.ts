@@ -9,19 +9,25 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import {
     DownloadApiService,
+    HelperService,
     LogService,
     NoticeService,
     StoreApiService,
     UserApiService,
-    HelperService,
 } from 'app/shared/helpers';
 import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
-import { ErrorHandler, PaginateResponse, TStatus, TApprovalStatus } from 'app/shared/models/global.model';
+import {
+    ErrorHandler,
+    IErrorHandler,
+    PaginateResponse,
+    TApprovalStatus,
+    TStatus,
+} from 'app/shared/models/global.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import { FormActions, ProgressActions, UiActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import {
     catchError,
     exhaustMap,
@@ -31,7 +37,6 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-
 import { Store as Merchant, UserStore } from '../../models';
 import { MerchantApiService, MerchantEmployeeApiService } from '../../services';
 import { StoreActions } from '../actions';
@@ -55,27 +60,40 @@ export class MerchantEffects {
                 if (userData) {
                     return this._$merchantApi.getTotalApprovalStatus(userData.supplierId).pipe(
                         map((resp) => {
-                            this._$log.generateGroup(`[RESPONSE REQUEST CALCULATE SUPPLIER STORE]`, {
-                                response: {
-                                    type: 'log',
-                                    value: resp,
-                                },
+                            this._$log.generateGroup(
+                                `[RESPONSE REQUEST CALCULATE SUPPLIER STORE]`,
+                                {
+                                    response: {
+                                        type: 'log',
+                                        value: resp,
+                                    },
+                                }
+                            );
+
+                            return StoreActions.fetchCalculateSupplierStoresSuccess({
+                                payload: resp,
                             });
-    
-                            return StoreActions.fetchCalculateSupplierStoresSuccess({ payload: resp });
                         }),
                         catchError((err) =>
                             of(
                                 StoreActions.fetchCalculateSupplierStoresFailure({
-                                    payload: { id: 'fetchCalculateSupplierStoresFailure', errors: err },
+                                    payload: {
+                                        id: 'fetchCalculateSupplierStoresFailure',
+                                        errors: err,
+                                    },
                                 })
                             )
                         )
                     );
                 } else {
-                    return of(StoreActions.fetchCalculateSupplierStoresFailure({
-                        payload: { id: 'fetchCalculateSupplierStoresFailure', errors: 'No Supplier ID' },
-                    }));
+                    return of(
+                        StoreActions.fetchCalculateSupplierStoresFailure({
+                            payload: {
+                                id: 'fetchCalculateSupplierStoresFailure',
+                                errors: 'No Supplier ID',
+                            },
+                        })
+                    );
                 }
             })
         )
@@ -133,7 +151,7 @@ export class MerchantEffects {
     //         ),
     //     { dispatch: false }
     // );
-    
+
     /**
      *
      * [RE-SEND - REQUEST] Store
@@ -153,26 +171,28 @@ export class MerchantEffects {
 
                 // Memeriksa payload state apakah Array atau bukan.
                 if (Array.isArray(payload)) {
-                    requestBody.stores = payload.map(p => ({ storeId: +p.storeId }));
+                    requestBody.stores = payload.map((p) => ({ storeId: +p.storeId }));
                 } else {
-                    requestBody.stores = [ +payload.storeId ];
+                    requestBody.stores = [+payload.storeId];
                 }
 
                 return this._$merchantApi.resendStore(requestBody).pipe(
-                    map((resp) => {
-                        this._$log.generateGroup(`[RESPONSE REQUEST RESEND STORE]`, {
-                            response: {
-                                type: 'log',
-                                value: resp,
-                            },
-                        });
+                    switchMap((resp) => {
+                        if (
+                            resp.status === 'error' ||
+                            resp.status === 'warning' ||
+                            ((resp as any).type && (resp as any).type === 'error')
+                        ) {
+                            return throwError({ id: 'resendStoresFailure', errors: resp });
+                        }
 
-                        return StoreActions.resendStoresSuccess({ payload: resp });
+                        return of(resp);
                     }),
+                    map((resp) => StoreActions.resendStoresSuccess({ payload: resp })),
                     catchError((err) =>
                         of(
                             StoreActions.resendStoresFailure({
-                                payload: { id: 'resendStoresFailure', errors: err },
+                                payload: err,
                             })
                         )
                     )
@@ -192,11 +212,29 @@ export class MerchantEffects {
                 ofType(StoreActions.resendStoresFailure),
                 map((action) => action.payload),
                 tap((resp) => {
-                    if (resp.errors.code) {
+                    if (resp.errors && resp.errors.code) {
                         if (resp.errors.code === 500) {
-                            this._$helper.showErrorNotification({ id: 'ERR_INTERNAL_SERVER', errors: resp.errors });
+                            this._$helper.showErrorNotification({
+                                id: 'ERR_INTERNAL_SERVER',
+                                errors: resp.errors,
+                            });
                         } else {
-                            this._$helper.showErrorNotification({ id: 'ERR_UNKNOWN', errors: resp.errors });
+                            this._$helper.showErrorNotification({
+                                id: 'ERR_UNKNOWN',
+                                errors: resp.errors,
+                            });
+                        }
+                    } else if (resp.errors.type && resp.errors.type === 'error') {
+                        this._$notice.open(resp.errors.message || 'Re-send stores fail.', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+                    } else {
+                        if (resp.errors.status === 'error' || resp.errors.status === 'warning') {
+                            this._$notice.open('Re-send stores fail.', 'error', {
+                                verticalPosition: 'bottom',
+                                horizontalPosition: 'right',
+                            });
                         }
                     }
                 })
@@ -430,7 +468,7 @@ export class MerchantEffects {
                     {
                         data: {
                             title: 'Delete',
-                            message: `Are you sure want to delete <strong>${params.store.name}</strong> ?`,
+                            message: `Are you sure want to delete <strong>${params.outerStore.name}</strong> ?`,
                             id: params.id,
                         },
                         disableClose: true,
@@ -572,7 +610,7 @@ export class MerchantEffects {
                         title: `Set Approval Status to ${title}`,
                         message: `Are you sure want to change <strong>${params.supplierStore.store.name}</strong> approval status ?`,
                         id: params.supplierStore.id,
-                        approvalStatus: params.approvalStatus
+                        approvalStatus: params.approvalStatus,
                     },
                     disableClose: true,
                 });
@@ -585,7 +623,9 @@ export class MerchantEffects {
             }),
             map(({ id, approvalStatus }) => {
                 if (id) {
-                    return StoreActions.updateStoreRequest({ payload: { id, body: { approvalStatus }, isSupplierStore: true } });
+                    return StoreActions.updateStoreRequest({
+                        payload: { id, body: { approvalStatus }, isSupplierStore: true },
+                    });
                 } else {
                     return UiActions.resetHighlightRow();
                 }
@@ -603,15 +643,15 @@ export class MerchantEffects {
             ofType(StoreActions.confirmChangeStatusStore),
             map((action) => action.payload),
             exhaustMap((params) => {
-                let title = params.status === 'active' ? 'Inactive' : 'Active';
-                let body = params.status === 'active' ? 'inactive' : 'active';
+                let title = '';
+                let body = '';
 
                 if (params.status === 'active') {
-                    title = 'Active';
-                    body = 'active';
-                } else if (params.status === 'inactive') {
                     title = 'Inactive';
                     body = 'inactive';
+                } else if (params.status === 'inactive') {
+                    title = 'Active';
+                    body = 'active';
                 } else if (params.status === 'verified') {
                     title = 'Verified';
                     body = 'verified';
@@ -636,7 +676,7 @@ export class MerchantEffects {
                 >(ChangeConfirmationComponent, {
                     data: {
                         title: `Set ${title}`,
-                        message: `Are you sure want to change <strong>${params.store.name}</strong> status ?`,
+                        message: `Are you sure want to change <strong>${params.outerStore.name}</strong> status ?`,
                         id: params.id,
                         change: body,
                     },
