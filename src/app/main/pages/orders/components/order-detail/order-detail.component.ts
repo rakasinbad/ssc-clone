@@ -1,30 +1,22 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    Input,
     OnDestroy,
     OnInit,
     ViewEncapsulation,
 } from '@angular/core';
-import { MatDialog, MatTableDataSource } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { TranslateService } from '@ngx-translate/core';
 import { LogService } from 'app/shared/helpers';
-import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
-import * as _ from 'lodash';
-import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil, tap } from 'rxjs/operators';
-
-import { locale as english } from '../i18n/en';
-import { locale as indonesian } from '../i18n/id';
-import { OrderQtyFormComponent } from '../order-qty-form/order-qty-form.component';
-import { OrderActions } from '../store/actions';
-import { fromOrder } from '../store/reducers';
-import { OrderSelectors } from '../store/selectors';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { OrderQtyFormComponent } from '../../order-qty-form/order-qty-form.component';
+import { OrderActions } from '../../store/actions';
+import { fromOrder } from '../../store/reducers';
 
 @Component({
     selector: 'app-order-detail',
@@ -35,83 +27,20 @@ import { OrderSelectors } from '../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDetailComponent implements OnInit, OnDestroy {
-    dataSource: MatTableDataSource<any>;
-    displayedColumns = [
-        'product',
-        // 'bonus',
-        'order-qty',
-        // 'delivered-qty',
-        // 'invoiced-qty',
-        // 'unitOfMeasured',
-        'unit-price',
-        'discount-price',
-        'gross',
-        // 'amountDisc1',
-        // 'amountDisc2',
-        // 'amountDisc3',
-        // 'promo',
-        // 'amountPromo'
-    ];
+    @Input()
+    data: any;
 
-    order$: Observable<any>;
-    selectedRowIndex$: Observable<string>;
-    smallBreadcrumbs$: Observable<IBreadcrumbs[]>;
-    isLoading$: Observable<boolean>;
+    @Input()
+    loading: boolean;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<any> = new Subject();
 
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private store: Store<fromOrder.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        public translate: TranslateService,
         private _$log: LogService
-    ) {
-        // Load translate
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-
-        this.dataSource = new MatTableDataSource();
-
-        // Set breadcrumbs
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        // translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Order Managements',
-                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS',
-                    },
-                    {
-                        title: 'Order Details',
-                        translate: 'BREADCRUMBS.ORDER_DETAILS',
-                        active: true,
-                    },
-                ],
-            })
-        );
-
-        // Set small breadcrumbs
-        this.store.dispatch(
-            UiActions.createSmallBreadcrumb({
-                payload: [
-                    {
-                        title: 'Quotations',
-                    },
-                    {
-                        title: 'Quotations Send',
-                    },
-                    {
-                        title: 'Sales Order',
-                        active: true,
-                    },
-                ],
-            })
-        );
-    }
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -120,8 +49,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this._unSubs$ = new Subject<void>();
+        /* this._unSubs$ = new Subject<void>();
 
         this.initSource();
 
@@ -140,13 +68,10 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             )
             .subscribe((isRefresh) => {
                 this.initSource();
-            });
+            }); */
     }
 
     ngOnDestroy(): void {
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
-
         this.store.dispatch(UiActions.resetBreadcrumb());
         this.store.dispatch(UiActions.resetSmallBreadcrumb());
         this.store.dispatch(OrderActions.resetOrders());
@@ -269,7 +194,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     private initSource(): void {
-        const { id } = this.route.snapshot.params;
+        /* const { id } = this.route.snapshot.params;
 
         this.order$ = this.store.select(OrderSelectors.getSelectedOrder).pipe(
             tap((data) => {
@@ -282,6 +207,6 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.store.dispatch(OrderActions.fetchOrderRequest({ payload: id }));
+        this.store.dispatch(OrderActions.fetchOrderRequest({ payload: id })); */
     }
 }

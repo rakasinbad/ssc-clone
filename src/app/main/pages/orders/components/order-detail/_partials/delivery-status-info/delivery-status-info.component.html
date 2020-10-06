@@ -1,0 +1,57 @@
+<div class="box-container" fxLayout="column" fxLayoutGap="16px" fxFlex>
+    <div class="box-container__title">
+        <span class="mat-headline m-0"> Delivery Status </span>
+    </div>
+
+    <div class="box-content__container" fxLayout="column">
+        <div class="tracking-info">
+            <div class="content" fxLayout="column" fxLayoutGap="20px">
+                <div class="status secondary-text" [class.active]="data?.status === 'checkout'">
+                    <div class="delivery-status-header">Quotation</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'pending'">
+                    <div class="delivery-status-header">Awaiting to be verified</div>
+                </div>
+
+                <div
+                    class="status secondary-text"
+                    [class.active]="data?.status === 'pending_payment'"
+                >
+                    <div class="delivery-status-header">Pending Payment</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'confirm'">
+                    <div class="delivery-status-header">New Order</div>
+                </div>
+
+                <div
+                    class="status secondary-text"
+                    [class.active]="data?.status === 'pending_supplier'"
+                >
+                    <div class="delivery-status-header">Pending Supplier</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'packing'">
+                    <div class="delivery-status-header">Packed</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'shipping'">
+                    <div class="delivery-status-header">Shipped</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'delivered'">
+                    <div class="delivery-status-header">Delivered</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'done'">
+                    <div class="delivery-status-header">Done</div>
+                </div>
+
+                <div class="status secondary-text" [class.active]="data?.status === 'cancel'">
+                    <div class="delivery-status-header">Canceled</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

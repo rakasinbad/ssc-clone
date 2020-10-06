@@ -1,27 +1,38 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import {
     AfterViewInit,
-    ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
+    TemplateRef,
     ViewChild,
     ViewEncapsulation,
-    ChangeDetectorRef,
-    TemplateRef
 } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-import { MatPaginator, MatSort, PageEvent, MatCheckboxChange, MatCheckbox } from '@angular/material';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+    MatCheckbox,
+    MatCheckboxChange,
+    MatDialog,
+    MatPaginator,
+    MatSort,
+    PageEvent,
+} from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { CardHeaderActionConfig } from 'app/shared/components/card-header/models/card-header.model';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ButtonDesignType } from 'app/shared/models/button.model';
-import { LifecyclePlatform, TNullable, TApprovalStatus } from 'app/shared/models/global.model';
+import { LifecyclePlatform, TApprovalStatus, TNullable } from 'app/shared/models/global.model';
+import { HashTable2 } from 'app/shared/models/hashtable2.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
@@ -30,20 +41,14 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { combineLatest, merge, Observable, Subject, BehaviorSubject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, takeUntil, flatMap, tap, take, withLatestFrom } from 'rxjs/operators';
-
+import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
+import { ResendStoreDialogComponent } from './components';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
-import { SelectionModel, SelectionChange } from '@angular/cdk/collections';
-
-import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
-import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
-import { HashTable2 } from 'app/shared/models/hashtable2.model';
-import { CardHeaderActionConfig } from 'app/shared/components/card-header/models/card-header.model';
 
 @Component({
     selector: 'app-merchants',
@@ -51,7 +56,6 @@ import { CardHeaderActionConfig } from 'app/shared/components/card-header/models
     styleUrls: ['./merchants.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 10;
@@ -65,7 +69,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Store List'
+            label: 'Store List',
         },
         batchAction: {
             actions: [
@@ -86,7 +90,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     label: 'Reset Selection'
                 // }
             ],
-            onActionSelected: action => {
+            onActionSelected: (action) => {
                 if (action.id === 'verify') {
                     if (this.selected.length === 1) {
                         this.onUpdateApprovalStatus(this.selected.toArray()[0], 'verified');
@@ -107,37 +111,37 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 } else if (action.id === 'reset-selection') {
                     this.selected.clear();
-                    this.updateBatchActions();
-                    this.updateHeadCheckbox();
+                    this._updateBatchActions();
+                    this._updateHeadCheckbox();
                 } else if (action.id === 'view-selection') {
                     this.viewSelection();
                 }
             },
-            show: false
+            show: false,
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
                 setTimeout(() => this._onRefreshTable(true), 100);
-            }
+            },
         },
         add: {
             permissions: ['ACCOUNT.STORE.CREATE'],
             onClick: () => {
                 this.router.navigate(['/pages/account/stores/new']);
-            }
+            },
         },
         export: {
             permissions: ['ACCOUNT.STORE.EXPORT'],
             useAdvanced: true,
-            pageType: 'stores'
+            pageType: 'stores',
         },
         import: {
             permissions: ['ACCOUNT.STORE.IMPORT'],
             useAdvanced: true,
-            pageType: 'stores'
-        }
+            pageType: 'stores',
+        },
     };
 
     // Untuk menyimpan ID SupplierStore yang terpilih.
@@ -154,32 +158,32 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             placeholder: 'Choose Store List Status',
             sources: this._$helper.storeStatus(),
             rules: {
-                required: true
-            }
+                required: true,
+            },
         },
         search: {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
                 setTimeout(() => this._onRefreshTable(true), 100);
-            }
+            },
         },
         add: {
             permissions: ['ACCOUNT.STORE.CREATE'],
             onClick: () => {
                 this.router.navigate(['/pages/account/stores/new']);
-            }
+            },
         },
         export: {
             permissions: ['ACCOUNT.STORE.EXPORT'],
             useAdvanced: true,
-            pageType: 'stores'
+            pageType: 'stores',
         },
         import: {
             permissions: ['ACCOUNT.STORE.IMPORT'],
             useAdvanced: true,
-            pageType: 'stores'
-        }
+            pageType: 'stores',
+        },
     };
 
     // search: FormControl = new FormControl('');
@@ -199,7 +203,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'joining-date',
         'status',
         'supplier-status',
-        'actions'
+        'actions',
     ];
     resendStoreColumns: Array<string> = [
         'name',
@@ -207,7 +211,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'city',
         'owner-phone-no',
         'status',
-        'supplier-status'
+        'supplier-status',
     ];
     importBtnConfig: IButtonImportConfig = {
         id: 'import-journey-plan',
@@ -215,10 +219,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         color: 'accent',
         dialogConf: {
             title: 'Import',
-            cssToolbar: 'fuse-white-bg'
+            cssToolbar: 'fuse-white-bg',
         },
         title: 'IMPORT ADV',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
+        type: ButtonDesignType.MAT_STROKED_BUTTON,
     };
 
     // Untuk keperluan checkbox.
@@ -233,8 +237,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     totalPending$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
     totalUpdating$: BehaviorSubject<string> = new BehaviorSubject<string>('-');
 
-    dataSource: Array<SupplierStore> = [];
-    dataSource$: Observable<Array<SupplierStore>>;
+    dataSource: any[] = [];
+    dataSource$: Observable<any[]>;
     selectedRowIndex$: Observable<string>;
     // tslint:disable-next-line: no-inferrable-types
     totalDataSource: number = 0;
@@ -259,7 +263,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     dialogRejectForm: ApplyDialogService;
     dialogStoreType: ApplyDialogService;
 
-    private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('empty');
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -273,7 +276,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         private _$notice: NoticeService,
         private cdRef: ChangeDetectorRef,
         private applyDialogFactory$: ApplyDialogFactoryService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private matDialog: MatDialog
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -283,19 +287,19 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home'
+                        title: 'Home',
                         // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Store',
-                        translate: 'BREADCRUMBS.ACCOUNT'
+                        translate: 'BREADCRUMBS.ACCOUNT',
                     },
                     {
                         title: 'Store List',
                         translate: 'BREADCRUMBS.STORE',
-                        active: true
-                    }
-                ]
+                        active: true,
+                    },
+                ],
             })
         );
     }
@@ -360,7 +364,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // this.selection.clear();
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 this.isMassAction = false;
 
@@ -376,14 +380,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         minWidth: '50vw',
                         maxWidth: '50vw',
                         height: '420px',
-                        panelClass: 'dialog-container-no-padding'
+                        panelClass: 'dialog-container-no-padding',
                     }
                 );
 
                 this.dialogRejectForm.closed$.subscribe({
                     next: (value: TNullable<string>) => {
                         HelperService.debug('DIALOG REJECT STORE CLOSED', value);
-        
+
                         if (value === 'apply') {
                             // Mendapatkan value form-nya.
                             const formValue = this.rejectForm.getRawValue();
@@ -402,25 +406,27 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                         imageUrl: formValue.imageUrl,
                                         idImageUrl: formValue.idImageUrl,
                                         selfieImageUrl: formValue.selfieImageUrl,
-                                        taxImageUrl: formValue.taxImageUrl
-                                    }
-                                }
+                                        taxImageUrl: formValue.taxImageUrl,
+                                    },
+                                },
                             };
 
-                            this.store.dispatch(StoreActions.updateStoreRequest({
-                                payload: {
-                                    id: item.id,
-                                    isSupplierStore: true,
-                                    body: payload
-                                }
-                            }));
+                            this.store.dispatch(
+                                StoreActions.updateStoreRequest({
+                                    payload: {
+                                        id: item.id,
+                                        isSupplierStore: true,
+                                        body: payload,
+                                    },
+                                })
+                            );
                         }
                     },
                 });
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -429,13 +435,15 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     onRejectStores(): void {
         const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 this.isMassAction = true;
 
                 this.dialogStoreType = this.applyDialogFactory$.open(
                     {
-                        title: `Mass Reject (${this.selected.length} ${this.selected.length === 1 ? 'store' : 'stores'})`,
+                        title: `Mass Reject (${this.selected.length} ${
+                            this.selected.length === 1 ? 'store' : 'stores'
+                        })`,
                         template: this.reject,
                         isApplyEnabled: true,
                     },
@@ -444,21 +452,23 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         width: '60vw',
                         minWidth: '60vw',
                         maxWidth: '60vw',
-                        panelClass: 'dialog-container-no-padding'
+                        panelClass: 'dialog-container-no-padding',
                     }
                 );
 
                 this.dialogStoreType.closed$.subscribe({
                     next: (value: TNullable<string>) => {
                         HelperService.debug('DIALOG MASS REJECT STORE CLOSED', value);
-        
+
                         if (value === 'apply') {
                             // Mendapatkan value form-nya.
                             const formValue = this.rejectForm.getRawValue();
                             // Menyiapkan payload-nya.
                             const payload = {
                                 approvalStatus: 'rejected',
-                                supplierStores: this.selected.toArray().map(selected => ({ supplierStoreId: selected.id })),
+                                supplierStores: this.selected
+                                    .toArray()
+                                    .map((selected) => ({ id: selected.id })),
                                 rejection: {
                                     reasons: formValue.reason,
                                     rejectedFields: {
@@ -471,27 +481,29 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                         imageUrl: formValue.imageUrl,
                                         idImageUrl: formValue.idImageUrl,
                                         selfieImageUrl: formValue.selfieImageUrl,
-                                        taxImageUrl: formValue.taxImageUrl
-                                    }
-                                }
+                                        taxImageUrl: formValue.taxImageUrl,
+                                    },
+                                },
                             };
 
-                            this.store.dispatch(StoreActions.updateStoreRequest({
-                                payload: {
-                                    id: null,
-                                    isSupplierStore: true,
-                                    body: payload
-                                }
-                            }));
+                            this.store.dispatch(
+                                StoreActions.updateStoreRequest({
+                                    payload: {
+                                        id: null,
+                                        isSupplierStore: true,
+                                        body: payload,
+                                    },
+                                })
+                            );
                         }
-        
+
                         this.cdRef.detectChanges();
                     },
                 });
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -506,44 +518,37 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // this.selection.clear();
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 // this.selection.select(item);
                 this.isMassAction = false;
                 this.selectedSupplierStore = item;
 
-                this.dialogStoreType = this.applyDialogFactory$.open(
-                    {
-                        title: 'Re-send',
-                        template: this.resendStore,
-                        isApplyEnabled: true,
+                const dialogRef = this.matDialog.open(ResendStoreDialogComponent, {
+                    autoFocus: false,
+                    data: {
+                        message: `Are you sure want to re-send the store? Resend will update your <br/>
+                        data and make the store to be a new store`,
                     },
-                    {
-                        disableClose: true,
-                        width: '60vw',
-                        minWidth: '60vw',
-                        maxWidth: '60vw',
-                        panelClass: 'dialog-container-no-padding'
-                    }
-                );
+                    disableClose: true,
+                    panelClass: 'resend-store-dialog',
+                    minHeight: '180px',
+                    minWidth: '460px',
+                });
 
-                this.dialogStoreType.closed$.subscribe({
-                    next: (value: TNullable<string>) => {
-                        HelperService.debug('DIALOG RE-SEND STORE CLOSED', value);
-        
-                        if (value === 'apply') {
-                            this.store.dispatch(StoreActions.resendStoresRequest({
-                                payload: [item]
-                            }));
-                        }
-        
-                        this.cdRef.detectChanges();
-                    },
+                dialogRef.afterClosed().subscribe((result) => {
+                    if (result === 'confirm') {
+                        this.store.dispatch(
+                            StoreActions.resendStoresRequest({
+                                payload: [item],
+                            })
+                        );
+                    }
                 });
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -560,9 +565,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 template: this.viewSelected,
                 isApplyEnabled: false,
                 showApplyButton: false,
-                contentClass: [
-                    'h-532', 'pt-16', 'px-0', 'm-0', 'mat-typography'
-                ],
+                contentClass: ['h-532', 'pt-16', 'px-0', 'm-0', 'mat-typography'],
             },
             {
                 disableClose: true,
@@ -570,7 +573,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 maxWidth: '90vw',
                 width: '90vw',
                 height: '600px',
-                panelClass: 'dialog-container-no-padding'
+                panelClass: 'dialog-container-no-padding',
             }
         );
     }
@@ -582,14 +585,18 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-                this.store.dispatch(StoreActions.confirmUpdateApprovalStatusStore({ payload: { approvalStatus, supplierStore: item } }));
+                this.store.dispatch(
+                    StoreActions.confirmUpdateApprovalStatusStore({
+                        payload: { approvalStatus, supplierStore: item },
+                    })
+                );
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -598,7 +605,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     onVerifyStores(): void {
         const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 this.dialogStoreType = this.applyDialogFactory$.open(
                     {
@@ -611,37 +618,41 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         width: '60vw',
                         minWidth: '60vw',
                         maxWidth: '60vw',
-                        panelClass: 'dialog-container-no-padding'
+                        panelClass: 'dialog-container-no-padding',
                     }
                 );
 
                 this.dialogStoreType.closed$.subscribe({
                     next: (value: TNullable<string>) => {
                         HelperService.debug('DIALOG MASS APPROVE STORE CLOSED', value);
-        
+
                         if (value === 'apply') {
                             // Menyiapkan payload-nya.
                             const payload = {
                                 approvalStatus: 'verified',
-                                supplierStores: this.selected.toArray().map(selected => ({ supplierStoreId: selected.id })),
+                                supplierStores: this.selected
+                                    .toArray()
+                                    .map((selected) => ({ supplierStoreId: selected.id })),
                             };
 
-                            this.store.dispatch(StoreActions.updateStoreRequest({
-                                payload: {
-                                    id: null,
-                                    isSupplierStore: true,
-                                    body: payload
-                                }
-                            }));
+                            this.store.dispatch(
+                                StoreActions.updateStoreRequest({
+                                    payload: {
+                                        id: null,
+                                        isSupplierStore: true,
+                                        body: payload,
+                                    },
+                                })
+                            );
                         }
-        
+
                         this.cdRef.detectChanges();
                     },
                 });
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -650,42 +661,43 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     onResendStores(): void {
         const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 this.isMassAction = true;
 
                 this.dialogStoreType = this.applyDialogFactory$.open(
                     {
-                        title: 'Re-send',
+                        title: 'Resend',
                         template: this.resendStore,
                         isApplyEnabled: true,
                     },
                     {
+                        autoFocus: false,
                         disableClose: true,
                         width: '60vw',
                         minWidth: '60vw',
                         maxWidth: '60vw',
-                        panelClass: 'dialog-container-no-padding'
+                        panelClass: 'dialog-container-no-padding',
                     }
                 );
 
                 this.dialogStoreType.closed$.subscribe({
                     next: (value: TNullable<string>) => {
                         HelperService.debug('DIALOG RE-SEND STORES CLOSED', value);
-        
+
                         if (value === 'apply') {
-                            this.store.dispatch(StoreActions.resendStoresRequest({
-                                payload: this.selected.toArray()
-                            }));
+                            this.store.dispatch(
+                                StoreActions.resendStoresRequest({
+                                    payload: this.selected.toArray(),
+                                })
+                            );
                         }
-        
-                        this.cdRef.detectChanges();
                     },
                 });
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -698,14 +710,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
 
-        canChangeStatusStore.then(hasAccess => {
+        canChangeStatusStore.then((hasAccess) => {
             if (hasAccess) {
                 this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
                 this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -718,14 +730,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canDeleteStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.DELETE');
 
-        canDeleteStore.then(hasAccess => {
+        canDeleteStore.then((hasAccess) => {
             if (hasAccess) {
                 this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
                 this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
             } else {
                 this._$notice.open('Sorry, permission denied!', 'error', {
                     verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
+                    horizontalPosition: 'right',
                 });
             }
         });
@@ -752,7 +764,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         ? (payload.end as moment.Moment).format('YYYY-MM-DD')
                         : payload.end
                         ? moment(payload.end).format('YYYY-MM-DD')
-                        : null
+                        : null,
             };
 
             this.store.dispatch(StoreActions.exportRequest({ payload: body }));
@@ -773,17 +785,35 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             return '-';
         }
 
-        return salesRep.map(sR => sR.fullName).join(',<br/>');
+        return salesRep.map((sR) => sR.fullName).join(',<br/>');
     }
 
     onSelectedTab(index: number): void {
         switch (index) {
-            case 1: this.storeStatus = 'verified'; this._onRefreshTable(true); break;
-            case 2: this.storeStatus = 'guest'; this._onRefreshTable(true); break;
-            case 3: this.storeStatus = 'rejected'; this._onRefreshTable(true); break;
-            case 4: this.storeStatus = 'pending'; this._onRefreshTable(true); break;
-            case 5: this.storeStatus = 'updating'; this._onRefreshTable(true); break;
-            default: this.storeStatus = ''; this._onRefreshTable(true); break;
+            case 1:
+                this.storeStatus = 'verified';
+                this._onRefreshTable(true);
+                break;
+            case 2:
+                this.storeStatus = 'guest';
+                this._onRefreshTable(true);
+                break;
+            case 3:
+                this.storeStatus = 'rejected';
+                this._onRefreshTable(true);
+                break;
+            case 4:
+                this.storeStatus = 'pending';
+                this._onRefreshTable(true);
+                break;
+            case 5:
+                this.storeStatus = 'updating';
+                this._onRefreshTable(true);
+                break;
+            default:
+                this.storeStatus = '';
+                this._onRefreshTable(true);
+                break;
         }
     }
 
@@ -794,8 +824,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selectedIds.push(+item.id);
             this.selection.select(item);
         } else {
-            const idx = this.selectedIds.findIndex(id => id === +item.id);
-    
+            const idx = this.selectedIds.findIndex((id) => id === +item.id);
+
             if (event.checked) {
                 this.selectedIds.push(+item.id);
                 this.selection.select(item);
@@ -807,20 +837,15 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         }
 
-        HelperService.debug('[AFTER] SUPPLIER STORE SELECTED', { item, selectedIds: this.selectedIds, selection: this.selection });
+        HelperService.debug('[AFTER] SUPPLIER STORE SELECTED', {
+            item,
+            selectedIds: this.selectedIds,
+            selection: this.selection,
+        });
     }
 
     handleCheckbox(event): void {
         HelperService.debug('SELECT ALL CLICKED', event);
-        // this.isAllSelected()
-        //     ? this.trigger$.next('empty')
-        //     : this.trigger$.next('all');
-            // : this.dataSource$
-            //     .pipe(
-            //         flatMap(v => v),
-            //         take(1)
-            //     )
-            //     .forEach(row => this.selection.select(row));
     }
 
     // isAllSelected(): boolean {
@@ -833,17 +858,25 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // }
 
     onAllRowsSelected(): void {
-        HelperService.debug('[BEFORE] onAllRowsSelected', { selected: this.selected, dataSource: this.dataSource, totalDataSource: this.totalDataSource });
+        HelperService.debug('[BEFORE] onAllRowsSelected', {
+            selected: this.selected,
+            dataSource: this.dataSource,
+            totalDataSource: this.totalDataSource,
+        });
 
         if (this.headCheckbox.checked || this.headCheckbox.indeterminate) {
             this.selected.upsert(this.dataSource);
         } else {
-            this.selected.remove(this.dataSource.map(store => store.id));
+            this.selected.remove(this.dataSource.map((store) => store.id));
         }
 
-        HelperService.debug('[AFTER] onAllRowsSelected', { selected: this.selected, dataSource: this.dataSource, totalDataSource: this.totalDataSource });
-        this.updateHeadCheckbox();
-        this.updateBatchActions();
+        HelperService.debug('[AFTER] onAllRowsSelected', {
+            selected: this.selected,
+            dataSource: this.dataSource,
+            totalDataSource: this.totalDataSource,
+        });
+        this._updateHeadCheckbox();
+        this._updateBatchActions();
     }
 
     onRowSelected(ev: MatCheckboxChange, row: SupplierStore): void {
@@ -855,59 +888,56 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selected.remove(row.id);
         }
 
-        this.updateHeadCheckbox();
-        this.updateBatchActions();
+        this._updateHeadCheckbox();
+        this._updateBatchActions();
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private tickHeadCheckbox(checked: boolean, indeterminate: boolean): void {
+    // Handle to indeterminate state of the checkbox (head checkbox) depends on total selection row
+    private _tickHeadCheckbox(checked: boolean, indeterminate: boolean): void {
         if (this.headCheckbox) {
             this.headCheckbox.checked = checked;
             this.headCheckbox.indeterminate = indeterminate;
         }
     }
 
-    private updateHeadCheckbox(): void {
-        setTimeout(() => {
-            if (this.headCheckbox) {
-                const selectedIds = this.selected.toArray().map(s => s.id);
-                const dataSourceIds = this.dataSource.map(source => source.id);
-                const totalSelectedOnPage = dataSourceIds.filter(id => selectedIds.includes(id)).length;
-    
-                if (this.selected.length === 0) {
-                    this.tickHeadCheckbox(false, false);
-                } else if (this.selected.length === this.dataSource.length) {
-                    if (totalSelectedOnPage === 0) {
-                        this.tickHeadCheckbox(false, false);
-                    } else {
-                        this.tickHeadCheckbox(true, false);
-                    }
-                } else if (this.selected.length !== this.dataSource.length) {
-                    if (totalSelectedOnPage === 0) {
-                        this.tickHeadCheckbox(false, false);
-                    } else if (totalSelectedOnPage === this.dataSource.length) {
-                        this.tickHeadCheckbox(true, false);
-                    } else {
-                        this.tickHeadCheckbox(false, true);
-                    }
+    // Handle to update checkbox (head checkbox) on column table
+    private _updateHeadCheckbox(): void {
+        if (this.headCheckbox) {
+            const selectedIds = this.selected.toArray().map((s) => s.id);
+            const dataSourceIds = this.dataSource.map((source) => source.id);
+            const totalSelectedOnPage = dataSourceIds.filter((id) => selectedIds.includes(id))
+                .length;
+
+            if (this.selected.length === 0) {
+                this._tickHeadCheckbox(false, false);
+            } else if (this.selected.length === this.dataSource.length) {
+                if (totalSelectedOnPage === 0) {
+                    this._tickHeadCheckbox(false, false);
+                } else {
+                    this._tickHeadCheckbox(true, false);
+                }
+            } else if (this.selected.length !== this.dataSource.length) {
+                if (totalSelectedOnPage === 0) {
+                    this._tickHeadCheckbox(false, false);
+                } else if (totalSelectedOnPage === this.dataSource.length) {
+                    this._tickHeadCheckbox(true, false);
+                } else {
+                    this._tickHeadCheckbox(false, true);
                 }
             }
-        }, 100);
+        }
     }
 
-    private updateBatchActions(): void {
-        // tslint:disable-next-line: no-inferrable-types
+    // Handle to update batch actions depends on selection row
+    private _updateBatchActions(): void {
         let hasRejected: boolean = false;
-        // tslint:disable-next-line: no-inferrable-types
         let hasPending: boolean = false;
-        // tslint:disable-next-line: no-inferrable-types
         let hasGuest: boolean = false;
-        // tslint:disable-next-line: no-inferrable-types
         let hasUpdating: boolean = false;
-        // tslint:disable-next-line: no-inferrable-types
         let hasVerified: boolean = false;
         // Untuk menyimpan action yang akan dimunculkan di card header.
         let newActions: Array<CardHeaderActionConfig> = [];
@@ -942,20 +972,20 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             batchAction: {
                 ...this.cardHeaderConfig.batchAction,
                 actions: [],
-                show: false
-            }
+                show: false,
+            },
         };
 
-        // Re-semd
-        if (!hasPending && !hasVerified && !hasGuest && !hasUpdating && (hasRejected)) {
+        // Re-send dihilangkan karena fitur re-send dibuka untuk semua status
+        /* if (!hasPending && !hasVerified && !hasGuest && !hasUpdating && hasRejected) {
             newActions = [
                 ...newActions,
                 {
                     id: 'resend',
                     label: 'Re-send',
-                }
+                },
             ];
-        }
+        } */
 
         // Verify
         if (!hasVerified && !hasRejected && (hasGuest || hasUpdating || hasPending)) {
@@ -964,25 +994,30 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 {
                     id: 'verify',
                     label: 'Verify',
-                }, {
+                },
+                {
                     id: 'reject',
                     label: 'Reject',
-                }
+                },
             ];
         }
 
         // Show reset selection
         if (this.selected.length > 0) {
             newActions = [
+                {
+                    id: 'resend',
+                    label: 'Re-send',
+                },
                 ...newActions,
                 {
                     id: 'reset-selection',
-                    label: 'Reset Selection'
+                    label: 'Reset Selection',
                 },
                 {
                     id: 'view-selection',
-                    label: 'View Selection'
-                }
+                    label: 'View Selection',
+                },
             ];
         }
 
@@ -992,13 +1027,12 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 ...this.cardHeaderConfig.batchAction,
                 actions: newActions,
                 show: hasVerified || hasRejected || hasGuest || hasUpdating || hasPending,
-            }
+            },
         };
-
-        this.cdRef.markForCheck();
     }
 
-    private updateDisplayedColumns(hasUpdateAccess: boolean): void {
+    // Handle to display column table by supplier status
+    private _updateDisplayedColumns(hasUpdateAccess: boolean): void {
         if (hasUpdateAccess) {
             if (this.storeStatus) {
                 this.displayedColumns = ['checkbox'];
@@ -1037,18 +1071,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // 'sr-name',
                 'joining-date',
                 'status',
-                'supplier-status'
+                'supplier-status',
             ];
         }
     }
 
-    /**
-     *
-     *
-     * @private
-     * @param {LifecyclePlatform} [lifeCycle]
-     * @memberof MerchantsComponent
-     */
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.AfterViewInit:
@@ -1064,17 +1091,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this.ngxPermissions
                     .hasPermission(['ACCOUNT.STORE.UPDATE', 'ACCOUNT.STORE.DELETE'])
-                    .then(hasAccess => {
-                        this.updateDisplayedColumns(hasAccess);
+                    .then((hasAccess) => {
+                        this._updateDisplayedColumns(hasAccess);
                     });
                 break;
 
             case LifecyclePlatform.OnDestroy:
                 this._unSubs$.next();
                 this._unSubs$.complete();
-
-                this.trigger$.next('');
-                this.trigger$.complete();
 
                 this.totalStores$.next('');
                 this.totalVerified$.next('');
@@ -1103,18 +1127,12 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.sort.sort({
                     id: 'updated_at',
                     start: 'desc',
-                    disableClear: true
+                    disableClear: true,
                 });
 
                 localStorage.removeItem('filter.store');
 
                 this.store.dispatch(StoreActions.deselectSupplierStore());
-
-                // .pipe(
-                //     filter(source => source.length > 0),
-                //     delay(1000),
-                //     startWith(this._$merchantApi.initBrandStore())
-                // );
 
                 // Menyiapkan form reject.
                 this.rejectForm = this.fb.group({
@@ -1131,182 +1149,66 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     reason: ['', []],
                 });
 
-                this.rejectForm.valueChanges.pipe(
-                    tap(value => HelperService.debug('REJECT FORM VALUE CHANGES', value)),
-                    takeUntil(this._unSubs$)
-                ).subscribe();
+                this.rejectForm.valueChanges
+                    .pipe(
+                        tap((value) => HelperService.debug('REJECT FORM VALUE CHANGES', value)),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe();
 
                 this.selection = new SelectionModel<SupplierStore>(true, []);
-                this.dataSource$ = this.store.select(StoreSelectors.getAllStore).pipe(
-                    tap(value => HelperService.debug('GET ALL SUPPLIER STORES', value)),
-                    tap(value => {
-                        const selected: Array<SupplierStore> = [];
 
-                        value.forEach(val => {
+                this.dataSource$ = this.store.select(StoreSelectors.getAllStore).pipe(
+                    tap((value) => HelperService.debug('GET ALL SUPPLIER STORES', value)),
+                    tap((value) => {
+                        const selected: any[] = [];
+
+                        value.forEach((val) => {
                             if (this.selectedIds.includes(+val.id)) {
                                 selected.push(val);
                             }
                         });
 
                         this.dataSource = value;
-                        this.updateHeadCheckbox();
-                        // this.selection.select(...selected);
-                    }),
+                        this._updateHeadCheckbox();
+                    })
                 );
-                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore)
-                .pipe(
-                    tap(value => {
+
+                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore).pipe(
+                    tap((value) => {
                         this.totalDataSource = value;
                     })
                 );
+
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+
                 this.isLoading$ = combineLatest([
                     this.store.select(StoreSelectors.getIsLoading),
-                    this.store.select(ExportSelector.getRequestingState)
-                ]).pipe(map(state => state.includes(true)));
+                    this.store.select(ExportSelector.getRequestingState),
+                ]).pipe(map((state) => state.includes(true)));
 
-                this.store.select(StoreSelectors.getApprovalStatuses).pipe(
-                    takeUntil(this._unSubs$)
-                ).subscribe(data => {
-                    if (!data) {
-                        this.store.dispatch(StoreActions.fetchCalculateSupplierStoresRequest());
-                    } else {
-                        this.totalStores$.next(data.totalStores);
-                        this.totalVerified$.next(data.totalVerified);
-                        this.totalGuest$.next(data.totalGuest);
-                        this.totalRejected$.next(data.totalRejected);
-                        this.totalPending$.next(data.totalPending);
-                        this.totalUpdating$.next(data.totalUpdating);
-                    }
-                });
+                // Horizontal filter
+                this.store
+                    .select(StoreSelectors.getApprovalStatuses)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe((data) => {
+                        if (!data) {
+                            this.store.dispatch(StoreActions.fetchCalculateSupplierStoresRequest());
+                        } else {
+                            this.totalStores$.next(data.totalStores);
+                            this.totalVerified$.next(data.totalVerified);
+                            this.totalGuest$.next(data.totalGuest);
+                            this.totalRejected$.next(data.totalRejected);
+                            this.totalPending$.next(data.totalPending);
+                            this.totalUpdating$.next(data.totalUpdating);
+                        }
+                    });
 
                 this._initTable();
 
-                this.selection.changed.pipe(
-                    debounceTime(100),
-                    tap(value => HelperService.debug('SELECTION CHANGED', value)),
-                    takeUntil(this._unSubs$)
-                ).subscribe((value: SelectionChange<SupplierStore>) => {
-                    // tslint:disable-next-line: no-inferrable-types
-                    let hasRejected: boolean = false;
-                    // tslint:disable-next-line: no-inferrable-types
-                    let hasPending: boolean = false;
-                    // tslint:disable-next-line: no-inferrable-types
-                    let hasGuest: boolean = false;
-                    // tslint:disable-next-line: no-inferrable-types
-                    let hasUpdating: boolean = false;
-                    // tslint:disable-next-line: no-inferrable-types
-                    let hasVerified: boolean = false;
-
-                    for (const selected of this.selection.selected) {
-                        switch (selected.outerStore['approvalStatus']) {
-                            case 'rejected': {
-                                hasRejected = true;
-                                break;
-                            }
-                            case 'pending': {
-                                hasPending = true;
-                                break;
-                            }
-                            case 'guest': {
-                                hasGuest = true;
-                                break;
-                            }
-                            case 'updating': {
-                                hasUpdating = true;
-                                break;
-                            }
-                            case 'verified': {
-                                hasVerified = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    this.cardHeaderConfig = {
-                        ...this.cardHeaderConfig,
-                        batchAction: {
-                            ...this.cardHeaderConfig.batchAction,
-                            actions: [],
-                            show: false
-                        }
-                    };
-
-                    // Re-send
-                    if (!hasPending && !hasVerified && !hasGuest && !hasUpdating && (hasRejected)) {
-                        this.cardHeaderConfig = {
-                            ...this.cardHeaderConfig,
-                            batchAction: {
-                                ...this.cardHeaderConfig.batchAction,
-                                actions: [
-                                    ...this.cardHeaderConfig.batchAction.actions,
-                                    {
-                                        id: 'resend',
-                                        label: 'Re-send',
-                                    }
-                                ]
-                            }
-                        };
-                    }
-
-                    // Verify
-                    if (!hasVerified && !hasRejected && (hasGuest || hasUpdating || hasPending)) {
-                        this.cardHeaderConfig = {
-                            ...this.cardHeaderConfig,
-                            batchAction: {
-                                ...this.cardHeaderConfig.batchAction,
-                                actions: [
-                                    ...this.cardHeaderConfig.batchAction.actions,
-                                    {
-                                        id: 'verify',
-                                        label: 'Verify',
-                                    }, {
-                                        id: 'reject',
-                                        label: 'Reject',
-                                    }
-                                ]
-                            }
-                        };
-                    }
-
-                    // Show reset selection
-                    if (this.selectedIds.length > 0) {
-                        this.cardHeaderConfig = {
-                            ...this.cardHeaderConfig,
-                            batchAction: {
-                                ...this.cardHeaderConfig.batchAction,
-                                actions: [
-                                    ...this.cardHeaderConfig.batchAction.actions,
-                                    {
-                                        id: 'reset-selection',
-                                        label: 'Reset Selection'
-                                    }
-                                ],
-                                show: true
-                            }
-                        };
-                    }
-
-                    this.cdRef.markForCheck();
-                });
-
-                this.trigger$.pipe(
-                    withLatestFrom(this.dataSource$),
-                    takeUntil(this._unSubs$)
-                ).subscribe(([trigger, dataSource]) => {
-                    if (trigger === 'empty') {
-                        this.selected.clear();
-                    } else if (trigger === 'all') {
-                        this.selected.upsert(dataSource);
-                    }
-
-                    this.updateBatchActions();
-                    this.cdRef.markForCheck();
-                });
-
                 this.search.valueChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-                    .subscribe(v => {
+                    .subscribe((v) => {
                         if (v) {
                             localStorage.setItem('filter.store', v);
                         }
@@ -1317,12 +1219,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store
                     .select(StoreSelectors.getIsRefresh)
                     .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-                    .subscribe(isRefresh => {
+                    .subscribe((isRefresh) => {
                         if (isRefresh) {
-                            this.store.dispatch(StoreActions.setRefreshStatus({ refreshStatus: false }));
+                            this.store.dispatch(
+                                StoreActions.setRefreshStatus({ refreshStatus: false })
+                            );
                             this.store.dispatch(StoreActions.fetchCalculateSupplierStoresRequest());
                             this.selected.clear();
-                            this.updateBatchActions();
+                            this._updateBatchActions();
                             this._onRefreshTable();
                         }
                     });
@@ -1337,26 +1241,18 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.ngxPermissions
             .hasPermission(['ACCOUNT.STORE.UPDATE', 'ACCOUNT.STORE.DELETE'])
-            .then(hasAccess => {
-                this.updateDisplayedColumns(hasAccess);
+            .then((hasAccess) => {
+                this._updateDisplayedColumns(hasAccess);
             });
 
         this._initTable();
     }
 
-    /**
-     *
-     *
-     * @private
-     * @memberof MerchantsComponent
-     */
     private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
         };
-
-        // this.selection.clear();
 
         data['paginate'] = true;
 
@@ -1371,8 +1267,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             data['search'] = [
                 {
                     fieldName: 'keyword',
-                    keyword: query
-                }
+                    keyword: query,
+                },
             ];
         }
 
@@ -1382,7 +1278,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.store.dispatch(
             StoreActions.fetchStoresRequest({
-                payload: data
+                payload: data,
             })
         );
     }

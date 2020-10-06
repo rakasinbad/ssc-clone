@@ -1,0 +1,85 @@
+<mat-table
+    class="order-line-list sinbad-table"
+    [class.sinbad-table-no-record]="(dataSource.totalDataSource$ | async) === 0"
+    #table
+    [dataSource]="dataSource"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Product Column -->
+    <ng-container matColumnDef="product">
+        <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break">
+                {{ row?.catalogue?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Order Quantity Column -->
+    <ng-container matColumnDef="order-qty">
+        <mat-header-cell *matHeaderCellDef> Order Quantity </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break">
+                {{ (row?.qty | number) || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Unit Price Column -->
+    <ng-container matColumnDef="unit-price">
+        <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break">
+                {{ (row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Gross Price Column -->
+    <ng-container matColumnDef="gross-price">
+        <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break">
+                {{
+                    (row?.grossPrice
+                        | calculateGrossPrice: true:row?.qty:row?.cataloguePromo
+                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Discount Price Column -->
+    <ng-container matColumnDef="discount-price">
+        <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break">
+                {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Type Column -->
+    <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break">
+                {{ row?.type | catalogueType }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="5"> No records found </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" class="order-line-list-item"></mat-row>
+    <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="(dataSource.totalDataSource$ | async) === 0"
+    ></mat-footer-row>
+</mat-table>
