@@ -1,8 +1,9 @@
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { BenefitType } from 'app/shared/models/benefit-type.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 
 interface IFlexiComboCondition {
     benefitBonusQty: string;
@@ -10,6 +11,8 @@ interface IFlexiComboCondition {
     benefitType: string;
     conditionBase: string;
     conditionQty: number;
+    ratioBase: string;
+    ratioQty: number;
     multiplication: boolean;
 }
 
@@ -40,7 +43,6 @@ export class CreateFlexiComboDto {
     maxRedemptionPerStore: number;
     name: string;
     platform: PlatformSinbad;
-    promoBudget: number;
     shortDescription: string;
     startDate: string;
     status: EStatus;
@@ -48,6 +50,11 @@ export class CreateFlexiComboDto {
     target: string;
     type: string;
     voucherCombine: boolean;
+    promoBudget: number;
+    promoAllocationType: PromoAllocation;
+    promoSlot: number;
+    isNewStore: boolean;
+    isActiveStore: boolean;
 
     constructor(data: CreateFlexiComboDto) {
         const {
@@ -70,6 +77,10 @@ export class CreateFlexiComboDto {
             target,
             type,
             voucherCombine,
+            promoSlot,
+            promoAllocationType,
+            isNewStore,
+            isActiveStore
         } = data;
 
         this.base = base;
@@ -83,7 +94,7 @@ export class CreateFlexiComboDto {
         this.maxRedemptionPerStore = maxRedemptionPerStore;
         this.name = name;
         this.platform = platform;
-        this.promoBudget = promoBudget;
+       
         this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         this.startDate = startDate;
         this.status = status;
@@ -91,6 +102,17 @@ export class CreateFlexiComboDto {
         this.target = target;
         this.type = type;
         this.voucherCombine = voucherCombine;
+        this.promoAllocationType = promoAllocationType;
+        this.isNewStore = isNewStore;
+        this.isActiveStore = isActiveStore;
+
+        if (this.promoAllocationType == 'none') {
+            this.promoBudget = null;
+            this.promoSlot = null;
+        } else {
+            this.promoBudget = promoBudget || null;
+            this.promoSlot = promoSlot || null;
+        }
     }
 }
 
@@ -114,6 +136,10 @@ export class PatchFlexiComboDto {
     target?: string;
     type?: string;
     voucherCombine?: boolean;
+    promoSlot?: number;
+    promoAllocationType?: string;
+    isActiveStore?: boolean;
+    isNewStore?: boolean;
 
     constructor(data: PatchFlexiComboDto) {
         const {
@@ -136,6 +162,10 @@ export class PatchFlexiComboDto {
             target,
             type,
             voucherCombine,
+            promoAllocationType,
+            promoSlot,
+            isNewStore,
+            isActiveStore
         } = data;
 
         if (typeof base !== 'undefined') {
@@ -186,6 +216,14 @@ export class PatchFlexiComboDto {
             this.promoBudget = promoBudget;
         }
 
+        if (typeof promoAllocationType !== 'undefined') {
+            this.promoAllocationType = promoAllocationType;
+        }
+
+        if (typeof promoSlot !== 'undefined') {
+            this.promoSlot = promoSlot;
+        }
+
         if (typeof shortDescription !== 'undefined') {
             this.shortDescription = (shortDescription && shortDescription.trim()) || null;
         }
@@ -213,6 +251,14 @@ export class PatchFlexiComboDto {
         if (typeof voucherCombine !== 'undefined') {
             this.voucherCombine = voucherCombine;
         }
+
+        if (typeof isNewStore !== 'undefined') {
+            this.isNewStore = isNewStore;
+        }
+
+        if (typeof isActiveStore !== 'undefined') {
+            this.isActiveStore = isActiveStore;
+        }
     }
 }
 
@@ -230,6 +276,9 @@ export class ConditionDto {
     conditionQty: string;
     conditionValue: number;
     multiplication: boolean;
+    ratioBase: RatioBaseCondition;
+    ratioQty: number;
+    ratioValue: number;
 
     constructor(data: ConditionDto) {
         const {
@@ -246,6 +295,9 @@ export class ConditionDto {
             conditionQty,
             conditionValue,
             multiplication,
+            ratioBase,
+            ratioQty,
+            ratioValue
         } = data;
 
         this.id = id;
@@ -261,5 +313,8 @@ export class ConditionDto {
         this.conditionQty = conditionQty;
         this.conditionValue = conditionValue;
         this.multiplication = multiplication;
+        this.ratioBase = ratioBase;
+        this.ratioQty = ratioQty;
+        this.ratioValue = ratioValue;
     }
 }

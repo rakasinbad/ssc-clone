@@ -1,7 +1,5 @@
 <div class="pb-16">
-    <span class="mat-headline">
-        Condition & Benefit
-    </span>
+    <span class="mat-headline"> Condition & Benefit </span>
 </div>
 
 <ng-container *ngIf="(flexiCombo$ | async)?.promoConditions as conditions; else noConditions">
@@ -12,7 +10,13 @@
         fxLayoutGap="16px"
         *ngFor="let condition of conditions; index as idx; first as isFirst; last as isLast"
     >
-        <span class="box-title"> Tier {{ idx + 1 }} </span>
+        <ng-container *ngIf="condition?.multiplication === false">
+            <span class="box-title"> Condition & Benefit {{ idx + 1 }} </span>
+        </ng-container>
+
+        <ng-container *ngIf="condition?.multiplication === true">
+            <span class="box-title"> Condition & Benefit </span>
+        </ng-container>
 
         <div
             class="custom-field info-field"
@@ -20,9 +24,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label group-label" fxFlexAlign="center" fxFlex="10">
-                Condition
-            </div>
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10">Condition</div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100"></div>
         </div>
@@ -33,22 +35,22 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">
-                Base
-            </div>
+            <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100">
                 <ng-container *ngIf="conditionBase; else noConditionBase">
                     <mat-radio-group [value]="condition?.conditionBase">
-                        <mat-radio-button *ngFor="let row of conditionBase" [value]="row?.id">
+                        <mat-radio-button
+                            *ngFor="let row of conditionBase"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
                             {{ row?.label }}
                         </mat-radio-button>
                     </mat-radio-group>
                 </ng-container>
 
-                <ng-template #noConditionBase>
-                    -
-                </ng-template>
+                <ng-template #noConditionBase> - </ng-template>
             </div>
         </div>
 
@@ -60,9 +62,7 @@
         >
             <div class="label" fxFlexAlign="center" fxFlex="10">
                 <ng-container [ngSwitch]="condition?.conditionBase">
-                    <ng-container *ngSwitchCase="eConditionBase.QTY">
-                        Qty >=
-                    </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.QTY"> Qty >= </ng-container>
                     <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
                         Order Value >=
                     </ng-container>
@@ -73,54 +73,124 @@
             <div class="info" fxFlex="100">
                 <ng-container [ngSwitch]="condition?.conditionBase">
                     <ng-container *ngSwitchCase="eConditionBase.QTY">
-                        {{ condition?.conditionQty }}
+                        <p thousandSeparator=".">
+                            {{ condition?.conditionQty | number }}
+                        </p>
                     </ng-container>
                     <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
-                        {{ condition?.conditionValue }}
+                        <p thousandSeparator=".">
+                            Rp {{ (condition?.conditionValue | number) }}
+                        </p>
                     </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>
                 </ng-container>
             </div>
         </div>
 
+        <ng-container *ngIf="condition?.multiplication === true">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label group-label" fxFlexAlign="center" fxFlex="10">
+                    Buy Ratio Condition
+                </div>
+
+                <div class="info" fxFlexAlign="center" fxFlex="100"></div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+
+                <div class="info" fxFlexAlign="center" fxFlex="100">
+                    <ng-container *ngIf="ratioConditionBase; else noRatioBase">
+                        <mat-radio-group [value]="condition?.ratioBase">
+                            <mat-radio-button
+                                *ngFor="let row of ratioConditionBase"
+                                [value]="row?.id"
+                                [disabled]="true"
+                            >
+                                {{ row?.label }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+
+                    <ng-template #noRatioBase> - </ng-template>
+                </div>
+            </div>
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">
+                    <ng-container [ngSwitch]="condition?.ratioBase">
+                        <ng-container *ngSwitchCase="eBuyRatioCondition.QTY"> Qty >= </ng-container>
+                        <ng-container *ngSwitchCase="eBuyRatioCondition.ORDER_VALUE">
+                            Order Value >=
+                        </ng-container>
+                        <ng-container *ngSwitchDefault>-</ng-container>
+                    </ng-container>
+                </div>
+
+                <div class="info" fxFlex="100">
+                    <ng-container [ngSwitch]="condition?.ratioBase">
+                        <ng-container *ngSwitchCase="eBuyRatioCondition.QTY">
+                            {{ condition?.ratioQty }}
+                        </ng-container>
+                        <ng-container *ngSwitchCase="eBuyRatioCondition.ORDER_VALUE">
+                            {{ condition?.ratioValue }}
+                        </ng-container>
+                        <ng-container *ngSwitchDefault>-</ng-container>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+
         <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label group-label" fxFlexAlign="center" fxFlex="10">
-                Benefit
-            </div>
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10">Benefit</div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100"></div>
         </div>
 
-        <div
+        <ng-container *ngIf="condition?.multiplication === false">
+            <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">
-                Benefit Type
-            </div>
+            <div class="label" fxFlexAlign="center" fxFlex="10">Benefit Type</div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100">
                 <ng-container *ngIf="benefitType; else noBenefitType">
                     <mat-radio-group [value]="condition?.benefitType">
-                        <mat-radio-button *ngFor="let row of benefitType" [value]="row?.id">
+                        <mat-radio-button
+                            *ngFor="let row of benefitType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
                             {{ row?.label }}
                         </mat-radio-button>
                     </mat-radio-group>
                 </ng-container>
 
-                <ng-template #noBenefitType>
-                    -
-                </ng-template>
+                <ng-template #noBenefitType> - </ng-template>
             </div>
         </div>
-
         <ng-container [ngSwitch]="condition?.benefitType">
             <!-- Benefit Type Qty -->
             <ng-container *ngSwitchCase="eBenefitType.QTY">
@@ -130,9 +200,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">
-                        Bonus SKU
-                    </div>
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
 
                     <div class="info" fxFlex="100">
                         {{ condition?.catalogue?.name || '-' }}
@@ -145,11 +213,13 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                     *ngIf="isFirst"
+                    style="margin-top: 10px;"
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10"></div>
 
-                    <div class="info" fxFlex="100">
+                    <div class="info" fxFlex="100" >
                         <mat-checkbox
+                            [disabled]="true"
                             [checked]="
                                 isApplySameSku(
                                     (flexiCombo$ | async)?.promoCatalogues,
@@ -168,16 +238,14 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">
-                        Bonus Qty
-                    </div>
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
 
                     <div class="info" fxFlex="100">
                         {{ condition?.benefitBonusQty || '-' }}
                     </div>
                 </div>
 
-                <div
+                <!-- <div
                     class="custom-field info-field"
                     fxLayout="row"
                     fxLayoutAlign="start center"
@@ -191,7 +259,7 @@
                             Multiplication Only
                         </mat-checkbox>
                     </div>
-                </div>
+                </div> -->
             </ng-container>
             <!-- ./ Benefit Type Qty -->
 
@@ -203,12 +271,12 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">
-                        Rebate
-                    </div>
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
 
                     <div class="info" fxFlex="100">
-                        {{ condition?.benefitRebate || '-' }}
+                        <p thousandSeparator=".">
+                            {{ (condition?.benefitRebate | number )|| '-' }}
+                        </p>
                     </div>
                 </div>
             </ng-container>
@@ -222,9 +290,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">
-                        % Discount
-                    </div>
+                    <div class="label" fxFlexAlign="center" fxFlex="10">% Discount</div>
 
                     <div class="info" fxFlex="100">
                         {{ condition?.benefitDiscount || '-' }}
@@ -237,9 +303,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">
-                        Max Rebate
-                    </div>
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Max Rebate</div>
 
                     <div class="info" fxFlex="100">
                         {{ condition?.benefitMaxRebate || '-' }}
@@ -250,9 +314,117 @@
 
             <ng-container *ngSwitchDefault>-</ng-container>
         </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="condition?.multiplication === true">
+            <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Benefit Type</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="benefitMultiType; else noBenefitTypeMulti">
+                    <mat-radio-group [value]="condition?.benefitType">
+                        <mat-radio-button
+                            *ngFor="let row of benefitMultiType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noBenefitTypeMulti> - </ng-template>
+            </div>
+        </div>
+        
+        <ng-container [ngSwitch]="condition?.benefitType">
+            <!-- Benefit Type Qty -->
+            <ng-container *ngSwitchCase="eBenefitMultiType.QTY">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.catalogue?.name || '-' }}
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                    *ngIf="isFirst"
+                    style="margin-top: 10px;"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+                    <div class="info" fxFlex="100" >
+                        <mat-checkbox
+                            [disabled]="true"
+                            [checked]="
+                                isApplySameSku(
+                                    (flexiCombo$ | async)?.promoCatalogues,
+                                    condition?.benefitCatalogueId
+                                )
+                            "
+                        >
+                            Apply Some SKU
+                        </mat-checkbox>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitBonusQty || '-' }}
+                    </div>
+                </div>
+
+            </ng-container>
+            <!-- ./ Benefit Type Qty -->
+
+            <!-- Benefit Type Amount -->
+            <ng-container *ngSwitchCase="eBenefitMultiType.AMOUNT">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
+
+                    <div class="info" fxFlex="100">
+                        <p thousandSeparator=".">
+                            {{ (condition?.benefitRebate | number )|| '-' }}
+                        </p>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- ./ Benefit Type Amount -->
+
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
+    
+    </ng-container>
+
+        
     </div>
 </ng-container>
 
-<ng-template #noConditions>
-    Not found Condition & Benefit Settings.
-</ng-template>
+<ng-template #noConditions> Not found Condition & Benefit Settings. </ng-template>

@@ -38,10 +38,10 @@ import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-d
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
 import { Brand } from 'app/shared/models/brand.model';
 import { CalculationMechanism } from 'app/shared/models/calculation-mechanism.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import {
     EStatus,
     IBreadcrumbs,
@@ -53,6 +53,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
@@ -88,10 +89,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     calculationMechanism = this._$helperService.calculationMechanism();
     conditionBase = this._$helperService.conditionBase();
     eConditionBase = ConditionBase;
+    ratioBase = this._$helperService.buyRatioCondition();
+    eBuyRatioCondition = RatioBaseCondition;
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
+    benefitMultiType = this._$helperService.benefitMultiType();
+    eBenefitMultiType = BenefitMultiType;
     segmentBase = this._$helperService.segmentationBase();
     eSegmentBase = SegmentationBase;
+    promoAllocation = this._$helperService.promoAllocation();
+    ePromoAllocation = PromoAllocation;
 
     minStartDate: Date = new Date();
     maxStartDate: Date = null;
@@ -148,6 +155,20 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
+    public listPromoAlloc: any = [
+        { label: 'None', value: 'none', checked: true },
+        { label: 'Promo Budget', value: 'promo_budget', checked: false },
+        { label: 'Promo Slot', value: 'promo_slot', checked: false },
+    ];
+    public selectPromo: string;
+    public selectNewStore = false;
+    public selectActiveOutlet = false;
+    public maxRedemStat = false;
+    public multiStat = false;
+    public ratioBaseEdit: string;
+    public firstBuyCheck = false;
+    public disableMulti = false;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -173,7 +194,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
+        
         this._initPage();
     }
 
@@ -244,7 +265,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         let lastIdx = idx;
         let prevLastIdx = idx;
-
+        
         this.conditions.removeAt(idx);
 
         const conditions = this.conditions.getRawValue();
@@ -255,19 +276,36 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             prevLastIdx = nextIdx;
         }
 
-        if (idx === prevLastIdx) {
-            // Enable Last Tier
-            this.conditionsCtrl[lastIdx].enable({
+        if (this.pageType === 'new' && this.multiStat == true) {
+            this.conditionsCtrl[0].enable({
                 onlySelf: true,
             });
+
+            this.conditions.removeAt(1);
+
+        } else if (this.pageType === 'edit' && this.multiStat == true) {
+            this.conditionsCtrl[0].enable({
+                onlySelf: true,
+            });
+
+            this.conditions.removeAt(1);
+
         } else {
-            if (lastIdx >= 1) {
-                while (idx <= lastIdx) {
-                    this._newTierValidation(idx);
-                    idx++;
+            if (idx === prevLastIdx) {
+                // Enable Last Tier
+                this.conditionsCtrl[lastIdx].enable({
+                    onlySelf: true,
+                });
+            } else {
+                if (lastIdx >= 1) {
+                    while (idx <= lastIdx) {
+                        this._newTierValidation(idx);
+                        idx++;
+                    }
                 }
             }
         }
+        
     }
 
     getApplyBonusSku(idx: number): Selection {
@@ -327,12 +365,33 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     /**
      *
+     * Get buy ratio condition base value (Tier)
+     * @param {number} idx
+     * @returns {string}
+     * @memberof FlexiComboFormComponent
+     */
+    getBuyRatioConditionBase(idx: number): string {
+        return this.form.get(['conditions', idx, 'buyRatioCondition']).value;
+    }
+
+    /**
+     *
      * Get segmentation base value
      * @returns {string}
      * @memberof FlexiComboFormComponent
      */
     getSegmentationBase(): string {
         return this.form.get('segmentationBase').value;
+    }
+
+     /**
+     *
+     * Get segmentation base value
+     * @returns {string}
+     * @memberof FlexiComboFormComponent
+     */
+    getPromoAllocation(): string {
+        return this.form.get('promoAllocationType').value;
     }
 
     /**
@@ -456,7 +515,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (triggerBase === TriggerBase.SKU) {
             // Get Chosen SKU Field value
             const chosenSku = this.form.get('chosenSku').value;
-
             // Check chosen sku item is equal 1
             if (chosenSku && chosenSku.length === 1) {
                 return true;
@@ -473,6 +531,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     isBenefitType(benefitType: BenefitType, idx: number): boolean {
+        const benefitTypeCtrl = this.conditionsCtrl[idx].get('benefitType');
+
+        if (!benefitTypeCtrl) {
+            return false;
+        }
+
+        const benefitTypeVal = benefitTypeCtrl.value;
+
+        if (benefitTypeVal === benefitType) {
+            return true;
+        }
+
+        return false;
+    }
+
+    isBenefitMultiType(benefitType: BenefitMultiType, idx: number): boolean {
         const benefitTypeCtrl = this.conditionsCtrl[idx].get('benefitType');
 
         if (!benefitTypeCtrl) {
@@ -626,12 +700,41 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!conditionBaseVal || typeof idx !== 'number') {
             return;
         }
-
+        
+        // const conditionBaseCtrl = this.conditionsCtrl[idx].get('conditionBase');
         // Handle validation for Qty Field (Condition Base - Qty) (FormControl = conditionQty)
         this._qtyValueValidationByConditionBase(conditionBaseVal, idx);
 
         // Handle validation for Order Value Field (Condition Base - Order Value) (FormControl = conditionValue)
         this._orderValueValidationByConditionBase(conditionBaseVal, idx);
+
+        //for handle validation benefit Rp / Amount if conditions change
+        const conditionType = this.conditionsCtrl[idx].get('conditionBase').value;
+        const benefitTypeVal = this.conditionsCtrl[idx].get('benefitType').value;
+        this._benefitRebateValidationByBenefitType(benefitTypeVal, idx);
+        
+    }
+
+    /**
+     *
+     * Handle change event for Buy Ratio Condition Base Field
+     * @param {MatRadioChange} ev
+     * @param {number} idx
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    onChangeRatioConditionBase(ev: MatRadioChange, idx: number): void {
+        const ratioBaseVal = ev.value;
+
+        if (!ratioBaseVal || typeof idx !== 'number') {
+            return;
+        }
+
+        // Handle validation for Ratio Buy Qty Field (Condition Base - Qty) (FormControl = ratioQty)
+        this._qtyValueValidationByRatioConditionBase(ratioBaseVal, idx);
+
+        // Handle validation for Ratio Buy Order Value Field (Condition Base - Order Value) (FormControl = ratioValue)
+        this._orderValueValidationByRatioConditionBase(ratioBaseVal, idx);
     }
 
     /**
@@ -659,6 +762,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this._benefitMaxRebateValidationByBenefitType(benefitTypeVal, idx);
         }
 
+        return;
+    }
+
+     /**
+     *
+     * Handle change event for Buy Ratio Order Value Field
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    onChangeOrderValueRatio(idx: number): void {
+        const prevIdx = idx > 0 ? idx - 1 : 0;
         return;
     }
 
@@ -693,6 +807,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreGroup').clearValidators();
             this.form.get('chosenStoreChannel').clearValidators();
             this.form.get('chosenStoreCluster').clearValidators();
+            this.selectNewStore = false;
+            this.selectActiveOutlet = false;
+            this.form.get('isNewStore').setValue(false);
+            this.form.get('isActiveStore').setValue(false);
         } else if (ev.value === SegmentationBase.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
 
@@ -1060,6 +1178,117 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
     }
 
+    /**
+     *
+     * Handle change event for General Information Promo Allocation
+     * @param {MatRadioChange} ev
+     * @param {number} idx
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectPromoAlloc(ev: MatRadioChange): void {
+        this.selectPromo = ev.value;
+        this.form.get('promoAllocationType').setValidators([
+            RxwebValidators.required({
+                message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            }),
+            RxwebValidators.choice({
+                minLength: 1,
+                message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            }),
+        ]);
+    }
+
+     /**
+     *
+     * Handle change event for Segmentatio
+     * @param {mat-checkbox} ev
+     * @param {string and type} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    checkSegmentation(ev, type): void {
+        if (type === 'new_store' && ev.checked === true) {
+            this.selectActiveOutlet = true;
+        } else if (type === 'active_outlet' && ev.checked === true) {
+            this.selectNewStore = true;
+        } else {
+            this.selectNewStore = false;
+            this.selectActiveOutlet = false;
+        }
+    }
+
+    
+    /**
+     *
+     * Handle change event for First Buy
+     * @param {mat-checkbox} ev
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    selectFirstBuy(event): void {
+        if (event.checked === true) {
+            this.maxRedemStat = true;
+            this.firstBuyCheck = true;
+            this.form.get('maxRedemption').setValue(1);
+        } else {
+            this.maxRedemStat = false;
+            this.firstBuyCheck = false;
+            if (this.pageType === 'new') {
+                this.form.get('maxRedemption').setValue('');
+            }
+        }
+    }
+
+    /**
+     *
+     * Handle change event for Multiplication
+     * @param {mat-checkbox} ev
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectMultiplication(event): void {
+        if (event.checked === true) {
+            this.multiStat = true;
+            if (this.pageType === 'new') {
+                if (this.conditionsCtrl.length > 1) {
+                    for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
+                        this.deleteCondition(i);
+                    }
+                }
+            } else if (this.pageType === 'edit') {
+                if (this.conditionsCtrl.length > 1) {
+                    for (let i = 0; i <= this.conditionsCtrl.length; ++i ) {
+                        this.deleteCondition(i);
+                    }
+                } else {
+                    if (this.ratioBaseEdit == null) {
+                        this.conditions.at(0).get('ratioBase').setValue('qty');
+                        this._qtyValueValidationByRatioConditionBaseEdit('qty', 0);
+                    } 
+                }
+            }
+        } else {
+            this.multiStat = false;
+            if (this.pageType === 'new') {
+            } else if (this.pageType === 'edit') {
+                if (this.ratioBaseEdit == null) {
+                    this.conditions.at(0).get('ratioBase').setValue('null');
+                    this._qtyValueValidationByRatioConditionBaseEdit(null, 0);
+                    this._orderValueValidationByRatioConditionBaseEdit(null, 0);
+                } else {
+                    this._qtyValueValidationByRatioConditionBaseEdit(null, 0);
+                    this._orderValueValidationByRatioConditionBaseEdit(null, 0);
+                }
+            }
+        }
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
@@ -1204,6 +1433,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             }
                         ),
                     }),
+                    
                 ]);
             } else {
                 conditionValueCtrl.setValidators([
@@ -1319,6 +1549,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                }),
+
                 this._customValidationDiscountLimit(idx, conditionBaseCtrl.value),
             ]);
         } else {
@@ -1351,6 +1586,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
                 // NOTE E1AM-105
                 // this._customValidationMaxRebateLimit(idx, conditionBaseCtrl.value),
             ]);
@@ -1383,6 +1622,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     acceptValue: NumericValueType.PositiveNumber,
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
                 }),
                 this._customValidationRebateLimit(idx, conditionBaseCtrl.value),
             ]);
@@ -1535,6 +1778,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'
+                })
             ]);
         } else {
             qtyValueCtrl.clearValidators();
@@ -1546,6 +1793,67 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
             //     }),
             // ]);
+        }
+
+        qtyValueCtrl.updateValueAndValidity();
+    }
+
+    
+    /**
+     *
+     * Handle validation for Qty Field by Buy Ratio Condition Base (FormControl = ratioQty)
+     * @private
+     * @param {RatioBaseCondition} conditionBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _qtyValueValidationByRatioConditionBase(ratioBase: RatioBaseCondition, idx: number): void {
+        const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
+        if (ratioBase === RatioBaseCondition.QTY) {
+            qtyValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.digit({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'})
+            ]);
+        } else {
+            qtyValueCtrl.clearValidators();
+        }
+
+        qtyValueCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Qty Field by Buy Ratio Condition Base (FormControl = ratioQty)
+     * @private
+     * @param {RatioBaseCondition} conditionBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _qtyValueValidationByRatioConditionBaseEdit(ratioBase, idx: number): void {
+        const qtyValueCtrl = this.conditionsCtrl[idx].get('ratioQty');
+        if (ratioBase === RatioBaseCondition.QTY) {
+            qtyValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.digit({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'})
+            ]);
+        } else if (ratioBase ==  null) {
+            qtyValueCtrl.clearValidators();
+        } else {
+            qtyValueCtrl.clearValidators();
         }
 
         qtyValueCtrl.updateValueAndValidity();
@@ -1572,7 +1880,79 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
             ]);
+        } else {
+            orderValueCtrl.clearValidators();
+        }
+
+        orderValueCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Order Value Field by Ratio Condition Base (FormControl = ratioValue) 
+     * @private
+     * @param {RatioConditionBase} ratioBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _orderValueValidationByRatioConditionBase(ratioBase: RatioBaseCondition, idx: number): void {
+        const orderValueCtrl = this.conditionsCtrl[idx].get('ratioValue');
+
+        if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
+            orderValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
+            ]);
+        } else {
+            orderValueCtrl.clearValidators();
+        }
+
+        orderValueCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Order Value Field by Ratio Condition Base (FormControl = ratioValue) 
+     * @private
+     * @param {RatioConditionBase} ratioBase
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _orderValueValidationByRatioConditionBaseEdit(ratioBase, idx: number): void {
+        const orderValueCtrl = this.conditionsCtrl[idx].get('ratioValue');
+
+        if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
+            orderValueCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
+            ]);
+        } else if (ratioBase == null) {
+            orderValueCtrl.clearValidators();
         } else {
             orderValueCtrl.clearValidators();
         }
@@ -1646,6 +2026,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                 }),
                 minNumberValidator,
+                RxwebValidators.maxNumber({
+                    value:99999999,
+                    message: 'Max input is 8 digit'
+                })
             ]);
         } else {
             benefitBonusQtyCtrl.clearValidators();
@@ -1715,6 +2099,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     allowDecimal: true,
                     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                 }),
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
             ]);
         } else {
             benefitMaxRebateCtrl.clearValidators();
@@ -1733,10 +2121,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      */
     private _benefitRebateValidationByBenefitType(benefitType: BenefitType, idx: number): void {
         const benefitRebateCtrl = this.conditionsCtrl[idx].get('benefitRebate');
-
         if (benefitType === BenefitType.AMOUNT) {
             const conditionBaseVal = this.conditionsCtrl[idx].get('conditionBase').value;
-
             if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
                 const conditionValue = this.conditionsCtrl[idx].get('conditionValue').value;
 
@@ -1759,8 +2145,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             }
                         ),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ]);
-            } else {
+            } else if (conditionBaseVal !== ConditionBase.ORDER_VALUE) {
                 benefitRebateCtrl.setValidators([
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -1770,6 +2160,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ]);
             }
         } else {
@@ -1807,16 +2201,27 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:99999999,
+                        message: 'Max input is 8 digit'
+                    })
                 ],
             ],
             conditionValue: [
                 null,
                 [
+                    // RxwebValidators.digit({
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    // }),
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             benefitType: [
@@ -1841,6 +2246,71 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: false,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'min_number',
+                            { minValue: 1 }
+                        ),
+                    }),
+                    RxwebValidators.maxNumber({
+                        value:99999999,
+                        message: 'Max input is 8 digit'
+                    })
+                ],
+            ],
+            benefitRebate: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
+                ],
+            ],
+            benefitDiscount: null,
+            benefitMaxRebate: null,
+            multiplication: false,
+            applySameSku: false,
+            ratioBase: [
+                (condition && condition.ratioBase) || ConditionBase.QTY || ConditionBase.ORDER_VALUE || null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            ratioValue: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
+                ],
+            ],
+            ratioQty: [
+                null,
+                [
+                    // RxwebValidators.required({
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    // }),
                     RxwebValidators.digit({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
@@ -1852,22 +2322,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                             { minValue: 1 }
                         ),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:99999999,
+                        message: 'Max input is 8 digit'
+                    })
                 ],
             ],
-            benefitRebate: [
-                null,
-                [
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                ],
-            ],
-            benefitDiscount: null,
-            benefitMaxRebate: null,
-            multiplication: false,
-            applySameSku: false,
         });
     }
 
@@ -2044,6 +2504,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         },
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:20,
+                        message: 'Max input is 20 character'
+                    })
                     // RxwebValidators.alphaNumeric({
                     //     allowWhiteSpace: false,
                     //     message: this._$errorMessage.getErrorMessageNonState(
@@ -2087,6 +2551,18 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     RxwebValidators.digit({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
+                ],
+            ],
+            promoAllocationType: [
+                PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
                 ],
             ],
             promoBudget: [
@@ -2097,7 +2573,30 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowDecimal: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
+            ],
+            promoSlot: [
+                null,
+                [
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
+                ],
+                // [
+                //     RxwebValidators.numeric({
+                //         acceptValue: NumericValueType.PositiveNumber,
+                //         allowDecimal: true,
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                //     }),
+                // ],
             ],
             startDate: [
                 { value: null, disabled: true },
@@ -2172,10 +2671,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStoreGroup: null,
             chosenStoreChannel: null,
             chosenStoreCluster: null,
+            isNewStore: false,
+            isActiveStore: false
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
-
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
@@ -2220,6 +2720,41 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const chosenStoreGroupCtrl = this.form.get('chosenStoreGroup');
         const chosenStoreChannelCtrl = this.form.get('chosenStoreChannel');
         const chosenStoreClusterCtrl = this.form.get('chosenStoreCluster');
+        const activeStoreCtrl = this.form.get('isActiveStore');
+        const newStoreCtrl = this.form.get('isNewStore');
+        const promoAllocationTypeCtrl = this.form.get('promoAllocationType');
+        const promoSlotCtrl = this.form.get('promoSlot');
+        
+        //  Handle Promo Allocation Type
+        if (row.promoAllocationType) {
+            promoAllocationTypeCtrl.setValue(row.promoAllocationType);
+            this.selectPromo = row.promoAllocationType;
+        }
+        
+        //  Handle Promo Slot
+        if (row.promoSlot) {
+            promoSlotCtrl.setValue(row.promoSlot);
+        }
+
+        // Handle Active Store
+        if (row.isActiveStore) {
+            activeStoreCtrl.setValue (row.isActiveStore);
+            if (row.isActiveStore == true) {
+                this.selectNewStore = true;
+            } else {
+                this.selectNewStore = false;
+            }
+        }
+
+        // Handle New Store
+        if (row.isNewStore) {
+            newStoreCtrl.setValue (row.isNewStore);
+            if (row.isNewStore === true) {
+                this.selectActiveOutlet = true;
+            } else {
+                this.selectActiveOutlet = false;
+            }
+        }
 
         // Handle Promo Seller ID
         if (row.externalId) {
@@ -2244,6 +2779,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle Promo Budget
         if (row.promoBudget) {
             promoBudgetCtrl.setValue(row.promoBudget);
+           
+
+            promoBudgetCtrl.setValidators([
+                RxwebValidators.maxNumber({
+                    value:999999999999,
+                    message: 'Max input is 12 digit'
+                })
+            ]);
+            // promoBudgetCtrl.clearValidators();
+            promoBudgetCtrl.updateValueAndValidity();
         }
 
         // Handle Start Date
@@ -2269,6 +2814,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Handle First Buy
         if (row.firstBuy) {
             firstBuyCtrl.setValue(row.firstBuy);
+            this.firstBuyCheck = row.firstBuy;
         }
 
         // Handle Trigger Base
@@ -2357,12 +2903,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         benefitRebate: item.benefitRebate,
                         benefitDiscount: item.benefitDiscount,
                         benefitMaxRebate: item.benefitMaxRebate,
+                        ratioBase: item.ratioBase,
+                        ratioQty: Number(item.ratioQty),
+                        ratioValue: item.ratioValue,
                     });
                 }),
                 ['id'],
                 ['asc']
             );
-
+                if (newPromoConditions.length > 1) {
+                    this.disableMulti = true;
+                }
             this._setEditConditionForm(row, newPromoConditions);
         }
 
@@ -2595,7 +3146,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 // Handle add new FormControl for setValue index item 1
                 this.conditions.push(this._createConditions());
             }
+            
+            this.multiStat = item.multiplication;
 
+            if (this.firstBuyCheck == true) {
+                this.maxRedemStat = true;
+            }
             // if (idx !== limitIdx) {
             //     // Disable not last tier
             //     this.conditionsCtrl[idx].disable({
@@ -2638,6 +3194,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (item.conditionBase === ConditionBase.QTY) {
                 // Handle Qty Field
                 this.conditions.at(idx).get('conditionQty').setValue(item.conditionQty);
+
             } else if (item.conditionBase === ConditionBase.ORDER_VALUE) {
                 // Handle Order Value Field
                 this.conditions.at(idx).get('conditionValue').setValue(item.conditionValue);
@@ -2663,6 +3220,19 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 this.conditions.at(idx).get('benefitMaxRebate').setValue(item.benefitMaxRebate);
             }
 
+            if (item.ratioBase === RatioBaseCondition.QTY) {
+                this.conditions.at(idx).get('ratioBase').setValue(item.ratioBase);
+                // Handle Ratio Qty 
+                this.conditions.at(idx).get('ratioQty').setValue(item.ratioQty);
+
+            } else if (item.ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                this.conditions.at(idx).get('ratioBase').setValue(item.ratioBase);
+                // Handle Ratio Value
+                this.conditions.at(idx).get('ratioValue').setValue(item.ratioValue);
+            } 
+
+            this.ratioBaseEdit = item.ratioBase;
+
             // Handle Qty Field Validation
             this._qtyValueValidationByConditionBase(item.conditionBase, idx);
 
@@ -2683,6 +3253,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             // Handle Benefit Max Rebate Field Validation
             this._benefitMaxRebateValidationByBenefitType(item.benefitType, idx);
+
+            // Handle Ratio Buy Qty Field Validation
+            this._qtyValueValidationByRatioConditionBase(item.ratioBase, idx);
+
+             // Handle Ratio Buy Order Value Field Validation
+            this._orderValueValidationByRatioConditionBase(item.ratioBase, idx);
+
         }
     }
 
@@ -2716,6 +3293,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             promoName,
             segmentationBase,
             startDate,
+            promoAllocationType,
+            promoSlot,
+            isNewStore,
+            isActiveStore
         } = body;
 
         const newChosenSku =
@@ -2780,6 +3361,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                           benefitDiscount,
                           benefitMaxRebate,
                           id,
+                          ratioBase,
+                          ratioQty,
+                          ratioValue,
                       } = condition;
 
                       let conditionObject = {};
@@ -2796,14 +3380,29 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
                       const sameObj = {
                           conditionBase,
+                          ratioBase,
                           ...conditionObject,
                           benefitType,
-                          multiplication,
+                          multiplication: this.multiStat,
                       };
 
                       if (this.pageType === 'edit') {
                           sameObj['id'] = id;
                       }
+
+                      if (ratioBase === RatioBaseCondition.QTY) {
+                        sameObj['ratioValue'] = null;
+                        sameObj['ratioQty'] = ratioQty;
+                      } else if (ratioBase === RatioBaseCondition.ORDER_VALUE) {
+                        sameObj['ratioQty'] = null;
+                        sameObj['ratioValue'] = ratioValue;
+                      }
+                    
+                      if (this.multiStat == false) {
+                        sameObj['ratioBase'] = null;
+                        sameObj['ratioQty'] = null;
+                        sameObj['ratioValue'] = null;
+                    }
 
                       if (benefitType === BenefitType.QTY) {
                           return {
@@ -2823,6 +3422,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                               benefitMaxRebate,
                           };
                       }
+
 
                       return condition;
                   })
@@ -2856,6 +3456,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 target: segmentationBase,
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
+                promoAllocationType,
+                promoSlot,
+                isNewStore,
+                isActiveStore
             };
 
             if (base === TriggerBase.SKU) {
@@ -2878,7 +3482,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             // console.log('[NEW] OnSubmit 1', body);
             // console.log('[NEW] OnSubmit 2', payload);
-
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
@@ -2903,6 +3506,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 target: segmentationBase,
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
+                promoAllocationType,
+                promoSlot,
+                isNewStore,
+                isActiveStore
             };
 
             if (!imgSuggestion) {
@@ -2934,41 +3541,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (Object.keys(payload.dataTarget).length < 1) {
                 payload.dataTarget = null;
             }
-
-            // console.log('[EDIT] OnSubmit 1', body);
-            // console.log('[EDIT] OnSubmit 2', payload);
-
-            // const payload = {
-            //     urbanId: urban.id,
-            //     warehouseValueId: body.whValue ? body.whValue : null,
-            //     warehouseTemperatureId: body.temperature ? body.temperature : null,
-            //     code: body.whId,
-            //     name: body.whName,
-            //     leadTime: body.leadTime,
-            //     longitude: body.lng,
-            //     latitude: body.lat,
-            //     noteAddress: body.notes,
-            //     address: body.address,
-            //     invoiceGroup: body.invoices,
-            //     // deletedInvoiceGroup: this._deletedInvoiceGroups,
-            //     status: 'active',
-            // };
-
-            // if (!body.longitude) {
-            //     delete payload.longitude;
-            // }
-
-            // if (!body.latitude) {
-            //     delete payload.latitude;
-            // }
-
-            // if (!body.address) {
-            //     delete payload.address;
-            // }
-
-            // if (!body.notes) {
-            //     delete payload.noteAddress;
-            // }
 
             if (id && Object.keys(payload).length > 0) {
                 this.store.dispatch(
@@ -3144,7 +3716,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             const prevBenefitRebateVal = +prevBenefitRebateCtrl.value;
 
             let limitNumber = prevBenefitRebateVal;
-
             if (conditionBase === ConditionBase.ORDER_VALUE) {
                 const conditionValueCtrl = this.conditionsCtrl[idx].get('conditionValue');
                 const conditionValueVal = +conditionValueCtrl.value;

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
+import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { Observable } from 'rxjs';
 
 import { FlexiCombo, IPromoCondition, IPromoCatalogue } from '../../../models';
@@ -26,6 +26,12 @@ export class FlexiComboDetailCnbComponent implements OnInit {
     eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
+
+    benefitMultiType = this._$helperService.benefitMultiType();
+    eBenefitMultiType = BenefitMultiType;
+
+    ratioConditionBase = this._$helperService.buyRatioCondition();
+    eBuyRatioCondition = RatioBaseCondition;
 
     constructor(
         private store: Store<fromFlexiCombos.FeatureState>,
@@ -76,8 +82,15 @@ export class FlexiComboDetailCnbComponent implements OnInit {
             return false;
         }
 
-        const idx = sources.findIndex((source) => source.id === benefitSku);
-
-        return idx !== -1;
+        if (sources.length == 1) {
+            const idx = sources.findIndex((source) => source.id === benefitSku);
+            if (sources[0]['catalogue'].id == benefitSku ) {
+                return true;
+            } else {
+                return false
+            }
+            
+        }
+        // return idx !== -1;
     }
 }
