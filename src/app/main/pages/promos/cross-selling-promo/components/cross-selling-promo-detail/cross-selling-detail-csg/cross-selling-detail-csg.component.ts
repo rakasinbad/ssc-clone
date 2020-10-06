@@ -31,6 +31,9 @@ export class CrossSellingDetailCsgComponent implements OnInit {
     public baseGroup2: string;
     public generalGroup1 = [];
     public generalGroup2 = [];
+    public choosenSku1: any;
+    public choosenSku2: any;
+    public benefits: any;
 
     constructor(
         private store: Store<fromCrossSellingPromoCombos.FeatureState>,
@@ -44,18 +47,16 @@ export class CrossSellingDetailCsgComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        let itemCondition;
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem).pipe(
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem)
+        .pipe(
             map((item) => {
-                // console.log('isi item csg->', item)
-                itemCondition = item.promoBenefit;
-                    // this.typePromoAlloc = item.promoAllocationType;
                 return item;
             })
         );
         this.crossSellingPromo$.subscribe(val => {
-            this.conditionGroupSelling = itemCondition.promoConditionCatalogues;
-            for(let condCat of this.conditionGroupSelling) {
+            this.conditionGroupSelling.push(val);
+            this.benefits = this.conditionGroupSelling[0];
+            for (let condCat of this.benefits.promoBenefit.promoConditionCatalogues) {
                 if (condCat.crossSellingGroup == 'Group 1'){
                     this.generalGroup1.push(condCat);
                 } else {
@@ -67,7 +68,8 @@ export class CrossSellingDetailCsgComponent implements OnInit {
 
             this.baseGroup1 = this.generalGroup1[0].conditionBase;
             this.baseGroup2 = this.generalGroup2[0].conditionBase;
-        })
+        });
+
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
@@ -98,7 +100,6 @@ export class CrossSellingDetailCsgComponent implements OnInit {
     getSkus(value: IPromoCatalogue[]): string {
         if (value && value.length > 0) {
             const sku = value.map((v) => v.catalogue.name);
-
             return sku.length > 0 ? sku.join(', ') : '-';
         }
 

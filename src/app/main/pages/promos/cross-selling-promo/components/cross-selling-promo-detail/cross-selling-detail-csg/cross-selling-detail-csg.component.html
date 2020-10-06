@@ -46,7 +46,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
 
         <div class="info" fxFlex="100">
-            {{conditionGroupSelling[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
+            {{generalGroup1[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
         </div>
     </div>
 
@@ -82,10 +82,10 @@
 
         <div class="info" fxFlex="90">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base">
+                <ng-container [ngSwitch]="'sku'">
                     <ng-container *ngSwitchCase="eTriggerBase.SKU">
                         <span>
-                            {{ getSkus((crossSellingPromo$ | async)?.promoCatalogues) || '-' }}
+                            {{ getSkus(generalGroup1) || '-' }}
                         </span>
                     </ng-container>
                     <ng-container *ngSwitchCase="eTriggerBase.BRAND">
@@ -95,11 +95,7 @@
                     </ng-container>
                     <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
                         <span>
-                            {{
-                                getInvoiceGroups(
-                                    (crossSellingPromo$ | async)?.promoInvoiceGroups
-                                ) || '-'
-                            }}
+                            {{getInvoiceGroups((crossSellingPromo$ | async)?.promoInvoiceGroups) || '-'}}
                         </span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>
@@ -122,7 +118,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
 
         <div class="info" fxFlex="100">
-            {{conditionGroupSelling[0].crossSellingGroupRelation}} 
+            <!-- {{conditionGroupSelling[0].crossSellingGroupRelation}}  -->
         </div>
     </div>  
 
@@ -209,7 +205,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
 
         <div class="info" fxFlex="100">
-            {{conditionGroupSelling[1].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
+            {{generalGroup2[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
         </div>
     </div>
 
@@ -233,7 +229,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
 
         <div class="info" fxFlex="100">
-            {{conditionGroupSelling[1].crossSellingGroupRelation}}  
+            <!-- {{conditionGroupSelling[1].crossSellingGroupRelation}}   -->
         </div>
     </div>  
 
@@ -258,10 +254,10 @@
 
         <div class="info" fxFlex="90">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base">
+                <ng-container [ngSwitch]="'sku'">
                     <ng-container *ngSwitchCase="eTriggerBase.SKU">
                         <span>
-                            {{ getSkus((crossSellingPromo$ | async)?.promoCatalogues) || '-' }}
+                            {{ getSkus(generalGroup2) || '-' }}
                         </span>
                     </ng-container>
                     <ng-container *ngSwitchCase="eTriggerBase.BRAND">
@@ -271,11 +267,7 @@
                     </ng-container>
                     <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
                         <span>
-                            {{
-                                getInvoiceGroups(
-                                    (crossSellingPromo$ | async)?.promoInvoiceGroups
-                                ) || '-'
-                            }}
+                            {{getInvoiceGroups((crossSellingPromo$ | async)?.promoInvoiceGroups) || '-'}}
                         </span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>

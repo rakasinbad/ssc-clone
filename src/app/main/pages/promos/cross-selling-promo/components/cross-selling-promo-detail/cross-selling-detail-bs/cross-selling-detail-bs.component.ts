@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { CrossSelling, IPromoCatalogue } from '../../../models';
 import * as fromCrossSellingPromos from '../../../store/reducers';
@@ -20,11 +20,10 @@ export class CrossSellingDetailBsComponent implements OnInit {
     crossSellingPromo$: Observable<CrossSelling>;
     isLoading$: Observable<boolean>;
 
-    // conditionBase = this._$helperService.conditionBase();
-    // eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
-
+    public benefitSetting = [];
+    public benefitSubs: Subscription;
     constructor(
         private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService
@@ -38,25 +37,16 @@ export class CrossSellingDetailBsComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem).pipe(
-            map((item) => {
-                if (item) {
-                    // const promoConditions =
-                    //     item.promoConditions && item.promoConditions.length > 0
-                    //         ? _.orderBy(item.promoConditions, ['id'], ['asc'])
-                    //         : [];
-                    return {
-                        ...item,
-                        // promoConditions,
-                    };
-                }
-
-                return item;
-            })
-        );
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
+        this.benefitSubs = this.crossSellingPromo$.subscribe(val => {
+            this.benefitSetting.push(val.promoBenefit);
+        })
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
+    ngOnDestroy(): void {
+        this.benefitSubs.unsubscribe();
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------

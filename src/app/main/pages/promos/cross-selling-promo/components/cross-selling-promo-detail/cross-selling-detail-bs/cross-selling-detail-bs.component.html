@@ -34,7 +34,7 @@
             <div class="info" fxFlexAlign="center" fxFlex="100">
                 <ng-container *ngIf="benefitType; else noBenefitType">
                     <!-- <mat-radio-group [value]="condition?.benefitType"> -->
-                        <mat-radio-group [value]="'qty'">
+                        <mat-radio-group [value]="benefitSetting[0].benefitType">
                         <mat-radio-button
                             *ngFor="let row of benefitType"
                             [value]="row?.id"
@@ -49,8 +49,8 @@
                 <ng-template #noBenefitType> - </ng-template>
             </div>
         </div>
-        <!-- <ng-container [ngSwitch]="condition?.benefitType"> -->
-        <ng-container [ngSwitch]="'qty'">
+
+        <ng-container [ngSwitch]="benefitSetting[0].benefitType">
             <!-- Benefit Type Qty -->
             <ng-container *ngSwitchCase="eBenefitType.QTY">
                 <div
@@ -62,8 +62,7 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
 
                     <div class="info" fxFlex="100">
-                        Sunlight
-                        <!-- {{ condition?.catalogue?.name || '-' }} -->
+                        {{benefitSetting[0].catalogue.name}}
                     </div>
                 </div>
 
@@ -75,9 +74,8 @@
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
 
-                    <div class="info" fxFlex="100">
-                        1
-                        <!-- {{ condition?.benefitBonusQty || '-' }} -->
+                    <div class="info" fxFlex="100"> 
+                        {{benefitSetting[0].benefit_bonus_qty || '-'}}
                     </div>
                 </div>
             </ng-container>
@@ -95,8 +93,7 @@
 
                     <div class="info" fxFlex="100">
                         <p thousandSeparator=".">
-                            1
-                            <!-- {{ (condition?.benefitRebate | number )|| '-' }} -->
+                            {{(benefitSetting[0].benefitRebate | number) || '-'}}
                         </p>
                     </div>
                 </div>
@@ -114,8 +111,7 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">% Discount</div>
 
                     <div class="info" fxFlex="100">
-                        1
-                        <!-- {{ condition?.benefitDiscount || '-' }} -->
+                        {{(benefitSetting[0].benefitDiscount | number) || '-'}}
                     </div>
                 </div>
 
@@ -128,8 +124,7 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">Max Rebate</div>
 
                     <div class="info" fxFlex="100">
-                        1
-                        <!-- {{ condition?.benefitMaxRebate || '-' }} -->
+                        {{(benefitSetting[0].benefitMaxRebate | number) || '-'}}
                     </div>
                 </div>
             </ng-container>
