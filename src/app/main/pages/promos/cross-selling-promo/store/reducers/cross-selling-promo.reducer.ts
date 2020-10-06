@@ -31,8 +31,8 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 export const reducer = createReducer(
     initialState,
     on(
-        CrossSellingPromoActions.fetchCrossSellingPromoRequest,
-        CrossSellingPromoActions.fetchCrossSellingPromosRequest,
+        CrossSellingPromoActions.fetchCrossSellingPromoListRequest,
+        CrossSellingPromoActions.fetchCrossSellingPromoDetailRequest,
         CrossSellingPromoActions.createCrossSellingPromoRequest,
         // CrossSellingPromoActions.updateCrossSellingPromoRequest,
         CrossSellingPromoActions.changeStatusRequest,
@@ -43,8 +43,8 @@ export const reducer = createReducer(
         })
     ),
     on(
-        CrossSellingPromoActions.fetchCrossSellingPromoFailure,
-        CrossSellingPromoActions.fetchCrossSellingPromosFailure,
+        CrossSellingPromoActions.fetchCrossSellingPromoListFailure,
+        CrossSellingPromoActions.fetchCrossSellingPromoDetailFailure,
         CrossSellingPromoActions.createCrossSellingPromoFailure,
         // CrossSellingPromoActions.updateCrossSellingPromoFailure,
         CrossSellingPromoActions.changeStatusFailure,
@@ -54,15 +54,15 @@ export const reducer = createReducer(
             isLoading: false,
         })
     ),
-    on(CrossSellingPromoActions.fetchCrossSellingPromoRequest, (state, { payload }) => ({
+    on(CrossSellingPromoActions.fetchCrossSellingPromoDetailRequest, (state, { payload }) => ({
         ...state,
         isLoading: true,
         selectedId: payload.id,
     })),
-    on(CrossSellingPromoActions.fetchCrossSellingPromoSuccess, (state, { payload }) =>
+    on(CrossSellingPromoActions.fetchCrossSellingPromoDetailSuccess, (state, { payload }) =>
         adapter.addOne(payload, { ...state, isLoading: false })
     ),
-    on(CrossSellingPromoActions.fetchCrossSellingPromosSuccess, (state, { payload }) =>
+    on(CrossSellingPromoActions.fetchCrossSellingPromoListSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
     on(CrossSellingPromoActions.changeStatusSuccess, (state, { payload }) =>

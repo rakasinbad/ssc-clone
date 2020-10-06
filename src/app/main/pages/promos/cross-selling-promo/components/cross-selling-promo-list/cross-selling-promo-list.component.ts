@@ -87,12 +87,12 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
 
     dummyData = [];
 
-    // selection: SelectionModel<CrossSelling>;
+    selection: SelectionModel<CrossSelling>;
     eTriggerBase = TriggerBase;
 
     dataSource$: Observable<CrossSelling[]>;
     totalDataSource$: Observable<number>;
-    totalDataSource: number;
+    // totalDataSource: number;
     dataSource = new MatTableDataSource();
 
     isLoading$: Observable<boolean>;
@@ -170,8 +170,8 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
             return;
         }
 
-        // this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        // this.store.dispatch(CrossSellingPromoActions.confirmChangeStatus({ payload: item }));
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(CrossSellingPromoActions.confirmChangeStatus({ payload: item }));
     }
 
     onDelete(item): void {
@@ -179,8 +179,8 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
             return;
         }
 
-        // this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        // this.store.dispatch(CrossSellingPromoActions.confirmDeleteFlexiCombo({ payload: item }));
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(CrossSellingPromoActions.confirmDeleteCrossSellingPromo({ payload: item }));
     }
 
     onSelectedTab(ev: MatTabChangeEvent): void {
@@ -220,9 +220,9 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
             default:
                 this.paginator.pageSize = this.defaultPageSize;
 
-                // this.selection = new SelectionModel<any>(true, []);
-                this.totalDataSource = this.dummyData.length;
-                this.dataSource.data = ELEMENT_DATA;
+                this.selection = new SelectionModel<any>(true, []);
+                // this.totalDataSource = this.dummyData.length;
+                // this.dataSource.data = ELEMENT_DATA;
 
                 this.dataSource$ = this.store.select(CrossSellingPromoSelectors.selectAll);
                 this.totalDataSource$ = this.store.select(CrossSellingPromoSelectors.getTotalItem);
@@ -282,18 +282,18 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
                 }
             }
 
-            if (this.type == 1) {
-                const activeData = ELEMENT_DATA.filter((item) => item.status == 'active');
-                this.dataSource.data = activeData;
-            } else if (this.type == 2) {
-                const activeData = ELEMENT_DATA.filter((item) => item.status == 'inactive');
-                this.dataSource.data = activeData;
-            } else {
-                this.dataSource.data = ELEMENT_DATA;
-            }
+            // if (this.type == 1) {
+            //     const activeData = ELEMENT_DATA.filter((item) => item.status == 'active');
+            //     this.dataSource.data = activeData;
+            // } else if (this.type == 2) {
+            //     const activeData = ELEMENT_DATA.filter((item) => item.status == 'inactive');
+            //     this.dataSource.data = activeData;
+            // } else {
+            //     this.dataSource.data = ELEMENT_DATA;
+            // }
 
             this.store.dispatch(
-                CrossSellingPromoActions.fetchCrossSellingPromosRequest({
+                CrossSellingPromoActions.fetchCrossSellingPromoListRequest({
                     payload: data,
                 })
             );

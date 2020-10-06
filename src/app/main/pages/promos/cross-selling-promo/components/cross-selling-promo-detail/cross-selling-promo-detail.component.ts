@@ -89,7 +89,7 @@ export class CrossSellingPromoDetailComponent implements OnInit, OnDestroy {
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
                 // Reset core state crossSellingPromo
-                // this.store.dispatch(CrossSellingPromoActions.clearState());
+                this.store.dispatch(CrossSellingPromoActions.clearState());
                 break;
 
             default:
@@ -100,14 +100,14 @@ export class CrossSellingPromoDetailComponent implements OnInit, OnDestroy {
                     })
                 );
 
-                // this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
+                this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
 
-                // this.store.dispatch(CrossSellingPromoActions.fetchCrossSellingPromoRequest({ payload: { id, parameter } }));
+                this.store.dispatch(CrossSellingPromoActions.fetchCrossSellingPromoDetailRequest({ payload: { id, parameter } }));
 
-                // this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
+                this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
                 break;
         }
     }

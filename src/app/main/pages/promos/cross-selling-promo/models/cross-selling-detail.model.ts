@@ -7,13 +7,65 @@ import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 
 interface ICrossSellingPromoBenefit extends ITimestamp {
     readonly id: NonNullable<string>;
-    benefitBonusQty: string;
     benefitCatalogueId: string;
     benefitDiscount: string;
     benefitMaxRebate: string;
-    benefitRebate: string;
     benefitType: string;
+    benefit_bonus_qty: string;
+    catalogue: ICatalogueGroup[];
+    deletedAt: TNullable<string>;
+    promoConditionBrands: promoConditionBrand[]
+    promoConditionCatalogues: PromoConditionCatalogue[];
+    promoConditionInvoiceGroups: promoConditionInvoiceGroup[];
     promoId: string;
+}
+
+interface promoConditionBrand extends ITimestamp {
+    readonly id: NonNullable<string>;
+}
+
+interface PromoConditionCatalogue extends ITimestamp {
+    readonly id: NonNullable<string>;
+    promoConditionId: string;
+    crossSellingGroup: string;
+    crossSellingGroupRelation: string;
+    catalogueId: string;
+    conditionBase: string;
+    conditionQty: string;
+    conditionValue: TNullable<number>;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+    catalogue: ICatalogueGroup[];
+}
+
+interface ICatalogueGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    name: string;
+    brand_id: string;
+    brand: IBrandGroup;
+}
+
+interface IBrandGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    name: string;
+    invoiceGroupBrands: InvoiceBrandGroup[];
+}
+
+interface InvoiceBrandGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    brand_id: string;
+    invoice_group_id: string;
+    invoiceGroup: InvoiceGroup;
+}
+
+interface InvoiceGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    name: string;
+}
+
+interface promoConditionInvoiceGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
 }
 
 export class CrossSellingPromoDetail implements ITimestamp {
@@ -37,7 +89,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
     planBudget: number;
     promoSlot: number;
     planSlot: number;
-    promoBenefit: ICrossSellingPromoBenefit[];
+    promoConditionCatalogues: ICrossSellingPromoBenefit[];
     startDate: string;
     endDate: string;
     status: EStatus;
@@ -68,7 +120,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
             promoSlot,
             planBudget,
             planSlot,
-            promoBenefit,
+            promoConditionCatalogues,
             startDate,
             status,
             supplierId,
@@ -99,7 +151,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
         this.promoSlot = promoSlot || null;
         this.planBudget = planBudget || null;
         this.planSlot = planSlot || null;
-        this.promoBenefit = promoBenefit;
+        this.promoConditionCatalogues = promoConditionCatalogues;
         this.startDate = startDate;
         this.status = status;
         this.target = target;

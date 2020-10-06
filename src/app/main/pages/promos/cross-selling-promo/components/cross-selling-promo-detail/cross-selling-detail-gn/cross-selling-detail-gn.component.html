@@ -14,8 +14,7 @@
         <div class="info" fxFlex="100" style="padding-top: 9px;">
             <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container *ngIf="promoAllocationCross; else noPromoAllocatione">
-                    <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.promoAllocationType"> -->
-                    <mat-radio-group [value]="'promo_budget'">
+                    <mat-radio-group [value]="(crossSellingPromo$ | async)?.promoAllocationType">
                         <mat-radio-button
                             *ngFor="let row of promoAllocationCross"
                             [value]="row?.id"
@@ -46,8 +45,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                cross selling 1
-                <!-- {{ (crossSellingPromo$ | async)?.externalId || '-' }} -->
+                {{ (crossSellingPromo$ | async)?.externalId || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -67,8 +65,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                test cross selling
-                <!-- {{ (crossSellingPromo$ | async)?.name || '-' }} -->
+                {{ (crossSellingPromo$ | async)?.name || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -88,8 +85,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                All
-                <!-- {{ ((crossSellingPromo$ | async)?.platform | titlecase) || '-' }} -->
+                {{ ((crossSellingPromo$ | async)?.platform | titlecase) || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -109,8 +105,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                1
-                <!-- {{ (crossSellingPromo$ | async)?.maxRedemptionPerStore || '-' }} -->
+                {{ (crossSellingPromo$ | async)?.maxRedemptionPerStore || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -120,43 +115,50 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <ng-container *ngIf="!(isLoading$ | async)">
-            <ng-container *ngIf="typePromoAlloc == 'promo_slot'">
-                <div class="label" fxFlexAlign="center" fxFlex="10">
-                    Max Promo Redemption<br />(transaction)
-                </div>
-            </ng-container>
-            <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
-                <div class="label" fxFlexAlign="center" fxFlex="10">
-                    Max Promo Redemption
+    <ng-container *ngIf="!(isLoading$ | async)">
+        <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10"> Max Promo Redemption
                     <br />(Rp)
                 </div>
-            </ng-container>
-            <!-- <ng-container *ngIf="typePromoAlloc == 'none'">
-                <div class="label" fxFlexAlign="center" fxFlex="10">
-                    Max Redemption<br />per Buyer
+                <div class="info" fxFlex="100">
+                    <p thousandSeparator=".">
+                        Rp {{ ((crossSellingPromo$ | async)?.promoBudget | number) || '-' }}
+                    </p>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading$ | async"
+                    ></ngx-skeleton-loader>
                 </div>
-            </ng-container> -->
+            </div>
         </ng-container>
-
-        <div class="info" fxFlex="100">
-            <ng-container *ngIf="!(isLoading$ | async)">
-                1
-                <!-- {{ (crossSellingPromo$ | async)?.promoBudget || '-' }} -->
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader>
-        </div>
-    </div>
+    </ng-container>
+    <ng-container *ngIf="!(isLoading$ | async)">
+        <ng-container *ngIf="typePromoAlloc == 'promo_slot'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10"> Max Promo Redemption<br />(transaction)</div>
+                <div class="info" fxFlex="100">
+                    <p>
+                        {{ ((crossSellingPromo$ | async)?.promoSlot | number) || '-' }}
+                    </p>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading$ | async"
+                    ></ngx-skeleton-loader>
+                </div>
+            </div>
+        </ng-container>
+    </ng-container>
 
     <div
         class="custom-field info-field"
@@ -170,15 +172,13 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                     <span class="date">
-                        20/09/2020
-                        <!-- {{ ((crossSellingPromo$ | async)?.startDate | date: 'dd/MM/yyyy') || '-' }} -->
+                        {{ ((crossSellingPromo$ | async)?.startDate | date: 'dd/MM/yyyy') || '-' }}
                     </span>
 
                     <mat-icon class="sinbad-red-10-fg">today</mat-icon>
 
                     <span class="time">
-                        00:01
-                        <!-- {{ ((crossSellingPromo$ | async)?.startDate | date: 'HH:mm') || '-' }} -->
+                        {{ ((crossSellingPromo$ | async)?.startDate | date: 'HH:mm') || '-' }}
                     </span>
                 </span>
             </ng-container>
@@ -202,15 +202,13 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                     <span class="date">
-                        20/09/2020
-                        <!-- {{ ((crossSellingPromo$ | async)?.endDate | date: 'dd/MM/yyyy') || '-' }} -->
+                        {{ ((crossSellingPromo$ | async)?.endDate | date: 'dd/MM/yyyy') || '-' }}
                     </span>
 
                     <mat-icon class="sinbad-red-10-fg">today</mat-icon>
 
                     <span class="time">
-                        23:00
-                        <!-- {{ ((crossSellingPromo$ | async)?.endDate | date: 'HH:mm') || '-' }} -->
+                        {{ ((crossSellingPromo$ | async)?.endDate | date: 'HH:mm') || '-' }}
                     </span>
                 </span>
             </ng-container>
@@ -263,8 +261,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Text deskripsi
-                <!-- {{ (crossSellingPromo$ | async)?.shortDescription || '-' }} -->
+                {{ (crossSellingPromo$ | async)?.shortDescription || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader

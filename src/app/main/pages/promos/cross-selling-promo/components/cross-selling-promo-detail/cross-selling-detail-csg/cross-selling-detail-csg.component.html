@@ -16,8 +16,7 @@
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container *ngIf="conditionBase; else noConditionBase">
-                     <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.base"> -->
-                        <mat-radio-group [value]="'qty'">
+                    <mat-radio-group [value]="baseGroup1">
                         <mat-radio-button
                             *ngFor="let row of conditionBase"
                             [value]="row?.id"
@@ -47,8 +46,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
 
         <div class="info" fxFlex="100">
-            Unipro
-            <!-- {{ crossSellingPromo?.faktur || '-' }} -->
+            {{conditionGroupSelling[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
         </div>
     </div>
 
@@ -70,15 +68,10 @@
         fxLayoutGap="15px"
     >
         <div class="label" fxFlexAlign="start" fxFlex="10">
-            <!-- <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base"> -->
             <ng-container [ngSwitch]="'sku'">
                 <ng-container *ngSwitchCase="eTriggerBase.SKU"> 
                     Chosen SKU
-                    <br/>
-                    (0
-                    <!-- {{
-                    (crossSellingPromo$ | async)?.promoCrossGroup?.skuGroupChoosen?.length
-                }} -->
+                    <br/> {{generalGroup1.length}}
                 Selected) 
                 </ng-container>
                 <ng-container *ngSwitchCase="eTriggerBase.BRAND"> Chosen Brand </ng-container>
@@ -128,11 +121,12 @@
     >
         <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
 
-        <div class="info" fxFlex="100">AND</div>
-        <!-- <div class="info" fxFlex="100">{{(crossSellingPromo$ | async)?.promoCrossGroup?.relationGroup}}</div> -->
+        <div class="info" fxFlex="100">
+            {{conditionGroupSelling[0].crossSellingGroupRelation}} 
+        </div>
     </div>  
 
-    <ng-container [ngSwitch]="'qty'">
+    <ng-container [ngSwitch]="baseGroup1">
         <!-- Base Condition Type Qty -->
         <ng-container *ngSwitchCase="eConditionBase.QTY">
             <div
@@ -143,7 +137,7 @@
             >
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
 
-                <div class="info" fxFlex="100">1</div>
+                <div class="info" fxFlex="100">{{generalGroup1[0].conditionQty}}</div>
             </div>
         </ng-container>
         <!-- ./ Base Condition Type Qty -->
@@ -159,7 +153,7 @@
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
 
                 <div class="info" fxFlex="100">
-                    <p thousandSeparator=".">1</p>
+                    <p thousandSeparator=".">{{generalGroup1[0].conditionValue}}</p>
                 </div>
             </div>
         </ng-container>
@@ -185,8 +179,7 @@
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container *ngIf="conditionBase; else noConditionBase">
-                    <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.base"> -->
-                    <mat-radio-group [value]="'qty'">
+                    <mat-radio-group [value]="baseGroup2">
                         <mat-radio-button
                             *ngFor="let row of conditionBase"
                             [value]="row?.id"
@@ -216,8 +209,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
 
         <div class="info" fxFlex="100">
-            Unipro
-            <!-- {{ crossSellingPromo?.faktur || '-' }} -->
+            {{conditionGroupSelling[1].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
         </div>
     </div>
 
@@ -240,8 +232,9 @@
     >
         <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
 
-        <div class="info" fxFlex="100">AND</div>
-        <!-- <div class="info" fxFlex="100">{{(crossSellingPromo$ | async)?.promoCrossGroup?.relationGroup}}</div> -->
+        <div class="info" fxFlex="100">
+            {{conditionGroupSelling[1].crossSellingGroupRelation}}  
+        </div>
     </div>  
 
     <div
@@ -251,15 +244,10 @@
         fxLayoutGap="15px"
     >
         <div class="label" fxFlexAlign="start" fxFlex="10">
-            <!-- <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.base"> -->
             <ng-container [ngSwitch]="'sku'">
                 <ng-container *ngSwitchCase="eTriggerBase.SKU">
                     Chosen SKU
-                    <br/>
-                    (0
-                        <!-- {{
-                        (crossSellingPromo$ | async)?.promoCrossGroup?.skuGroupChoosen?.length
-                    }} -->
+                    <br/> {{generalGroup2.length}}
                     Selected)
                 </ng-container>
                 <ng-container *ngSwitchCase="eTriggerBase.BRAND"> Chosen Brand </ng-container>
@@ -301,7 +289,7 @@
         </div>
     </div>
 
-    <ng-container [ngSwitch]="'qty'">
+    <ng-container [ngSwitch]="baseGroup2">
         <!-- Base Condition Type Qty -->
         <ng-container *ngSwitchCase="eConditionBase.QTY">
             <div
@@ -310,9 +298,9 @@
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <div class="label" fxFlexAlign="center" fxFlex="10">Qty >=</div>
+                <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
 
-                <div class="info" fxFlex="100">1</div>
+                <div class="info" fxFlex="100">{{generalGroup2[0].conditionQty}}</div>
             </div>
         </ng-container>
         <!-- ./ Base Condition Type Qty -->
@@ -328,7 +316,7 @@
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
 
                 <div class="info" fxFlex="100">
-                    <p thousandSeparator=".">1</p>
+                    <p thousandSeparator=".">{{generalGroup2[0].conditionValue}}</p>
                 </div>
             </div>
         </ng-container>

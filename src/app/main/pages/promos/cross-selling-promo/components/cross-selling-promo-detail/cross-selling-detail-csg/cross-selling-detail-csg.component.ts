@@ -4,6 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { CrossSelling, IPromoBrand, IPromoCatalogue, IPromoInvoiceGroup } from '../../../models';
 import * as fromCrossSellingPromoCombos from '../../../store/reducers';
@@ -25,6 +26,12 @@ export class CrossSellingDetailCsgComponent implements OnInit {
 
     conditionBase = this._$helperService.conditionBase();
     eConditionBase = ConditionBase;
+    public conditionGroupSelling = [];
+    public baseGroup1: string;
+    public baseGroup2: string;
+    public generalGroup1 = [];
+    public generalGroup2 = [];
+
     constructor(
         private store: Store<fromCrossSellingPromoCombos.FeatureState>,
         private _$helperService: HelperService
@@ -37,8 +44,30 @@ export class CrossSellingDetailCsgComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+        let itemCondition;
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem).pipe(
+            map((item) => {
+                // console.log('isi item csg->', item)
+                itemCondition = item.promoBenefit;
+                    // this.typePromoAlloc = item.promoAllocationType;
+                return item;
+            })
+        );
+        this.crossSellingPromo$.subscribe(val => {
+            this.conditionGroupSelling = itemCondition.promoConditionCatalogues;
+            for(let condCat of this.conditionGroupSelling) {
+                if (condCat.crossSellingGroup == 'Group 1'){
+                    this.generalGroup1.push(condCat);
+                } else {
+                    this.generalGroup2.push(condCat);
+                }
+            }
+            // console.log('gp1->', this.generalGroup1)
+            // console.log('gp2->',this.generalGroup2)
 
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
+            this.baseGroup1 = this.generalGroup1[0].conditionBase;
+            this.baseGroup2 = this.generalGroup2[0].conditionBase;
+        })
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
