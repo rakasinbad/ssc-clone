@@ -24,8 +24,7 @@
                 >
                     <div class="h2">
                         <ng-container *ngIf="!(isLoading$ | async)">
-                            Cross Selling Promo
-                            <!-- {{ (crossSellingPromo$ | async)?.name }} -->
+                            {{ (crossSellingPromo$ | async)?.name }}
                         </ng-container>
 
                         <ngx-skeleton-loader

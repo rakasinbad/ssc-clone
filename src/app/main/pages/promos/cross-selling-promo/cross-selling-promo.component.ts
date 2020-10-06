@@ -31,7 +31,7 @@ export class CrossSellingPromoComponent implements OnInit, OnDestroy {
         label: 'Cross Selling Promo',
     },
     search: {
-        active: false,
+        active: true,
     },
     add: {
         permissions: [],
@@ -99,8 +99,8 @@ constructor(private router: Router, private store: Store<crossSellingPromo.Featu
                 // Reset breadcrumb state
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
-                // Reset core state flexiCombos
-                // this.store.dispatch(FlexiComboActions.clearState());
+                // Reset core state cross selling promo
+                this.store.dispatch(CrossSellingPromoActions.clearState());
                 break;
 
             default:

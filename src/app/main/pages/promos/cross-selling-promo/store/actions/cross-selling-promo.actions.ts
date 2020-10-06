@@ -9,37 +9,37 @@ import { CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto } from '../..
 // Fetch Cross Selling Promos
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchCrossSellingPromosRequest = createAction(
-    '[Cross Selling Promo] Fetch Cross Selling Promo Request',
+export const fetchCrossSellingPromoListRequest = createAction(
+    '[Cross Selling Promo] Fetch Cross Selling Promo List Request',
     props<{ payload: IQueryParams }>()
 );
 
-export const fetchCrossSellingPromosFailure = createAction(
-    '[Cross Selling Promo] Fetch Cross Selling Promo Failure',
+export const fetchCrossSellingPromoListFailure = createAction(
+    '[Cross Selling Promo] Fetch Cross Selling Promo List Failure',
     props<{ payload: ErrorHandler }>()
 );
 
-export const fetchCrossSellingPromosSuccess = createAction(
-    '[Cross Selling Promo] Fetch Cross Selling Promo Success',
+export const fetchCrossSellingPromoListSuccess = createAction(
+    '[Cross Selling Promo] Fetch Cross Selling Promo List Success',
     props<{ payload: { data: CrossSelling[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Cross Selling Promo
+// Fetch Cross Selling Promo for detail
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchCrossSellingPromoRequest = createAction(
-    '[Cross Selling Promo] Fetch Cross Selling Promo Request',
+export const fetchCrossSellingPromoDetailRequest = createAction(
+    '[Cross Selling Promo] Fetch Cross Selling Promo Detail Request',
     props<{ payload: { id: string, parameter?: IQueryParams } }>()
 );
 
-export const fetchCrossSellingPromoFailure = createAction(
-    '[Cross Selling Promo] Fetch Cross Selling Promo Failure',
+export const fetchCrossSellingPromoDetailFailure = createAction(
+    '[Cross Selling Promo] Fetch Cross Selling Promo Detail Failure',
     props<{ payload: ErrorHandler }>()
 );
 
-export const fetchCrossSellingPromoSuccess = createAction(
-    '[Cross Selling Promo] Fetch Cross Selling Promo Success',
+export const fetchCrossSellingPromoDetailSuccess = createAction(
+    '[Cross Selling Promo] Fetch Cross Selling Promo Detail Success',
     props<{ payload: CrossSelling }>()
 );
 
@@ -110,8 +110,8 @@ export const changeStatusSuccess = createAction(
 export const clearState = createAction('[Cross Selling] Reset Cross Selling Promo Core State');
 
 export type FailureActions =
-    | 'fetchCrossSellingPromosFailure'
-    | 'fetchCrossSellingPromoFailure'
+    | 'fetchCrossSellingPromoListFailure'
+    | 'fetchCrossSellingPromoDetailFailure'
     | 'createCrossSellingPromoFailure'
     // | 'updateCrossSellingPromoFailure'
     | 'deleteCrossSellingPromoFailure'

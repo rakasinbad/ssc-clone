@@ -26,13 +26,14 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-import { CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, 
+import { CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, CrossSellingPromoDetail,
     IPromoCatalogue, IPromoBrand, IPromoInvoiceGroup, IPromoStore, 
     IPromoWarehouse, IPromoType, IPromoGroup, IPromoChannel, 
     IPromoCluster, ICrossSellingPromoBenefit } from '../../models';
 import { CrossSellingPromoApiService } from '../../services/cross-selling-promo-api.service';
 import { CrossSellingPromoActions, CrossSellingPromoFailureActions } from '../actions';
 import * as crossSellingPromo from '../reducers';
+import { FormActions } from 'app/shared/store/actions';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
@@ -70,6 +71,12 @@ export class CrossSellingPromoEffects {
                         catchError((err) => this._sendErrorToState$(err, 'createCrossSellingPromoFailure'))
                     );
                 }
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.store.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
             })
         )
     );
@@ -81,6 +88,8 @@ export class CrossSellingPromoEffects {
                 map((action) => action.payload),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
+
+                    this.store.dispatch(FormActions.resetClickSaveButton());
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -108,12 +117,12 @@ export class CrossSellingPromoEffects {
     );
 
      // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods [Cross Selling Promo]
+    // @ FETCH methods [Cross Selling Promo] list
     // -----------------------------------------------------------------------------------------------------
 
-    fetchCrossSellingPromosRequest$ = createEffect(() =>
+    fetchCrossSellingPromoRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(CrossSellingPromoActions.fetchCrossSellingPromosRequest),
+            ofType(CrossSellingPromoActions.fetchCrossSellingPromoListRequest),
             map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(([params, authState]: [IQueryParams, TNullable<Auth>]) => {
@@ -125,7 +134,7 @@ export class CrossSellingPromoEffects {
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
                             this._fetchCrossSellingPromosRequest$
                         ),
-                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromosFailure'))
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoListFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -135,18 +144,19 @@ export class CrossSellingPromoEffects {
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
                             this._fetchCrossSellingPromosRequest$
                         ),
-                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromosFailure'))
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoListFailure'))
                     );
                 }
             })
         )
     );
 
-    fetchCrossSellingPromosFailure$ = createEffect(
+    fetchCrossSellingPromoListFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(CrossSellingPromoActions.fetchCrossSellingPromosFailure),
-                map((action) => action.payload),
+                ofType(CrossSellingPromoActions.fetchCrossSellingPromoListFailure),
+                map((action) => action.payload, 
+                ),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
 
@@ -160,12 +170,12 @@ export class CrossSellingPromoEffects {
     );
 
     // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods [Cross Selling Promo]
+    // @ FETCH methods [Cross Selling Promo] detail
     // -----------------------------------------------------------------------------------------------------
 
-    fetchCrossSellingPromoRequest$ = createEffect(() =>
+    fetchCrossSellingPromoDetailRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(CrossSellingPromoActions.fetchCrossSellingPromoRequest),
+            ofType(CrossSellingPromoActions.fetchCrossSellingPromoDetailRequest),
             map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(([{ id, parameter }, authState]: [{ id: string, parameter?: IQueryParams }, TNullable<Auth>]) => {
@@ -175,9 +185,9 @@ export class CrossSellingPromoEffects {
                         retry(3),
                         switchMap((userData) => of({ userData, id, parameter })),
                         switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
-                            this._fetchCrossSellingPromoRequest$
+                            this._fetchCrossSellingPromoDetailRequest$
                         ),
-                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -185,19 +195,19 @@ export class CrossSellingPromoEffects {
                         retry(3),
                         switchMap((userData) => of({ userData, id, parameter })),
                         switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
-                            this._fetchCrossSellingPromoRequest$
+                            this._fetchCrossSellingPromoDetailRequest$
                         ),
-                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                        catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                     );
                 }
             })
         )
     );
 
-    fetchCrossSellingPromoFailure$ = createEffect(
+    fetchCrossSellingPromoDetailFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(CrossSellingPromoActions.fetchCrossSellingPromoFailure),
+                ofType(CrossSellingPromoActions.fetchCrossSellingPromoDetailFailure),
                 map((action) => action.payload),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
@@ -207,6 +217,213 @@ export class CrossSellingPromoEffects {
                             verticalPosition: 'bottom',
                             horizontalPosition: 'right',
                         });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [DELETE - Cross Selling Promo]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmDeleteCrossSellingPromo$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.confirmDeleteCrossSellingPromo),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                const title = params.status === EStatus.ACTIVE ? 'Inactive' : 'Active';
+                const body = params.status === EStatus.ACTIVE ? EStatus.INACTIVE : EStatus.ACTIVE;
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
+                    DeleteConfirmationComponent,
+                    {
+                        data: {
+                            title: 'Delete',
+                            message: `Are you sure want to delete <strong>${params.name}</strong> ?`,
+                            id: params.id,
+                        },
+                        disableClose: true,
+                    }
+                );
+
+                return dialogRef.afterClosed();
+            }),
+            map((id) => {
+                if (id) {
+                    return CrossSellingPromoActions.deleteCrossSellingPromoRequest({
+                        payload: id,
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    deleteCrossSellingPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.deleteCrossSellingPromoRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [string, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, string], Observable<AnyAction>>(
+                            this._deleteCrossSellingPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'deleteCrossSellingPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, string], Observable<AnyAction>>(
+                            this._deleteCrossSellingPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'deleteCrossSellingPromoFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    deleteCrossSellingPromoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.deleteCrossSellingPromoFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to delete Cross Selling Promo';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    deleteCrossSellingPromoSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.deleteCrossSellingPromoSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully deleted cross selling promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CHANGE STATUS - Cross Selling Promo]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmChangeStatus$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.confirmChangeStatus),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                const title = params.status === EStatus.ACTIVE ? 'Inactive' : 'Active';
+                const body = params.status === EStatus.ACTIVE ? EStatus.INACTIVE : EStatus.ACTIVE;
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: EStatus }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: `Set ${title}`,
+                        message: `Are you sure want to change <strong>${params.name}</strong> status to <strong>${body}</strong> ?`,
+                        id: params.id,
+                        change: body,
+                    },
+                    disableClose: true,
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && change) {
+                    return CrossSellingPromoActions.changeStatusRequest({
+                        payload: { id, body: change },
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    changeStatusRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.changeStatusRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [{ body: EStatus; id: string }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: EStatus; id: string }], Observable<AnyAction>>(
+                            this._changeStatusRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: EStatus; id: string }], Observable<AnyAction>>(
+                            this._changeStatusRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    changeStatusFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.changeStatusFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to change status';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    changeStatusSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.changeStatusSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully changed status cross selling promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -311,7 +528,6 @@ export class CrossSellingPromoEffects {
         if (supplierId) {
             newParams['supplierId'] = supplierId;
         }
-
         return this._$crossSellingPromoApi.findAll<PaginateResponse<CrossSelling>>(newParams).pipe(
             catchOffline(),
             map((resp) => {
@@ -323,58 +539,37 @@ export class CrossSellingPromoEffects {
                     total: resp.total,
                 };
 
-                return CrossSellingPromoActions.fetchCrossSellingPromosSuccess({
+                return CrossSellingPromoActions.fetchCrossSellingPromoListSuccess({
                     payload: newResp,
                 });
             }),
-            catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+            catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoListFailure'))
         );
     };
 
-    _fetchCrossSellingPromoRequest$ = ({ userData, id, parameter = {} }: { userData: User, id: string, parameter: IQueryParams }): Observable<AnyAction> => {
+    _fetchCrossSellingPromoDetailRequest$ = ({ userData, id, parameter = {} }: { userData: User, id: string, parameter: IQueryParams }): Observable<AnyAction> => {
         const newParams: IQueryParams = {
             paginate: false,
         };
-
         if (parameter['splitRequest']) {
             return forkJoin([
                 this._$crossSellingPromoApi.findById<CrossSelling>(id, newParams).pipe(
                     catchOffline(),
                     retry(3),
-                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                 ),
-                this._$crossSellingPromoApi.findById<CrossSelling>(id, ({ ...newParams, data: 'base' } as IQueryParams)).pipe(
+                this._$crossSellingPromoApi.findById<CrossSelling>(id, ({ ...newParams, data: 'cross-selling-group' } as IQueryParams)).pipe(
                     catchOffline(),
                     retry(3),
-                    // map((resp) =>
-                    //     FlexiComboActions.fetchFlexiComboSuccess({
-                    //         payload: new FlexiCombo(resp),
-                    //     })
-                    // ),
-                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
-                ),
-                this._$crossSellingPromoApi.findById<CrossSelling>(id, ({ ...newParams, data: 'condition' } as IQueryParams)).pipe(
-                    catchOffline(),
-                    retry(3),
-                    // map((resp) =>
-                    //     FlexiComboActions.fetchFlexiComboSuccess({
-                    //         payload: new FlexiCombo(resp),
-                    //     })
-                    // ),
-                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                 ),
                 this._$crossSellingPromoApi.findById<CrossSelling>(id, ({ ...newParams, data: 'target' } as IQueryParams)).pipe(
                     catchOffline(),
                     retry(3),
-                    // map((resp) =>
-                    //     FlexiComboActions.fetchFlexiComboSuccess({
-                    //         payload: new FlexiCombo(resp),
-                    //     })
-                    // ),
-                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                 )
             ]).pipe(
-                switchMap(([general, base, benefit, target]: [CrossSelling, CrossSelling, CrossSelling, CrossSelling]) => {
+                switchMap(([general, benefit, target]: [CrossSelling, CrossSelling, CrossSelling]) => {
                     let promoCatalogues: Array<IPromoCatalogue> = [];
                     let promoBrands: Array<IPromoBrand> = [];
                     let promoInvoiceGroups: Array<IPromoInvoiceGroup> = [];
@@ -385,25 +580,21 @@ export class CrossSellingPromoEffects {
                     let promoChannels: Array<IPromoChannel> = [];
                     let promoClusters: Array<IPromoCluster> = [];
                     let promoBenefit: Array<ICrossSellingPromoBenefit> = [];
-                    
+                   
                     const {
-                        base: dataBase,
+                        // base: dataBase,
                         target: dataTarget
                     } = general;
 
-                    if (dataBase === 'sku') {
-                        promoCatalogues = base as unknown as Array<IPromoCatalogue>;
-                    } else if (dataBase === 'brand') {
-                        promoBrands = base as unknown as Array<IPromoBrand>;
-                    } else if (dataBase === 'invoice_group') {
-                        promoInvoiceGroups = base as unknown as Array<IPromoInvoiceGroup>;
-                    }
-
-                    if (Array.isArray(benefit)) {
-                        if ((benefit as Array<ICrossSellingPromoBenefit>).length > 0) {
-                            promoBenefit = benefit;
-                        }
-                    }
+                    // if (dataBase === 'sku') {
+                    //     promoCatalogues = base as unknown as Array<IPromoCatalogue>;
+                    // } else if (dataBase === 'brand') {
+                    //     promoBrands = base as unknown as Array<IPromoBrand>;
+                    // } else if (dataBase === 'invoice_group') {
+                    //     promoInvoiceGroups = base as unknown as Array<IPromoInvoiceGroup>;
+                    // }
+                    
+                    promoBenefit = benefit as unknown as Array<ICrossSellingPromoBenefit>;
 
                     if (dataTarget === 'store') {
                         promoStores = target as unknown as Array<IPromoStore>;
@@ -415,7 +606,7 @@ export class CrossSellingPromoEffects {
                         promoClusters = target['promoClusters'] as unknown as Array<IPromoCluster>;
                     }
 
-                    return of(CrossSellingPromoActions.fetchCrossSellingPromoSuccess({
+                    return of(CrossSellingPromoActions.fetchCrossSellingPromoDetailSuccess({
                         payload: new CrossSelling({
                             ...general,
                             promoCatalogues,
@@ -436,11 +627,11 @@ export class CrossSellingPromoEffects {
             return this._$crossSellingPromoApi.findById<CrossSelling>(id, newParams).pipe(
                 catchOffline(),
                 map((resp) =>
-                    CrossSellingPromoActions.fetchCrossSellingPromoSuccess({
+                    CrossSellingPromoActions.fetchCrossSellingPromoDetailSuccess({
                         payload: new CrossSelling(resp),
                     })
                 ),
-                catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoFailure'))
+                catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
             );
         }
 

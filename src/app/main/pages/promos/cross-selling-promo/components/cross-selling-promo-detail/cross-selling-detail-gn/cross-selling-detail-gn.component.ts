@@ -25,7 +25,7 @@ export class CrossSellingDetailGnComponent implements OnInit {
 
     promoAllocationCross = this._$helperService.promoAllocationCross();
     ePromoAllocation = PromoAllocationCross;
-    public typePromoAlloc: string = 'promo_budget';
+    public typePromoAlloc: string;
 
     constructor(private matDialog: MatDialog, private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService,
@@ -41,8 +41,7 @@ export class CrossSellingDetailGnComponent implements OnInit {
 
         this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem).pipe(
             map((item) => {
-                    // this.typePromoAlloc = item.promoAllocationType;
-                    this.typePromoAlloc = 'promo_budget';
+                    this.typePromoAlloc = item.promoAllocationType;
                 return item;
             })
         );

@@ -164,14 +164,65 @@ export interface IPromoCluster extends ITimestamp {
 
 export interface ICrossSellingPromoBenefit extends ITimestamp {
     readonly id: NonNullable<string>;
-    benefitBonusQty: number;
     benefitCatalogueId: string;
-    benefitDiscount: number;
-    benefitMaxRebate: number;
-    benefitRebate: number;
-    benefitType: BenefitType;
-    catalogue?: ICatalogue;
+    benefitDiscount: string;
+    benefitMaxRebate: string;
+    benefitType: string;
+    benefit_bonus_qty: string;
+    catalogue: ICatalogueGroup[];
+    deletedAt: TNullable<string>;
+    promoConditionBrands: promoConditionBrand[]
+    promoConditionCatalogues: PromoConditionCatalogue[];
+    promoConditionInvoiceGroups: promoConditionInvoiceGroup[];
     promoId: string;
+}
+
+interface promoConditionBrand extends ITimestamp {
+    readonly id: NonNullable<string>;
+}
+
+interface PromoConditionCatalogue extends ITimestamp {
+    readonly id: NonNullable<string>;
+    promoConditionId: string;
+    crossSellingGroup: string;
+    crossSellingGroupRelation: string;
+    catalogueId: string;
+    conditionBase: string;
+    conditionQty: string;
+    conditionValue: TNullable<number>;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+    catalogue: ICatalogueGroup[];
+}
+
+interface ICatalogueGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    name: string;
+    brand_id: string;
+    brand: IBrandGroup;
+}
+
+interface IBrandGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    name: string;
+    invoiceGroupBrands: InvoiceBrandGroup[];
+}
+
+interface InvoiceBrandGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    brand_id: string;
+    invoice_group_id: string;
+    invoiceGroup: InvoiceGroup;
+}
+
+interface InvoiceGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    name: string;
+}
+
+interface promoConditionInvoiceGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
 }
 
 export interface IPromoGroup extends ITimestamp {
@@ -380,8 +431,9 @@ export class CrossSelling implements ITimestamp {
 
         /* Handle promoBenefit */
         if (typeof promoBenefit !== 'undefined') {
-            this.promoBenefit =
-                promoBenefit && promoBenefit.length > 0 ? promoBenefit : [];
+            this.promoBenefit = promoBenefit;
+        } else if (typeof promoBenefit == 'undefined') {
+            this.promoBenefit = [];
         }
 
         /* Handle promoGroups */
