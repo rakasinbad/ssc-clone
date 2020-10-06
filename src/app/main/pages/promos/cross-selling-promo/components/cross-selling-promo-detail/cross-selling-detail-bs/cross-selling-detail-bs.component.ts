@@ -23,7 +23,8 @@ export class CrossSellingDetailBsComponent implements OnInit {
     benefitType = this._$helperService.benefitType();
     eBenefitType = BenefitType;
     public benefitSetting = [];
-    public benefitSubs: Subscription;
+    public benefits: any;
+    public subs: Subscription;
     constructor(
         private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService
@@ -36,44 +37,21 @@ export class CrossSellingDetailBsComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
-        this.benefitSubs = this.crossSellingPromo$.subscribe(val => {
-            this.benefitSetting.push(val.promoBenefit);
-        })
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem)
+        .pipe(
+            map((item) => {
+                return item;
+            })
+        );
+        this.subs = this.crossSellingPromo$.subscribe(val => {
+            this.benefitSetting.push(val);
+            this.benefits = this.benefitSetting[0].promoBenefit;
+        });
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
-    ngOnDestroy(): void {
-        this.benefitSubs.unsubscribe();
+    ngOnDestroy(): void{
+        this.subs.unsubscribe();
     }
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    // getConditions(value: IPromoCondition[]): IPromoCondition[] {
-    //     if (value && value.length > 0) {
-    //         return value;
-    //     }
-
-    //     return [];
-    // }
-
-    // isApplySameSku(sources: IPromoCatalogue[], benefitSku: string): boolean {
-    //     if (!sources || !sources.length || sources.length > 1 || !benefitSku) {
-    //         return false;
-    //     }
-
-    //     if (sources.length == 1) {
-    //         const idx = sources.findIndex((source) => source.id === benefitSku);
-    //         if (sources[0]['catalogue'].id == benefitSku ) {
-    //             return true;
-    //         } else {
-    //             return false
-    //         }
-            
-    //     }
-    //     // return idx !== -1;
-    // }
 
 }

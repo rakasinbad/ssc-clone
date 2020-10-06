@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { CrossSelling, IPromoBrand, IPromoCatalogue, IPromoInvoiceGroup } from '../../../models';
@@ -20,6 +20,7 @@ import { CrossSellingPromoSelectors } from '../../../store/selectors';
 export class CrossSellingDetailCsgComponent implements OnInit {
     crossSellingPromo$: Observable<CrossSelling>;
     isLoading$: Observable<boolean>;
+    public subs: Subscription;
 
     triggerBase = this._$helperService.triggerBase();
     eTriggerBase = TriggerBase;
@@ -53,7 +54,7 @@ export class CrossSellingDetailCsgComponent implements OnInit {
                 return item;
             })
         );
-        this.crossSellingPromo$.subscribe(val => {
+        this.subs = this.crossSellingPromo$.subscribe(val => {
             this.conditionGroupSelling.push(val);
             this.benefits = this.conditionGroupSelling[0];
             for (let condCat of this.benefits.promoBenefit.promoConditionCatalogues) {
@@ -63,8 +64,6 @@ export class CrossSellingDetailCsgComponent implements OnInit {
                     this.generalGroup2.push(condCat);
                 }
             }
-            // console.log('gp1->', this.generalGroup1)
-            // console.log('gp2->',this.generalGroup2)
 
             this.baseGroup1 = this.generalGroup1[0].conditionBase;
             this.baseGroup2 = this.generalGroup2[0].conditionBase;
@@ -106,4 +105,7 @@ export class CrossSellingDetailCsgComponent implements OnInit {
         return '-';
     }
 
+    ngOnDestroy(): void{
+        this.subs.unsubscribe();
+    }
 }
