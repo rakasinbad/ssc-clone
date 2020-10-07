@@ -238,7 +238,6 @@
                         <div
                             fxFlex="row"
                             fxLayoutAlign="end center"
-                            *ngIf="row?.statusPayment !== 'paid'"
                         >
                             <button
                                 mat-icon-button
@@ -256,6 +255,7 @@
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="Update Status"
+                                        *ngIf="row?.statusPayment !== 'paid'"
                                         (click)="onUpdate(row)"
                                     >
                                         <span>Update Status</span>
