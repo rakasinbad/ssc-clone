@@ -131,3 +131,21 @@ export const getPaymentDemoDetail = createAction(
     '[Payment Page] Get Payment Demo Detail',
     props<{ payload: string }>()
 );
+
+
+// -----------------------------------------------------------------------------------------------------
+// GET INVOICES
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchInvoiceOrder = createAction(
+    '[Orders Invoices] Get Invoices',
+    props<{ payload: string }>()
+);
+export const fetchInvoiceSuccess = createAction(
+    '[Orders Invoices] Get Invoices Status Success',
+    props<{ payload: { fileName: string; url: string } }>()
+);
+export const fetchInvoiceFailed = createAction(
+    '[Orders Invoices] Get Invoices Status Failed',
+    props<{ payload: IErrorHandler }>()
+);

@@ -68,7 +68,7 @@
                         <p class="price text-word-break-break-word">
                             {{
                                 +row?.billing.amount > 0
-                                    ? (+row?.billing.amount | price: 'short') || '-'
+                                    ? (+row?.billing.amount | price: 'full') || '-'
                                     : row?.billing.amount
                             }}
                         </p>
@@ -259,6 +259,19 @@
                                         (click)="onUpdate(row)"
                                     >
                                         <span>Update Status</span>
+                                    </button>
+                                    <button
+                                        (click)="onViewInvoice(row.id)"
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="View Invoice"
+
+                                    >
+<!--                                        <mat-spinner *ngIf="(invoiceFetching$ | async); else vieInvoiceText" color="accent" aria-setsize="10px"></mat-spinner>-->
+<!--                                        <ng-template #vieInvoiceText>-->
+                                            <span>View Invoice</span>
+<!--                                        </ng-template>-->
                                     </button>
                                 </ng-template>
 

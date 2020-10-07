@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { fromPaymentStatus } from '../reducers';
+import { getOrderState } from '../../../../orders/store/selectors/order.selectors';
 
 export const getPaymentStatusState = createFeatureSelector<fromPaymentStatus.State>(
     fromPaymentStatus.FEATURE_KEY
@@ -75,3 +76,13 @@ export const getTotalOverduePayment = createSelector(
 export const getIsRefresh = createSelector(getPaymentStatusState, state => state.isRefresh);
 
 export const getIsLoading = createSelector(getPaymentStatusState, state => state.isLoading);
+
+
+
+// -----------------------------------------------------------------------------------------------------
+// Helper State
+// -----------------------------------------------------------------------------------------------------
+
+
+export const getInvoice = createSelector(getPaymentStatusState, (state) => state.invoice);
+export const getInvoiceLoading = createSelector(getPaymentStatusState, (state) => state.invoiceFetching);

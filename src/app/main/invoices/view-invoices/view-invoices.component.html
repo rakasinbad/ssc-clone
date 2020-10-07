@@ -1,0 +1,31 @@
+<div id="invoices-view" class="page-layout carded fullwidth inner-scroll" style="background-color: #F6F6F6">
+    <div class="invoice-header-card">
+        <div style="text-align: right">
+            <button
+                style="background-color: #EE444E;
+                    padding: 15px 60px;
+                    margin-right: 5px;
+                    cursor: pointer;
+                    font-family: 'Muli',serif;
+                    border-radius: 5px;
+                    color: white;
+                    font-weight: 700;
+                    border: none;
+                    font-size: 1.2em;"
+                (click)="print()"
+            >
+                print
+            </button>
+        </div>
+    </div>
+    <div class="center">
+        <div class="order-box info-box inner-scroll" fxFlex="30">
+            <pdf-viewer
+                [src]="url"
+                [render-text]="true"
+                [original-size]="false"
+                style="display: block;">
+            </pdf-viewer>
+        </div>
+    </div>
+</div>
