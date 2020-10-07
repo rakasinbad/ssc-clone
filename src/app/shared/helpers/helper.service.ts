@@ -176,20 +176,20 @@ export class HelperService {
         },
     ];
 
-    // private static readonly _promoAllocation: { id: PromoAllocation; label: string }[] = [
-    //     {
-    //         id: PromoAllocation.NONE,
-    //         label: 'None',
-    //     },
-    //     {
-    //         id: PromoAllocation.PROMOBUDGET,
-    //         label: 'Promo Budget',
-    //     },
-    //     {
-    //         id: PromoAllocation.PROMOSLOT,
-    //         label: 'Promo Slot',
-    //     },
-    // ];
+    private static readonly _promoAllocation: { id: PromoAllocation; label: string }[] = [
+        {
+            id: PromoAllocation.NONE,
+            label: 'None',
+        },
+        {
+            id: PromoAllocation.PROMOBUDGET,
+            label: 'Max Promo Redemption (Rp)',
+        },
+        {
+            id: PromoAllocation.PROMOSLOT,
+            label: 'Max Promo Redemption (transaction)',
+        },
+    ];
 
     private static readonly _promoAllocationCross: { id: PromoAllocationCross; label: string }[] = [
         {
@@ -732,9 +732,9 @@ export class HelperService {
         return HelperService._segmentationBase;
     }
 
-    // promoAllocation(): { id: PromoAllocation; label: string }[] {
-    //     return HelperService._promoAllocation;
-    // }
+    promoAllocation(): { id: PromoAllocation; label: string }[] {
+        return HelperService._promoAllocation;
+    }
 
     promoAllocationCross(): { id: PromoAllocationCross; label: string }[] {
         return HelperService._promoAllocationCross;
