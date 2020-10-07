@@ -10,9 +10,9 @@ import * as LogRocket from 'logrocket';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 
-import { BenefitType } from '../models/benefit-type.model';
+import { BenefitType, BenefitMultiType } from '../models/benefit-type.model';
 import { CalculationMechanism } from '../models/calculation-mechanism.model';
-import { ConditionBase } from '../models/condition-base.model';
+import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
 import { PlatformSinbad } from '../models/platform.model';
 import { IQueryParams } from '../models/query.model';
@@ -48,6 +48,16 @@ export class HelperService {
             label: '%',
         },
     ];
+    private static readonly _benefitMultiType: { id: BenefitMultiType; label: string }[] = [
+        {
+            id: BenefitMultiType.QTY,
+            label: 'Qty',
+        },
+        {
+            id: BenefitMultiType.AMOUNT,
+            label: 'Rp',
+        },
+    ];
 
     private static readonly _calculationMechanism: { id: CalculationMechanism; label: string }[] = [
         {
@@ -67,6 +77,17 @@ export class HelperService {
         },
         {
             id: ConditionBase.ORDER_VALUE,
+            label: 'Order Value',
+        },
+    ];
+
+    private static readonly _buyRatioCondition: { id: RatioBaseCondition; label: string }[] = [
+        {
+            id: RatioBaseCondition.QTY,
+            label: 'Qty',
+        },
+        {
+            id: RatioBaseCondition.ORDER_VALUE,
             label: 'Order Value',
         },
     ];
@@ -675,6 +696,10 @@ export class HelperService {
         return HelperService._benefitType;
     }
 
+    benefitMultiType(): { id: BenefitMultiType; label: string }[] {
+        return HelperService._benefitMultiType;
+    }
+
     calculationMechanism(): { id: CalculationMechanism; label: string }[] {
         return HelperService._calculationMechanism;
     }
@@ -685,6 +710,10 @@ export class HelperService {
 
     conditionBase(): { id: ConditionBase; label: string }[] {
         return HelperService._conditionBase;
+    }
+
+    buyRatioCondition(): { id: RatioBaseCondition; label: string }[] {
+        return HelperService._buyRatioCondition;
     }
 
     orderStatus(): { id: string; label: string }[] {

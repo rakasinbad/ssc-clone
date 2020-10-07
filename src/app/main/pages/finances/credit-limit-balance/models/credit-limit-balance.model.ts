@@ -1,4 +1,4 @@
-import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models/merchant.model';
 import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { StoreSegment } from 'app/shared/models/store-segment.model';
@@ -68,7 +68,7 @@ export class CreditLimitStore implements ICreditLimitStore {
             updatedCreditLimit,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;
@@ -159,7 +159,7 @@ export class CreditLimitGroup implements ICreditLimitGroup {
             termOfPayment,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;
@@ -179,7 +179,7 @@ export class CreditLimitGroup implements ICreditLimitGroup {
 
     set setCreditLimitAreas(value: Array<CreditLimitArea>) {
         this.creditLimitAreas =
-            value && value.length > 0 ? value.map(row => new CreditLimitArea(row)) : [];
+            value && value.length > 0 ? value.map((row) => new CreditLimitArea(row)) : [];
     }
 
     set setStoreSegment(value: StoreSegment) {
@@ -241,7 +241,7 @@ export class CreditLimitArea implements ICreditLimitArea {
             unitValue,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;

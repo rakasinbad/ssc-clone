@@ -2,7 +2,13 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "./out-tsc/app",
-        "types": ["node", "googlemaps"]
+        "types": ["node", "googlemaps"],
+        "paths": {
+            "moment": [
+                "../node_modules/moment/min/moment.min.js",
+                "../node_modules/moment/locale/id.js"
+            ]
+        }
     },
     "files": ["src/main.ts", "src/polyfills.ts"],
     "include": ["src/**/*.ts"],

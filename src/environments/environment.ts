@@ -11,10 +11,8 @@ export const environment = {
     environment: 'local',
     logRocketId: '',
     // logRocketId: 'fbtbt4/sinbad-seller-center',
-    // Untuk meletakkan versi app.
-    appVersion: '',
-    // Untuk meletakkan short commit hash terakhir.
-    appHash: '',
+    appVersion: 'GIT_TAG',
+    appHash: 'GIT_COMMIT_SHORT',
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50, 100],
     host: 'https://kong-dev.sinbad.web.id',

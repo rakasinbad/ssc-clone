@@ -19,7 +19,7 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container *ngIf="triggerBase; else noTriggerBase">
                     <mat-radio-group [value]="(flexiCombo$ | async)?.base">
-                        <mat-radio-button *ngFor="let row of triggerBase" [value]="row?.id">
+                        <mat-radio-button *ngFor="let row of triggerBase" [value]="row?.id" [disabled]="true">
                             {{ row?.label }}
                         </mat-radio-button>
                     </mat-radio-group>

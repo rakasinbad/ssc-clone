@@ -30,6 +30,7 @@ import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto, IPromoCatalogue, I
 import { FlexiComboApiService } from '../../services/flexi-combo-api.service';
 import { FlexiComboActions, FlexiComboFailureActions } from '../actions';
 import * as fromFlexiCombos from '../reducers';
+import { FormActions } from 'app/shared/store/actions';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 @Injectable()
@@ -65,6 +66,12 @@ export class FlexiComboEffects {
                         catchError((err) => this._sendErrorToState$(err, 'createFlexiComboFailure'))
                     );
                 }
+            }),
+             // Me-reset state tombol save.
+             finalize(() => {
+                this.store.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
             })
         )
     );
@@ -76,6 +83,8 @@ export class FlexiComboEffects {
                 map((action) => action.payload),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
+
+                    this.store.dispatch(FormActions.resetClickSaveButton());
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -144,7 +153,13 @@ export class FlexiComboEffects {
                         );
                     }
                 }
-            )
+            ),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.store.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
+            })
         )
     );
 
@@ -155,6 +170,8 @@ export class FlexiComboEffects {
                 map((action) => action.payload),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
+
+                    this.store.dispatch(FormActions.resetClickSaveButton());
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
