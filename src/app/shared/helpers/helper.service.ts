@@ -22,7 +22,7 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import * as moment from 'moment';
 import { IHeaderRequest } from '../models/header.model';
-import { PromoAllocation } from '../models/promo-allocation.model';
+import { PromoAllocation, PromoAllocationCross } from '../models/promo-allocation.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -187,6 +187,21 @@ export class HelperService {
         },
         {
             id: PromoAllocation.PROMOSLOT,
+            label: 'Max Promo Redemption (transaction)',
+        },
+    ];
+
+    private static readonly _promoAllocationCross: { id: PromoAllocationCross; label: string }[] = [
+        {
+            id: PromoAllocationCross.NONE,
+            label: 'None',
+        },
+        {
+            id: PromoAllocationCross.PROMOBUDGET,
+            label: 'Max Promo Redemption (Rp)',
+        },
+        {
+            id: PromoAllocationCross.PROMOSLOT,
             label: 'Max Promo Redemption (transaction)',
         },
     ];
@@ -719,6 +734,10 @@ export class HelperService {
 
     promoAllocation(): { id: PromoAllocation; label: string }[] {
         return HelperService._promoAllocation;
+    }
+
+    promoAllocationCross(): { id: PromoAllocationCross; label: string }[] {
+        return HelperService._promoAllocationCross;
     }
 
     storeStatus(): { id: string; label: string }[] {
