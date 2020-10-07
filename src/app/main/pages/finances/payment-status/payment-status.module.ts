@@ -16,6 +16,8 @@ import { PaymentStatusComponent } from './payment-status.component';
 import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-payment-form.component';
 import { PaymentEffects } from './store/effects';
 import { fromPaymentStatus } from './store/reducers';
+import { PaymentStatusViewInvoicesComponent } from './payment-status-view-invoices/payment-status-view-invoices.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 /**
  *
@@ -24,7 +26,12 @@ import { fromPaymentStatus } from './store/reducers';
  * @class PaymentStatusModule
  */
 @NgModule({
-    declarations: [PaymentStatusComponent, PaymentStatusFormComponent, ProofOfPaymentFormComponent],
+    declarations: [
+        PaymentStatusComponent,
+        PaymentStatusFormComponent,
+        ProofOfPaymentFormComponent,
+        PaymentStatusViewInvoicesComponent
+    ],
     imports: [
         PaymentStatusRoutingModule,
 
@@ -38,10 +45,13 @@ import { fromPaymentStatus } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         ImportAdvancedModule,
+        PdfViewerModule,
+
 
         StoreModule.forFeature(fromPaymentStatus.FEATURE_KEY, fromPaymentStatus.reducer),
         EffectsModule.forFeature([PaymentEffects])
     ],
     entryComponents: [PaymentStatusFormComponent, ProofOfPaymentFormComponent]
 })
-export class PaymentStatusModule {}
+export class PaymentStatusModule {
+}
