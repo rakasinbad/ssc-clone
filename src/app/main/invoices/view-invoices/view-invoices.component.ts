@@ -68,7 +68,8 @@ export class ViewInvoicesComponent implements OnInit, OnDestroy {
     print(): void {
         const url = this.url; // Url from API
         this.http.get(url, { // fetch file from s3 as blob data
-            responseType: 'blob'
+            responseType: 'blob',
+            headers: {}
         }).subscribe(
             (response) => {
                 const blob = new Blob([response], {type: 'application/pdf'}); // response convert to javascript blob
