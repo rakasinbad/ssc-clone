@@ -78,9 +78,10 @@ export class ViewInvoicesComponent implements OnInit, OnDestroy {
                 iframe.style.display = 'none'; // set iframe not to diplay in html
                 iframe.src = blobUrl; // set iframe src
                 document.body.appendChild(iframe); // append iframe to dom
-
                 iframe.contentWindow.focus();
                 iframe.contentWindow.print(); // print element inside iframe
+
+
             });
     }
 }
