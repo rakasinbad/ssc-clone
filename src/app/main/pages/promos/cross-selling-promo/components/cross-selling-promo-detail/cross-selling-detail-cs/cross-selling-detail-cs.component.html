@@ -15,11 +15,10 @@
             Segmentation Base
         </div>
 
-        <div class="info" fxFlexAlign="center" fxFlex="100">
+        <div class="info" fxFlexAlign="center" fxFlex="100" style="padding-top: 9px;">
             <ng-container *ngIf="segmentBase; else noSegmentBase">
-                <!-- <mat-radio-group [value]="(crossSellingPromo$ | async)?.target"> -->
-                <mat-radio-group [value]="'segmentation'">
-                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id">
+                <mat-radio-group [value]="(crossSellingPromo$ | async)?.target">
+                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id" [disabled]="true">
                         {{ row?.label }}
                     </mat-radio-button>
                 </mat-radio-group>
@@ -31,7 +30,7 @@
         </div>
     </div>
 
-    <ng-container [ngSwitch]="typeSegmentDummy">
+    <ng-container [ngSwitch]="(crossSellingPromo$ | async)?.target">
         <!-- Segmentation Base Direct Store -->
         <ng-container *ngSwitchCase="eSegmentBase.STORE">
             <div
