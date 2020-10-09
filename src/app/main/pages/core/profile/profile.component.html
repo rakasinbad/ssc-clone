@@ -672,7 +672,7 @@
                                             >
 <!--                                                {{ (profile$ | async)?.taxNo | mask: "00.000.000.0-000.000" || "00.000.000.0-000.000" }}-->
 
-                                                {{ ((profile$ | async)?.taxNo) === ""  ? "00.000.000.0-000.000" : (profile$ | async)?.taxNo | mask: "00.000.000.0-000.000" }}
+                                                {{ ((((profile$ | async)?.taxNo) === "" ) || ((profile$ | async)?.taxNo == null )) ? "00.000.000.0-000.000" : (profile$ | async)?.taxNo | mask: "00.000.000.0-000.000" }}
                                             </ng-container>
 
                                             <mat-form-field
