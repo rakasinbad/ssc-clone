@@ -670,7 +670,7 @@
                                                     !isEdit
                                                 "
                                             >
-                                                {{ (profile$ | async)?.taxNo | mask: "00.000.000.0-000.00" || "00.000.000.0-000.00" }}
+                                                {{ (profile$ | async)?.taxNo | mask: "00.000.000.0-000.000" || "00.000.000.0-000.000" }}
                                             </ng-container>
 
                                             <mat-form-field
@@ -683,7 +683,7 @@
                                                 <input
                                                     matInput
                                                     formControlName="taxNo"
-                                                    mask="00.000.000.0-000.00"
+                                                    mask="00.000.000.0-000.000"
                                                     [validation]="false"
                                                 />
                                             </mat-form-field>
