@@ -403,7 +403,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
-            taxNo: ''
+            taxNo: [
+                '',
+                [
+                    RxwebValidators.minLength({
+                        value: 15,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.maxLength({
+                        value: 15,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ]
         });
 
         this.store
