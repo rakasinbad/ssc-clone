@@ -80,8 +80,6 @@ export class ViewInvoicesComponent implements OnInit, OnDestroy {
                 document.body.appendChild(iframe); // append iframe to dom
                 iframe.contentWindow.focus();
                 iframe.contentWindow.print(); // print element inside iframe
-
-
             });
     }
 }
