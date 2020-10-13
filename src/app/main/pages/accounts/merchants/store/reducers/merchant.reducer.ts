@@ -289,6 +289,7 @@ const brandStoreReducer = createReducer(
     on(StoreActions.updateStatusStoreSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
+        isRefresh: true,
         stores: adapterStore.updateOne(payload, state.stores),
         errors: adapterError.removeOne('updateStatusStoreFailure', state.errors),
     })),
@@ -349,7 +350,7 @@ const brandStoreReducer = createReducer(
     })),
     on(StoreActions.resetStoreEdit, (state) => ({
         ...state,
-        store: null
+        store: null,
     })),
     on(StoreActions.selectSupplierStore, (state, { payload }) => ({
         ...state,
@@ -369,8 +370,8 @@ const brandStoreReducer = createReducer(
     })),
     on(StoreActions.setRefreshStatus, (state, { refreshStatus }) => ({
         ...state,
-        isRefresh: refreshStatus
-    })),
+        isRefresh: refreshStatus,
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

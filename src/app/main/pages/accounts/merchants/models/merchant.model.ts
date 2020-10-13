@@ -1,4 +1,3 @@
-import { Warehouse } from './warehouse.model';
 import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
 import { CustomerHierarchy, Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { TNullable, TStatus } from 'app/shared/models/global.model';
@@ -13,19 +12,20 @@ import { SupplierStore } from 'app/shared/models/supplier.model';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 import { User } from 'app/shared/models/user.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
+import { Warehouse } from './warehouse.model';
 
 export interface ICheckOwnerPhoneResponse {
     message: string;
     storeId: TNullable<string>;
     availability: boolean;
     user: TNullable<{
-        userId: TNullable<string>,
-        userName: TNullable<string>,
-        taxNumber: TNullable<string>,
-        mobilePhoneNumber: TNullable<string>,
-        idNumber: TNullable<string>,
-        idNumberPicture: TNullable<string>,
-        selfiePicture: TNullable<string>,
+        userId: TNullable<string>;
+        userName: TNullable<string>;
+        taxNumber: TNullable<string>;
+        mobilePhoneNumber: TNullable<string>;
+        idNumber: TNullable<string>;
+        idNumberPicture: TNullable<string>;
+        selfiePicture: TNullable<string>;
     }>;
 }
 
@@ -44,12 +44,14 @@ export interface IResendStorePayload {
 }
 
 export interface IResendStoreResponse {
-    id: string;
-    status: number;
+    id: NonNullable<string>;
     message: {
         message: string;
         supplierStoreCode: string;
-    }
+    };
+    status: number;
+    storeCode: string;
+    storeId: string;
 }
 
 export interface IStorePortfolio extends ITimestamp {

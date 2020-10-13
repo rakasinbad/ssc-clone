@@ -7,8 +7,8 @@ export const environment = {
     hmr: false,
     environment: 'production',
     logRocketId: 'fbtbt4/sinbad-seller-center',
-    appVersion: '',
-    appHash: '',
+    appVersion: 'GIT_TAG',
+    appHash: 'GIT_COMMIT_SHORT',
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50],
     host: 'https://kong.sinbad.web.id',

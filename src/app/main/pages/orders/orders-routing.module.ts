@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-import { AuthGuard } from '../core/auth/auth.guard';
-import { OrderDetailComponent } from './order-detail/order-detail.component';
-import { OrdersComponent } from './orders.component';
 import { NgxPermissionsGuard } from 'ngx-permissions';
+import { AuthGuard } from '../core/auth/auth.guard';
+import { OrdersComponent } from './orders.component';
+import { OrderDetailViewComponent } from './pages';
 
 const routes: Routes = [
     {
@@ -19,25 +18,21 @@ const routes: Routes = [
                     'HEAD_OF_SALES',
                     'BOS',
                     'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
+                    'SUPPLIER_ADMIN',
                 ],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true
-                    }
-                }
-            }
-        }
-        // resolve: {
-        //     orders: OrderResolver,
-        //     status: OrderStatusResolver
-        // }
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
     },
     {
         path: ':id/detail',
-        component: OrderDetailComponent,
+        component: OrderDetailViewComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -47,31 +42,22 @@ const routes: Routes = [
                     'HEAD_OF_SALES',
                     'BOS',
                     'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
+                    'SUPPLIER_ADMIN',
                 ],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true
-                    }
-                }
-            }
-        }
-        // resolve: {
-        //     order: OrderDetailResolver
-        // }
-    }
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
 ];
 
-/**
- *
- *
- * @export
- * @class OrdersRoutingModule
- */
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class OrdersRoutingModule {}

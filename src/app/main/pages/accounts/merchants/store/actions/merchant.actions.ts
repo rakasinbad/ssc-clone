@@ -4,14 +4,20 @@ import { IErrorHandler, TStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
-
-import { Store as Merchant, UserStore, IResendStoreResponse, ICalculateSupplierStoreResponse } from '../../models';
+import {
+    ICalculateSupplierStoreResponse,
+    ResendStore,
+    Store as Merchant,
+    UserStore,
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Calculate Supplier Stores
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchCalculateSupplierStoresRequest = createAction('[Stores API] Fetch Calculate Supplier Stores Request');
+export const fetchCalculateSupplierStoresRequest = createAction(
+    '[Stores API] Fetch Calculate Supplier Stores Request'
+);
 
 export const fetchCalculateSupplierStoresFailure = createAction(
     '[Stores API] Fetch Calculate Supplier Stores Failure',
@@ -39,7 +45,7 @@ export const resendStoresFailure = createAction(
 
 export const resendStoresSuccess = createAction(
     '[Stores API] Re-send Stores Success',
-    props<{ payload: Array<IResendStoreResponse> }>()
+    props<{ payload: ResendStore }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -58,7 +64,7 @@ export const fetchStoresFailure = createAction(
 
 export const fetchStoresSuccess = createAction(
     '[Stores API] Fetch Stores Success',
-    props<{ payload: { data: SupplierStore[]; total: number } }>()
+    props<{ payload: { data: any[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -215,7 +221,7 @@ export const confirmUpdateStore = createAction(
 
 export const updateStoreRequest = createAction(
     '[Stores API] Update Store Request',
-    props<{ payload: { body: any; id: string, isSupplierStore?: boolean } }>()
+    props<{ payload: { body: any; id: string; isSupplierStore?: boolean } }>()
 );
 
 export const updateStoreFailure = createAction(
@@ -598,11 +604,13 @@ export const resetStoreEdit = createAction('[Accounts Page] Reset Store Edit');
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
 
-export const selectSupplierStore = createAction('[Stores Page] Select Supplier Store',
+export const selectSupplierStore = createAction(
+    '[Stores Page] Select Supplier Store',
     props<{ payload: SupplierStore }>()
 );
 
-export const setRefreshStatus = createAction('[Store Page] Set Refresh Status',
+export const setRefreshStatus = createAction(
+    '[Store Page] Set Refresh Status',
     props<{ refreshStatus: boolean }>()
 );
 

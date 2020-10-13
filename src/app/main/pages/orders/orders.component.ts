@@ -1,7 +1,5 @@
 import {
     AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
@@ -34,7 +32,6 @@ import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
-
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { statusOrder } from './status';
@@ -48,10 +45,7 @@ import { OrderSelectors } from './store/selectors';
     styleUrls: ['./orders.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
-
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
@@ -163,10 +157,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void> = new Subject<void>();
+    private _unSubs$: Subject<any> = new Subject<any>();
 
     constructor(
-        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
@@ -782,7 +775,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             this.store.select(OrderSelectors.getTotalCompletedOrder),
             this.store.select(OrderSelectors.getTotalPendingOrder),
             this.store.select(OrderSelectors.getTotalCanceledOrder),
-            this.store.select(OrderSelectors.getTotalPendingPayment)
+            this.store.select(OrderSelectors.getTotalPendingPayment),
         ])
             .pipe(takeUntil(this._unSubs$))
             .subscribe(
@@ -795,7 +788,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     completedOrder,
                     pendingOrder,
                     canceledOrder,
-                     pendingPayment
+                    pendingPayment,
                 ]) => {
                     this.allOrder = +allOrder;
                     this.newOrder = +newOrder;
@@ -806,7 +799,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.pendingOrder = +pendingOrder;
                     this.canceledOrder = +canceledOrder;
                     this.pendingPayment = +pendingPayment;
-                    this.cdRef.markForCheck();
+                    // this.cdRef.markForCheck();
                 }
             );
     }
