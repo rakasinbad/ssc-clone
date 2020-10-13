@@ -370,7 +370,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this.dialogRejectForm = this.applyDialogFactory$.open(
                     {
-                        title: `Reject (${item.store.name})`,
+                        title: `Reject (${item.outerStore.name})`,
                         template: this.reject,
                         isApplyEnabled: true,
                     },

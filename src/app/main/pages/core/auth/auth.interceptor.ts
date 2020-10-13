@@ -40,10 +40,11 @@ export class AuthInterceptor implements HttpInterceptor {
                     if (!user) {
                         return next.handle(req);
                     }
-
-                    req = req.clone({
-                        headers: req.headers.set('Authorization', `Bearer ${user.token}`)
-                    });
+                    if (req.url.includes('sinbad.web.id') || req.url.includes('sinbad.co.id')){
+                        req = req.clone({
+                            headers: req.headers.set('Authorization', `Bearer ${user.token}`)
+                        });
+                    }
 
                     return next.handle(req);
                 })

@@ -11,6 +11,10 @@ const routes: Routes = [
         pathMatch: 'full',
     },
     {
+        path: 'invoices',
+        loadChildren: () => import('./main/invoices/view-invoices/view-invoices.module').then((m) => m.ViewInvoicesModule)
+    },
+    {
         path: 'auth',
         loadChildren: () => import('./main/pages/core/auth/auth.module').then((m) => m.AuthModule),
     },
