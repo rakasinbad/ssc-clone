@@ -1,0 +1,52 @@
+<div id="invoices-view" class="page-layout carded fullwidth inner-scroll" style="background-color: #F6F6F6">
+    <div class="invoice-header-card">
+        <div style="text-align: right">
+            <a
+                [href]="url"
+                style="background-color: #EE444E;
+                    padding: 15px 20px;
+                    height: 51px;
+                    width: 121px;
+                    margin-right: 5px;
+                    cursor: pointer;
+                    font-family: 'Muli',serif;
+                    border-radius: 5px;
+                    color: white;
+                    font-weight: 700;
+                    border: none;
+                    text-decoration: none;
+                    font-size: 1.2em;"
+               download
+            >
+                Download
+            </a>
+            <button
+                style="background-color: #EE444E;
+                    padding: 15px 20px;
+                    height: 51px;
+                    width: 121px;
+                    margin-right: 5px;
+                    cursor: pointer;
+                    font-family: 'Muli',serif;
+                    border-radius: 5px;
+                    color: white;
+                    font-weight: 700;
+                    border: none;
+                    font-size: 1.2em;"
+                (click)="print()"
+            >
+                Print
+            </button>
+        </div>
+    </div>
+    <div class="center">
+        <div class="order-box info-box inner-scroll" fxFlex="30">
+            <pdf-viewer
+                [src]="url"
+                [render-text]="true"
+                [original-size]="false"
+                style="display: block;">
+            </pdf-viewer>
+        </div>
+    </div>
+</div>

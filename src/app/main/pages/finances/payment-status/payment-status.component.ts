@@ -138,6 +138,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+    invoiceFetching$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -196,7 +197,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
+        this.invoiceFetching$ = this.store.select(PaymentStatusSelectors.getInvoiceLoading);
         this._initPage();
     }
 
@@ -243,8 +244,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
-
         this.table.nativeElement.scrollIntoView();
         // this.table.nativeElement.scrollTop = 0;
     }
@@ -260,6 +259,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/Payment+Status.zip',
             '_blank'
         );
+    }
+
+    onViewInvoice(id): void {
+        this.store.dispatch(PaymentStatusActions.fetchInvoiceOrder({ payload: id }));
     }
 
     onExport(ev: { action: string; payload: any }): void {
@@ -312,6 +315,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
     }
+
 
     onProofPayment(): void {
         this.matDialog.open(ProofOfPaymentFormComponent, {

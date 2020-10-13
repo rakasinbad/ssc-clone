@@ -314,7 +314,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         if (this.isEdit) {
             const payload = {
                 urbanId: body.urban,
-                address: body.notes
+                address: body.notes,
+                taxNo: body.taxNo
             };
 
             if (!body.urban) {
@@ -401,6 +402,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                     })
                 ]
+            ],
+            taxNo: [
+                '',
+                [
+                    RxwebValidators.minLength({
+                        value: 15,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.maxLength({
+                        value: 15,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
             ]
         });
 
@@ -434,6 +448,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
             if (this.form.get('notes').invalid) {
                 this.form.get('notes').markAsTouched();
             }
+        }
+
+        if (data.taxNo){
+            this.form.get('taxNo').setValue(data.taxNo);
+        }else{
+            this.form.get('taxNo').setValue('"00000000000000"');
         }
     }
 
