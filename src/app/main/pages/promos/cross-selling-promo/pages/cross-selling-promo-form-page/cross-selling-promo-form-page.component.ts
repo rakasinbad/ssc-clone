@@ -84,6 +84,7 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
     ngOnInit() {
         this.crossSellingPromoFacade.createBreadcrumb(this.breadCrumbs);
         this.crossSellingPromoFacade.setFooterConfig(this.footerConfig);
+        this.crossSellingPromoFacade.setCancelButton();
         this.crossSellingPromoFacade.getInvoiceGroup();
 
         this.form = this.crossSellingPromoFormService.createForm();

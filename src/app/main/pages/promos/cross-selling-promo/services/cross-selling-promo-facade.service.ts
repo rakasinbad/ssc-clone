@@ -36,6 +36,10 @@ export class CrossSellingPromoFacadeService {
         this.store.dispatch(UiActions.resetBreadcrumb());
     }
 
+    setCancelButton(): void {
+        this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
+    }
+
     setFooterConfig(config: IFooterActionConfig): void {
         this.store.dispatch(UiActions.setFooterActionConfig({ payload: config }));
     }
