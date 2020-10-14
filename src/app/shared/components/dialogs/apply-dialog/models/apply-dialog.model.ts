@@ -1,6 +1,6 @@
 import { TemplateRef } from '@angular/core';
 
-export interface ApplyDialog {
+export interface ApplyDialog<T = undefined> {
     title: string;
     template: TemplateRef<any>;
     isApplyEnabled: boolean;
@@ -9,4 +9,6 @@ export interface ApplyDialog {
     applyValue?: string;
     closeValue?: string;
     contentClass?: Array<string>;
+    handleEventManually?: boolean;
+    context?: T;
 }

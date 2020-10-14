@@ -16,18 +16,30 @@ import { CrossSellingDetailGnComponent } from './components/cross-selling-promo-
 import { CrossSellingDetailCsgComponent } from './components/cross-selling-promo-detail/cross-selling-detail-csg/cross-selling-detail-csg.component';
 import { CrossSellingDetailBsComponent } from './components/cross-selling-promo-detail/cross-selling-detail-bs/cross-selling-detail-bs.component';
 import { CrossSellingDetailCsComponent } from './components/cross-selling-promo-detail/cross-selling-detail-cs/cross-selling-detail-cs.component';
-
+import {
+    CrossSellingPromoBenefitFormComponent,
+    CrossSellingPromoGeneralInfoFormComponent,
+    CrossSellingPromoGroupFormComponent,
+    CrossSellingPromoSegmentSettingFormComponent,
+} from './components/form';
+import { CrossSellingPromoFormPageComponent } from './pages';
+import { CrossSellingPromoFacadeService, CrossSellingPromoFormService } from './services';
 
 @NgModule({
   declarations: [
-    CrossSellingPromoComponent,
+      CrossSellingPromoComponent,
       CrossSellingPromoListComponent,
       CrossSellingPromoDetailComponent,
       CrossSellingPromoFormComponent,
       CrossSellingDetailGnComponent,
       CrossSellingDetailCsgComponent,
       CrossSellingDetailBsComponent,
-      CrossSellingDetailCsComponent
+      CrossSellingDetailCsComponent,
+      CrossSellingPromoBenefitFormComponent,
+      CrossSellingPromoFormPageComponent,
+      CrossSellingPromoGeneralInfoFormComponent,
+      CrossSellingPromoGroupFormComponent,
+      CrossSellingPromoSegmentSettingFormComponent,
     ],
   imports: [
     CrossSellingPromoRoutingModule,
@@ -45,6 +57,7 @@ import { CrossSellingDetailCsComponent } from './components/cross-selling-promo-
 
     //NgRx Store
     CrossSellingPromoNgrxModule
-  ]
+  ],
+  providers: [CrossSellingPromoFacadeService, CrossSellingPromoFormService],
 })
 export class CrossSellingPromoModule { }
