@@ -24,6 +24,7 @@ import {
 } from './components/form';
 import { CrossSellingPromoFormPageComponent } from './pages';
 import { CrossSellingPromoFacadeService, CrossSellingPromoFormService } from './services';
+import { PipeSharedModule } from 'app/shared/pipe-shared.module';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { CrossSellingPromoFacadeService, CrossSellingPromoFormService } from './
     SharedModule,
     SharedComponentsModule,
     MaterialModule,
+    PipeSharedModule,
 
     // Third Party (RxWeb: https://www.rxweb.io)
     RxReactiveFormsModule,
