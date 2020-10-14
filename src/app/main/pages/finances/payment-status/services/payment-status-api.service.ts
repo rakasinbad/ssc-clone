@@ -58,6 +58,16 @@ export class PaymentStatusApiService {
         return this.http.get(this._url, { params: newParams });
     }
 
+
+    findById(id: string, type = 'order'): Observable<any> {
+        if (type === 'invoice'){
+            this._url = this._$helper.handleApiRouter('/payment/v1/invoice');
+        }else{
+            this._url = this._$helper.handleApiRouter(this._endpointPayment);
+        }
+        return this.http.get(`${this._url}/${id}`);
+    }
+
     patch(body: any, id: string): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpointPatch);
 

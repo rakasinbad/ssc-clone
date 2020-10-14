@@ -5,6 +5,7 @@ import * as fromRoot from 'app/store/app.reducer';
 
 import { IStatusPayment } from '../../models';
 import { PaymentStatusActions } from '../actions';
+import { OrderActions } from '../../../../orders/store/actions';
 
 export const FEATURE_KEY = 'paymentStatuses';
 
@@ -22,6 +23,11 @@ export interface State {
     // selectedPaymentStatusId: string | number;
     source: TSource;
     paymentStatuses: PaymentStatusState;
+    invoiceFetching: boolean;
+    invoice: {
+        fileName: string;
+        url: string;
+    };
     errors: ErrorState;
 }
 
@@ -54,6 +60,11 @@ export const initialState: State = {
     isLoading: false,
     // selectedPaymentStatusId: null,
     source: 'fetch',
+    invoiceFetching: false,
+    invoice: {
+        url: undefined,
+        fileName: undefined
+    },
     paymentStatuses: initialPaymentStatus,
     errors: initialErrorState
 };
@@ -140,7 +151,28 @@ const paymentStatusReducer = createReducer(
         ...state,
         paymentStatuses: initialState.paymentStatuses,
         errors: adapterError.removeOne('fetchPaymentStatusesFailure', state.errors)
-    }))
+    })),
+    on(PaymentStatusActions.fetchInvoiceOrder, (state => ({
+        ...state,
+        invoiceFetching: true,
+    }))),
+    on(PaymentStatusActions.fetchInvoiceSuccess, (state, { payload }) => ({
+        ...state,
+        invoiceFetching: false,
+        isRefresh: undefined,
+        invoice: {
+            fileName: payload.fileName,
+            url: payload.url
+        },
+        errors: adapterError.removeOne('fetchOrderFailure', state.errors),
+    })),
+    on(PaymentStatusActions.fetchInvoiceFailed, (state, { payload }) => ({
+        ...state,
+        invoiceFetching: false,
+        isRefresh: undefined,
+        invoice: null,
+        errors: adapterError.removeOne('fetchOrdersFailure', state.errors),
+    })),
     // on(PaymentStatusActions.generatePaymentsDemo, (state, { payload }) => ({
     //     ...state,
     //     paymentStatus: adapterPaymentStatus.addAll(payload, state.paymentStatus)

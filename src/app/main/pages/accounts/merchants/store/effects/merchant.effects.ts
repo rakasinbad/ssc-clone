@@ -608,7 +608,7 @@ export class MerchantEffects {
                 >(ChangeConfirmationComponent, {
                     data: {
                         title: `Set Approval Status to ${title}`,
-                        message: `Are you sure want to change <strong>${params.supplierStore.store.name}</strong> approval status ?`,
+                        message: `Are you sure want to change <strong>${params.supplierStore.outerStore.name}</strong> approval status ?`,
                         id: params.supplierStore.id,
                         approvalStatus: params.approvalStatus,
                     },
