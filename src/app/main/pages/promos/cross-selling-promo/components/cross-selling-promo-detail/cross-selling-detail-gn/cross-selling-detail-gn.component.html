@@ -283,7 +283,7 @@
 
         <div class="info" fxFlex="100" >
             <ng-container *ngIf="!(isLoading$ | async)">
-                <mat-checkbox [checked]="(crossSellingPromo$ | async)?.firstBuy" style="font-size: 14px;">
+                <mat-checkbox [checked]="(crossSellingPromo$ | async)?.firstBuy" [disabled]="true" style="font-size: 14px;">
                     First Buy
                 </mat-checkbox>
             </ng-container>

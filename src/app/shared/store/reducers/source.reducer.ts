@@ -1,6 +1,5 @@
 import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
-
 import * as fromPortfolios from './sources/portfolio';
 import * as fromStockManagementReasons from './sources/stock-management-reason';
 import * as fromTeams from './sources/team';
@@ -22,7 +21,6 @@ interface State {
     [fromTeams.featureKey]: fromTeams.State;
     [fromTemperatures.featureKey]: fromTemperatures.State;
     [fromWarehouses.featureKey]: fromWarehouses.State;
-    [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
     [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
 }
 
@@ -50,7 +48,7 @@ function reducers(state: State | undefined, action: Action): State {
         [fromTeams.featureKey]: fromTeams.reducers,
         [fromTemperatures.featureKey]: fromTemperatures.reducers,
         [fromWarehouses.featureKey]: fromWarehouses.reducers,
-        [fromWarehouseValues.featureKey]: fromWarehouseValues.reducers
+        [fromWarehouseValues.featureKey]: fromWarehouseValues.reducers,
     })(state, action);
 }
 

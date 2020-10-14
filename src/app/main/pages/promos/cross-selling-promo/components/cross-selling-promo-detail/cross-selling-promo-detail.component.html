@@ -50,7 +50,7 @@
         <div class="content-card">
             <!-- CONTENT -->
             <div class="content">
-                <mat-tab-group color="accent" fxLayout="column" fxFlex>
+                <mat-tab-group color="accent" fxLayout="column" animationDuration="0ms" fxFlex>
                     <mat-tab label="General Information">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
@@ -59,7 +59,7 @@
                         </ng-template>
                     </mat-tab>
 
-                    <mat-tab label="Cross Selling Group" [disabled]="isLoading$ | async">
+                    <mat-tab label="Cross Selling Group">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-cross-selling-detail-csg></app-cross-selling-detail-csg>
@@ -67,7 +67,7 @@
                         </ng-template>
                     </mat-tab>
 
-                    <mat-tab label="Benefit Setting" [disabled]="isLoading$ | async">
+                    <mat-tab label="Benefit Setting">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-cross-selling-detail-bs></app-cross-selling-detail-bs>
@@ -75,7 +75,7 @@
                         </ng-template>
                     </mat-tab>
 
-                    <mat-tab label="Customer Segmentation" [disabled]="isLoading$ | async">
+                    <mat-tab label="Customer Segmentation">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-cross-selling-detail-cs></app-cross-selling-detail-cs>

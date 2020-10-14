@@ -86,7 +86,7 @@ constructor(private router: Router, private store: Store<crossSellingPromo.Featu
     }
 
     onClickAdd(): void {
-        // this.router.navigateByUrl('/pages/promos/cross-selling-promo/new');
+        this.router.navigateByUrl('/pages/promos/cross-selling-promo/add');
     }
 
     // -----------------------------------------------------------------------------------------------------

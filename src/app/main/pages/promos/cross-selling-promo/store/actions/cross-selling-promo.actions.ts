@@ -49,7 +49,7 @@ export const fetchCrossSellingPromoDetailSuccess = createAction(
 
 export const createCrossSellingPromoRequest = createAction(
     '[Cross Selling Promo] Create Cross Selling Promo Request',
-    props<{ payload: CreateCrossSellingDto }>()
+    props<{ payload: CreateFormDto }>()
 );
 
 export const createCrossSellingPromoFailure = createAction(
@@ -57,7 +57,9 @@ export const createCrossSellingPromoFailure = createAction(
     props<{ payload: ErrorHandler }>()
 );
 
-export const createCrossSellingPromoSuccess = createAction('[Cross Selling Promo] Create Cross Selling Promo Success');
+export const createCrossSellingPromoSuccess = createAction(
+    '[Cross Selling Promo] Create Cross Selling Promo Success'
+);
 
 // -----------------------------------------------------------------------------------------------------
 // [CRUD - DELETE] Cross Selling
