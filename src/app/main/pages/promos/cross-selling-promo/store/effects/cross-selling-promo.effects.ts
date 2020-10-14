@@ -33,7 +33,6 @@ import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDt
 import { CrossSellingPromoApiService } from '../../services/cross-selling-promo-api.service';
 import { CrossSellingPromoActions, CrossSellingPromoFailureActions } from '../actions';
 import * as crossSellingPromo from '../reducers';
-import { FormActions } from 'app/shared/store/actions';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
