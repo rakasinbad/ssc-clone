@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 
 import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService, NoticeService, ScrollService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog, MatSelect } from '@angular/material';
+import { MatAutocomplete, MatAutocompleteTrigger, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { Catalogue as Entity } from './models';
@@ -42,6 +42,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     // Untuk keperluan mat dialog ref.
     dialogRef$: Subject<string> = new Subject<string>();
 
+    // Untuk menyimpan entities yang terpilih dan akan dikirim melalui event apply.
+    selectedEntities: Array<Entity> = [];
     // Untuk menyimpan Entity yang belum ditransformasi untuk keperluan select advanced.
     rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
     // Untuk menyimpan Entity yang tersedia.
@@ -81,9 +83,22 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     @Input() placeholder: string = 'Choose SKU';
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('mode') mode: 'single' | 'multi' = 'multi';
+    // Untuk memberitahu kepada component bahwa ada override untuk apply dan close dialog.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() handleEventManually: boolean = false;
+    // Untuk mencari catalogue berdasarkan nama Invoice Group-nya.
+    @Input() invoiceGroupName: string;
+    // Untuk mengirim pesan error ke form.
+    @Input() errorMessage: string;
+    // Untuk menyimpan catalogues yang opsinya ingin di-disable. (tidak bisa dipilih)
+    @Input() disabledCatalogues: Array<Selection> = [];
 
-    // Untuk mengirim data berupa lokasi yang telah terpilih.
+    // Untuk mengirim data berupa catalogue yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
+    // Untuk mengirim data berupa catalogue yang telah terpilih melalui tombol Apply. (hanya terkirim jika handleEventManually = true)
+    @Output() applied: EventEmitter<Array<Entity>> = new EventEmitter<Array<Entity>>();
+    // Untuk event ketika menekan close pada dialog. (Dialog tidak tertutup otomatis jika handleEventManually = true)
+    @Output() closed: EventEmitter<void> = new EventEmitter<void>();
 
     // Untuk keperluan AutoComplete
     @ViewChild('entityAutocomplete', { static: false }) entityAutoComplete: MatAutocomplete;
@@ -195,18 +210,29 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             ),
             tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
             switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
-                // Jika user tidak ada data supplier.
-                if (!userSupplier) {
-                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                }
-
-                // Mengambil ID supplier-nya.
-                const { supplierId } = userSupplier;
-
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
-                // Memasukkan ID supplier ke dalam params baru.
-                newQuery['supplierId'] = supplierId;
+
+                // Memeriksa keberadaan input value dari invoiceGroupName.
+                if (this.invoiceGroupName) {
+                    // Memberi flag bahwa ID supplier tidak diwajibkan.
+                    // Jika tidak dikasih flag, maka service akan mengembalikan nilai error.
+                    newQuery['noSupplierId'] = true;
+                    // Memasukkan nama faktur ke dalam params baru.
+                    newQuery['fakturName'] = this.invoiceGroupName;
+                } else {
+                    // Jika user tidak ada data supplier.
+                    if (!userSupplier) {
+                        throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                    }
+
+                    // Mengambil ID supplier-nya.
+                    const { supplierId } = userSupplier;
+    
+                    // Memasukkan ID supplier ke dalam params baru.
+                    newQuery['supplierId'] = supplierId;
+                }
+
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
@@ -353,11 +379,14 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
         if (event) {
-            let value: string | Array<string>;
+            let value: string | Array<string> = null;
             const rawEntities = this.rawAvailableEntities$.value;
 
             if (event['option'] && event['source']) {
-                value = event['option']['value']['id'];
+                if (event['option']['value']) {
+                    value = event['option']['value']['id'];
+                }
+
                 this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
             } else {
                 const eventIds = event.map(e => e.id);
@@ -405,11 +434,12 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     onSelectionChanged($event: SelectionList): void {
-        const { removed, merged = this.entityFormValue.value } = $event;
+        const { added, removed, merged = this.entityFormValue.value } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
 
+        this.selectedEntities = added as unknown as Array<Entity>;
         this.cdRef.markForCheck();
     }
 
@@ -429,19 +459,46 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 title: 'Select SKU',
                 template: this.selectStoreType,
                 isApplyEnabled: true,
+                handleEventManually: this.handleEventManually
             }, {
                 disableClose: true,
                 width: '80vw',
                 minWidth: '80vw',
                 maxWidth: '80vw',
             });
-    
+
+            if (this.handleEventManually) {
+                this.dialog.onApply().pipe(
+                    takeUntil(this.dialog.closed$)
+                ).subscribe(() => {
+                    const selectedValues = this.selectedEntities;
+
+                    if (this.entityFormValue.value) {
+                        selectedValues.push(...this.entityFormValue.value);
+                    }
+
+                    this.applied.emit(selectedValues);
+                });
+
+                this.dialog.onClose().pipe(
+                    takeUntil(this.dialog.closed$)
+                ).subscribe(() => {
+                    this.closed.emit();
+                });
+            }
+
+            this.dialog.opened$.subscribe({
+                next: () => {
+                    this.initEntity();
+                }
+            });
+
             this.dialog.closed$.subscribe({
                 next: (value: TNullable<string>) => {
                     HelperService.debug('DIALOG SELECTION CLOSED', value);
-    
+
                     let selection;
-                    if (value === 'apply') {
+                    if (!!value) {
                         if (!this.removing) {
                             if (Array.isArray(this.tempEntity)) {
                                 if (this.tempEntity.length > 0) {
@@ -474,6 +531,10 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     
                     this.onSelectedEntity(this.entityFormValue.value);
                     this.cdRef.markForCheck();
+                },
+                complete: () => {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
                 }
             });
         }
@@ -619,6 +680,45 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes['invoiceGroupName']) {
+            this.availableEntities$.next([]);
+            this.rawAvailableEntities$.next([]);
+
+            const params: IQueryParams = {
+                paginate: true,
+                limit: this.limit,
+                skip: 0,
+            };
+
+            this.requestEntity(params);
+        }
+
+        if (changes['disabledCatalogues']) {
+            const values = changes['disabledCatalogues'].currentValue;
+
+            if (!Array.isArray(values)) {
+                this.disabledCatalogues = [];
+            }
+        }
+
+        if (changes['errorMessage']) {
+            if (changes['errorMessage'].currentValue) {
+                const error = changes['errorMessage'].currentValue;
+
+                this.entityForm.setErrors({ custom: { message: error } });
+                this.entityFormView.setErrors({ custom: { message: error } });
+            } else {
+                this.entityForm.setErrors(null);
+                this.entityFormView.setErrors(null);
+            }
+        }
+
+        if (changes['mode']) {
+            if (changes['mode'].currentValue === 'single') {
+                this.initEntity();
+            }
+        }
+
         if (changes['required']) {
             if (changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();
@@ -714,7 +814,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         });
 
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
+        if (this.mode === 'single') {
+            this.initEntity();
+        }
 
         // if (this.dropdown) {
         //     if (this.dropdown.panel) {

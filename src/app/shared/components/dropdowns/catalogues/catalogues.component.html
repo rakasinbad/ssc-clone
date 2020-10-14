@@ -83,9 +83,14 @@
             <mat-spinner [diameter]="25" color="accent"></mat-spinner>
         </div>
         <!-- / LOADER -->
-        <mat-error *ngIf="mode === 'single'">
-            <ng-container *ngTemplateOutlet="errorMessage"></ng-container>
+        <mat-error *ngIf="entityForm?.errors?.required; else hasCustomError">
+            {{ entityForm?.errors?.required?.message }}
         </mat-error>
+        <ng-template #hasCustomError>
+            <mat-error>
+                {{ entityForm?.errors?.custom?.message }}
+            </mat-error>
+        </ng-template>
     </mat-form-field>
     <!-- <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
         <mat-select [placeholder]="placeholder" [formControl]="entityForm" (openedChange)="onOpenedChangeEntity($event)" #dropdown>
@@ -109,15 +114,22 @@
                 [formControl]="entityFormView"
                 [value]="entityFormView.value"
             />
-            <mat-error *ngIf="mode === 'multi'">
-                <ng-container *ngTemplateOutlet="errorMessage"></ng-container>
+
+            <mat-error *ngIf="entityFormView?.errors?.required; else hasCustomError">
+                {{ entityFormView?.errors?.required?.message }}
             </mat-error>
+            <ng-template #hasCustomError>
+                <mat-error>
+                    {{ entityFormView?.errors?.custom?.message }}
+                </mat-error>
+            </ng-template>
         </mat-form-field>
     </div>
     <ng-template #selectStoreType>
         <sinbad-multiple-selection
             [disableClearAll]="false"
             [enableSelectAll]="true"
+            [disabledOptions]="disabledCatalogues"
             [availableOptions]="(availableEntities$ | async)"
             [totalAvailableOptions]="(totalEntities$ | async)"
             [initialSelectedOptions]="initialSelection"

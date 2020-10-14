@@ -7,22 +7,21 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { environment } from 'environments/environment';
 import * as jwt_decode from 'jwt-decode';
 import * as LogRocket from 'logrocket';
-import { Observable, of, throwError } from 'rxjs';
+import * as moment from 'moment';
+import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
-
-import { BenefitType, BenefitMultiType } from '../models/benefit-type.model';
+import { LogicRelation, SpecifiedTarget } from '../models';
+import { BenefitMultiType, BenefitType } from '../models/benefit-type.model';
 import { CalculationMechanism } from '../models/calculation-mechanism.model';
 import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
 import { PlatformSinbad } from '../models/platform.model';
+import { PromoAllocation, PromoAllocationCross } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
 import { SegmentationBase } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
-import * as moment from 'moment';
-import { IHeaderRequest } from '../models/header.model';
-import { PromoAllocation, PromoAllocationCross } from '../models/promo-allocation.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -30,9 +29,7 @@ interface TTemplateFiles {
     paymentStatus: string;
 }
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class HelperService {
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
         {
@@ -78,6 +75,21 @@ export class HelperService {
         {
             id: ConditionBase.ORDER_VALUE,
             label: 'Order Value',
+        },
+    ];
+
+    private static readonly _logicRelation: { id: LogicRelation; label: string }[] = [
+        {
+            id: LogicRelation.OR,
+            label: LogicRelation.OR,
+        },
+        {
+            id: LogicRelation.AND,
+            label: LogicRelation.AND,
+        },
+        {
+            id: LogicRelation.NA,
+            label: LogicRelation.NA,
         },
     ];
 
@@ -182,12 +194,12 @@ export class HelperService {
             label: 'None',
         },
         {
-            id: PromoAllocation.PROMOBUDGET,
-            label: 'Max Promo Redemption (Rp)',
-        },
-        {
             id: PromoAllocation.PROMOSLOT,
             label: 'Max Promo Redemption (transaction)',
+        },
+        {
+            id: PromoAllocation.PROMOBUDGET,
+            label: 'Max Promo Redemption (Rp)',
         },
     ];
 
@@ -226,6 +238,21 @@ export class HelperService {
         {
             id: 'inactive',
             label: 'Inactive',
+        },
+    ];
+
+    private static readonly _specifiedTarget: { id: SpecifiedTarget; label: string }[] = [
+        {
+            id: SpecifiedTarget.NONE,
+            label: 'None',
+        },
+        {
+            id: SpecifiedTarget.NEW_STORE,
+            label: 'New Store',
+        },
+        {
+            id: SpecifiedTarget.ACTIVE_STORE,
+            label: 'Active Outlets Only',
         },
     ];
 
@@ -412,8 +439,13 @@ export class HelperService {
             // Error message related to HTTP.
             if (error.httpError.error) {
                 if (error.httpError.error.code || error.httpError.error.message) {
-                    errId = `ERROR_NET_HTTP_${ errId !== '(none)' ? errId : error.httpError.error.code || 'UNKNOWN'}`,
-                    message = +error.httpError.error.code >= 500 ? 'Network related issue' : 'Client related issue';
+                    (errId = `ERROR_NET_HTTP_${
+                        errId !== '(none)' ? errId : error.httpError.error.code || 'UNKNOWN'
+                    }`),
+                        (message =
+                            +error.httpError.error.code >= 500
+                                ? 'Network related issue'
+                                : 'Client related issue');
                 }
             }
         } else if (error.error) {
@@ -425,9 +457,11 @@ export class HelperService {
 
         if (error.error) {
             if (typeof error.error !== 'string') {
-                requestId = !error.error.errors ? '-'
-                        : !error.error.errors.uuid ? '-'
-                        : error.error.errors.uuid;
+                requestId = !error.error.errors
+                    ? '-'
+                    : !error.error.errors.uuid
+                    ? '-'
+                    : error.error.errors.uuid;
             }
         }
 
@@ -712,6 +746,10 @@ export class HelperService {
         return HelperService._conditionBase;
     }
 
+    logicRelation(): { id: LogicRelation; label: string }[] {
+        return HelperService._logicRelation;
+    }
+
     buyRatioCondition(): { id: RatioBaseCondition; label: string }[] {
         return HelperService._buyRatioCondition;
     }
@@ -738,6 +776,10 @@ export class HelperService {
 
     promoAllocationCross(): { id: PromoAllocationCross; label: string }[] {
         return HelperService._promoAllocationCross;
+    }
+
+    specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
+        return HelperService._specifiedTarget;
     }
 
     storeStatus(): { id: string; label: string }[] {

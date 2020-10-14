@@ -13,7 +13,7 @@ import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/sh
 import { ErrorHandler, EStatus, PaginateResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
-import { UiActions } from 'app/shared/store/actions';
+import { FormActions, UiActions } from 'app/shared/store/actions';
 import { Observable, of, forkJoin } from 'rxjs';
 import {
     catchError,
@@ -26,7 +26,7 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-import { CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, CrossSellingPromoDetail,
+import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, CrossSellingPromoDetail,
     IPromoCatalogue, IPromoBrand, IPromoInvoiceGroup, IPromoStore, 
     IPromoWarehouse, IPromoType, IPromoGroup, IPromoChannel, 
     IPromoCluster, ICrossSellingPromoBenefit } from '../../models';
@@ -49,7 +49,7 @@ export class CrossSellingPromoEffects {
             ofType(CrossSellingPromoActions.createCrossSellingPromoRequest),
             map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-            switchMap(([payload, authState]: [CreateCrossSellingDto, TNullable<Auth>]) => {
+            switchMap(([payload, authState]: [CreateFormDto, TNullable<Auth>]) => {
                 if (!authState) {
                     return this._$helper.decodeUserToken().pipe(
                         map(this._checkUserSupplier),
@@ -58,25 +58,23 @@ export class CrossSellingPromoEffects {
                         switchMap<[User, any], Observable<AnyAction>>(
                             this._createCrossSellingPromoRequest$
                         ),
-                        catchError((err) => this._sendErrorToState$(err, 'createCrossSellingPromoFailure'))
+                        catchError((err) =>
+                            this._sendErrorToState$(err, 'createCrossSellingPromoFailure')
+                        )
                     );
                 } else {
                     return of(authState.user).pipe(
                         map(this._checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, payload])),
-                        switchMap<[User, CreateCrossSellingDto], Observable<AnyAction>>(
+                        switchMap<[User, CreateFormDto], Observable<AnyAction>>(
                             this._createCrossSellingPromoRequest$
                         ),
-                        catchError((err) => this._sendErrorToState$(err, 'createCrossSellingPromoFailure'))
+                        catchError((err) =>
+                            this._sendErrorToState$(err, 'createCrossSellingPromoFailure')
+                        )
                     );
                 }
-            }),
-            // Me-reset state tombol save.
-            finalize(() => {
-                this.store.dispatch(
-                    FormActions.resetClickSaveButton()
-                );
             })
         )
     );
@@ -89,12 +87,13 @@ export class CrossSellingPromoEffects {
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
 
-                    this.store.dispatch(FormActions.resetClickSaveButton());
-
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
                     });
+
+                    // Reset save btn
+                    this.store.dispatch(FormActions.resetClickSaveButton());
                 })
             ),
         { dispatch: false }
@@ -453,17 +452,17 @@ export class CrossSellingPromoEffects {
         return userData;
     };
 
-    _createCrossSellingPromoRequest$ = ([userData, payload]: [User, CreateCrossSellingDto]): Observable<
+    _createCrossSellingPromoRequest$ = ([userData, payload]: [User, CreateFormDto]): Observable<
         AnyAction
     > => {
-        const newPayload = new CreateCrossSellingDto({ ...payload });
+        const newPayload = { ...payload };
         const { supplierId } = userData.userSupplier;
 
         if (supplierId) {
             newPayload.supplierId = supplierId;
         }
 
-        return this._$crossSellingPromoApi.create<CreateCrossSellingDto>(newPayload).pipe(
+        return this._$crossSellingPromoApi.create<CreateFormDto>(newPayload).pipe(
             map((resp) => {
                 return CrossSellingPromoActions.createCrossSellingPromoSuccess();
             }),

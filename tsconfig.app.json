@@ -3,13 +3,7 @@
     "compilerOptions": {
         "outDir": "./out-tsc/app",
         "types": ["node", "googlemaps"],
-        "allowSyntheticDefaultImports": true,
-        "paths": {
-            "moment": [
-                "../node_modules/moment/min/moment.min.js",
-                "../node_modules/moment/locale/id.js"
-            ]
-        }
+        "allowSyntheticDefaultImports": true
     },
     "files": ["src/main.ts", "src/polyfills.ts"],
     "include": ["src/**/*.ts"],
