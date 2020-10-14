@@ -3,7 +3,7 @@ import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Update } from '@ngrx/entity';
 
-import { CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto } from '../../models';
+import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Cross Selling Promos
