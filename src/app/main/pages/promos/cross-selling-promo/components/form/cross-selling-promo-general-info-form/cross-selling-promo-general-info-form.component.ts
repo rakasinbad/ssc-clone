@@ -1,6 +1,5 @@
 import {
     ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
@@ -9,7 +8,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatRadioChange } from '@angular/material';
+import { MatCheckboxChange, MatRadioChange } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
@@ -62,7 +61,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
     formValue: EventEmitter<GeneralInfoFormDto> = new EventEmitter();
 
     constructor(
-        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private errorMessageService: ErrorMessageService,
@@ -104,6 +102,17 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
         } else {
             this.promoBudgetLabel = null;
             this._clearPromoBudgetValidation();
+        }
+    }
+
+    onChangeFirstBuy(ev: MatCheckboxChange): void {
+        const maxRedemptionCtrl = this.form.get('maxRedemption');
+
+        if (ev.checked) {
+            maxRedemptionCtrl.setValue(1);
+            maxRedemptionCtrl.disable({ onlySelf: true });
+        } else {
+            maxRedemptionCtrl.enable({ onlySelf: true });
         }
     }
 
@@ -190,7 +199,7 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
             externalId: body['promoSellerId'],
             name: body['promoName'],
             platform: body['platform'],
-            maxRedemptionPerStore: +body['maxRedemption'] || null,
+            maxRedemptionPerStore: (body['firstBuy'] ? 1 : +body['maxRedemption']) || null,
             promoSlot:
                 (body['promoAllocationType'] === PromoAllocation.PROMOSLOT &&
                     +body['promoBudget']) ||

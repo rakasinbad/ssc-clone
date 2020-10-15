@@ -484,7 +484,10 @@
                 <label fxFlexAlign="center" fxFlex="12"> </label>
 
                 <div fxFlexAlign="center" fxFlex="50">
-                    <mat-checkbox [formControl]="form.get('firstBuy')">
+                    <mat-checkbox
+                        [formControl]="form.get('firstBuy')"
+                        (change)="onChangeFirstBuy($event)"
+                    >
                         First Buy
 
                         <!-- <mat-icon
