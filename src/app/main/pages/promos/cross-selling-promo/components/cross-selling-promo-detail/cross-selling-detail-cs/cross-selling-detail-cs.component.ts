@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
-import { Observable } from 'rxjs';
-
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
     CrossSelling,
     IPromoChannel,
@@ -30,7 +30,16 @@ export class CrossSellingDetailCsComponent implements OnInit {
     segmentBase = this._$helperService.segmentationBase();
     eSegmentBase = SegmentationBase;
 
-    public typeSegmentDummy: string = 'segmentation';
+    public subs: Subscription;
+    public specifiedTarget = [
+        {id: 1, label: 'None'},
+        {id: 2, label: 'New Store'},
+        {id: 3, label: 'Active Outlet Only'}];
+    public benefitSetting = [];
+    public statNewStore = false;
+    public statActiveStore = false;
+    public selectTargetId: number;
+
     constructor(
         private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService
@@ -44,7 +53,24 @@ export class CrossSellingDetailCsComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem)
+        .pipe(
+            map((item) => {
+                return item;
+            })
+        );
+        this.subs = this.crossSellingPromo$.subscribe(val => {
+            this.benefitSetting.push(val);
+            this.statNewStore = this.benefitSetting[0].isNewStore;
+            this.statActiveStore = this.benefitSetting[0].isActiveStore;
+            if (this.statNewStore == false && this.statActiveStore == false){
+                this.selectTargetId = 1;
+            } else if (this.statNewStore == true && this.statActiveStore == false) {
+                this.selectTargetId = 2;
+            } else if (this.statNewStore == false && this.statActiveStore == true) {
+                this.selectTargetId = 3;
+            }
+        });
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
@@ -112,4 +138,7 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
+    ngOnDestroy(): void{
+        this.subs.unsubscribe();
+    }
 }
