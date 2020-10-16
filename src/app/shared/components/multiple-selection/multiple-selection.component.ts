@@ -140,18 +140,37 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
     onToggleSelectAll($event: MatSelectionListChange): void {
         const isSelected = $event.option.selected;
+        const disabledIds = this.disabledOptions.map(disabledOption => disabledOption.id);
 
         if (isSelected) {
-            this.availableSelection.selectAll();
+            if (disabledIds.length === 0) {
+                this.availableSelection.selectAll();
 
-            for (const option of this.availableOption.toArray()) {
-                if (!option.selected && !option.disabled) {
-                    option.toggle();
+                for (const option of this.availableOption.toArray()) {
+                    if (!option.selected && !option.disabled) {
+                        option.toggle();
+                    }
+    
+                    this.availableSelection.selectionChange.emit(
+                        new MatSelectionListChange(this.availableSelection, option)
+                    );
                 }
-
-                this.availableSelection.selectionChange.emit(
-                    new MatSelectionListChange(this.availableSelection, option)
-                );
+            } else {
+                for (const option of this.availableOption.toArray()) {
+                    const optionId = (option.value as Selection).id;
+    
+                    if (disabledIds.includes(optionId)) {
+                        continue;
+                    }
+    
+                    if (!option.selected && !option.disabled) {
+                        option.toggle();
+                    }
+    
+                    this.availableSelection.selectionChange.emit(
+                        new MatSelectionListChange(this.availableSelection, option)
+                    );
+                }
             }
 
             HelperService.debug('SELECTED => this.availableOption from ViewChildren', this.availableOption);

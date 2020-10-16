@@ -17,6 +17,7 @@
 
         <div class="info" fxFlexAlign="center" fxFlex="100" style="padding-top: 9px;">
             <ng-container *ngIf="segmentBase; else noSegmentBase">
+                <br/>
                 <mat-radio-group [value]="(crossSellingPromo$ | async)?.target">
                     <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id" [disabled]="true">
                         {{ row?.label }}
@@ -143,16 +144,26 @@
 
                 <div class="info" fxFlex="100">
                     <ng-container *ngIf="!(isLoading$ | async)">
-                        <mat-checkbox
-                            [checked]="(crossSellingPromo$ | async)?.isNewStore"
-                            [disabled]="true"
-                        >
-                            New Store
-                        </mat-checkbox>
+                        <br/>
+                        <mat-radio-group [value]="selectTargetId">
+                            <mat-radio-button
+                                *ngFor="let row of specifiedTarget"
+                                [value]="row.id"
+                                [disabled]="true"
+                            >
+                                {{ row.label }}
 
-                        <mat-checkbox [checked]="(crossSellingPromo$ | async)?.isActiveStore" [disabled]="true">
-                            Active Outlet Only
-                        </mat-checkbox>
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                    matTooltipClass="tooltip-br"
+                                    *ngIf="row.id === 2"
+                                >
+                                    help
+                                </mat-icon>
+                            </mat-radio-button>
+                        </mat-radio-group>
                     </ng-container>
 
                     <ng-container *ngIf="isLoading$ | async">
