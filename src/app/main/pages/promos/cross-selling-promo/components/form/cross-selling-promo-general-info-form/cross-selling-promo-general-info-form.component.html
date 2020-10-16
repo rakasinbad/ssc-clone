@@ -196,7 +196,12 @@
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="50">
-                    <input matInput [formControl]="form.get('maxRedemption')" mask="0*" />
+                    <input
+                        matInput
+                        [formControl]="form.get('maxRedemption')"
+                        mask="0*"
+                        autocomplete="off"
+                    />
 
                     <mat-error>
                         {{ form.get('maxRedemption').value | errorMessage: form:'maxRedemption' }}
@@ -226,20 +231,19 @@
                     {{ promoBudgetLabel }}
                 </label>
 
-                <mat-form-field appearance="outline" fxFlex="50">
-                    <input
-                        matInput
-                        [formControl]="form.get('promoBudget')"
-                        mask="separator.2"
-                        thousandSeparator="."
-                        prefix="Rp"
-                        placeholder="Rp"
-                    />
+                <ng-container [ngSwitch]="form.get('promoAllocationType').value">
+                    <ng-container *ngSwitchCase="promoAllocationType.PROMOSLOT">
+                        <ng-container
+                            *ngTemplateOutlet="typePromoSlot; context: { form: form }"
+                        ></ng-container>
+                    </ng-container>
 
-                    <mat-error>
-                        {{ form.get('promoBudget').value | errorMessage: form:'promoBudget' }}
-                    </mat-error>
-                </mat-form-field>
+                    <ng-container *ngSwitchCase="promoAllocationType.PROMOBUDGET">
+                        <ng-container
+                            *ngTemplateOutlet="typePromoBudget; context: { form: form }"
+                        ></ng-container>
+                    </ng-container>
+                </ng-container>
             </div>
             <!-- / ALLOCATE REDEMPTION -->
 
@@ -484,7 +488,10 @@
                 <label fxFlexAlign="center" fxFlex="12"> </label>
 
                 <div fxFlexAlign="center" fxFlex="50">
-                    <mat-checkbox [formControl]="form.get('firstBuy')">
+                    <mat-checkbox
+                        [formControl]="form.get('firstBuy')"
+                        (change)="onChangeFirstBuy($event)"
+                    >
                         First Buy
 
                         <!-- <mat-icon
@@ -502,3 +509,36 @@
         </div>
     </div>
 </mat-card>
+
+<ng-template let-form="form" #typePromoSlot>
+    <mat-form-field appearance="outline" fxFlex="50">
+        <input
+            matInput
+            [formControl]="form.get('promoBudget')"
+            mask="09999999"
+            autocomplete="off"
+        />
+
+        <mat-error>
+            {{ form.get('promoBudget').value | errorMessage: form:'promoBudget' }}
+        </mat-error>
+    </mat-form-field>
+</ng-template>
+
+<ng-template let-form="form" #typePromoBudget>
+    <mat-form-field appearance="outline" fxFlex="50">
+        <input
+            matInput
+            [formControl]="form.get('promoBudget')"
+            mask="separator.2"
+            thousandSeparator="."
+            separatorLimit="100000000000"
+            prefix="Rp"
+            placeholder="Rp"
+        />
+
+        <mat-error>
+            {{ form.get('promoBudget').value | errorMessage: form:'promoBudget' }}
+        </mat-error>
+    </mat-form-field>
+</ng-template>

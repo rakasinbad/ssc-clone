@@ -1,6 +1,5 @@
 import {
     ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
@@ -9,7 +8,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatRadioChange } from '@angular/material';
+import { MatCheckboxChange, MatRadioChange } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
@@ -39,6 +38,7 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
 
     platformsSinbad: { id: PlatformSinbad; label: string }[];
     promoAllocation: { id: PromoAllocation; label: string }[];
+    promoAllocationType = PromoAllocation;
     tmp: Partial<Record<TmpKey, FormControl>> = {
         imgSuggestion: new FormControl({ value: '', disabled: true }),
     };
@@ -62,7 +62,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
     formValue: EventEmitter<GeneralInfoFormDto> = new EventEmitter();
 
     constructor(
-        private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private errorMessageService: ErrorMessageService,
@@ -98,12 +97,24 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
     onChangePromoAllocationType(ev: MatRadioChange): void {
         const label = this.promoAllocation.find((item) => item.id === ev.value).label;
 
+        this._clearPromoBudgetValidation();
+
         if (ev.value === 'promo_slot' || ev.value === 'promo_budget') {
             this.promoBudgetLabel = label;
-            this._setPromoBudgetValidation();
+            this._setPromoBudgetValidation(ev.value);
         } else {
             this.promoBudgetLabel = null;
-            this._clearPromoBudgetValidation();
+        }
+    }
+
+    onChangeFirstBuy(ev: MatCheckboxChange): void {
+        const maxRedemptionCtrl = this.form.get('maxRedemption');
+
+        if (ev.checked) {
+            maxRedemptionCtrl.setValue(1);
+            maxRedemptionCtrl.disable({ onlySelf: true });
+        } else {
+            maxRedemptionCtrl.enable({ onlySelf: true });
         }
     }
 
@@ -190,7 +201,7 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
             externalId: body['promoSellerId'],
             name: body['promoName'],
             platform: body['platform'],
-            maxRedemptionPerStore: +body['maxRedemption'] || null,
+            maxRedemptionPerStore: (body['firstBuy'] ? 1 : +body['maxRedemption']) || null,
             promoSlot:
                 (body['promoAllocationType'] === PromoAllocation.PROMOSLOT &&
                     +body['promoBudget']) ||
@@ -209,17 +220,52 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
         this.formValue.emit(payload);
     }
 
-    private _setPromoBudgetValidation(): void {
-        this.form.get('promoBudget').setValidators([
+    private _setPromoBudgetValidation(type: PromoAllocation): void {
+        this.form.get('promoBudget').reset();
+
+        const validators = [
             RxwebValidators.required({
                 message: this.errorMessageService.getErrorMessageNonState('default', 'required'),
             }),
-            RxwebValidators.numeric({
-                acceptValue: NumericValueType.PositiveNumber,
-                allowDecimal: true,
-                message: this.errorMessageService.getErrorMessageNonState('default', 'pattern'),
-            }),
-        ]);
+        ];
+
+        if (type === PromoAllocation.PROMOSLOT) {
+            validators.push(
+                RxwebValidators.digit({
+                    message: this.errorMessageService.getErrorMessageNonState('default', 'numeric'),
+                }),
+
+                // max length 8 character
+                RxwebValidators.maxLength({
+                    value: 8,
+                    message: this.errorMessageService.getErrorMessageNonState(
+                        'default',
+                        'max_length',
+                        8
+                    ),
+                })
+            );
+        } else if (type === PromoAllocation.PROMOBUDGET) {
+            validators.push(
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this.errorMessageService.getErrorMessageNonState('default', 'pattern'),
+                }),
+
+                // max length 12 character
+                RxwebValidators.maxLength({
+                    value: 12,
+                    message: this.errorMessageService.getErrorMessageNonState(
+                        'default',
+                        'max_length',
+                        12
+                    ),
+                })
+            );
+        }
+
+        this.form.get('promoBudget').setValidators(validators);
         this.form.get('promoBudget').updateValueAndValidity();
     }
 
