@@ -2,6 +2,8 @@
     <span class="mat-headline"> Cross Selling Group </span>
 </div>
 
+<ng-container *ngIf="(crossSellingPromo$ | async)?.promoBenefit as crossbenefit; else noCrossBenefit">
+
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
     <span class="box-title"> Group 1 </span>
 
@@ -317,3 +319,7 @@
         <ng-container *ngSwitchDefault>-</ng-container>
     </ng-container>
 </div>
+
+</ng-container>
+
+<ng-template #noCrossBenefit> Not found Cross Selling Group.</ng-template>
