@@ -53,13 +53,13 @@ export const navigation: FuseNavigation[] = [
         type: 'collapsable',
         icon: 'custom-sinbad-catalogue-logo',
         children: [
-            {
+            /* {
                 id: 'addProduct',
                 title: 'Add Product',
                 translate: 'NAV.ADD_PRODUCT.TITLE',
                 type: 'item',
                 url: '/pages/catalogues/add',
-            },
+            }, */
             {
                 id: 'manageProduct',
                 title: 'Manage Product',
