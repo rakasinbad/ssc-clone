@@ -79,7 +79,7 @@ export class CrossSellingDetailCsgComponent implements OnInit {
     getBrands(value: IPromoBrand[]): string {
         if (value && value.length > 0) {
             const brand = value.map((v) => v.brand.name);
-
+            
             return brand.length > 0 ? brand.join(', ') : '-';
         }
 
@@ -98,8 +98,13 @@ export class CrossSellingDetailCsgComponent implements OnInit {
 
     getSkus(value: IPromoCatalogue[]): string {
         if (value && value.length > 0) {
-            const sku = value.map((v) => v.catalogue.name);
-            return sku.length > 0 ? sku.join(', ') : '-';
+            if (value[0].catalogue == null) {
+                return '-';
+            } else {
+                const sku = value.map((v) => v.catalogue.name);
+                return sku.length > 0 ? sku.join(', ') : '-';
+            }
+            
         }
 
         return '-';

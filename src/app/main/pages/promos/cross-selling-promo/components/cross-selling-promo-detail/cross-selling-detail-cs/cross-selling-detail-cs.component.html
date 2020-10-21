@@ -17,7 +17,6 @@
 
         <div class="info" fxFlexAlign="center" fxFlex="100" style="padding-top: 9px;">
             <ng-container *ngIf="segmentBase; else noSegmentBase">
-                <br/>
                 <mat-radio-group [value]="(crossSellingPromo$ | async)?.target">
                     <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id" [disabled]="true">
                         {{ row?.label }}
@@ -140,11 +139,12 @@
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+                <div class="label" fxFlexAlign="center" fxFlex="10">
+                    Specified Target
+                </div>
 
                 <div class="info" fxFlex="100">
                     <ng-container *ngIf="!(isLoading$ | async)">
-                        <br/>
                         <mat-radio-group [value]="selectTargetId">
                             <mat-radio-button
                                 *ngFor="let row of specifiedTarget"
