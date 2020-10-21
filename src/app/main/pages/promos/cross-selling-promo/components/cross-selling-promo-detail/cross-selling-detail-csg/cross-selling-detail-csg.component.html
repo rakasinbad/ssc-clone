@@ -48,7 +48,12 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
 
         <div class="info" fxFlex="100">
-            {{generalGroup1[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
+            <ng-container *ngIf="generalGroup1[0].catalogue != null; else errorInvoice">
+            {{generalGroup1[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name || '-'}}  
+            </ng-container>
+            <ng-template #errorInvoice>
+                -
+            </ng-template>
         </div>
     </div>
 
@@ -120,7 +125,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
 
         <div class="info" fxFlex="100">
-            {{generalGroup1[0].crossSellingGroupRelation}} 
+            {{generalGroup1[0].crossSellingGroupRelation || '-'}} 
         </div>
     </div>  
 
@@ -135,7 +140,7 @@
             >
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
 
-                <div class="info" fxFlex="100">{{generalGroup1[0].conditionQty}}</div>
+                <div class="info" fxFlex="100">{{generalGroup1[0].conditionQty || '-'}}</div>
             </div>
         </ng-container>
         <!-- ./ Base Condition Type Qty -->
@@ -151,7 +156,7 @@
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
 
                 <div class="info" fxFlex="100">
-                    <p thousandSeparator=".">{{generalGroup1[0].conditionValue}}</p>
+                    <p thousandSeparator=".">{{generalGroup1[0].conditionValue || '-'}}</p>
                 </div>
             </div>
         </ng-container>
@@ -207,7 +212,12 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
 
         <div class="info" fxFlex="100">
-            {{generalGroup2[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name}}  
+            <ng-container *ngIf="generalGroup2[0].catalogue != null; else errorInvoice2">
+                {{generalGroup2[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name || '-'}}  
+            </ng-container>
+            <ng-template #errorInvoice2>
+                -
+            </ng-template>
         </div>
     </div>
 
@@ -231,7 +241,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
 
         <div class="info" fxFlex="100">
-            {{generalGroup2[0].crossSellingGroupRelation}}  
+            {{generalGroup2[0].crossSellingGroupRelation || '-'}}  
         </div>
     </div>  
 
@@ -294,7 +304,7 @@
             >
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
 
-                <div class="info" fxFlex="100">{{generalGroup2[0].conditionQty}}</div>
+                <div class="info" fxFlex="100">{{generalGroup2[0].conditionQty || '-'}}</div>
             </div>
         </ng-container>
         <!-- ./ Base Condition Type Qty -->
@@ -310,7 +320,7 @@
                 <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
 
                 <div class="info" fxFlex="100">
-                    <p thousandSeparator=".">{{generalGroup2[0].conditionValue}}</p>
+                    <p thousandSeparator=".">{{generalGroup2[0].conditionValue || '-'}}</p>
                 </div>
             </div>
         </ng-container>
