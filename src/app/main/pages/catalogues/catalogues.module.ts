@@ -20,6 +20,7 @@ import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove
 import { CataloguesSelectCategoryComponent } from './catalogues-select-category/catalogues-select-category.component';
 import { CataloguesComponent } from './catalogues.component';
 import { CataloguesRoutingModule } from './catalogues.routes';
+import { CatalogueVisibilityComponent } from './components';
 import { CatalogueAmountSettingsComponent } from './components/catalogue-amount-settings/catalogue-amount-settings.component';
 import { CatalogueMediaSettingsComponent } from './components/catalogue-media-settings/catalogue-media-settings.component';
 import { CataloguePriceSettingsComponent } from './components/catalogue-price-settings/catalogue-price-settings.component';
@@ -31,25 +32,24 @@ import { CatalogueEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
 
-// import { style } from '@angular/animations';
-
 @NgModule({
     declarations: [
-        CataloguesComponent,
-        CataloguesImportComponent,
-        CataloguesAddNewProductComponent,
-        CataloguesFormComponent,
-        CataloguesSelectCategoryComponent,
-        CataloguesEditPriceStockComponent,
-        CataloguesRemoveComponent,
         CataloguesActiveInactiveComponent,
+        CataloguesAddNewProductComponent,
+        CataloguesComponent,
+        CataloguesEditPriceStockComponent,
+        CataloguesFormComponent,
+        CataloguesImportComponent,
+        CataloguesRemoveComponent,
+        CataloguesSelectCategoryComponent,
+        CatalogueVisibilityComponent,
         // Catalogue's Card Component
+        CatalogueAmountSettingsComponent,
         CatalogueDetailComponent,
-        CatalogueSkuInformationComponent,
         CatalogueMediaSettingsComponent,
         CataloguePriceSettingsComponent,
+        CatalogueSkuInformationComponent,
         CatalogueWeightAndDimensionComponent,
-        CatalogueAmountSettingsComponent,
     ],
     imports: [
         CataloguesRoutingModule,
@@ -60,7 +60,6 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         DragDropModule,
 
         RxReactiveFormsModule,
-        // RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
         QuillModule.forRoot({
             modules: {
@@ -77,14 +76,14 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         EffectsModule.forFeature([BrandEffects, CatalogueEffects, ExportsEffects]),
     ],
     entryComponents: [
-        CataloguesImportComponent,
+        CatalogueAmountSettingsComponent,
+        CataloguesActiveInactiveComponent,
         CataloguesAddNewProductComponent,
         CataloguesEditPriceStockComponent,
-        CataloguesSelectCategoryComponent,
+        CataloguesImportComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent,
+        CataloguesSelectCategoryComponent,
         CatalogueWeightAndDimensionComponent,
-        CatalogueAmountSettingsComponent,
     ],
     providers: [CatalogueFacadeService],
 })
