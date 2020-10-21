@@ -1,5 +1,6 @@
-import { Component, ViewEncapsulation, Inject, TemplateRef, EventEmitter, Output } from '@angular/core';
+import { Component, ViewEncapsulation, Inject, TemplateRef, EventEmitter, Output, forwardRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { ApplyDialogService } from './services/apply-dialog.service';
 
 @Component({
     selector: 'apply-dialog',
@@ -26,15 +27,37 @@ export class ApplyDialogComponent<T> {
                 applyValue: string,
                 closeValue: string,
                 contentClass?: Array<string>,
-                context: T,
+                handleEventManually?: boolean,
+                context?: T,
+                service?: ApplyDialogService<T>
             },
     ) {}
 
     onApply(): void {
-        this.matDialogRef.close(typeof this.data.applyValue !== undefined ? this.data.applyValue : 'apply');
+        if (!this.matDialogRef) {
+            return;
+        }
+
+        const { applyValue, handleEventManually } = this.data;
+
+        if (handleEventManually) {
+            this.data.service._apply();
+        } else {
+            this.matDialogRef.close(applyValue);
+        }
     }
 
     onClose(): void {
-        this.matDialogRef.close(null);
+        if (!this.matDialogRef) {
+            return;
+        }
+
+        const { closeValue, handleEventManually } = this.data;
+
+        if (handleEventManually) {
+            this.data.service._close();
+        } else {
+            this.matDialogRef.close(closeValue);
+        }
     }
 }

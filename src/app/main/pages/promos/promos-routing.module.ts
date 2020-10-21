@@ -79,6 +79,30 @@ const routes: Routes = [
             },
         },
     },
+    {
+        path: 'cross-selling-promo',
+        loadChildren: () =>
+            import('./cross-selling-promo/cross-selling-promo.module').then((m) => m.CrossSellingPromoModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN',
+                ],
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
 ];
 
 @NgModule({

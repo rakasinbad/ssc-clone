@@ -1,0 +1,359 @@
+<mat-card class="mb-16">
+    <div fxLayout="column">
+        <span
+            class="mat-headline"
+            [@animate]="{ value: '*', params: { delay: '120ms', x: '-25px' } }"
+        >
+            Customer Segmentation Setting
+        </span>
+
+        <div class="form-box">
+            <div
+                class="custom-field mb-8"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get('segmentationBase').value || form.get('segmentationBase').touched
+                            | hasErrorField: form.get('segmentationBase'):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Segmentation Base
+                </label>
+
+                <div fxFlexAlign="center" fxFlex="50">
+                    <ng-container *ngIf="segmentationBase; else noSegmentBase">
+                        <mat-radio-group
+                            [formControl]="form.get('segmentationBase')"
+                            (change)="onChangeSegmentBase($event)"
+                        >
+                            <mat-radio-button
+                                *ngFor="let row of segmentationBase"
+                                [value]="row?.id"
+                            >
+                                {{ row?.label }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+
+                    <ng-template #noSegmentBase>
+                        <div class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">
+                            Segmentation base not found
+                        </div>
+                    </ng-template>
+
+                    <mat-hint
+                        class="mat-error"
+                        *ngIf="
+                            form.get('segmentationBase').value ||
+                                form.get('segmentationBase').touched
+                                | hasErrorField: form.get('segmentationBase')
+                        "
+                    >
+                        {{
+                            form.get('segmentationBase').value
+                                | errorMessage: form:'segmentationBase'
+                        }}
+                    </mat-hint>
+                </div>
+            </div>
+
+            <ng-container *ngIf="form.get('segmentationBase').value === segmentBase.STORE">
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('chosenStore').value || form.get('chosenStore').touched
+                                | hasErrorField: form.get('chosenStore'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        Store<br />
+                        ({{ form.get('chosenStore').value?.length || 0 }} Selected)
+                    </label>
+
+                    <select-supplier-stores
+                        [initialSelection]="form.get('chosenStore').value || []"
+                        [disabled]="form.get('chosenStore').disabled"
+                        placeholder="Choose Store"
+                        [required]="true"
+                        (selected)="onStoreSelected($event)"
+                        fxFlex="50"
+                    >
+                        <div error>
+                            {{ form.get('chosenStore').value | errorMessage: form:'chosenStore' }}
+                        </div>
+                    </select-supplier-stores>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="form.get('segmentationBase').value === segmentBase.SEGMENTATION">
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('chosenWarehouse').value || form.get('chosenWarehouse').touched
+                                | hasErrorField: form.get('chosenWarehouse'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        Warehouse<br />
+                        ({{ form.get('chosenWarehouse').value?.length || 0 }} Selected)
+                    </label>
+
+                    <select-warehouses
+                        [initialSelection]="form.get('chosenWarehouse').value || []"
+                        [disabled]="form.get('chosenWarehouse').disabled"
+                        placeholder="Choose Warehouse"
+                        [required]="false"
+                        (selected)="onWarehouseSelected($event)"
+                        fxFlex="50"
+                    >
+                        <div error>
+                            {{
+                                form.get('chosenWarehouse').value
+                                    | errorMessage: form:'chosenWarehouse'
+                            }}
+                        </div>
+                    </select-warehouses>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('chosenStoreType').value || form.get('chosenStoreType').touched
+                                | hasErrorField: form.get('chosenStoreType'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        Store Type<br />
+                        ({{ form.get('chosenStoreType').value?.length || 0 }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        [initialSelection]="form.get('chosenStoreType').value || []"
+                        [disabled]="form.get('chosenStoreType').disabled"
+                        placeholder="Choose Store Type"
+                        title="Select Store Type"
+                        segmentationType="type"
+                        [required]="false"
+                        (selected)="onStoreTypeSelected($event)"
+                        fxFlex="50"
+                    >
+                        <div error>
+                            {{
+                                form.get('chosenStoreType').value
+                                    | errorMessage: form:'chosenStoreType'
+                            }}
+                        </div>
+                    </select-store-segmentation>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('chosenStoreGroup').value ||
+                                form.get('chosenStoreGroup').touched
+                                | hasErrorField: form.get('chosenStoreGroup'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        Store Group<br />
+                        ({{ form.get('chosenStoreGroup').value?.length || 0 }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        [initialSelection]="form.get('chosenStoreGroup').value || []"
+                        [disabled]="form.get('chosenStoreGroup').disabled"
+                        placeholder="Choose Store Group"
+                        title="Select Store Group"
+                        segmentationType="group"
+                        [required]="false"
+                        (selected)="onStoreGroupSelected($event)"
+                        fxFlex="50"
+                    >
+                        <div error>
+                            {{
+                                form.get('chosenStoreGroup').value
+                                    | errorMessage: form:'chosenStoreGroup'
+                            }}
+                        </div>
+                    </select-store-segmentation>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('chosenStoreChannel').value ||
+                                form.get('chosenStoreChannel').touched
+                                | hasErrorField: form.get('chosenStoreChannel'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        Store Channel<br />
+                        ({{ form.get('chosenStoreChannel').value?.length || 0 }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        [initialSelection]="form.get('chosenStoreChannel').value || []"
+                        [disabled]="form.get('chosenStoreChannel').disabled"
+                        placeholder="Choose Store Channel"
+                        title="Select Store Channel"
+                        segmentationType="channel"
+                        [required]="false"
+                        (selected)="onStoreChannelSelected($event)"
+                        fxFlex="50"
+                    >
+                        <div error>
+                            {{
+                                form.get('chosenStoreChannel').value
+                                    | errorMessage: form:'chosenStoreChannel'
+                            }}
+                        </div>
+                    </select-store-segmentation>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('chosenStoreCluster').value ||
+                                form.get('chosenStoreCluster').touched
+                                | hasErrorField: form.get('chosenStoreCluster'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        Store Cluster<br />
+                        ({{ form.get('chosenStoreCluster').value?.length || 0 }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        [initialSelection]="form.get('chosenStoreCluster').value || []"
+                        [disabled]="form.get('chosenStoreCluster').disabled"
+                        placeholder="Choose Store Cluster"
+                        title="Select Store Cluster"
+                        segmentationType="cluster"
+                        [required]="false"
+                        (selected)="onStoreClusterSelected($event)"
+                        fxFlex="50"
+                    >
+                        <div error>
+                            {{
+                                form.get('chosenStoreCluster').value
+                                    | errorMessage: form:'chosenStoreCluster'
+                            }}
+                        </div>
+                    </select-store-segmentation>
+                </div>
+
+                <div
+                    class="custom-field mb-8"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label
+                        [class.sinbad-red-fg]="
+                            form.get('specifiedTarget').value || form.get('specifiedTarget').touched
+                                | hasErrorField: form.get('specifiedTarget'):false
+                        "
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                    >
+                        <span class="sinbad-red-fg">*</span>
+                        Specified Target
+                    </label>
+
+                    <div fxFlexAlign="center" fxFlex="50">
+                        <ng-container *ngIf="specifiedTarget; else noSpecifiedTarget">
+                            <mat-radio-group [formControl]="form.get('specifiedTarget')">
+                                <mat-radio-button
+                                    *ngFor="let row of specifiedTarget"
+                                    [value]="row.id"
+                                >
+                                    {{ row.label }}
+
+                                    <mat-icon
+                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                        color="accent"
+                                        matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                        matTooltipClass="tooltip-br"
+                                        *ngIf="row.id === specifiedTargetType.NEW_STORE"
+                                    >
+                                        help
+                                    </mat-icon>
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </ng-container>
+
+                        <ng-template #noSpecifiedTarget>
+                            <div class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">
+                                Specified target not found
+                            </div>
+                        </ng-template>
+
+                        <mat-hint
+                            class="mat-error"
+                            *ngIf="
+                                form.get('specifiedTarget').value ||
+                                    form.get('specifiedTarget').touched
+                                    | hasErrorField: form.get('specifiedTarget')
+                            "
+                        >
+                            {{
+                                form.get('specifiedTarget').value
+                                    | errorMessage: form:'specifiedTarget'
+                            }}
+                        </mat-hint>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</mat-card>

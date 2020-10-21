@@ -342,6 +342,12 @@ body.theme-sinbad-light {
     }
 
     .custom-field {
+        &.no-form-field {
+            label {
+                top: unset;
+            }
+        }
+
         label {
             font-weight: 600 !important;
             position: relative;

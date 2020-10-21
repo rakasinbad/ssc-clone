@@ -1,5 +1,14 @@
 @import 'src/@fuse/scss/fuse';
 
+.mat-list-item-disabled {
+    .mat-list-text {
+        span.sinbad-multiple-selection {
+            opacity: 0.4;
+            font-style: italic;
+        }
+    }
+}
+
 sinbad-multiple-selection {
     .content, .relative {
         position: relative;

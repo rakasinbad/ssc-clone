@@ -33,6 +33,10 @@ export class CatalogueApiService {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
+        if (params['fakturName']) {
+            newArgs.push({ key: 'fakturName', value: params['fakturName'] });
+        }
+
         if (params['keyword']) {
             params['search'] = [
                 {
