@@ -1,13 +1,12 @@
 import {
     AfterViewInit,
-    ChangeDetectionStrategy,
     Component,
     ElementRef,
     OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -23,6 +22,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { GeneratorService, HelperService, NoticeService } from 'app/shared/helpers';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
@@ -30,13 +30,12 @@ import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
-
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { Catalogue } from './models';
-import { CataloguesService } from './services';
+import { CatalogueFacadeService, CataloguesService } from './services';
 import { statusCatalogue } from './status';
 import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
@@ -50,33 +49,46 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
     styleUrls: ['./catalogues.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
+    private breadCrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Catalogue',
+            translate: 'BREADCRUMBS.CATALOGUE',
+        },
+        {
+            title: 'Manage Product',
+            translate: 'BREADCRUMBS.MANAGE_PRODUCT',
+            active: true,
+        },
+    ];
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Catalogue'
+            label: 'Catalogue',
         },
         search: {
-            active: true
+            active: true,
         },
         add: {
-            permissions: ['CATALOGUE.CREATE']
+            permissions: ['CATALOGUE.CREATE'],
         },
         export: {
             permissions: ['CATALOGUE.EXPORT'],
             useAdvanced: true,
-            pageType: 'catalogues'
+            pageType: 'catalogues',
         },
         import: {
             permissions: ['CATALOGUE.IMPORT'],
             useAdvanced: true,
-            pageType: 'catalogues'
-        }
+            pageType: 'catalogues',
+        },
     };
 
     dataSource: MatTableDataSource<Catalogue>;
@@ -89,7 +101,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         'price',
         // 'stock',
         // 'sales',
-        'actions'
+        'type',
+        'actions',
     ];
     displayedColumns = this.initialDisplayedColumns;
     hasSelected: boolean;
@@ -122,6 +135,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         private exportStore: Store<fromExport.State>,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private catalogueFacade: CatalogueFacadeService,
         private _$catalogue: CataloguesService,
         private _$generate: GeneratorService,
         private matDialog: MatDialog,
@@ -133,25 +147,6 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home'
-                        // translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Catalogue',
-                        translate: 'BREADCRUMBS.CATALOGUE'
-                    },
-                    {
-                        title: 'Manage Product',
-                        translate: 'BREADCRUMBS.MANAGE_PRODUCT',
-                        active: true
-                    }
-                ]
-            })
-        );
         this.statusCatalogue = statusCatalogue;
 
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
@@ -160,7 +155,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private updatePrivileges(): void {
         this.ngxPermissionsService
             .hasPermission(['CATALOGUE.UPDATE', 'CATALOGUE.DELETE'])
-            .then(result => {
+            .then((result) => {
                 // Jika ada permission-nya.
                 if (result) {
                     if (this.findCatalogueMode === 'blocked') {
@@ -171,7 +166,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                             'blockType',
                             'blockReason',
                             'blockSuggest',
-                            'actions'
+                            'actions',
                         ];
                     } else {
                         this.displayedColumns = this.initialDisplayedColumns;
@@ -184,7 +179,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                             'timeLimit',
                             'blockType',
                             'blockReason',
-                            'blockSuggest'
+                            'blockSuggest',
                             // 'actions'
                         ];
                     } else {
@@ -197,7 +192,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                             'price',
                             // 'stock',
                             // 'sales',
-                            'actions'
+                            'actions',
                         ];
                     }
                 }
@@ -206,9 +201,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private applyCardHeaderEvent(): void {
         // Mengimplementasi event klik tombol "Add" dari card header menuju halaman Add Product.
-        this.cardHeaderConfig.add.onClick = () => {
-            this.router.navigate(['/pages/catalogues/add']);
-        };
+        // this.cardHeaderConfig.add.onClick = () => {
+        //     this.router.navigate(['/pages/catalogues/add']);
+        // };
 
         // Mengimplementasi event "Search" dari card header menuju fungsi onSearch.
         this.cardHeaderConfig.search.changed = (value: string) => this.onSearch(value);
@@ -219,6 +214,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        this.catalogueFacade.createBreadcrumb(this.breadCrumbs);
         // Mengimplementasi event-event dari konfigurasi card header.
         this.applyCardHeaderEvent();
 
@@ -241,7 +237,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(CatalogueSelectors.getRefreshStatus)
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(needRefresh => {
+            .subscribe((needRefresh) => {
                 if (needRefresh) {
                     this.onRefreshTable();
                 }
@@ -293,7 +289,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(CatalogueSelectors.getRefreshStatus)
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(status => {
+            .subscribe((status) => {
                 if (status) {
                     this.onRefreshTable();
                 }
@@ -310,7 +306,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Set default first status active
         this.store.dispatch(
             UiActions.setCustomToolbarActive({
-                payload: 'all-type'
+                payload: 'all-type',
             })
         );
 
@@ -330,12 +326,12 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(CatalogueSelectors.getAllTotalCatalogue)
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(payload => {
+            .subscribe((payload) => {
                 const {
                     totalAllStatus: allCount,
                     totalActive: liveCount,
                     totalEmptyStock: emptyStock,
-                    totalBanned: blockedCount
+                    totalBanned: blockedCount,
                 } = payload;
 
                 this.store.dispatch(
@@ -343,8 +339,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         payload: {
                             id: 'all-type',
                             properties: { title: `All (${allCount})` },
-                            key: 'customNavigation'
-                        }
+                            key: 'customNavigation',
+                        },
                     })
                 );
 
@@ -352,9 +348,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     UiActions.updateItemNavigation({
                         payload: {
                             id: 'live',
-                            properties: { title: `Live (${liveCount})` },
-                            key: 'customNavigation'
-                        }
+                            properties: { title: `Active (${liveCount})` },
+                            key: 'customNavigation',
+                        },
                     })
                 );
 
@@ -363,8 +359,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         payload: {
                             id: 'empty',
                             properties: { title: `Empty (${emptyStock})` },
-                            key: 'customNavigation'
-                        }
+                            key: 'customNavigation',
+                        },
                     })
                 );
 
@@ -373,8 +369,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         payload: {
                             id: 'banned',
                             properties: { title: `Banned (${blockedCount})` },
-                            key: 'customNavigation'
-                        }
+                            key: 'customNavigation',
+                        },
                     })
                 );
 
@@ -383,8 +379,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         payload: {
                             id: 'inactive',
                             properties: { title: `Inactive` },
-                            key: 'customNavigation'
-                        }
+                            key: 'customNavigation',
+                        },
                     })
                 );
             });
@@ -392,7 +388,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store
             .select(UiSelectors.getCustomToolbarActive)
             .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(index => {
+            .subscribe((index) => {
                 // console.log('INDEX', index);
                 // if (index === 'blocked') {
                 //     this.displayedColumns = [
@@ -433,6 +429,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.initTable();
             });
         // this.initTable();
+    }
+
+    onClickAddCatalogue(): void {
+        this.router.navigateByUrl('/pages/catalogues/add');
     }
 
     onSearch($event: string): void {
@@ -485,7 +485,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     viewProduct(id: string): void {
         this.store.dispatch(
             CatalogueActions.setSelectedCatalogue({
-                payload: id
+                payload: id,
             })
         );
         this.router.navigate(['/pages/catalogues/view', id]);
@@ -496,7 +496,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const data: IQueryParams = {
             limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
+            skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
 
         data['paginate'] = true;
@@ -510,7 +510,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.store.dispatch(
             CatalogueActions.fetchCataloguesRequest({
-                payload: data
+                payload: data,
             })
         );
 
@@ -583,10 +583,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     onImportProduct(): void {
         this.matDialog.open(CataloguesImportComponent, {
             data: {
-                title: 'Import'
+                title: 'Import',
             },
             disableClose: true,
-            width: '1000px'
+            width: '1000px',
         });
     }
 
@@ -599,18 +599,18 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     data: {
                         // catalogueId: catalogue.id,
                         catalogue,
-                        editMode
+                        editMode,
                         // price: catalogue.suggestRetailPrice,
                         // stock: catalogue.stock
                     },
-                    disableClose: false
+                    disableClose: false,
                 }),
             100
         );
     }
 
     onDownload(template: string): void {
-        this._helper.downloadTemplate().subscribe(links => {
+        this._helper.downloadTemplate().subscribe((links) => {
             for (const type of Object.keys(links)) {
                 if (type === template) {
                     return window.open(links[type], '_blank');
@@ -619,7 +619,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
             return this._notice.open('Template not found.', 'error', {
                 horizontalPosition: 'right',
-                verticalPosition: 'bottom'
+                verticalPosition: 'bottom',
             });
         });
     }
@@ -637,7 +637,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -679,16 +679,16 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 data['search'] = [
                     {
                         fieldName: 'name',
-                        keyword: this.search
+                        keyword: this.search,
                     },
                     {
                         fieldName: 'sku',
-                        keyword: this.search
+                        keyword: this.search,
                     },
                     {
                         fieldName: 'external_id',
-                        keyword: this.search
-                    }
+                        keyword: this.search,
+                    },
                 ];
             }
 
@@ -696,7 +696,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
             this.store.dispatch(
                 CatalogueActions.fetchCataloguesRequest({
-                    payload: data
+                    payload: data,
                 })
             );
         }
