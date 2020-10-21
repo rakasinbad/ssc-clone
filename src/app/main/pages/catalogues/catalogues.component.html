@@ -132,7 +132,7 @@
                 <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Base Price</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <a class="fuse-black-fg">
+                        <span class="fuse-black-fg">
                             <p
                                 *ngIf="
                                     !!row?.discountedRetailBuyingPrice ||
@@ -154,7 +154,7 @@
                                     }}
                                 </p>
                             </ng-template>
-                        </a>
+                        </span>
                     </mat-cell>
                 </ng-container>
                 <!-- / Product's Price Column -->
