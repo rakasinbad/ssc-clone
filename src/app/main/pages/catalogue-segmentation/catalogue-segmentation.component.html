@@ -1,0 +1,17 @@
+<div id="catalogue-segmentations" class="page-layout carded fullwidth inner-scroll">
+    <!-- SECTION CENTER -->
+    <div class="center p-8">
+        <!-- <sinbad-horizontal-filter class="mb-8 has-border" [filters]="statusFilter" (selected)="onSelectedStatusFilter($event)" title="Sinbad Filter"></sinbad-horizontal-filter> -->
+
+        <!-- SECTION CONTENT CARD -->
+        <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+            <app-catalogue-segmentation-list class="px-16"></app-catalogue-segmentation-list>
+
+            <!-- <app-sinbad-store-list class="px-16" [approvalStatus]="approvalStatus" [keyword]="keyword" (rowSelected)="onRowSelected($event)"></app-sinbad-store-list> -->
+        </div>
+        <!-- !SECTION CONTENT CARD -->
+    </div>
+    <!-- !SECTION CENTER -->
+</div>
