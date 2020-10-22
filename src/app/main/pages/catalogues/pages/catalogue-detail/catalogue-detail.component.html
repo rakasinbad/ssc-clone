@@ -104,7 +104,7 @@
             </mat-tab>
             <!-- / SKU INFORMATION TAB -->
 
-            <!-- SEGMENTATION SETTING TAB -->
+            <!-- SEGMENTATION SETTINGS TAB -->
             <mat-tab label="Segmentation Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-price-settings
@@ -116,8 +116,9 @@
                     ></catalogue-price-settings>
                 </ng-template>
             </mat-tab>
-            <!-- / SEGMENTATION SETTING TAB -->
+            <!-- / SEGMENTATION SETTINGS TAB -->
 
+            <!-- MEDIA SETTINGS TAB -->
             <mat-tab label="Media Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-media-settings
@@ -127,8 +128,10 @@
                     ></catalogue-media-settings>
                 </ng-template>
             </mat-tab>
+            <!-- / MEDIA SETTINGS TAB -->
 
-            <mat-tab label="Weight & Dimension" [disabled]="isEditMode()">
+            <!-- DELIVERY TAB -->
+            <mat-tab label="Delivery" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-weight-and-dimension
                         [(formMode)]="formMode"
@@ -137,7 +140,9 @@
                     ></catalogue-weight-and-dimension>
                 </ng-template>
             </mat-tab>
+            <!-- / DELIVERY TAB -->
 
+            <!-- AMOUNT SETTINGS TAB -->
             <mat-tab label="Amount Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-amount-settings
@@ -147,6 +152,7 @@
                     ></catalogue-amount-settings>
                 </ng-template>
             </mat-tab>
+            <!-- / AMOUNT SETTINGS TAB -->
 
             <!-- VISIBILITY TAB -->
             <mat-tab label="Visibility" [disabled]="isEditMode()">
