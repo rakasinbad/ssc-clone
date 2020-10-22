@@ -1,11 +1,18 @@
 <!-- CONTENT CARD (BERAT DAN DIMENSI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Weight & Dimension</div>
+        <div class="font-weight-600 font-size-24 line-height-20">Delivery</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
-        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
             <!-- BERAT PER PCS PRODUK -->
             <div
                 [ngClass]="formClass"
@@ -17,14 +24,19 @@
                     class="pr-0"
                     fxFlexAlign="center"
                     fxFlex="18"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('productShipment.catalogueWeight'))"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productShipment.catalogueWeight'))
+                    "
                 >
-                    <span
-                        class="red-500-fg"
-                    >* </span>Weight per Pcs
+                    <span class="red-500-fg">* </span>Weight per Pcs
                 </label>
-        
-                <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
+
+                <mat-form-field
+                    appearance="outline"
+                    fxFlex="80"
+                    fxFlexAlign="center"
+                    *ngIf="!isViewMode()"
+                >
                     <input
                         matInput
                         name="weight"
@@ -34,20 +46,32 @@
                         suffix=" gr"
                         placeholder="in gram(s)"
                     />
-                    <mat-error
-                        *ngIf="hasError(form.get('productShipment.catalogueWeight'))"
-                    >
+                    <mat-error *ngIf="hasError(form.get('productShipment.catalogueWeight'))">
                         {{ getFormError(form.get('productShipment.catalogueWeight')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productShipment.catalogueWeight').value !== 'null'">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="
+                        isViewMode() && form.get('productShipment.catalogueWeight').value !== 'null'
+                    "
+                >
                     {{ form.get('productShipment.catalogueWeight').value | number: '1.0-2' }} gr
                 </span>
-                <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productShipment.catalogueWeight').value === 'null'">
+                <span
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="
+                        isViewMode() && form.get('productShipment.catalogueWeight').value === 'null'
+                    "
+                >
                     -
                 </span>
             </div>
             <!-- / BERAT PER PCS PRODUK -->
+
             <!-- BERAT PER MASTER BOX PRODUK -->
             <div
                 [ngClass]="formClass"
@@ -59,12 +83,19 @@
                     class="pr-0"
                     fxFlexAlign="center"
                     fxFlex="18"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('productShipment.packagedWeight'))"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productShipment.packagedWeight'))
+                    "
                 >
-                    Weight per <br/>Master Box
+                    Weight per <br />Master Box
                 </label>
-        
-                <mat-form-field appearance="outline" fxFlex="80"  fxFlexAlign="center" *ngIf="!isViewMode()">
+
+                <mat-form-field
+                    appearance="outline"
+                    fxFlex="80"
+                    fxFlexAlign="center"
+                    *ngIf="!isViewMode()"
+                >
                     <input
                         matInput
                         name="weight"
@@ -74,20 +105,29 @@
                         suffix=" gr"
                         placeholder="in gram(s)"
                     />
-                    <mat-error
-                        *ngIf="hasError(form.get('productShipment.packagedWeight'))"
-                    >
+                    <mat-error *ngIf="hasError(form.get('productShipment.packagedWeight'))">
                         {{ getFormError(form.get('productShipment.packagedWeight')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productShipment.packagedWeight').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productShipment.packagedWeight').value"
+                >
                     {{ form.get('productShipment.packagedWeight').value | number: '1.0-2' }} gr
                 </span>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productShipment.packagedWeight').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productShipment.packagedWeight').value"
+                >
                     -
                 </span>
             </div>
             <!-- / BERAT PER MASTER BOX PRODUK -->
+
             <!-- DIMENSI PER PCS PRODUK -->
             <div
                 [ngClass]="formClass"
@@ -99,15 +139,21 @@
                     class="pr-0"
                     fxFlexAlign="center"
                     fxFlex="18"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('productShipment.catalogueDimension'))"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productShipment.catalogueDimension'))
+                    "
                 >
-                    <span
-                        class="red-500-fg"
-                    >* </span>Dimension per <br/>Pcs
+                    <span class="red-500-fg">* </span>Dimension per <br />Pcs
                 </label>
 
-                <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
-                    <input matInput
+                <mat-form-field
+                    appearance="outline"
+                    fxFlex="80"
+                    fxFlexAlign="center"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
                         name="width"
                         formControlName="catalogueDimension"
                         mask="separator"
@@ -115,20 +161,29 @@
                         suffix=" cm³"
                         thousandSeparator="."
                     />
-                    <mat-error
-                        *ngIf="hasError(form.get('productShipment.catalogueDimension'))"
-                    >
+                    <mat-error *ngIf="hasError(form.get('productShipment.catalogueDimension'))">
                         {{ getFormError(form.get('productShipment.catalogueDimension')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productShipment.catalogueDimension').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productShipment.catalogueDimension').value"
+                >
                     {{ form.get('productShipment.catalogueDimension').value | number: '1.0-2' }} cm³
                 </span>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productShipment.catalogueDimension').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productShipment.catalogueDimension').value"
+                >
                     -
                 </span>
             </div>
             <!-- / DIMENSI PER PCS PRODUK -->
+
             <!-- DIMENSI PER MASTER BOX PRODUK -->
             <div
                 [ngClass]="formClass"
@@ -140,13 +195,21 @@
                     fxFlexAlign="center"
                     fxFlex="18"
                     class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('productShipment.packagedDimension'))"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productShipment.packagedDimension'))
+                    "
                 >
-                    Dimension per <br/>Master Box
+                    Dimension per <br />Master Box
                 </label>
 
-                <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
-                    <input matInput
+                <mat-form-field
+                    appearance="outline"
+                    fxFlex="80"
+                    fxFlexAlign="center"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
                         name="width"
                         formControlName="packagedDimension"
                         mask="separator"
@@ -154,16 +217,24 @@
                         placeholder="in cm³"
                         suffix=" cm³"
                     />
-                    <mat-error
-                        *ngIf="hasError(form.get('productShipment.packagedDimension'))"
-                    >
+                    <mat-error *ngIf="hasError(form.get('productShipment.packagedDimension'))">
                         {{ getFormError(form.get('productShipment.packagedDimension')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productShipment.packagedDimension').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productShipment.packagedDimension').value"
+                >
                     {{ form.get('productShipment.packagedDimension').value | number: '1.0-2' }} cm³
                 </span>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productShipment.packagedDimension').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productShipment.packagedDimension').value"
+                >
                     -
                 </span>
             </div>
