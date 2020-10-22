@@ -67,6 +67,12 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/catalogues/list',
             },
+            {
+                id: 'segmentation',
+                title: 'Catalogue Segmentation',
+                type: 'item',
+                url: '/pages/catalogue-segmentations',
+            },
         ],
     },
     {
@@ -249,7 +255,6 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/promos/voucher',
             },
-            
         ],
     },
 ];
