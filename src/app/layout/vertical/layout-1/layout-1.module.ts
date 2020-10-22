@@ -8,11 +8,7 @@ import { NavbarModule } from 'app/layout/components/navbar/navbar.module';
 import { QuickPanelModule } from 'app/layout/components/quick-panel/quick-panel.module';
 import { ToolbarModule } from 'app/layout/components/toolbar/toolbar.module';
 import { VerticalLayout1Component } from 'app/layout/vertical/layout-1/layout-1.component';
-import { SinbadFilterModule } from 'app/shared/components/sinbad-filter/sinbad-filter.module';
-
 import { FooterActionModule } from './../../components/footer-action/footer-action.module';
-
-// import { AccountMerchantQuickPanelModule } from 'app/main/pages/accounts/account-detail/account-merchant-quick-panel/account-merchant-quick-panel.module';
 
 @NgModule({
     declarations: [VerticalLayout1Component],
@@ -29,7 +25,7 @@ import { FooterActionModule } from './../../components/footer-action/footer-acti
         ToolbarModule,
 
         FooterActionModule,
-        SinbadFilterModule,
+        // SinbadFilterModule,
         // AccountMerchantQuickPanelModule
     ],
     exports: [VerticalLayout1Component],

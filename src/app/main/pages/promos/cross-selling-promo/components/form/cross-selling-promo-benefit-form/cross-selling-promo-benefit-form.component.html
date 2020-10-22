@@ -1,0 +1,317 @@
+<mat-card>
+    <div fxLayout="column">
+        <span
+            class="mat-headline"
+            [@animate]="{ value: '*', params: { delay: '120ms', x: '-25px' } }"
+        >
+            Benefit Settings
+        </span>
+
+        <div class="form-box">
+            <div
+                class="box-group"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex="63.7"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <span
+                    class="field-head-wrapper"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between stretch"
+                >
+                    <span class="box-title" fxFlexAlign="center"> Benefit </span>
+                </span>
+
+                <div class="field-content-instruction" fxLayout="row" fxLayoutAlign="start stretch">
+                    <div
+                        class="field-wrapper instruction p-16"
+                        fxLayout="column"
+                        fxLayoutAlign="start stretch"
+                        fxFlex="1 1 auto"
+                    >
+                        <span class="field-title">
+                            Benefit
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Define the benefit of your promo&#10;program that will be granted to your&#10;customers here."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                        </span>
+
+                        <!-- BENEFIT TYPE -->
+                        <div
+                            class="custom-field no-form-field mb-8"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label
+                                [class.sinbad-red-fg]="
+                                    form.get('benefitType').value || form.get('benefitType').touched
+                                        | hasErrorField: form.get('benefitType'):false
+                                "
+                                fxFlexAlign="center"
+                                fxFlex="16"
+                            >
+                                <span class="sinbad-red-fg">*</span>
+                                Benefit Type
+                            </label>
+
+                            <div fxFlexAlign="center" fxFlex="50">
+                                <ng-container *ngIf="benefitType; else noBenefitType">
+                                    <mat-radio-group
+                                        [formControl]="form.get('benefitType')"
+                                        (change)="onChangeBenefitType($event)"
+                                    >
+                                        <mat-radio-button
+                                            *ngFor="let row of benefitType"
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
+
+                                <ng-template #noBenefitType> - </ng-template>
+
+                                <mat-hint
+                                    class="mat-error"
+                                    *ngIf="
+                                        form.get('benefitType').value ||
+                                            form.get('benefitType').touched
+                                            | hasErrorField: form.get('benefitType')
+                                    "
+                                >
+                                    {{
+                                        form.get('benefitType').value
+                                            | errorMessage: form:'benefitType'
+                                    }}
+                                </mat-hint>
+                            </div>
+                        </div>
+                        <!-- / BENEFIT TYPE -->
+
+                        <ng-container [ngSwitch]="form.get('benefitType').value">
+                            <ng-container *ngSwitchCase="conditionBenefitType.QTY">
+                                <ng-container
+                                    *ngTemplateOutlet="benefitQty; context: { form: form }"
+                                ></ng-container>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="conditionBenefitType.AMOUNT">
+                                <ng-container
+                                    *ngTemplateOutlet="benefitAmount; context: { form: form }"
+                                ></ng-container>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="conditionBenefitType.PERCENT">
+                                <ng-container
+                                    *ngTemplateOutlet="benefitPercent; context: { form: form }"
+                                ></ng-container
+                            ></ng-container>
+                        </ng-container>
+                    </div>
+
+                    <!-- CARD-INSTRUCTION -->
+                    <card-instruction class="card-instruction">
+                        <p class="title">Instruction</p>
+
+                        <p class="font-size-10">
+                            Sample Case:<br /><br />
+                            Group 1:<br />
+                            Chosen SKU = SKU A<br />
+                            Qty = 5<br /><br />
+
+                            Group 2:<br />
+                            Chosen SKU = SKU B<br />
+                            Order Value = 100.000<br /><br />
+
+                            Benefit:<br />
+                            Rebate = 10.000<br /><br />
+
+                            If:<br />
+                            1. Toko Indah ordered 5 SKU A and 100.000 worth of SKU B, then<br />
+                            Toko Indah gets 10.000 price cut.<br />
+                            2. Toko Indah ordered 2 SKU A and 100.000 worth of SKU B, then<br />
+                            Toko Indah will not get the promo.<br />
+                            3. Toko Indah ordered 5 SKU A and 50.000 worth of SKU B, then<br />
+                            Toko Indah will not get the promo.<br />
+                            4. Toko Indah ordered 10 SKU A and 200.000 worth of SKU B, then<br />
+                            Toko Indah gets 10.000 price cut.
+                        </p>
+                    </card-instruction>
+                    <!-- ./ CARD-INSTRUCTION -->
+                </div>
+            </div>
+        </div>
+    </div>
+</mat-card>
+
+<!-- TEMPLATE BENEFIT TYPE -->
+<ng-template let-form="form" #benefitQty>
+    <!-- BONUS SKU FIELD -->
+    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <label
+            [class.sinbad-red-fg]="
+                form.get('benefitCatalogueId').value || form.get('benefitCatalogueId').touched
+                    | hasErrorField: form.get('benefitCatalogueId'):false
+            "
+            fxFlexAlign="center"
+            fxFlex="16"
+        >
+            <span class="sinbad-red-fg">*</span>
+            Bonus SKU {{ fakturName || '-' }}
+        </label>
+
+        <select-catalogues
+            mode="single"
+            [invoiceGroupName]="fakturName || null"
+            [disabled]="form.get('benefitCatalogueId').disabled || !fakturName"
+            [initialSelection]="form.get('benefitCatalogueId').value || null"
+            [required]="true"
+            (selected)="onSkuSelected($event)"
+            (focusout)="onSkuFocusOut($event)"
+            fxFlex="60"
+        >
+            <div error>
+                {{ form.get('benefitCatalogueId').value | errorMessage: form:'benefitCatalogueId' }}
+            </div>
+        </select-catalogues>
+    </div>
+    <!-- / BONUS SKU FIELD -->
+
+    <!-- BONUS QTY FIELD -->
+    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <label
+            [class.sinbad-red-fg]="
+                form.get('benefitBonusQty').value || form.get('benefitBonusQty').touched
+                    | hasErrorField: form.get('benefitBonusQty'):false
+            "
+            fxFlexAlign="center"
+            fxFlex="16"
+        >
+            <span class="sinbad-red-fg">*</span>
+            Bonus Qty
+        </label>
+
+        <mat-form-field appearance="outline" fxFlex="60">
+            <input
+                matInput
+                [formControl]="form.get('benefitBonusQty')"
+                mask="09999"
+                autocomplete="off"
+            />
+
+            <mat-error>
+                {{ form.get('benefitBonusQty').value | errorMessage: form:'benefitBonusQty' }}
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <!-- / BONUS QTY FIELD -->
+</ng-template>
+
+<ng-template let-form="form" #benefitAmount>
+    <!-- REBATE FIELD -->
+    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <label
+            [class.sinbad-red-fg]="
+                form.get('benefitRebate').value || form.get('benefitRebate').touched
+                    | hasErrorField: form.get('benefitRebate'):false
+            "
+            fxFlexAlign="center"
+            fxFlex="16"
+        >
+            <span class="sinbad-red-fg">*</span>
+            Rebate
+        </label>
+
+        <mat-form-field appearance="outline" fxFlex="60">
+            <input
+                matInput
+                [formControl]="form.get('benefitRebate')"
+                mask="separator.2"
+                thousandSeparator="."
+                prefix="Rp"
+                placeholder="Rp"
+                autocomplete="off"
+            />
+
+            <mat-error>
+                {{ form.get('benefitRebate').value | errorMessage: form:'benefitRebate' }}
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <!-- / REBATE FIELD -->
+</ng-template>
+
+<ng-template let-form="form" #benefitPercent>
+    <!-- DISCOUNT FIELD -->
+    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <label
+            [class.sinbad-red-fg]="
+                form.get('benefitDiscount').value || form.get('benefitDiscount').touched
+                    | hasErrorField: form.get('benefitDiscount'):false
+            "
+            fxFlexAlign="center"
+            fxFlex="16"
+        >
+            <span class="sinbad-red-fg">*</span>
+            % Discount
+        </label>
+
+        <mat-form-field appearance="outline" fxFlex="60">
+            <input
+                type="number"
+                matInput
+                [formControl]="form.get('benefitDiscount')"
+                min="0"
+                max="100"
+                step="0.5"
+                autocomplete="off"
+            />
+
+            <mat-error>
+                {{ form.get('benefitDiscount').value | errorMessage: form:'benefitDiscount' }}
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <!-- / DISCOUNT FIELD -->
+
+    <!-- MAX REBATE FIELD -->
+    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <label
+            [class.sinbad-red-fg]="
+                form.get('benefitMaxRebate').value || form.get('benefitMaxRebate').touched
+                    | hasErrorField: form.get('benefitMaxRebate'):false
+            "
+            fxFlexAlign="center"
+            fxFlex="16"
+        >
+            <span class="sinbad-red-fg">*</span>
+            Max Rebate
+        </label>
+
+        <mat-form-field appearance="outline" fxFlex="60">
+            <input
+                matInput
+                [formControl]="form.get('benefitMaxRebate')"
+                mask="separator.2"
+                thousandSeparator="."
+                prefix="Rp"
+                placeholder="Rp"
+                autocomplete="off"
+            />
+
+            <mat-error>
+                {{ form.get('benefitMaxRebate').value | errorMessage: form:'benefitMaxRebate' }}
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <!-- / MAX REBATE FIELD -->
+</ng-template>
+<!-- / TEMPLATE BENEFIT TYPE -->

@@ -232,6 +232,12 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/promos/flexi-combo',
             },
             {
+                id: 'cross-selling-promo',
+                title: 'Cross Selling Promo',
+                type: 'item',
+                url: '/pages/promos/cross-selling-promo',
+            },
+            {
                 id: 'period-target-promo',
                 title: 'Period Target Promo',
                 type: 'item',
@@ -243,6 +249,7 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/promos/voucher',
             },
+            
         ],
     },
 ];
