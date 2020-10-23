@@ -1,0 +1,164 @@
+<mat-table
+    class="catalogue-segmentation-list sinbad-table"
+    #table
+    [dataSource]="dataSource"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Segmentation Name Column -->
+    <ng-container matColumnDef="segmentation-name">
+        <mat-header-cell *matHeaderCellDef>Segmentation Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+    <!-- / Segmentation Name Column -->
+
+    <!-- Warehouse Column -->
+    <ng-container matColumnDef="warehouse-name">
+        <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.warehouses || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+    <!-- / Warehouse Column -->
+
+    <!-- Store Types Column -->
+    <ng-container matColumnDef="store-type">
+        <mat-header-cell *matHeaderCellDef>Types</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.types || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+    <!-- / Store Types Column -->
+
+    <!-- Store Groups Column -->
+    <ng-container matColumnDef="store-group">
+        <mat-header-cell *matHeaderCellDef>Groups</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.groups || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+    <!-- / Store Groups Column -->
+
+    <!-- Store Channels Column -->
+    <ng-container matColumnDef="store-channel">
+        <mat-header-cell *matHeaderCellDef>Channels</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.channels || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+    <!-- / Store Channels Column -->
+
+    <!-- Store Clusters Column -->
+    <ng-container matColumnDef="store-cluster">
+        <mat-header-cell *matHeaderCellDef>Clusters</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-word-break-break-word">
+                {{ row?.clusters || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+    <!-- / Store Clusters Column -->
+
+    <!-- Status Column -->
+    <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <mat-icon
+                class="status-icon s-24"
+                svgIcon="sinbad-check-active"
+                title="Active"
+                *ngIf="row.status === 'active'"
+            ></mat-icon>
+            <mat-icon
+                class="status-icon s-24"
+                svgIcon="sinbad-check-inactive"
+                title="Inactive"
+                *ngIf="row.status === 'inactive'"
+            ></mat-icon>
+        </mat-cell>
+    </ng-container>
+    <!-- / Status Column -->
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <button
+                type="button"
+                mat-icon-button
+                [matMenuTriggerFor]="actionMenu"
+                aria-label="More"
+                title="More Action"
+                (click)="$event.stopPropagation()"
+            >
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu class="actions-panel" #actionMenu="matMenu">
+                <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                    <button
+                        type="button"
+                        mat-menu-item
+                        class="sinbad-mat-menu-item"
+                        aria-label="Inactive"
+                        *ngIf="row?.status === 'active'"
+                    >
+                        <mat-icon>archive</mat-icon>
+                        <span>Inactive</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-menu-item
+                        class="sinbad-mat-menu-item"
+                        aria-label="Active"
+                        *ngIf="row?.status === 'inactive'"
+                    >
+                        <mat-icon>unarchive</mat-icon>
+                        <span>Active</span>
+                    </button>
+                </ng-template>
+
+                <ng-template [ngxPermissionsOnly]="['CATALOGUE.DELETE']">
+                    <button
+                        type="button"
+                        mat-menu-item
+                        class="sinbad-mat-menu-item"
+                        aria-label="Delete"
+                    >
+                        <mat-icon>delete</mat-icon>
+                        <span>Delete</span>
+                    </button>
+                </ng-template>
+            </mat-menu>
+        </mat-cell>
+    </ng-container>
+    <!-- / Actions Column -->
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="catalogue-segmentation-list__item"
+    ></mat-row>
+</mat-table>
+
+<mat-paginator
+    [disabled]="false"
+    [length]="100"
+    [pageSize]="dataSource.total"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+></mat-paginator>
