@@ -7,6 +7,7 @@ import { CatalogueSegmentationComponent } from './catalogue-segmentation.compone
 import { CatalogueSegmentationRoutingModule } from './catalogue-segmentation.routes';
 import { CatalogueSegmentationListComponent } from './components';
 import { CatalogueSegmentationFacadeService } from './services';
+import { CatalogueSegmentationNgrxModule } from './store';
 
 @NgModule({
     declarations: [CatalogueSegmentationComponent, CatalogueSegmentationListComponent],
@@ -19,6 +20,8 @@ import { CatalogueSegmentationFacadeService } from './services';
 
         RxReactiveFormsModule,
         NgxPermissionsModule.forChild(),
+
+        CatalogueSegmentationNgrxModule,
     ],
     providers: [CatalogueSegmentationFacadeService],
 })
