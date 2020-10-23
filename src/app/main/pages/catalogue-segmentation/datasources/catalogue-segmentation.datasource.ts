@@ -1,5 +1,5 @@
-import { DataSource } from '@angular/cdk/table';
-import { Observable, Subject } from 'rxjs';
+import { DataSource } from '@angular/cdk/collections';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export class CatalogueSegmentationDataSource implements DataSource<any> {
     private sample = [
@@ -24,7 +24,7 @@ export class CatalogueSegmentationDataSource implements DataSource<any> {
             status: 'inactive',
         },
     ];
-    private sources$: Subject<any> = new Subject();
+    private sources$: BehaviorSubject<any> = new BehaviorSubject([]);
 
     total = this.sample.length;
 

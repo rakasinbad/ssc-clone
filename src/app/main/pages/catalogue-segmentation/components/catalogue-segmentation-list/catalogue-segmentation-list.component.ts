@@ -4,6 +4,7 @@ import {
     Component,
     ElementRef,
     Input,
+    OnDestroy,
     OnInit,
     ViewChild,
     ViewEncapsulation,
@@ -23,7 +24,7 @@ import { CatalogueSegmentationDataSource } from '../../datasources';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit {
+export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     readonly defaultPageSize = environment.pageSize;
@@ -73,6 +74,11 @@ export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit
                 this.table.nativeElement.scrollTop = 0;
                 this._initTable();
             });
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     private _initTable(): void {
