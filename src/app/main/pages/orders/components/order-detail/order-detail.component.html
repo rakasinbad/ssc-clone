@@ -285,7 +285,7 @@
 
                                 <ng-container *ngIf="!loading">
                                     {{
-                                        (data?.parcelNettPrice
+                                        ((data?.parcelGrossPrice-data?.parcelPromo-data?.parcelVoucher)
                                             | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                                     }}
                                 </ng-container>
