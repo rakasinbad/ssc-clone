@@ -5,12 +5,23 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { CatalogueSegmentationComponent } from './catalogue-segmentation.component';
 import { CatalogueSegmentationRoutingModule } from './catalogue-segmentation.routes';
-import { CatalogueSegmentationListComponent } from './components';
+import {
+    CatalogueListComponent,
+    CatalogueSegmentationFormComponent,
+    CatalogueSegmentationListComponent,
+} from './components';
+import { CatalogueSegmentationFormPageComponent } from './pages';
 import { CatalogueSegmentationFacadeService } from './services';
 import { CatalogueSegmentationNgrxModule } from './store';
 
 @NgModule({
-    declarations: [CatalogueSegmentationComponent, CatalogueSegmentationListComponent],
+    declarations: [
+        CatalogueListComponent,
+        CatalogueSegmentationComponent,
+        CatalogueSegmentationFormComponent,
+        CatalogueSegmentationFormPageComponent,
+        CatalogueSegmentationListComponent,
+    ],
     imports: [
         CatalogueSegmentationRoutingModule,
 
