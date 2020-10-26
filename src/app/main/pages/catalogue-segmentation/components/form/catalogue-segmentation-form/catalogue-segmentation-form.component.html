@@ -1,0 +1,155 @@
+<mat-card fxLayout="column">
+    <span class="mat-headline">Catalogue Segmentation</span>
+
+    <form action="">
+        <div class="form-box">
+            <!-- SEGMENTATION NAME FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12" fxFill>
+                    <span class="sinbad-red-fg">*</span> Segmentation Name
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <input matInput autocapitalize="words" autocomplete="off" />
+
+                    <mat-error>
+                        <!-- {{ form.get('promoName').value | errorMessage: form:'promoName' }} -->
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- / SEGMENTATION NAME FIELD -->
+
+            <!-- WAREHOUSE FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12">
+                    <span class="sinbad-red-fg">*</span>
+                    Warehouse<br />
+                    (0 Selected)
+                </label>
+
+                <select-warehouses
+                    [initialSelection]="[]"
+                    placeholder="Choose Warehouse"
+                    [required]="false"
+                    fxFlex="50"
+                >
+                    <!-- <div error>
+                        {{
+                            form.get('chosenWarehouse').value | errorMessage: form:'chosenWarehouse'
+                        }}
+                    </div> -->
+                </select-warehouses>
+            </div>
+            <!-- / WAREHOUSE FIELD -->
+
+            <!-- STORE TYPE FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12">
+                    Store Type<br />
+                    (0 Selected)
+                </label>
+
+                <select-store-segmentation
+                    [initialSelection]="[]"
+                    placeholder="Choose Store Type"
+                    title="Select Store Type"
+                    segmentationType="type"
+                    [required]="false"
+                    fxFlex="50"
+                >
+                    <!-- <div error>
+                            {{
+                                form.get('chosenStoreType').value
+                                    | errorMessage: form:'chosenStoreType'
+                            }}
+                        </div> -->
+                </select-store-segmentation>
+            </div>
+            <!-- / STORE TYPE FIELD -->
+
+            <!-- STORE GROUP FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12">
+                    Store Group<br />
+                    (0 Selected)
+                </label>
+
+                <select-store-segmentation
+                    [initialSelection]="[]"
+                    placeholder="Choose Store Group"
+                    title="Select Store Group"
+                    segmentationType="group"
+                    [required]="false"
+                    fxFlex="50"
+                >
+                    <!-- <div error>
+                            {{
+                                form.get('chosenStoreType').value
+                                    | errorMessage: form:'chosenStoreType'
+                            }}
+                        </div> -->
+                </select-store-segmentation>
+            </div>
+            <!-- / STORE GROUP FIELD -->
+
+            <!-- STORE CHANNEL FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12">
+                    Store Channel<br />
+                    (0 Selected)
+                </label>
+
+                <select-store-segmentation
+                    [initialSelection]="[]"
+                    placeholder="Choose Store Channel"
+                    title="Select Store Channel"
+                    segmentationType="channel"
+                    [required]="false"
+                    fxFlex="50"
+                >
+                    <!-- <div error>
+                            {{
+                                form.get('chosenStoreChannel').value
+                                    | errorMessage: form:'chosenStoreChannel'
+                            }}
+                        </div> -->
+                </select-store-segmentation>
+            </div>
+            <!-- STORE CHANNEL FIELD -->
+        </div>
+
+        <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+        <app-catalogue-list></app-catalogue-list>
+    </form>
+</mat-card>

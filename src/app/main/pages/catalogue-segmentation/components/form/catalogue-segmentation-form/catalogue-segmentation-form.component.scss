@@ -1,0 +1,13 @@
+@import 'src/@sinbad/scss/helper';
+
+app-catalogue-segmentation-form {
+    .mat-title,
+    .mat-headline {
+        color: sinbad-color('black', '100');
+    }
+
+    .mat-headline {
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
