@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Router } from '@angular/router';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
@@ -20,7 +21,11 @@ export class CatalogueSegmentationComponent implements OnInit {
         },
     };
 
-    constructor() {}
+    constructor(private router: Router) {}
 
     ngOnInit() {}
+
+    onClickAdd(): void {
+        this.router.navigateByUrl('/pages/catalogue-segmentations/add');
+    }
 }

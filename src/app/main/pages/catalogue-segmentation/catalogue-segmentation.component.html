@@ -5,7 +5,10 @@
 
         <!-- SECTION CONTENT CARD -->
         <div class="content-card">
-            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+            <sinbad-card-header
+                [config]="cardHeaderConfig"
+                (onClickAdd)="onClickAdd()"
+            ></sinbad-card-header>
 
             <app-catalogue-segmentation-list class="px-16"></app-catalogue-segmentation-list>
 
