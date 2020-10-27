@@ -3,7 +3,9 @@ import {
     ErrorMessagePipe,
     FilterLogicRelationPipe,
     HasErrorFieldPipe,
+    HasFormModePipe,
     InvoiceGroupNamePipe,
+    VisibilityTypePipe,
 } from './pipes';
 
 @NgModule({
@@ -11,8 +13,17 @@ import {
         ErrorMessagePipe,
         FilterLogicRelationPipe,
         HasErrorFieldPipe,
+        HasFormModePipe,
         InvoiceGroupNamePipe,
+        VisibilityTypePipe,
     ],
-    exports: [ErrorMessagePipe, FilterLogicRelationPipe, HasErrorFieldPipe, InvoiceGroupNamePipe],
+    exports: [
+        ErrorMessagePipe,
+        FilterLogicRelationPipe,
+        HasErrorFieldPipe,
+        HasFormModePipe,
+        InvoiceGroupNamePipe,
+        VisibilityTypePipe,
+    ],
 })
 export class PipeSharedModule {}
