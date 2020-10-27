@@ -157,7 +157,7 @@
             <!-- VISIBILITY TAB -->
             <mat-tab label="Visibility" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <app-catalogue-visibility></app-catalogue-visibility>
+                    <app-catalogue-visibility [(formMode)]="formMode"></app-catalogue-visibility>
                 </ng-template>
             </mat-tab>
             <!-- / VISIBILITY TAB -->
