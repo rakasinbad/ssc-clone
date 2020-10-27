@@ -16,9 +16,9 @@
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
                 <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Status </label>
 
-                <mat-radio-group fxFlex="80">
-                    <mat-radio-button class="pr-36">Active</mat-radio-button>
-                    <mat-radio-button class="pr-36">Inactive</mat-radio-button>
+                <mat-radio-group [formControl]="form.get('status')" fxFlex="80">
+                    <mat-radio-button class="pr-36" [value]="'active'">Active</mat-radio-button>
+                    <mat-radio-button class="pr-36" [value]="'inactive'">Inactive</mat-radio-button>
                 </mat-radio-group>
                 <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
                     {{ form.get('productInfo.name').value }}
@@ -42,7 +42,9 @@
                         {{ getFormError(form.get('productInfo.name')) }}
                     </mat-error>
                 </mat-form-field> -->
-                <span class="grey-fg" fxFlex="80" *ngIf="true"> Bonus </span>
+                <span class="grey-fg" fxFlex="80" *ngIf="formMode | hasFormMode: 'view'">
+                    {{ form.get('isBonus').value | visibilityType }}
+                </span>
             </div>
             <!-- / TYPE -->
         </form>
