@@ -19,6 +19,22 @@ export class CatalogueDataSource implements DataSource<any> {
             type: 'Regular',
             status: 'inactive',
         },
+        {
+            id: '3',
+            name: 'SNB-CATALOGUE 3',
+            sinbadId: '30548',
+            supplierId: '1214',
+            type: 'Regular',
+            status: 'active',
+        },
+        {
+            id: '4',
+            name: 'SNB-CATALOGUE 4',
+            sinbadId: '30549',
+            supplierId: '1215',
+            type: 'Regular',
+            status: 'active',
+        },
     ];
     private sources$: BehaviorSubject<any> = new BehaviorSubject([]);
 
