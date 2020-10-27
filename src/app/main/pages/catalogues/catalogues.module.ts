@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { PipeSharedModule } from 'app/shared';
 import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
@@ -58,6 +59,7 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         SharedComponentsModule,
         MaterialModule,
         DragDropModule,
+        PipeSharedModule,
 
         RxReactiveFormsModule,
         NgxPermissionsModule.forChild(),
