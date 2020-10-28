@@ -316,7 +316,7 @@
                 <label
                     class="pr-0 form-label"
                     fxFlex="12"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherTermsConds'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('termsAndConditions'))"
                     [class.mt-20]="!isViewMode()"
                 >
                     <span class="sinbad-red-fg">*</span>Voucher Terms<br />& Conditions
@@ -364,7 +364,7 @@
                 </mat-form-field>
 
                 <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    {{ form.get('voucherTermsConds').value || '-' }}
+                    {{ form.get('termsAndConditions').value || '-' }}
                 </span>
             </div>
             <!-- / Voucher Terms & Conditions -->
@@ -374,7 +374,7 @@
                 <label
                     class="pr-0 form-label"
                     fxFlex="12"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherInstruction'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('instructions'))"
                     [class.mt-20]="!isViewMode()"
                 >
                     <span class="sinbad-red-fg">*</span>Voucher<br />Instruction
@@ -422,7 +422,7 @@
                 </mat-form-field>
 
                 <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    {{ form.get('voucherInstruction').value || '-' }}
+                    {{ form.get('instructions').value || '-' }}
                 </span>
             </div>
             <!-- / Voucher Instructions -->
@@ -663,7 +663,7 @@
                         [fxFlex]="formFieldLength"
                         *ngIf="isViewMode()"
                     >
-                        {{ (form.get('activeStartDate').value | date: 'dd/MM/yyyy') || '-' }}
+                        {{ (form.get('startDate').value | date: 'dd/MM/yyyy') || '-' }}
                     </span>
                 </div>
                 <!-- / Available to be Collected From -->
@@ -767,7 +767,7 @@
                         fxFlexAlign="center"
                         class="pr-0 form-label"
                         fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('activeStartDate'))"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('startDate'))"
                     >
                         <span class="sinbad-red-fg">*</span>Active From
                     </label>
@@ -784,8 +784,8 @@
                             [min]="minActiveStartDate"
                             (dateChange)="onChangeActiveStartDate($event)"
                             autocomplete="false"
-                            name="activeStartDate"
-                            formControlName="activeStartDate"
+                            name="startDate"
+                            formControlName="startDate"
                         />
                         <mat-datetimepicker-toggle
                             matSuffix
@@ -798,8 +798,8 @@
                             type="date"
                         >
                         </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('activeStartDate'))">
-                            {{ getFormError(form.get('activeStartDate')) }}
+                        <mat-error *ngIf="hasError(form.get('startDate'))">
+                            {{ getFormError(form.get('startDate')) }}
                         </mat-error>
                     </mat-form-field>
                     <span
@@ -808,7 +808,7 @@
                         [fxFlex]="formFieldLength"
                         *ngIf="isViewMode()"
                     >
-                        {{ (form.get('activeStartDate').value | date: 'dd/MM/yyyy') || '-' }}
+                        {{ (form.get('startDate').value | date: 'dd/MM/yyyy') || '-' }}
                     </span>
                 </div>
                 <!-- / ACTIVE START DATE -->
@@ -819,7 +819,7 @@
                         fxFlexAlign="center"
                         class="pr-0 form-label"
                         fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('activeEndDate'))"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('endDate'))"
                     >
                         <span class="sinbad-red-fg">*</span>To
                     </label>
@@ -836,8 +836,8 @@
                             [min]="minActiveEndDate"
                             (dateChange)="onChangeActiveEndDate($event)"
                             autocomplete="false"
-                            name="activeEndDate"
-                            formControlName="activeEndDate"
+                            name="endDate"
+                            formControlName="endDate"
                         />
                         <mat-datetimepicker-toggle
                             matSuffix
@@ -850,8 +850,8 @@
                             type="date"
                         >
                         </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('activeEndDate'))">
-                            {{ getFormError(form.get('activeEndDate')) }}
+                        <mat-error *ngIf="hasError(form.get('endDate'))">
+                            {{ getFormError(form.get('endDate')) }}
                         </mat-error>
                     </mat-form-field>
                     <span
@@ -860,7 +860,7 @@
                         [fxFlex]="formFieldLength"
                         *ngIf="isViewMode()"
                     >
-                        {{ (form.get('activeEndDate').value | date: 'dd/MM/yyyy') || '-' }}
+                        {{ (form.get('endDate').value | date: 'dd/MM/yyyy') || '-' }}
                     </span>
                 </div>
                 <!-- / ACTIVE END DATE -->

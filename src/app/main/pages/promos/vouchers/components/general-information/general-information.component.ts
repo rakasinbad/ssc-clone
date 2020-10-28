@@ -149,6 +149,8 @@ export class VoucherGeneralInformationComponent
         'view-field label-no-padding': boolean;
     };
 
+    private strictISOString = false;
+
     promoAllocation = this.helper$.promoAllocation();
     ePromoAllocation = PromoAllocation;
     // supplierVoucherType = this.helper$.supplierVoucherType();
@@ -279,6 +281,12 @@ export class VoucherGeneralInformationComponent
 
     getVoucherTerm(value) {
         let sumData = value;
+        let vv = [];
+        for(let terms of value) {
+            vv.push(terms.name);
+        }
+        this.form.get('termsAndConditions').setValue(vv);
+        
     }
 
     getVoucherIns(value) {
@@ -287,6 +295,7 @@ export class VoucherGeneralInformationComponent
         for(let instvoucher of value) {
             vv.push(instvoucher.name);
         }
+        this.form.get('instructions').setValue(vv);
     }
 
      /**
@@ -479,7 +488,7 @@ export class VoucherGeneralInformationComponent
                     platform: String(voucher.platform).toLowerCase(),
                     maxRedemptionPerBuyer: voucher.maxRedemptionPerStore,
                     maxVoucherRedemption: voucher.maxVoucherRedemption,
-                    activeStartDate: moment(voucher.startDate).toDate(),
+                    startDate: moment(voucher.startDate).toDate(),
                     activeEndDate: moment(voucher.endDate).toDate(),
                     description: voucher.description,
                     shortDescription: voucher.shortDescription,
@@ -557,7 +566,7 @@ export class VoucherGeneralInformationComponent
             ],
             shortDescription: [''],
             description: [''],
-            voucherTermsConds: [
+            termsAndConditions: [
                 '',
                 [
                     RxwebValidators.required({
@@ -565,7 +574,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            voucherInstruction: [
+            instructions: [
                 '',
                 [
                     RxwebValidators.required({
@@ -634,17 +643,7 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
 
-            // maxVoucherRedemption: [
-            //     '',
-            //     [
-            //         RxwebValidators.numeric({
-            //             allowDecimal: false,
-            //             message: 'This field must be numeric.',
-            //         }),
-            //     ],
-            // ],
-
-            activeStartDate: [
+            startDate: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
@@ -652,7 +651,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            activeEndDate: [
+            endDate: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
@@ -722,7 +721,7 @@ export class VoucherGeneralInformationComponent
                 map(([_, status]) => {
                     const rawValue = this.form.getRawValue();
 
-                    if (!rawValue.activeStartDate || !rawValue.activeEndDate) {
+                    if (!rawValue.startDate || !rawValue.endDate) {
                         return 'INVALID';
                     } else {
                         return status;
@@ -805,32 +804,38 @@ export class VoucherGeneralInformationComponent
     onChangeActiveStartDate(ev: MatDatetimepickerInputEvent<any>): void {
         const activeStartDate = moment(ev.value);
         // this.form.get('activeEndDate').value = '2020-10-31';
-        if (this.form.get('activeEndDate').value) {
-            const activeEndDate = moment(this.form.get('activeEndDate').value);
+        if (this.form.get('endDate').value) {
+            const activeEndDate = moment(this.form.get('endDate').value);
 
             if (activeStartDate.isAfter(activeEndDate)) {
-                this.form.get('activeEndDate').reset();
+                this.form.get('endDate').reset();
             }
         }
 
         this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
         this.triggerStatus$.next('');
+        let stDateHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
+        let stDate = moment(stDateHrMn).format();
+        this.form.get('startDate').setValue(stDate);
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
         console.log('end date ->', ev.value);
         const activeEndDate = moment(ev.value);
 
-        if (this.form.get('activeStartDate').value) {
-            const activeStartDate = moment(this.form.get('activeStartDate').value);
+        if (this.form.get('startDate').value) {
+            const activeStartDate = moment(this.form.get('startDate').value);
 
             if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('activeStartDate').reset();
+                this.form.get('startDate').reset();
             }
         }
 
         this.maxActiveStartDate = activeEndDate.toDate();
         this.triggerStatus$.next('');
+        let edDateHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+        let edDate = moment(edDateHrMn).format();
+        this.form.get('endDate').setValue(edDate);
     }
 
     onChangeCollectibleFrom(ev: MatDatetimepickerInputEvent<any>): void {
@@ -865,7 +870,6 @@ export class VoucherGeneralInformationComponent
 
 
     ngOnInit(): void {
-        console.log('time format->', moment('2020-09-09T06:05:00.000Z').format('YYYY-MM-DD HH:mm'));
         /** Menyiapkan form. */
         this.initForm();
 

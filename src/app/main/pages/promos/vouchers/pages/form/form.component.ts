@@ -249,8 +249,8 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             name: generalInformationValue.name,
             platform: generalInformationValue.platform,
             maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
-            startDate: ((generalInformationValue.activeStartDate as unknown) as moment.Moment).toISOString(),
-            endDate: ((generalInformationValue.activeEndDate as unknown) as moment.Moment).toISOString(),
+            startDate: generalInformationValue.startDate,
+            endDate: generalInformationValue.endDate,
             description: generalInformationValue.description,
             shortDescription: generalInformationValue.shortDescription,
             // CONDITION SETTINGS
