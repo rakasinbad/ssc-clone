@@ -18,23 +18,23 @@
             <!-- / *HIDDEN* ID -->
 
             <!-- WRAPPER BOX -->
-            <div fxLayout="row" fxLayoutAlign="start start" fxFlex>
+            <!-- <div fxLayout="row" fxLayoutAlign="start start" fxFlex> -->
                 <!-- FORM -->
-                <div
+                <!-- <div
                     class="p-16"
                     [fxFlex]="labelLength + formFieldLength"
                     fxLayout="column"
                     [fxLayoutGap]="!isViewMode() ? '5px' : '10px'"
-                >
+                > -->
                     <!-- BASE (CONDITION) -->
                     <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                         <label
                             fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
+                            fxFlex="12"
                             class="pr-0 form-label"
                             [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                         >
-                            <span class="sinbad-red-fg">* </span>Base
+                            <span class="sinbad-red-fg">*</span>Base
                         </label>
 
                         <mat-radio-group
@@ -58,16 +58,16 @@
                     >
                         <label
                             fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
+                            fxFlex="12"
                             class="pr-0 form-label"
                             [class.mat-error]="!isViewMode() && hasError(form.get('qty'))"
                         >
-                            Qty >=
+                            <span class="sinbad-red-fg">*</span>Qty >=
                         </label>
 
                         <mat-form-field
                             appearance="outline"
-                            [fxFlex]="formFieldLength * 2 - 1"
+                            fxFlex="40"
                             *ngIf="!isViewMode()"
                         >
                             <input
@@ -95,16 +95,16 @@
                     >
                         <label
                             fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
+                            fxFlex="12"
                             class="pr-0 form-label"
                             [class.mat-error]="!isViewMode() && hasError(form.get('orderValue'))"
                         >
-                            Order Value >=
+                            <span class="sinbad-red-fg">*</span>Order Value >=
                         </label>
 
                         <mat-form-field
                             appearance="outline"
-                            [fxFlex]="formFieldLength * 2 - 1"
+                            fxFlex="40"
                             *ngIf="!isViewMode()"
                         >
                             <input
@@ -128,9 +128,9 @@
                         </span>
                     </div>
                     <!-- / ORDER VALUE (BASE) -->
-                </div>
+                <!-- </div> -->
                 <!-- / FORM -->
-            </div>
+            <!-- </div> -->
             <!-- / WRAPPER BOX -->
         </form>
     </div>

@@ -17,7 +17,6 @@ import {
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
-
 import { FeatureState as VoucherCoreFeatureState } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import {
@@ -28,7 +27,7 @@ import {
     ValidationErrors,
     FormControl,
 } from '@angular/forms';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import {
     distinctUntilChanged,
     debounceTime,
@@ -46,18 +45,32 @@ import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatRadioChange } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as moment from 'moment';
-// import { UserSupplier } from 'app/shared/models/supplier.model';
-// import { TNullable } from 'app/shared/models/global.model';
-// import { UiActions, FormActions } from 'app/shared/store/actions';
-// import { FormSelectors } from 'app/shared/store/selectors';
+import * as _ from 'lodash';
+import * as numeral from 'numeral';
+import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { DomSanitizer } from '@angular/platform-browser';
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
+
+export interface VoucherTerms {
+    name: string;
+}
+export interface VoucherIns {
+    name: string;
+}
+export interface VoucherTag {
+    name: string;
+}
+
+type TmpKey = 'imgSuggestion';
 
 @Component({
     selector: 'voucher-general-information',
@@ -85,12 +98,18 @@ export class VoucherGeneralInformationComponent
     // Untuk menampung foto yang ingin diupload sementara sebelum dikirim.
     tmpImageSuggestion: FormControl = new FormControl({ value: '', disabled: true });
     tmpCouponImage: FormControl = new FormControl({ value: '', disabled: true });
+    tmp: Partial<Record<TmpKey, FormControl>> = {};
 
     // Untuk membatasi pemberian tanggal.
     minActiveStartDate: Date;
     maxActiveStartDate: Date;
     minActiveEndDate: Date;
     maxActiveEndDate: Date;
+
+    minCollectibleFrom: Date;
+    maxCollectibleFrom: Date;
+    minCollectibleTo: Date;
+    maxCollectibleTo: Date;
 
     // tslint:disable-next-line: no-inferrable-types
     labelLength: number = 10;
@@ -130,6 +149,36 @@ export class VoucherGeneralInformationComponent
         'view-field label-no-padding': boolean;
     };
 
+    promoAllocation = this.helper$.promoAllocation();
+    ePromoAllocation = PromoAllocation;
+    // supplierVoucherType = this.helper$.supplierVoucherType();
+    // eSupplierVoucherType = SupplierVoucherType;
+    sinbadVoucherType: Array<{ id: string; label: string }> = [];
+    sinbadVoucherCategory: Array<{ id: string; label: string }> = [];
+    // supplierVoucherCategory = this.helper$.supplierVoucherCategory();
+    // eSupplierVoucherCategory = SupplierVoucherCategory;
+    public selectPromo: string;
+    public selectTypeVoucher: string;
+
+    visibleVoucherTerms = true;
+    selectableVoucherTerms = true;
+    removableVoucherTerms = true;
+    addOnBlurVoucherTerms = true;
+    visibleVoucherIns = true;
+    selectableVoucherIns = true;
+    removableVoucherIns = true;
+    addOnBlurVoucherIns = true;
+    visibleVoucherTag = true;
+    selectableVoucherTag = true;
+    removableVoucherTag = true;
+    addOnBlurVoucherTag = true;
+    readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+    voucherTerms: VoucherTerms[] = [];
+    voucherIns: VoucherIns[] = [];
+    voucherTag: VoucherTag[] = [];
+    isiVoucher = [];
+    public expirationCheck = false;
+
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
 
     constructor(
@@ -142,10 +191,204 @@ export class VoucherGeneralInformationComponent
         private store: NgRxStore<VoucherCoreFeatureState>,
         private promo$: VoucherApiService,
         private errorMessage$: ErrorMessageService,
-        private helper$: HelperService
+        private helper$: HelperService,
+        private domSanitizer: DomSanitizer
     ) {
         // Untuk menyimpan platform-nya Sinbad yang tersedia.
-        this.sinbadPlatforms = this.helper$.platformSinbad();
+        this.sinbadPlatforms = this.helper$.platformSupplierVoucher();
+        this.sinbadVoucherType = this.helper$.supplierVoucherType();
+        this.sinbadVoucherCategory = this.helper$.supplierVoucherCategory();
+    }
+
+    /**
+     *
+     * Handle change event for General Information Promo Allocation
+     * @param {MatRadioChange} ev
+     * @param {number} idx
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+
+    selectPromoAlloc(ev: MatRadioChange): void {
+        this.selectPromo = ev.value;
+        this.form.get('promoAllocationType').setValidators([
+            RxwebValidators.required({
+                message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+            }),
+            RxwebValidators.choice({
+                minLength: 1,
+                message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+            }),
+        ]);
+    }
+
+    selectVoucherType(value) {
+        this.selectTypeVoucher = value.value;
+    }
+
+    addVoucherTerms(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+
+        // Add our voucher terms
+        if ((value || '').trim()) {
+            this.voucherTerms.push({ name: value.trim() });
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = '';
+        }
+
+        this.getVoucherTerm(this.voucherTerms);
+    }
+
+    removeVoucherTerms(voucherTerms: VoucherTerms): void {
+        const index = this.voucherTerms.indexOf(voucherTerms);
+
+        if (index >= 0) {
+            this.voucherTerms.splice(index, 1);
+        }
+        this.getVoucherTerm(this.voucherTerms);
+    }
+
+    addVoucherIns(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+
+        // Add our voucher ins
+        if ((value || '').trim()) {
+            this.voucherIns.push({ name: value.trim() });
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = '';
+        }
+        this.getVoucherIns(this.voucherIns);
+    }
+
+    removeVoucherIns(voucherIns: VoucherIns): void {
+        const index = this.voucherIns.indexOf(voucherIns);
+
+        if (index >= 0) {
+            this.voucherIns.splice(index, 1);
+        }
+        this.getVoucherIns(this.voucherIns);
+    }
+
+    getVoucherTerm(value) {
+        let sumData = value;
+    }
+
+    getVoucherIns(value) {
+        let total = value;
+        let vv = [];
+        for(let instvoucher of value) {
+            vv.push(instvoucher.name);
+        }
+    }
+
+     /**
+     *
+     * Handle File Browse (Image / File)
+     * @param {Event} ev
+     * @param {string} type
+     * @memberof FlexiComboFormComponent
+     */
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+
+            if (file) {
+                switch (type) {
+                    case 'imgSuggestion':
+                        {
+                            const imgSuggestionField = this.form.get('imgSuggestion');
+
+                            const fileReader = new FileReader();
+
+                            fileReader.onload = () => {
+                                imgSuggestionField.setValue(fileReader.result);
+                                this.tmp['imgSuggestion'].setValue({
+                                    name: file.name,
+                                    url: this.domSanitizer.bypassSecurityTrustUrl(
+                                        window.URL.createObjectURL(file)
+                                    ),
+                                });
+
+                                if (imgSuggestionField.invalid) {
+                                    imgSuggestionField.markAsTouched();
+                                }
+                            };
+
+                            fileReader.readAsDataURL(file);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        } else {
+            switch (type) {
+                case 'imgSuggestion':
+                    {
+                        this.form.get('imgSuggestion').reset();
+                        this.tmp['imgSuggestion'].reset();
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    selectExpiration(event) {
+        if (event.checked === true) {
+            this.expirationCheck = true;
+            this.form.get('expirationStatus').setValue(true);
+        } else {
+            this.expirationCheck = false;
+            this.form.get('expirationStatus').setValue(false);
+        }
+    }
+
+    inputExpirationDays(event): void {
+        console.log('isi value input->', event)
+    }
+
+    addVoucherTag(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+
+        // Add our voucher tag
+        if ((value || '').trim()) {
+            this.voucherTag.push({ name: value.trim() });
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = '';
+        }
+        this.getVoucherTag(this.voucherTag);
+    }
+
+    removeVoucherTag(voucherTag: VoucherTag): void {
+        const index = this.voucherTag.indexOf(voucherTag);
+
+        if (index >= 0) {
+            this.voucherTag.splice(index, 1);
+        }
+        this.getVoucherTag(this.voucherTag);
+    }
+
+    getVoucherTag(value) {
+        let sumData = value;
+        console.log('isi tag->', value)
     }
 
     private updateFormView(): void {
@@ -255,8 +498,23 @@ export class VoucherGeneralInformationComponent
         this.maxActiveEndDate = null;
         this.maxActiveStartDate = null;
 
+        this.minCollectibleFrom = new Date();
+        this.minCollectibleTo = null;
+        this.maxCollectibleFrom = null;
+        this.maxCollectibleTo = null;
+
+        this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
+
         this.form = this.fb.group({
             id: [''],
+            promoAllocationType: [
+                PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             externalId: [
                 '',
                 [
@@ -266,6 +524,48 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             name: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            voucherType: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            voucherHeader: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            category: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            shortDescription: [''],
+            description: [''],
+            voucherTermsConds: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            voucherInstruction: [
                 '',
                 [
                     RxwebValidators.required({
@@ -290,8 +590,47 @@ export class VoucherGeneralInformationComponent
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
-                        message: 'Allowed minimum value is 1'
+                        message: 'Allowed minimum value is 1',
+                    }),
+                ],
+            ],
+            promoBudget: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
                     })
+                ],
+            ],
+            promoSlot: [
+                null,
+                [
+                    RxwebValidators.digit({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
+                ],
+            ],
+            imgSuggestion: [
+                null,
+                [
+                    RxwebValidators.fileSize({
+                        maxSize: Math.floor(5 * 1000 * 1000),
+                        message: this.errorMessage$.getErrorMessageNonState(
+                            'default',
+                            'file_size_lte',
+                            { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
+                        ),
+                    }),
                 ],
             ],
 
@@ -321,34 +660,86 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            description: [''],
-            shortDescription: [''],
+            collactibleDateFrom: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            collactibleDateTo: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            expirationStatus: false,
+            expirationDays: [
+                null,
+                [
+                    RxwebValidators.digit({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                    RxwebValidators.maxLength({
+                        value:8,
+                        message: 'Max input is 8 digit'
+                    })
+                ],
+            ],
+            voucherTag: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            voucherCode: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ]
         });
     }
 
     private initFormCheck(): void {
-        combineLatest([
-            this.triggerStatus$,
-            this.form.statusChanges as Observable<FormStatus>,
-        ]).pipe(
-            distinctUntilChanged(),
-            debounceTime(300),
-            tap(([_, value]) => HelperService.debug('[BEFORE MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED', value)),
-            map(([_, status]) => {
-                const rawValue = this.form.getRawValue();
+        combineLatest([this.triggerStatus$, this.form.statusChanges as Observable<FormStatus>])
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(300),
+                tap(([_, value]) =>
+                    HelperService.debug(
+                        '[BEFORE MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
+                        value
+                    )
+                ),
+                map(([_, status]) => {
+                    const rawValue = this.form.getRawValue();
 
-                if (!rawValue.activeStartDate || !rawValue.activeEndDate) {
-                    return 'INVALID';
-                } else {
-                    return status;
-                }
-            }),
-            tap(value => HelperService.debug('[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED', value)),
-            // tap(value => HelperService.debug('SUPPLIER VOUCHER GENERAL INFORMATION FORM STATUS CHANGED:', value)),
-            takeUntil(this.subs$)
-        ).subscribe(status => {
-            this.formStatusChange.emit(status);
-        });
+                    if (!rawValue.activeStartDate || !rawValue.activeEndDate) {
+                        return 'INVALID';
+                    } else {
+                        return status;
+                    }
+                }),
+                tap((value) =>
+                    HelperService.debug(
+                        '[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
+                        value
+                    )
+                ),
+                // tap(value => HelperService.debug('SUPPLIER VOUCHER GENERAL INFORMATION FORM STATUS CHANGED:', value)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((status) => {
+                this.formStatusChange.emit(status);
+            });
 
         this.form.valueChanges
             .pipe(
@@ -413,7 +804,7 @@ export class VoucherGeneralInformationComponent
 
     onChangeActiveStartDate(ev: MatDatetimepickerInputEvent<any>): void {
         const activeStartDate = moment(ev.value);
-
+        // this.form.get('activeEndDate').value = '2020-10-31';
         if (this.form.get('activeEndDate').value) {
             const activeEndDate = moment(this.form.get('activeEndDate').value);
 
@@ -427,6 +818,7 @@ export class VoucherGeneralInformationComponent
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
+        console.log('end date ->', ev.value);
         const activeEndDate = moment(ev.value);
 
         if (this.form.get('activeStartDate').value) {
@@ -441,34 +833,39 @@ export class VoucherGeneralInformationComponent
         this.triggerStatus$.next('');
     }
 
-    // onFileBrowse(ev: Event): void {
-    //     const inputEl = ev.target as HTMLInputElement;
+    onChangeCollectibleFrom(ev: MatDatetimepickerInputEvent<any>): void {
+        const activeStartDate = moment(ev.value);
+        if (this.form.get('collactibleDateFrom').value) {
+            const activeEndDate = moment(this.form.get('collactibleDateTo').value);
 
-    //     if (inputEl.files && inputEl.files.length > 0) {
-    //         const file = inputEl.files[0];
+            if (activeStartDate.isAfter(activeEndDate)) {
+                this.form.get('collactibleDateFrom').reset();
+            }
+        }
 
-    //         if (file) {
-    //             const photoField = this.form.get('imageSuggestion');
+        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
+        this.triggerStatus$.next('');
+    }
 
-    //             const fileReader = new FileReader();
+    onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
+        console.log('end date ->', ev.value);
+        const activeEndDate = moment(ev.value);
 
-    //             fileReader.onload = () => {
-    //                 photoField.setValue(fileReader.result);
-    //                 this.tmpImageSuggestion.setValue(file.name);
+        if (this.form.get('collactibleDateTo').value) {
+            const activeStartDate = moment(this.form.get('collactibleDateFrom').value);
 
-    //                 if (photoField.invalid) {
-    //                     photoField.markAsTouched();
-    //                 }
-    //             };
+            if (activeEndDate.isBefore(activeStartDate)) {
+                this.form.get('collactibleDateTo').reset();
+            }
+        }
 
-    //             fileReader.readAsDataURL(file);
-    //         }
-    //     }
+        this.maxActiveStartDate = activeEndDate.toDate();
+        this.triggerStatus$.next('');
+    }
 
-    //     return;
-    // }
 
     ngOnInit(): void {
+        console.log('time format->', moment('2020-09-09T06:05:00.000Z').format('YYYY-MM-DD HH:mm'));
         /** Menyiapkan form. */
         this.initForm();
 

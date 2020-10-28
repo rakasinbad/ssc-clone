@@ -17,15 +17,39 @@
             <input hidden name="id" formControlName="id" />
             <!-- / *HIDDEN* ID -->
 
+            <!-- Promo Allocation -->
+            <!-- <div class="form-box"> -->
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label fxFlexAlign="center" fxFlex="12" class="pr-0 form-label">
+                        <span class="sinbad-red-fg">*</span>Promo Allocation
+                    </label>
+
+                    <mat-radio-group
+                        formControlName="promoAllocationType"
+                        aria-label="Select type"
+                        (change)="selectPromoAlloc($event)"
+                        style="margin-top: 3px"
+                    >
+                        <mat-radio-button
+                            *ngFor="let option of promoAllocation"
+                            [value]="option.id"
+                        >
+                            {{ option?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+            <!-- </div> -->
+            <!-- / Promo Allocation end -->
+
             <!-- SUPPLIER VOUCHER ID -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
-                    [fxFlex]="labelLength"
                     class="pr-0 form-label"
+                    fxFlex="12"
                     [class.mat-error]="!isViewMode() && hasError(form.get('externalId'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Sup Voucher ID
+                    <span class="sinbad-red-fg">*</span>Sup Voucher ID
                 </label>
 
                 <mat-form-field
@@ -37,23 +61,6 @@
                     <mat-error *ngIf="!isViewMode() && hasError(form.get('externalId'))">
                         {{ getFormError(form.get('externalId')) }}
                     </mat-error>
-                    <!-- <mat-error
-                        *ngIf="!isViewMode() && $any(form.get('sellerId').errors)?.skuSupplierExist"
-                    >
-                        SKU already exist.
-                    </mat-error>
-                    <mat-hint
-                        class="mb-4 primary-fg"
-                        *ngIf="form.get('sellerId').status === 'PENDING'"
-                    >
-                        Checking ...
-                    </mat-hint>
-                    <mat-hint
-                        class="mb-4 green-800-fg"
-                        *ngIf="form.get('sellerId').status === 'VALID'"
-                    >
-                        SKU is available.
-                    </mat-hint> -->
                 </mat-form-field>
                 <span
                     class="form-value"
@@ -70,11 +77,11 @@
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
-                    [fxFlex]="labelLength"
                     class="pr-0 form-label"
+                    fxFlex="12"
                     [class.mat-error]="!isViewMode() && hasError(form.get('name'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Voucher Name
+                    <span class="sinbad-red-fg">*</span>Voucher Name
                 </label>
 
                 <mat-form-field
@@ -98,15 +105,337 @@
             </div>
             <!-- / VOUCHER NAME -->
 
+            <!-- VOUCHER Type -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherType'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Voucher Type
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <mat-select
+                        name="voucherType"
+                        formControlName="voucherType"
+                        (selectionChange)="selectVoucherType($event)"
+                    >
+                        <mat-option
+                            *ngFor="let voucherType of sinbadVoucherType"
+                            [value]="voucherType.id"
+                        >
+                            {{ voucherType.label }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('voucherType'))">
+                        {{ getFormError(form.get('voucherType')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('voucherType').value || '-' }}
+                </span>
+            </div>
+            <!-- / VOUCHER type -->
+
+            <!-- VOUCHER Header -->
+            <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherHeader'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Voucher<br />Header
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="40">
+                    <input matInput name="voucherHeader" formControlName="voucherHeader" />
+                    <mat-error *ngIf="hasError(form.get('voucherHeader'))">
+                        {{ getFormError(form.get('voucherHeader')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('voucherHeader').value || '-' }}
+                </span>
+            </div>
+            <!-- / VOUCHER Header -->
+
+            <!-- Category -->
+            <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('category'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Category
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <mat-select name="category" formControlName="category">
+                        <mat-option
+                            *ngFor="let category of sinbadVoucherCategory"
+                            [value]="category.id"
+                        >
+                            {{ category.label }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('category'))">
+                        {{ getFormError(form.get('category')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ form.get('category').value || '-' }}
+                </span>
+            </div>
+            <!-- / Category -->
+
+            <!-- SHORT DESCRIPTION -->
+            <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
+                <label
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('shortDescription'))"
+                    [class.mt-20]="!isViewMode()"
+                >
+                    <span class="sinbad-red-fg">*</span>Short Voucher<br />Description
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <textarea
+                        matInput
+                        rows="10"
+                        name="shortDescription"
+                        formControlName="shortDescription"
+                    ></textarea>
+                    <mat-error *ngIf="hasError(form.get('shortDescription'))">
+                        {{ getFormError(form.get('shortDescription')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('shortDescription').value || '-' }}
+                </span>
+            </div>
+            <!-- / SHORT DESCRIPTION -->
+
+            <!-- DESCRIPTION -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="start"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('description'))"
+                    [class.mt-20]="!isViewMode()"
+                >
+                    <span class="sinbad-red-fg">*</span>Voucher<br />Description
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <textarea
+                        matInput
+                        rows="10"
+                        name="description"
+                        formControlName="description"
+                    ></textarea>
+                    <mat-error *ngIf="hasError(form.get('description'))">
+                        {{ getFormError(form.get('description')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('description').value || '-' }}
+                </span>
+            </div>
+            <!-- / DESCRIPTION -->
+
+            <!-- Voucher Terms & Conditions -->
+            <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
+                <label
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherTermsConds'))"
+                    [class.mt-20]="!isViewMode()"
+                >
+                    <span class="sinbad-red-fg">*</span>Voucher Terms<br />& Conditions
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+
+                <mat-form-field
+                    appearance="none"
+                    class="example-chip-list"
+                    style="
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        flex: 1 1 100%;
+                        box-sizing: border-box;
+                        max-width: 40%;
+                        border: 1px solid rgba(0, 0, 0, 0.12);
+                        margin-bottom: 25px;
+                        height: 250px;
+                    "
+                >
+                    <mat-chip-list #chipListTerms>
+                        <mat-chip
+                            *ngFor="let voucherterms of voucherTerms"
+                            [selectable]="selectableVoucherTerms"
+                            [removable]="removableVoucherTerms"
+                            (removed)="removeVoucherTerms(voucherterms)"
+                        >
+                            {{ voucherterms.name }}
+                            <mat-icon matChipRemove *ngIf="removableVoucherTerms">cancel</mat-icon>
+                        </mat-chip>
+                        <input
+                            [matChipInputFor]="chipListTerms"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="addOnBlurVoucherTerms"
+                            (matChipInputTokenEnd)="addVoucherTerms($event)"
+                        />
+                    </mat-chip-list>
+                </mat-form-field>
+
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('voucherTermsConds').value || '-' }}
+                </span>
+            </div>
+            <!-- / Voucher Terms & Conditions -->
+
+            <!-- Voucher Instructions -->
+            <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
+                <label
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherInstruction'))"
+                    [class.mt-20]="!isViewMode()"
+                >
+                    <span class="sinbad-red-fg">*</span>Voucher<br />Instruction
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                </label>
+
+                <mat-form-field
+                    appearance="none"
+                    class="example-chip-list"
+                    style="
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        flex: 1 1 100%;
+                        box-sizing: border-box;
+                        max-width: 40%;
+                        border: 1px solid rgba(0, 0, 0, 0.12);
+                        margin-bottom: 25px;
+                        height: 250px;
+                    "
+                >
+                    <mat-chip-list #chipList1>
+                        <mat-chip
+                            *ngFor="let voucherins of voucherIns"
+                            [selectable]="selectableVoucherIns"
+                            [removable]="removableVoucherIns"
+                            (removed)="removeVoucherIns(voucherins)"
+                        >
+                            {{ voucherins.name }}
+                            <mat-icon matChipRemove *ngIf="removableVoucherIns">cancel</mat-icon>
+                        </mat-chip>
+                        <input
+                            [matChipInputFor]="chipList1"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="addOnBlurVoucherIns"
+                            (matChipInputTokenEnd)="addVoucherIns($event)"
+                        />
+                    </mat-chip-list>
+                </mat-form-field>
+
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('voucherInstruction').value || '-' }}
+                </span>
+            </div>
+            <!-- / Voucher Instructions -->
+
             <!-- PLATFORM -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
-                    [fxFlex]="labelLength"
                     class="pr-0 form-label"
+                    fxFlex="12"
                     [class.mat-error]="!isViewMode() && hasError(form.get('platform'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Platform
+                    <span class="sinbad-red-fg">*</span>Platform
                 </label>
 
                 <mat-form-field
@@ -135,16 +464,15 @@
             </div>
             <!-- / PLATFORM -->
 
-            <!-- MAX REDEMPTION PER USER -->
+            <!-- Max number of collection -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
-                    [fxFlex]="labelLength"
                     class="pr-0 form-label"
+                    fxFlex="12"
                     [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerBuyer'))"
                 >
-                    Max Redemption <br />
-                    per Buyer
+                    <span class="sinbad-red-fg">*</span>Max number of<br />collection
                 </label>
 
                 <mat-form-field
@@ -171,137 +499,437 @@
                     {{ form.get('maxRedemptionPerBuyer').value || '-' }}
                 </span>
             </div>
-            <!-- / MAX REDEMPTION PER USER -->
+            <!-- / Max number of collection -->
 
-            <!-- MAX VOUCHER REDEMTION -->
-            <!-- <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+            <!-- max redem promo budget promo slot  by type allocation  -->
+            <div
+                *ngIf="selectPromo == 'promo_budget'"
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+            >
                 <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxVoucherRedemption'))"
+                    fxFlexAlign="center" class="pr-0 form-label" fxFlex="12"
+                    [class.sinbad-red-fg]="hasError('promoBudget')"
                 >
-                    Max Voucher <br />
-                    Redemption
+                    <span class="sinbad-red-fg">*</span>Max Promo Redemption<br />(Rp)
                 </label>
 
-                <mat-form-field
-                    appearance="outline"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="!isViewMode()"
-                >
+                <mat-form-field appearance="outline" fxFlex="40">
                     <input
                         matInput
-                        type="number"
-                        name="maxVoucherRedemption"
-                        formControlName="maxVoucherRedemption"
+                        name="promoBudget"
+                        formControlName="promoBudget"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                        placeholder="Rp"
                     />
-                    <mat-error *ngIf="hasError(form.get('maxVoucherRedemption'))">
-                        {{ getFormError(form.get('maxVoucherRedemption')) }}
+
+                    <mat-error *ngIf="hasError('promoBudget', true)">
+                        {{ getFormError(form.get('promoBudget')) }}
                     </mat-error>
                 </mat-form-field>
-                <span
-                    class="form-value"
-                    fxFlexAlign="center"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="isViewMode()"
-                >
-                    {{ form.get('maxVoucherRedemption').value || '-' }}
-                </span>
-            </div> -->
-            <!-- / MAX VOUCHER REDEMTION -->
+            </div>
 
-            <!-- ACTIVE START DATE -->
-            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('activeStartDate'))"
-                >
-                    <span class="sinbad-red-fg">* </span>Active From
+            <div
+                *ngIf="selectPromo == 'promo_slot'"
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [class.sinbad-red-fg]="hasError('promoSlot')"
+            >
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+                    <span class="sinbad-red-fg">*</span>Max Promo Redemption<br />(transaction)
                 </label>
 
-                <mat-form-field
-                    appearance="outline"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="!isViewMode()"
-                >
-                    <input
-                        matInput
-                        [matDatetimepicker]="activeStartDatePicker"
-                        [max]="maxActiveStartDate"
-                        [min]="minActiveStartDate"
-                        (dateChange)="onChangeActiveStartDate($event)"
-                        autocomplete="false"
-                        name="activeStartDate"
-                        formControlName="activeStartDate"
-                    />
-                    <mat-datetimepicker-toggle
-                        matSuffix
-                        [for]="activeStartDatePicker"
-                    ></mat-datetimepicker-toggle>
-                    <mat-datetimepicker
-                        touchUi
-                        #activeStartDatePicker
-                        [disabled]="false"
-                        type="datetime"
+                <mat-form-field appearance="outline" fxFlex="40">
+                    <input matInput name="promoSlot" formControlName="promoSlot" mask="0*" />
+
+                    <mat-error *ngIf="hasError('promoSlot', true)">
+                        {{ getFormError(form.get('promoSlot')) }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <!-- max redem promo budget promo slot  by type allocation -->
+
+            <!-- upload voucher banner image -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+                    <span class="sinbad-red-fg">*</span>Voucher<br />Banner
+
+                    <mat-icon
+                        class="active-icon s-14 ml-8 cursor-pointer"
+                        color="accent"
+                        matTooltip="Voucher Banner"
+                        matTooltipClass="tooltip-br"
                     >
-                    </mat-datetimepicker>
-                    <mat-error *ngIf="hasError(form.get('activeStartDate'))">
-                        {{ getFormError(form.get('activeStartDate')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span
-                    class="form-value"
-                    fxFlexAlign="center"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="isViewMode()"
-                >
-                    {{ (form.get('activeStartDate').value | date: 'dd/MM/yyyy HH:mm') || '-' }}
-                </span>
-            </div>
-            <!-- / ACTIVE START DATE -->
-
-            <!-- ACTIVE END DATE -->
-            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('activeEndDate'))"
-                >
-                    <span class="sinbad-red-fg">* </span>To
+                        help
+                    </mat-icon>
                 </label>
-
-                <mat-form-field
-                    appearance="outline"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="!isViewMode()"
-                >
-                    <input
-                        matInput
-                        [matDatetimepicker]="activeEndDatePicker"
-                        [max]="maxActiveEndDate"
-                        [min]="minActiveEndDate"
-                        (dateChange)="onChangeActiveEndDate($event)"
-                        autocomplete="false"
-                        name="activeEndDate"
-                        formControlName="activeEndDate"
-                    />
-                    <mat-datetimepicker-toggle
-                        matSuffix
-                        [for]="activeEndDatePicker"
-                    ></mat-datetimepicker-toggle>
-                    <mat-datetimepicker
-                        touchUi
-                        #activeEndDatePicker
-                        [disabled]="false"
-                        type="datetime"
+                <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                    <mat-form-field
+                        class="sinbad-file-field"
+                        appearance="outline"
+                        fxFlex="33"
+                        [class.mat-sinbad-field-error]="hasError('imgSuggestion')"
                     >
-                    </mat-datetimepicker>
-                    <mat-error *ngIf="hasError(form.get('activeEndDate'))">
-                        {{ getFormError(form.get('activeEndDate')) }}
+                        <input
+                            #imgSuggestionPicker
+                            type="file"
+                            class="custom-file"
+                            accept=".jpg, .jpeg, .png"
+                            formControlName="imgSuggestion"
+                            (click)="imgSuggestionPicker.value = null"
+                            (change)="onFileBrowse($event, 'imgSuggestion')"
+                            autocomplete="off"
+                        />
+                        <input
+                            matInput
+                            [formControl]="tmp.imgSuggestion"
+                            [value]="
+                                tmp.imgSuggestion.value && tmp.imgSuggestion.value.name
+                                    ? tmp.imgSuggestion.value.name
+                                    : null
+                            "
+                            placeholder="No file choose"
+                            autocomplete="off"
+                        />
+
+                        <mat-hint class="mat-error" *ngIf="hasError('imgSuggestion', true)">
+                            {{ getFormError('imgSuggestion') }}
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        (click)="imgSuggestionPicker.click()"
+                        fxFlexAlign="center"
+                    >
+                        Upload Your File
+                    </button>
+                </div>
+            </div>
+            <!-- upload voucher banner image -->
+
+            <ng-container *ngIf="selectTypeVoucher == 'collectible'; else otherTypeVoucher">
+                <!-- *Available to be Collected From -->
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label
+                        fxFlexAlign="center"
+                        class="pr-0 form-label"
+                        fxFlex="12"
+                        [class.mat-error]="
+                            !isViewMode() && hasError(form.get('collactibleDateFrom'))
+                        "
+                    >
+                        <span class="sinbad-red-fg">*</span>Available to be <br />Collected From
+                    </label>
+
+                    <mat-form-field
+                        appearance="outline"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="!isViewMode()"
+                    >
+                        <input
+                            matInput
+                            [matDatetimepicker]="activeCollactibleFromPicker"
+                            [min]="minCollectibleFrom"
+                            (dateChange)="onChangeCollectibleFrom($event)"
+                            autocomplete="false"
+                            name="collactibleDateFrom"
+                            formControlName="collactibleDateFrom"
+                        />
+                        <mat-datetimepicker-toggle
+                            matSuffix
+                            [for]="activeCollactibleFromPicker"
+                        ></mat-datetimepicker-toggle>
+                        <mat-datetimepicker
+                            touchUi
+                            #activeCollactibleFromPicker
+                            [disabled]="false"
+                            type="date"
+                        >
+                        </mat-datetimepicker>
+                        <mat-error *ngIf="hasError(form.get('collactibleDateFrom'))">
+                            {{ getFormError(form.get('collactibleDateFrom')) }}
+                        </mat-error>
+                    </mat-form-field>
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ (form.get('activeStartDate').value | date: 'dd/MM/yyyy') || '-' }}
+                    </span>
+                </div>
+                <!-- / Available to be Collected From -->
+
+                <!-- *Available to be Collected To -->
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label
+                        fxFlexAlign="center"
+                        class="pr-0 form-label"
+                        fxFlex="12"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('collactibleDateTo'))"
+                    >
+                        <span class="sinbad-red-fg">*</span>Available to be<br />Collected To
+                    </label>
+
+                    <mat-form-field
+                        appearance="outline"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="!isViewMode()"
+                    >
+                        <input
+                            matInput
+                            [matDatetimepicker]="activeCollactibleToPicker"
+                            [max]="maxCollectibleTo"
+                            [min]="minCollectibleTo"
+                            (dateChange)="onChangeCollectibleTo($event)"
+                            autocomplete="false"
+                            name="collactibleDateTo"
+                            formControlName="collactibleDateTo"
+                        />
+                        <mat-datetimepicker-toggle
+                            matSuffix
+                            [for]="activeCollactibleToPicker"
+                        ></mat-datetimepicker-toggle>
+                        <mat-datetimepicker
+                            touchUi
+                            #activeCollactibleToPicker
+                            [disabled]="false"
+                            type="date"
+                        >
+                        </mat-datetimepicker>
+                        <mat-error *ngIf="hasError(form.get('collactibleDateTo'))">
+                            {{ getFormError(form.get('collactibleDateTo')) }}
+                        </mat-error>
+                    </mat-form-field>
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ (form.get('collactibleDateTo').value | date: 'dd/MM/yyyy') || '-' }}
+                    </span>
+                </div>
+                <!-- / *Available to be Collected To -->
+
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+                    </label>
+                    <mat-checkbox
+                        (change)="selectExpiration($event)"
+                        [checked]="expirationCheck"
+                        formControlName="expirationStatus"
+                    >
+                        Expiration
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
+                            matTooltipClass="tooltip-br"
+                        >
+                            help
+                        </mat-icon>
+                    </mat-checkbox>
+                </div>
+
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+                        <span class="sinbad-red-fg">*</span>Expiration Days
+                    </label>
+
+                    <mat-form-field appearance="outline" fxFlex="40">
+                        <input
+                            matInput
+                            name="expirationDays"
+                            formControlName="expirationDays"
+                            (ngModelChange)="inputExpirationDays($event)"
+                        />
+
+                        <mat-error *ngIf="hasError('expirationDays', true)">
+                            {{ getFormError(form.get('expirationDays')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </ng-container>
+
+            <ng-template #otherTypeVoucher>
+                <!-- ACTIVE START DATE -->
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label
+                        fxFlexAlign="center"
+                        class="pr-0 form-label"
+                        fxFlex="12"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('activeStartDate'))"
+                    >
+                        <span class="sinbad-red-fg">*</span>Active From
+                    </label>
+
+                    <mat-form-field
+                        appearance="outline"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="!isViewMode()"
+                    >
+                        <input
+                            matInput
+                            [matDatetimepicker]="activeStartDatePicker"
+                            [max]="maxActiveStartDate"
+                            [min]="minActiveStartDate"
+                            (dateChange)="onChangeActiveStartDate($event)"
+                            autocomplete="false"
+                            name="activeStartDate"
+                            formControlName="activeStartDate"
+                        />
+                        <mat-datetimepicker-toggle
+                            matSuffix
+                            [for]="activeStartDatePicker"
+                        ></mat-datetimepicker-toggle>
+                        <mat-datetimepicker
+                            touchUi
+                            #activeStartDatePicker
+                            [disabled]="false"
+                            type="date"
+                        >
+                        </mat-datetimepicker>
+                        <mat-error *ngIf="hasError(form.get('activeStartDate'))">
+                            {{ getFormError(form.get('activeStartDate')) }}
+                        </mat-error>
+                    </mat-form-field>
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ (form.get('activeStartDate').value | date: 'dd/MM/yyyy') || '-' }}
+                    </span>
+                </div>
+                <!-- / ACTIVE START DATE -->
+
+                <!-- ACTIVE END DATE -->
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label
+                        fxFlexAlign="center"
+                        class="pr-0 form-label"
+                        fxFlex="12"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('activeEndDate'))"
+                    >
+                        <span class="sinbad-red-fg">*</span>To
+                    </label>
+
+                    <mat-form-field
+                        appearance="outline"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="!isViewMode()"
+                    >
+                        <input
+                            matInput
+                            [matDatetimepicker]="activeEndDatePicker"
+                            [max]="maxActiveEndDate"
+                            [min]="minActiveEndDate"
+                            (dateChange)="onChangeActiveEndDate($event)"
+                            autocomplete="false"
+                            name="activeEndDate"
+                            formControlName="activeEndDate"
+                        />
+                        <mat-datetimepicker-toggle
+                            matSuffix
+                            [for]="activeEndDatePicker"
+                        ></mat-datetimepicker-toggle>
+                        <mat-datetimepicker
+                            touchUi
+                            #activeEndDatePicker
+                            [disabled]="false"
+                            type="date"
+                        >
+                        </mat-datetimepicker>
+                        <mat-error *ngIf="hasError(form.get('activeEndDate'))">
+                            {{ getFormError(form.get('activeEndDate')) }}
+                        </mat-error>
+                    </mat-form-field>
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ (form.get('activeEndDate').value | date: 'dd/MM/yyyy') || '-' }}
+                    </span>
+                </div>
+                <!-- / ACTIVE END DATE -->
+            </ng-template>
+
+            <!-- Voucher Tag -->
+            <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
+                <label fxFlexAlign="center" fxFlex="12" class="pr-0 form-label">
+                    Voucher Tag
+                </label>
+
+                <mat-form-field
+                    appearance="none"
+                    class="example-chip-list"
+                    style="
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        flex: 1 1 100%;
+                        box-sizing: border-box;
+                        max-width: 40%;
+                        border: 1px solid rgba(0, 0, 0, 0.12);
+                        margin-bottom: 25px;
+                        height: 50px;
+                    "
+                >
+                    <mat-chip-list #chipListTerms>
+                        <mat-chip
+                            *ngFor="let vouchertag of voucherTag"
+                            [selectable]="selectableVoucherTag"
+                            [removable]="removableVoucherTag"
+                            (removed)="removeVoucherTag(vouchertag)"
+                        >
+                            {{ vouchertag.name }}
+                            <mat-icon matChipRemove *ngIf="removableVoucherTag">cancel</mat-icon>
+                        </mat-chip>
+                        <input
+                            [matChipInputFor]="chipListTerms"
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            [matChipInputAddOnBlur]="addOnBlurVoucherTag"
+                            (matChipInputTokenEnd)="addVoucherTag($event)"
+                        />
+                    </mat-chip-list>
+                </mat-form-field>
+
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ form.get('voucherTag').value || '-' }}
+                </span>
+            </div>
+            <!-- / Voucher Tag-->
+
+            <!-- VOUCHER Code -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherCode'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Voucher Code
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input matInput name="voucherCode" formControlName="voucherCode" />
+                    <mat-error *ngIf="hasError(form.get('voucherCode'))">
+                        {{ getFormError(form.get('voucherCode')) }}
                     </mat-error>
                 </mat-form-field>
                 <span
@@ -310,76 +938,10 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('activeEndDate').value | date: 'dd/MM/yyyy HH:mm') || '-' }}
+                    {{ form.get('voucherCode').value || '-' }}
                 </span>
             </div>
-            <!-- / ACTIVE END DATE -->
-
-            <!-- DESCRIPTION -->
-            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label
-                    fxFlexAlign="start"
-                    [fxFlex]="labelLength"
-                    class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('description'))"
-                    [class.mt-20]="!isViewMode()"
-                >
-                    Description
-                </label>
-
-                <mat-form-field
-                    appearance="outline"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="!isViewMode()"
-                >
-                    <textarea
-                        matInput
-                        rows="10"
-                        name="description"
-                        formControlName="description"
-                    ></textarea>
-                    <mat-error *ngIf="hasError(form.get('description'))">
-                        {{ getFormError(form.get('description')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    {{ form.get('description').value || '-' }}
-                </span>
-            </div>
-            <!-- / DESCRIPTION -->
-
-            <!-- SHORT DESCRIPTION -->
-            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label
-                    fxFlexAlign="start"
-                    [fxFlex]="labelLength"
-                    class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('shortDescription'))"
-                    [class.mt-20]="!isViewMode()"
-                >
-                    Short Description
-                </label>
-
-                <mat-form-field
-                    appearance="outline"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="!isViewMode()"
-                >
-                    <textarea
-                        matInput
-                        rows="10"
-                        name="shortDescription"
-                        formControlName="shortDescription"
-                    ></textarea>
-                    <mat-error *ngIf="hasError(form.get('shortDescription'))">
-                        {{ getFormError(form.get('shortDescription')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    {{ form.get('shortDescription').value || '-' }}
-                </span>
-            </div>
-            <!-- / SHORT DESCRIPTION -->
+            <!-- / VOUCHER Code -->
         </form>
     </div>
 </div>
