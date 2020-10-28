@@ -1,7 +1,6 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
     AfterViewInit,
-    ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     OnDestroy,
@@ -29,14 +28,14 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Brand } from 'app/shared/models/brand.model';
-import { IBreadcrumbs, TNullable } from 'app/shared/models/global.model';
+import { IBreadcrumbs, IFooterActionConfig, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import * as numeral from 'numeral';
 import Quill from 'quill';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
-import * as numeral from 'numeral';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -48,12 +47,11 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../models';
-import { CataloguesService } from '../services';
+import { BrandFacadeService, CatalogueFacadeService, CataloguesService } from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
 import { fromBrand, fromCatalogue } from '../store/reducers';
 import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
@@ -69,6 +67,48 @@ type IFormMode = 'add' | 'view' | 'edit';
     // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit {
+    private breadcrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Catalogue',
+        },
+    ];
+
+    private footerConfig: IFooterActionConfig = {
+        progress: {
+            title: {
+                label: 'Skor Konten Produk',
+                active: true,
+            },
+            value: {
+                active: false,
+            },
+            active: false,
+        },
+        action: {
+            save: {
+                label: 'Save',
+                active: true,
+            },
+            draft: {
+                label: 'Save Draft',
+                active: false,
+            },
+            cancel: {
+                label: 'Cancel',
+                active: false,
+            },
+            goBack: {
+                label: 'Back',
+                active: true,
+                url: '/pages/catalogues/list',
+            },
+        },
+    };
+
+    private unSubs$: Subject<any> = new Subject();
     formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
@@ -109,8 +149,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-    private _unSubs$: Subject<void>;
-
     constructor(
         private fb: FormBuilder,
         private route: ActivatedRoute,
@@ -122,6 +160,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private _cd: ChangeDetectorRef,
         public translate: TranslateService,
         private sanitizer: DomSanitizer,
+        private brandFacade: BrandFacadeService,
+        private catalogueFacade: CatalogueFacadeService,
         private $helper: HelperService,
         private errorMessageSvc: ErrorMessageService,
         private catalogueSvc: CataloguesService,
@@ -129,78 +169,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
 
-        const breadcrumbs: Array<IBreadcrumbs> = [
-            {
-                title: 'Home',
-                // translate: 'BREADCRUMBS.HOME',
-                active: false,
-            },
-            {
-                title: 'Catalogue',
-                translate: 'BREADCRUMBS.CATALOGUE',
-                url: '/pages/catalogues',
-            },
-        ];
-
-        if (this.route.snapshot.url.filter((url) => url.path === 'edit').length > 0) {
-            breadcrumbs.push({
-                title: 'Edit Product',
-                translate: 'BREADCRUMBS.EDIT_PRODUCT',
-                active: true,
-            });
-        } else {
-            breadcrumbs.push({
-                title: 'Add New Product',
-                translate: 'BREADCRUMBS.ADD_PRODUCT',
-                active: true,
-            });
-        }
-
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: breadcrumbs,
-            })
-        );
-
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
-        this.store.dispatch(
+        /* this.store.dispatch(
             UiActions.setFooterActionConfig({
-                payload: {
-                    progress: {
-                        title: {
-                            label: 'Skor Konten Produk',
-                            active: true,
-                        },
-                        value: {
-                            active: false,
-                        },
-                        active: false,
-                    },
-                    action: {
-                        save: {
-                            label: 'Save',
-                            active: true,
-                        },
-                        draft: {
-                            label: 'Save Draft',
-                            active: false,
-                        },
-                        cancel: {
-                            label: 'Cancel',
-                            active: false,
-                        },
-                        goBack: {
-                            label: 'Back',
-                            active: true,
-                            url: '/pages/catalogues/list',
-                        },
-                    },
-                },
+                payload: ,
             })
         );
 
-        this.store.dispatch(FormActions.resetFormStatus());
+        this.store.dispatch(FormActions.resetFormStatus()); */
     }
 
     private fileSizeValidator(fieldName: string, maxSize: number = 0): ValidatorFn {
@@ -335,15 +312,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
 
         if (this.formMode !== 'edit') {
-            this.store.dispatch(
+            console.log('ADD SUBMIT', { payload: catalogueData });
+            /* this.store.dispatch(
                 CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
-            );
+            ); */
         } else {
-            this.store.dispatch(
+            console.log('EDIT SUBMIT', { payload: catalogueData, id: formValues.productInfo.id });
+            /* this.store.dispatch(
                 CatalogueActions.patchCatalogueRequest({
                     payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' },
                 })
-            );
+            ); */
         }
 
         this.store.dispatch(FormActions.resetClickSaveButton());
@@ -397,27 +376,40 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     ngOnInit(): void {
-        /** Set subject untuk keperluan Subscription. */
-        this._unSubs$ = new Subject<void>();
+        if (this.route.snapshot.url.filter((url) => url.path === 'edit').length > 0) {
+            this.breadcrumbs.push({
+                title: 'Edit Product',
+                translate: 'BREADCRUMBS.EDIT_PRODUCT',
+                active: true,
+            });
+        } else {
+            this.breadcrumbs.push({
+                title: 'Add New Product',
+                translate: 'BREADCRUMBS.ADD_PRODUCT',
+                active: true,
+            });
+        }
+
+        this.catalogueFacade.createBreadcrumb(this.breadcrumbs);
+        this.catalogueFacade.setFooterConfig(this.footerConfig);
 
         this.isLoading$ = combineLatest([
-            this.store.select(CatalogueSelectors.getIsLoading),
-            this.brandStore.select(BrandSelectors.getBrandState),
+            this.catalogueFacade.isLoading$,
+            this.brandFacade.isLoading$,
         ]).pipe(
-            map(([storeLoading, brand]) => {
-                if (storeLoading && !brand.isLoading) {
+            map(([catalogueLoading, brandLoading]) => {
+                if (catalogueLoading && !brandLoading) {
                     return true;
                 } else {
                     return false;
                 }
-            }),
-            takeUntil(this._unSubs$)
+            })
         );
 
         /** Mulai mengambil data kategori katalog. */
         this.store
             .select(CatalogueSelectors.getCatalogueCategories)
-            .pipe(takeUntil(this._unSubs$))
+            .pipe(takeUntil(this.unSubs$))
             .subscribe((categories) => {
                 /** Minta kategori katalog ke back-end jika belum ada. */
                 if (categories.length === 0) {
@@ -434,9 +426,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Menyiapkan form. */
         this.form = this.fb.group({
             productInfo: this.fb.group({
-                id: [''],
+                id: null,
                 externalId: [
-                    '',
+                    null,
                     {
                         validators: [
                             RxwebValidators.required({
@@ -450,7 +442,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     },
                 ],
                 name: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -460,18 +452,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
-                description: [''],
-                information: [
-                    '',
-                    [
-                        // RxwebValidators.required({
-                        //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                        // })
-                    ],
-                ],
+                description: null,
+                information: null,
                 // variant: ['', Validators.required],
                 brandId: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -493,7 +478,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 category: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -503,10 +488,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
-                stock: [''],
+                stock: null,
                 unlimitedStock: [{ value: false, disabled: true }],
                 uom: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -516,15 +501,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
-                uomName: [''],
+                uomName: null,
                 // minQty: ['', [Validators.required, Validators.min(1)]],
                 // packagedQty: ['', [Validators.required, Validators.min(1)]],
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]
             }),
             productSale: this.fb.group({
-                retailPrice: [''],
+                retailPrice: null,
                 productPrice: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -544,7 +529,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         RxwebValidators.choice({
                             minLength: 1,
                             conditionalExpression: (controls) =>
-                                (controls.tags as Array<string>).length > 0 ? true : null,
+                                (controls.tags as string[]).length > 0 ? true : null,
                             message: this.errorMessageSvc.getErrorMessageNonState(
                                 'product_tag',
                                 'min_1_tag'
@@ -590,7 +575,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             }),
             productShipment: this.fb.group({
                 catalogueWeight: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -609,7 +594,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 packagedWeight: [
-                    '',
+                    null,
                     [
                         // RxwebValidators.required({
                         //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
@@ -621,7 +606,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 catalogueDimension: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -640,7 +625,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 packagedDimension: [
-                    '',
+                    null,
                     [
                         // RxwebValidators.required({
                         //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
@@ -651,7 +636,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         // })
                     ],
                 ],
-                isDangerous: [''],
+                // isDangerous: null,
                 couriers: this.fb.array([
                     this.fb.control({
                         name: 'SiCepat REG (maks 5000g)',
@@ -669,7 +654,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             }),
             productCount: this.fb.group({
                 qtyPerMasterBox: [
-                    '',
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -687,7 +672,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
-                minQtyOption: ['pcs'],
+                minQtyOption: 'pcs',
                 minQtyValue: [
                     { value: '1', disabled: true },
                     [
@@ -707,7 +692,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
-                additionalQtyOption: ['pcs'],
+                additionalQtyOption: 'pcs',
                 additionalQtyValue: [
                     { value: '1', disabled: true },
                     [
@@ -727,6 +712,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
+            }),
+            productVisibility: this.fb.group({
+                status: 'active',
+                isBonus: false,
             }),
         });
 
@@ -802,7 +791,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         return of([brands, categories, userSupplier, productName]);
                     }
                 ),
-                takeUntil(this._unSubs$)
+                takeUntil(this.unSubs$)
             )
             .subscribe(
                 ([brands, categories, userSupplier, productName]: [
@@ -862,7 +851,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productShipment').valueChanges,
             this.form.statusChanges
         )
-            .pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this._unSubs$))
+            .pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this.unSubs$))
             .subscribe(() => {
                 if (this.form.status === 'VALID') {
                     this.store.dispatch(FormActions.setFormStatusValid());
@@ -877,7 +866,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Melakukan subscribe ke perubahan nilai opsi Minimum Quantity Order. */
         this.form
             .get('productCount.minQtyOption')
-            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
             .subscribe((value) => {
                 /** Mengambil nilai pada input Minimum Order Quantity. */
                 const minQtyValueController = this.form.get('productCount.minQtyValue');
@@ -905,7 +894,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Melakukan subscribe ke perubahan nilai opsi Additional Quantity. */
         this.form
             .get('productCount.additionalQtyOption')
-            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
             .subscribe((value) => {
                 /** Mengambil nilai pada input Additional Quantity. */
                 const additionalQtyValueController = this.form.get(
@@ -937,7 +926,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Melakukan subscribe ke perubahan nilai input Quantity per Master Box. */
         this.form
             .get('productCount.qtyPerMasterBox')
-            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
             .subscribe((value) => {
                 /** Mengambil Form Control-nya option dan input Minimum Quantity Order. */
                 const minQtyOption = this.form.get('productCount.minQtyOption');
@@ -962,7 +951,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
                 filter((isClick) => isClick),
-                takeUntil(this._unSubs$)
+                takeUntil(this.unSubs$)
             )
             .subscribe((isClick) => {
                 /** Jika menekannya, maka submit data form-nya. */
@@ -972,9 +961,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             });
 
         /** Melakukan subscribe ketika ada perubahan data daftar brand. */
-        this.brands$ = this.store
-            .select(BrandSelectors.getAllBrands)
-            .pipe(takeUntil(this._unSubs$));
+        this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this.unSubs$));
 
         this.form.get('productInfo.information').setValue('---');
         setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
@@ -987,7 +974,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         this.store
             .select(CatalogueSelectors.getCatalogueUnits)
-            .pipe(takeUntil(this._unSubs$))
+            .pipe(takeUntil(this.unSubs$))
             .subscribe((units) => {
                 if (units.length === 0) {
                     return this.store.dispatch(
@@ -1031,7 +1018,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         this.form.get('productInfo.stock').enable();
                     }
                 }),
-                takeUntil(this._unSubs$)
+                takeUntil(this.unSubs$)
             )
             .subscribe();
 
@@ -1042,8 +1029,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this.unSubs$.next();
+        this.unSubs$.complete();
 
         this.store.dispatch(CatalogueActions.resetSelectedCatalogue());
         this.store.dispatch(CatalogueActions.resetSelectedCategories());
@@ -1106,7 +1093,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.store.select(CatalogueSelectors.getCatalogueUnits),
             this.store.select(AuthSelectors.getUserSupplier),
         ])
-            .pipe(takeUntil(this._unSubs$))
+            .pipe(takeUntil(this.unSubs$))
             .subscribe(([catalogue, categories, units, userSupplier]) => {
                 /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
                 const { id } = this.route.snapshot.params;

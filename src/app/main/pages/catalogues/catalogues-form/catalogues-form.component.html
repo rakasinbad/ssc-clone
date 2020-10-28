@@ -1916,13 +1916,17 @@
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
-                        formGroupName="productCount"
+                        formGroupName="productVisibility"
                     >
                         <label
                             class="pr-0"
                             fxFlexAlign="start"
                             fxFlex="18"
-                            [class.mat-error]="hasError(form.get('productCount.minQtyValue'))"
+                            [class.sinbad-red-fg]="
+                                form.get('productVisibility.status').value ||
+                                    form.get('productVisibility.status').touched
+                                    | hasErrorField: form.get('productVisibility.status'):false
+                            "
                         >
                             Status
                         </label>
@@ -1932,30 +1936,27 @@
                             fxLayoutAlign="space-between stretch"
                             fxLayoutGap="5px"
                             fxFlex="80"
-                            *ngIf="!isViewMode()"
+                            *ngIf="!(formMode | hasFormMode: 'view')"
                         >
                             <!-- RADIO BUTTON SELECT STATUS -->
-                            <mat-radio-group>
-                                <mat-radio-button class="pr-36">Active</mat-radio-button>
-                                <mat-radio-button class="pr-36">Inactive</mat-radio-button>
+                            <mat-radio-group formControlName="status">
+                                <mat-radio-button class="pr-36" [value]="'active'">
+                                    Active
+                                </mat-radio-button>
+                                <mat-radio-button class="pr-36" [value]="'inactive'">
+                                    Inactive
+                                </mat-radio-button>
                             </mat-radio-group>
                             <!-- / RADIO BUTTON SELECT STATUS -->
                         </div>
+
                         <span
                             class="grey-fg"
                             fxFlexAlign="center"
                             fxFlex="80"
-                            *ngIf="isViewMode() && form.get('productCount.minQtyValue').value"
+                            *ngIf="formMode | hasFormMode: 'view'"
                         >
-                            {{ form.get('productCount.minQtyValue').value | number: '1.0-2' }}
-                        </span>
-                        <span
-                            class="grey-fg"
-                            fxFlexAlign="center"
-                            fxFlex="80"
-                            *ngIf="isViewMode() && !form.get('productCount.minQtyValue').value"
-                        >
-                            -
+                            {{ form.get('productVisibility.status').value || '-' }}
                         </span>
                     </div>
                     <!-- / STATUS -->
@@ -1965,17 +1966,20 @@
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
-                        formGroupName="productCount"
+                        formGroupName="productVisibility"
                     >
                         <label
                             class="pr-0"
                             fxFlexAlign="start"
                             fxFlex="18"
-                            [class.mat-error]="
-                                hasError(form.get('productCount.additionalQtyValue'))
+                            [class.sinbad-red-fg]="
+                                form.get('productVisibility.isBonus').value ||
+                                    form.get('productVisibility.isBonus').touched
+                                    | hasErrorField: form.get('productVisibility.isBonus'):false
                             "
                         >
-                            <span class="red-500-fg">* </span>Type
+                            <span class="red-500-fg">*</span>
+                            Type
                         </label>
 
                         <div
@@ -1983,31 +1987,19 @@
                             fxLayoutAlign="space-between stretch"
                             fxLayoutGap="5px"
                             fxFlex="80"
-                            *ngIf="!isViewMode()"
+                            *ngIf="!(formMode | hasFormMode: 'view')"
                         >
-                            <mat-checkbox labelPosition="after"> Bonus </mat-checkbox>
+                            <mat-checkbox formControlName="isBonus" labelPosition="after">
+                                Bonus
+                            </mat-checkbox>
                         </div>
                         <span
                             class="grey-fg"
                             fxFlexAlign="center"
                             fxFlex="80"
-                            *ngIf="
-                                isViewMode() && form.get('productCount.additionalQtyValue').value
-                            "
+                            *ngIf="formMode | hasFormMode: 'view'"
                         >
-                            {{
-                                form.get('productCount.additionalQtyValue').value | number: '1.0-2'
-                            }}
-                        </span>
-                        <span
-                            class="grey-fg"
-                            fxFlexAlign="center"
-                            fxFlex="80"
-                            *ngIf="
-                                isViewMode() && !form.get('productCount.additionalQtyValue').value
-                            "
-                        >
-                            -
+                            {{ form.get('productVisibility.isBonus').value }}
                         </span>
                     </div>
                     <!-- / TYPE -->
