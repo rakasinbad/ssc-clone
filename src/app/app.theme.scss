@@ -220,7 +220,7 @@ $typography: mat-typography-config(
     // Logistics
     @include warehouses-theme($theme);
     @include warehouse-coverages-theme($theme);
-    @include sku-assigments-theme($theme);
+    @include sku-assignments-theme($theme);
     @include stock-managements-theme($theme);
 
     // OMS
