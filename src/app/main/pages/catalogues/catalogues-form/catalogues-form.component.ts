@@ -829,21 +829,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     UserSupplier,
                     string
                 ]) => {
-                    /** Mengambil data brand jika belum ada di state. */
-                    if (!brands || brands.length === 0) {
-                        const params: IQueryParams = {
-                            paginate: false
-                        };
-
-                        /** Mengambil brand berdasarkan ID supplier-nya dari state. */
-                        params['supplierId'] = userSupplier.supplierId;
-                        return this.store.dispatch(
-                            BrandActions.fetchBrandsRequest({
-                                payload: params
-                            })
-                        );
-                    }
-
                     /** Memasukkan nama produk ke dalam form jika bukan edit mode (nama form yang berasal dari halaman Add Product) */
                     // if (!this.isEditMode) {
                     //     this.form.get('productInfo.name').patchValue(productName);
@@ -1067,7 +1052,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     ngAfterViewInit(): void {
+        this.requestBrands();
         this._cd.markForCheck();
+    }
+
+    private requestBrands(): void {
+        const params: IQueryParams = {
+            paginate: false
+        };
+
+        return this.store.dispatch(
+            BrandActions.fetchBrandsRequest({
+                payload: params
+            })
+        );
     }
 
     private registerQuillFormatting(): void {
