@@ -399,7 +399,7 @@ export class VoucherGeneralInformationComponent
         };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
-            'mt-16': true,
+            'mt-16': false,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
