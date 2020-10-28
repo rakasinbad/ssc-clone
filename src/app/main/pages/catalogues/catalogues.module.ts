@@ -28,7 +28,7 @@ import { CataloguePriceSettingsComponent } from './components/catalogue-price-se
 import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
 import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
-import { CatalogueFacadeService } from './services';
+import { BrandFacadeService, CatalogueFacadeService } from './services';
 import { CatalogueEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
@@ -87,6 +87,6 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         CataloguesSelectCategoryComponent,
         CatalogueWeightAndDimensionComponent,
     ],
-    providers: [CatalogueFacadeService],
+    providers: [BrandFacadeService, CatalogueFacadeService],
 })
 export class CataloguesModule {}
