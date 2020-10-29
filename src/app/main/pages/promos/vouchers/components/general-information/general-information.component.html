@@ -25,7 +25,7 @@
                     </label>
 
                     <mat-radio-group
-                        formControlName="promoAllocationType"
+                        formControlName="voucherAllocationType"
                         aria-label="Select type"
                         (change)="selectPromoAlloc($event)"
                         style="margin-top: 3px"
@@ -342,6 +342,7 @@
                         border: 1px solid rgba(0, 0, 0, 0.12);
                         margin-bottom: 25px;
                         height: 250px;
+                        border-radius: 5px;
                     "
                 >
                     <mat-chip-list #chipListTerms>
@@ -400,6 +401,7 @@
                         border: 1px solid rgba(0, 0, 0, 0.12);
                         margin-bottom: 25px;
                         height: 250px;
+                        border-radius: 5px;
                     "
                 >
                     <mat-chip-list #chipList1>
@@ -483,6 +485,7 @@
                     <input
                         matInput
                         type="number"
+                        min="0"
                         name="maxRedemptionPerBuyer"
                         formControlName="maxRedemptionPerBuyer"
                     />
@@ -510,7 +513,7 @@
             >
                 <label
                     fxFlexAlign="center" class="pr-0 form-label" fxFlex="12"
-                    [class.sinbad-red-fg]="hasError('promoBudget')"
+                    [class.sinbad-red-fg]="hasError('voucherBudget')"
                 >
                     <span class="sinbad-red-fg">*</span>Max Promo Redemption<br />(Rp)
                 </label>
@@ -518,16 +521,16 @@
                 <mat-form-field appearance="outline" fxFlex="40">
                     <input
                         matInput
-                        name="promoBudget"
-                        formControlName="promoBudget"
+                        name="voucherBudget"
+                        formControlName="voucherBudget"
                         mask="separator.2"
                         thousandSeparator="."
                         prefix="Rp"
                         placeholder="Rp"
                     />
 
-                    <mat-error *ngIf="hasError('promoBudget', true)">
-                        {{ getFormError(form.get('promoBudget')) }}
+                    <mat-error *ngIf="hasError('voucherBudget', true)">
+                        {{ getFormError(form.get('voucherBudget')) }}
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -537,17 +540,17 @@
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
-                [class.sinbad-red-fg]="hasError('promoSlot')"
+                [class.sinbad-red-fg]="hasError('voucherSlot')"
             >
                 <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
                     <span class="sinbad-red-fg">*</span>Max Promo Redemption<br />(transaction)
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="40">
-                    <input matInput name="promoSlot" formControlName="promoSlot" mask="0*" />
+                    <input matInput name="voucherSlot" formControlName="voucherSlot" mask="0*" />
 
-                    <mat-error *ngIf="hasError('promoSlot', true)">
-                        {{ getFormError(form.get('promoSlot')) }}
+                    <mat-error *ngIf="hasError('voucherSlot', true)">
+                        {{ getFormError(form.get('voucherSlot')) }}
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -572,32 +575,32 @@
                         class="sinbad-file-field"
                         appearance="outline"
                         fxFlex="33"
-                        [class.mat-sinbad-field-error]="hasError('imgSuggestion')"
+                        [class.mat-sinbad-field-error]="hasError('voucherBanner')"
                     >
                         <input
-                            #imgSuggestionPicker
+                            #voucherBannerPicker
                             type="file"
                             class="custom-file"
                             accept=".jpg, .jpeg, .png"
-                            formControlName="imgSuggestion"
-                            (click)="imgSuggestionPicker.value = null"
-                            (change)="onFileBrowse($event, 'imgSuggestion')"
+                            formControlName="voucherBanner"
+                            (click)="voucherBannerPicker.value = null"
+                            (change)="onFileBrowse($event, 'voucherBanner')"
                             autocomplete="off"
                         />
                         <input
                             matInput
-                            [formControl]="tmp.imgSuggestion"
+                            [formControl]="tmp.voucherBanner"
                             [value]="
-                                tmp.imgSuggestion.value && tmp.imgSuggestion.value.name
-                                    ? tmp.imgSuggestion.value.name
+                                tmp.voucherBanner.value && tmp.voucherBanner.value.name
+                                    ? tmp.voucherBanner.value.name
                                     : null
                             "
                             placeholder="No file choose"
                             autocomplete="off"
                         />
 
-                        <mat-hint class="mat-error" *ngIf="hasError('imgSuggestion', true)">
-                            {{ getFormError('imgSuggestion') }}
+                        <mat-hint class="mat-error" *ngIf="hasError('voucherBanner', true)">
+                            {{ getFormError('voucherBanner') }}
                         </mat-hint>
                     </mat-form-field>
 
@@ -605,7 +608,7 @@
                         type="button"
                         mat-flat-button
                         color="accent"
-                        (click)="imgSuggestionPicker.click()"
+                        (click)="voucherBannerPicker.click()"
                         fxFlexAlign="center"
                     >
                         Upload Your File
@@ -690,9 +693,8 @@
                             [matDatetimepicker]="activeCollactibleToPicker"
                             [max]="maxCollectibleTo"
                             [min]="minCollectibleTo"
-                            (dateChange)="onChangeCollectibleTo($event)"
                             autocomplete="false"
-                            value="valueCollectibleTo"
+                            formControlName="availableCollectedTo"
                             readonly
                         />
                         <mat-datetimepicker-toggle
@@ -728,7 +730,7 @@
                     <mat-checkbox
                         (change)="selectExpiration($event)"
                         [checked]="expirationCheck"
-                        formControlName="expirationStatus"
+                        formControlName="expiration"
                     >
                         Expiration
                         <mat-icon
@@ -760,6 +762,8 @@
                                 name="expirationDays"
                                 formControlName="expirationDays"
                                 (ngModelChange)="inputExpirationDays($event)"
+                                type="number"
+                                min="1"
                             />
     
                             <mat-error *ngIf="hasError('expirationDays', true)">
@@ -895,6 +899,7 @@
                         border: 1px solid rgba(0, 0, 0, 0.12);
                         margin-bottom: 25px;
                         height: 71px;
+                        border-radius: 5px;
                     "
                 >
                     <mat-chip-list #chipListTerms>

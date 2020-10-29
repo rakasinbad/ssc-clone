@@ -21,7 +21,7 @@ interface IVoucherGeneralInformation {
     instructions: [];
     voucherBanner: string;
     expiration: Boolean;
-    expirationDays: string;
+    expirationDays: number;
     availableCollectedFrom: string;
     availableCollectedTo: string;
     voucherTag: [];
@@ -49,7 +49,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     instructions: [];
     voucherBanner: string;
     expiration: Boolean;
-    expirationDays: string;
+    expirationDays: number;
     availableCollectedFrom: string;
     availableCollectedTo: string;
     voucherTag: [];
@@ -100,7 +100,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.instructions = instructions || null;
         this.voucherBanner = voucherBanner || null;
         this.expiration = expiration;
-        if (this.expiration == true) {
+        if (this.voucherType == "collectible") {
             this.availableCollectedFrom = availableCollectedFrom || null;
             this.availableCollectedTo = availableCollectedTo || null;
             this.expirationDays = expirationDays || null;

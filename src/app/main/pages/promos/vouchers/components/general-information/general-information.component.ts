@@ -70,7 +70,7 @@ export interface VoucherTag {
     name: string;
 }
 
-type TmpKey = 'imgSuggestion';
+type TmpKey = 'voucherBanner';
 
 @Component({
     selector: 'voucher-general-information',
@@ -215,7 +215,7 @@ export class VoucherGeneralInformationComponent
 
     selectPromoAlloc(ev: MatRadioChange): void {
         this.selectPromo = ev.value;
-        this.form.get('promoAllocationType').setValidators([
+        this.form.get('voucherAllocationType').setValidators([
             RxwebValidators.required({
                 message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
             }),
@@ -315,23 +315,23 @@ export class VoucherGeneralInformationComponent
 
             if (file) {
                 switch (type) {
-                    case 'imgSuggestion':
+                    case 'voucherBanner':
                         {
-                            const imgSuggestionField = this.form.get('imgSuggestion');
+                            const voucherBannerField = this.form.get('voucherBanner');
 
                             const fileReader = new FileReader();
 
                             fileReader.onload = () => {
-                                imgSuggestionField.setValue(fileReader.result);
-                                this.tmp['imgSuggestion'].setValue({
+                                voucherBannerField.setValue(fileReader.result);
+                                this.tmp['voucherBanner'].setValue({
                                     name: file.name,
                                     url: this.domSanitizer.bypassSecurityTrustUrl(
                                         window.URL.createObjectURL(file)
                                     ),
                                 });
 
-                                if (imgSuggestionField.invalid) {
-                                    imgSuggestionField.markAsTouched();
+                                if (voucherBannerField.invalid) {
+                                    voucherBannerField.markAsTouched();
                                 }
                             };
 
@@ -345,10 +345,10 @@ export class VoucherGeneralInformationComponent
             }
         } else {
             switch (type) {
-                case 'imgSuggestion':
+                case 'voucherBanner':
                     {
-                        this.form.get('imgSuggestion').reset();
-                        this.tmp['imgSuggestion'].reset();
+                        this.form.get('voucherBanner').reset();
+                        this.tmp['voucherBanner'].reset();
                     }
                     break;
 
@@ -361,34 +361,40 @@ export class VoucherGeneralInformationComponent
     selectExpiration(event) {
         if (event.checked === true) {
             this.expirationCheck = true;
-            this.form.get('expirationStatus').setValue(true);
+            this.form.get('expiration').setValue(true);
+            // let availableFrom = this.form.get('availableCollectedTo');
+            // console.log('availableFrom->', availableFrom)
+            // this.form.get('availableCollectedTo').setValue();
+
         } else {
             this.expirationCheck = false;
-            this.form.get('expirationStatus').setValue(false);
+            this.form.get('expiration').setValue(false);
 
-            // let collectibleStart = this.startCollectFromHrMn;
-            // let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('DD-MM-YYYY');
-            // this.valueCollectibleTo = collectibleTo;
-            // console.log('collectibleTo select expiration auto->', collectibleTo)
-            // this.form.get('availableCollectedTo').setValue(moment(futureDays + '23:59').format());
-            
-            // let activeStartDate = this.form.get('availableCollectedFrom');
-            // console.log('isi activeStartDate->', activeStartDate)
-            this.form.get('startDate').setValue(null);
-            // let eDate= '9999-12-31 00:00';
-            // let activeEndDate = moment(eDate).format();
-            this.form.get('endDate').setValue(null);
+            let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('YYYY-MM-DD');
+            this.valueCollectibleTo = collectibleTo;
+            let collectToDate = moment(collectibleTo).format();
+            this.form.get('availableCollectedTo').setValue(collectToDate);
         }
     }
 
     inputExpirationDays(event): void {
         // console.log('isi value input->', event)
-        if (event != '') {
+        if (event == '' || event == null) {
+            this.form.get('availableCollectedTo').setValue('');
+            this.form.get('expirationDays').setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.minNumber({
+                    value: 1,
+                    message: 'Allowed minimum value is 1',
+                }),
+            ]);
+        } else {
             // console.log('isi input collect to->', moment().add(event, 'days').format('DD-MM-YYYY'))
-            let futureDays = moment().add(event, 'days').format('DD-MM-YYYY');
-            this.valueCollectibleTo = futureDays;
-            this.form.get('availableCollectedTo').setValue(moment(futureDays + '23:59').format());
-        }
+            let futureDays = moment().add(event, 'days').format('YYYY-MM-DD');
+            this.form.get('availableCollectedTo').setValue(moment(futureDays).format());
+        } 
     }
 
     addVoucherTag(event: MatChipInputEvent): void {
@@ -480,36 +486,36 @@ export class VoucherGeneralInformationComponent
         this.collectibleFromDate = moment(this.startCollectFromHrMn).format();
         this.form.get('availableCollectedFrom').setValue(this.collectibleFromDate);
 
-        this.form.get('startDate').setValue(this.collectibleFromDate);
+        // this.form.get('startDate').setValue(this.collectibleFromDate);
 
         if (this.expirationCheck == false) {
-            let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('DD-MM-YYYY');
+            let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('YYYY-MM-DD');
             this.valueCollectibleTo = collectibleTo;
             let collectToDate = moment(collectibleTo).format();
-            this.form.get('availableCollectedTo').setValue(collectibleTo);
+            this.form.get('availableCollectedTo').setValue(collectToDate);
             // console.log('collectibleTocollectToDate->', collectibleTo)
         }
     }
 
-    onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
-        // console.log('end date ->', ev.value);
-        const activeEndDate = moment(ev.value);
+    // onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
+    //     // console.log('end date ->', ev.value);
+    //     const activeEndDate = moment(ev.value);
 
-        if (this.form.get('availableCollectedTo').value) {
-            const activeStartDate = moment(this.form.get('availableCollectedFrom').value);
+    //     if (this.form.get('availableCollectedTo').value) {
+    //         const activeStartDate = moment(this.form.get('availableCollectedFrom').value);
 
-            if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('availableCollectedTo').reset();
-            }
-        }
+    //         if (activeEndDate.isBefore(activeStartDate)) {
+    //             this.form.get('availableCollectedTo').reset();
+    //         }
+    //     }
 
-        this.maxActiveStartDate = activeEndDate.toDate();
-        this.triggerStatus$.next('');
+    //     this.maxActiveStartDate = activeEndDate.toDate();
+    //     this.triggerStatus$.next('');
 
-        let stCollectToHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
-        let collectToDate = moment(stCollectToHrMn).format();
-        this.form.get('availableCollectedTo').setValue(collectToDate);
-    }
+    //     let stCollectToHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+    //     let collectToDate = moment(stCollectToHrMn).format();
+    //     this.form.get('availableCollectedTo').setValue(collectToDate);
+    // }
 
     private updateFormView(): void {
         // Penetapan class pada form field berdasarkan mode form-nya.
@@ -622,12 +628,12 @@ export class VoucherGeneralInformationComponent
         this.minCollectibleTo = null;
         this.maxCollectibleFrom = null;
         this.maxCollectibleTo = null;
-
-        this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
+        // voucherBanner
+        this.tmp['voucherBanner'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.fb.group({
             id: [null],
-            promoAllocationType: [
+            voucherAllocationType: [
                 PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
                 [
                     RxwebValidators.required({
@@ -702,7 +708,7 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             maxRedemptionPerBuyer: [
-                '1',
+                '',
                 [
                     RxwebValidators.numeric({
                         allowDecimal: false,
@@ -712,9 +718,13 @@ export class VoucherGeneralInformationComponent
                         value: 1,
                         message: 'Allowed minimum value is 1',
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
-            promoBudget: [
+            voucherBudget: [
                 null,
                 [
                     RxwebValidators.numeric({
@@ -728,7 +738,7 @@ export class VoucherGeneralInformationComponent
                     })
                 ],
             ],
-            promoSlot: [
+            voucherSlot: [
                 null,
                 [
                     RxwebValidators.digit({
@@ -740,7 +750,7 @@ export class VoucherGeneralInformationComponent
                     })
                 ],
             ],
-            imgSuggestion: [
+            voucherBanner: [
                 null,
                 [
                     RxwebValidators.fileSize({
@@ -750,6 +760,9 @@ export class VoucherGeneralInformationComponent
                             'file_size_lte',
                             { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
                         ),
+                    }),
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
                 ],
             ],
@@ -786,12 +799,16 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            expirationStatus: false,
+            expiration: false,
             expirationDays: [
                 null,
                 [
                     RxwebValidators.digit({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: 'Allowed minimum value is 1',
                     }),
                     RxwebValidators.maxLength({
                         value:8,

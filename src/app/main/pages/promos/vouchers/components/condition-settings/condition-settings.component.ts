@@ -277,17 +277,29 @@ export class VoucherConditionSettingsComponent
             qty: [
                 '',
                 [
-                    RxwebValidators.required({
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             orderValue: [
                 { value: '', disabled: true },
                 [
-                    RxwebValidators.required({
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
         });
