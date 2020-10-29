@@ -160,7 +160,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltip="Content for the voucher title&#10;on voucher list and voucher detail."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -196,7 +196,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltip="Category of the voucher."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -242,7 +242,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltip="Short description of the voucher."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -283,7 +283,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltip="Description of the voucher benefits."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -323,7 +323,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltip="Requirements need to be &#10;fulfilled to use the voucher."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -381,7 +381,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="This function allows you to set multiplication promo;&#10; promo that can give multiple benefits calculation."
+                        matTooltip="Step on how to use vouchers."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -561,7 +561,7 @@
                     <mat-icon
                         class="active-icon s-14 ml-8 cursor-pointer"
                         color="accent"
-                        matTooltip="Voucher Banner"
+                        matTooltip="Image of the voucher banner.&#10;Maximum 2 mb of size,&#10;width 1441 px & height 589 px."
                         matTooltipClass="tooltip-br"
                     >
                         help
@@ -622,7 +622,7 @@
                         class="pr-0 form-label"
                         fxFlex="12"
                         [class.mat-error]="
-                            !isViewMode() && hasError(form.get('collactibleDateFrom'))
+                            !isViewMode() && hasError(form.get('availableCollectedFrom'))
                         "
                     >
                         <span class="sinbad-red-fg">*</span>Available to be <br />Collected From
@@ -639,8 +639,8 @@
                             [min]="minCollectibleFrom"
                             (dateChange)="onChangeCollectibleFrom($event)"
                             autocomplete="false"
-                            name="collactibleDateFrom"
-                            formControlName="collactibleDateFrom"
+                            name="availableCollectedFrom"
+                            formControlName="availableCollectedFrom"
                         />
                         <mat-datetimepicker-toggle
                             matSuffix
@@ -653,8 +653,8 @@
                             type="date"
                         >
                         </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('collactibleDateFrom'))">
-                            {{ getFormError(form.get('collactibleDateFrom')) }}
+                        <mat-error *ngIf="hasError(form.get('availableCollectedFrom'))">
+                            {{ getFormError(form.get('availableCollectedFrom')) }}
                         </mat-error>
                     </mat-form-field>
                     <span
@@ -663,7 +663,7 @@
                         [fxFlex]="formFieldLength"
                         *ngIf="isViewMode()"
                     >
-                        {{ (form.get('startDate').value | date: 'dd/MM/yyyy') || '-' }}
+                        {{ (form.get('availableCollectedFrom').value | date: 'dd/MM/yyyy') || '-' }}
                     </span>
                 </div>
                 <!-- / Available to be Collected From -->
@@ -674,7 +674,7 @@
                         fxFlexAlign="center"
                         class="pr-0 form-label"
                         fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('collactibleDateTo'))"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('availableCollectedTo'))"
                     >
                         <span class="sinbad-red-fg">*</span>Available to be<br />Collected To
                     </label>
@@ -683,6 +683,7 @@
                         appearance="outline"
                         [fxFlex]="formFieldLength"
                         *ngIf="!isViewMode()"
+                        
                     >
                         <input
                             matInput
@@ -691,22 +692,23 @@
                             [min]="minCollectibleTo"
                             (dateChange)="onChangeCollectibleTo($event)"
                             autocomplete="false"
-                            name="collactibleDateTo"
-                            formControlName="collactibleDateTo"
+                            value="valueCollectibleTo"
+                            readonly
                         />
                         <mat-datetimepicker-toggle
                             matSuffix
                             [for]="activeCollactibleToPicker"
+                            [disabled]="true"
                         ></mat-datetimepicker-toggle>
                         <mat-datetimepicker
                             touchUi
                             #activeCollactibleToPicker
-                            [disabled]="false"
+                            [disabled]="true"
                             type="date"
                         >
                         </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('collactibleDateTo'))">
-                            {{ getFormError(form.get('collactibleDateTo')) }}
+                        <mat-error *ngIf="hasError(form.get('availableCollectedTo'))">
+                            {{ getFormError(form.get('availableCollectedTo')) }}
                         </mat-error>
                     </mat-form-field>
                     <span
@@ -715,7 +717,7 @@
                         [fxFlex]="formFieldLength"
                         *ngIf="isViewMode()"
                     >
-                        {{ (form.get('collactibleDateTo').value | date: 'dd/MM/yyyy') || '-' }}
+                        {{ (form.get('availableCollectedTo').value | date: 'dd/MM/yyyy') || '-' }}
                     </span>
                 </div>
                 <!-- / *Available to be Collected To -->
@@ -732,7 +734,12 @@
                         <mat-icon
                             class="active-icon s-14 ml-8 cursor-pointer"
                             color="accent"
-                            matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
+                            matTooltip="Define the expiration of the voucher.&#10;
+                            If it remains unchecked, it means the voucher can&#10;
+                            be used by the store anytime as long as&#10;
+                            it is available. If it's checked,&#10;
+                            define how long will it be available&#10;
+                            to be used once it's collected."
                             matTooltipClass="tooltip-br"
                         >
                             help
@@ -740,24 +747,28 @@
                     </mat-checkbox>
                 </div>
 
-                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
-                        <span class="sinbad-red-fg">*</span>Expiration Days
-                    </label>
-
-                    <mat-form-field appearance="outline" fxFlex="40">
-                        <input
-                            matInput
-                            name="expirationDays"
-                            formControlName="expirationDays"
-                            (ngModelChange)="inputExpirationDays($event)"
-                        />
-
-                        <mat-error *ngIf="hasError('expirationDays', true)">
-                            {{ getFormError(form.get('expirationDays')) }}
-                        </mat-error>
-                    </mat-form-field>
-                </div>
+                <ng-container *ngIf="expirationCheck == true">
+                    <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('expirationDays'))">
+                            <span class="sinbad-red-fg">*</span>Expiration Days
+                        </label>
+    
+                        <mat-form-field appearance="outline" fxFlex="40">
+                            <input
+                                matInput
+                                name="expirationDays"
+                                formControlName="expirationDays"
+                                (ngModelChange)="inputExpirationDays($event)"
+                            />
+    
+                            <mat-error *ngIf="hasError('expirationDays', true)">
+                                {{ getFormError(form.get('expirationDays')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </ng-container>
+                
             </ng-container>
 
             <ng-template #otherTypeVoucher>
@@ -883,7 +894,7 @@
                         max-width: 40%;
                         border: 1px solid rgba(0, 0, 0, 0.12);
                         margin-bottom: 25px;
-                        height: 50px;
+                        height: 71px;
                     "
                 >
                     <mat-chip-list #chipListTerms>

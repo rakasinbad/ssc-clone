@@ -25,6 +25,7 @@ interface IVoucherGeneralInformation {
     availableCollectedFrom: string;
     availableCollectedTo: string;
     voucherTag: [];
+    code: string;
 }
 
 export class VoucherGeneralInformation implements IVoucherGeneralInformation {
@@ -52,6 +53,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     availableCollectedFrom: string;
     availableCollectedTo: string;
     voucherTag: [];
+    code: string;
 
     constructor(data: IVoucherGeneralInformation) {
         const {
@@ -77,7 +79,8 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
             expirationDays,
             availableCollectedFrom,
             availableCollectedTo,
-            voucherTag
+            voucherTag,
+            code
         } = data;
 
         this.id = id;
@@ -85,8 +88,6 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.name = name;
         this.platform = platform;
         this.maxRedemptionPerBuyer = maxRedemptionPerBuyer;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.description = description;
         this.shortDescription = shortDescription;
         this.voucherAllocationType = voucherAllocationType;
@@ -99,9 +100,15 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.instructions = instructions || null;
         this.voucherBanner = voucherBanner || null;
         this.expiration = expiration;
-        this.expirationDays = expirationDays || null;
-        this.availableCollectedFrom = availableCollectedFrom;
-        this.availableCollectedTo = availableCollectedTo;
+        if (this.expiration == true) {
+            this.availableCollectedFrom = availableCollectedFrom || null;
+            this.availableCollectedTo = availableCollectedTo || null;
+            this.expirationDays = expirationDays || null;
+        } else {
+            this.startDate = startDate|| null;
+            this.endDate = endDate|| null;
+        }
         this.voucherTag = voucherTag || null;
+        this.code = code || null;
     }
 }

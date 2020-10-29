@@ -180,7 +180,9 @@ export class VoucherGeneralInformationComponent
     voucherTag: VoucherTag[] = [];
     isiVoucher = [];
     public expirationCheck = false;
-
+    public valueCollectibleTo: string;
+    startCollectFromHrMn: string;
+    collectibleFromDate: string;
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
 
     constructor(
@@ -363,11 +365,30 @@ export class VoucherGeneralInformationComponent
         } else {
             this.expirationCheck = false;
             this.form.get('expirationStatus').setValue(false);
+
+            // let collectibleStart = this.startCollectFromHrMn;
+            // let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('DD-MM-YYYY');
+            // this.valueCollectibleTo = collectibleTo;
+            // console.log('collectibleTo select expiration auto->', collectibleTo)
+            // this.form.get('availableCollectedTo').setValue(moment(futureDays + '23:59').format());
+            
+            // let activeStartDate = this.form.get('availableCollectedFrom');
+            // console.log('isi activeStartDate->', activeStartDate)
+            this.form.get('startDate').setValue(null);
+            // let eDate= '9999-12-31 00:00';
+            // let activeEndDate = moment(eDate).format();
+            this.form.get('endDate').setValue(null);
         }
     }
 
     inputExpirationDays(event): void {
-        console.log('isi value input->', event)
+        // console.log('isi value input->', event)
+        if (event != '') {
+            // console.log('isi input collect to->', moment().add(event, 'days').format('DD-MM-YYYY'))
+            let futureDays = moment().add(event, 'days').format('DD-MM-YYYY');
+            this.valueCollectibleTo = futureDays;
+            this.form.get('availableCollectedTo').setValue(moment(futureDays + '23:59').format());
+        }
     }
 
     addVoucherTag(event: MatChipInputEvent): void {
@@ -397,7 +418,97 @@ export class VoucherGeneralInformationComponent
 
     getVoucherTag(value) {
         let sumData = value;
-        console.log('isi tag->', value)
+        // console.log('isi tag->', value)
+        let vTag = [];
+        for(let tag of value) {
+            vTag.push(tag.name);
+        }
+        this.form.get('voucherTag').setValue(vTag);
+    }
+
+    onChangeActiveStartDate(ev: MatDatetimepickerInputEvent<any>): void {
+        const activeStartDate = moment(ev.value);
+        // this.form.get('activeEndDate').value = '2020-10-31';
+        if (this.form.get('endDate').value) {
+            const activeEndDate = moment(this.form.get('endDate').value);
+
+            if (activeStartDate.isAfter(activeEndDate)) {
+                this.form.get('endDate').reset();
+            }
+        }
+
+        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
+        this.triggerStatus$.next('');
+        let stDateHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
+        let stDate = moment(stDateHrMn).format();
+        this.form.get('startDate').setValue(stDate);
+    }
+
+    onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
+        // console.log('end date ->', ev.value);
+        const activeEndDate = moment(ev.value);
+
+        if (this.form.get('startDate').value) {
+            const activeStartDate = moment(this.form.get('startDate').value);
+
+            if (activeEndDate.isBefore(activeStartDate)) {
+                this.form.get('startDate').reset();
+            }
+        }
+
+        this.maxActiveStartDate = activeEndDate.toDate();
+        this.triggerStatus$.next('');
+        let edDateHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+        let edDate = moment(edDateHrMn).format();
+        this.form.get('endDate').setValue(edDate);
+    }
+
+    onChangeCollectibleFrom(ev: MatDatetimepickerInputEvent<any>): void {
+        const activeStartDate = moment(ev.value);
+        if (this.form.get('availableCollectedFrom').value) {
+            const activeEndDate = moment(this.form.get('availableCollectedTo').value);
+
+            if (activeStartDate.isAfter(activeEndDate)) {
+                this.form.get('availableCollectedFrom').reset();
+            }
+        }
+
+        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
+        this.triggerStatus$.next('');
+
+        this.startCollectFromHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
+        this.collectibleFromDate = moment(this.startCollectFromHrMn).format();
+        this.form.get('availableCollectedFrom').setValue(this.collectibleFromDate);
+
+        this.form.get('startDate').setValue(this.collectibleFromDate);
+
+        if (this.expirationCheck == false) {
+            let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('DD-MM-YYYY');
+            this.valueCollectibleTo = collectibleTo;
+            let collectToDate = moment(collectibleTo).format();
+            this.form.get('availableCollectedTo').setValue(collectibleTo);
+            // console.log('collectibleTocollectToDate->', collectibleTo)
+        }
+    }
+
+    onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
+        // console.log('end date ->', ev.value);
+        const activeEndDate = moment(ev.value);
+
+        if (this.form.get('availableCollectedTo').value) {
+            const activeStartDate = moment(this.form.get('availableCollectedFrom').value);
+
+            if (activeEndDate.isBefore(activeStartDate)) {
+                this.form.get('availableCollectedTo').reset();
+            }
+        }
+
+        this.maxActiveStartDate = activeEndDate.toDate();
+        this.triggerStatus$.next('');
+
+        let stCollectToHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+        let collectToDate = moment(stCollectToHrMn).format();
+        this.form.get('availableCollectedTo').setValue(collectToDate);
     }
 
     private updateFormView(): void {
@@ -515,7 +626,7 @@ export class VoucherGeneralInformationComponent
         this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.fb.group({
-            id: [''],
+            id: [null],
             promoAllocationType: [
                 PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
                 [
@@ -644,7 +755,7 @@ export class VoucherGeneralInformationComponent
             ],
 
             startDate: [
-                { value: '', disabled: true },
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -652,6 +763,14 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             endDate: [
+                { value: null, disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            availableCollectedFrom: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
@@ -659,15 +778,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            collactibleDateFrom: [
-                { value: '', disabled: true },
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
-            collactibleDateTo: [
+            availableCollectedTo: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
@@ -721,11 +832,11 @@ export class VoucherGeneralInformationComponent
                 map(([_, status]) => {
                     const rawValue = this.form.getRawValue();
 
-                    if (!rawValue.startDate || !rawValue.endDate) {
-                        return 'INVALID';
-                    } else {
+                    // if (!rawValue.startDate || !rawValue.endDate) {
+                    //     return 'INVALID';
+                    // } else {
                         return status;
-                    }
+                    // }
                 }),
                 tap((value) =>
                     HelperService.debug(
@@ -801,72 +912,7 @@ export class VoucherGeneralInformationComponent
         return this.formMode === 'view';
     }
 
-    onChangeActiveStartDate(ev: MatDatetimepickerInputEvent<any>): void {
-        const activeStartDate = moment(ev.value);
-        // this.form.get('activeEndDate').value = '2020-10-31';
-        if (this.form.get('endDate').value) {
-            const activeEndDate = moment(this.form.get('endDate').value);
-
-            if (activeStartDate.isAfter(activeEndDate)) {
-                this.form.get('endDate').reset();
-            }
-        }
-
-        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
-        this.triggerStatus$.next('');
-        let stDateHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
-        let stDate = moment(stDateHrMn).format();
-        this.form.get('startDate').setValue(stDate);
-    }
-
-    onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
-        console.log('end date ->', ev.value);
-        const activeEndDate = moment(ev.value);
-
-        if (this.form.get('startDate').value) {
-            const activeStartDate = moment(this.form.get('startDate').value);
-
-            if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('startDate').reset();
-            }
-        }
-
-        this.maxActiveStartDate = activeEndDate.toDate();
-        this.triggerStatus$.next('');
-        let edDateHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
-        let edDate = moment(edDateHrMn).format();
-        this.form.get('endDate').setValue(edDate);
-    }
-
-    onChangeCollectibleFrom(ev: MatDatetimepickerInputEvent<any>): void {
-        const activeStartDate = moment(ev.value);
-        if (this.form.get('collactibleDateFrom').value) {
-            const activeEndDate = moment(this.form.get('collactibleDateTo').value);
-
-            if (activeStartDate.isAfter(activeEndDate)) {
-                this.form.get('collactibleDateFrom').reset();
-            }
-        }
-
-        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
-        this.triggerStatus$.next('');
-    }
-
-    onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
-        console.log('end date ->', ev.value);
-        const activeEndDate = moment(ev.value);
-
-        if (this.form.get('collactibleDateTo').value) {
-            const activeStartDate = moment(this.form.get('collactibleDateFrom').value);
-
-            if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('collactibleDateTo').reset();
-            }
-        }
-
-        this.maxActiveStartDate = activeEndDate.toDate();
-        this.triggerStatus$.next('');
-    }
+    
 
 
     ngOnInit(): void {
