@@ -183,6 +183,8 @@ export class VoucherGeneralInformationComponent
     public valueCollectibleTo: string;
     startCollectFromHrMn: string;
     collectibleFromDate: string;
+    fromDate: any;
+    countDiffDays: any;
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
 
     constructor(
@@ -362,9 +364,6 @@ export class VoucherGeneralInformationComponent
         if (event.checked === true) {
             this.expirationCheck = true;
             this.form.get('expiration').setValue(true);
-            // let availableFrom = this.form.get('availableCollectedTo');
-            // console.log('availableFrom->', availableFrom)
-            // this.form.get('availableCollectedTo').setValue();
 
         } else {
             this.expirationCheck = false;
@@ -374,11 +373,12 @@ export class VoucherGeneralInformationComponent
             this.valueCollectibleTo = collectibleTo;
             let collectToDate = moment(collectibleTo).format();
             this.form.get('availableCollectedTo').setValue(collectToDate);
+            this.form.get('expirationDays').setValue(this.countDiffDays);
+
         }
     }
 
     inputExpirationDays(event): void {
-        // console.log('isi value input->', event)
         if (event == '' || event == null) {
             this.form.get('availableCollectedTo').setValue('');
             this.form.get('expirationDays').setValidators([
@@ -390,8 +390,8 @@ export class VoucherGeneralInformationComponent
                     message: 'Allowed minimum value is 1',
                 }),
             ]);
+            this.form.get('expirationDays').setValue(this.countDiffDays);
         } else {
-            // console.log('isi input collect to->', moment().add(event, 'days').format('DD-MM-YYYY'))
             let futureDays = moment().add(event, 'days').format('YYYY-MM-DD');
             this.form.get('availableCollectedTo').setValue(moment(futureDays).format());
         } 
@@ -424,7 +424,6 @@ export class VoucherGeneralInformationComponent
 
     getVoucherTag(value) {
         let sumData = value;
-        // console.log('isi tag->', value)
         let vTag = [];
         for(let tag of value) {
             vTag.push(tag.name);
@@ -451,7 +450,6 @@ export class VoucherGeneralInformationComponent
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
-        // console.log('end date ->', ev.value);
         const activeEndDate = moment(ev.value);
 
         if (this.form.get('startDate').value) {
@@ -482,40 +480,22 @@ export class VoucherGeneralInformationComponent
         this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
         this.triggerStatus$.next('');
 
+        this.fromDate  = moment(ev.value);
         this.startCollectFromHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
         this.collectibleFromDate = moment(this.startCollectFromHrMn).format();
         this.form.get('availableCollectedFrom').setValue(this.collectibleFromDate);
 
-        // this.form.get('startDate').setValue(this.collectibleFromDate);
-
         if (this.expirationCheck == false) {
             let collectibleTo = moment(this.startCollectFromHrMn).add(1, 'M').format('YYYY-MM-DD');
+            let endDate = moment(this.startCollectFromHrMn).add(1, 'M');
             this.valueCollectibleTo = collectibleTo;
             let collectToDate = moment(collectibleTo).format();
             this.form.get('availableCollectedTo').setValue(collectToDate);
-            // console.log('collectibleTocollectToDate->', collectibleTo)
+            this.countDiffDays = endDate.diff(this.fromDate, 'days');
+            this.form.get('expirationDays').setValue(this.countDiffDays);
+          
         }
     }
-
-    // onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
-    //     // console.log('end date ->', ev.value);
-    //     const activeEndDate = moment(ev.value);
-
-    //     if (this.form.get('availableCollectedTo').value) {
-    //         const activeStartDate = moment(this.form.get('availableCollectedFrom').value);
-
-    //         if (activeEndDate.isBefore(activeStartDate)) {
-    //             this.form.get('availableCollectedTo').reset();
-    //         }
-    //     }
-
-    //     this.maxActiveStartDate = activeEndDate.toDate();
-    //     this.triggerStatus$.next('');
-
-    //     let stCollectToHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
-    //     let collectToDate = moment(stCollectToHrMn).format();
-    //     this.form.get('availableCollectedTo').setValue(collectToDate);
-    // }
 
     private updateFormView(): void {
         // Penetapan class pada form field berdasarkan mode form-nya.
@@ -603,7 +583,7 @@ export class VoucherGeneralInformationComponent
                     externalId: voucher.externalId,
                     name: voucher.name,
                     platform: String(voucher.platform).toLowerCase(),
-                    maxRedemptionPerBuyer: voucher.maxRedemptionPerStore,
+                    maxCollectionPerStore: voucher.maxCollectionPerStore,
                     maxVoucherRedemption: voucher.maxVoucherRedemption,
                     startDate: moment(voucher.startDate).toDate(),
                     activeEndDate: moment(voucher.endDate).toDate(),
@@ -707,7 +687,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            maxRedemptionPerBuyer: [
+            maxCollectionPerStore: [
                 '',
                 [
                     RxwebValidators.numeric({

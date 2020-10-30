@@ -17,7 +17,7 @@ interface ISupplierVoucher extends Timestamp {
     code: string;
     name: string;
     platform: string;
-    maxRedemptionPerStore: string;
+    maxCollectionPerStore: string;
     maxVoucherRedemption: number;
     startDate: string;
     endDate: string;
@@ -60,7 +60,7 @@ export class SupplierVoucher implements ISupplierVoucher {
     code: string;
     name: string;
     platform: string;
-    maxRedemptionPerStore: string;
+    maxCollectionPerStore: string;
     maxVoucherRedemption: number;
     startDate: string;
     endDate: string;
@@ -103,7 +103,7 @@ export class SupplierVoucher implements ISupplierVoucher {
             code,
             name,
             platform,
-            maxRedemptionPerStore,
+            maxCollectionPerStore,
             maxVoucherRedemption,
             startDate,
             endDate,
@@ -144,7 +144,7 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.code = code;
         this.name = name;
         this.platform = platform;
-        this.maxRedemptionPerStore = maxRedemptionPerStore;
+        this.maxCollectionPerStore = maxCollectionPerStore;
         this.maxVoucherRedemption = maxVoucherRedemption;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -194,7 +194,7 @@ export class SupplierVoucherPayload implements ISupplierVoucherPayload {
 //     externalId: generalInformationValue.sellerId,
 //     name: generalInformationValue.name,
 //     platform: generalInformationValue.platform,
-//     maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
+//     maxCollectionPerStore: +generalInformationValue.maxCollectionPerStore,
 //     promoBudget: +generalInformationValue.budget,
 //     startDate: (generalInformationValue.activeStartDate as unknown as moment.Moment).toISOString(),
 //     endDate: (generalInformationValue.activeEndDate as unknown as moment.Moment).toISOString(),

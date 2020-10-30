@@ -472,7 +472,7 @@
                     fxFlexAlign="center"
                     class="pr-0 form-label"
                     fxFlex="12"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerBuyer'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('maxCollectionPerStore'))"
                 >
                     <span class="sinbad-red-fg">*</span>Max number of<br />collection
                 </label>
@@ -486,11 +486,11 @@
                         matInput
                         type="number"
                         min="0"
-                        name="maxRedemptionPerBuyer"
-                        formControlName="maxRedemptionPerBuyer"
+                        name="maxCollectionPerStore"
+                        formControlName="maxCollectionPerStore"
                     />
-                    <mat-error *ngIf="hasError(form.get('maxRedemptionPerBuyer'))">
-                        {{ getFormError(form.get('maxRedemptionPerBuyer')) }}
+                    <mat-error *ngIf="hasError(form.get('maxCollectionPerStore'))">
+                        {{ getFormError(form.get('maxCollectionPerStore')) }}
                     </mat-error>
                 </mat-form-field>
                 <span

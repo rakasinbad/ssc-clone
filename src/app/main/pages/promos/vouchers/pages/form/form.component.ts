@@ -254,7 +254,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             termsAndConditions: generalInformationValue.termsAndConditions,
             instructions: generalInformationValue.instructions,
             platform: generalInformationValue.platform,
-            maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
+            maxCollectionPerStore: +generalInformationValue.maxCollectionPerStore,
             voucherSlot: generalInformationValue.voucherSlot,
             voucherBudget: generalInformationValue.voucherBudget,
             voucherBanner: generalInformationValue.voucherBanner,

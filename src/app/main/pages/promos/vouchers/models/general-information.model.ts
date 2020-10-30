@@ -5,7 +5,7 @@ interface IVoucherGeneralInformation {
     externalId: string;
     name: string;
     platform: PlatformSupplierVoucer;
-    maxRedemptionPerBuyer: string;
+    maxCollectionPerStore: string;
     maxVoucherRedemption: string;
     startDate: string;
     endDate: string;
@@ -33,7 +33,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     externalId: string;
     name: string;
     platform: PlatformSupplierVoucer;
-    maxRedemptionPerBuyer: string;
+    maxCollectionPerStore: string;
     maxVoucherRedemption: string;
     startDate: string;
     endDate: string;
@@ -61,7 +61,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
             externalId,
             name,
             platform,
-            maxRedemptionPerBuyer,
+            maxCollectionPerStore,
             startDate,
             endDate,
             description,
@@ -87,7 +87,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.externalId = externalId;
         this.name = name;
         this.platform = platform;
-        this.maxRedemptionPerBuyer = maxRedemptionPerBuyer;
+        this.maxCollectionPerStore = maxCollectionPerStore;
         this.description = description;
         this.shortDescription = shortDescription;
         this.voucherAllocationType = voucherAllocationType;
