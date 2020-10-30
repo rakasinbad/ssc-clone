@@ -7,7 +7,7 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -18,13 +18,13 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { UiActions } from 'app/shared/store/actions';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { CatalogueCategory } from '../models';
+import { CatalogueFacadeService } from '../services';
 import { CatalogueActions } from '../store/actions';
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
@@ -46,9 +46,26 @@ interface ISelectedCategory {
     styleUrls: ['./catalogues-add-new-product.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, OnDestroy {
+    private breadcrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Catalogue',
+            // translate: 'BREADCRUMBS.CATALOGUE',
+            // url: '/pages/catalogues',
+        },
+        {
+            title: 'Add Product',
+            translate: 'BREADCRUMBS.ADD_PRODUCT',
+            active: true,
+        },
+    ];
+    private unSubs$: Subject<any> = new Subject();
+
     isFulfilled = false;
     productName: FormControl;
     search: FormControl;
@@ -63,53 +80,31 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
         { data: [], selected: '' },
         { data: [], selected: '' },
         { data: [], selected: '' },
-        { data: [], selected: '' }
+        { data: [], selected: '' },
     ];
     categoryTree: Array<CatalogueCategory>;
-
-    private _unSubs$: Subject<void>;
 
     constructor(
         private router: Router,
         private fb: FormBuilder,
         private _cd: ChangeDetectorRef,
-        private store: Store<fromCatalogue.FeatureState>,
+        public translate: TranslateService,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        public translate: TranslateService,
+        private store: Store<fromCatalogue.FeatureState>,
+        private catalogueFacade: CatalogueFacadeService,
         private errorMessageSvc: ErrorMessageService
     ) {
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home'
-                        // translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Catalogue',
-                        translate: 'BREADCRUMBS.CATALOGUE',
-                        url: '/pages/catalogues'
-                    },
-                    {
-                        title: 'Add Product',
-                        translate: 'BREADCRUMBS.ADD_PRODUCT',
-                        active: true
-                    }
-                ]
-            })
-        );
-
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     ngOnInit(): void {
-        this._unSubs$ = new Subject<void>();
+        this.catalogueFacade.createBreadcrumb(this.breadcrumbs);
 
         this.productName = new FormControl('', [
             RxwebValidators.required({
-                message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-            })
+                message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+            }),
         ]);
         this.search = new FormControl('', Validators.required);
 
@@ -120,7 +115,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
                     {
                         id: this.fb.control(null, Validators.required),
                         idx: this.fb.control(null, Validators.required),
-                        name: this.fb.control(null, Validators.required)
+                        name: this.fb.control(null, Validators.required),
                     },
                     Validators.required
                 ),
@@ -128,36 +123,36 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
                 this.fb.group({
                     id: this.fb.control(null),
                     idx: this.fb.control(null),
-                    name: this.fb.control(null)
+                    name: this.fb.control(null),
                 }),
                 // Level 3
                 this.fb.group({
                     id: this.fb.control(null),
                     idx: this.fb.control(null),
-                    name: this.fb.control(null)
+                    name: this.fb.control(null),
                 }),
                 // Level 4
                 this.fb.group({
                     id: this.fb.control(null),
                     idx: this.fb.control(null),
-                    name: this.fb.control(null)
-                })
+                    name: this.fb.control(null),
+                }),
             ],
             Validators.required
         );
 
         combineLatest([
             this.store.select(CatalogueSelectors.getCategoryTree),
-            this.store.select(CatalogueSelectors.getCatalogueCategories)
+            this.store.select(CatalogueSelectors.getCatalogueCategories),
         ])
-            .pipe(takeUntil(this._unSubs$))
+            .pipe(takeUntil(this.unSubs$))
             .subscribe(([tree, categories]) => {
                 if (categories.length === 0) {
                     return this.store.dispatch(
                         CatalogueActions.fetchCatalogueCategoriesRequest({
                             payload: {
-                                paginate: false
-                            }
+                                paginate: false,
+                            },
                         })
                     );
                 }
@@ -172,8 +167,8 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
             });
 
         this.selectedCategories$ = this.selectedCategory.valueChanges.pipe(
-            map(forms => {
-                const form: [] = forms.filter(f => f.id).map(f => f.name);
+            map((forms) => {
+                const form: [] = forms.filter((f) => f.id).map((f) => f.name);
 
                 return form.join(' > ');
             })
@@ -185,8 +180,8 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
     }
 
     ngOnDestroy(): void {
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     onSelectCategory(
@@ -197,7 +192,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
         level: number,
         hasChild: any
     ): void {
-        const resetTree = lvl => {
+        const resetTree = (lvl) => {
             let tempLevel = lvl;
 
             while (tempLevel <= this.selectedCategories.length - 1) {
@@ -214,7 +209,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
 
             // Jika parentId nya null, berarti dia induk kategori.
             if (!data.parentId) {
-                const idx = this.categoryTree.findIndex(category => category.id === data.id);
+                const idx = this.categoryTree.findIndex((category) => category.id === data.id);
                 this.selectedCategories[level + 1].data = this.categoryTree[idx].children;
             } else {
                 this.selectedCategories[level + 1].data = data.children;
@@ -231,30 +226,30 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
     }
 
     addNewCatalogue(): void {
-        const categories = this.selectedCategory.getRawValue().filter(selected => selected.id);
+        const categories = this.selectedCategory.getRawValue().filter((selected) => selected.id);
         const lastSelectedCategory = categories[categories.length - 1];
         const lastCategory = this.categories.filter(
-            category => lastSelectedCategory.id === category.id
+            (category) => lastSelectedCategory.id === category.id
         );
 
         this.store.dispatch(
             CatalogueActions.setSelectedCategories({
                 payload: [
                     ...this.selectedCategory.controls
-                        .filter(control => control.get('id').value)
+                        .filter((control) => control.get('id').value)
                         .map((control, idx, controls) => ({
                             id: control.get('id').value,
                             name: control.get('name').value,
                             parent: idx === 0 ? null : controls[idx - 1].get('id').value,
-                            hasChildren: lastCategory[0].children.length === 0 ? false : true
-                        }))
-                ]
+                            hasChildren: lastCategory[0].children.length === 0 ? false : true,
+                        })),
+                ],
             })
         );
 
         this.store.dispatch(
             CatalogueActions.setProductName({
-                payload: this.productName.value
+                payload: this.productName.value,
             })
         );
 

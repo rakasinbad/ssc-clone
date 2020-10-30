@@ -139,13 +139,28 @@ app-catalogues {
             flex: 0 1 12.5%;
         }
 
+        .mat-column-status {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
         .mat-column-actions {
-            display: flex;
-            flex: 0 1 12.5%;
+            flex: 0 1 80px;
+            min-width: 80px;
             justify-content: flex-end;
         }
 
-        .quantity-indicator {
+        .status-icon {
+            border-radius: 50%;
+        }
+
+        /*        .mat-column-actions {
+            display: flex;
+            flex: 0 1 12.5%;
+            justify-content: flex-end;
+        } */
+
+        /*  .quantity-indicator {
             display: inline-block;
             vertical-align: middle;
             width: 8px;
@@ -157,11 +172,7 @@ app-catalogues {
                 display: inline-block;
                 vertical-align: middle;
             }
-        }
-
-        .active-icon {
-            border-radius: 50%;
-        }
+        } */
 
         // .mat-column-actions {
         //     flex: 0 1 80px;

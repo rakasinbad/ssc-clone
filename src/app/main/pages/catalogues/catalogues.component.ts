@@ -102,6 +102,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'stock',
         // 'sales',
         'type',
+        'status',
         'actions',
     ];
     displayedColumns = this.initialDisplayedColumns;

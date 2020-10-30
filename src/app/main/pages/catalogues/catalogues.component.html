@@ -232,10 +232,32 @@
                 <ng-container matColumnDef="type">
                     <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-word-break-break-word">Regular</p>
+                        <p class="text-word-break-break-word">
+                            {{ row?.isBonus ? 'Regular, Bonus' : 'Regular' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
                 <!-- / Type Column -->
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-icon
+                            class="status-icon s-24"
+                            svgIcon="sinbad-check-active"
+                            title="Active"
+                            *ngIf="row.status === 'active'"
+                        ></mat-icon>
+                        <mat-icon
+                            class="status-icon s-24"
+                            svgIcon="sinbad-check-inactive"
+                            title="Inactive"
+                            *ngIf="row.status === 'inactive'"
+                        ></mat-icon>
+                    </mat-cell>
+                </ng-container>
+                <!-- / Status Column -->
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
