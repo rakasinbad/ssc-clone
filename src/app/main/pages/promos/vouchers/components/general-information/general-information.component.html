@@ -933,7 +933,7 @@
                     fxFlexAlign="center"
                     fxFlex="12"
                     class="pr-0 form-label"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('voucherCode'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('code'))"
                 >
                     <span class="sinbad-red-fg">*</span>Voucher Code
                 </label>
@@ -943,9 +943,9 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="!isViewMode()"
                 >
-                    <input matInput name="voucherCode" formControlName="voucherCode" />
-                    <mat-error *ngIf="hasError(form.get('voucherCode'))">
-                        {{ getFormError(form.get('voucherCode')) }}
+                    <input matInput name="code" formControlName="code" />
+                    <mat-error *ngIf="hasError(form.get('code'))">
+                        {{ getFormError(form.get('code')) }}
                     </mat-error>
                 </mat-form-field>
                 <span
@@ -954,7 +954,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ form.get('voucherCode').value || '-' }}
+                    {{ form.get('code').value || '-' }}
                 </span>
             </div>
             <!-- / VOUCHER Code -->

@@ -824,7 +824,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            voucherCode: [
+            code: [
                 '',
                 [
                     RxwebValidators.required({
