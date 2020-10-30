@@ -83,6 +83,8 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
+    // Untuk mengirim data apakah checkbox "Select All" dicentang atau tidak.
+    @Output() selectAllChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
@@ -367,10 +369,12 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     onSelectionChanged($event: SelectionList): void {
-        const { removed, merged = this.entityFormValue.value } = $event;
+        const { removed, merged = this.entityFormValue.value, isAllSelected } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
+
+        this.selectAllChanged.emit(isAllSelected);
 
         this.cdRef.markForCheck();
     }
