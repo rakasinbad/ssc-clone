@@ -24,16 +24,43 @@
                     <span class="sinbad-red-fg">*</span>Promo Allocation
                 </label>
 
-                <mat-radio-group
-                    formControlName="voucherAllocationType"
-                    aria-label="Select type"
-                    (change)="selectPromoAlloc($event)"
-                    style="margin-top: 3px"
-                >
-                    <mat-radio-button *ngFor="let option of promoAllocation" [value]="option.id">
-                        {{ option?.label }}
-                    </mat-radio-button>
-                </mat-radio-group>
+                <ng-container *ngIf="!isViewMode()">
+                    <mat-radio-group
+                        formControlName="voucherAllocationType"
+                        aria-label="Select type"
+                        (change)="selectPromoAlloc($event)"
+                        style="margin-top: 3px"
+                    >
+                        <mat-radio-button
+                            *ngFor="let option of promoAllocation"
+                            [value]="option.id"
+                        >
+                            {{ option?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-container *ngIf="isViewMode()">
+                    <mat-radio-group [value]="form.get('voucherAllocationType').value">
+                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" [disabled]="true">
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+
+                    <!-- <mat-radio-group
+                        formControlName="voucherAllocationType"
+                        aria-label="Select type"
+                        style="margin-top: 3px"
+                        [disabled]="true"
+                    >
+                        <mat-radio-button
+                            *ngFor="let option of promoAllocation"
+                            [value]="option.id"
+                        >
+                            {{ option?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group> -->
+                </ng-container>
             </div>
             <!-- </div> -->
             <!-- / Promo Allocation end -->
@@ -739,20 +766,28 @@
                         <span class="sinbad-red-fg">*</span>Expiration Days
                     </label>
 
-                    <mat-form-field appearance="outline" fxFlex="40">
+                    <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
                         <input
                             matInput
                             name="expirationDays"
                             formControlName="expirationDays"
-                            (ngModelChange)="inputExpirationDays($event)"
                             type="number"
                             min="1"
                         />
 
-                        <mat-error *ngIf="hasError('expirationDays', true)">
+                        <mat-error *ngIf="!isViewMode() && hasError(form.get('expirationDays'))">
                             {{ getFormError(form.get('expirationDays')) }}
                         </mat-error>
                     </mat-form-field>
+
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ (form.get('expirationDays').value) || '-' }}
+                    </span>
                 </div>
             </ng-container>
 

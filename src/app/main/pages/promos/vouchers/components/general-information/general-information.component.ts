@@ -378,20 +378,20 @@ export class VoucherGeneralInformationComponent
     //     }
     // }
 
-    inputExpirationDays(event): void {
-        if (event == '' || event == null) {
-            this.form.get('expirationDays').setValidators([
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.minNumber({
-                    value: 1,
-                    message: 'Allowed minimum value is 1',
-                }),
-            ]);
-            // this.form.get('expirationDays').setValue(this.countDiffDays);
-        } 
-    }
+    // inputExpirationDays(event): void {
+    //     if (event == '' || event == null) {
+    //         this.form.get('expirationDays').setValidators([
+    //             RxwebValidators.required({
+    //                 message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+    //             }),
+    //             RxwebValidators.minNumber({
+    //                 value: 1,
+    //                 message: 'Allowed minimum value is 1',
+    //             }),
+    //         ]);
+    //         // this.form.get('expirationDays').setValue(this.countDiffDays);
+    //     } 
+    // }
 
     addVoucherTag(event: MatChipInputEvent): void {
         const input = event.input;
@@ -785,15 +785,24 @@ export class VoucherGeneralInformationComponent
             expirationDays: [
                 null,
                 [
-                    RxwebValidators.digit({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: false,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
-                        message: 'Allowed minimum value is 1',
+                        message: this.errorMessage$.getErrorMessageNonState(
+                            'default',
+                            'min_number',
+                            { minValue: 1 }
+                        ),
                     }),
-                    RxwebValidators.maxLength({
-                        value:8,
+                    RxwebValidators.maxNumber({
+                        value:99999999,
                         message: 'Max input is 8 digit'
                     })
                 ],
