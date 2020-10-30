@@ -13,6 +13,10 @@ export class CatalogueFacadeService {
     catalogue$: Observable<Catalogue> = this.store.select(
         CatalogueSelectors.getSelectedCatalogueEntity
     );
+    totalCatalogueSegmentation$: Observable<number> = this.store.select(
+        CatalogueSelectors.getTotalCataloguePriceSettings
+    );
+    isLoading$: Observable<boolean> = this.store.select(CatalogueSelectors.getIsLoading);
 
     constructor(private store: Store<fromCatalogue.FeatureState>) {}
 

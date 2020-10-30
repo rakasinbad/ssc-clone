@@ -277,7 +277,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this.store.dispatch(FormActions.setFormStatusInvalid());
         this.store.dispatch(FormActions.resetClickCancelButton());
 
-        this.cdRef.markForCheck();
+        // this.cdRef.markForCheck();
     }
 
     scrollTop(element: ElementRef<HTMLElement>): void {
@@ -296,7 +296,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             .pipe(withLatestFrom(this.selectedCatalogue$), takeUntil(this.subs$))
             .subscribe(([_, { id: catalogueId }]) => {
                 this.formMode = 'edit';
-                this.cdRef.markForCheck();
+                // this.cdRef.markForCheck();
                 // this.router.navigate([`/pages/catalogues/edit/${this.section}/${catalogueId}`]);
             });
     }
