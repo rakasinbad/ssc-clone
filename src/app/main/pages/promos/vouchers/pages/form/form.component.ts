@@ -254,7 +254,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             termsAndConditions: generalInformationValue.termsAndConditions,
             instructions: generalInformationValue.instructions,
             platform: generalInformationValue.platform,
-            maxCollectionPerStore: +generalInformationValue.maxCollectionPerStore,
+            maxCollectionPerStore: generalInformationValue.maxCollectionPerStore,
             voucherSlot: generalInformationValue.voucherSlot,
             voucherBudget: generalInformationValue.voucherBudget,
             voucherBanner: generalInformationValue.voucherBanner,
@@ -262,7 +262,6 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             endDate: generalInformationValue.endDate,
             availableCollectedFrom: generalInformationValue.availableCollectedFrom,
             availableCollectedTo: generalInformationValue.availableCollectedTo,
-            expiration: generalInformationValue.expiration,
             expirationDays: generalInformationValue.expirationDays,
             description: generalInformationValue.description,
             shortDescription: generalInformationValue.shortDescription,
@@ -298,6 +297,15 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                     : 'unknown',
             dataTarget: {},
         };
+
+        if (payload.voucherAllocationType == 'promo_budget') {
+            payload.voucherSlot = null;
+        } else if (payload.voucherAllocationType == 'promo_slot'){
+            payload.voucherBudget = null;
+        } else if (payload.voucherAllocationType == 'none') {
+            payload.voucherSlot = null;
+            payload.voucherBudget = null;
+        }
 
         if (payload.voucherType == 'collectible') {
             delete payload.startDate;

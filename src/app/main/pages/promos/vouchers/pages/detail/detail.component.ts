@@ -307,15 +307,15 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     }
 
-    editCatalogue(): void {
-        this.formMode = 'edit';
+    // editCatalogue(): void {
+    //     this.formMode = 'edit';
 
-        this.VoucherStore.dispatch(UiActions.showFooterAction());
-        this.VoucherStore.dispatch(FormActions.setFormStatusInvalid());
-        this.VoucherStore.dispatch(FormActions.resetClickCancelButton());
+    //     this.VoucherStore.dispatch(UiActions.showFooterAction());
+    //     this.VoucherStore.dispatch(FormActions.setFormStatusInvalid());
+    //     this.VoucherStore.dispatch(FormActions.resetClickCancelButton());
 
-        this.cdRef.markForCheck();
-    }
+    //     this.cdRef.markForCheck();
+    // }
 
     scrollTop(element: ElementRef<HTMLElement>): void {
         element.nativeElement.scrollTop = 0;

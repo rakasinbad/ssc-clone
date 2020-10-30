@@ -19,25 +19,22 @@
 
             <!-- Promo Allocation -->
             <!-- <div class="form-box"> -->
-                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label fxFlexAlign="center" fxFlex="12" class="pr-0 form-label">
-                        <span class="sinbad-red-fg">*</span>Promo Allocation
-                    </label>
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label fxFlexAlign="center" fxFlex="12" class="pr-0 form-label">
+                    <span class="sinbad-red-fg">*</span>Promo Allocation
+                </label>
 
-                    <mat-radio-group
-                        formControlName="voucherAllocationType"
-                        aria-label="Select type"
-                        (change)="selectPromoAlloc($event)"
-                        style="margin-top: 3px"
-                    >
-                        <mat-radio-button
-                            *ngFor="let option of promoAllocation"
-                            [value]="option.id"
-                        >
-                            {{ option?.label }}
-                        </mat-radio-button>
-                    </mat-radio-group>
-                </div>
+                <mat-radio-group
+                    formControlName="voucherAllocationType"
+                    aria-label="Select type"
+                    (change)="selectPromoAlloc($event)"
+                    style="margin-top: 3px"
+                >
+                    <mat-radio-button *ngFor="let option of promoAllocation" [value]="option.id">
+                        {{ option?.label }}
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
             <!-- </div> -->
             <!-- / Promo Allocation end -->
 
@@ -466,43 +463,47 @@
             </div>
             <!-- / PLATFORM -->
 
-            <!-- Max number of collection -->
-            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label
-                    fxFlexAlign="center"
-                    class="pr-0 form-label"
-                    fxFlex="12"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxCollectionPerStore'))"
-                >
-                    <span class="sinbad-red-fg">*</span>Max number of<br />collection
-                </label>
+            <ng-container *ngIf="selectTypeVoucher == 'collectible'">
+                <!-- Max number of collection -->
+                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label
+                        fxFlexAlign="center"
+                        class="pr-0 form-label"
+                        fxFlex="12"
+                        [class.mat-error]="
+                            !isViewMode() && hasError(form.get('maxCollectionPerStore'))
+                        "
+                    >
+                        <span class="sinbad-red-fg">*</span>Max number of<br />collection
+                    </label>
 
-                <mat-form-field
-                    appearance="outline"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="!isViewMode()"
-                >
-                    <input
-                        matInput
-                        type="number"
-                        min="0"
-                        name="maxCollectionPerStore"
-                        formControlName="maxCollectionPerStore"
-                    />
-                    <mat-error *ngIf="hasError(form.get('maxCollectionPerStore'))">
-                        {{ getFormError(form.get('maxCollectionPerStore')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span
-                    class="form-value"
-                    fxFlexAlign="center"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="isViewMode()"
-                >
-                    {{ form.get('maxCollectionPerStore').value || '-' }}
-                </span>
-            </div>
-            <!-- / Max number of collection -->
+                    <mat-form-field
+                        appearance="outline"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="!isViewMode()"
+                    >
+                        <input
+                            matInput
+                            type="number"
+                            min="0"
+                            name="maxCollectionPerStore"
+                            formControlName="maxCollectionPerStore"
+                        />
+                        <mat-error *ngIf="hasError(form.get('maxCollectionPerStore'))">
+                            {{ getFormError(form.get('maxCollectionPerStore')) }}
+                        </mat-error>
+                    </mat-form-field>
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ form.get('maxCollectionPerStore').value || '-' }}
+                    </span>
+                </div>
+                <!-- / Max number of collection -->
+            </ng-container>
 
             <!-- max redem promo budget promo slot  by type allocation  -->
             <div
@@ -512,7 +513,9 @@
                 fxLayoutAlign="start stretch"
             >
                 <label
-                    fxFlexAlign="center" class="pr-0 form-label" fxFlex="12"
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
                     [class.sinbad-red-fg]="hasError('voucherBudget')"
                 >
                     <span class="sinbad-red-fg">*</span>Max Promo Redemption<br />(Rp)
@@ -677,7 +680,9 @@
                         fxFlexAlign="center"
                         class="pr-0 form-label"
                         fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('availableCollectedTo'))"
+                        [class.mat-error]="
+                            !isViewMode() && hasError(form.get('availableCollectedTo'))
+                        "
                     >
                         <span class="sinbad-red-fg">*</span>Available to be<br />Collected To
                     </label>
@@ -686,26 +691,26 @@
                         appearance="outline"
                         [fxFlex]="formFieldLength"
                         *ngIf="!isViewMode()"
-                        
                     >
                         <input
                             matInput
                             [matDatetimepicker]="activeCollactibleToPicker"
                             [max]="maxCollectibleTo"
                             [min]="minCollectibleTo"
+                            (dateChange)="onChangeCollectibleTo($event)"
+                            autocomplete="false"
                             autocomplete="false"
                             formControlName="availableCollectedTo"
-                            readonly
                         />
                         <mat-datetimepicker-toggle
                             matSuffix
                             [for]="activeCollactibleToPicker"
-                            [disabled]="true"
+                            [disabled]="false"
                         ></mat-datetimepicker-toggle>
                         <mat-datetimepicker
                             touchUi
                             #activeCollactibleToPicker
-                            [disabled]="true"
+                            [disabled]="false"
                             type="date"
                         >
                         </mat-datetimepicker>
@@ -725,54 +730,30 @@
                 <!-- / *Available to be Collected To -->
 
                 <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
-                    </label>
-                    <mat-checkbox
-                        (change)="selectExpiration($event)"
-                        [checked]="expirationCheck"
-                        formControlName="expiration"
+                    <label
+                        fxFlexAlign="center"
+                        class="pr-0 form-label"
+                        fxFlex="12"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('expirationDays'))"
                     >
-                        Expiration
-                        <mat-icon
-                            class="active-icon s-14 ml-8 cursor-pointer"
-                            color="accent"
-                            matTooltip="Define the expiration of the voucher.&#10;
-                            If it remains unchecked, it means the voucher can&#10;
-                            be used by the store anytime as long as&#10;
-                            it is available. If it's checked,&#10;
-                            define how long will it be available&#10;
-                            to be used once it's collected."
-                            matTooltipClass="tooltip-br"
-                        >
-                            help
-                        </mat-icon>
-                    </mat-checkbox>
-                </div>
+                        <span class="sinbad-red-fg">*</span>Expiration Days
+                    </label>
 
-                <ng-container *ngIf="expirationCheck == true">
-                    <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('expirationDays'))">
-                            <span class="sinbad-red-fg">*</span>Expiration Days
-                        </label>
-    
-                        <mat-form-field appearance="outline" fxFlex="40">
-                            <input
-                                matInput
-                                name="expirationDays"
-                                formControlName="expirationDays"
-                                (ngModelChange)="inputExpirationDays($event)"
-                                type="number"
-                                min="1"
-                            />
-    
-                            <mat-error *ngIf="hasError('expirationDays', true)">
-                                {{ getFormError(form.get('expirationDays')) }}
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                </ng-container>
-                
+                    <mat-form-field appearance="outline" fxFlex="40">
+                        <input
+                            matInput
+                            name="expirationDays"
+                            formControlName="expirationDays"
+                            (ngModelChange)="inputExpirationDays($event)"
+                            type="number"
+                            min="1"
+                        />
+
+                        <mat-error *ngIf="hasError('expirationDays', true)">
+                            {{ getFormError(form.get('expirationDays')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
             </ng-container>
 
             <ng-template #otherTypeVoucher>

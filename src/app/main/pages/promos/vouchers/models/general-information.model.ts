@@ -20,7 +20,6 @@ interface IVoucherGeneralInformation {
     termsAndConditions: [];
     instructions: [];
     voucherBanner: string;
-    expiration: Boolean;
     expirationDays: number;
     availableCollectedFrom: string;
     availableCollectedTo: string;
@@ -48,7 +47,6 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     termsAndConditions: [];
     instructions: [];
     voucherBanner: string;
-    expiration: Boolean;
     expirationDays: number;
     availableCollectedFrom: string;
     availableCollectedTo: string;
@@ -75,7 +73,6 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
             termsAndConditions,
             instructions,
             voucherBanner,
-            expiration,
             expirationDays,
             availableCollectedFrom,
             availableCollectedTo,
@@ -87,7 +84,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.externalId = externalId;
         this.name = name;
         this.platform = platform;
-        this.maxCollectionPerStore = maxCollectionPerStore;
+        this.maxCollectionPerStore = maxCollectionPerStore || null;
         this.description = description;
         this.shortDescription = shortDescription;
         this.voucherAllocationType = voucherAllocationType;
@@ -99,7 +96,6 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.termsAndConditions = termsAndConditions || null;
         this.instructions = instructions || null;
         this.voucherBanner = voucherBanner || null;
-        this.expiration = expiration;
         if (this.voucherType == "collectible") {
             this.availableCollectedFrom = availableCollectedFrom || null;
             this.availableCollectedTo = availableCollectedTo || null;
