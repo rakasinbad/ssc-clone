@@ -286,23 +286,22 @@ export class VoucherGeneralInformationComponent
     getVoucherTerm(value) {
         let sumData = value;
         let vv = [];
-        for(let terms of value) {
+        for (let terms of value) {
             vv.push(terms.name);
         }
         this.form.get('termsAndConditions').setValue(vv);
-        
     }
 
     getVoucherIns(value) {
         let total = value;
         let vv = [];
-        for(let instvoucher of value) {
+        for (let instvoucher of value) {
             vv.push(instvoucher.name);
         }
         this.form.get('instructions').setValue(vv);
     }
 
-     /**
+    /**
      *
      * Handle File Browse (Image / File)
      * @param {Event} ev
@@ -389,8 +388,8 @@ export class VoucherGeneralInformationComponent
     //                 message: 'Allowed minimum value is 1',
     //             }),
     //         ]);
-    //         // this.form.get('expirationDays').setValue(this.countDiffDays);
-    //     } 
+    //         this.form.get('expirationDays').setValue(null);
+    //     }
     // }
 
     addVoucherTag(event: MatChipInputEvent): void {
@@ -421,7 +420,7 @@ export class VoucherGeneralInformationComponent
     getVoucherTag(value) {
         let sumData = value;
         let vTag = [];
-        for(let tag of value) {
+        for (let tag of value) {
             vTag.push(tag.name);
         }
         this.form.get('voucherTag').setValue(vTag);
@@ -439,8 +438,8 @@ export class VoucherGeneralInformationComponent
         }
 
         this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
-        this.triggerStatus$.next('');
-        let stDateHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
+        // this.triggerStatus$.next('');
+        let stDateHrMn = moment(ev.value).format('YYYY-MM-DD 00:00');
         let stDate = moment(stDateHrMn).format();
         this.form.get('startDate').setValue(stDate);
     }
@@ -457,47 +456,47 @@ export class VoucherGeneralInformationComponent
         }
 
         this.maxActiveStartDate = activeEndDate.toDate();
-        this.triggerStatus$.next('');
-        let edDateHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+        // this.triggerStatus$.next('');
+        let edDateHrMn = moment(ev.value).format('YYYY-MM-DD 23:59');
         let edDate = moment(edDateHrMn).format();
         this.form.get('endDate').setValue(edDate);
     }
 
     onChangeCollectibleFrom(ev: MatDatetimepickerInputEvent<any>): void {
         const activeStartDate = moment(ev.value);
-        if (this.form.get('availableCollectedFrom').value) {
-            const activeEndDate = moment(this.form.get('availableCollectedTo').value);
+        if (this.form.get('startDate').value) {
+            const activeEndDate = moment(this.form.get('startDate').value);
 
             if (activeStartDate.isAfter(activeEndDate)) {
-                this.form.get('availableCollectedFrom').reset();
+                this.form.get('startDate').reset();
             }
         }
 
         this.minCollectibleTo = activeStartDate.add(1, 'minute').toDate();
-        this.triggerStatus$.next('');
+        // this.triggerStatus$.next('');
 
-        this.fromDate  = moment(ev.value);
-        this.startCollectFromHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
+        this.fromDate = moment(ev.value);
+        this.startCollectFromHrMn = moment(ev.value).format('YYYY-MM-DD 00:00');
         this.collectibleFromDate = moment(this.startCollectFromHrMn).format();
-        this.form.get('availableCollectedFrom').setValue(this.collectibleFromDate);
+        this.form.get('startDate').setValue(this.collectibleFromDate);
     }
 
     onChangeCollectibleTo(ev: MatDatetimepickerInputEvent<any>): void {
         const activeEndDate = moment(ev.value);
 
-        if (this.form.get('availableCollectedFrom').value) {
-            const activeStartDate = moment(this.form.get('availableCollectedFrom').value);
+        if (this.form.get('endDate').value) {
+            const activeStartDate = moment(this.form.get('endDate').value);
 
             if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('availableCollectedFrom').reset();
+                this.form.get('endDate').reset();
             }
         }
 
         this.maxCollectibleFrom = activeEndDate.toDate();
-        this.triggerStatus$.next('');
-        let edDateHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+        // this.triggerStatus$.next('');
+        let edDateHrMn = moment(ev.value).format('YYYY-MM-DD 23:59');
         let edDate = moment(edDateHrMn).format();
-        this.form.get('availableCollectedTo').setValue(edDate);
+        this.form.get('endDate').setValue(edDate);
     }
 
     private updateFormView(): void {
@@ -667,7 +666,7 @@ export class VoucherGeneralInformationComponent
             shortDescription: [''],
             description: [''],
             termsAndConditions: [
-                '',
+                null,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -675,7 +674,7 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
             instructions: [
-                '',
+                null,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -693,18 +692,17 @@ export class VoucherGeneralInformationComponent
             maxCollectionPerStore: [
                 null,
                 [
-                    RxwebValidators.numeric({
-                        allowDecimal: false,
-                        message: 'This field must be numeric.',
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
                         message: 'Allowed minimum value is 1',
                     }),
                     RxwebValidators.maxNumber({
-                        value:999999999999,
-                        message: 'Max input is 12 digit'
-                    })
+                        value: 999999999999,
+                        message: 'Max input is 12 digit',
+                    }),
                 ],
             ],
             voucherBudget: [
@@ -716,9 +714,9 @@ export class VoucherGeneralInformationComponent
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxNumber({
-                        value:999999999999,
-                        message: 'Max input is 12 digit'
-                    })
+                        value: 999999999999,
+                        message: 'Max input is 12 digit',
+                    }),
                 ],
             ],
             voucherSlot: [
@@ -728,9 +726,9 @@ export class VoucherGeneralInformationComponent
                         message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
                     }),
                     RxwebValidators.maxLength({
-                        value:8,
-                        message: 'Max input is 8 digit'
-                    })
+                        value: 8,
+                        message: 'Max input is 8 digit',
+                    }),
                 ],
             ],
             voucherBanner: [
@@ -766,32 +764,11 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            availableCollectedFrom: [
-                { value: '', disabled: true },
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
-            availableCollectedTo: [
-                { value: '', disabled: true },
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
             expirationDays: [
                 null,
                 [
                     RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: false,
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
@@ -801,10 +778,6 @@ export class VoucherGeneralInformationComponent
                             { minValue: 1 }
                         ),
                     }),
-                    RxwebValidators.maxNumber({
-                        value:99999999,
-                        message: 'Max input is 8 digit'
-                    })
                 ],
             ],
             voucherTag: [
@@ -822,7 +795,7 @@ export class VoucherGeneralInformationComponent
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
                 ],
-            ]
+            ],
         });
     }
 
@@ -833,7 +806,7 @@ export class VoucherGeneralInformationComponent
                 debounceTime(300),
                 tap(([_, value]) =>
                     HelperService.debug(
-                        '[BEFORE MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
+                        '[BEFORE MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED 1',
                         value
                     )
                 ),
@@ -843,12 +816,18 @@ export class VoucherGeneralInformationComponent
                     // if (!rawValue.startDate || !rawValue.endDate) {
                     //     return 'INVALID';
                     // } else {
+
+                    // if (rawValue.voucherType == 'direct') {
+                        // rawValue.expirationDays == 1;
+                        // return 'VALID'
+                    // } else {
                         return status;
+                    // }
                     // }
                 }),
                 tap((value) =>
                     HelperService.debug(
-                        '[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
+                        '[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED 1',
                         value
                     )
                 ),
@@ -919,9 +898,6 @@ export class VoucherGeneralInformationComponent
     isViewMode(): boolean {
         return this.formMode === 'view';
     }
-
-    
-
 
     ngOnInit(): void {
         /** Menyiapkan form. */

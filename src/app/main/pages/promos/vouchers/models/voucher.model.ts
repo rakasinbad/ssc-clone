@@ -1,6 +1,11 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
-import { Catalogue, StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
+import {
+    Catalogue,
+    StoreSegmentationGroup,
+    StoreSegmentationChannel,
+    StoreSegmentationCluster,
+} from 'app/main/pages/catalogues/models';
 import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { Store } from 'app/shared/models/store.model';
@@ -23,7 +28,19 @@ interface ISupplierVoucher extends Timestamp {
     endDate: string;
     description: string;
     shortDescription: string;
-    imageUrl: string;
+    // imageUrl: string;
+    voucherAllocationType: string;
+    voucherSlot: string;
+    voucherBudget: string;
+    voucherType: string;
+    voucherHeader: string;
+    category: string;
+    termsAndConditions?: Array<any>;
+    instructions?: Array<any>;
+    voucherBanner: string;
+    expirationDays: number;
+    voucherTag?: Array<any>;
+
     base: string;
     conditionBase: string;
     conditionQty: TNullable<string>;
@@ -66,7 +83,19 @@ export class SupplierVoucher implements ISupplierVoucher {
     endDate: string;
     description: string;
     shortDescription: string;
-    imageUrl: string;
+    // imageUrl: string;
+    voucherAllocationType: string;
+    voucherSlot: string;
+    voucherBudget: string;
+    voucherType: string;
+    voucherHeader: string;
+    category: string;
+    termsAndConditions?: Array<any>;
+    instructions?: Array<any>;
+    voucherBanner: string;
+    expirationDays: number;
+    voucherTag?: Array<any>;
+
     base: string;
     conditionBase: string;
     conditionQty: TNullable<string>;
@@ -109,7 +138,19 @@ export class SupplierVoucher implements ISupplierVoucher {
             endDate,
             description,
             shortDescription,
-            imageUrl,
+            // imageUrl,
+            voucherAllocationType,
+            voucherSlot,
+            voucherBudget,
+            voucherType,
+            voucherHeader,
+            category,
+            termsAndConditions,
+            instructions,
+            voucherBanner,
+            expirationDays,
+            voucherTag,
+
             base,
             conditionBase,
             conditionQty,
@@ -146,11 +187,28 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.platform = platform;
         this.maxCollectionPerStore = maxCollectionPerStore;
         this.maxVoucherRedemption = maxVoucherRedemption;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        // this.startDate = startDate;
+        // this.endDate = endDate;
         this.description = description;
         this.shortDescription = shortDescription;
-        this.imageUrl = imageUrl;
+        // this.imageUrl = imageUrl;
+        this.voucherAllocationType = voucherAllocationType;
+        this.voucherSlot = voucherSlot || null;
+        this.voucherBudget = voucherBudget || null;
+        this.voucherType = voucherType;
+        this.voucherHeader = voucherHeader || null;
+        this.category = category || null;
+        this.termsAndConditions = termsAndConditions || null;
+        this.instructions = instructions || null;
+        this.voucherBanner = voucherBanner || null;
+        if (this.voucherType == "collectible") {
+            this.expirationDays = expirationDays || null;
+        } else {
+            this.startDate = startDate|| null;
+            this.endDate = endDate|| null;
+        }
+        this.voucherTag = voucherTag || null;
+
         this.base = base;
         this.conditionBase = conditionBase;
         this.conditionQty = conditionQty;
