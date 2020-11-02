@@ -307,6 +307,11 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
 
         if (payload.voucherType == 'direct') {
             payload.expirationDays = null;
+            payload.maxCollectionPerStore = 1;
+        }
+
+        if (payload.voucherTag == '') {
+            payload.voucherTag = [];
         }
 
         // Klasifikasi "dataBase" untuk Condition Settings.

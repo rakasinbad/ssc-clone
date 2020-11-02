@@ -356,24 +356,6 @@ export class VoucherGeneralInformationComponent
         }
     }
 
-    // inputExpirationDays(event): void {
-    //     if (event == '') {
-    //         this.form.get('expirationDays').setValidators([
-    //             RxwebValidators.required({
-    //                 message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-    //             }),
-    //             RxwebValidators.minNumber({
-    //                 value: 1,
-    //                 message: 'Allowed minimum value is 1',
-    //             }),
-    //         ]);
-    //     } else {
-    //         // console.log('isi input collect to->', moment().add(event, 'days').format('DD-MM-YYYY'))
-    //         let futureDays = moment().add(event, 'days').format('DD-MM-YYYY');
-    //         this.form.get('endDate').setValue(moment(futureDays + '23:59').format());
-    //     }
-    // }
-
     addVoucherTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
@@ -401,7 +383,6 @@ export class VoucherGeneralInformationComponent
 
     getVoucherTag(value) {
         let sumData = value;
-        // console.log('isi tag->', value)
         let vTag = [];
         for(let tag of value) {
             vTag.push(tag.name);
@@ -428,7 +409,6 @@ export class VoucherGeneralInformationComponent
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
-        // console.log('end date ->', ev.value);
         const activeEndDate = moment(ev.value);
 
         if (this.form.get('startDate').value) {
@@ -532,12 +512,23 @@ export class VoucherGeneralInformationComponent
                     externalId: voucher.externalId,
                     name: voucher.name,
                     platform: String(voucher.platform).toLowerCase(),
+                    voucherType: voucher.voucherType,
+                    voucherHeader: voucher.voucherHeader,
+                    category: voucher.category,
                     maxCollectionPerStore: voucher.maxCollectionPerStore,
                     maxVoucherRedemption: voucher.maxVoucherRedemption,
+                    voucherSlot: voucher.voucherSlot,
+                    voucherBudget: voucher.voucherBudget,
                     startDate: moment(voucher.startDate).toDate(),
-                    activeEndDate: moment(voucher.endDate).toDate(),
+                    endDate: moment(voucher.endDate).toDate(),
                     description: voucher.description,
                     shortDescription: voucher.shortDescription,
+                    termsAndConditions: voucher.termsAndConditions,
+                    instructions: voucher.instructions,
+                    voucherBanner: voucher.voucherBanner,
+                    expirationDays: voucher.expirationDays,
+                    voucherTag: voucher.voucherTag,
+                    code: voucher.code
                 });
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
@@ -701,23 +692,6 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            // availableCollectedFrom: [
-            //     { value: null, disabled: true },
-            //     [
-            //         RxwebValidators.required({
-            //             message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-            //         }),
-            //     ],
-            // ],
-            // availableCollectedTo: [
-            //     { value: null, disabled: true },
-            //     [
-            //         RxwebValidators.required({
-            //             message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-            //         }),
-            //     ],
-            // ],
-            // expirationStatus: false,
             expirationDays: [
                 null,
                 [
@@ -738,6 +712,14 @@ export class VoucherGeneralInformationComponent
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.minLength({
+                        value: 5,
+                        message: 'Min input is 5 character',
+                    }),
+                    RxwebValidators.maxLength({
+                        value: 10,
+                        message: 'Max input is 10 character',
                     }),
                 ],
             ]
@@ -761,6 +743,8 @@ export class VoucherGeneralInformationComponent
                     if (!rawValue.startDate || !rawValue.endDate) {
                         return 'INVALID';
                     } else if (rawValue.voucherType == 'collectible' && rawValue.expirationDays == null) {
+                        return 'INVALID';
+                    } else if (rawValue.voucherType == 'collectible' && rawValue.maxCollectionPerStore == null) {
                         return 'INVALID';
                     } else {
                         return status;
