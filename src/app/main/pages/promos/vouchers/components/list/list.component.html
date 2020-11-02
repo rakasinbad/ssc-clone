@@ -68,8 +68,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    Collectible Supplier Voucher
-                    <!-- {{ row?.voucherType === 'direct' ? 'Direct Supplier Voucher' : row?.voucherType === 'collectible' ? 'Collectible Supplier Voucher' : (row?.voucherType | titlecase) || '-' }} -->
+                    {{ row?.voucherType === 'direct' ? 'Direct Supplier Voucher' : row?.voucherType === 'collectible' ? 'Collectible Supplier Voucher' : (row?.voucherType | titlecase) || '-' }}
                 </p>
             </mat-cell>
         </ng-container>
