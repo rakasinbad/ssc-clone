@@ -254,13 +254,13 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             termsAndConditions: generalInformationValue.termsAndConditions,
             instructions: generalInformationValue.instructions,
             platform: generalInformationValue.platform,
-            maxCollectionPerStore: +generalInformationValue.maxCollectionPerStore,
+            maxCollectionPerStore: generalInformationValue.maxCollectionPerStore,
             voucherSlot: generalInformationValue.voucherSlot,
             voucherBudget: generalInformationValue.voucherBudget,
             voucherBanner: generalInformationValue.voucherBanner,
             startDate: generalInformationValue.startDate,
             endDate: generalInformationValue.endDate,
-            expirationDays: +generalInformationValue.expirationDays,
+            expirationDays: generalInformationValue.expirationDays,
             description: generalInformationValue.description,
             shortDescription: generalInformationValue.shortDescription,
             voucherTag: generalInformationValue.voucherTag,
@@ -304,6 +304,8 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             payload.voucherSlot = null;
             payload.voucherBudget = null;
         }
+
+        console.log('maxCollectionPerStore->', payload.maxCollectionPerStore)
 
         // Klasifikasi "dataBase" untuk Condition Settings.
         if (payload.base === 'sku') {

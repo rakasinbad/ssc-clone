@@ -1,18 +1,16 @@
 @import 'src/@fuse/scss/fuse';
 
 voucher-list {
-    display: flex;
-    flex: 1 1 auto;
-    overflow: auto;
-    flex-direction: column;
-    // border-radius: 4px !important;
+    // display: flex;
+    // flex: 1 1 auto;
+    // overflow: auto;
+    // flex-direction: column;
+    // // border-radius: 4px !important;
 
     .voucher-list-table {
         flex: 1 1 auto;
-        // border-top: 1px solid rgba(0, 0, 0, 0.12);
-        border: 1px solid #e8e8e8;
-        border-radius: 4px !important;
-        min-height: 40px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
@@ -20,6 +18,8 @@ voucher-list {
         .mat-header-row,
         .mat-row {
             background: white;
+            min-width: fit-content;
+            width: 100%;
         }
 
         .mat-row {
@@ -101,6 +101,24 @@ voucher-list {
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
+        }
+        .mat-column-supplier-voucher-id {
+            flex: 0 0 110px;
+            justify-content: flex-end;
+        }
+        .mat-column-voucher-name {
+            flex: 0 1 180px;
+            min-width: 110px;
+        }
+
+        .mat-column-voucher-type {
+            flex: 0 1 180px;
+            min-width: 110px;
+        }
+
+        .mat-column-allocation-type {
+            flex: 0 1 110px;
+            min-width: 110px;
         }
 
         .quantity-indicator {

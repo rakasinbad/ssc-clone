@@ -78,11 +78,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.externalId = externalId;
         this.name = name;
         this.platform = platform;
-        if (maxCollectionPerStore == '0') {
-            this.maxCollectionPerStore = null;
-        } else {
-            this.maxCollectionPerStore = maxCollectionPerStore || null;
-        }
+        this.maxCollectionPerStore = maxCollectionPerStore || null;
         this.description = description;
         this.shortDescription = shortDescription;
         this.voucherAllocationType = voucherAllocationType;

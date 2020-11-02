@@ -560,7 +560,7 @@
                         <input
                             matInput
                             type="number"
-                            min="0"
+                            min="1"
                             name="maxCollectionPerStore"
                             formControlName="maxCollectionPerStore"
                         />
@@ -725,287 +725,138 @@
             </div>
             <!-- upload voucher banner image -->
 
-            <ng-container *ngIf="selectTypeVoucher == 'collectible'; else otherTypeVoucher">
-                <!-- ACTIVE START DATE -->
-                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label
-                        fxFlexAlign="center"
-                        class="pr-0 form-label"
-                        fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('startDate'))"
-                    >
-                        <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Active From
-                    </label>
-
-                    <mat-form-field
-                        appearance="outline"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="!isViewMode()"
-                    >
-                        <input
-                            matInput
-                            [matDatetimepicker]="activeStartDatePicker"
-                            [max]="maxActiveStartDate"
-                            [min]="minActiveStartDate"
-                            (dateChange)="onChangeActiveStartDate($event)"
-                            autocomplete="false"
-                            name="startDate"
-                            formControlName="startDate"
-                        />
-                        <mat-datetimepicker-toggle
-                            matSuffix
-                            [for]="activeStartDatePicker"
-                        ></mat-datetimepicker-toggle>
-                        <mat-datetimepicker
-                            touchUi
-                            #activeStartDatePicker
-                            [disabled]="false"
-                            type="date"
-                        >
-                        </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('startDate'))">
-                            {{ getFormError(form.get('startDate')) }}
-                        </mat-error>
-                    </mat-form-field>
-                    <span
-                        class="form-value"
-                        fxFlexAlign="center"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="isViewMode()"
-                    >
-                        {{ (form.get('startDate').value | date: 'dd/MM/yyyy') || '-' }}
-                    </span>
-                </div>
-                <!-- / ACTIVE START DATE -->
-
-                <!-- ACTIVE END DATE -->
-                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label
-                        fxFlexAlign="center"
-                        class="pr-0 form-label"
-                        fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('endDate'))"
-                    >
-                        <span class="sinbad-red-fg">*</span>To
-                    </label>
-
-                    <mat-form-field
-                        appearance="outline"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="!isViewMode()"
-                    >
-                        <input
-                            matInput
-                            [matDatetimepicker]="activeEndDatePicker"
-                            [max]="maxActiveEndDate"
-                            [min]="minActiveEndDate"
-                            (dateChange)="onChangeActiveEndDate($event)"
-                            autocomplete="false"
-                            name="endDate"
-                            formControlName="endDate"
-                        />
-                        <mat-datetimepicker-toggle
-                            matSuffix
-                            [for]="activeEndDatePicker"
-                        ></mat-datetimepicker-toggle>
-                        <mat-datetimepicker
-                            touchUi
-                            #activeEndDatePicker
-                            [disabled]="false"
-                            type="date"
-                        >
-                        </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('endDate'))">
-                            {{ getFormError(form.get('endDate')) }}
-                        </mat-error>
-                    </mat-form-field>
-                    <span
-                        class="form-value"
-                        fxFlexAlign="center"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="isViewMode()"
-                    >
-                        {{ (form.get('endDate').value | date: 'dd/MM/yyyy') || '-' }}
-                    </span>
-                </div>
-                <!-- / ACTIVE END DATE -->
-
-                <div
-                    [ngClass]="formClass"
-                    fxLayout="row"
-                    fxLayoutAlign="start stretch"
-                    [class.sinbad-red-fg]="hasError('expirationDays')"
+            <!-- ACTIVE START DATE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('startDate'))"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        class="pr-0 form-label"
-                        fxFlex="12"
-                        [class.mat-error]="!isViewMode()"
+                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Active From
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        [matDatetimepicker]="activeStartDatePicker"
+                        [max]="maxActiveStartDate"
+                        [min]="minActiveStartDate"
+                        (dateChange)="onChangeActiveStartDate($event)"
+                        autocomplete="false"
+                        name="startDate"
+                        formControlName="startDate"
+                    />
+                    <mat-datetimepicker-toggle
+                        matSuffix
+                        [for]="activeStartDatePicker"
+                    ></mat-datetimepicker-toggle>
+                    <mat-datetimepicker
+                        touchUi
+                        #activeStartDatePicker
+                        [disabled]="false"
+                        type="date"
                     >
-                        <span class="sinbad-red-fg">*</span>Expiration Days
-                    </label>
+                    </mat-datetimepicker>
+                    <mat-error *ngIf="hasError(form.get('startDate'))">
+                        {{ getFormError(form.get('startDate')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('startDate').value | date: 'dd/MM/yyyy') || '-' }}
+                </span>
+            </div>
+            <!-- / ACTIVE START DATE -->
 
-                    <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
-                        <input
-                            matInput
-                            name="expirationDays"
-                            formControlName="expirationDays"
-                            mask="0*"
-                        />
+            <!-- ACTIVE END DATE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('endDate'))"
+                >
+                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>To
+                </label>
 
-                        <!-- <input
-                            matInput
-                            name="width"
-                            formControlName="expirationDays"
-                            mask="separator"
-                            thousandSeparator="."
-                        /> -->
-                        <!-- <input
-                            matInput
-                            name="expirationDays"
-                            formControlName="expirationDays"
-                            mask="0*"
-                        /> -->
-
-                        <mat-error *ngIf="hasError(form.get('expirationDays'))">
-                            {{ getFormError(form.get('expirationDays')) }}
-                        </mat-error>
-                    </mat-form-field>
-
-                    <!-- <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
-                        <input
-                            matInput
-                            name="expirationDays"
-                            formControlName="expirationDays"
-                            type="number"
-                            min="1"
-                        />
-
-                        <mat-error *ngIf="hasError(form.get('expirationDays'))">
-                            {{ getFormError(form.get('expirationDays')) }}
-                        </mat-error>
-                    </mat-form-field> -->
-
-                    <span
-                        class="form-value"
-                        fxFlexAlign="center"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="isViewMode()"
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        [matDatetimepicker]="activeEndDatePicker"
+                        [max]="maxActiveEndDate"
+                        [min]="minActiveEndDate"
+                        (dateChange)="onChangeActiveEndDate($event)"
+                        autocomplete="false"
+                        name="endDate"
+                        formControlName="endDate"
+                    />
+                    <mat-datetimepicker-toggle
+                        matSuffix
+                        [for]="activeEndDatePicker"
+                    ></mat-datetimepicker-toggle>
+                    <mat-datetimepicker
+                        touchUi
+                        #activeEndDatePicker
+                        [disabled]="false"
+                        type="date"
                     >
-                        {{ form.get('expirationDays').value || '-' }}
-                    </span>
-                </div>
-            </ng-container>
+                    </mat-datetimepicker>
+                    <mat-error *ngIf="hasError(form.get('endDate'))">
+                        {{ getFormError(form.get('endDate')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('endDate').value | date: 'dd/MM/yyyy') || '-' }}
+                </span>
+            </div>
+            <!-- / ACTIVE END DATE -->
 
-            <ng-template #otherTypeVoucher>
-                <!-- ACTIVE START DATE -->
-                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label
-                        fxFlexAlign="center"
-                        class="pr-0 form-label"
-                        fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('startDate'))"
-                    >
-                        <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Active From
-                    </label>
+                <!-- expiration day -->
+                <ng-container *ngIf="expirationCheck == true">
+                    <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('expirationDays'))">
+                            <span class="sinbad-red-fg">*</span>Expiration Days
+                        </label>
+    
+                        <mat-form-field appearance="outline" fxFlex="40">
+                            <input
+                                matInput
+                                name="expirationDays"
+                                formControlName="expirationDays"
+                                (ngModelChange)="inputExpirationDays($event)"
+                            />
+    
+                            <mat-error *ngIf="hasError('expirationDays', true)">
+                                {{ getFormError(form.get('expirationDays')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </ng-container>
+                <!-- end expiration days -->
 
-                    <mat-form-field
-                        appearance="outline"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="!isViewMode()"
-                    >
-                        <input
-                            matInput
-                            [matDatetimepicker]="activeStartDatePicker"
-                            [max]="maxActiveStartDate"
-                            [min]="minActiveStartDate"
-                            (dateChange)="onChangeActiveStartDate($event)"
-                            autocomplete="false"
-                            name="startDate"
-                            formControlName="startDate"
-                        />
-                        <mat-datetimepicker-toggle
-                            matSuffix
-                            [for]="activeStartDatePicker"
-                        ></mat-datetimepicker-toggle>
-                        <mat-datetimepicker
-                            touchUi
-                            #activeStartDatePicker
-                            [disabled]="false"
-                            type="date"
-                        >
-                        </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('startDate'))">
-                            {{ getFormError(form.get('startDate')) }}
-                        </mat-error>
-                    </mat-form-field>
-                    <span
-                        class="form-value"
-                        fxFlexAlign="center"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="isViewMode()"
-                    >
-                        {{ (form.get('startDate').value | date: 'dd/MM/yyyy') || '-' }}
-                    </span>
-                </div>
-                <!-- / ACTIVE START DATE -->
-
-                <!-- ACTIVE END DATE -->
-                <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                    <label
-                        fxFlexAlign="center"
-                        class="pr-0 form-label"
-                        fxFlex="12"
-                        [class.mat-error]="!isViewMode() && hasError(form.get('endDate'))"
-                    >
-                        <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>To
-                    </label>
-
-                    <mat-form-field
-                        appearance="outline"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="!isViewMode()"
-                    >
-                        <input
-                            matInput
-                            [matDatetimepicker]="activeEndDatePicker"
-                            [max]="maxActiveEndDate"
-                            [min]="minActiveEndDate"
-                            (dateChange)="onChangeActiveEndDate($event)"
-                            autocomplete="false"
-                            name="endDate"
-                            formControlName="endDate"
-                        />
-                        <mat-datetimepicker-toggle
-                            matSuffix
-                            [for]="activeEndDatePicker"
-                        ></mat-datetimepicker-toggle>
-                        <mat-datetimepicker
-                            touchUi
-                            #activeEndDatePicker
-                            [disabled]="false"
-                            type="date"
-                        >
-                        </mat-datetimepicker>
-                        <mat-error *ngIf="hasError(form.get('endDate'))">
-                            {{ getFormError(form.get('endDate')) }}
-                        </mat-error>
-                    </mat-form-field>
-                    <span
-                        class="form-value"
-                        fxFlexAlign="center"
-                        [fxFlex]="formFieldLength"
-                        *ngIf="isViewMode()"
-                    >
-                        {{ (form.get('endDate').value | date: 'dd/MM/yyyy') || '-' }}
-                    </span>
-                </div>
-                <!-- / ACTIVE END DATE -->
-            </ng-template>
 
             <!-- Voucher Tag -->
             <div [ngClass]="formClass" class="custom-field" fxLayoutAlign="start stretch">
-                <label fxFlex="12" class="pr-0 form-label"> Voucher Tag </label>
+                <label fxFlex="12" class="mt-20 pr-0 form-label">Voucher Tag</label>
 
                 <mat-form-field
                     *ngIf="!isViewMode()"
