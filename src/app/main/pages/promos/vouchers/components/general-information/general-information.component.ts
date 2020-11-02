@@ -56,6 +56,7 @@ import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
@@ -824,9 +825,6 @@ export class VoucherGeneralInformationComponent
         return this.formMode === 'view';
     }
 
-    
-
-
     ngOnInit(): void {
         /** Menyiapkan form. */
         this.initForm();
@@ -852,6 +850,20 @@ export class VoucherGeneralInformationComponent
             this.trigger$.next('');
             setTimeout(() => this.updateFormView());
         }
+    }
+
+    onShowImage(imageUrl: string, title: string): void {
+        if (!imageUrl || !title) {
+            return;
+        }
+
+        this.dialog.open(ShowImageComponent, {
+            data: {
+                title: title || '',
+                url: imageUrl || '',
+            },
+            disableClose: true,
+        });
     }
 
     ngOnDestroy(): void {

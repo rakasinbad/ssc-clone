@@ -732,14 +732,28 @@
                     </button>
                 </div>
 
-                <span
+                <ng-container *ngIf="isViewMode(); else notFoundImg">
+                    <button
+                    type="button"
+                    mat-button
+                    color="accent"
+                    class="btn-sinbad-link"
+                    (click)="onShowImage(imageUrl, 'Voucher Banner')"
+                    *ngIf="form.get('voucherBanner').value as imageUrl; else notFoundImg"
+                >
+                    View
+                </button>
+
+                <ng-template #notFoundImg> - </ng-template>
+                </ng-container>
+                <!-- <span
                     class="form-value"
                     fxFlexAlign="center"
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
                     {{ (form.get('voucherBanner').value | titlecase) || '-' }}
-                </span>
+                </span> -->
             </div>
             <!-- upload voucher banner image -->
 
