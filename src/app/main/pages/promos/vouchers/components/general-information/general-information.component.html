@@ -840,9 +840,9 @@
                         <mat-form-field appearance="outline" fxFlex="40">
                             <input
                                 matInput
+                                type="number"
                                 name="expirationDays"
                                 formControlName="expirationDays"
-                                (ngModelChange)="inputExpirationDays($event)"
                             />
     
                             <mat-error *ngIf="hasError('expirationDays', true)">

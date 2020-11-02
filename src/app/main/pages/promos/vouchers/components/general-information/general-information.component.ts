@@ -356,14 +356,23 @@ export class VoucherGeneralInformationComponent
         }
     }
 
-    inputExpirationDays(event): void {
-        // console.log('isi value input->', event)
-        if (event != '') {
-            // console.log('isi input collect to->', moment().add(event, 'days').format('DD-MM-YYYY'))
-            let futureDays = moment().add(event, 'days').format('DD-MM-YYYY');
-            this.form.get('endDate').setValue(moment(futureDays + '23:59').format());
-        }
-    }
+    // inputExpirationDays(event): void {
+    //     if (event == '') {
+    //         this.form.get('expirationDays').setValidators([
+    //             RxwebValidators.required({
+    //                 message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+    //             }),
+    //             RxwebValidators.minNumber({
+    //                 value: 1,
+    //                 message: 'Allowed minimum value is 1',
+    //             }),
+    //         ]);
+    //     } else {
+    //         // console.log('isi input collect to->', moment().add(event, 'days').format('DD-MM-YYYY'))
+    //         let futureDays = moment().add(event, 'days').format('DD-MM-YYYY');
+    //         this.form.get('endDate').setValue(moment(futureDays + '23:59').format());
+    //     }
+    // }
 
     addVoucherTag(event: MatChipInputEvent): void {
         const input = event.input;
@@ -626,8 +635,9 @@ export class VoucherGeneralInformationComponent
                 null,
                 [
                     RxwebValidators.numeric({
-                        allowDecimal: false,
-                        message: 'This field must be numeric.',
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minNumber({
                         value: 1,
@@ -711,13 +721,15 @@ export class VoucherGeneralInformationComponent
             expirationDays: [
                 null,
                 [
-                    RxwebValidators.digit({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.maxLength({
-                        value:8,
-                        message: 'Max input is 8 digit'
-                    })
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: 'Allowed minimum value is 1',
+                    }),
                 ],
             ],
             voucherTag: [''],
@@ -746,11 +758,13 @@ export class VoucherGeneralInformationComponent
                 map(([_, status]) => {
                     const rawValue = this.form.getRawValue();
 
-                    // if (!rawValue.startDate || !rawValue.endDate) {
-                    //     return 'INVALID';
-                    // } else {
+                    if (!rawValue.startDate || !rawValue.endDate) {
+                        return 'INVALID';
+                    } else if (rawValue.voucherType == 'collectible' && rawValue.expirationDays == null) {
+                        return 'INVALID';
+                    } else {
                         return status;
-                    // }
+                    }
                 }),
                 tap((value) =>
                     HelperService.debug(

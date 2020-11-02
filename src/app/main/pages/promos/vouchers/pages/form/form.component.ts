@@ -305,7 +305,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             payload.voucherBudget = null;
         }
 
-        console.log('maxCollectionPerStore->', payload.maxCollectionPerStore)
+        if (payload.voucherType == 'direct') {
+            payload.expirationDays = null;
+        }
 
         // Klasifikasi "dataBase" untuk Condition Settings.
         if (payload.base === 'sku') {
