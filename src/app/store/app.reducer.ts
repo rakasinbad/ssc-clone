@@ -5,7 +5,7 @@ import {
     ActionReducerMap,
     createFeatureSelector,
     createSelector,
-    MetaReducer
+    MetaReducer,
 } from '@ngrx/store';
 import { AuthActions } from 'app/main/pages/core/auth/store/actions';
 import {
@@ -14,11 +14,10 @@ import {
     fromNetwork,
     fromProgress,
     fromSource,
-    fromUi
+    fromUi,
 } from 'app/shared/store/reducers';
 import { environment } from 'environments/environment';
 import { storeFreeze } from 'ngrx-store-freeze';
-
 import * as fromAuth from '../main/pages/core/auth/store/reducers/auth.reducer';
 import { RouterStateUrl } from './custom-serializer';
 
@@ -42,8 +41,8 @@ export const appReducer = new InjectionToken<ActionReducerMap<State>>('Root Redu
         [fromNetwork.FEATURE_KEY]: fromNetwork.reducer,
         [fromProgress.FEATURE_KEY]: fromProgress.reducer,
         [fromSource.featureKey]: fromSource.reducers,
-        [fromUi.FEAUTURE_KEY]: fromUi.reducer
-    })
+        [fromUi.FEAUTURE_KEY]: fromUi.reducer,
+    }),
 });
 
 export function logger(reducer: ActionReducer<State>): ActionReducer<State> {
@@ -76,20 +75,22 @@ export const metaReducers: MetaReducer<State>[] =
         : [clearState];
 
 export const getRouterState = createFeatureSelector<RouterReducerState<RouterStateUrl>>('router');
+
 export const {
     selectQueryParams,
     selectRouteParams,
+    selectRouteParam,
     selectRouteData,
     selectCurrentRoute,
-    selectUrl
+    selectUrl,
 } = getSelectors(getRouterState);
 
 export const getCurrentUrl = createSelector(
     getRouterState,
-    state => state && state.state && state.state.url
+    (state) => state && state.state && state.state.url
 );
 
 export const getParams = createSelector(
     getRouterState,
-    state => state && state.state && state.state.params
+    (state) => state && state.state && state.state.params
 );

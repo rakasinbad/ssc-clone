@@ -1,4 +1,8 @@
-<div #catalogueDetails id="catalogue-details" class="page-layout carded fullwidth inner-scroll line-height-1.75">
+<div
+    #catalogueDetails
+    id="catalogue-details"
+    class="page-layout carded fullwidth inner-scroll line-height-1.75"
+>
     <!-- TOP BACKGROUND -->
     <div class="top-bg h-188 accent"></div>
     <!-- / TOP BACKGROUND -->
@@ -6,26 +10,32 @@
     <!-- CENTER -->
     <div class="center px-16">
         <!-- CONTENT HEADER -->
-        <div
-            class="h-120 accent mb-0 mt-20"
-            fxLayout="row"
-            fxLayoutAlign="space-between center"
-        >
+        <div class="h-120 accent mb-0 mt-20" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/catalogues/list']">
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/catalogues/list']"
+                >
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
                 <div
                     class="img-container mr-24"
-                    style="width: 70px; height: 70px;"
+                    style="width: 70px; height: 70px"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <ng-container *ngIf="(selectedCatalogue$ | async)?.catalogueImages[0]; else noCatalogueImage;">
+                    <ng-container
+                        *ngIf="
+                            (selectedCatalogue$ | async)?.catalogueImages[0];
+                            else noCatalogueImage
+                        "
+                    >
                         <img
                             class="fit-image fuse-white"
-                            style="border-radius: 5px;"
+                            style="border-radius: 5px"
                             [defaultImage]="'assets/images/catalogue/no_photo.png'"
                             [lazyLoad]="(selectedCatalogue$ | async)?.catalogueImages[0]?.imageUrl"
                             [errorImage]="'assets/images/catalogue/no_photo.png'"
@@ -45,7 +55,9 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        <ng-container *ngIf="!(selectedCatalogue$ | async); else isCatalogueNameLoading;">
+                        <ng-container
+                            *ngIf="!(selectedCatalogue$ | async); else isCatalogueNameLoading"
+                        >
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                             ></ngx-skeleton-loader>
@@ -56,11 +68,12 @@
                     </div>
 
                     <div class="subtitle secondary-text">
-                        <span class="fuse-white-fg">Product Detail</span>
+                        <span class="fuse-white-fg">SKU Detail</span>
                     </div>
                 </div>
             </div>
             <!-- / APP TITLE -->
+
             <!-- EDIT BUTTON -->
             <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
                 <span class="red-500-fg">Edit</span>
@@ -71,13 +84,15 @@
 
         <!-- TAB GROUP -->
         <mat-tab-group
-            color="accent" style="border-radius: 4px;"
+            color="accent"
+            style="border-radius: 4px"
             class="sinbad-white sinbad-mat-tab-group has-border mat-tab-header-px-12"
             animationDuration="0ms"
             dynamicHeight="true"
             (selectedIndexChange)="onSelectedTab($event)"
             fusePerfectScrollbar
         >
+            <!-- SKU INFORMATION TAB -->
             <mat-tab label="SKU Information" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-sku-information
@@ -87,7 +102,10 @@
                     ></catalogue-sku-information>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Price Settings" [disabled]="isEditMode()">
+            <!-- / SKU INFORMATION TAB -->
+
+            <!-- SEGMENTATION SETTINGS TAB -->
+            <mat-tab label="Segmentation Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-price-settings
                         #cataloguePriceSettings
@@ -98,6 +116,9 @@
                     ></catalogue-price-settings>
                 </ng-template>
             </mat-tab>
+            <!-- / SEGMENTATION SETTINGS TAB -->
+
+            <!-- MEDIA SETTINGS TAB -->
             <mat-tab label="Media Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-media-settings
@@ -107,7 +128,10 @@
                     ></catalogue-media-settings>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Weight & Dimension" [disabled]="isEditMode()">
+            <!-- / MEDIA SETTINGS TAB -->
+
+            <!-- DELIVERY TAB -->
+            <mat-tab label="Delivery" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-weight-and-dimension
                         [(formMode)]="formMode"
@@ -116,6 +140,9 @@
                     ></catalogue-weight-and-dimension>
                 </ng-template>
             </mat-tab>
+            <!-- / DELIVERY TAB -->
+
+            <!-- AMOUNT SETTINGS TAB -->
             <mat-tab label="Amount Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-amount-settings
@@ -125,6 +152,15 @@
                     ></catalogue-amount-settings>
                 </ng-template>
             </mat-tab>
+            <!-- / AMOUNT SETTINGS TAB -->
+
+            <!-- VISIBILITY TAB -->
+            <mat-tab label="Visibility" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-catalogue-visibility [(formMode)]="formMode"></app-catalogue-visibility>
+                </ng-template>
+            </mat-tab>
+            <!-- / VISIBILITY TAB -->
         </mat-tab-group>
         <!-- / TAB GROUP -->
     </div>

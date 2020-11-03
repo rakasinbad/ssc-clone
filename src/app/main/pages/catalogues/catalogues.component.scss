@@ -1,7 +1,7 @@
 @import 'src/@fuse/scss/fuse';
 
 app-catalogues {
-    .header {
+    /* .header {
         height: 80px;
         min-height: 80px;
         max-height: 136px;
@@ -12,7 +12,7 @@ app-catalogues {
             min-height: 192px !important;
             max-height: 192px !important;
         }
-    }
+    } */
 
     .catalogues-table {
         flex: 1 1 auto;
@@ -22,25 +22,28 @@ app-catalogues {
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
-        // .mat-header-row {
-        //     min-height: 64px;
-        // }
+        .mat-header-row,
+        .mat-row {
+            background: white;
 
-        // .order {
-        //     position: relative;
-        //     cursor: pointer;
-        //     height: 84px;
-        // }
+            // For horizontal scroll
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: 68px;
+        }
 
         mat-chip {
             font-size: 10px;
         }
 
-        mat-row {
+        /*  mat-row {
             height: 63px !important;
             min-height: 63px !important;
             max-height: 63px !important;
-        }
+        } */
 
         img.ng-failed-lazyloaded {
             filter: grayscale(1);
@@ -53,14 +56,14 @@ app-catalogues {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            // padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
         }
 
         .catalogue {
             position: relative;
-            cursor: pointer;
-            padding: 10px 0px;
-            min-height: 70px;
         }
 
         .clickable {
@@ -72,10 +75,11 @@ app-catalogues {
             min-width: 0;
             display: flex;
             align-items: center;
+            padding-right: 8px;
 
-            .word-wrap {
+            /* .word-wrap {
                 word-break: break-all;
-            }
+            } */
         }
 
         .mat-column-checkbox {
@@ -88,8 +92,8 @@ app-catalogues {
         }
 
         .mat-column-name {
-            flex: 0 1 75%;
-            padding-left: 10px;
+            flex: 1 1 75%;
+            // padding-left: 10px;
 
             .img-container {
                 width: 50px; /*any size*/
@@ -108,7 +112,8 @@ app-catalogues {
             }
         }
 
-        .mat-column-sku, .mat-column-externalId {
+        .mat-column-sku,
+        .mat-column-externalId {
             flex: 0 1 20%;
             margin-right: 20px;
         }
@@ -129,17 +134,33 @@ app-catalogues {
         .mat-column-timeLimit,
         .mat-column-blockType,
         .mat-column-blockReason,
-        .mat-column-blockSuggest {
+        .mat-column-blockSuggest,
+        .mat-column-type {
             flex: 0 1 12.5%;
+        }
+
+        .mat-column-status {
+            flex: 0 1 80px;
+            min-width: 80px;
         }
 
         .mat-column-actions {
-            display: flex;
-            flex: 0 1 12.5%;
+            flex: 0 1 80px;
+            min-width: 80px;
             justify-content: flex-end;
         }
 
-        .quantity-indicator {
+        .status-icon {
+            border-radius: 50%;
+        }
+
+        /*        .mat-column-actions {
+            display: flex;
+            flex: 0 1 12.5%;
+            justify-content: flex-end;
+        } */
+
+        /*  .quantity-indicator {
             display: inline-block;
             vertical-align: middle;
             width: 8px;
@@ -151,11 +172,7 @@ app-catalogues {
                 display: inline-block;
                 vertical-align: middle;
             }
-        }
-
-        .active-icon {
-            border-radius: 50%;
-        }
+        } */
 
         // .mat-column-actions {
         //     flex: 0 1 80px;

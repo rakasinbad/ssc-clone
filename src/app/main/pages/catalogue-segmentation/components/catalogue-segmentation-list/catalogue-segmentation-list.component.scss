@@ -1,0 +1,132 @@
+@import 'src/@fuse/scss/fuse';
+
+app-catalogue-segmentation-list {
+    // Sticky header
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: auto;
+
+    .catalogue-segmentation-list {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        // No record table
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+
+            // For horizontal scroll
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-header-cell,
+        .mat-cell {
+            padding: 0 16px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+        }
+
+        .catalogue-segmentation-list__item {
+            position: relative;
+
+            // If row can be click
+            cursor: pointer;
+            min-height: unset;
+        }
+
+        mat-header-cell:first-of-type,
+        mat-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-right: 0;
+        }
+
+        .mat-header-cell:nth-last-of-type(2),
+        .mat-cell:nth-last-of-type(2) {
+            padding-right: 0;
+        }
+
+        mat-header-cell:last-of-type,
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-left: 0;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mat-column-segmentation-name {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-warehouse-name {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-type {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-group {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-channel {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-cluster {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-status {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .status-icon {
+            border-radius: 50%;
+        }
+
+        .mat-column-no-record {
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+}

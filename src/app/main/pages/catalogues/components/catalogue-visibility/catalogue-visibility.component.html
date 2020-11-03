@@ -1,0 +1,53 @@
+<!-- CONTENT CARD (VISIBILTY) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">Visibility</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="true ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- STATUS -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Status </label>
+
+                <mat-radio-group [formControl]="form.get('status')" fxFlex="80">
+                    <mat-radio-button class="pr-36" [value]="'active'">Active</mat-radio-button>
+                    <mat-radio-button class="pr-36" [value]="'inactive'">Inactive</mat-radio-button>
+                </mat-radio-group>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('productInfo.name').value }}
+                </span> -->
+            </div>
+            <!-- / STATUS -->
+
+            <!-- TYPE -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Type </label>
+
+                <!-- <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
+                    <input
+                        matInput
+                        name="name"
+                        formControlName="name"
+                    />
+                    <mat-error
+                        *ngIf="hasError(form.get('productInfo.name'))"
+                    >
+                        {{ getFormError(form.get('productInfo.name')) }}
+                    </mat-error>
+                </mat-form-field> -->
+                <span class="grey-fg" fxFlex="80" *ngIf="formMode | hasFormMode: 'view'">
+                    {{ form.get('isBonus').value | visibilityType }}
+                </span>
+            </div>
+            <!-- / TYPE -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (VISIBILTY) -->
