@@ -21,9 +21,11 @@ export class CatalogueSegmentationComponent implements OnInit {
         },
     };
 
+    keyword: string = null;
+
     constructor(private router: Router) {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
 
     onClickAdd(): void {
         this.router.navigateByUrl('/pages/catalogue-segmentations/add');

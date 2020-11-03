@@ -1,20 +1,27 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
+    SimpleChanges,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
 import { MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
-import { merge, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { combineLatest, merge, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { CatalogueSegmentationDataSource } from '../../datasources';
+import { CatalogueSegmentation } from '../../models';
+import { CatalogueSegmentationFacadeService } from '../../services';
 
 @Component({
     selector: 'app-catalogue-segmentation-list',
@@ -24,7 +31,20 @@ import { CatalogueSegmentationDataSource } from '../../datasources';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CatalogueSegmentationListComponent
+    implements OnChanges, OnInit, AfterViewInit, OnDestroy {
+    private breadcrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Catalogue',
+        },
+        {
+            title: 'Catalogue Segmentation',
+            active: true,
+        },
+    ];
     private unSubs$: Subject<any> = new Subject();
 
     readonly defaultPageSize = environment.pageSize;
@@ -42,6 +62,8 @@ export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit
     ];
 
     dataSource: CatalogueSegmentationDataSource;
+    isLoading: boolean;
+    totalItem: number;
 
     @Input()
     keyword: string;
@@ -55,10 +77,34 @@ export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    constructor() {}
+    constructor(
+        private cdRef: ChangeDetectorRef,
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService
+    ) {}
 
-    ngOnInit() {
-        this.dataSource = new CatalogueSegmentationDataSource();
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['keyword']) {
+            if (!changes['keyword'].isFirstChange()) {
+                this._initTable();
+            }
+        }
+    }
+
+    ngOnInit(): void {
+        this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
+
+        this.dataSource = new CatalogueSegmentationDataSource(this.catalogueSegmentationFacade);
+
+        combineLatest([this.dataSource.isLoading$, this.dataSource.totalItem$])
+            .pipe(
+                map(([isLoading, totalItem]) => ({ isLoading, totalItem })),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe(({ isLoading, totalItem }) => {
+                this.isLoading = isLoading;
+                this.totalItem = totalItem;
+                this.cdRef.detectChanges();
+            });
 
         this._initTable();
     }
@@ -77,11 +123,46 @@ export class CatalogueSegmentationListComponent implements OnInit, AfterViewInit
     }
 
     ngOnDestroy(): void {
+        this.catalogueSegmentationFacade.clearBreadcrumb();
+
         this.unSubs$.next();
         this.unSubs$.complete();
     }
 
+    onTrackCatalogueSegmentation(index: number, item: CatalogueSegmentation): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id;
+    }
+
     private _initTable(): void {
-        this.dataSource.getAll();
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            };
+
+            data['paginate'] = true;
+
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.keyword;
+
+            if (query) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query,
+                    },
+                ];
+            }
+
+            this.dataSource.getWithQuery(data);
+        }
     }
 }
