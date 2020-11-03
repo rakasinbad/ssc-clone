@@ -1,6 +1,13 @@
+import { Location } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { IFooterActionConfig } from 'app/shared/models/global.model';
-import { CatalogueSegmentationFacadeService } from '../../services';
+import { FormGroup } from '@angular/forms';
+import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+import {
+    CatalogueSegmentationFacadeService,
+    CatalogueSegmentationFormService,
+} from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-form-page.component.html',
@@ -8,6 +15,18 @@ import { CatalogueSegmentationFacadeService } from '../../services';
     encapsulation: ViewEncapsulation.None,
 })
 export class CatalogueSegmentationFormPageComponent implements OnInit, AfterViewInit, OnDestroy {
+    private breadcrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Catalogue',
+        },
+        {
+            title: 'Add Catalogue Segmentation',
+            active: true,
+        },
+    ];
     private footerConfig: IFooterActionConfig = {
         progress: {
             title: {
@@ -34,12 +53,34 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
             },
         },
     };
+    private unSubs$: Subject<any> = new Subject();
 
-    constructor(private catalogueSegmentationFacade: CatalogueSegmentationFacadeService) {}
+    form: FormGroup;
+
+    constructor(
+        private location: Location,
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private catalogueSegmentationFormService: CatalogueSegmentationFormService
+    ) {}
 
     ngOnInit(): void {
+        this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
         this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
         this.catalogueSegmentationFacade.setCancelButton();
+
+        this.form = this.catalogueSegmentationFormService.createForm();
+
+        // Handle cancel button action (footer)
+        this.catalogueSegmentationFacade.clickCancelBtn$
+            .pipe(
+                filter((isClick) => !!isClick),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((_) => {
+                this.location.back();
+
+                this.catalogueSegmentationFacade.resetCancelBtn();
+            });
     }
 
     ngAfterViewInit(): void {
@@ -50,5 +91,8 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
         this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetAllFooter();
         this.catalogueSegmentationFacade.hideFooter();
+
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 }
