@@ -1,16 +1,18 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Action, createReducer } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
+import { CatalogueSegmentation } from '../../models';
+import { CatalogueSegmentationActions } from '../actions';
 
 export const dataCatalogueSegmentationFeatureKey = 'dataCatalogueSegmentation';
 
-export interface State extends EntityState<any> {
+export interface State extends EntityState<CatalogueSegmentation> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
     total: number;
 }
 
-export const adapter = createEntityAdapter<any>({ selectId: (row) => row.id });
+export const adapter = createEntityAdapter<CatalogueSegmentation>({ selectId: (row) => row.id });
 
 export const initialState: State = adapter.getInitialState({
     isLoading: false,
@@ -19,7 +21,20 @@ export const initialState: State = adapter.getInitialState({
     total: 0,
 });
 
-const reducerFn = createReducer(initialState);
+const reducerFn = createReducer(
+    initialState,
+    on(CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest, (state) => ({
+        ...state,
+        isLoading: true,
+    })),
+    on(CatalogueSegmentationActions.fetchCatalogueSegmentationsFailure, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
+    on(CatalogueSegmentationActions.fetchCatalogueSegmentationsSuccess, (state, { data, total }) =>
+        adapter.addAll(data, { ...state, isLoading: false, total })
+    )
+);
 
 export function reducer(state: State | undefined, action: Action): State {
     return reducerFn(state, action);

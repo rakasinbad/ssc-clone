@@ -1,10 +1,20 @@
 <mat-table
-    class="catalogue-segmentation-list sinbad-table"
+    class="catalogue-segmentation-list sinbad-table sinbad-table__hover"
+    [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
     #table
     [dataSource]="dataSource"
+    [trackBy]="onTrackCatalogueSegmentation"
     matSort
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
+    [fusePerfectScrollbarOptions]="{
+        updateOnRouteChange: true,
+        suppressScrollX: totalItem ? false : true,
+        wheelSpeed: 0.5,
+        swipeEasing: true,
+        minScrollbarLength: 40,
+        maxScrollbarLength: 300
+    }"
 >
     <!-- Segmentation Name Column -->
     <ng-container matColumnDef="segmentation-name">
@@ -22,7 +32,7 @@
         <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
-                {{ row?.warehouses || '-' }}
+                {{ (row?.warehouse?.firstName | segmentationView: row?.warehouse?.amount) || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -33,7 +43,7 @@
         <mat-header-cell *matHeaderCellDef>Types</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
-                {{ row?.types || '-' }}
+                {{ (row?.type?.firstName | segmentationView: row?.type?.amount) || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -44,7 +54,7 @@
         <mat-header-cell *matHeaderCellDef>Groups</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
-                {{ row?.groups || '-' }}
+                {{ (row?.group?.firstName | segmentationView: row?.group?.amount) || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -55,7 +65,7 @@
         <mat-header-cell *matHeaderCellDef>Channels</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
-                {{ row?.channels || '-' }}
+                {{ (row?.channel?.firstName | segmentationView: row?.channel?.amount) || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -66,7 +76,7 @@
         <mat-header-cell *matHeaderCellDef>Clusters</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
-                {{ row?.clusters || '-' }}
+                {{ (row?.cluster?.firstName | segmentationView: row?.cluster?.amount) || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -148,17 +158,30 @@
     </ng-container>
     <!-- / Actions Column -->
 
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+    </ng-container>
+
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="catalogue-segmentation-list__item"
     ></mat-row>
+    <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="!isLoading && totalItem === 0"
+    ></mat-footer-row>
 </mat-table>
 
+<div class="loader-content" *ngIf="isLoading && (!totalItem || totalItem)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
 <mat-paginator
-    [disabled]="false"
-    [length]="100"
-    [pageSize]="dataSource.total"
+    [disabled]="(isLoading && !totalItem) || (!isLoading && totalItem === 0)"
+    [length]="totalItem"
+    [pageSize]="defaultPageSize"
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons
 ></mat-paginator>

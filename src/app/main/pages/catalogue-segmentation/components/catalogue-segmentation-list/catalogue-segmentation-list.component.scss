@@ -75,75 +75,34 @@ app-catalogue-segmentation-list {
             align-items: center;
         }
 
-        .mat-column-checkbox {
-            flex: 0 1 50px;
-            min-width: 50px;
-        }
-
-        .mat-column-sinbad-id {
-            flex: 0 1 100px;
-            min-width: 100px;
-        }
-
-        .mat-column-store-name {
-            flex: 1 1 10em;
+        .mat-column-segmentation-name {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-owner-name {
-            flex: 1 1 10em;
-            min-width: 120px;
-        }
-
-        .mat-column-owner-phone {
-            flex: 0 1 10em;
-            min-width: 170px;
-            // min-width: 150px;
-        }
-
-        .mat-column-store-province {
-            flex: 0 1 10em;
+        .mat-column-warehouse-name {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-store-city {
-            flex: 0 1 8em;
+        .mat-column-store-type {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-store-address {
-            flex: 1 1 10em;
-            min-width: 250px;
-        }
-
-        .mat-column-citizen-id {
-            flex: 0 1 150px;
+        .mat-column-store-group {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-store-photo {
-            flex: 0 1 80px;
-            min-width: 80px;
+        .mat-column-store-channel {
+            flex: 1 1 150px;
+            min-width: 150px;
         }
 
-        .mat-column-join-date {
-            flex: 0 1 140px;
-            min-width: 140px;
-        }
-
-        .mat-column-create-date {
-            flex: 0 1 140px;
-            min-width: 140px;
-        }
-
-        .mat-column-update-date {
-            flex: 0 1 140px;
-            min-width: 140px;
-        }
-
-        .mat-column-store-request {
-            flex: 0 1 120px;
-            min-width: 120px;
+        .mat-column-store-cluster {
+            flex: 1 1 150px;
+            min-width: 150px;
         }
 
         .mat-column-status {
@@ -159,6 +118,15 @@ app-catalogue-segmentation-list {
 
         .status-icon {
             border-radius: 50%;
+        }
+
+        .mat-column-no-record {
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
     }
 }

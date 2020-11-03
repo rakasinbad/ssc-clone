@@ -5,6 +5,7 @@ import {
     HasErrorFieldPipe,
     HasFormModePipe,
     InvoiceGroupNamePipe,
+    SegmentationViewPipe,
     VisibilityTypePipe,
 } from './pipes';
 
@@ -15,6 +16,7 @@ import {
         HasErrorFieldPipe,
         HasFormModePipe,
         InvoiceGroupNamePipe,
+        SegmentationViewPipe,
         VisibilityTypePipe,
     ],
     exports: [
@@ -23,6 +25,7 @@ import {
         HasErrorFieldPipe,
         HasFormModePipe,
         InvoiceGroupNamePipe,
+        SegmentationViewPipe,
         VisibilityTypePipe,
     ],
 })

@@ -8,11 +8,13 @@
             <sinbad-card-header
                 [config]="cardHeaderConfig"
                 (onClickAdd)="onClickAdd()"
+                (onSearchChanged)="keyword = $event"
             ></sinbad-card-header>
 
-            <app-catalogue-segmentation-list class="px-16"></app-catalogue-segmentation-list>
-
-            <!-- <app-sinbad-store-list class="px-16" [approvalStatus]="approvalStatus" [keyword]="keyword" (rowSelected)="onRowSelected($event)"></app-sinbad-store-list> -->
+            <app-catalogue-segmentation-list
+                class="px-16"
+                [keyword]="keyword"
+            ></app-catalogue-segmentation-list>
         </div>
         <!-- !SECTION CONTENT CARD -->
     </div>

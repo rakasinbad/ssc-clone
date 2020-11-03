@@ -10,4 +10,5 @@ export * from './order-status.pipe';
 export * from './price.pipe';
 export * from './replace.pipe';
 export * from './safe.pipe';
+export * from './segmentation-view.pipe';
 export * from './visibility-type.pipe';
