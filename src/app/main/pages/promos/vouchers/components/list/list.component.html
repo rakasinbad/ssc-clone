@@ -1,6 +1,6 @@
 <div>
     <mat-table
-        class="voucher-list-table"
+        class="voucher-list-table sinbad-table"
         [class.h-256]="!(isLoading$ | async) && (totalDataSource$ | async) > 0"
         #table
         [dataSource]="(isLoading$ | async) ? [] : (dataSource$ | async)"
@@ -60,6 +60,57 @@
                 </p>
             </mat-cell>
         </ng-container>
+
+        <!-- Voucher Type Column -->
+        <ng-container matColumnDef="voucher-type">
+            <mat-header-cell *matHeaderCellDef>
+                Voucher Type
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row?.voucherType === 'direct' ? 'Direct Supplier Voucher' : row?.voucherType === 'collectible' ? 'Collectible Supplier Voucher' : (row?.voucherType | titlecase) || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Voucher Type Column -->
+        <ng-container matColumnDef="allocation-type">
+            <mat-header-cell *matHeaderCellDef>
+                Allocation Type
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    -
+                    <!-- {{ (row?.voucherAllocationType | titlecase) || '-' }} -->
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Voucher Type Column -->
+        <ng-container matColumnDef="allocation-value">
+            <mat-header-cell *matHeaderCellDef>
+                Allocation Value
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <!-- <ng-container *ngIf="row?.voucherAllocationType == 'none'"> -->
+                    <p style="word-break: break-word;">
+                        -
+                    </p>
+                <!-- </ng-container> -->
+                <ng-container *ngIf="row?.voucherAllocationType == 'transaction'">
+                    <p style="word-break: break-word;">
+                        Rp <!-- {{ (row?.voucherBudget | titlecase) || '-' }} -->
+                    </p>
+                </ng-container>
+                <ng-container *ngIf="row?.voucherAllocationType == 'slot'">
+                    <p style="word-break: break-word;">
+                        <!-- {{ (row?.voucherSlot | titlecase) || '-' }} -->
+                    </p>
+                </ng-container>
+                
+            </mat-cell>
+        </ng-container>
+        
     
         <!-- Benefit Column -->
         <ng-container matColumnDef="benefit">

@@ -176,6 +176,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         this.subs$.complete();
     }
 
+    onChangePage(ev: PageEvent): void {
+        this.table.nativeElement.scrollIntoView();
+        // this.table.nativeElement.scrollTop = 0;
+    }
+
     openDetailPage(promoId: string): void {
         // this.VoucherStore.dispatch(
         //     VoucherActions.fetchVoucherRequest({
@@ -265,6 +270,9 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
+                        'voucher-type',
+                        'allocation-type',
+                        'allocation-value',
                         'benefit',
                         // 'voucher-used',
                         'start-date',
@@ -278,6 +286,9 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
+                        'voucher-type',
+                        'allocation-type',
+                        'allocation-value',
                         'benefit',
                         // 'voucher-used',
                         'start-date',

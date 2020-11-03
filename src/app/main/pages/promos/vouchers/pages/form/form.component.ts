@@ -246,13 +246,25 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             status: 'active',
             // GENERAL INFORMATON
             externalId: generalInformationValue.externalId,
+            voucherAllocationType: generalInformationValue.voucherAllocationType,
             name: generalInformationValue.name,
+            voucherType: generalInformationValue.voucherType,
+            voucherHeader: generalInformationValue.voucherHeader,
+            category: generalInformationValue.category,
+            termsAndConditions: generalInformationValue.termsAndConditions,
+            instructions: generalInformationValue.instructions,
             platform: generalInformationValue.platform,
-            maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
-            startDate: ((generalInformationValue.activeStartDate as unknown) as moment.Moment).toISOString(),
-            endDate: ((generalInformationValue.activeEndDate as unknown) as moment.Moment).toISOString(),
+            maxCollectionPerStore: generalInformationValue.maxCollectionPerStore,
+            voucherSlot: generalInformationValue.voucherSlot,
+            voucherBudget: generalInformationValue.voucherBudget,
+            voucherBanner: generalInformationValue.voucherBanner,
+            startDate: generalInformationValue.startDate,
+            endDate: generalInformationValue.endDate,
+            expirationDays: generalInformationValue.expirationDays,
             description: generalInformationValue.description,
             shortDescription: generalInformationValue.shortDescription,
+            voucherTag: generalInformationValue.voucherTag,
+            code: generalInformationValue.code,
             // CONDITION SETTINGS
             base: eligibleProductValue.base === 'sku'
                     ? 'sku'
@@ -283,6 +295,24 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                     : 'unknown',
             dataTarget: {},
         };
+
+        if (payload.voucherAllocationType == 'promo_budget') {
+            payload.voucherSlot = null;
+        } else if (payload.voucherAllocationType == 'promo_slot'){
+            payload.voucherBudget = null;
+        } else if (payload.voucherAllocationType == 'none') {
+            payload.voucherSlot = null;
+            payload.voucherBudget = null;
+        }
+
+        if (payload.voucherType == 'direct') {
+            payload.expirationDays = null;
+            payload.maxCollectionPerStore = 1;
+        }
+
+        if (payload.voucherTag == '') {
+            payload.voucherTag = [];
+        }
 
         // Klasifikasi "dataBase" untuk Condition Settings.
         if (payload.base === 'sku') {
