@@ -169,7 +169,7 @@ export class VoucherConditionSettingsComponent
         };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
-            'mt-16': true,
+            'mt-16': false,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
@@ -277,17 +277,29 @@ export class VoucherConditionSettingsComponent
             qty: [
                 '',
                 [
-                    RxwebValidators.required({
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
             orderValue: [
                 { value: '', disabled: true },
                 [
-                    RxwebValidators.required({
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxNumber({
+                        value:999999999999,
+                        message: 'Max input is 12 digit'
+                    })
                 ],
             ],
         });

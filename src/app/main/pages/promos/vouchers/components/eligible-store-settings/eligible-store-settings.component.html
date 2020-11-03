@@ -1,7 +1,7 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Customer Segmentation Settings</div>
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Customer Segmentation Settings</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -21,7 +21,7 @@
             >
                 <label
                     fxFlexAlign="center"
-                    [fxFlex]="labelLength"
+                    fxFlex="12"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('segmentationBase'))"
                 >
@@ -45,7 +45,7 @@
             >
                 <label
                     [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
-                    [fxFlex]="labelLength"
+                    fxFlex="12"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenStore'))"
                 >
@@ -87,7 +87,7 @@
                 >
                     <label
                         [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
-                        [fxFlex]="labelLength"
+                        fxFlex="12"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenWarehouse'))"
                     >
@@ -122,7 +122,7 @@
                 >
                     <label
                         [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
-                        [fxFlex]="labelLength"
+                        fxFlex="12"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreType'))"
                     >
@@ -159,7 +159,7 @@
                 >
                     <label
                         [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
-                        [fxFlex]="labelLength"
+                        fxFlex="12"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreGroup'))"
                     >
@@ -196,7 +196,7 @@
                 >
                     <label
                         [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
-                        [fxFlex]="labelLength"
+                        fxFlex="12"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreChannel'))"
                     >
@@ -233,7 +233,7 @@
                 >
                     <label
                         [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
-                        [fxFlex]="labelLength"
+                        fxFlex="12"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreCluster'))"
                     >
