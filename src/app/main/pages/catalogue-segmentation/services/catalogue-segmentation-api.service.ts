@@ -14,8 +14,13 @@ export class CatalogueSegmentationApiService {
         this.url = this.helperService.handleApiRouter(this.endpoint);
     }
 
-    findAll<T>(params: IQueryParams): Observable<T> {
-        const newArg = [];
+    getWithQuery<T>(params: IQueryParams): Observable<T> {
+        const newArg = [
+            {
+                key: 'type',
+                value: 'segmentation',
+            },
+        ];
 
         if (params['supplierId']) {
             newArg.push({
