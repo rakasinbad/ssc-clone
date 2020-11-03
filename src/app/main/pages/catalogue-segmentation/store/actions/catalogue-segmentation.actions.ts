@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { CatalogueSegmentation } from '../../models';
 
 enum Actions {
     FetchCatalogueSegmentationsFailure = '[Catalogue Segmentation] Fetch Catalogue Segmentations Failure',
@@ -15,7 +16,7 @@ export const fetchCatalogueSegmentationsRequest = createAction(
 
 export const fetchCatalogueSegmentationsSuccess = createAction(
     Actions.FetchCatalogueSegmentationsSuccess,
-    props<{ payload: any }>()
+    props<{ data: CatalogueSegmentation[]; total: number }>()
 );
 
 export const fetchCatalogueSegmentationsFailure = createAction(
