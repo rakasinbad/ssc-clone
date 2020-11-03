@@ -732,7 +732,7 @@
                     </button>
                 </div>
 
-                <ng-container *ngIf="isViewMode(); else notFoundImg">
+                <ng-container *ngIf="isViewMode()">
                     <button
                     type="button"
                     mat-button
@@ -983,18 +983,26 @@
                         <span class="sinbad-red-fg">*</span>Expiration Days
                     </label>
 
-                    <mat-form-field appearance="outline" fxFlex="40">
+                    <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
                         <input
                             matInput
                             type="number"
                             name="expirationDays"
                             formControlName="expirationDays"
                         />
-
-                        <mat-error *ngIf="hasError('expirationDays', true)">
+                        <mat-error *ngIf="hasError(form.get('expirationDays'))">
                             {{ getFormError(form.get('expirationDays')) }}
                         </mat-error>
                     </mat-form-field>
+
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ form.get('expirationDays').value || '-' }}
+                    </span>
                 </div>
             </ng-container>
             <!-- end expiration days -->

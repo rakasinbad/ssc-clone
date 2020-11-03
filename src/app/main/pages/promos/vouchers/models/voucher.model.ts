@@ -201,12 +201,9 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.termsAndConditions = termsAndConditions || null;
         this.instructions = instructions || null;
         this.voucherBanner = voucherBanner || null;
-        if (this.voucherType == "collectible") {
-            this.expirationDays = expirationDays || null;
-        } else {
-            this.startDate = startDate|| null;
-            this.endDate = endDate|| null;
-        }
+        this.expirationDays = expirationDays || null;
+        this.startDate = startDate || null;
+        this.endDate = endDate || null;
         this.voucherTag = voucherTag || null;
 
         this.base = base;

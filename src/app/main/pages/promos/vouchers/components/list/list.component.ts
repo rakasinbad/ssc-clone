@@ -53,12 +53,15 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
     search: FormControl = new FormControl();
 
     displayedColumns = [
-        // 'checkbox',
         'supplier-voucher-id',
         'voucher-name',
         'eligible-product',
-        'benefit',
-        // 'voucher-used',
+        'voucher-type',
+        'allocation-type',
+        'allocation-value',
+        'total-order-value',
+        'collected',
+        'used',
         'start-date',
         'end-date',
         'status',
@@ -181,6 +184,10 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         // this.table.nativeElement.scrollTop = 0;
     }
 
+    onTrackBy(index: number, item: any): string {
+        return !item ? null : item.id;
+    }
+
     openDetailPage(promoId: string): void {
         // this.VoucherStore.dispatch(
         //     VoucherActions.fetchVoucherRequest({
@@ -195,11 +202,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         this.isAllSelected()
             ? this.selection.clear()
             : this.dataSource$
-                .pipe(
-                    flatMap((v) => v),
-                    takeUntil(this.subs$)
-                )
-                .forEach((row) => this.selection.select(row));
+                  .pipe(
+                      flatMap((v) => v),
+                      takeUntil(this.subs$)
+                  )
+                  .forEach((row) => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -224,7 +231,9 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmSetActiveSupplierVoucher({ payload: item }));
+        this.VoucherStore.dispatch(
+            VoucherActions.confirmSetActiveSupplierVoucher({ payload: item })
+        );
     }
 
     setInactive(item: SupplierVoucher): void {
@@ -232,7 +241,9 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmSetInactiveSupplierVoucher({ payload: item }));
+        this.VoucherStore.dispatch(
+            VoucherActions.confirmSetInactiveSupplierVoucher({ payload: item })
+        );
     }
 
     private _initTable(): void {
@@ -266,15 +277,15 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
-                        // 'checkbox',
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
                         'voucher-type',
                         'allocation-type',
                         'allocation-value',
-                        'benefit',
-                        // 'voucher-used',
+                        'total-order-value',
+                        'collected',
+                        'used',
                         'start-date',
                         'end-date',
                         'status',
@@ -282,15 +293,15 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                     ];
                 } else {
                     this.displayedColumns = [
-                        // 'checkbox',
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
                         'voucher-type',
                         'allocation-type',
                         'allocation-value',
-                        'benefit',
-                        // 'voucher-used',
+                        'total-order-value',
+                        'collected',
+                        'used',
                         'start-date',
                         'end-date',
                         'status',

@@ -532,6 +532,13 @@ export class VoucherGeneralInformationComponent
                     code: voucher.code
                 });
 
+                this.selectTypeVoucher = voucher.voucherType;
+                if (this.selectTypeVoucher == 'collectible') {
+                    this.expirationCheck = true;
+                } else {
+                    this.expirationCheck = false;
+                }
+
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
                 this.form.markAsDirty({ onlySelf: false });
                 this.form.markAllAsTouched();
