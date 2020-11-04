@@ -40,6 +40,9 @@ interface ISupplierVoucher extends Timestamp {
     imageUrl: string;
     expirationDays: number;
     voucherTag?: Array<any>;
+    totalOrderValue: number;
+    used: string;
+    collected: string;
 
     base: string;
     conditionBase: string;
@@ -95,6 +98,9 @@ export class SupplierVoucher implements ISupplierVoucher {
     imageUrl: string;
     expirationDays: number;
     voucherTag?: Array<any>;
+    totalOrderValue: number;
+    used: string;
+    collected: string;
 
     base: string;
     conditionBase: string;
@@ -150,6 +156,9 @@ export class SupplierVoucher implements ISupplierVoucher {
             imageUrl,
             expirationDays,
             voucherTag,
+            totalOrderValue,
+            used,
+            collected,
 
             base,
             conditionBase,
@@ -205,7 +214,10 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.startDate = startDate || null;
         this.endDate = endDate || null;
         this.voucherTag = voucherTag || null;
-
+        this.totalOrderValue = totalOrderValue || null;
+        this.used = used || null;
+        this.collected = collected || null;
+        
         this.base = base;
         this.conditionBase = conditionBase;
         this.conditionQty = conditionQty;
