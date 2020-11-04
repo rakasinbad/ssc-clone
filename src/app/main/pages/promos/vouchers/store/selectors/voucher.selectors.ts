@@ -28,6 +28,8 @@ export const getAllVoucher = createSelector(getVoucherState, selectAllVoucher);
 
 export const getVoucherIds = createSelector(getVoucherState, selectVoucherIds);
 
+export const getTotalItem = createSelector(getVoucherState, (state) => state.total);
+
 export const getSelectedVoucher = createSelector(
     getVoucherState,
     getVoucherEntity,

@@ -101,9 +101,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             takeUntil(this.subs$)
         );
 
-        this.totalDataSource$ = this.VoucherStore.select(
-            VoucherSelectors.getVoucherTotalEntity
-        ).pipe(takeUntil(this.subs$));
+        this.totalDataSource$ = this.VoucherStore.select(VoucherSelectors.getTotalItem);
 
         this.isLoading$ = this.VoucherStore.select(VoucherSelectors.getLoadingState).pipe(
             takeUntil(this.subs$)
