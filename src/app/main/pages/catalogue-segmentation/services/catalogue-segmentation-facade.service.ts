@@ -9,24 +9,24 @@ import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
 import { CatalogueSegmentation } from '../models';
 import { CatalogueSegmentationActions } from '../store/actions';
 import { fromCatalogueSegmentation } from '../store/reducers';
-import { CatalogueSegmentationSelectors } from '../store/selectors';
+import { DataCatalogueSegmentationSelectors } from '../store/selectors';
 
 @Injectable({ providedIn: CatalogueSegmentationModule })
 export class CatalogueSegmentationFacadeService {
     readonly catalogueSegmentation$: Observable<CatalogueSegmentation> = this.store.select(
-        CatalogueSegmentationSelectors.selectCurrentItem
+        DataCatalogueSegmentationSelectors.selectCurrentItem
     );
     readonly catalogueSegmentations$: Observable<CatalogueSegmentation[]> = this.store.select(
-        CatalogueSegmentationSelectors.selectAll
+        DataCatalogueSegmentationSelectors.selectAll
     );
     readonly isLoading$: Observable<boolean> = this.store.select(
-        CatalogueSegmentationSelectors.selectIsLoading
+        DataCatalogueSegmentationSelectors.selectIsLoading
     );
     readonly isRefresh$: Observable<boolean> = this.store.select(
-        CatalogueSegmentationSelectors.selectIsRefresh
+        DataCatalogueSegmentationSelectors.selectIsRefresh
     );
     readonly totalItem$: Observable<number> = this.store.select(
-        CatalogueSegmentationSelectors.selectTotalItem
+        DataCatalogueSegmentationSelectors.selectTotalItem
     );
 
     readonly clickCancelBtn$: Observable<boolean> = this.store.select(
