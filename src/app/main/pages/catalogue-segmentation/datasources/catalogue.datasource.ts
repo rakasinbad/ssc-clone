@@ -1,54 +1,34 @@
 import { DataSource } from '@angular/cdk/collections';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Catalogue } from '../models';
+import { CatalogueFacadeService } from '../services';
 
-export class CatalogueDataSource implements DataSource<any> {
-    private sample = [
-        {
-            id: '1',
-            name: 'SNB-CATALOGUE',
-            sinbadId: '30546',
-            supplierId: '1212',
-            type: 'Regular',
-            status: 'active',
-        },
-        {
-            id: '2',
-            name: 'FREE 1 MOLTO PARFUM (SETIAP PEMBELIAN RINSO LIQUID/POWDER)',
-            sinbadId: '30547',
-            supplierId: '1213',
-            type: 'Regular',
-            status: 'inactive',
-        },
-        {
-            id: '3',
-            name: 'SNB-CATALOGUE 3',
-            sinbadId: '30548',
-            supplierId: '1214',
-            type: 'Regular',
-            status: 'active',
-        },
-        {
-            id: '4',
-            name: 'SNB-CATALOGUE 4',
-            sinbadId: '30549',
-            supplierId: '1215',
-            type: 'Regular',
-            status: 'active',
-        },
-    ];
-    private sources$: BehaviorSubject<any> = new BehaviorSubject([]);
+export class CatalogueDataSource implements DataSource<Catalogue> {
+    private _collections$: BehaviorSubject<Catalogue[]> = new BehaviorSubject([]);
 
-    total = this.sample.length;
+    collections: Catalogue[] = [];
+    isLoading$: Observable<boolean> = this.catalogueFacade.isLoading$;
+    isRefresh$: Observable<boolean> = this.catalogueFacade.isRefresh$;
+    totalItem$: Observable<number> = this.catalogueFacade.totalItem$;
 
-    constructor() {}
+    constructor(private catalogueFacade: CatalogueFacadeService) {}
 
-    getAll(): void {
-        this.sources$.next(this.sample);
+    getWithQuery(params: IQueryParams): void {
+        this.catalogueFacade.getWithQuery(params);
     }
 
-    connect(): Observable<any> {
-        return this.sources$.asObservable();
+    collections$(): Observable<Catalogue[]> {
+        return this._collections$.asObservable();
     }
 
-    disconnect(): void {}
+    connect(): Observable<Catalogue[]> {
+        return this.catalogueFacade.catalogues$.pipe(tap((item) => this._collections$.next(item)));
+    }
+
+    disconnect(): void {
+        this._collections$.next([]);
+        this._collections$.complete();
+    }
 }
