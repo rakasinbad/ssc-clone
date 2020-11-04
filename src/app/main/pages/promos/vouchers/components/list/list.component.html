@@ -109,7 +109,7 @@
         <mat-header-cell *matHeaderCellDef mat-sort-header> Total Order Value </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.totalordervalue | number) || '-' }}
+                {{ (row?.totalOrderValue | number) || '-' }}
             </p>
         </mat-cell>
     </ng-container>
