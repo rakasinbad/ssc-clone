@@ -19,7 +19,7 @@ interface IVoucherGeneralInformation {
     category: string;
     termsAndConditions: [];
     instructions: [];
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag: [];
     code: string;
@@ -44,7 +44,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     category: string;
     termsAndConditions: [];
     instructions: [];
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag: [];
     code: string;
@@ -68,7 +68,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
             category,
             termsAndConditions,
             instructions,
-            voucherBanner,
+            imageUrl,
             expirationDays,
             voucherTag,
             code
@@ -89,7 +89,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.category = category || null;
         this.termsAndConditions = termsAndConditions || null;
         this.instructions = instructions || null;
-        this.voucherBanner = voucherBanner || null;
+        this.imageUrl = imageUrl || null;
         if (this.voucherType == 'direct') {
             this.expirationDays = null;
         }

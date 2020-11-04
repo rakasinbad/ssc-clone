@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
 
 import { SupplierVoucher } from '../models';
@@ -114,7 +114,7 @@ export class VoucherApiService {
     //     return of(data);
     // }
 
-    find<T>(params: IQueryParams): Observable<T> {
+    find<T>(params: IQueryParamsVoucher): Observable<T> {
         if (params['id']) {
             this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
             return this.http.get<T>(`${this._url}/${params['id']}`);
@@ -128,6 +128,18 @@ export class VoucherApiService {
 
         if (params['supplierId'] && !params['noSupplierId']) {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+
+        if (params['totalOrderValue']) {
+            newArgs.push({ key: 'totalOrderValue', value: params['totalOrderValue'] });
+        }
+
+        if (params['collected']) {
+            newArgs.push({ key: 'collected', value: params['collected'] });
+        }
+
+        if (params['used']) {
+            newArgs.push({ key: 'used', value: params['used'] });
         }
 
         if (params['keyword']) {

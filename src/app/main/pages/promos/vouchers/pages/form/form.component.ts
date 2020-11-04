@@ -257,7 +257,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             maxCollectionPerStore: generalInformationValue.maxCollectionPerStore,
             voucherSlot: generalInformationValue.voucherSlot,
             voucherBudget: generalInformationValue.voucherBudget,
-            voucherBanner: generalInformationValue.voucherBanner,
+            imageUrl: generalInformationValue.imageUrl,
             startDate: generalInformationValue.startDate,
             endDate: generalInformationValue.endDate,
             expirationDays: generalInformationValue.expirationDays,

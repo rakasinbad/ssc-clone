@@ -692,32 +692,32 @@
                         class="sinbad-file-field"
                         appearance="outline"
                         fxFlex="33"
-                        [class.mat-sinbad-field-error]="hasError('voucherBanner')"
+                        [class.mat-sinbad-field-error]="hasError('imageUrl')"
                     >
                         <input
-                            #voucherBannerPicker
+                            #imageUrlPicker
                             type="file"
                             class="custom-file"
                             accept=".jpg, .jpeg, .png"
-                            formControlName="voucherBanner"
-                            (click)="voucherBannerPicker.value = null"
-                            (change)="onFileBrowse($event, 'voucherBanner')"
+                            formControlName="imageUrl"
+                            (click)="imageUrlPicker.value = null"
+                            (change)="onFileBrowse($event, 'imageUrl')"
                             autocomplete="off"
                         />
                         <input
                             matInput
-                            [formControl]="tmp.voucherBanner"
+                            [formControl]="tmp.imageUrl"
                             [value]="
-                                tmp.voucherBanner.value && tmp.voucherBanner.value.name
-                                    ? tmp.voucherBanner.value.name
+                                tmp.imageUrl.value && tmp.imageUrl.value.name
+                                    ? tmp.imageUrl.value.name
                                     : null
                             "
                             placeholder="No file choose"
                             autocomplete="off"
                         />
 
-                        <mat-hint class="mat-error" *ngIf="hasError('voucherBanner', true)">
-                            {{ getFormError('voucherBanner') }}
+                        <mat-hint class="mat-error" *ngIf="hasError('imageUrl', true)">
+                            {{ getFormError('imageUrl') }}
                         </mat-hint>
                     </mat-form-field>
 
@@ -725,7 +725,7 @@
                         type="button"
                         mat-flat-button
                         color="accent"
-                        (click)="voucherBannerPicker.click()"
+                        (click)="imageUrlPicker.click()"
                         fxFlexAlign="center"
                     >
                         Upload Your File
@@ -739,7 +739,7 @@
                     color="accent"
                     class="btn-sinbad-link"
                     (click)="onShowImage(imageUrl, 'Voucher Banner')"
-                    *ngIf="form.get('voucherBanner').value as imageUrl; else notFoundImg"
+                    *ngIf="form.get('imageUrl').value as imageUrl; else notFoundImg"
                 >
                     View
                 </button>
@@ -752,7 +752,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('voucherBanner').value | titlecase) || '-' }}
+                    {{ (form.get('imageUrl').value | titlecase) || '-' }}
                 </span> -->
             </div>
             <!-- upload voucher banner image -->

@@ -37,7 +37,7 @@ interface ISupplierVoucher extends Timestamp {
     category: string;
     termsAndConditions?: Array<any>;
     instructions?: Array<any>;
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag?: Array<any>;
 
@@ -92,7 +92,7 @@ export class SupplierVoucher implements ISupplierVoucher {
     category: string;
     termsAndConditions?: Array<any>;
     instructions?: Array<any>;
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag?: Array<any>;
 
@@ -147,7 +147,7 @@ export class SupplierVoucher implements ISupplierVoucher {
             category,
             termsAndConditions,
             instructions,
-            voucherBanner,
+            imageUrl,
             expirationDays,
             voucherTag,
 
@@ -200,7 +200,7 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.category = category || null;
         this.termsAndConditions = termsAndConditions || null;
         this.instructions = instructions || null;
-        this.voucherBanner = voucherBanner || null;
+        this.imageUrl = imageUrl || null;
         this.expirationDays = expirationDays || null;
         this.startDate = startDate || null;
         this.endDate = endDate || null;

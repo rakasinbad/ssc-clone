@@ -24,7 +24,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as VoucherCoreState } from '../../store/reducers';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 // import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { SupplierVoucher } from '../../models';
 import { VoucherSelectors } from '../../store/selectors';
@@ -181,12 +181,22 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
 
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
+
+        const data: IQueryParamsVoucher = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex
+        };
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            // data['sortBy'] = this.sort.active;
+        }
         // this.table.nativeElement.scrollTop = 0;
     }
 
-    onTrackBy(index: number, item: any): string {
-        return !item ? null : item.id;
-    }
+    // onTrackBy(index: number, item: any): string {
+    //     return !item ? null : item.id;
+    // }
 
     openDetailPage(promoId: string): void {
         // this.VoucherStore.dispatch(
@@ -248,10 +258,21 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
 
     private _initTable(): void {
         if (this.paginator) {
-            const data: IQueryParams = {
+            const data: IQueryParamsVoucher = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
+
+            if (this.sort.direction) {
+                if (this.sort.active === 'total-order-value') {
+                    data['totalOrderValue'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
+                } else if (this.sort.active === 'collected') {
+                    data['collected'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
+                }  else if (this.sort.active === 'used') {
+                    data['used'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
+                } 
+                
+            } 
 
             data['paginate'] = true;
             data['keyword'] = this.search.value;
@@ -261,7 +282,6 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             }
 
             this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucher());
-
             this.VoucherStore.dispatch(
                 VoucherActions.fetchSupplierVoucherRequest({
                     payload: data,

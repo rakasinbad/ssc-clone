@@ -71,7 +71,7 @@ export interface VoucherTag {
     name: string;
 }
 
-type TmpKey = 'voucherBanner';
+type TmpKey = 'imageUrl';
 
 @Component({
     selector: 'voucher-general-information',
@@ -97,7 +97,7 @@ export class VoucherGeneralInformationComponent
     formModeValue: IFormMode = 'add';
 
     // Untuk menampung foto yang ingin diupload sementara sebelum dikirim.
-    tmpvoucherBanner: FormControl = new FormControl({ value: '', disabled: true });
+    tmpimageUrl: FormControl = new FormControl({ value: '', disabled: true });
     tmpCouponImage: FormControl = new FormControl({ value: '', disabled: true });
     tmp: Partial<Record<TmpKey, FormControl>> = {};
 
@@ -314,23 +314,23 @@ export class VoucherGeneralInformationComponent
 
             if (file) {
                 switch (type) {
-                    case 'voucherBanner':
+                    case 'imageUrl':
                         {
-                            const voucherBannerField = this.form.get('voucherBanner');
+                            const imageUrlField = this.form.get('imageUrl');
 
                             const fileReader = new FileReader();
 
                             fileReader.onload = () => {
-                                voucherBannerField.setValue(fileReader.result);
-                                this.tmp['voucherBanner'].setValue({
+                                imageUrlField.setValue(fileReader.result);
+                                this.tmp['imageUrl'].setValue({
                                     name: file.name,
                                     url: this.domSanitizer.bypassSecurityTrustUrl(
                                         window.URL.createObjectURL(file)
                                     ),
                                 });
 
-                                if (voucherBannerField.invalid) {
-                                    voucherBannerField.markAsTouched();
+                                if (imageUrlField.invalid) {
+                                    imageUrlField.markAsTouched();
                                 }
                             };
 
@@ -344,10 +344,10 @@ export class VoucherGeneralInformationComponent
             }
         } else {
             switch (type) {
-                case 'voucherBanner':
+                case 'imageUrl':
                     {
-                        this.form.get('voucherBanner').reset();
-                        this.tmp['voucherBanner'].reset();
+                        this.form.get('imageUrl').reset();
+                        this.tmp['imageUrl'].reset();
                     }
                     break;
 
@@ -526,7 +526,7 @@ export class VoucherGeneralInformationComponent
                     shortDescription: voucher.shortDescription,
                     termsAndConditions: voucher.termsAndConditions,
                     instructions: voucher.instructions,
-                    voucherBanner: voucher.voucherBanner,
+                    imageUrl: voucher.imageUrl,
                     expirationDays: voucher.expirationDays,
                     voucherTag: voucher.voucherTag,
                     code: voucher.code
@@ -552,7 +552,7 @@ export class VoucherGeneralInformationComponent
         this.maxActiveEndDate = null;
         this.maxActiveStartDate = null;
 
-        this.tmp['voucherBanner'] = new FormControl({ value: '', disabled: true });
+        this.tmp['imageUrl'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.fb.group({
             id: [null],
@@ -670,7 +670,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            voucherBanner: [
+            imageUrl: [
                 null,
                 [
                     RxwebValidators.fileSize({
