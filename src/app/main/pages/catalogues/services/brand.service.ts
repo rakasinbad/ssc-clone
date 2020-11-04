@@ -51,7 +51,7 @@ export class BrandService {
 
         if (params['supplierId']) {
             newArgs.push({
-                key: 'supplierId',
+                key: 'supplier_id',
                 value: params['supplierId']
             });
         }
