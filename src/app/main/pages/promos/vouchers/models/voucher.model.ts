@@ -30,8 +30,8 @@ interface ISupplierVoucher extends Timestamp {
     shortDescription: string;
     // imageUrl: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
@@ -88,8 +88,8 @@ export class SupplierVoucher implements ISupplierVoucher {
     shortDescription: string;
     // imageUrl: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;

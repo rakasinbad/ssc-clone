@@ -12,8 +12,8 @@ interface IVoucherGeneralInformation {
     description: string;
     shortDescription: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
@@ -37,8 +37,8 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     description: string;
     shortDescription: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
