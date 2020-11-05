@@ -1,3 +1,4 @@
+import { Store } from '@ngrx/store';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -22,6 +23,8 @@ import { map, takeUntil } from 'rxjs/operators';
 import { CatalogueSegmentationDataSource } from '../../datasources';
 import { CatalogueSegmentation } from '../../models';
 import { CatalogueSegmentationFacadeService } from '../../services';
+import { CatalogueSegmentationActions } from '../../store/actions';
+import { fromCatalogue } from 'app/main/pages/catalogues/store/reducers';
 
 @Component({
     selector: 'app-catalogue-segmentation-list',
@@ -79,7 +82,8 @@ export class CatalogueSegmentationListComponent
 
     constructor(
         private cdRef: ChangeDetectorRef,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private store: Store<fromCatalogue.FeatureState>
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -135,6 +139,11 @@ export class CatalogueSegmentationListComponent
         }
 
         return item.id;
+    }
+
+    onDeleteCatalogueSegmentation(idCatalogueSegment: number): void {
+        console.log(idCatalogueSegment);
+        this.store.dispatch(CatalogueSegmentationActions.DeleteCatalogueSegmentationsSuccess({ payload: { id: idCatalogueSegment } }));
     }
 
     private _initTable(): void {
