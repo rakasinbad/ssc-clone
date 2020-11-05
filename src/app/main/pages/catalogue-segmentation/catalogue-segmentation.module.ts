@@ -11,7 +11,13 @@ import {
     CatalogueSegmentationListComponent,
 } from './components';
 import { CatalogueSegmentationFormPageComponent } from './pages';
-import { CatalogueSegmentationApiService, CatalogueSegmentationFacadeService } from './services';
+import {
+    CatalogueApiService,
+    CatalogueFacadeService,
+    CatalogueSegmentationApiService,
+    CatalogueSegmentationFacadeService,
+    CatalogueSegmentationFormService,
+} from './services';
 import { CatalogueSegmentationNgrxModule } from './store';
 
 @NgModule({
@@ -35,6 +41,12 @@ import { CatalogueSegmentationNgrxModule } from './store';
 
         CatalogueSegmentationNgrxModule,
     ],
-    providers: [CatalogueSegmentationApiService, CatalogueSegmentationFacadeService],
+    providers: [
+        CatalogueApiService,
+        CatalogueFacadeService,
+        CatalogueSegmentationApiService,
+        CatalogueSegmentationFacadeService,
+        CatalogueSegmentationFormService,
+    ],
 })
 export class CatalogueSegmentationModule {}
