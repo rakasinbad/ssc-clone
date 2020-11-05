@@ -743,12 +743,13 @@ export class VoucherGeneralInformationComponent
                 ),
                 map(([_, status]) => {
                     const rawValue = this.form.getRawValue();
-
                     if (!rawValue.startDate || !rawValue.endDate) {
                         return 'INVALID';
                     } else if (rawValue.voucherType == 'collectible' && rawValue.expirationDays == null) {
                         return 'INVALID';
                     } else if (rawValue.voucherType == 'collectible' && rawValue.maxCollectionPerStore == null) {
+                        return 'INVALID';
+                    } else if (rawValue.imageUrl == null) {
                         return 'INVALID';
                     } else {
                         return status;
