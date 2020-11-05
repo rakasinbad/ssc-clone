@@ -142,6 +142,7 @@ export class CatalogueSegmentationListComponent
     }
 
     onDeleteCatalogueSegmentation(idCatalogueSegment: number): void {
+        // TODO: Hapus console.log ini setelah selesai secara fungsional dan layout.
         console.log(idCatalogueSegment);
         this.store.dispatch(CatalogueSegmentationActions.DeleteCatalogueSegmentationsSuccess({ payload: { id: idCatalogueSegment } }));
     }
