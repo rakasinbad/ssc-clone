@@ -12,12 +12,13 @@ voucher-list {
         border-radius: 4px;
         overflow: auto;
         min-height: 40px;
+        max-height: 380px;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
         &.sinbad-table-no-record {
             background: #ffffff !important;
-
+            max-height: 380px;
             .mat-header-row {
                 pointer-events: none;
             }
@@ -157,7 +158,7 @@ voucher-list {
 
         .mat-column-no-record {
             position: relative;
-            top: 15em;
+            top: 7em;
             justify-content: center;
         }
 
