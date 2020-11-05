@@ -100,15 +100,15 @@
             </p>
         </mat-cell>
     </ng-container>
-    
+
     <!-- Collected Column -->
     <ng-container matColumnDef="collected">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Collected </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                <ng-container *ngIf="row?.voucherType === 'direct'"> - </ng-container>
+                <ng-container *ngIf="row?.voucherType === 'direct'; else otherTypeVoucher"> - </ng-container>
 
-                <ng-container *ngIf="row?.voucherType === 'collectible'">
+                <ng-template #otherTypeVoucher>
                     <ng-container
                         *ngIf="row?.collected == 0 || row?.collected == null; else otherCollected"
                     >
@@ -117,7 +117,7 @@
                     <ng-template #otherCollected>
                         {{ (row?.collected | number) || '-' }}
                     </ng-template>
-                </ng-container>
+                </ng-template>
             </p>
         </mat-cell>
     </ng-container>
