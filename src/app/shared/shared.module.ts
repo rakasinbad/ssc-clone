@@ -25,6 +25,7 @@ import {
 import { MaterialModule } from './material.module';
 import { ChangeConfirmationComponent } from './modals/change-confirmation/change-confirmation.component';
 import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
+import { DeleteCatalogueSegmentationsComponent } from './modals/delete-catalogue-segmentations/delete-catalogue-segmentations.component';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
@@ -63,6 +64,7 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
 
         ChangeConfirmationComponent,
         DeleteConfirmationComponent,
+        DeleteCatalogueSegmentationsComponent,
 
         FilterAdvancedFormComponent,
         ShowImageComponent
@@ -126,6 +128,7 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
 
         // Component (Dialog, Modal, Snackbar)
         DeleteConfirmationComponent,
+        DeleteCatalogueSegmentationsComponent,
         ChangeConfirmationComponent,
         ShowImageComponent
     ],
@@ -138,10 +141,11 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
 
         ChangeConfirmationComponent,
         DeleteConfirmationComponent,
+        DeleteCatalogueSegmentationsComponent,
 
         FilterAdvancedFormComponent,
         ShowImageComponent
         // SearchBarComponent,
     ]
 })
-export class SharedModule {}
+export class SharedModule { }
