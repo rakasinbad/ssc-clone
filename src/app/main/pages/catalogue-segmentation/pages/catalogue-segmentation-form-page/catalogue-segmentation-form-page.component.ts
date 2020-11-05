@@ -1,9 +1,12 @@
 import { Location } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { FormMode, FormStatus } from 'app/shared/models';
 import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { CreateCatalogueSegmentationDto } from '../../models';
 import {
     CatalogueSegmentationFacadeService,
     CatalogueSegmentationFormService,
@@ -53,12 +56,17 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
             },
         },
     };
+    private formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject('INVALID');
     private unSubs$: Subject<any> = new Subject();
 
     form: FormGroup;
+    formMode: FormMode = 'add';
+    createCatalogueSegmentationFormDto: CreateCatalogueSegmentationDto;
+    updateCatalogueSegmentationFormDto: any;
 
     constructor(
         private location: Location,
+        private route: ActivatedRoute,
         private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
         private catalogueSegmentationFormService: CatalogueSegmentationFormService
     ) {}
@@ -68,7 +76,12 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
         this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
         this.catalogueSegmentationFacade.setCancelButton();
 
+        this.formMode = this.route.snapshot.params['id'] ? 'edit' : 'add';
+
         this.form = this.catalogueSegmentationFormService.createForm();
+
+        // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
+        this._setFormStatus();
 
         // Handle cancel button action (footer)
         this.catalogueSegmentationFacade.clickCancelBtn$
@@ -80,6 +93,16 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
                 this.location.back();
 
                 this.catalogueSegmentationFacade.resetCancelBtn();
+            });
+
+        // Handle save button action (footer)
+        this.catalogueSegmentationFacade.clickSaveBtn$
+            .pipe(
+                filter((isClick) => !!isClick),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((_) => {
+                this._onSubmit();
             });
     }
 
@@ -94,5 +117,37 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
 
         this.unSubs$.next();
         this.unSubs$.complete();
+    }
+
+    onSetFormStatus(status: FormStatus): void {
+        this.formStatus$.next(status);
+    }
+
+    private _onSubmit(): void {
+        if (this.form.invalid) {
+            return;
+        }
+
+        console.log('ON SUBMIT', {
+            create: this.createCatalogueSegmentationFormDto,
+            update: this.updateCatalogueSegmentationFormDto,
+        });
+
+        if (this.formMode === 'add') {
+            this.catalogueSegmentationFacade.createCatalogueSegmentation(
+                this.createCatalogueSegmentationFormDto
+            );
+        }
+    }
+
+    private _setFormStatus(): void {
+        this.formStatus$.pipe(takeUntil(this.unSubs$)).subscribe((status) => {
+            console.log('FORM CORE STATUS', { status });
+            if (status === 'VALID') {
+                this.catalogueSegmentationFacade.setFormValid();
+            } else {
+                this.catalogueSegmentationFacade.setFormInvalid();
+            }
+        });
     }
 }

@@ -12,6 +12,8 @@ import {
 } from './components';
 import { CatalogueSegmentationFormPageComponent } from './pages';
 import {
+    CatalogueApiService,
+    CatalogueFacadeService,
     CatalogueSegmentationApiService,
     CatalogueSegmentationFacadeService,
     CatalogueSegmentationFormService,
@@ -40,6 +42,8 @@ import { CatalogueSegmentationNgrxModule } from './store';
         CatalogueSegmentationNgrxModule,
     ],
     providers: [
+        CatalogueApiService,
+        CatalogueFacadeService,
         CatalogueSegmentationApiService,
         CatalogueSegmentationFacadeService,
         CatalogueSegmentationFormService,

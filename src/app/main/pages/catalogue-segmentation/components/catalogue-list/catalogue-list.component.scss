@@ -1,4 +1,5 @@
 @import 'src/@fuse/scss/fuse';
+@import 'src/@sinbad/scss/helper';
 
 app-catalogue-list {
     // Sticky header
@@ -6,6 +7,7 @@ app-catalogue-list {
     flex: 1 1 236px;
     flex-direction: column;
     overflow: auto;
+    justify-content: center;
 
     .catalogue-list {
         flex: 1 1 auto;
@@ -13,6 +15,7 @@ app-catalogue-list {
         border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: sinbad-color('black', '5') !important;
 
         // No record table
         &.sinbad-table-no-record {
@@ -45,8 +48,8 @@ app-catalogue-list {
             position: relative;
 
             // If row can be click
-            cursor: pointer;
-            min-height: unset;
+            // cursor: pointer;
+            // min-height: unset;
         }
 
         mat-header-cell:first-of-type,
@@ -80,70 +83,24 @@ app-catalogue-list {
             min-width: 50px;
         }
 
-        .mat-column-sinbad-id {
-            flex: 0 1 100px;
-            min-width: 100px;
-        }
-
-        .mat-column-store-name {
-            flex: 1 1 10em;
+        .mat-column-catalogue-name {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-owner-name {
-            flex: 1 1 10em;
-            min-width: 120px;
-        }
-
-        .mat-column-owner-phone {
-            flex: 0 1 10em;
-            min-width: 170px;
-            // min-width: 150px;
-        }
-
-        .mat-column-store-province {
-            flex: 0 1 10em;
+        .mat-column-sku-id {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-store-city {
-            flex: 0 1 8em;
+        .mat-column-external-id {
+            flex: 1 1 150px;
             min-width: 150px;
         }
 
-        .mat-column-store-address {
-            flex: 1 1 10em;
-            min-width: 250px;
-        }
-
-        .mat-column-citizen-id {
-            flex: 0 1 150px;
+        .mat-column-type {
+            flex: 1 1 150px;
             min-width: 150px;
-        }
-
-        .mat-column-store-photo {
-            flex: 0 1 80px;
-            min-width: 80px;
-        }
-
-        .mat-column-join-date {
-            flex: 0 1 140px;
-            min-width: 140px;
-        }
-
-        .mat-column-create-date {
-            flex: 0 1 140px;
-            min-width: 140px;
-        }
-
-        .mat-column-update-date {
-            flex: 0 1 140px;
-            min-width: 140px;
-        }
-
-        .mat-column-store-request {
-            flex: 0 1 120px;
-            min-width: 120px;
         }
 
         .mat-column-status {
@@ -160,5 +117,19 @@ app-catalogue-list {
         .status-icon {
             border-radius: 50%;
         }
+
+        .mat-column-no-record {
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+
+    .loader-content {
+        top: unset;
+        bottom: 6.8em;
     }
 }

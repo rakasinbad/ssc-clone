@@ -36,6 +36,7 @@ export class CatalogueSegmentationFormService {
             chosenStoreGroup: null,
             chosenStoreChannel: null,
             chosenStoreCluster: null,
+            chosenCatalogue: null,
         });
     }
 }

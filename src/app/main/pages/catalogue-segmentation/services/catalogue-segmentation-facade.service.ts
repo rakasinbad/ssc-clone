@@ -6,8 +6,8 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
-import { CatalogueSegmentation } from '../models';
-import { CatalogueSegmentationActions } from '../store/actions';
+import { CatalogueSegmentation, CreateCatalogueSegmentationDto } from '../models';
+import { CatalogueSegmentationActions, CatalogueSegmentationFormActions } from '../store/actions';
 import { fromCatalogueSegmentation } from '../store/reducers';
 import { DataCatalogueSegmentationSelectors } from '../store/selectors';
 
@@ -37,6 +37,12 @@ export class CatalogueSegmentationFacadeService {
     );
 
     constructor(private store: Store<fromCatalogueSegmentation.FeatureState>) {}
+
+    createCatalogueSegmentation(body: CreateCatalogueSegmentationDto): void {
+        this.store.dispatch(
+            CatalogueSegmentationFormActions.createCatalogueSegmentationRequest({ payload: body })
+        );
+    }
 
     getWithQuery(params: IQueryParams): void {
         this.store.dispatch(

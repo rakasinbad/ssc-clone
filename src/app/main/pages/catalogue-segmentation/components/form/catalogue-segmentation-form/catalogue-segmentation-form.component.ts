@@ -1,8 +1,11 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
+    OnDestroy,
     OnInit,
+    Output,
     ViewEncapsulation,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -13,9 +16,18 @@ import {
     StoreSegmentationGroup,
 } from 'app/main/pages/catalogues/models';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { CardHeaderActionConfig } from 'app/shared/components/card-header/models/card-header.model';
 import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
+import { FormMode, FormStatus } from 'app/shared/models';
+import { combineLatest, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import {
+    Catalogue,
+    CatalogueSegmentationFormDto,
+    CreateCatalogueSegmentationDto,
+} from '../../../models';
 
 @Component({
     selector: 'app-catalogue-segmentation-form',
@@ -25,25 +37,93 @@ import { Selection } from 'app/shared/components/multiple-selection/models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CatalogueSegmentationFormComponent implements OnInit {
+export class CatalogueSegmentationFormComponent implements OnInit, OnDestroy {
+    private unSubs$: Subject<any> = new Subject();
+
     cardHeaderConfig: ICardHeaderConfiguration = {
         class: 'm-0 my-16',
         title: {
             label: 'Table',
+        },
+        batchAction: {
+            actions: [],
+            show: false,
         },
         search: {
             active: true,
         },
     };
 
+    isShowSelectAllCatalogueAction: boolean = false;
+    isSelectAllCatalogue: boolean = false;
     isSelectAllWarehouse: boolean = false;
+    keyword: string = null;
 
     @Input()
     form: FormGroup;
 
+    @Input()
+    formMode: FormMode;
+
+    @Output()
+    formStatus: EventEmitter<FormStatus> = new EventEmitter();
+
+    @Output()
+    createFormValue: EventEmitter<CreateCatalogueSegmentationDto> = new EventEmitter();
+
     constructor() {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        combineLatest([this.form.statusChanges, this.form.get('chosenCatalogue').valueChanges])
+            .pipe(
+                map(([status, chosenCatalogue]) => {
+                    console.log('COMBINE LATEST A', { form: this.form, status, chosenCatalogue });
+
+                    if (!chosenCatalogue || (chosenCatalogue && !chosenCatalogue.length)) {
+                        return 'INVALID';
+                    }
+
+                    return status;
+                }),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((status: FormStatus) => {
+                if (status === 'VALID') {
+                    this._handleFormValue();
+                }
+
+                console.log('COMBINE LATEST B', { form: this.form, status });
+
+                this.formStatus.emit(status);
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
+    }
+
+    onActionSelected(action: CardHeaderActionConfig): void {
+        if (action.id === 'select-all') {
+            console.log('ON CLICK SELECT ALL', { action });
+            this.isSelectAllCatalogue = true;
+        }
+    }
+
+    onCatalogueSelected(ev: Catalogue[] | 'all'): void {
+        const chosenCatalogueCtrl = this.form.get('chosenCatalogue');
+
+        chosenCatalogueCtrl.markAsDirty();
+        chosenCatalogueCtrl.markAsTouched();
+
+        if (!ev.length && ev !== 'all') {
+            chosenCatalogueCtrl.setValue(null);
+        } else {
+            const newCatalogue: string[] | 'all' = ev === 'all' ? ev : ev.map((item) => item.id);
+
+            chosenCatalogueCtrl.setValue(newCatalogue);
+        }
+    }
 
     onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
         const chosenStoreChannelCtrl = this.form.get('chosenStoreChannel');
@@ -141,6 +221,96 @@ export class CatalogueSegmentationFormComponent implements OnInit {
     }
 
     onSelectAllWarehouse(ev: boolean): void {
-        // console.log('SELECT_ALL_WH', { ev });
+        console.log('SELECT_ALL_WH', { ev });
+    }
+
+    onUpdateBatchActions({
+        isShowBatchActions,
+        totalItem,
+    }: {
+        isShowBatchActions: boolean;
+        totalItem: number;
+    }): void {
+        let actions: CardHeaderActionConfig[] = [];
+
+        if (isShowBatchActions) {
+            actions = [
+                {
+                    id: 'select-all',
+                    label: `Select all ${totalItem} product${totalItem > 1 ? 's' : ''}`,
+                },
+            ];
+        }
+
+        this.cardHeaderConfig = {
+            ...this.cardHeaderConfig,
+            batchAction: {
+                ...this.cardHeaderConfig.batchAction,
+                actions,
+                show: !!actions.length,
+            },
+        };
+    }
+
+    private _handleFormValue(): void {
+        const {
+            chosenCatalogue: catalogueIds,
+            chosenStoreChannel,
+            chosenStoreCluster,
+            chosenStoreGroup,
+            chosenStoreType,
+            chosenWarehouse,
+            segmentationName,
+        } = this.form.getRawValue() as CatalogueSegmentationFormDto;
+
+        // Store Channel
+        const channelIds =
+            chosenStoreChannel && chosenStoreChannel.length
+                ? chosenStoreChannel.map((item) => item.id)
+                : null;
+
+        // Store Cluster
+        const clusterIds =
+            chosenStoreCluster && chosenStoreCluster.length
+                ? chosenStoreCluster.map((item) => item.id)
+                : null;
+
+        // Store Group
+        const groupIds =
+            chosenStoreGroup && chosenStoreGroup.length
+                ? chosenStoreGroup.map((item) => item.id)
+                : null;
+
+        // Store Type
+        const typeIds =
+            chosenStoreType && chosenStoreType.length
+                ? chosenStoreType.map((item) => item.id)
+                : null;
+
+        // Warehouse
+        const warehouseIds =
+            chosenWarehouse && chosenWarehouse.length && chosenWarehouse.map((item) => item.id);
+
+        // Segmentation Name
+        const name = segmentationName && segmentationName.trim();
+
+        if (this.formMode === 'add') {
+            const payload: CreateCatalogueSegmentationDto = {
+                catalogueIds,
+                channelIds,
+                clusterIds,
+                groupIds,
+                name,
+                supplierId: null,
+                typeIds,
+                warehouseIds,
+            };
+
+            console.log('ADD PAYLOAD', { payload });
+
+            this.createFormValue.emit(payload);
+        } else if (this.formMode === 'edit') {
+            const payload = {};
+        }
     }
 }

@@ -40,4 +40,8 @@ export class CatalogueSegmentationApiService {
 
         return this.http.get<T>(this.url, { params: newParams });
     }
+
+    post<T, D>(body: D): Observable<T> {
+        return this.http.post<T>(this.url, body);
+    }
 }

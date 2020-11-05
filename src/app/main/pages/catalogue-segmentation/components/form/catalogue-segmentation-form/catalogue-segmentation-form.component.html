@@ -211,9 +211,18 @@
             </div>
             <!-- STORE CHANNEL FIELD -->
         </div>
-
-        <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
-
-        <app-catalogue-list></app-catalogue-list>
     </form>
+
+    <sinbad-card-header
+        [config]="cardHeaderConfig"
+        (onSearchChanged)="keyword = $event"
+        (onActionSelected)="onActionSelected($event)"
+    ></sinbad-card-header>
+
+    <app-catalogue-list
+        [keyword]="keyword"
+        [(clickSelectAllCatalogue)]="isSelectAllCatalogue"
+        (changeCatalogue)="onCatalogueSelected($event)"
+        (showBatchActions)="onUpdateBatchActions($event)"
+    ></app-catalogue-list>
 </mat-card>
