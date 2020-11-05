@@ -255,9 +255,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             instructions: generalInformationValue.instructions,
             platform: generalInformationValue.platform,
             maxCollectionPerStore: generalInformationValue.maxCollectionPerStore,
-            voucherSlot: generalInformationValue.voucherSlot,
-            voucherBudget: generalInformationValue.voucherBudget,
-            voucherBanner: generalInformationValue.voucherBanner,
+            voucherSlot: +generalInformationValue.voucherSlot,
+            voucherBudget: +generalInformationValue.voucherBudget,
+            imageUrl: generalInformationValue.imageUrl,
             startDate: generalInformationValue.startDate,
             endDate: generalInformationValue.endDate,
             expirationDays: generalInformationValue.expirationDays,
@@ -296,9 +296,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             dataTarget: {},
         };
 
-        if (payload.voucherAllocationType == 'promo_budget') {
+        if (payload.voucherAllocationType == 'voucher_budget') {
             payload.voucherSlot = null;
-        } else if (payload.voucherAllocationType == 'promo_slot'){
+        } else if (payload.voucherAllocationType == 'voucher_slot'){
             payload.voucherBudget = null;
         } else if (payload.voucherAllocationType == 'none') {
             payload.voucherSlot = null;

@@ -21,7 +21,7 @@
             <!-- <div class="form-box"> -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label fxFlexAlign="center" fxFlex="12" class="pr-0 form-label">
-                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Promo Allocation
+                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Voucher Allocation
                 </label>
 
                 <ng-container *ngIf="!isViewMode()">
@@ -32,7 +32,7 @@
                         style="margin-top: 3px"
                     >
                         <mat-radio-button
-                            *ngFor="let option of promoAllocation"
+                            *ngFor="let option of voucherAllocation"
                             [value]="option.id"
                         >
                             {{ option?.label }}
@@ -43,7 +43,7 @@
                 <ng-container *ngIf="isViewMode()">
                     <mat-radio-group [value]="form.get('voucherAllocationType').value">
                         <mat-radio-button
-                            *ngFor="let row of promoAllocation"
+                            *ngFor="let row of voucherAllocation"
                             [value]="row?.id"
                             [disabled]="true"
                         >
@@ -600,7 +600,7 @@
 
             <!-- max redem promo budget promo slot  by type allocation  -->
             <div
-                *ngIf="selectPromo == 'promo_budget'"
+                *ngIf="selectPromo == 'voucher_budget'"
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
@@ -642,7 +642,7 @@
             </div>
 
             <div
-                *ngIf="selectPromo == 'promo_slot'"
+                *ngIf="selectPromo == 'voucher_slot'"
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
@@ -692,32 +692,32 @@
                         class="sinbad-file-field"
                         appearance="outline"
                         fxFlex="33"
-                        [class.mat-sinbad-field-error]="hasError('voucherBanner')"
+                        [class.mat-sinbad-field-error]="hasError('imageUrl')"
                     >
                         <input
-                            #voucherBannerPicker
+                            #imageUrlPicker
                             type="file"
                             class="custom-file"
                             accept=".jpg, .jpeg, .png"
-                            formControlName="voucherBanner"
-                            (click)="voucherBannerPicker.value = null"
-                            (change)="onFileBrowse($event, 'voucherBanner')"
+                            formControlName="imageUrl"
+                            (click)="imageUrlPicker.value = null"
+                            (change)="onFileBrowse($event, 'imageUrl')"
                             autocomplete="off"
                         />
                         <input
                             matInput
-                            [formControl]="tmp.voucherBanner"
+                            [formControl]="tmp.imageUrl"
                             [value]="
-                                tmp.voucherBanner.value && tmp.voucherBanner.value.name
-                                    ? tmp.voucherBanner.value.name
+                                tmp.imageUrl.value && tmp.imageUrl.value.name
+                                    ? tmp.imageUrl.value.name
                                     : null
                             "
                             placeholder="No file choose"
                             autocomplete="off"
                         />
 
-                        <mat-hint class="mat-error" *ngIf="hasError('voucherBanner', true)">
-                            {{ getFormError('voucherBanner') }}
+                        <mat-hint class="mat-error" *ngIf="hasError('imageUrl', true)">
+                            {{ getFormError('imageUrl') }}
                         </mat-hint>
                     </mat-form-field>
 
@@ -725,7 +725,7 @@
                         type="button"
                         mat-flat-button
                         color="accent"
-                        (click)="voucherBannerPicker.click()"
+                        (click)="imageUrlPicker.click()"
                         fxFlexAlign="center"
                     >
                         Upload Your File
@@ -739,7 +739,7 @@
                     color="accent"
                     class="btn-sinbad-link"
                     (click)="onShowImage(imageUrl, 'Voucher Banner')"
-                    *ngIf="form.get('voucherBanner').value as imageUrl; else notFoundImg"
+                    *ngIf="form.get('imageUrl').value as imageUrl; else notFoundImg"
                 >
                     View
                 </button>
@@ -752,7 +752,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('voucherBanner').value | titlecase) || '-' }}
+                    {{ (form.get('imageUrl').value | titlecase) || '-' }}
                 </span> -->
             </div>
             <!-- upload voucher banner image -->
@@ -983,18 +983,26 @@
                         <span class="sinbad-red-fg">*</span>Expiration Days
                     </label>
 
-                    <mat-form-field appearance="outline" fxFlex="40">
+                    <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
                         <input
                             matInput
                             type="number"
                             name="expirationDays"
                             formControlName="expirationDays"
                         />
-
-                        <mat-error *ngIf="hasError('expirationDays', true)">
+                        <mat-error *ngIf="hasError(form.get('expirationDays'))">
                             {{ getFormError(form.get('expirationDays')) }}
                         </mat-error>
                     </mat-form-field>
+
+                    <span
+                        class="form-value"
+                        fxFlexAlign="center"
+                        [fxFlex]="formFieldLength"
+                        *ngIf="isViewMode()"
+                    >
+                        {{ form.get('expirationDays').value || '-' }}
+                    </span>
                 </div>
             </ng-container>
             <!-- end expiration days -->

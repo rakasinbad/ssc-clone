@@ -24,7 +24,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as VoucherCoreState } from '../../store/reducers';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 // import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { SupplierVoucher } from '../../models';
 import { VoucherSelectors } from '../../store/selectors';
@@ -53,12 +53,15 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
     search: FormControl = new FormControl();
 
     displayedColumns = [
-        // 'checkbox',
         'supplier-voucher-id',
         'voucher-name',
         'eligible-product',
-        'benefit',
-        // 'voucher-used',
+        'voucher-type',
+        'allocation-type',
+        'allocation-value',
+        'total-order-value',
+        'collected',
+        'used',
         'start-date',
         'end-date',
         'status',
@@ -98,9 +101,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             takeUntil(this.subs$)
         );
 
-        this.totalDataSource$ = this.VoucherStore.select(
-            VoucherSelectors.getVoucherTotalEntity
-        ).pipe(takeUntil(this.subs$));
+        this.totalDataSource$ = this.VoucherStore.select(VoucherSelectors.getTotalItem);
 
         this.isLoading$ = this.VoucherStore.select(VoucherSelectors.getLoadingState).pipe(
             takeUntil(this.subs$)
@@ -178,8 +179,22 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
 
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
+
+        const data: IQueryParamsVoucher = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex
+        };
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            // data['sortBy'] = this.sort.active;
+        }
         // this.table.nativeElement.scrollTop = 0;
     }
+
+    // onTrackBy(index: number, item: any): string {
+    //     return !item ? null : item.id;
+    // }
 
     openDetailPage(promoId: string): void {
         // this.VoucherStore.dispatch(
@@ -195,11 +210,11 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
         this.isAllSelected()
             ? this.selection.clear()
             : this.dataSource$
-                .pipe(
-                    flatMap((v) => v),
-                    takeUntil(this.subs$)
-                )
-                .forEach((row) => this.selection.select(row));
+                  .pipe(
+                      flatMap((v) => v),
+                      takeUntil(this.subs$)
+                  )
+                  .forEach((row) => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -224,7 +239,9 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmSetActiveSupplierVoucher({ payload: item }));
+        this.VoucherStore.dispatch(
+            VoucherActions.confirmSetActiveSupplierVoucher({ payload: item })
+        );
     }
 
     setInactive(item: SupplierVoucher): void {
@@ -232,15 +249,28 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             return;
         }
 
-        this.VoucherStore.dispatch(VoucherActions.confirmSetInactiveSupplierVoucher({ payload: item }));
+        this.VoucherStore.dispatch(
+            VoucherActions.confirmSetInactiveSupplierVoucher({ payload: item })
+        );
     }
 
     private _initTable(): void {
         if (this.paginator) {
-            const data: IQueryParams = {
+            const data: IQueryParamsVoucher = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
+
+            if (this.sort.direction) {
+                if (this.sort.active === 'total-order-value') {
+                    data['totalOrderValue'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
+                } else if (this.sort.active === 'collected') {
+                    data['collected'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
+                }  else if (this.sort.active === 'used') {
+                    data['used'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
+                } 
+                
+            } 
 
             data['paginate'] = true;
             data['keyword'] = this.search.value;
@@ -250,7 +280,6 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
             }
 
             this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucher());
-
             this.VoucherStore.dispatch(
                 VoucherActions.fetchSupplierVoucherRequest({
                     payload: data,
@@ -266,15 +295,15 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
-                        // 'checkbox',
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
                         'voucher-type',
                         'allocation-type',
                         'allocation-value',
-                        'benefit',
-                        // 'voucher-used',
+                        'total-order-value',
+                        'collected',
+                        'used',
                         'start-date',
                         'end-date',
                         'status',
@@ -282,15 +311,15 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                     ];
                 } else {
                     this.displayedColumns = [
-                        // 'checkbox',
                         'supplier-voucher-id',
                         'voucher-name',
                         'eligible-product',
                         'voucher-type',
                         'allocation-type',
                         'allocation-value',
-                        'benefit',
-                        // 'voucher-used',
+                        'total-order-value',
+                        'collected',
+                        'used',
                         'start-date',
                         'end-date',
                         'status',
