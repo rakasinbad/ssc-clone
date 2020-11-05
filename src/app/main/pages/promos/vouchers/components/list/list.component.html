@@ -1,14 +1,3 @@
-<!-- <div> -->
-<!-- <mat-table
-    class="voucher-list-table sinbad-table mx-12"
-    [class.h-256]="!(isLoading$ | async) && (totalDataSource$ | async) > 0"
-    #table
-    [dataSource]="(isLoading$ | async) ? [] : (dataSource$ | async)"
-    matSort
-    [@animateStagger]="{ value: '50' }"
-    fusePerfectScrollbar
-> -->
-
 <mat-table
     class="voucher-list-table sinbad-table"
     [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
@@ -71,8 +60,8 @@
         <mat-header-cell *matHeaderCellDef> Allocation Type </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ 
-                        row?.voucherAllocationType === 'voucher_slot'
+                {{
+                    row?.voucherAllocationType === 'voucher_slot'
                         ? 'Transaction'
                         : row?.voucherAllocationType === 'voucher_budget'
                         ? 'Rp'
@@ -92,13 +81,11 @@
                 <p style="word-break: break-word">-</p>
             </ng-container>
             <ng-container *ngIf="row?.voucherAllocationType == 'voucher_budget'">
-                <p style="word-break: break-word">
-                    Rp {{ (row?.voucherBudget | number) || '-' }}
-                </p>
+                <p style="word-break: break-word">Rp {{ (row?.voucherBudget | number) || '-' }}</p>
             </ng-container>
             <ng-container *ngIf="row?.voucherAllocationType == 'voucher_slot'">
                 <p style="word-break: break-word">
-                    {{ (row?.voucherSlot | number ) || '-' }}
+                    {{ (row?.voucherSlot | number) || '-' }}
                 </p>
             </ng-container>
         </mat-cell>
@@ -119,7 +106,14 @@
         <mat-header-cell *matHeaderCellDef mat-sort-header> Collected </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.collected | number) || '-' }}
+                <ng-container
+                    *ngIf="row?.collected == 0 || row?.collected == null; else otherCollected"
+                >
+                    -
+                </ng-container>
+                <ng-template #otherCollected>
+                    {{ (row?.collected | number) || '-' }}
+                </ng-template>
             </p>
         </mat-cell>
     </ng-container>
@@ -129,7 +123,12 @@
         <mat-header-cell *matHeaderCellDef mat-sort-header> Used </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.used | number) || '-' }}
+                <ng-container *ngIf="row?.used == 0 || row?.used == null; else otherUsed">
+                    0
+                </ng-container>
+                <ng-template #otherUsed>
+                    {{ (row?.used | number) || '-' }}
+                </ng-template>
             </p>
         </mat-cell>
     </ng-container>
@@ -256,11 +255,9 @@
         </mat-cell>
     </ng-container>
 
-     <!-- No Record Column -->
-     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="8">
-            No records found
-        </mat-footer-cell>
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
@@ -283,10 +280,6 @@
     <mat-spinner color="accent"></mat-spinner>
 </div>
 
-<!-- <div class="h-280 no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
-    No records found
-</div> -->
-
 <mat-paginator
     [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
     [length]="totalDataSource$ | async"
@@ -294,8 +287,3 @@
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons
 ></mat-paginator>
-<!-- </div> -->
-
-<!-- <div class="mt-100" fxLayout="row" fxLayoutAlign="center center" *ngIf="isLoading$ | async">
-    <mat-spinner color="accent"></mat-spinner>
-</div> -->
