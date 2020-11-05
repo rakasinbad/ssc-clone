@@ -110,9 +110,9 @@
 
                 <ng-template #otherTypeVoucher>
                     <ng-container
-                        *ngIf="row?.collected == 0 || row?.collected == null; else otherCollected"
+                        *ngIf="row?.collected == '0' || row?.collected == null; else otherCollected"
                     >
-                        -
+                        0
                     </ng-container>
                     <ng-template #otherCollected>
                         {{ (row?.collected | number) || '-' }}
