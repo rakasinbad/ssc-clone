@@ -1,0 +1,13 @@
+<h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2>
+
+<mat-dialog-content class="mat-typography">
+    <p class="cat-seg-message-dialog" [innerHTML]="data?.message"></p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button class="sinbad-mat-btn-border" mat-dialog-close>Cancel</button>
+    <button mat-button mat-button-base class="sinbad-mat-btn-accent" [mat-dialog-close]="data?.id"
+        cdkFocusInitial>Delete</button>
+</mat-dialog-actions>

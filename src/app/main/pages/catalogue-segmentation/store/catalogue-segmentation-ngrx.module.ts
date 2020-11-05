@@ -6,6 +6,7 @@ import {
     FetchCataloguesEffects,
     FetchCatalogueSegmentationsEffects,
 } from './effects';
+import { CatalogueSegmentationsEffects } from './effects/catalogue-segmentations.effects';
 import { fromCatalogueSegmentation } from './reducers';
 
 @NgModule({
@@ -15,6 +16,7 @@ import { fromCatalogueSegmentation } from './reducers';
             fromCatalogueSegmentation.reducers
         ),
         EffectsModule.forFeature([
+            CatalogueSegmentationsEffects,
             CreateCatalogueSegmentationEffects,
             FetchCatalogueSegmentationsEffects,
             FetchCataloguesEffects,
