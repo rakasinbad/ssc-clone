@@ -52,7 +52,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as numeral from 'numeral';
-import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
+import { VoucherAllocation } from 'app/shared/models/promo-allocation.model';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -147,14 +147,10 @@ export class VoucherGeneralInformationComponent
 
     private strictISOString = false;
 
-    promoAllocation = this.helper$.promoAllocation();
-    ePromoAllocation = PromoAllocation;
-    // supplierVoucherType = this.helper$.supplierVoucherType();
-    // eSupplierVoucherType = SupplierVoucherType;
+    voucherAllocation = this.helper$.voucherAllocation();
+    eVoucherAllocation = VoucherAllocation;
     sinbadVoucherType: Array<{ id: string; label: string }> = [];
     sinbadVoucherCategory: Array<{ id: string; label: string }> = [];
-    // supplierVoucherCategory = this.helper$.supplierVoucherCategory();
-    // eSupplierVoucherCategory = SupplierVoucherCategory;
     public selectPromo: string;
     public selectTypeVoucher: string;
 
@@ -557,7 +553,7 @@ export class VoucherGeneralInformationComponent
         this.form = this.fb.group({
             id: [null],
             voucherAllocationType: [
-                PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
+                VoucherAllocation.NONE || VoucherAllocation.PROMOBUDGET || VoucherAllocation.PROMOSLOT,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),

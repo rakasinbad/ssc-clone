@@ -21,7 +21,7 @@
             <!-- <div class="form-box"> -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label fxFlexAlign="center" fxFlex="12" class="pr-0 form-label">
-                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Promo Allocation
+                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Voucher Allocation
                 </label>
 
                 <ng-container *ngIf="!isViewMode()">
@@ -32,7 +32,7 @@
                         style="margin-top: 3px"
                     >
                         <mat-radio-button
-                            *ngFor="let option of promoAllocation"
+                            *ngFor="let option of voucherAllocation"
                             [value]="option.id"
                         >
                             {{ option?.label }}
@@ -43,7 +43,7 @@
                 <ng-container *ngIf="isViewMode()">
                     <mat-radio-group [value]="form.get('voucherAllocationType').value">
                         <mat-radio-button
-                            *ngFor="let row of promoAllocation"
+                            *ngFor="let row of voucherAllocation"
                             [value]="row?.id"
                             [disabled]="true"
                         >
