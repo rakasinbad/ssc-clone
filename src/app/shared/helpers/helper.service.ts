@@ -16,7 +16,7 @@ import { CalculationMechanism } from '../models/calculation-mechanism.model';
 import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
 import { PlatformSinbad, PlatformSupplierVoucer } from '../models/platform.model';
-import { PromoAllocation, PromoAllocationCross } from '../models/promo-allocation.model';
+import { PromoAllocation, PromoAllocationCross, VoucherAllocation } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
 import { SegmentationBase } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
@@ -233,6 +233,22 @@ export class HelperService {
             label: 'Max Promo Redemption (transaction)',
         },
     ];
+
+    private static readonly _voucherAllocation: { id: VoucherAllocation; label: string }[] = [
+        {
+            id: VoucherAllocation.NONE,
+            label: 'None',
+        },
+        {
+            id: VoucherAllocation.PROMOSLOT,
+            label: 'Max Promo Redemption (transaction)',
+        },
+        {
+            id: VoucherAllocation.PROMOBUDGET,
+            label: 'Max Promo Redemption (Rp)',
+        },
+    ];
+    
 
     private static readonly _supplierVoucherType: { id: SupplierVoucherType; label: string }[] = [
         {
@@ -819,6 +835,10 @@ export class HelperService {
 
     promoAllocationCross(): { id: PromoAllocationCross; label: string }[] {
         return HelperService._promoAllocationCross;
+    }
+
+    voucherAllocation(): { id: VoucherAllocation; label: string }[] {
+        return HelperService._voucherAllocation;
     }
 
     supplierVoucherType(): { id: SupplierVoucherType; label: string }[] {

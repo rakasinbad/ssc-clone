@@ -30,16 +30,19 @@ interface ISupplierVoucher extends Timestamp {
     shortDescription: string;
     // imageUrl: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
     termsAndConditions?: Array<any>;
     instructions?: Array<any>;
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag?: Array<any>;
+    totalOrderValue: number;
+    used: string;
+    collected: string;
 
     base: string;
     conditionBase: string;
@@ -85,16 +88,19 @@ export class SupplierVoucher implements ISupplierVoucher {
     shortDescription: string;
     // imageUrl: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
     termsAndConditions?: Array<any>;
     instructions?: Array<any>;
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag?: Array<any>;
+    totalOrderValue: number;
+    used: string;
+    collected: string;
 
     base: string;
     conditionBase: string;
@@ -147,9 +153,12 @@ export class SupplierVoucher implements ISupplierVoucher {
             category,
             termsAndConditions,
             instructions,
-            voucherBanner,
+            imageUrl,
             expirationDays,
             voucherTag,
+            totalOrderValue,
+            used,
+            collected,
 
             base,
             conditionBase,
@@ -200,15 +209,15 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.category = category || null;
         this.termsAndConditions = termsAndConditions || null;
         this.instructions = instructions || null;
-        this.voucherBanner = voucherBanner || null;
-        if (this.voucherType == "collectible") {
-            this.expirationDays = expirationDays || null;
-        } else {
-            this.startDate = startDate|| null;
-            this.endDate = endDate|| null;
-        }
+        this.imageUrl = imageUrl || null;
+        this.expirationDays = expirationDays || null;
+        this.startDate = startDate || null;
+        this.endDate = endDate || null;
         this.voucherTag = voucherTag || null;
-
+        this.totalOrderValue = totalOrderValue || null;
+        this.used = used || null;
+        this.collected = collected || null;
+        
         this.base = base;
         this.conditionBase = conditionBase;
         this.conditionQty = conditionQty;

@@ -1,19 +1,28 @@
 @import 'src/@fuse/scss/fuse';
 
 voucher-list {
-    // display: flex;
-    // flex: 1 1 auto;
-    // overflow: auto;
-    // flex-direction: column;
-    // // border-radius: 4px !important;
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    overflow: auto !important;
 
     .voucher-list-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
         overflow: auto;
+        min-height: 40px;
+        max-height: 350px;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+            max-height: 350px;
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
 
         .mat-header-row,
         .mat-row {
@@ -26,7 +35,7 @@ voucher-list {
             min-height: unset;
         }
 
-        .warehouse {
+        .sinbad-voucher-list-item {
             position: relative;
             cursor: pointer;
             // height: 84px;
@@ -47,11 +56,8 @@ voucher-list {
             padding-left: 12px;
         }
 
-        mat-header-cell:last-of-type {
-            padding-right: 24px;
-        }
-
         mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
         .mat-cell:last-of-type {
             padding-right: 12px;
         }
@@ -62,10 +68,6 @@ voucher-list {
             display: flex;
             align-items: center;
             padding-right: 8px;
-        }
-
-        .mat-column-checkbox {
-            flex: 0 1 64px;
         }
 
         .mat-column-id {
@@ -86,89 +88,86 @@ voucher-list {
             flex: 0 1 240px;
         }
 
-        .mat-column-price {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-quantity {
-            flex: 0 1 160px;
-        }
-
         .mat-column-active {
             flex: 0 1 80px;
         }
 
-        .mat-column-actions {
-            flex: 0 1 80px;
-            justify-content: flex-end;
-        }
         .mat-column-supplier-voucher-id {
-            flex: 0 0 110px;
-            justify-content: flex-end;
+            // flex: 0 0 110px;
+            min-width: 110px;
         }
         .mat-column-voucher-name {
-            flex: 0 1 180px;
-            min-width: 110px;
+            flex: 0 1 200px;
+            min-width: 200px;
+        }
+        .mat-column-eligible-product {
+            flex: 0 1 150px;
+            min-width: 150px;
         }
 
         .mat-column-voucher-type {
-            flex: 0 1 180px;
-            min-width: 110px;
+            flex: 0 1 250px;
+            min-width: 250px;
         }
 
         .mat-column-allocation-type {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-allocation-value {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-total-order-value {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-collected{
             flex: 0 1 110px;
             min-width: 110px;
         }
 
-        .quantity-indicator {
-            display: inline-block;
-            vertical-align: middle;
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            margin-right: 8px;
+        .mat-column-used {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
 
-            & + span {
-                display: inline-block;
-                vertical-align: middle;
-            }
+        .mat-column-start-date {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-end-date {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-status {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 7em;
+            justify-content: center;
         }
 
         .active-icon {
             border-radius: 50%;
         }
     }
+}
 
-    .tab-container {
-        background-color: '#ffffff';
-    }
-
-    .button-tab-custom {
-        min-height: 50px !important;
-        max-height: 50px !important;
-        min-width: 120px !important;
-        padding: 20px;
-        cursor: pointer;
-        text-align: center;
-    }
-
-    .button-tab-custom-active {
-        min-height: 50px !important;
-        max-height: 50px !important;
-        min-width: 120px !important;
-        padding: 20px;
-        cursor: pointer;
-        text-align: center;
-        color: #f34247;
-        border-bottom: 1px solid #f34247;
-
-        span {
-            color: #f34247;
-        }
-    }
-
-    .text-tab-custom {
-        color: 'red';
-    }
+mat-menu-panel {
+    min-height: 52px;
 }

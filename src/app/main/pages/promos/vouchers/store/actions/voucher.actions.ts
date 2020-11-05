@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { SupplierVoucher } from '../../models';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
 import { SupplierVoucherPayload } from '../../models/voucher.model';
 import { EntityPayload } from 'app/shared/models/entity-payload.model';
@@ -24,7 +24,7 @@ export type failureActionNames =
 
 export const fetchSupplierVoucherRequest = createAction(
     '[Promo/SupplierVoucher API] Fetch SupplierVoucher Request',
-    props<{ payload: IQueryParams | string }>()
+    props<{ payload: IQueryParamsVoucher | string }>()
 );
 
 export const fetchSupplierVoucherFailure = createAction(

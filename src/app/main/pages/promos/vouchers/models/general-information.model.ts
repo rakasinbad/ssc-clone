@@ -12,14 +12,14 @@ interface IVoucherGeneralInformation {
     description: string;
     shortDescription: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
     termsAndConditions: [];
     instructions: [];
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag: [];
     code: string;
@@ -37,14 +37,14 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
     description: string;
     shortDescription: string;
     voucherAllocationType: string;
-    voucherSlot: string;
-    voucherBudget: string;
+    voucherSlot: number;
+    voucherBudget: number;
     voucherType: string;
     voucherHeader: string;
     category: string;
     termsAndConditions: [];
     instructions: [];
-    voucherBanner: string;
+    imageUrl: string;
     expirationDays: number;
     voucherTag: [];
     code: string;
@@ -68,7 +68,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
             category,
             termsAndConditions,
             instructions,
-            voucherBanner,
+            imageUrl,
             expirationDays,
             voucherTag,
             code
@@ -89,7 +89,7 @@ export class VoucherGeneralInformation implements IVoucherGeneralInformation {
         this.category = category || null;
         this.termsAndConditions = termsAndConditions || null;
         this.instructions = instructions || null;
-        this.voucherBanner = voucherBanner || null;
+        this.imageUrl = imageUrl || null;
         if (this.voucherType == 'direct') {
             this.expirationDays = null;
         }

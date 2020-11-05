@@ -1,223 +1,214 @@
-<div>
-    <mat-table
-        class="voucher-list-table sinbad-table"
-        [class.h-256]="!(isLoading$ | async) && (totalDataSource$ | async) > 0"
-        #table
-        [dataSource]="(isLoading$ | async) ? [] : (dataSource$ | async)"
-        matSort
-        [@animateStagger]="{ value: '50' }"
-        fusePerfectScrollbar
-    >
-        <!-- Checkbox Column -->
-        <ng-container matColumnDef="checkbox">
-            <mat-header-cell *matHeaderCellDef>
-                <!-- <mat-checkbox></mat-checkbox> -->
-                <mat-checkbox
-                    (change)="$event ? handleCheckbox() : null"
-                    (click)="$event.stopPropagation()"
-                    [checked]="selection.hasValue() && isAllSelected()"
-                    [indeterminate]="selection.hasValue() && !isAllSelected()"
-                ></mat-checkbox>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <!-- <mat-checkbox></mat-checkbox> -->
-                <mat-checkbox
-                    (click)="$event.stopPropagation()"
-                    (change)="$event ? selection.toggle(row) : null"
-                    [checked]="selection.isSelected(row)"
-                ></mat-checkbox>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Supplier Voucher Id Column -->
-        <ng-container matColumnDef="supplier-voucher-id">
-            <mat-header-cell *matHeaderCellDef>
-                Sup Voucher ID
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">{{ row?.externalId || '-' }}</p>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Voucher Name Column -->
-        <ng-container matColumnDef="voucher-name">
-            <mat-header-cell *matHeaderCellDef>
-                Voucher Name
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">{{ row?.name || '-' }}</p>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Eligible Product Column -->
-        <ng-container matColumnDef="eligible-product">
-            <mat-header-cell *matHeaderCellDef>
-                Eligible Product
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ row?.base === 'sku' ? 'SKU' : row?.base === 'invoice_group' ? 'Faktur' : (row?.base | titlecase) || '-' }}
-                </p>
-            </mat-cell>
-        </ng-container>
+<mat-table
+    class="voucher-list-table sinbad-table"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+    #table
+    [dataSource]="dataSource$ | async"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Supplier Voucher Id Column -->
+    <ng-container matColumnDef="supplier-voucher-id">
+        <mat-header-cell *matHeaderCellDef> Sup Voucher ID </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.externalId || '-' }}</p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Voucher Type Column -->
-        <ng-container matColumnDef="voucher-type">
-            <mat-header-cell *matHeaderCellDef>
-                Voucher Type
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ row?.voucherType === 'direct' ? 'Direct Supplier Voucher' : row?.voucherType === 'collectible' ? 'Collectible Supplier Voucher' : (row?.voucherType | titlecase) || '-' }}
-                </p>
-            </mat-cell>
-        </ng-container>
+    <!-- Voucher Name Column -->
+    <ng-container matColumnDef="voucher-name">
+        <mat-header-cell *matHeaderCellDef> Voucher Name </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.name || '-' }}</p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Voucher Type Column -->
-        <ng-container matColumnDef="allocation-type">
-            <mat-header-cell *matHeaderCellDef>
-                Allocation Type
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    -
-                    <!-- {{ (row?.voucherAllocationType | titlecase) || '-' }} -->
-                </p>
-            </mat-cell>
-        </ng-container>
+    <!-- Eligible Product Column -->
+    <ng-container matColumnDef="eligible-product">
+        <mat-header-cell *matHeaderCellDef> Eligible Product </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{
+                    row?.base === 'sku'
+                        ? 'SKU'
+                        : row?.base === 'invoice_group'
+                        ? 'Faktur'
+                        : (row?.base | titlecase) || '-'
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Voucher Type Column -->
-        <ng-container matColumnDef="allocation-value">
-            <mat-header-cell *matHeaderCellDef>
-                Allocation Value
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <!-- <ng-container *ngIf="row?.voucherAllocationType == 'none'"> -->
-                    <p style="word-break: break-word;">
-                        -
-                    </p>
-                <!-- </ng-container> -->
-                <ng-container *ngIf="row?.voucherAllocationType == 'transaction'">
-                    <p style="word-break: break-word;">
-                        Rp <!-- {{ (row?.voucherBudget | titlecase) || '-' }} -->
-                    </p>
-                </ng-container>
-                <ng-container *ngIf="row?.voucherAllocationType == 'slot'">
-                    <p style="word-break: break-word;">
-                        <!-- {{ (row?.voucherSlot | titlecase) || '-' }} -->
-                    </p>
-                </ng-container>
-                
-            </mat-cell>
-        </ng-container>
-        
-    
-        <!-- Benefit Column -->
-        <ng-container matColumnDef="benefit">
-            <mat-header-cell *matHeaderCellDef>
-                Benefit
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ row?.benefitType === 'percent' ? row?.benefitDiscount + ' %' : row?.benefitType === 'amount' ? (row?.benefitRebate | price: 'full':'IDR':'narrow':'1.0-2') : '-' }}
+    <!-- Voucher Type Column -->
+    <ng-container matColumnDef="voucher-type">
+        <mat-header-cell *matHeaderCellDef> Voucher Type </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{
+                    row?.voucherType === 'direct'
+                        ? 'Direct Supplier Voucher'
+                        : row?.voucherType === 'collectible'
+                        ? 'Collectible Supplier Voucher'
+                        : (row?.voucherType | titlecase) || '-'
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Voucher Type Column -->
+    <ng-container matColumnDef="allocation-type">
+        <mat-header-cell *matHeaderCellDef> Allocation Type </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{
+                    row?.voucherAllocationType === 'voucher_slot'
+                        ? 'Transaction'
+                        : row?.voucherAllocationType === 'voucher_budget'
+                        ? 'Rp'
+                        : row?.voucherAllocationType === 'none'
+                        ? '-'
+                        : (row?.voucherAllocationType | titlecase) || '-'
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Voucher value Column -->
+    <ng-container matColumnDef="allocation-value">
+        <mat-header-cell *matHeaderCellDef> Allocation Value </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <ng-container *ngIf="row?.voucherAllocationType == 'none'">
+                <p style="word-break: break-word">-</p>
+            </ng-container>
+            <ng-container *ngIf="row?.voucherAllocationType == 'voucher_budget'">
+                <p style="word-break: break-word">Rp {{ (row?.voucherBudget | number) || '-' }}</p>
+            </ng-container>
+            <ng-container *ngIf="row?.voucherAllocationType == 'voucher_slot'">
+                <p style="word-break: break-word">
+                    {{ (row?.voucherSlot | number) || '-' }}
                 </p>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Voucher Used Column -->
-        <ng-container matColumnDef="voucher-used">
-            <mat-header-cell *matHeaderCellDef>
-                Voucher Used
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    1/25
-                </p>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Start Date Column -->
-        <ng-container matColumnDef="start-date">
-            <mat-header-cell *matHeaderCellDef>
-                Start Date
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ (row?.startDate | date: 'dd/MM/yyyy') || '-' }}
-                </p>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- End Date Column -->
-        <ng-container matColumnDef="end-date">
-            <mat-header-cell *matHeaderCellDef>
-                End Date
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">{{ (row?.endDate | date: 'dd/MM/yyyy') || '-' }}</p>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Status Column -->
-        <ng-container matColumnDef="status">
-            <mat-header-cell *matHeaderCellDef>
-                Status
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <ng-container *ngIf="row?.status; else noStatus">
-                    <mat-icon
-                        class="active-icon s-24"
-                        [matTooltip]="row?.status | titlecase"
-                        svgIcon="sinbad-check-active"
-                        *ngIf="row?.status === 'active'"
+            </ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Total Order Value Column -->
+    <ng-container matColumnDef="total-order-value">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Total Order Value </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ (row?.totalOrderValue | number) || 0 }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Collected Column -->
+    <ng-container matColumnDef="collected">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Collected </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                <ng-container *ngIf="row?.voucherType === 'direct'; else otherTypeVoucher"> - </ng-container>
+
+                <ng-template #otherTypeVoucher>
+                    <ng-container
+                        *ngIf="row?.collected == '0' || row?.collected == null; else otherCollected"
                     >
-                    </mat-icon>
-    
-                    <mat-icon
-                        class="active-icon s-24"
-                        [matTooltip]="row?.status | titlecase"
-                        svgIcon="sinbad-check-inactive"
-                        *ngIf="row?.status === 'inactive'"
-                    >
-                    </mat-icon>
-                </ng-container>
-    
-                <ng-template #noStatus>
-                    -
+                        0
+                    </ng-container>
+                    <ng-template #otherCollected>
+                        {{ (row?.collected | number) || '-' }}
+                    </ng-template>
                 </ng-template>
-            </mat-cell>
-        </ng-container>
-    
-        <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef>
-                Actions
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <div fxFlex="row" fxLayoutAlign="end center">
-                    <button
-                        mat-icon-button
-                        [matMenuTriggerFor]="moreMenu"
-                        aria-label="More"
-                        (click)="$event.stopPropagation()"
-                    >
-                        <mat-icon class="secondary-text">more_vert</mat-icon>
-                    </button>
-    
-                    <mat-menu #moreMenu="matMenu">
-                        <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
-                            <button
-                                type="button"
-                                mat-menu-item
-                                class="sinbad-mat-menu-item"
-                                aria-label="Detail"
-                                (click)="openDetailPage(row.id)"
-                            >
-                                <mat-icon>info</mat-icon>
-                                <span>Detail</span>
-                            </button>
-    
-                            <!-- <button
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Used Column -->
+    <ng-container matColumnDef="used">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Used </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                <ng-container *ngIf="row?.used == 0 || row?.used == null; else otherUsed">
+                    0
+                </ng-container>
+                <ng-template #otherUsed>
+                    {{ (row?.used | number) || '-' }}
+                </ng-template>
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Start Date Column -->
+    <ng-container matColumnDef="start-date">
+        <mat-header-cell *matHeaderCellDef> Start Date </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ (row?.startDate | date: 'dd/MM/yyyy') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- End Date Column -->
+    <ng-container matColumnDef="end-date">
+        <mat-header-cell *matHeaderCellDef> End Date </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ (row?.endDate | date: 'dd/MM/yyyy') || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Status Column -->
+    <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <ng-container *ngIf="row?.status; else noStatus">
+                <mat-icon
+                    class="active-icon s-24"
+                    [matTooltip]="row?.status | titlecase"
+                    svgIcon="sinbad-check-active"
+                    *ngIf="row?.status === 'active'"
+                >
+                </mat-icon>
+
+                <mat-icon
+                    class="active-icon s-24"
+                    [matTooltip]="row?.status | titlecase"
+                    svgIcon="sinbad-check-inactive"
+                    *ngIf="row?.status === 'inactive'"
+                >
+                </mat-icon>
+            </ng-container>
+
+            <ng-template #noStatus> - </ng-template>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="moreMenu"
+                    aria-label="More"
+                    (click)="$event.stopPropagation()"
+                >
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Detail"
+                            (click)="openDetailPage(row.id)"
+                        >
+                            <mat-icon>info</mat-icon>
+                            <span>Detail</span>
+                        </button>
+
+                        <!-- <button
                                 type="button"
                                 mat-menu-item
                                 class="sinbad-mat-menu-item"
@@ -227,70 +218,76 @@
                                 <mat-icon>edit</mat-icon>
                                 <span>Edit</span>
                             </button> -->
-    
-                            <button
-                                mat-menu-item
-                                type="button"
-                                class="sinbad-mat-menu-item"
-                                aria-label="archive"
-                                (click)="setInactive(row)"
-                                *ngIf="row?.status === 'active'"
-                            >
-                                <mat-icon>archive</mat-icon>
-                                <span>Set to Inactive</span>
-                            </button>
-    
-                            <button
-                                mat-menu-item
-                                type="button"
-                                class="sinbad-mat-menu-item"
-                                aria-label="archive"
-                                (click)="setActive(row)"
-                                *ngIf="row?.status === 'inactive'"
-                            >
-                                <mat-icon>unarchive</mat-icon>
-                                <span>Set to Active</span>
-                            </button>
-    
-                            <button
-                                mat-menu-item
-                                type="button"
-                                class="sinbad-mat-menu-item"
-                                aria-label="remove"
-                                (click)="onDelete(row)"
-                            >
-                                <mat-icon>delete</mat-icon>
-                                <span>Remove</span>
-                            </button>
-                        </ng-template>
-                    </mat-menu>
-                </div>
-            </mat-cell>
-        </ng-container>
-    
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    
-        <mat-row *matRowDef="let row; columns: displayedColumns" class="flexicombo"></mat-row>
-        <!-- <mat-row
-            *matRowDef="let row; columns: displayedColumns"
-            class="flexicombo"
-            (click)="$event.stopPropagation(); onSkuAssignmentDetail(row)"
-        ></mat-row> -->
-    </mat-table>
-    
-    <div class="h-280 no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
-        No records found
-    </div>
-    
-    <mat-paginator
-        [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
-        [length]="totalDataSource$ | async"
-        [pageSize]="defaultPageSize"
-        [pageSizeOptions]="defaultPageOpts"
-        showFirstLastButtons
-    ></mat-paginator>
-</div>
 
-<div class="mt-100" fxLayout="row" fxLayoutAlign="center center" *ngIf="isLoading$ | async">
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="archive"
+                            (click)="setInactive(row)"
+                            *ngIf="row?.status === 'active'"
+                        >
+                            <mat-icon>archive</mat-icon>
+                            <span>Set to Inactive</span>
+                        </button>
+
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="archive"
+                            (click)="setActive(row)"
+                            *ngIf="row?.status === 'inactive'"
+                        >
+                            <mat-icon>unarchive</mat-icon>
+                            <span>Set to Active</span>
+                        </button>
+
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="remove"
+                            (click)="onDelete(row)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Remove</span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="sinbad-voucher-list-item"
+    ></mat-row>
+
+    <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+    ></mat-footer-row>
+</mat-table>
+
+<div
+    class="loader-content"
+    *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+>
     <mat-spinner color="accent"></mat-spinner>
 </div>
+
+<mat-paginator
+    [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
+    [length]="totalDataSource$ | async"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+></mat-paginator>

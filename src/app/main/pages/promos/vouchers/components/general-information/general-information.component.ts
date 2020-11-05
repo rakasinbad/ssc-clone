@@ -52,7 +52,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as moment from 'moment';
 import * as _ from 'lodash';
 import * as numeral from 'numeral';
-import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
+import { VoucherAllocation } from 'app/shared/models/promo-allocation.model';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -71,7 +71,7 @@ export interface VoucherTag {
     name: string;
 }
 
-type TmpKey = 'voucherBanner';
+type TmpKey = 'imageUrl';
 
 @Component({
     selector: 'voucher-general-information',
@@ -97,7 +97,7 @@ export class VoucherGeneralInformationComponent
     formModeValue: IFormMode = 'add';
 
     // Untuk menampung foto yang ingin diupload sementara sebelum dikirim.
-    tmpvoucherBanner: FormControl = new FormControl({ value: '', disabled: true });
+    tmpimageUrl: FormControl = new FormControl({ value: '', disabled: true });
     tmpCouponImage: FormControl = new FormControl({ value: '', disabled: true });
     tmp: Partial<Record<TmpKey, FormControl>> = {};
 
@@ -147,14 +147,10 @@ export class VoucherGeneralInformationComponent
 
     private strictISOString = false;
 
-    promoAllocation = this.helper$.promoAllocation();
-    ePromoAllocation = PromoAllocation;
-    // supplierVoucherType = this.helper$.supplierVoucherType();
-    // eSupplierVoucherType = SupplierVoucherType;
+    voucherAllocation = this.helper$.voucherAllocation();
+    eVoucherAllocation = VoucherAllocation;
     sinbadVoucherType: Array<{ id: string; label: string }> = [];
     sinbadVoucherCategory: Array<{ id: string; label: string }> = [];
-    // supplierVoucherCategory = this.helper$.supplierVoucherCategory();
-    // eSupplierVoucherCategory = SupplierVoucherCategory;
     public selectPromo: string;
     public selectTypeVoucher: string;
 
@@ -314,23 +310,23 @@ export class VoucherGeneralInformationComponent
 
             if (file) {
                 switch (type) {
-                    case 'voucherBanner':
+                    case 'imageUrl':
                         {
-                            const voucherBannerField = this.form.get('voucherBanner');
+                            const imageUrlField = this.form.get('imageUrl');
 
                             const fileReader = new FileReader();
 
                             fileReader.onload = () => {
-                                voucherBannerField.setValue(fileReader.result);
-                                this.tmp['voucherBanner'].setValue({
+                                imageUrlField.setValue(fileReader.result);
+                                this.tmp['imageUrl'].setValue({
                                     name: file.name,
                                     url: this.domSanitizer.bypassSecurityTrustUrl(
                                         window.URL.createObjectURL(file)
                                     ),
                                 });
 
-                                if (voucherBannerField.invalid) {
-                                    voucherBannerField.markAsTouched();
+                                if (imageUrlField.invalid) {
+                                    imageUrlField.markAsTouched();
                                 }
                             };
 
@@ -344,10 +340,10 @@ export class VoucherGeneralInformationComponent
             }
         } else {
             switch (type) {
-                case 'voucherBanner':
+                case 'imageUrl':
                     {
-                        this.form.get('voucherBanner').reset();
-                        this.tmp['voucherBanner'].reset();
+                        this.form.get('imageUrl').reset();
+                        this.tmp['imageUrl'].reset();
                     }
                     break;
 
@@ -526,11 +522,18 @@ export class VoucherGeneralInformationComponent
                     shortDescription: voucher.shortDescription,
                     termsAndConditions: voucher.termsAndConditions,
                     instructions: voucher.instructions,
-                    voucherBanner: voucher.voucherBanner,
+                    imageUrl: voucher.imageUrl,
                     expirationDays: voucher.expirationDays,
                     voucherTag: voucher.voucherTag,
                     code: voucher.code
                 });
+
+                this.selectTypeVoucher = voucher.voucherType;
+                if (this.selectTypeVoucher == 'collectible') {
+                    this.expirationCheck = true;
+                } else {
+                    this.expirationCheck = false;
+                }
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
                 this.form.markAsDirty({ onlySelf: false });
@@ -545,12 +548,12 @@ export class VoucherGeneralInformationComponent
         this.maxActiveEndDate = null;
         this.maxActiveStartDate = null;
 
-        this.tmp['voucherBanner'] = new FormControl({ value: '', disabled: true });
+        this.tmp['imageUrl'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.fb.group({
             id: [null],
             voucherAllocationType: [
-                PromoAllocation.NONE || PromoAllocation.PROMOBUDGET || PromoAllocation.PROMOSLOT,
+                VoucherAllocation.NONE || VoucherAllocation.PROMOBUDGET || VoucherAllocation.PROMOSLOT,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -663,7 +666,7 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            voucherBanner: [
+            imageUrl: [
                 null,
                 [
                     RxwebValidators.fileSize({
@@ -740,12 +743,13 @@ export class VoucherGeneralInformationComponent
                 ),
                 map(([_, status]) => {
                     const rawValue = this.form.getRawValue();
-
                     if (!rawValue.startDate || !rawValue.endDate) {
                         return 'INVALID';
                     } else if (rawValue.voucherType == 'collectible' && rawValue.expirationDays == null) {
                         return 'INVALID';
                     } else if (rawValue.voucherType == 'collectible' && rawValue.maxCollectionPerStore == null) {
+                        return 'INVALID';
+                    } else if (rawValue.imageUrl == null) {
                         return 'INVALID';
                     } else {
                         return status;
