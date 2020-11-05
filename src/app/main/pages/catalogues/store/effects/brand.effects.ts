@@ -4,10 +4,12 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
 import { Brand } from 'app/shared/models/brand.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { BrandService } from '../../services/brand.service';
 import { BrandActions } from '../actions';
@@ -19,8 +21,9 @@ export class BrandEffects {
         this.actions$.pipe(
             ofType(BrandActions.fetchBrandsRequest),
             map(action => action.payload),
-            switchMap(payload => {
-                return this._$brandApi.find<Array<Brand>>(payload).pipe(
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId }]) => {
+                return this._$brandApi.find<Array<Brand>>({ ...payload, supplierId } as IQueryParams).pipe(
                     catchOffline(),
                     map(response => {
                         const newResp = {

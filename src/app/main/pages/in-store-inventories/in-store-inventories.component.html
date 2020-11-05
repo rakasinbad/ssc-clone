@@ -19,8 +19,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.externalId || '-' }}
-                        </p>\
+                            {{ row?.store?.supplierStores[0]?.externalId || '-' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 

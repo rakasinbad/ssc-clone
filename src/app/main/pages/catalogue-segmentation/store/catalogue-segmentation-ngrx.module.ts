@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { FetchCatalogueSegmentationsEffects } from './effects';
+import {
+    CreateCatalogueSegmentationEffects,
+    FetchCataloguesEffects,
+    FetchCatalogueSegmentationsEffects,
+} from './effects';
+import { CatalogueSegmentationsEffects } from './effects/catalogue-segmentations.effects';
 import { fromCatalogueSegmentation } from './reducers';
 
 @NgModule({
@@ -10,7 +15,12 @@ import { fromCatalogueSegmentation } from './reducers';
             fromCatalogueSegmentation.catalogueSegmentationFeatureKey,
             fromCatalogueSegmentation.reducers
         ),
-        EffectsModule.forFeature([FetchCatalogueSegmentationsEffects]),
+        EffectsModule.forFeature([
+            CatalogueSegmentationsEffects,
+            CreateCatalogueSegmentationEffects,
+            FetchCatalogueSegmentationsEffects,
+            FetchCataloguesEffects,
+        ]),
     ],
 })
 export class CatalogueSegmentationNgrxModule {}
