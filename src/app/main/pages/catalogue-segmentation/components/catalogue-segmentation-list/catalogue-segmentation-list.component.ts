@@ -25,7 +25,7 @@ import { CatalogueSegmentationDataSource } from '../../datasources';
 import { CatalogueSegmentation } from '../../models';
 import { CatalogueSegmentationFacadeService } from '../../services';
 import { CatalogueSegmentationActions } from '../../store/actions';
-import { selectAll } from '../../store/selectors/catalogue-segmentation.selector';
+// import { selectAll } from '../../store/selectors/catalogue-segmentation.selector';
 import { fromCatalogueSegmentation } from '../../store/reducers';
 
 @Component({
