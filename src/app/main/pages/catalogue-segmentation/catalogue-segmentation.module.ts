@@ -7,6 +7,7 @@ import { CatalogueSegmentationComponent } from './catalogue-segmentation.compone
 import { CatalogueSegmentationRoutingModule } from './catalogue-segmentation.routes';
 import {
     CatalogueListComponent,
+    CatalogueSegmentationDetailComponent,
     CatalogueSegmentationFormComponent,
     CatalogueSegmentationListComponent,
 } from './components';
@@ -27,6 +28,7 @@ import { CatalogueSegmentationNgrxModule } from './store';
     declarations: [
         CatalogueListComponent,
         CatalogueSegmentationComponent,
+        CatalogueSegmentationDetailComponent,
         CatalogueSegmentationDetailPageComponent,
         CatalogueSegmentationFormComponent,
         CatalogueSegmentationFormPageComponent,
