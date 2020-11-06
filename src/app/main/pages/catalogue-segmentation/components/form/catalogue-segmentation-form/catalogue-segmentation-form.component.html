@@ -1,7 +1,7 @@
 <mat-card class="mb-16" fxLayout="column">
     <span class="mat-headline">Catalogue Segmentation</span>
 
-    <form action="">
+    <form [formGroup]="form">
         <div class="form-box">
             <!-- SEGMENTATION NAME FIELD -->
             <div
@@ -11,15 +11,34 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label fxFlexAlign="center" fxFlex="12" fxFill>
-                    <span class="sinbad-red-fg">*</span> Segmentation Name
+                <label
+                    for="segmentation-name"
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    fxFill
+                    [class.sinbad-red-fg]="
+                        form.get('segmentationName').value || form.get('segmentationName').touched
+                            | hasErrorField: form.get('segmentationName'):false
+                    "
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Segmentation Name
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="50">
-                    <input matInput autocapitalize="words" autocomplete="off" />
+                    <input
+                        matInput
+                        id="segmentation-name"
+                        formControlName="segmentationName"
+                        autocapitalize="words"
+                        autocomplete="off"
+                    />
 
                     <mat-error>
-                        <!-- {{ form.get('promoName').value | errorMessage: form:'promoName' }} -->
+                        {{
+                            form.get('segmentationName').value
+                                | errorMessage: form:'segmentationName'
+                        }}
                     </mat-error>
                 </mat-form-field>
             </div>
@@ -33,23 +52,35 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label fxFlexAlign="center" fxFlex="12">
+                <label
+                    for="chosen-warehouse"
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    [class.sinbad-red-fg]="
+                        form.get('chosenWarehouse').value || form.get('chosenWarehouse').touched
+                            | hasErrorField: form.get('chosenWarehouse'):false
+                    "
+                >
                     <span class="sinbad-red-fg">*</span>
                     Warehouse<br />
-                    (0 Selected)
+                    ({{ form.get('chosenWarehouse').value?.length || 0 }} Selected)
                 </label>
 
                 <select-warehouses
-                    [initialSelection]="[]"
+                    id="chosen-warehouse"
+                    [initialSelection]="form.get('chosenWarehouse').value || []"
+                    [disabled]="form.get('chosenWarehouse').disabled"
                     placeholder="Choose Warehouse"
-                    [required]="false"
+                    [required]="true"
+                    (selected)="onWarehouseSelected($event)"
+                    (selectAllChanged)="onSelectAllWarehouse($event)"
                     fxFlex="50"
                 >
-                    <!-- <div error>
+                    <div error>
                         {{
                             form.get('chosenWarehouse').value | errorMessage: form:'chosenWarehouse'
                         }}
-                    </div> -->
+                    </div>
                 </select-warehouses>
             </div>
             <!-- / WAREHOUSE FIELD -->
@@ -62,25 +93,35 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label fxFlexAlign="center" fxFlex="12">
+                <label
+                    for="chosen-store-type"
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    [class.sinbad-red-fg]="
+                        form.get('chosenStoreType').value || form.get('chosenStoreType').touched
+                            | hasErrorField: form.get('chosenStoreType'):false
+                    "
+                >
                     Store Type<br />
-                    (0 Selected)
+                    ({{ form.get('chosenStoreType').value?.length || 0 }} Selected)
                 </label>
 
                 <select-store-segmentation
-                    [initialSelection]="[]"
+                    id="chosen-store-type"
+                    [initialSelection]="form.get('chosenStoreType').value || []"
+                    [disabled]="form.get('chosenStoreType').disabled"
                     placeholder="Choose Store Type"
                     title="Select Store Type"
                     segmentationType="type"
                     [required]="false"
+                    (selected)="onStoreTypeSelected($event)"
                     fxFlex="50"
                 >
-                    <!-- <div error>
-                            {{
-                                form.get('chosenStoreType').value
-                                    | errorMessage: form:'chosenStoreType'
-                            }}
-                        </div> -->
+                    <div error>
+                        {{
+                            form.get('chosenStoreType').value | errorMessage: form:'chosenStoreType'
+                        }}
+                    </div>
                 </select-store-segmentation>
             </div>
             <!-- / STORE TYPE FIELD -->
@@ -93,25 +134,36 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label fxFlexAlign="center" fxFlex="12">
+                <label
+                    for="chosen-store-group"
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    [class.sinbad-red-fg]="
+                        form.get('chosenStoreGroup').value || form.get('chosenStoreGroup').touched
+                            | hasErrorField: form.get('chosenStoreGroup'):false
+                    "
+                >
                     Store Group<br />
-                    (0 Selected)
+                    ({{ form.get('chosenStoreGroup').value?.length || 0 }} Selected)
                 </label>
 
                 <select-store-segmentation
-                    [initialSelection]="[]"
+                    id="chosen-store-group"
+                    [initialSelection]="form.get('chosenStoreGroup').value || []"
+                    [disabled]="form.get('chosenStoreGroup').disabled"
                     placeholder="Choose Store Group"
                     title="Select Store Group"
                     segmentationType="group"
                     [required]="false"
+                    (selected)="onStoreGroupSelected($event)"
                     fxFlex="50"
                 >
-                    <!-- <div error>
-                            {{
-                                form.get('chosenStoreType').value
-                                    | errorMessage: form:'chosenStoreType'
-                            }}
-                        </div> -->
+                    <div error>
+                        {{
+                            form.get('chosenStoreGroup').value
+                                | errorMessage: form:'chosenStoreGroup'
+                        }}
+                    </div>
                 </select-store-segmentation>
             </div>
             <!-- / STORE GROUP FIELD -->
@@ -124,32 +176,53 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label fxFlexAlign="center" fxFlex="12">
+                <label
+                    for="chosen-store-channel"
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    [class.sinbad-red-fg]="
+                        form.get('chosenStoreChannel').value ||
+                            form.get('chosenStoreChannel').touched
+                            | hasErrorField: form.get('chosenStoreChannel'):false
+                    "
+                >
                     Store Channel<br />
-                    (0 Selected)
+                    ({{ form.get('chosenStoreChannel').value?.length || 0 }} Selected)
                 </label>
 
                 <select-store-segmentation
-                    [initialSelection]="[]"
+                    id="chosen-store-channel"
+                    [initialSelection]="form.get('chosenStoreChannel').value || []"
+                    [disabled]="form.get('chosenStoreChannel').disabled"
                     placeholder="Choose Store Channel"
                     title="Select Store Channel"
                     segmentationType="channel"
                     [required]="false"
+                    (selected)="onStoreChannelSelected($event)"
                     fxFlex="50"
                 >
-                    <!-- <div error>
-                            {{
-                                form.get('chosenStoreChannel').value
-                                    | errorMessage: form:'chosenStoreChannel'
-                            }}
-                        </div> -->
+                    <div error>
+                        {{
+                            form.get('chosenStoreChannel').value
+                                | errorMessage: form:'chosenStoreChannel'
+                        }}
+                    </div>
                 </select-store-segmentation>
             </div>
             <!-- STORE CHANNEL FIELD -->
         </div>
-
-        <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
-
-        <app-catalogue-list></app-catalogue-list>
     </form>
+
+    <sinbad-card-header
+        [config]="cardHeaderConfig"
+        (onSearchChanged)="keyword = $event"
+        (onActionSelected)="onActionSelected($event)"
+    ></sinbad-card-header>
+
+    <app-catalogue-list
+        [keyword]="keyword"
+        [(clickSelectAllCatalogue)]="isSelectAllCatalogue"
+        (changeCatalogue)="onCatalogueSelected($event)"
+        (showBatchActions)="onUpdateBatchActions($event)"
+    ></app-catalogue-list>
 </mat-card>

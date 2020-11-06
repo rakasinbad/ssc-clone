@@ -6,21 +6,16 @@ import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
 
 @Injectable({ providedIn: CatalogueSegmentationModule })
-export class CatalogueSegmentationApiService {
+export class CatalogueApiService {
     private url: string;
-    private readonly endpoint: string = '/catalogue-segmentations';
+    private readonly endpoint: string = '/catalogues';
 
     constructor(private http: HttpClient, private helperService: HelperService) {
         this.url = this.helperService.handleApiRouter(this.endpoint);
     }
 
     getWithQuery<T>(params: IQueryParams): Observable<T> {
-        const newArg = [
-            {
-                key: 'type',
-                value: 'segmentation',
-            },
-        ];
+        const newArg = [];
 
         if (params['supplierId']) {
             newArg.push({
@@ -39,13 +34,5 @@ export class CatalogueSegmentationApiService {
         const newParams = this.helperService.handleParams(this.url, params, ...newArg);
 
         return this.http.get<T>(this.url, { params: newParams });
-    }
-
-    public deleteWithQuery(id: string): any {
-        return this.http.delete(this.url + '/' + id);
-    }
-
-    post<T, D>(body: D): Observable<T> {
-        return this.http.post<T>(this.url, body);
     }
 }

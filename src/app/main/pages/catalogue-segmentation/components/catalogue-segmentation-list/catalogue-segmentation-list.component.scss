@@ -1,4 +1,5 @@
 @import 'src/@fuse/scss/fuse';
+@import 'src/@sinbad/scss/helper';
 
 app-catalogue-segmentation-list {
     // Sticky header
@@ -13,6 +14,7 @@ app-catalogue-segmentation-list {
         border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: sinbad-color('black', '5') !important;
 
         // No record table
         &.sinbad-table-no-record {

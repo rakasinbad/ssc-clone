@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import { CatalogueSegmentation } from '../../models';
-import { CatalogueSegmentationActions } from '../actions';
+import { CatalogueSegmentationActions, CatalogueSegmentationFormActions } from '../actions';
 
 export const dataCatalogueSegmentationFeatureKey = 'dataCatalogueSegmentation';
 
@@ -23,14 +23,22 @@ export const initialState: State = adapter.getInitialState({
 
 const reducerFn = createReducer(
     initialState,
-    on(CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest, (state) => ({
-        ...state,
-        isLoading: true,
-    })),
-    on(CatalogueSegmentationActions.fetchCatalogueSegmentationsFailure, (state) => ({
-        ...state,
-        isLoading: false,
-    })),
+    on(
+        CatalogueSegmentationFormActions.createCatalogueSegmentationRequest,
+        CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest,
+        (state) => ({
+            ...state,
+            isLoading: true,
+        })
+    ),
+    on(
+        CatalogueSegmentationFormActions.createCatalogueSegmentationFailure,
+        CatalogueSegmentationActions.fetchCatalogueSegmentationsFailure,
+        (state) => ({
+            ...state,
+            isLoading: false,
+        })
+    ),
     on(CatalogueSegmentationActions.fetchCatalogueSegmentationsSuccess, (state, { data, total }) =>
         adapter.addAll(data, { ...state, isLoading: false, total })
     ),
@@ -38,6 +46,7 @@ const reducerFn = createReducer(
         ...state,
         isRefresh: data.payload.refreshStatus,
     }))
+    on(CatalogueSegmentationFormActions.createCatalogueSegmentationSuccess, () => initialState)
 );
 
 export function reducer(state: State | undefined, action: Action): State {

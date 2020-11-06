@@ -8,27 +8,27 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
-import { CatalogueSegmentation } from '../models';
-import { CatalogueSegmentationActions } from '../store/actions';
+import { CatalogueSegmentation, CreateCatalogueSegmentationDto } from '../models';
+import { CatalogueSegmentationActions, CatalogueSegmentationFormActions } from '../store/actions';
 import { fromCatalogueSegmentation } from '../store/reducers';
-import { CatalogueSegmentationSelectors } from '../store/selectors';
+import { DataCatalogueSegmentationSelectors } from '../store/selectors';
 
 @Injectable({ providedIn: CatalogueSegmentationModule })
 export class CatalogueSegmentationFacadeService {
     readonly catalogueSegmentation$: Observable<CatalogueSegmentation> = this.store.select(
-        CatalogueSegmentationSelectors.selectCurrentItem
+        DataCatalogueSegmentationSelectors.selectCurrentItem
     );
     readonly catalogueSegmentations$: Observable<CatalogueSegmentation[]> = this.store.select(
-        CatalogueSegmentationSelectors.selectAll
+        DataCatalogueSegmentationSelectors.selectAll
     );
     readonly isLoading$: Observable<boolean> = this.store.select(
-        CatalogueSegmentationSelectors.selectIsLoading
+        DataCatalogueSegmentationSelectors.selectIsLoading
     );
     readonly isRefresh$: Observable<boolean> = this.store.select(
-        CatalogueSegmentationSelectors.selectIsRefresh
+        DataCatalogueSegmentationSelectors.selectIsRefresh
     );
     readonly totalItem$: Observable<number> = this.store.select(
-        CatalogueSegmentationSelectors.selectTotalItem
+        DataCatalogueSegmentationSelectors.selectTotalItem
     );
 
     readonly clickCancelBtn$: Observable<boolean> = this.store.select(
@@ -39,6 +39,12 @@ export class CatalogueSegmentationFacadeService {
     );
 
     constructor(private store: Store<fromCatalogueSegmentation.FeatureState>, private dataService: CatalogueSegmentationApiService, private _notice: NoticeService) { }
+
+    createCatalogueSegmentation(body: CreateCatalogueSegmentationDto): void {
+        this.store.dispatch(
+            CatalogueSegmentationFormActions.createCatalogueSegmentationRequest({ payload: body })
+        );
+    }
 
     getWithQuery(params: IQueryParams): void {
         this.store.dispatch(

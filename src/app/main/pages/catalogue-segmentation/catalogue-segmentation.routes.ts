@@ -40,6 +40,23 @@ const routes: Routes = [
             },
         },
     },
+    {
+        path: ':id/edit',
+        component: CatalogueSegmentationFormPageComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
 ];
 
 @NgModule({
