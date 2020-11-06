@@ -9,6 +9,16 @@ app-catalogue-list {
     overflow: auto;
     justify-content: center;
 
+    // Helper container for table with loader
+    position: relative;
+
+    /* .table-container--loader {
+        // Helper container for table with loader
+        display: flex;
+        position: relative;
+        overflow: auto;
+    } */
+
     .catalogue-list {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
@@ -129,7 +139,11 @@ app-catalogue-list {
     }
 
     .loader-content {
-        top: unset;
-        bottom: 6.8em;
+        // Center loader
+        right: unset;
+        bottom: unset;
+        top: 50%;
+        left: 50%;
+        transform: translate3d(-50%, -50%, 0);
     }
 }

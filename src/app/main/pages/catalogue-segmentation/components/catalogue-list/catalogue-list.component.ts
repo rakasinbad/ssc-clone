@@ -16,6 +16,7 @@ import {
 } from '@angular/core';
 import { MatCheckbox, MatCheckboxChange, MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
+import { FormMode } from 'app/shared/models';
 import { HashTable2 } from 'app/shared/models/hashtable2.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
@@ -53,6 +54,9 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
 
     @Input()
     keyword: string;
+
+    @Input()
+    formMode: FormMode;
 
     @Input()
     clickSelectAllCatalogue: boolean;
@@ -102,6 +106,10 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
             }
 
             console.log('CHANGE SELECT ALL', { changes });
+        }
+
+        if (changes['formMode']) {
+            this._updateTableColumn(changes['formMode'].currentValue);
         }
     }
 
@@ -273,5 +281,22 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     private _updateChangeCatalogueToAll(): void {
         this.changeCatalogue.emit('all');
         this.clickSelectAllCatalogueChange.emit(false);
+    }
+
+    private _updateTableColumn(formMode: FormMode): void {
+        switch (formMode) {
+            case 'view':
+                this.displayedColumns = [
+                    'catalogue-name',
+                    'sku-id',
+                    'external-id',
+                    'type',
+                    'status',
+                ];
+                break;
+
+            default:
+                break;
+        }
     }
 }
