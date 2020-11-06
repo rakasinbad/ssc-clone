@@ -40,4 +40,9 @@ export class CatalogueSegmentationApiService {
 
         return this.http.get<T>(this.url, { params: newParams });
     }
+
+    public deleteWithQuery(id: string): any {
+        return this.http.delete(this.url + '/' + id);
+    }
+
 }
