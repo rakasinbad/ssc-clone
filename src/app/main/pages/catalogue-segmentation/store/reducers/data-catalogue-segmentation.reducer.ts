@@ -45,7 +45,7 @@ const reducerFn = createReducer(
     on(CatalogueSegmentationActions.refreshTable, (state, data) => ({
         ...state,
         isRefresh: data.payload.refreshStatus,
-    }))
+    })),
     on(CatalogueSegmentationFormActions.createCatalogueSegmentationSuccess, () => initialState)
 );
 
