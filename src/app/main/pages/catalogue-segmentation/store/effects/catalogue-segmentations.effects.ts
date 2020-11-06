@@ -1,13 +1,30 @@
+import { CatalogueSegmentationFacadeService } from './../../services/catalogue-segmentation-facade.service';
+import { CatalogueSegmentationDataSource } from './../../datasources/catalogue-segmentation.datasource';
+import { Store } from '@ngrx/store';
 import { DeleteCatalogueSegmentationsComponent } from 'app/shared/modals';
-import { MatDialog } from '@angular/material';
+import { MatDialog} from '@angular/material';
 import { map, exhaustMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { UiActions } from 'app/shared/store/actions';
 import { CatalogueSegmentationActions } from '../actions';
+import { environment } from 'environments/environment';
+import { fromCatalogueSegmentation } from '../reducers';
 
 @Injectable()
 export class CatalogueSegmentationsEffects {
-    constructor(private actions$: Actions, private matDialog: MatDialog) { }
+    dataSource: CatalogueSegmentationDataSource;
+
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    constructor(
+        private actions$: Actions,
+        private matDialog: MatDialog,
+        private dataService: CatalogueSegmentationFacadeService,
+        private store: Store<fromCatalogueSegmentation.FeatureState>
+    ) { }
+
     DeleteCatalogueSegmentationsSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -27,14 +44,16 @@ export class CatalogueSegmentationsEffects {
                         disableClose: true
                     });
 
-                    console.log('fghfgh');
-
                     return dialogRef.afterClosed();
                 }),
                 map(response => {
-                    console.log('CONFIRM SET TO INACTIVE', response);
-
-
+                    //run action for refresh table
+                    if (response) {
+                        //call api from CatalogueSegmentationApiService
+                        this.dataService.deleteWithQuery(response);
+                    } else {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    }
                 })
             ),
         { dispatch: false }
