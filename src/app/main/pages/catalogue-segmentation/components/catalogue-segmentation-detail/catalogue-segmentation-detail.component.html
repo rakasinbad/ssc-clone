@@ -1,0 +1,114 @@
+<div fxLayout="column">
+    <div class="box-vertical" fxLayout="column" fxLayoutAlign="start stretch">
+        <div class="pb-16">
+            <span class="mat-headline"> Catalogue Segmentation </span>
+        </div>
+
+        <div class="form-field" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+            <!-- SEGMENTATION NAME -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Segmentation Name</div>
+                <div>
+                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
+                        {{ (store$ | async)?.largeArea || '-' }}
+                    </sinbad-skeleton-view> -->
+                </div>
+            </div>
+            <!-- / SEGMENTATION NAME -->
+
+            <!-- WAREHOUSE -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Warehouse<br />(0 Selected)</div>
+                <div>
+                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
+                        {{ (store$ | async)?.numberOfEmployee || '-' }}
+                    </sinbad-skeleton-view> -->
+                </div>
+            </div>
+            <!-- / WAREHOUSE -->
+
+            <!-- STORE TYPE -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Store Type<br />(0 Selected)</div>
+                <div>
+                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
+                        {{ (store$ | async)?.topSellingBrand || '-' }}
+                    </sinbad-skeleton-view> -->
+                </div>
+            </div>
+            <!-- / STORE TYPE -->
+
+            <!-- STORE GROUP -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Store Group<br />(0 Selected)</div>
+                <div>
+                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
+                        {{ (store$ | async)?.mostWantedBrand || '-' }}
+                    </sinbad-skeleton-view> -->
+                </div>
+            </div>
+            <!-- / STORE GROUP -->
+
+            <!-- STORE CHANNEL -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Store Channel<br />(0 Selected)</div>
+                <div>
+                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
+                        {{ (store$ | async)?.vehicleAccessibilityAmount || '-' }}
+                    </sinbad-skeleton-view> -->
+                </div>
+            </div>
+            <!-- / STORE CHANNEL -->
+
+            <!-- STORE CLUSTER -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Store Cluster<br />(0 Selected)</div>
+                <div></div>
+            </div>
+            <!-- / STORE CLUSTER -->
+        </div>
+    </div>
+
+    <sinbad-card-header
+        [config]="cardHeaderConfig"
+        (onSearchChanged)="keyword = $event"
+    ></sinbad-card-header>
+
+    <app-catalogue-list [keyword]="keyword" [formMode]="formMode"></app-catalogue-list>
+</div>

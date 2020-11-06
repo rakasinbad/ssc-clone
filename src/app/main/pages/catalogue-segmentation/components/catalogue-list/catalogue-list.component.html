@@ -1,3 +1,7 @@
+<!-- <div class="table-container--loader">
+
+</div> -->
+
 <mat-table
     class="catalogue-list sinbad-table sinbad-table__hover"
     [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
@@ -160,7 +164,9 @@
 
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="7"> No records found </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef [attr.colspan]="formMode === 'view' ? 5 : 7">
+            No records found
+        </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
