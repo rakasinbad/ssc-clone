@@ -168,6 +168,7 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="catalogue-segmentation-list__item"
+        [routerLink]="[row.id, 'detail']"
     ></mat-row>
     <mat-footer-row
         *matFooterRowDef="['no-record']"
