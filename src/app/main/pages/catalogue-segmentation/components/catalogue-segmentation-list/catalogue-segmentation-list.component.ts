@@ -1,4 +1,5 @@
-import { Store } from '@ngrx/store';
+import { FeatureState } from './../../../../../shared/components/import-advanced/store/reducers/import-advanced.reducer';
+import { Store, select } from '@ngrx/store';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -24,7 +25,8 @@ import { CatalogueSegmentationDataSource } from '../../datasources';
 import { CatalogueSegmentation } from '../../models';
 import { CatalogueSegmentationFacadeService } from '../../services';
 import { CatalogueSegmentationActions } from '../../store/actions';
-import { fromCatalogue } from 'app/main/pages/catalogues/store/reducers';
+// import { selectAll } from '../../store/selectors/catalogue-segmentation.selector';
+import { fromCatalogueSegmentation } from '../../store/reducers';
 
 @Component({
     selector: 'app-catalogue-segmentation-list',
@@ -67,6 +69,7 @@ export class CatalogueSegmentationListComponent
     dataSource: CatalogueSegmentationDataSource;
     isLoading: boolean;
     totalItem: number;
+    haha: any;
 
     @Input()
     keyword: string;
@@ -83,8 +86,8 @@ export class CatalogueSegmentationListComponent
     constructor(
         private cdRef: ChangeDetectorRef,
         private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private store: Store<fromCatalogue.FeatureState>
-    ) {}
+        private store: Store<fromCatalogueSegmentation.FeatureState>,
+    ) { }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyword']) {
@@ -95,6 +98,13 @@ export class CatalogueSegmentationListComponent
     }
 
     ngOnInit(): void {
+        this.catalogueSegmentationFacade.isRefresh$.subscribe(data => {
+            if (data) {
+                this._initTable();
+                this.catalogueSegmentationFacade.isRefresh(false); //set isRefresh state to false
+            }
+        });
+
         this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
 
         this.dataSource = new CatalogueSegmentationDataSource(this.catalogueSegmentationFacade);
@@ -142,9 +152,7 @@ export class CatalogueSegmentationListComponent
     }
 
     onDeleteCatalogueSegmentation(idCatalogueSegment: number): void {
-        // TODO: Hapus console.log ini setelah selesai secara fungsional dan layout.
-        console.log(idCatalogueSegment);
-        this.store.dispatch(CatalogueSegmentationActions.DeleteCatalogueSegmentationsSuccess({ payload: { id: idCatalogueSegment } }));
+        this.catalogueSegmentationFacade.delete(idCatalogueSegment);
     }
 
     private _initTable(): void {

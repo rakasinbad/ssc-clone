@@ -1,3 +1,5 @@
+import { NoticeService } from './../../../../shared/helpers/notice.service';
+import { CatalogueSegmentationApiService } from './catalogue-segmentation-api.service';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
@@ -36,7 +38,7 @@ export class CatalogueSegmentationFacadeService {
         FormSelectors.getIsClickSaveButton
     );
 
-    constructor(private store: Store<fromCatalogueSegmentation.FeatureState>) {}
+    constructor(private store: Store<fromCatalogueSegmentation.FeatureState>, private dataService: CatalogueSegmentationApiService, private _notice: NoticeService) { }
 
     createCatalogueSegmentation(body: CreateCatalogueSegmentationDto): void {
         this.store.dispatch(
@@ -48,6 +50,34 @@ export class CatalogueSegmentationFacadeService {
         this.store.dispatch(
             CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest({ payload: params })
         );
+    }
+
+    //delete catalogue segments by id
+    delete(idCatalogueSegment: number): void {
+        this.store.dispatch(CatalogueSegmentationActions.DeleteCatalogueSegmentationsSuccess({ payload: { id: idCatalogueSegment } }));
+    }
+
+    //delete catalogue segments by id
+    deleteWithQuery(idCatalogueSegment: string): void {
+        this.dataService.deleteWithQuery(idCatalogueSegment).subscribe((data: any) => {
+            this.store.dispatch(CatalogueSegmentationActions.refreshTable({ payload: { refreshStatus: true } }));
+            this._notice.open('Your selected Catalogue has been deleted.', 'success', {
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                duration: 5000
+            });
+        }, (err) => {
+            this._notice.open(err.message, 'error', {
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                duration: 5000
+            });
+        });
+    }
+
+    //isRefresh use after delete success
+    isRefresh(status: boolean): void {
+        this.store.dispatch(CatalogueSegmentationActions.refreshTable({ payload: { refreshStatus: status } }));
     }
 
     createBreadcrumb(breadcrumbs: IBreadcrumbs[]): void {

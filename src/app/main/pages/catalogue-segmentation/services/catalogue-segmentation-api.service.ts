@@ -41,6 +41,10 @@ export class CatalogueSegmentationApiService {
         return this.http.get<T>(this.url, { params: newParams });
     }
 
+    public deleteWithQuery(id: string): any {
+        return this.http.delete(this.url + '/' + id);
+    }
+
     post<T, D>(body: D): Observable<T> {
         return this.http.post<T>(this.url, body);
     }
