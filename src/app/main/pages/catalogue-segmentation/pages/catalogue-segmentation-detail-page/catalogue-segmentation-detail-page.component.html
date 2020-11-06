@@ -7,16 +7,12 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center p-8">
+    <div class="center">
         <!-- HEADER -->
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button
-                    mat-icon-button
-                    class="mr-0 mr-sm-16"
-                    [routerLink]="['/pages', 'catalogue-segmentations']"
-                >
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" backButton>
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
@@ -68,16 +64,9 @@
                     <mat-tab label="Catalogue Segmentation">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
-                                <!-- <app-flexi-combo-detail-general></app-flexi-combo-detail-general> -->
-                            </div>
-                        </ng-template>
-                    </mat-tab>
-
-                    <mat-tab label="Trigger"
-                        ><!-- [disabled]="isLoading$ | async" -->
-                        <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
-                                <!-- <app-flexi-combo-detail-trigger></app-flexi-combo-detail-trigger> -->
+                                <app-catalogue-segmentation-detail
+                                    [formMode]="formMode"
+                                ></app-catalogue-segmentation-detail>
                             </div>
                         </ng-template>
                     </mat-tab>
