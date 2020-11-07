@@ -33,7 +33,8 @@ const reducerFn = createReducer(
     })),
     on(CatalogueActions.fetchCataloguesSuccess, (state, { data, total }) =>
         adapter.addAll(data, { ...state, isLoading: false, total })
-    )
+    ),
+    on(CatalogueActions.resetState, () => initialState)
 );
 
 export function reducer(state: State | undefined, action: Action): State {

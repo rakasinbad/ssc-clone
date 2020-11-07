@@ -59,6 +59,9 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     formMode: FormMode;
 
     @Input()
+    segmentationId: string;
+
+    @Input()
     clickSelectAllCatalogue: boolean;
 
     @Output()
@@ -91,6 +94,8 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('CHANGES CATALOGUE LIST', { changes });
+
         if (changes['keyword']) {
             if (!changes['keyword'].isFirstChange()) {
                 this._initTable();
@@ -104,12 +109,19 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
             ) {
                 this._updateChangeCatalogueToAll();
             }
-
-            console.log('CHANGE SELECT ALL', { changes });
         }
 
         if (changes['formMode']) {
             this._updateTableColumn(changes['formMode'].currentValue);
+        }
+
+        if (changes['segmentationId']) {
+            if (
+                !changes['segmentationId'].isFirstChange() &&
+                changes['segmentationId'].currentValue
+            ) {
+                this._initTable();
+            }
         }
     }
 
@@ -130,7 +142,7 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 takeUntil(this.unSubs$)
             )
             .subscribe(({ isLoading, totalItem }) => {
-                this.isLoading = isLoading;
+                this.isLoading = (this.formMode !== 'add' && !this.segmentationId) || isLoading;
                 this.totalItem = totalItem;
                 this.cdRef.detectChanges();
             });
@@ -223,7 +235,11 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 ];
             }
 
-            this.dataSource.getWithQuery(data);
+            if (this.formMode === 'add') {
+                this.dataSource.getWithQuery(data);
+            } else if (this.segmentationId) {
+                this.dataSource.getWithQuery(data, this.formMode, this.segmentationId);
+            }
         }
     }
 

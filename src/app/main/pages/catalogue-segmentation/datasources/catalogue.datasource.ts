@@ -1,4 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
+import { FormMode } from 'app/shared/models';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -15,8 +16,8 @@ export class CatalogueDataSource implements DataSource<Catalogue> {
 
     constructor(private catalogueFacade: CatalogueFacadeService) {}
 
-    getWithQuery(params: IQueryParams): void {
-        this.catalogueFacade.getWithQuery(params);
+    getWithQuery(params: IQueryParams, formMode: FormMode = 'add', id?: string): void {
+        this.catalogueFacade.getWithQuery(params, formMode, id);
     }
 
     collections$(): Observable<Catalogue[]> {
@@ -30,5 +31,7 @@ export class CatalogueDataSource implements DataSource<Catalogue> {
     disconnect(): void {
         this._collections$.next([]);
         this._collections$.complete();
+
+        this.catalogueFacade.resetState();
     }
 }
