@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FormMode } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CatalogueSegmentation } from '../../models';
@@ -14,6 +15,22 @@ import { CatalogueSegmentationFacadeService } from '../../services';
     encapsulation: ViewEncapsulation.None,
 })
 export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestroy {
+    private breadcrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Catalogue',
+        },
+        {
+            title: 'Catalogue Segmentation',
+        },
+        {
+            title: 'Catalogue Segmentation Detail',
+            active: true,
+        },
+    ];
+
     formMode: FormMode;
     catalogueSegmentation: CatalogueSegmentation;
     isLoading: boolean = false;
@@ -28,6 +45,8 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     ) {}
 
     ngOnInit(): void {
+        this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
+
         this.formMode = this._checkFormMode();
 
         if (this.formMode !== 'view') {
@@ -52,6 +71,7 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     }
 
     ngOnDestroy(): void {
+        this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetState();
     }
 

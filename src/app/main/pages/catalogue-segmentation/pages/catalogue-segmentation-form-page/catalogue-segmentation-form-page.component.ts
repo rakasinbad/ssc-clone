@@ -26,6 +26,9 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
             title: 'Catalogue',
         },
         {
+            title: 'Catalogue Segmentation',
+        },
+        {
             title: 'Add Catalogue Segmentation',
             active: true,
         },
@@ -72,11 +75,29 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
     ) {}
 
     ngOnInit(): void {
+        this.formMode = this.route.snapshot.params['id'] ? 'edit' : 'add';
+
+        if (this.formMode === 'edit') {
+            this.breadcrumbs = [
+                {
+                    title: 'Home',
+                },
+                {
+                    title: 'Catalogue',
+                },
+                {
+                    title: 'Catalogue Segmentation',
+                },
+                {
+                    title: 'Edit Catalogue Segmentation',
+                    active: true,
+                },
+            ];
+        }
+
         this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
         this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
         this.catalogueSegmentationFacade.setCancelButton();
-
-        this.formMode = this.route.snapshot.params['id'] ? 'edit' : 'add';
 
         this.form = this.catalogueSegmentationFormService.createForm();
 
