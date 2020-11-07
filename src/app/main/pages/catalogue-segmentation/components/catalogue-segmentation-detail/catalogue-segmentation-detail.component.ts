@@ -8,6 +8,7 @@ import {
 import { fuseAnimations } from '@fuse/animations';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { FormMode } from 'app/shared/models';
+import { CatalogueSegmentation } from '../../models';
 
 @Component({
     selector: 'app-catalogue-segmentation-detail',
@@ -36,6 +37,12 @@ export class CatalogueSegmentationDetailComponent implements OnInit {
 
     @Input()
     formMode: FormMode;
+
+    @Input()
+    item: CatalogueSegmentation;
+
+    @Input()
+    isLoading: boolean;
 
     constructor() {}
 
