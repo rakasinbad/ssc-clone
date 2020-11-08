@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -14,11 +14,42 @@ export class CatalogueSegmentationApiService {
         this.url = this.helperService.handleApiRouter(this.endpoint);
     }
 
-    getWithQuery<T>(params: IQueryParams): Observable<T> {
+    getById<T>(
+        id: string,
+        type: 'segmentation' | 'catalogue' = 'segmentation',
+        params?: IQueryParams
+    ): Observable<T> {
+        let newParams: HttpParams = null;
+
+        if (params) {
+            const newArg = [
+                {
+                    key: 'type',
+                    value: type,
+                },
+            ];
+
+            if (params['keyword']) {
+                newArg.push({
+                    key: 'keyword',
+                    value: params['keyword'],
+                });
+            }
+
+            newParams = this.helperService.handleParams(this.url, params, ...newArg);
+        }
+
+        return this.http.get<T>(`${this.url}/${id}`, { params: newParams });
+    }
+
+    getWithQuery<T>(
+        params: IQueryParams,
+        type: 'segmentation' | 'catalogue' = 'segmentation'
+    ): Observable<T> {
         const newArg = [
             {
                 key: 'type',
-                value: 'segmentation',
+                value: type,
             },
         ];
 

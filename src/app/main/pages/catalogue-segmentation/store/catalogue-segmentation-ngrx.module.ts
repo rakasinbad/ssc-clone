@@ -4,6 +4,7 @@ import { StoreModule } from '@ngrx/store';
 import {
     CreateCatalogueSegmentationEffects,
     FetchCataloguesEffects,
+    FetchCatalogueSegmentationEffects,
     FetchCatalogueSegmentationsEffects,
 } from './effects';
 import { CatalogueSegmentationsEffects } from './effects/catalogue-segmentations.effects';
@@ -18,8 +19,9 @@ import { fromCatalogueSegmentation } from './reducers';
         EffectsModule.forFeature([
             CatalogueSegmentationsEffects,
             CreateCatalogueSegmentationEffects,
-            FetchCatalogueSegmentationsEffects,
             FetchCataloguesEffects,
+            FetchCatalogueSegmentationEffects,
+            FetchCatalogueSegmentationsEffects,
         ]),
     ],
 })

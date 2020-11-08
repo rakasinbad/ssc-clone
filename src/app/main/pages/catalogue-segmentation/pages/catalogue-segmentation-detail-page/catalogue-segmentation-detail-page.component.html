@@ -22,18 +22,17 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                            {{ (flexiCombo$ | async)?.name }}
+                        <ng-container *ngIf="!isLoading">
+                            {{ catalogueSegmentation?.name || '-' }}
                         </ng-container>
 
                         <ngx-skeleton-loader
                             [theme]="{ width: '100px', height: '25px', 'margin-bottom': '-5px' }"
-                            *ngIf="isLoading$ | async"
-                        ></ngx-skeleton-loader> -->
-                        LAKME CLASSIC
+                            *ngIf="isLoading"
+                        ></ngx-skeleton-loader>
                     </div>
                     <div class="subtitle secondary-text">
-                        <span>SKU Detail</span>
+                        <span>Catalogue Segmentation Detail</span>
                     </div>
                 </div>
             </div>
@@ -44,15 +43,15 @@
                 mat-raised-button
                 class="accent-fg"
                 [routerLink]="['../', 'edit']"
+                *ngIf="!isLoading"
             >
-                <!-- *ngIf="!(isLoading$ | async)" -->
                 <span>Edit</span>
             </button>
 
-            <!-- <ngx-skeleton-loader
+            <ngx-skeleton-loader
                 [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / HEADER -->
 
@@ -66,6 +65,8 @@
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-catalogue-segmentation-detail
                                     [formMode]="formMode"
+                                    [item]="catalogueSegmentation$ | async"
+                                    [isLoading]="isLoading$ | async"
                                 ></app-catalogue-segmentation-detail>
                             </div>
                         </ng-template>

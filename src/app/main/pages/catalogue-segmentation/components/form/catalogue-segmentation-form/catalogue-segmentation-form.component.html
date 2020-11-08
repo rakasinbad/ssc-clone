@@ -221,6 +221,8 @@
 
     <app-catalogue-list
         [keyword]="keyword"
+        [formMode]="formMode"
+        [segmentationId]="item?.id"
         [(clickSelectAllCatalogue)]="isSelectAllCatalogue"
         (changeCatalogue)="onCatalogueSelected($event)"
         (showBatchActions)="onUpdateBatchActions($event)"

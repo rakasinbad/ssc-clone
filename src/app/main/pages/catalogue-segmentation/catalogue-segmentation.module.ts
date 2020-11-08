@@ -21,6 +21,7 @@ import {
     CatalogueSegmentationApiService,
     CatalogueSegmentationFacadeService,
     CatalogueSegmentationFormService,
+    CatalogueSegmentationService,
 } from './services';
 import { CatalogueSegmentationNgrxModule } from './store';
 
@@ -54,6 +55,7 @@ import { CatalogueSegmentationNgrxModule } from './store';
         CatalogueSegmentationApiService,
         CatalogueSegmentationFacadeService,
         CatalogueSegmentationFormService,
+        CatalogueSegmentationService,
     ],
 })
 export class CatalogueSegmentationModule {}

@@ -1,5 +1,3 @@
-import { NoticeService } from './../../../../shared/helpers/notice.service';
-import { CatalogueSegmentationApiService } from './catalogue-segmentation-api.service';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
@@ -9,9 +7,15 @@ import { FormSelectors } from 'app/shared/store/selectors';
 import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
 import { CatalogueSegmentation, CreateCatalogueSegmentationDto } from '../models';
-import { CatalogueSegmentationActions, CatalogueSegmentationFormActions } from '../store/actions';
+import {
+    CatalogueSegmentationActions,
+    CatalogueSegmentationDetailActions,
+    CatalogueSegmentationFormActions,
+} from '../store/actions';
 import { fromCatalogueSegmentation } from '../store/reducers';
 import { DataCatalogueSegmentationSelectors } from '../store/selectors';
+import { NoticeService } from './../../../../shared/helpers/notice.service';
+import { CatalogueSegmentationApiService } from './catalogue-segmentation-api.service';
 
 @Injectable({ providedIn: CatalogueSegmentationModule })
 export class CatalogueSegmentationFacadeService {
@@ -38,11 +42,21 @@ export class CatalogueSegmentationFacadeService {
         FormSelectors.getIsClickSaveButton
     );
 
-    constructor(private store: Store<fromCatalogueSegmentation.FeatureState>, private dataService: CatalogueSegmentationApiService, private _notice: NoticeService) { }
+    constructor(
+        private store: Store<fromCatalogueSegmentation.FeatureState>,
+        private dataService: CatalogueSegmentationApiService,
+        private _notice: NoticeService
+    ) {}
 
     createCatalogueSegmentation(body: CreateCatalogueSegmentationDto): void {
         this.store.dispatch(
             CatalogueSegmentationFormActions.createCatalogueSegmentationRequest({ payload: body })
+        );
+    }
+
+    getById(id: string): void {
+        this.store.dispatch(
+            CatalogueSegmentationDetailActions.fetchCatalogueSegmentationRequest({ id })
         );
     }
 
@@ -52,32 +66,47 @@ export class CatalogueSegmentationFacadeService {
         );
     }
 
+    resetState(): void {
+        this.store.dispatch(CatalogueSegmentationActions.resetState());
+    }
+
     //delete catalogue segments by id
     delete(idCatalogueSegment: number): void {
-        this.store.dispatch(CatalogueSegmentationActions.DeleteCatalogueSegmentationsSuccess({ payload: { id: idCatalogueSegment } }));
+        this.store.dispatch(
+            CatalogueSegmentationActions.DeleteCatalogueSegmentationsSuccess({
+                payload: { id: idCatalogueSegment },
+            })
+        );
     }
 
     //delete catalogue segments by id
     deleteWithQuery(idCatalogueSegment: string): void {
-        this.dataService.deleteWithQuery(idCatalogueSegment).subscribe((data: any) => {
-            this.store.dispatch(CatalogueSegmentationActions.refreshTable({ payload: { refreshStatus: true } }));
-            this._notice.open('Your selected Catalogue has been deleted.', 'success', {
-                horizontalPosition: 'right',
-                verticalPosition: 'top',
-                duration: 5000
-            });
-        }, (err) => {
-            this._notice.open(err.message, 'error', {
-                horizontalPosition: 'right',
-                verticalPosition: 'top',
-                duration: 5000
-            });
-        });
+        this.dataService.deleteWithQuery(idCatalogueSegment).subscribe(
+            (data: any) => {
+                this.store.dispatch(
+                    CatalogueSegmentationActions.refreshTable({ payload: { refreshStatus: true } })
+                );
+                this._notice.open('Your selected Catalogue has been deleted.', 'success', {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'top',
+                    duration: 5000,
+                });
+            },
+            (err) => {
+                this._notice.open(err.message, 'error', {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'top',
+                    duration: 5000,
+                });
+            }
+        );
     }
 
     //isRefresh use after delete success
     isRefresh(status: boolean): void {
-        this.store.dispatch(CatalogueSegmentationActions.refreshTable({ payload: { refreshStatus: status } }));
+        this.store.dispatch(
+            CatalogueSegmentationActions.refreshTable({ payload: { refreshStatus: status } })
+        );
     }
 
     createBreadcrumb(breadcrumbs: IBreadcrumbs[]): void {

@@ -12,6 +12,7 @@
         <app-catalogue-segmentation-form
             [form]="form"
             [formMode]="formMode"
+            [item]="catalogueSegmentation$ | async"
             (formStatus)="onSetFormStatus($event)"
             (createFormValue)="createCatalogueSegmentationFormDto = $event"
         ></app-catalogue-segmentation-form>

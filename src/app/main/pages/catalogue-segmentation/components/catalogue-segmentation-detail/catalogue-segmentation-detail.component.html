@@ -15,9 +15,14 @@
             >
                 <div class="label" fxFlex="120px">Segmentation Name</div>
                 <div>
-                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
-                        {{ (store$ | async)?.largeArea || '-' }}
-                    </sinbad-skeleton-view> -->
+                    <ng-container *ngIf="!isLoading">
+                        {{ (item?.warehouses | convertArrayToString: 'name') || '-' }}
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
                 </div>
             </div>
             <!-- / SEGMENTATION NAME -->
@@ -30,11 +35,25 @@
                 fxLayoutGap="16px"
                 fxFlex
             >
-                <div class="label" fxFlex="120px">Warehouse<br />(0 Selected)</div>
+                <div class="label" fxFlex="120px">
+                    Warehouse<br />
+                    <ng-container *ngIf="!isLoading">
+                        ({{ item?.totalWarehouse() || 0 }} Selected)
+                    </ng-container>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
+                </div>
                 <div>
-                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
-                        {{ (store$ | async)?.numberOfEmployee || '-' }}
-                    </sinbad-skeleton-view> -->
+                    <ng-container *ngIf="!isLoading">
+                        {{ (item?.warehouses | convertArrayToString: 'name') || '-' }}
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
                 </div>
             </div>
             <!-- / WAREHOUSE -->
@@ -47,11 +66,25 @@
                 fxLayoutGap="16px"
                 fxFlex
             >
-                <div class="label" fxFlex="120px">Store Type<br />(0 Selected)</div>
+                <div class="label" fxFlex="120px">
+                    Store Type<br />
+                    <ng-container *ngIf="!isLoading">
+                        ({{ item?.totalType() || 0 }} Selected)
+                    </ng-container>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
+                </div>
                 <div>
-                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
-                        {{ (store$ | async)?.topSellingBrand || '-' }}
-                    </sinbad-skeleton-view> -->
+                    <ng-container *ngIf="!isLoading">
+                        {{ (item?.types | convertArrayToString: 'name') || '-' }}
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
                 </div>
             </div>
             <!-- / STORE TYPE -->
@@ -64,11 +97,25 @@
                 fxLayoutGap="16px"
                 fxFlex
             >
-                <div class="label" fxFlex="120px">Store Group<br />(0 Selected)</div>
+                <div class="label" fxFlex="120px">
+                    Store Group<br />
+                    <ng-container *ngIf="!isLoading">
+                        ({{ item?.totalGroup() || 0 }} Selected)
+                    </ng-container>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
+                </div>
                 <div>
-                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
-                        {{ (store$ | async)?.mostWantedBrand || '-' }}
-                    </sinbad-skeleton-view> -->
+                    <ng-container *ngIf="!isLoading">
+                        {{ (item?.groups | convertArrayToString: 'name') || '-' }}
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
                 </div>
             </div>
             <!-- / STORE GROUP -->
@@ -81,11 +128,25 @@
                 fxLayoutGap="16px"
                 fxFlex
             >
-                <div class="label" fxFlex="120px">Store Channel<br />(0 Selected)</div>
+                <div class="label" fxFlex="120px">
+                    Store Channel<br />
+                    <ng-container *ngIf="!isLoading">
+                        ({{ item?.totalChannel() || 0 }} Selected)
+                    </ng-container>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
+                </div>
                 <div>
-                    <!-- <sinbad-skeleton-view [loading]="isLoading$ | async">
-                        {{ (store$ | async)?.vehicleAccessibilityAmount || '-' }}
-                    </sinbad-skeleton-view> -->
+                    <ng-container *ngIf="!isLoading">
+                        {{ (item?.channels | convertArrayToString: 'name') || '-' }}
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
                 </div>
             </div>
             <!-- / STORE CHANNEL -->
@@ -98,8 +159,26 @@
                 fxLayoutGap="16px"
                 fxFlex
             >
-                <div class="label" fxFlex="120px">Store Cluster<br />(0 Selected)</div>
-                <div></div>
+                <div class="label" fxFlex="120px">
+                    Store Cluster<br />
+                    <ng-container *ngIf="!isLoading">
+                        ({{ item?.totalCluster() || 0 }} Selected)
+                    </ng-container>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
+                </div>
+                <div>
+                    <ng-container *ngIf="!isLoading">
+                        {{ (item?.clusters | convertArrayToString: 'name') || '-' }}
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader>
+                </div>
             </div>
             <!-- / STORE CLUSTER -->
         </div>
@@ -110,5 +189,9 @@
         (onSearchChanged)="keyword = $event"
     ></sinbad-card-header>
 
-    <app-catalogue-list [keyword]="keyword" [formMode]="formMode"></app-catalogue-list>
+    <app-catalogue-list
+        [keyword]="keyword"
+        [formMode]="formMode"
+        [segmentationId]="item?.id"
+    ></app-catalogue-list>
 </div>

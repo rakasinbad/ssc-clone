@@ -1,5 +1,4 @@
 import { createSelector } from '@ngrx/store';
-import * as fromRoot from 'app/store/app.reducer';
 import { adapter } from '../reducers/data-catalogue.reducer';
 import { selectCatalogueSegmentationState } from './catalogue-segmentation.selector';
 
@@ -19,11 +18,9 @@ export const selectSelectedId = createSelector(
     (state) => state.selectedId
 );
 
-export const selectSelectedCatalogueId = fromRoot.selectRouteParam('id');
-
 export const selectCurrentItem = createSelector(
     selectEntities,
-    selectSelectedCatalogueId,
+    selectSelectedId,
     (entities, catalogueId) => entities[catalogueId]
 );
 

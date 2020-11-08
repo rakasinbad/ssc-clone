@@ -1,5 +1,3 @@
-import { FeatureState } from './../../../../../shared/components/import-advanced/store/reducers/import-advanced.reducer';
-import { Store, select } from '@ngrx/store';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -24,9 +22,6 @@ import { map, takeUntil } from 'rxjs/operators';
 import { CatalogueSegmentationDataSource } from '../../datasources';
 import { CatalogueSegmentation } from '../../models';
 import { CatalogueSegmentationFacadeService } from '../../services';
-import { CatalogueSegmentationActions } from '../../store/actions';
-// import { selectAll } from '../../store/selectors/catalogue-segmentation.selector';
-import { fromCatalogueSegmentation } from '../../store/reducers';
 
 @Component({
     selector: 'app-catalogue-segmentation-list',
@@ -69,7 +64,6 @@ export class CatalogueSegmentationListComponent
     dataSource: CatalogueSegmentationDataSource;
     isLoading: boolean;
     totalItem: number;
-    haha: any;
 
     @Input()
     keyword: string;
@@ -85,9 +79,8 @@ export class CatalogueSegmentationListComponent
 
     constructor(
         private cdRef: ChangeDetectorRef,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private store: Store<fromCatalogueSegmentation.FeatureState>,
-    ) { }
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyword']) {
@@ -98,7 +91,7 @@ export class CatalogueSegmentationListComponent
     }
 
     ngOnInit(): void {
-        this.catalogueSegmentationFacade.isRefresh$.subscribe(data => {
+        this.catalogueSegmentationFacade.isRefresh$.subscribe((data) => {
             if (data) {
                 this._initTable();
                 this.catalogueSegmentationFacade.isRefresh(false); //set isRefresh state to false
