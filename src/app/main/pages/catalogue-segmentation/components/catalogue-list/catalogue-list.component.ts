@@ -11,11 +11,13 @@ import {
     OnInit,
     Output,
     SimpleChanges,
+    TemplateRef,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
 import { MatCheckbox, MatCheckboxChange, MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { FormMode } from 'app/shared/models';
 import { HashTable2 } from 'app/shared/models/hashtable2.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -88,9 +90,13 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     @ViewChild('headCheckbox', { static: false })
     headCheckbox: MatCheckbox;
 
+    @ViewChild('alertUnassign', { static: false })
+    alertUnassign: TemplateRef<any>;
+
     constructor(
         private cdRef: ChangeDetectorRef,
-        private catalogueFacade: CatalogueFacadeService
+        private catalogueFacade: CatalogueFacadeService,
+        private applyDialogFactoryService: ApplyDialogFactoryService
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -207,6 +213,27 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
         return item.id;
     }
 
+    onUnassign(item: Catalogue): void {
+        this.applyDialogFactoryService.open(
+            {
+                title: 'Unassign',
+                template: this.alertUnassign,
+                isApplyEnabled: true,
+                showApplyButton: true,
+                showCloseButton: true,
+                applyButtonLabel: 'Unassign',
+                closeButtonLabel: 'Cancel',
+            },
+            {
+                disableClose: true,
+                width: '30vw',
+                minWidth: '30vw',
+                maxWidth: '50vw',
+                panelClass: 'dialog-container-no-padding',
+            }
+        );
+    }
+
     private _initTable(): void {
         if (this.paginator) {
             const data: IQueryParams = {
@@ -311,7 +338,28 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 ];
                 break;
 
+            case 'edit':
+                this.displayedColumns = [
+                    'checkbox',
+                    'catalogue-name',
+                    'sku-id',
+                    'external-id',
+                    'type',
+                    'status',
+                    'actions',
+                ];
+                break;
+
+            case 'add':
             default:
+                this.displayedColumns = [
+                    'checkbox',
+                    'catalogue-name',
+                    'sku-id',
+                    'external-id',
+                    'type',
+                    'status',
+                ];
                 break;
         }
     }

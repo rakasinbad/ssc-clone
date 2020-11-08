@@ -6,7 +6,7 @@ import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { CatalogueSegmentation } from '../../models';
-import { CatalogueSegmentationFacadeService } from '../../services';
+import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -41,17 +41,22 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private catalogueSegmentationService: CatalogueSegmentationService
     ) {}
 
     ngOnInit(): void {
-        this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
-
-        this.formMode = this._checkFormMode();
+        this.formMode = this.catalogueSegmentationService.checkFormMode(
+            'view',
+            this.route,
+            this.router
+        );
 
         if (this.formMode !== 'view') {
             this.router.navigateByUrl('/pages/catalogue-segmentations', { replaceUrl: true });
         }
+
+        this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
 
         this.catalogueSegmentation$ = this.catalogueSegmentationFacade.catalogueSegmentation$.pipe(
             tap((item) => {
@@ -73,14 +78,6 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     ngOnDestroy(): void {
         this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetState();
-    }
-
-    private _checkFormMode(): FormMode {
-        if (this.route.snapshot.params['id'] && this.router.url.endsWith('detail')) {
-            return 'view';
-        } else {
-            return null;
-        }
     }
 
     private _initDetail(id: string): void {

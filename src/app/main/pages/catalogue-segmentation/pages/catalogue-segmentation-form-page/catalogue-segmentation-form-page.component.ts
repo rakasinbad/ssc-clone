@@ -1,15 +1,16 @@
 import { Location } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormMode, FormStatus } from 'app/shared/models';
 import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { CreateCatalogueSegmentationDto } from '../../models';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { filter, takeUntil, tap } from 'rxjs/operators';
+import { CatalogueSegmentation, CreateCatalogueSegmentationDto } from '../../models';
 import {
     CatalogueSegmentationFacadeService,
     CatalogueSegmentationFormService,
+    CatalogueSegmentationService,
 } from '../../services';
 
 @Component({
@@ -67,15 +68,27 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
     createCatalogueSegmentationFormDto: CreateCatalogueSegmentationDto;
     updateCatalogueSegmentationFormDto: any;
 
+    catalogueSegmentation$: Observable<CatalogueSegmentation>;
+
     constructor(
         private location: Location,
         private route: ActivatedRoute,
+        private router: Router,
         private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private catalogueSegmentationService: CatalogueSegmentationService,
         private catalogueSegmentationFormService: CatalogueSegmentationFormService
     ) {}
 
     ngOnInit(): void {
-        this.formMode = this.route.snapshot.params['id'] ? 'edit' : 'add';
+        this.formMode = this.catalogueSegmentationService.checkFormMode(
+            'form',
+            this.route,
+            this.router
+        );
+
+        if (!this.formMode) {
+            this.router.navigateByUrl('/pages/catalogue-segmentations', { replaceUrl: true });
+        }
 
         if (this.formMode === 'edit') {
             this.breadcrumbs = [
@@ -125,6 +138,21 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
             .subscribe((_) => {
                 this._onSubmit();
             });
+
+        this.catalogueSegmentation$ = this.catalogueSegmentationFacade.catalogueSegmentation$.pipe(
+            filter(() => this.formMode === 'edit'),
+            tap((item) => {
+                console.log('TAP REQUEST', { item });
+                const { id } = this.route.snapshot.params;
+
+                if (!item) {
+                    this._initDetail(id);
+                }
+
+                // this.catalogueSegmentation = item;
+            }),
+            takeUntil(this.unSubs$)
+        );
     }
 
     ngAfterViewInit(): void {
@@ -136,12 +164,18 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
         this.catalogueSegmentationFacade.resetAllFooter();
         this.catalogueSegmentationFacade.hideFooter();
 
+        this.catalogueSegmentationFacade.resetState();
+
         this.unSubs$.next();
         this.unSubs$.complete();
     }
 
     onSetFormStatus(status: FormStatus): void {
         this.formStatus$.next(status);
+    }
+
+    private _initDetail(id: string): void {
+        this.catalogueSegmentationFacade.getById(id);
     }
 
     private _onSubmit(): void {
