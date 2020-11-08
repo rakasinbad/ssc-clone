@@ -64,7 +64,6 @@ export class CatalogueSegmentationListComponent
     dataSource: CatalogueSegmentationDataSource;
     isLoading: boolean;
     totalItem: number;
-    haha: any;
 
     @Input()
     keyword: string;
