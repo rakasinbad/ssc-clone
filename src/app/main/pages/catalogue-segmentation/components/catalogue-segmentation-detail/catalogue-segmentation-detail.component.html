@@ -16,7 +16,7 @@
                 <div class="label" fxFlex="120px">Segmentation Name</div>
                 <div>
                     <ng-container *ngIf="!isLoading">
-                        {{ (item?.warehouses | convertArrayToString: 'name') || '-' }}
+                        {{ item?.name || '-' }}
                     </ng-container>
 
                     <ngx-skeleton-loader
@@ -193,5 +193,6 @@
         [keyword]="keyword"
         [formMode]="formMode"
         [segmentationId]="item?.id"
+        (loading)="onLoadingCatalogueList($event)"
     ></app-catalogue-list>
 </div>

@@ -30,6 +30,7 @@ const reducerFn = createReducer(
     on(
         CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest,
         CatalogueSegmentationFormActions.createCatalogueSegmentationRequest,
+        CatalogueSegmentationFormActions.updateCatalogueSegmentationRequest,
         (state) => ({
             ...state,
             isLoading: true,
@@ -39,6 +40,7 @@ const reducerFn = createReducer(
         CatalogueSegmentationActions.fetchCatalogueSegmentationsFailure,
         CatalogueSegmentationDetailActions.fetchCatalogueSegmentationFailure,
         CatalogueSegmentationFormActions.createCatalogueSegmentationFailure,
+        CatalogueSegmentationFormActions.updateCatalogueSegmentationFailure,
         (state) => ({
             ...state,
             isLoading: false,

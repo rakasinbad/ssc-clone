@@ -43,14 +43,14 @@
                 mat-raised-button
                 class="accent-fg"
                 [routerLink]="['../', 'edit']"
-                *ngIf="!isLoading"
+                *ngIf="!isLoadingCombine"
             >
                 <span>Edit</span>
             </button>
 
             <ngx-skeleton-loader
                 [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading"
+                *ngIf="isLoadingCombine"
             ></ngx-skeleton-loader>
         </div>
         <!-- / HEADER -->
@@ -67,6 +67,7 @@
                                     [formMode]="formMode"
                                     [item]="catalogueSegmentation$ | async"
                                     [isLoading]="isLoading$ | async"
+                                    (loadingCatalogueList)="onSetLoadingCatalogueList($event)"
                                 ></app-catalogue-segmentation-detail>
                             </div>
                         </ng-template>

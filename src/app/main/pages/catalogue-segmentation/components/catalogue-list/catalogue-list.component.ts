@@ -23,10 +23,10 @@ import { HashTable2 } from 'app/shared/models/hashtable2.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
 import { combineLatest, merge, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 import { CatalogueDataSource } from '../../datasources';
 import { Catalogue } from '../../models';
-import { CatalogueFacadeService } from '../../services';
+import { CatalogueFacadeService, CatalogueSegmentationFacadeService } from '../../services';
 
 @Component({
     selector: 'app-catalogue-list',
@@ -69,6 +69,18 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     @Output()
     clickSelectAllCatalogueChange: EventEmitter<boolean> = new EventEmitter();
 
+    @Input()
+    clickResetSelection: boolean;
+
+    @Output()
+    clickResetSelectionChange: EventEmitter<boolean> = new EventEmitter();
+
+    @Input()
+    clickUnassignAllSelection: boolean;
+
+    @Output()
+    clickUnassignAllSelectionChange: EventEmitter<boolean> = new EventEmitter();
+
     @Output()
     changeCatalogue: EventEmitter<Catalogue[] | 'all'> = new EventEmitter();
 
@@ -77,6 +89,9 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
         isShowBatchActions: boolean;
         totalItem: number;
     }> = new EventEmitter();
+
+    @Output()
+    loading: EventEmitter<boolean> = new EventEmitter();
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -96,15 +111,23 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     constructor(
         private cdRef: ChangeDetectorRef,
         private catalogueFacade: CatalogueFacadeService,
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
         private applyDialogFactoryService: ApplyDialogFactoryService
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('CHANGES CATALOGUE LIST', { changes });
-
         if (changes['keyword']) {
             if (!changes['keyword'].isFirstChange()) {
                 this._initTable();
+            }
+        }
+
+        if (changes['clickResetSelection']) {
+            if (
+                !changes['clickResetSelection'].isFirstChange() &&
+                changes['clickResetSelection'].currentValue === true
+            ) {
+                this._resetSelection();
             }
         }
 
@@ -114,6 +137,15 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 changes['clickSelectAllCatalogue'].currentValue === true
             ) {
                 this._updateChangeCatalogueToAll();
+            }
+        }
+
+        if (changes['clickUnassignAllSelection']) {
+            if (
+                !changes['clickUnassignAllSelection'].isFirstChange() &&
+                changes['clickUnassignAllSelection'].currentValue === true
+            ) {
+                this._unAssignAllSelection();
             }
         }
 
@@ -149,8 +181,20 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
             )
             .subscribe(({ isLoading, totalItem }) => {
                 this.isLoading = (this.formMode !== 'add' && !this.segmentationId) || isLoading;
+                this.loading.emit(this.isLoading);
                 this.totalItem = totalItem;
                 this.cdRef.detectChanges();
+            });
+
+        this.catalogueFacade.isRefresh$
+            .pipe(
+                filter((isRefresh) => isRefresh),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe(() => {
+                this._initTable();
+                this._resetSelection();
+                this.selectedId = null;
             });
 
         this._initTable();
@@ -175,13 +219,6 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     }
 
     onAllRowsSelected(ev: MatCheckboxChange): void {
-        console.log('ALL ROWS', {
-            ev,
-            headCk: this.headCheckbox,
-            isHeadChecked: this.isHeadChecked,
-            isHeadIndeterminate: this.isHeadIndeterminate,
-        });
-
         if (this.isHeadChecked) {
             this.selectedCatalogue.upsert(this.collections);
         } else {
@@ -192,8 +229,6 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     }
 
     onRowSelected(ev: MatCheckboxChange, item: Catalogue): void {
-        console.log('ROW SELECTED', { ev, item, headCk: this.headCheckbox });
-
         this.selectedId = item.id || null;
 
         if (ev.checked) {
@@ -214,7 +249,13 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
     }
 
     onUnassign(item: Catalogue): void {
-        this.applyDialogFactoryService.open(
+        if (!item || !this.segmentationId || !item.segmentationId || this.formMode !== 'edit') {
+            return;
+        }
+
+        this.selectedId = item.id || null;
+
+        const dialogRef = this.applyDialogFactoryService.open(
             {
                 title: 'Unassign',
                 template: this.alertUnassign,
@@ -232,6 +273,18 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 panelClass: 'dialog-container-no-padding',
             }
         );
+
+        dialogRef.closed$.subscribe((res) => {
+            if (res === 'apply') {
+                this.catalogueSegmentationFacade.patchCatalogueSegmentation(
+                    { segmentationIds: [item.segmentationId] },
+                    this.segmentationId
+                );
+            }
+
+            this.selectedId = null;
+            this.cdRef.markForCheck();
+        });
     }
 
     private _initTable(): void {
@@ -270,6 +323,12 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
         }
     }
 
+    private _resetSelection(): void {
+        this.selectedCatalogue.clear();
+        this._updateHeadCheckbox();
+        this.clickResetSelectionChange.emit(false);
+    }
+
     private _updateHeadCheckbox(): void {
         const selectedIds = this.selectedCatalogue.toArray().map((item) => item.id);
         const collectionIds = this.collections.map((item) => item.id);
@@ -294,16 +353,6 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 this._updateTickHeadCheckbox(false, true);
             }
         }
-
-        console.log('UPDATE_HEAD_CHECKBOX', {
-            collectionIds,
-            totalSelectedOnPage,
-            selected: this.selectedCatalogue,
-            totalItem: this.totalItem,
-            selectedIds,
-            isHeadChecked: this.isHeadChecked,
-            isHeadIndeterminate: this.isHeadIndeterminate,
-        });
     }
 
     private _updateTickHeadCheckbox(checked: boolean, indeterminate: boolean): void {
@@ -319,6 +368,44 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
 
     private _showBatchActions(isShowBatchActions: boolean): void {
         this.showBatchActions.emit({ isShowBatchActions, totalItem: this.totalItem });
+    }
+
+    private _unAssignAllSelection(): void {
+        const selectedIds = this.selectedCatalogue.toArray().map((item) => item.segmentationId);
+
+        if (!selectedIds.length) {
+            return;
+        }
+
+        const dialogRef = this.applyDialogFactoryService.open(
+            {
+                title: `Unassign ${selectedIds.length} product${selectedIds.length > 1 ? 's' : ''}`,
+                template: this.alertUnassign,
+                isApplyEnabled: true,
+                showApplyButton: true,
+                showCloseButton: true,
+                applyButtonLabel: 'Unassign',
+                closeButtonLabel: 'Cancel',
+            },
+            {
+                disableClose: true,
+                width: '30vw',
+                minWidth: '30vw',
+                maxWidth: '50vw',
+                panelClass: 'dialog-container-no-padding',
+            }
+        );
+
+        dialogRef.closed$.subscribe((res) => {
+            if (res === 'apply') {
+                this.catalogueSegmentationFacade.patchCatalogueSegmentation(
+                    { segmentationIds: selectedIds },
+                    this.segmentationId
+                );
+            }
+
+            this.clickUnassignAllSelectionChange.emit(false);
+        });
     }
 
     private _updateChangeCatalogueToAll(): void {

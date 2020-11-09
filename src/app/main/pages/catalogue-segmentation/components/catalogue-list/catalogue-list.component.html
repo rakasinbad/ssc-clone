@@ -145,7 +145,11 @@
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns" class="catalogue-list__item"></mat-row>
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="catalogue-list__item"
+        [class.highlight-row]="selectedId === row.id"
+    ></mat-row>
     <mat-footer-row
         *matFooterRowDef="['no-record']"
         [fxShow]="!isLoading && totalItem === 0"

@@ -6,7 +6,11 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
-import { CatalogueSegmentation, CreateCatalogueSegmentationDto } from '../models';
+import {
+    CatalogueSegmentation,
+    CreateCatalogueSegmentationDto,
+    PatchCatalogueSegmentationDto,
+} from '../models';
 import {
     CatalogueSegmentationActions,
     CatalogueSegmentationDetailActions,
@@ -51,6 +55,14 @@ export class CatalogueSegmentationFacadeService {
     createCatalogueSegmentation(body: CreateCatalogueSegmentationDto): void {
         this.store.dispatch(
             CatalogueSegmentationFormActions.createCatalogueSegmentationRequest({ payload: body })
+        );
+    }
+
+    patchCatalogueSegmentation(body: PatchCatalogueSegmentationDto, id: string): void {
+        this.store.dispatch(
+            CatalogueSegmentationFormActions.updateCatalogueSegmentationRequest({
+                payload: { body, id },
+            })
         );
     }
 
