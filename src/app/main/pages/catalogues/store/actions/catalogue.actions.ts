@@ -11,7 +11,8 @@ import {
     ICatalogueStockResponse,
     SimpleCatalogueCategory,
     CatalogueInformation,
-    CatalogueWeightDimension
+    CatalogueWeightDimension,
+    CatalogueVisibility
 } from '../../models';
 import { CatalogueMedia } from '../../models/catalogue-media.model';
 import { CataloguePrice } from '../../models/catalogue-price.model';
@@ -35,7 +36,7 @@ export interface ApplyFilteredCataloguePricePayload {
     supplierId: number;
 }
 
-type CatalogueSection = 'sku-information' | 'price-settings' | 'media-settings' | 'weight-and-dimension' | 'amount-settings';
+type CatalogueSection = 'sku-information' | 'price-settings' | 'media-settings' | 'weight-and-dimension' | 'amount-settings' | 'visibility';
 
 export type FailureActionNames = 'fetchCataloguePriceSettingsFailure' | 'updateCataloguePriceSettingFailure' | 'applyFilteredCataloguePriceFailure';
 
@@ -98,7 +99,7 @@ export const startPatchCatalogue = createAction(
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
     // tslint:disable-next-line
-    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia> | Partial<CatalogueWeightDimension>; source: TSourceEdit; section?: CatalogueSection; } }>()
+    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia> | Partial<CatalogueWeightDimension> | Partial<CatalogueVisibility>; source: TSourceEdit; section?: CatalogueSection; } }>()
 );
 
 export const patchCatalogueFailure = createAction(

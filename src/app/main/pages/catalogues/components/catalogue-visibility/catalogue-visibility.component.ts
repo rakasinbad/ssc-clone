@@ -12,10 +12,12 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
+import { CatalogueVisibility } from '../../models';
 import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { debounceTime, filter, map, takeUntil, tap } from 'rxjs/operators';
 import { CatalogueFacadeService } from '../../services';
+import { FormStatus } from 'app/shared/models/global.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -29,6 +31,8 @@ type IFormMode = 'add' | 'view' | 'edit';
 export class CatalogueVisibilityComponent implements OnInit, OnChanges, OnDestroy {
     private trigger$: BehaviorSubject<string> = new BehaviorSubject('');
     private unSubs$: Subject<any> = new Subject();
+    @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
+    @Output() formValueChange: EventEmitter<CatalogueVisibility> = new EventEmitter<CatalogueVisibility>();
 
     catalogueContent: {
         'content-card': boolean;
@@ -94,6 +98,32 @@ export class CatalogueVisibilityComponent implements OnInit, OnChanges, OnDestro
 
         if (this.formMode === 'edit' || this.formMode === 'view') {
             this._patchForm();
+            this.form.statusChanges.pipe(
+                debounceTime(250),
+                // map(() => this.form.status),
+                tap(value => HelperService.debug('CATALOGUE VISIBILITY SETTING FORM STATUS CHANGED:', value)),
+                takeUntil(this.unSubs$)
+            ).subscribe((status: FormStatus) => {
+                this.formStatusChange.emit(status);
+            });
+
+            this.form.valueChanges.pipe(
+                debounceTime(250),
+                // map(() => this.form.getRawValue()),
+                tap(value => HelperService.debug('[BEFORE MAP] CATALOGUE VISIBILITY SETTINGS FORM VALUE CHANGED', value)),
+                map(value => {
+                    const formValue = {
+                        status: value.status,
+                        isBonus: value.isBonus,
+                    };
+    
+                    return formValue;
+                }),
+                tap(value => HelperService.debug('[AFTER MAP] CATALOGUE VISIBILITY SETTINGS FORM VALUE CHANGED', value)),
+                takeUntil(this.unSubs$)
+            ).subscribe(value => {
+                this.formValueChange.emit(value);
+            });
         }
     }
 
@@ -124,9 +154,8 @@ export class CatalogueVisibilityComponent implements OnInit, OnChanges, OnDestro
             .subscribe(({ catalogue: item }) => {
                 const statusCtrl = this.form.get('status');
                 const isBonusCtrl = this.form.get('isBonus');
-
                 statusCtrl.setValue(item.status);
-                isBonusCtrl.setValue(item.isBonus === true);
+                isBonusCtrl.setValue(item.isBonus);
 
                 if (this.formMode === 'view') {
                     statusCtrl.disable({ onlySelf: true });

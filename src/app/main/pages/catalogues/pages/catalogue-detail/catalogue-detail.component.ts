@@ -247,6 +247,19 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                 break;
             }
+            case 'visibility': {
+                const {
+                    status,
+                    isBonus,
+                } = $event as Catalogue;
+
+                this.formValue = {
+                    status,
+                    isBonus,
+                };
+
+                break;
+            }
         }
     }
 
@@ -266,6 +279,9 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             case 4:
                 this.section = 'amount-settings';
+                break;
+            case 5:
+                this.section = 'visibility';
                 break;
         }
     }
@@ -441,6 +457,21 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                             break;
                         }
                         case 'amount-settings': {
+                            this.store.dispatch(UiActions.hideFooterAction());
+                            this.store.dispatch(
+                                CatalogueActions.patchCatalogueRequest({
+                                    payload: {
+                                        id: catalogue.id,
+                                        data: this.formValue as Catalogue,
+                                        source: 'form',
+                                        section: this.section,
+                                    },
+                                })
+                            );
+
+                            break;
+                        }
+                        case 'visibility': {
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(
                                 CatalogueActions.patchCatalogueRequest({
