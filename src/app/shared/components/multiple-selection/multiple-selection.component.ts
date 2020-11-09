@@ -230,7 +230,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 added: this.selectedOptions,
                 removed: this.removedOptions,
                 merged: this.mergedSelectedOptions,
-                isAllSelected: this.allSelected,
+                isAllSelected: this.allSelected || this.mergedSelectedOptions.length === this.totalAvailableOptions,
             });
 
             // Mendeteksi adanya perubahan.
