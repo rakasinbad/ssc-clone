@@ -1,3 +1,7 @@
+<!-- <div class="table-container--loader">
+
+</div> -->
+
 <mat-table
     class="catalogue-list sinbad-table sinbad-table__hover"
     [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
@@ -73,7 +77,7 @@
 
     <!-- Type Column -->
     <ng-container matColumnDef="type">
-        <mat-header-cell *matHeaderCellDef>type</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
                 {{ row?.isBonus ? 'Bonus' : 'Regular' }}
@@ -103,7 +107,7 @@
     <!-- / Status Column -->
 
     <!-- Actions Column -->
-    <!-- <ng-container matColumnDef="actions">
+    <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <button
@@ -118,49 +122,26 @@
             </button>
 
             <mat-menu class="actions-panel" #actionMenu="matMenu">
-                <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
-                    <button
-                        type="button"
-                        mat-menu-item
-                        class="sinbad-mat-menu-item"
-                        aria-label="Inactive"
-                        *ngIf="row?.status === 'active'"
-                    >
-                        <mat-icon>archive</mat-icon>
-                        <span>Inactive</span>
-                    </button>
-
-                    <button
-                        type="button"
-                        mat-menu-item
-                        class="sinbad-mat-menu-item"
-                        aria-label="Active"
-                        *ngIf="row?.status === 'inactive'"
-                    >
-                        <mat-icon>unarchive</mat-icon>
-                        <span>Active</span>
-                    </button>
-                </ng-template>
-
-                <ng-template [ngxPermissionsOnly]="['CATALOGUE.DELETE']">
-                    <button
-                        type="button"
-                        mat-menu-item
-                        class="sinbad-mat-menu-item"
-                        aria-label="Delete"
-                    >
-                        <mat-icon>delete</mat-icon>
-                        <span>Delete</span>
-                    </button>
-                </ng-template>
+                <button
+                    type="button"
+                    mat-menu-item
+                    class="sinbad-mat-menu-item"
+                    aria-label="Unassign"
+                    (click)="onUnassign(row)"
+                >
+                    <mat-icon>archive</mat-icon>
+                    <span>Unassign</span>
+                </button>
             </mat-menu>
         </mat-cell>
-    </ng-container> -->
+    </ng-container>
     <!-- / Actions Column -->
 
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="7"> No records found </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef [attr.colspan]="formMode === 'view' ? 5 : 7">
+            No records found
+        </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
@@ -182,3 +163,12 @@
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons
 ></mat-paginator>
+
+<ng-template #alertUnassign>
+    <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
+        This action will only the linked segments, except the set warehouse segment setting. If you
+        want remove the SKU completely from the linked warehouse segment setting, you should access
+        it from the SKU assignment menu.<br />
+        Are you sure you want to unassign it?
+    </p>
+</ng-template>

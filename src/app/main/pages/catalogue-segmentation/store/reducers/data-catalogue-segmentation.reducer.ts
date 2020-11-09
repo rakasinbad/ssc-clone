@@ -1,7 +1,11 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import { CatalogueSegmentation } from '../../models';
-import { CatalogueSegmentationActions, CatalogueSegmentationFormActions } from '../actions';
+import {
+    CatalogueSegmentationActions,
+    CatalogueSegmentationDetailActions,
+    CatalogueSegmentationFormActions,
+} from '../actions';
 
 export const dataCatalogueSegmentationFeatureKey = 'dataCatalogueSegmentation';
 
@@ -24,16 +28,17 @@ export const initialState: State = adapter.getInitialState({
 const reducerFn = createReducer(
     initialState,
     on(
-        CatalogueSegmentationFormActions.createCatalogueSegmentationRequest,
         CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest,
+        CatalogueSegmentationFormActions.createCatalogueSegmentationRequest,
         (state) => ({
             ...state,
             isLoading: true,
         })
     ),
     on(
-        CatalogueSegmentationFormActions.createCatalogueSegmentationFailure,
         CatalogueSegmentationActions.fetchCatalogueSegmentationsFailure,
+        CatalogueSegmentationDetailActions.fetchCatalogueSegmentationFailure,
+        CatalogueSegmentationFormActions.createCatalogueSegmentationFailure,
         (state) => ({
             ...state,
             isLoading: false,
@@ -42,11 +47,23 @@ const reducerFn = createReducer(
     on(CatalogueSegmentationActions.fetchCatalogueSegmentationsSuccess, (state, { data, total }) =>
         adapter.addAll(data, { ...state, isLoading: false, total })
     ),
+    on(CatalogueSegmentationDetailActions.fetchCatalogueSegmentationRequest, (state, { id }) => ({
+        ...state,
+        isLoading: true,
+        selectedId: id,
+    })),
+    on(CatalogueSegmentationDetailActions.fetchCatalogueSegmentationSuccess, (state, { data }) =>
+        adapter.upsertOne(data, { ...state, isLoading: false })
+    ),
     on(CatalogueSegmentationActions.refreshTable, (state, data) => ({
         ...state,
         isRefresh: data.payload.refreshStatus,
     })),
-    on(CatalogueSegmentationFormActions.createCatalogueSegmentationSuccess, () => initialState)
+    on(
+        CatalogueSegmentationFormActions.createCatalogueSegmentationSuccess,
+        CatalogueSegmentationActions.resetState,
+        () => initialState
+    )
 );
 
 export function reducer(state: State | undefined, action: Action): State {

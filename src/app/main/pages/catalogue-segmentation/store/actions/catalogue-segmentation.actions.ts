@@ -9,6 +9,7 @@ enum Actions {
     FetchCatalogueSegmentationsSuccess = '[Catalogue Segmentation] Fetch Catalogue Segmentations Success',
     DeleteCatalogueSegmentationsSuccess = '[Catalogue Segmentation] Delete Catalogue Segmentations Success',
     RefreshTable = '[Catalogue Segmentation] Refresh Table Catalogue Segmentations Success',
+    ResetState = '[Catalogue Segmentation] Reset Catalogue Segmentation Data',
 }
 
 export const fetchCatalogueSegmentationsRequest = createAction(
@@ -25,6 +26,8 @@ export const fetchCatalogueSegmentationsFailure = createAction(
     Actions.FetchCatalogueSegmentationsFailure,
     props<{ payload: ErrorHandler }>()
 );
+
+export const resetState = createAction(Actions.ResetState);
 
 export const refreshTable = createAction(
     Actions.RefreshTable,

@@ -19,5 +19,7 @@ export class CatalogueSegmentationDataSource implements DataSource<CatalogueSegm
         return this.catalogueSegmentationFacade.catalogueSegmentations$;
     }
 
-    disconnect(): void {}
+    disconnect(): void {
+        this.catalogueSegmentationFacade.resetState();
+    }
 }

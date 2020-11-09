@@ -5,14 +5,15 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthFacadeService } from 'app/main/pages/core/auth/services';
 import { HelperService, NoticeService } from 'app/shared/helpers';
+import { FormMode } from 'app/shared/models';
 import { AnyAction } from 'app/shared/models/actions.model';
 import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { Catalogue } from '../../models';
-import { CatalogueApiService } from '../../services';
+import { Catalogue, CatalogueOfSegmentationProps } from '../../models';
+import { CatalogueApiService, CatalogueSegmentationApiService } from '../../services';
 import { CatalogueActions, CatalogueFailureActions } from '../actions';
 
 @Injectable()
@@ -21,12 +22,14 @@ export class FetchCataloguesEffects {
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCataloguesRequest),
             map((action) => action.payload),
-            withLatestFrom(this.authFacade.getUser$, (queryParams, auth) => ({
-                queryParams,
+            withLatestFrom(this.authFacade.getUser$, ({ params, formMode, id }, auth) => ({
+                params,
+                formMode: !formMode ? 'add' : formMode,
+                id,
                 auth,
             })),
-            switchMap(({ queryParams, auth }) =>
-                this._processFetchCatalogueSegmentations$(queryParams, auth)
+            switchMap(({ params, formMode, id, auth }) =>
+                this._processFetchCatalogueSegmentations$(params, auth, formMode, id)
             )
         )
     );
@@ -51,6 +54,7 @@ export class FetchCataloguesEffects {
         private actions$: Actions,
         private authFacade: AuthFacadeService,
         private catalogueApi: CatalogueApiService,
+        private catalogueSegmentationApi: CatalogueSegmentationApiService,
         private helperService: HelperService,
         private noticeService: NoticeService
     ) {}
@@ -111,6 +115,39 @@ export class FetchCataloguesEffects {
         );
     }
 
+    private _fetchCataloguesOfSegmentationRequest$(
+        id: string,
+        user: User,
+        params: IQueryParams
+    ): Observable<AnyAction> {
+        const newParams: IQueryParams = {
+            ...params,
+        };
+
+        return this.catalogueSegmentationApi
+            .getById<PaginateResponse<CatalogueOfSegmentationProps>>(id, 'catalogue', newParams)
+            .pipe(
+                catchOffline(),
+                map((resp) => {
+                    const newResp = {
+                        data:
+                            resp && resp.data.length
+                                ? resp.data
+                                      .map((item) => ({
+                                          segmentationId: item.segmentationId,
+                                          ...item.catalogue,
+                                      }))
+                                      .map((item) => new Catalogue(item))
+                                : [],
+                        total: resp.total,
+                    };
+
+                    return CatalogueActions.fetchCataloguesSuccess(newResp);
+                }),
+                catchError((err) => this._sendErrorToState$(err, 'fetchCataloguesFailure'))
+            );
+    }
+
     private _fetchCataloguesRequest$(user: User, params: IQueryParams): Observable<AnyAction> {
         const newParams: IQueryParams = {
             ...params,
@@ -141,20 +178,34 @@ export class FetchCataloguesEffects {
 
     private _processFetchCatalogueSegmentations$(
         params: IQueryParams,
-        auth: Auth
+        auth: Auth,
+        formMode: FormMode = 'add',
+        id?: string
     ): Observable<AnyAction> {
         if (!auth) {
             return this.helperService.decodeUserToken().pipe(
                 map((user) => this._checkUserSupplier(user)),
                 retry(3),
-                switchMap((user) => this._fetchCataloguesRequest$(user, params))
+                switchMap((user) => {
+                    if (formMode !== 'add') {
+                        return this._fetchCataloguesOfSegmentationRequest$(id, user, params);
+                    } else {
+                        return this._fetchCataloguesRequest$(user, params);
+                    }
+                })
             );
         }
 
         return of(auth.user).pipe(
             map((user) => this._checkUserSupplier(user)),
             retry(3),
-            switchMap((user) => this._fetchCataloguesRequest$(user, params))
+            switchMap((user) => {
+                if (formMode !== 'add') {
+                    return this._fetchCataloguesOfSegmentationRequest$(id, user, params);
+                } else {
+                    return this._fetchCataloguesRequest$(user, params);
+                }
+            })
         );
     }
 }

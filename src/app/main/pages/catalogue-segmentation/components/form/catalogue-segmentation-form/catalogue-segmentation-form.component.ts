@@ -3,9 +3,11 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
+    SimpleChanges,
     ViewEncapsulation,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
@@ -25,6 +27,7 @@ import { combineLatest, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import {
     Catalogue,
+    CatalogueSegmentation,
     CatalogueSegmentationFormDto,
     CreateCatalogueSegmentationDto,
 } from '../../../models';
@@ -37,7 +40,7 @@ import {
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CatalogueSegmentationFormComponent implements OnInit, OnDestroy {
+export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -65,6 +68,9 @@ export class CatalogueSegmentationFormComponent implements OnInit, OnDestroy {
     @Input()
     formMode: FormMode;
 
+    @Input()
+    item: CatalogueSegmentation;
+
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
 
@@ -72,6 +78,16 @@ export class CatalogueSegmentationFormComponent implements OnInit, OnDestroy {
     createFormValue: EventEmitter<CreateCatalogueSegmentationDto> = new EventEmitter();
 
     constructor() {}
+
+    ngOnChanges(changes: SimpleChanges): void {
+        console.log('CHANGES CS FORM', { changes });
+
+        if (changes['item']) {
+            if (changes['item'].currentValue && this.formMode === 'edit') {
+                this._setEditForm(changes['item'].currentValue);
+            }
+        }
+    }
 
     ngOnInit(): void {
         combineLatest([this.form.statusChanges, this.form.get('chosenCatalogue').valueChanges])
@@ -311,6 +327,19 @@ export class CatalogueSegmentationFormComponent implements OnInit, OnDestroy {
             this.createFormValue.emit(payload);
         } else if (this.formMode === 'edit') {
             const payload = {};
+        }
+    }
+
+    private _setEditForm(item: CatalogueSegmentation): void {
+        console.log('EDIT FORM', { item });
+        if (this.form) {
+            const segmentationNameCtrl = this.form.get('segmentationName');
+
+            if (item.name) {
+                segmentationNameCtrl.setValue(item.name);
+            }
+
+            segmentationNameCtrl.disable({ onlySelf: true });
         }
     }
 }

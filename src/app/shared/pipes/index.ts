@@ -1,5 +1,6 @@
 export * from './calculate-gross-price.pipe';
 export * from './catalogue-type.pipe';
+export * from './convert-array-to-string.pipe';
 export * from './error-message.pipe';
 export * from './filter-logic-relation.pipe';
 export * from './has-error-field.pipe';

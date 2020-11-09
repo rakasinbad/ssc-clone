@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import {
+    ConvertArrayToStringPipe,
     ErrorMessagePipe,
     FilterLogicRelationPipe,
     HasErrorFieldPipe,
@@ -11,6 +12,7 @@ import {
 
 @NgModule({
     declarations: [
+        ConvertArrayToStringPipe,
         ErrorMessagePipe,
         FilterLogicRelationPipe,
         HasErrorFieldPipe,
@@ -20,6 +22,7 @@ import {
         VisibilityTypePipe,
     ],
     exports: [
+        ConvertArrayToStringPipe,
         ErrorMessagePipe,
         FilterLogicRelationPipe,
         HasErrorFieldPipe,
