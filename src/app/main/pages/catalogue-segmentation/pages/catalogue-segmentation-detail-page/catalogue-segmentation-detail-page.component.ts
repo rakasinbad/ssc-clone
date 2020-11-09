@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FormMode } from 'app/shared/models';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { CatalogueSegmentation } from '../../models';
 import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from '../../services';
 
@@ -15,6 +15,7 @@ import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from
     encapsulation: ViewEncapsulation.None,
 })
 export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestroy {
+    private isLoadingCatalogueList$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     private breadcrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -34,6 +35,7 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     formMode: FormMode;
     catalogueSegmentation: CatalogueSegmentation;
     isLoading: boolean = false;
+    isLoadingCombine: boolean = false;
 
     catalogueSegmentation$: Observable<CatalogueSegmentation>;
     isLoading$: Observable<boolean>;
@@ -70,14 +72,29 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             })
         );
 
-        this.isLoading$ = this.catalogueSegmentationFacade.isLoading$.pipe(
-            tap((isLoading) => (this.isLoading = isLoading))
+        this.isLoading$ = combineLatest([
+            this.isLoadingCatalogueList$,
+            this.catalogueSegmentationFacade.isLoading$,
+        ]).pipe(
+            map(([isLoadingCatalogueList, isLoading]) => ({
+                isLoadingCatalogueList,
+                isLoading,
+            })),
+            tap(({ isLoadingCatalogueList, isLoading }) => {
+                this.isLoading = isLoading;
+                this.isLoadingCombine = isLoading || isLoadingCatalogueList;
+            }),
+            map(({ isLoading }) => isLoading)
         );
     }
 
     ngOnDestroy(): void {
         this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetState();
+    }
+
+    onSetLoadingCatalogueList(loading: boolean): void {
+        this.isLoadingCatalogueList$.next(loading);
     }
 
     private _initDetail(id: string): void {

@@ -106,6 +106,32 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
                     active: true,
                 },
             ];
+            this.footerConfig = {
+                progress: {
+                    title: {
+                        label: 'Skor tambah toko',
+                        active: false,
+                    },
+                    value: {
+                        active: false,
+                    },
+                    active: false,
+                },
+                action: {
+                    save: {
+                        label: 'Save',
+                        active: false,
+                    },
+                    draft: {
+                        label: 'Save Draft',
+                        active: false,
+                    },
+                    cancel: {
+                        label: 'Back',
+                        active: true,
+                    },
+                },
+            };
         }
 
         this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
@@ -142,7 +168,6 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
         this.catalogueSegmentation$ = this.catalogueSegmentationFacade.catalogueSegmentation$.pipe(
             filter(() => this.formMode === 'edit'),
             tap((item) => {
-                console.log('TAP REQUEST', { item });
                 const { id } = this.route.snapshot.params;
 
                 if (!item) {
@@ -183,11 +208,6 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
             return;
         }
 
-        console.log('ON SUBMIT', {
-            create: this.createCatalogueSegmentationFormDto,
-            update: this.updateCatalogueSegmentationFormDto,
-        });
-
         if (this.formMode === 'add') {
             this.catalogueSegmentationFacade.createCatalogueSegmentation(
                 this.createCatalogueSegmentationFormDto
@@ -197,7 +217,6 @@ export class CatalogueSegmentationFormPageComponent implements OnInit, AfterView
 
     private _setFormStatus(): void {
         this.formStatus$.pipe(takeUntil(this.unSubs$)).subscribe((status) => {
-            console.log('FORM CORE STATUS', { status });
             if (status === 'VALID') {
                 this.catalogueSegmentationFacade.setFormValid();
             } else {

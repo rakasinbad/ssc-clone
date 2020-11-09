@@ -76,6 +76,10 @@ export class CatalogueSegmentationApiService {
         return this.http.delete(this.url + '/' + id);
     }
 
+    patch<T, D>(body: D, id: string): Observable<T> {
+        return this.http.patch<T>(`${this.url}/${id}`, body);
+    }
+
     post<T, D>(body: D): Observable<T> {
         return this.http.post<T>(this.url, body);
     }
