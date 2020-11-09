@@ -26,27 +26,23 @@
             </div>
             <!-- / STATUS -->
 
-            <!-- TYPE -->
+            <!-- STATUS -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
                 <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Type </label>
 
-                <!-- <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        name="name"
-                        formControlName="name"
-                    />
-                    <mat-error
-                        *ngIf="hasError(form.get('productInfo.name'))"
+                <mat-checkbox [formControl]="form.get('isBonus')" [disabled]="formMode !== 'edit'" labelPosition="after" fxFlex="80">
+                    <ng-container
+                        [class.sinbad-red-fg]="
+                            !(formMode | hasFormMode: 'view') &&
+                            (form.get('isBonus').value || form.get('isBonus').touched
+                                | hasErrorField: form.get('isBonus'):false)
+                        "
                     >
-                        {{ getFormError(form.get('productInfo.name')) }}
-                    </mat-error>
-                </mat-form-field> -->
-                <span class="grey-fg" fxFlex="80" *ngIf="formMode | hasFormMode: 'view'">
-                    {{ form.get('isBonus').value | visibilityType }}
-                </span>
+                        Bonus
+                    </ng-container>
+                </mat-checkbox>
             </div>
-            <!-- / TYPE -->
+            <!-- / STATUS -->
         </form>
     </div>
 </div>
