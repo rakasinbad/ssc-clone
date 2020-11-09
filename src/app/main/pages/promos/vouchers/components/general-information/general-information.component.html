@@ -354,18 +354,7 @@
                 <mat-form-field
                     *ngIf="!isViewMode()"
                     appearance="none"
-                    class="example-chip-list"
-                    style="
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        border: 1px solid rgba(0, 0, 0, 0.12);
-                        margin-bottom: 25px;
-                        height: 250px;
-                        border-radius: 5px;
-                    "
+                    class="form-chip-list-input"
                 >
                     <mat-chip-list #chipListTerms>
                         <mat-chip
@@ -399,14 +388,7 @@
                     <mat-form-field
                         *ngIf="isViewMode()"
                         appearance="none"
-                        class="example-chip-list"
-                        style="
-                            flex: 1 1 100%;
-                            box-sizing: border-box;
-                            max-width: 40%;
-                            margin-bottom: 25px;
-                            border-radius: 5px;
-                        "
+                        class="form-chip-list"
                     >
                         <mat-chip-list>
                             <mat-chip *ngFor="let terms of form.get('termsAndConditions').value">
@@ -442,18 +424,7 @@
                 <mat-form-field
                     *ngIf="!isViewMode()"
                     appearance="none"
-                    class="example-chip-list"
-                    style="
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        border: 1px solid rgba(0, 0, 0, 0.12);
-                        margin-bottom: 25px;
-                        height: 250px;
-                        border-radius: 5px;
-                    "
+                    class="form-chip-list-input"
                 >
                     <mat-chip-list #chipList1>
                         <mat-chip
@@ -487,14 +458,7 @@
                     <mat-form-field
                         *ngIf="isViewMode()"
                         appearance="none"
-                        class="example-chip-list"
-                        style="
-                            flex: 1 1 100%;
-                            box-sizing: border-box;
-                            max-width: 40%;
-                            margin-bottom: 25px;
-                            border-radius: 5px;
-                        "
+                        class="form-chip-list"
                     >
                         <mat-chip-list>
                             <mat-chip *ngFor="let instruction of form.get('instructions').value">
@@ -1019,18 +983,7 @@
                 <mat-form-field
                     *ngIf="!isViewMode()"
                     appearance="none"
-                    class="example-chip-list"
-                    style="
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        border: 1px solid rgba(0, 0, 0, 0.12);
-                        margin-bottom: 25px;
-                        height: 71px;
-                        border-radius: 5px;
-                    "
+                    class="form-chip-list-input"
                 >
                     <mat-chip-list #chipListTerms>
                         <mat-chip
@@ -1064,14 +1017,7 @@
                     <mat-form-field
                         *ngIf="isViewMode()"
                         appearance="none"
-                        class="example-chip-list"
-                        style="
-                            flex: 1 1 100%;
-                            box-sizing: border-box;
-                            max-width: 40%;
-                            margin-bottom: 25px;
-                            border-radius: 5px;
-                        "
+                        class="form-chip-list"
                     >
                         <mat-chip-list>
                             <mat-chip *ngFor="let vtag of form.get('voucherTag').value">

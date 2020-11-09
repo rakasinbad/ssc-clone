@@ -1,40 +1,33 @@
 voucher-general-information {
-    // .view-field-right {
-    //     label {
-    //         font-weight: 600;
-    //         position: relative;
-    //         // top: -0.78em;
-    //         text-align: right;
-    //         padding-right: 2em;
-    //         // padding-right: 10px;
-    //     }
-
-    //     .mat-form-field-prefix {
-    //         top: -0.2em;
-    //     }
-
-    //     .mat-form-field-infix {
-    //         padding: 0.5em 0 !important;
-    //         top: -0.25em;
-    //     }
-
-    //     &.sinbad-textarea {
-    //         label {
-    //             top: -3em;
-    //         }
-    //     }
-
-    //     &.sinbad-button {
-    //         label {
-    //             top: 0;
-    //         }
-    //     }
-    // }
-
     .mat-radio-button ~ .mat-radio-button {
         margin-left: 16px;
     }
     
+   .form-chip-list {
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1 1 100%;
+        box-sizing: border-box;
+        max-width: 40%;
+        margin-bottom: 25px;
+        height: 71px;
+        border-radius: 5px;
+    }
+
+    .form-chip-list-input {
+        cursor: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1 1 100%;
+        box-sizing: border-box;
+        max-width: 40%;
+        margin-bottom: 25px;
+        height: 71px;
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+    }
+    
+
     .form-box {
         .custom-field {
             label {
@@ -181,4 +174,6 @@ voucher-general-information {
             }
         }
     }
+
+    
 }

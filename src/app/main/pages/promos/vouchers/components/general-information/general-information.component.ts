@@ -631,7 +631,7 @@ export class VoucherGeneralInformationComponent
                 [
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
+                        allowDecimal: false,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minNumber({
@@ -645,7 +645,7 @@ export class VoucherGeneralInformationComponent
                 [
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
+                        allowDecimal: false,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxNumber({
@@ -701,7 +701,7 @@ export class VoucherGeneralInformationComponent
                 [
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
+                        allowDecimal: false,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minNumber({
