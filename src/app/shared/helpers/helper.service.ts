@@ -243,10 +243,10 @@ export class HelperService {
             id: VoucherAllocation.PROMOSLOT,
             label: 'Max Promo Redemption (transaction)',
         },
-        {
-            id: VoucherAllocation.PROMOBUDGET,
-            label: 'Max Promo Redemption (Rp)',
-        },
+        // {
+        //     id: VoucherAllocation.PROMOBUDGET,
+        //     label: 'Max Promo Redemption (Rp)',
+        // },
     ];
     
 
@@ -266,11 +266,11 @@ export class HelperService {
         {
             id: SupplierVoucherCategory.PRICE_CUT,
             label: 'Price Cut',
-        },
-        {
-            id: SupplierVoucherCategory.BONUS,
-            label: 'Bonus',
         }
+        // {
+        //     id: SupplierVoucherCategory.BONUS,
+        //     label: 'Bonus',
+        // }
        
     ];  
 

@@ -354,18 +354,7 @@
                 <mat-form-field
                     *ngIf="!isViewMode()"
                     appearance="none"
-                    class="example-chip-list"
-                    style="
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        border: 1px solid rgba(0, 0, 0, 0.12);
-                        margin-bottom: 25px;
-                        height: 250px;
-                        border-radius: 5px;
-                    "
+                    class="form-chip-list-input"
                 >
                     <mat-chip-list #chipListTerms>
                         <mat-chip
@@ -386,37 +375,24 @@
                     </mat-chip-list>
                 </mat-form-field>
 
-                <mat-form-field
-                    *ngIf="isViewMode()"
-                    appearance="none"
-                    class="example-chip-list"
-                    style="
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        margin-bottom: 25px;
-                        border-radius: 5px;
+                <ng-container
+                    *ngIf="
+                        isViewMode() && form.get('termsAndConditions').value == null;
+                        else otherVoucherTerms
                     "
                 >
-                    <mat-chip-list>
-                        <ng-container
-                            *ngIf="
-                                form.get('termsAndConditions').value !== ('' || null || undefined);
-                                else others
-                            "
-                        >
+                    <span class="form-value" [fxFlex]="formFieldLength"> - </span>
+                </ng-container>
+
+                <ng-template #otherVoucherTerms>
+                    <mat-form-field *ngIf="isViewMode()" appearance="none" class="form-chip-list">
+                        <mat-chip-list>
                             <mat-chip *ngFor="let terms of form.get('termsAndConditions').value">
                                 {{ terms }}
                             </mat-chip>
-                        </ng-container>
-                        <ng-template #others>-</ng-template>
-                    </mat-chip-list>
-                </mat-form-field>
-
-                <!-- <span class="form-value" [fxFlex]="formFieldLength" 
-                *ngIf="isViewMode() && form.get('termsAndConditions').value == ('' || null || undefined)">
-                    -
-                </span> -->
+                        </mat-chip-list>
+                    </mat-form-field>
+                </ng-template>
             </div>
             <!-- / Voucher Terms & Conditions -->
 
@@ -444,18 +420,7 @@
                 <mat-form-field
                     *ngIf="!isViewMode()"
                     appearance="none"
-                    class="example-chip-list"
-                    style="
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        border: 1px solid rgba(0, 0, 0, 0.12);
-                        margin-bottom: 25px;
-                        height: 250px;
-                        border-radius: 5px;
-                    "
+                    class="form-chip-list-input"
                 >
                     <mat-chip-list #chipList1>
                         <mat-chip
@@ -476,28 +441,24 @@
                     </mat-chip-list>
                 </mat-form-field>
 
-                <mat-form-field
-                    *ngIf="isViewMode()"
-                    appearance="none"
-                    class="example-chip-list"
-                    style="
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        margin-bottom: 25px;
-                        border-radius: 5px;
+                <ng-container
+                    *ngIf="
+                        isViewMode() && form.get('instructions').value == null;
+                        else otherVoucherIns
                     "
                 >
-                    <mat-chip-list>
-                        <mat-chip *ngFor="let instruction of form.get('instructions').value">
-                            {{ instruction }}
-                        </mat-chip>
-                    </mat-chip-list>
-                </mat-form-field>
+                    <span class="form-value" [fxFlex]="formFieldLength"> - </span>
+                </ng-container>
 
-                <!-- <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    '-' 
-                </span> -->
+                <ng-template #otherVoucherIns>
+                    <mat-form-field *ngIf="isViewMode()" appearance="none" class="form-chip-list">
+                        <mat-chip-list>
+                            <mat-chip *ngFor="let instruction of form.get('instructions').value">
+                                {{ instruction }}
+                            </mat-chip>
+                        </mat-chip-list>
+                    </mat-form-field>
+                </ng-template>
             </div>
             <!-- / Voucher Instructions -->
 
@@ -559,7 +520,6 @@
                     >
                         <input
                             matInput
-                            type="number"
                             min="1"
                             name="maxCollectionPerStore"
                             formControlName="maxCollectionPerStore"
@@ -599,7 +559,7 @@
             </ng-container>
 
             <!-- max redem promo budget promo slot  by type allocation  -->
-            <div
+            <!-- <div
                 *ngIf="selectPromo == 'voucher_budget'"
                 [ngClass]="formClass"
                 fxLayout="row"
@@ -626,7 +586,7 @@
                         placeholder="Rp"
                     />
 
-                    <mat-error *ngIf="hasError('voucherBudget', true)">
+                    <mat-error *ngIf="hasError(form.get('voucherBudget'))">
                         {{ getFormError(form.get('voucherBudget')) }}
                     </mat-error>
                 </mat-form-field>
@@ -639,7 +599,7 @@
                 >
                     {{ form.get('voucherBudget').value || '-' }}
                 </span>
-            </div>
+            </div> -->
 
             <div
                 *ngIf="selectPromo == 'voucher_slot'"
@@ -654,9 +614,9 @@
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="40">
-                    <input matInput name="voucherSlot" formControlName="voucherSlot" mask="0*" />
+                    <input matInput name="voucherSlot" formControlName="voucherSlot"/>
 
-                    <mat-error *ngIf="hasError('voucherSlot', true)">
+                    <mat-error *ngIf="hasError(form.get('voucherSlot'))">
                         {{ getFormError(form.get('voucherSlot')) }}
                     </mat-error>
                 </mat-form-field>
@@ -734,26 +694,18 @@
 
                 <ng-container *ngIf="isViewMode()">
                     <button
-                    type="button"
-                    mat-button
-                    color="accent"
-                    class="btn-sinbad-link"
-                    (click)="onShowImage(imageUrl, 'Voucher Banner')"
-                    *ngIf="form.get('imageUrl').value as imageUrl; else notFoundImg"
-                >
-                    View
-                </button>
+                        type="button"
+                        mat-button
+                        color="accent"
+                        class="btn-sinbad-link"
+                        (click)="onShowImage(imageUrl, 'Voucher Banner')"
+                        *ngIf="form.get('imageUrl').value as imageUrl; else notFoundImg"
+                    >
+                        View
+                    </button>
 
-                <ng-template #notFoundImg> - </ng-template>
+                    <ng-template #notFoundImg> - </ng-template>
                 </ng-container>
-                <!-- <span
-                    class="form-value"
-                    fxFlexAlign="center"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="isViewMode()"
-                >
-                    {{ (form.get('imageUrl').value | titlecase) || '-' }}
-                </span> -->
             </div>
             <!-- upload voucher banner image -->
 
@@ -986,7 +938,6 @@
                     <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
                         <input
                             matInput
-                            type="number"
                             name="expirationDays"
                             formControlName="expirationDays"
                         />
@@ -1014,18 +965,7 @@
                 <mat-form-field
                     *ngIf="!isViewMode()"
                     appearance="none"
-                    class="example-chip-list"
-                    style="
-                        overflow-y: auto;
-                        overflow-x: hidden;
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        border: 1px solid rgba(0, 0, 0, 0.12);
-                        margin-bottom: 25px;
-                        height: 71px;
-                        border-radius: 5px;
-                    "
+                    class="form-chip-list-input"
                 >
                     <mat-chip-list #chipListTerms>
                         <mat-chip
@@ -1046,28 +986,24 @@
                     </mat-chip-list>
                 </mat-form-field>
 
-                <mat-form-field
-                    *ngIf="isViewMode()"
-                    appearance="none"
-                    class="example-chip-list"
-                    style="
-                        flex: 1 1 100%;
-                        box-sizing: border-box;
-                        max-width: 40%;
-                        margin-bottom: 25px;
-                        border-radius: 5px;
+                <ng-container
+                    *ngIf="
+                        isViewMode() && form.get('voucherTag').value == null;
+                        else otherVoucherTag
                     "
                 >
-                    <mat-chip-list>
-                        <mat-chip *ngFor="let vtag of form.get('voucherTag').value">
-                            {{ vtag }}
-                        </mat-chip>
-                    </mat-chip-list>
-                </mat-form-field>
+                    <span class="mt-20 form-value" [fxFlex]="formFieldLength"> - </span>
+                </ng-container>
 
-                <!-- <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    '-' 
-                </span> -->
+                <ng-template #otherVoucherTag>
+                    <mat-form-field *ngIf="isViewMode()" appearance="none" class="form-chip-list">
+                        <mat-chip-list>
+                            <mat-chip *ngFor="let vtag of form.get('voucherTag').value">
+                                {{ vtag }}
+                            </mat-chip>
+                        </mat-chip-list>
+                    </mat-form-field>
+                </ng-template>
             </div>
             <!-- / Voucher Tag-->
 

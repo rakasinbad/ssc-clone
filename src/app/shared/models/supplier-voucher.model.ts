@@ -4,6 +4,6 @@ export enum SupplierVoucherType {
 }
 
 export enum SupplierVoucherCategory {
-    PRICE_CUT = 'price_cut',
-    BONUS = 'bonus'
+    PRICE_CUT = 'price_cut'
+    // BONUS = 'bonus'
 }
