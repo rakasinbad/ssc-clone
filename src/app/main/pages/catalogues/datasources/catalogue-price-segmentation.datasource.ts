@@ -1,14 +1,45 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Observable } from 'rxjs';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { CataloguePrice } from '../models';
+import { CatalogueFacadeService } from '../services';
 
-export class CataloguePriceSegmentationDataSource implements DataSource<any> {
-    constructor() {}
+export class CataloguePriceSegmentationDataSource implements DataSource<CataloguePrice> {
+    private _collections$: BehaviorSubject<CataloguePrice[]> = new BehaviorSubject([]);
 
-    getAll(): void {}
+    collections: CataloguePrice[] = [];
+    isLoading$: Observable<boolean> = this.catalogueFacade.isLoading$;
+    totalCataloguePrice$: Observable<number> = this.catalogueFacade.totalCataloguePrice$;
 
-    connect(): Observable<any> {
-        return null;
+    constructor(private catalogueFacade: CatalogueFacadeService) {}
+
+    getWithQuery(params: IQueryParams): void {
+        this.catalogueFacade.getWithQuery(params);
     }
 
-    disconnect(): void {}
+    collections$(): Observable<CataloguePrice[]> {
+        return this._collections$.asObservable();
+    }
+
+    connect(): Observable<CataloguePrice[]> {
+        return this.catalogueFacade.cataloguePrices$.pipe(
+            map((cataloguePrices) => {
+                return cataloguePrices.map((item) => {
+                    const newItem: CataloguePrice = {
+                        ...item,
+                        price: (String(item.price).replace('.', ',') as unknown) as number,
+                    };
+
+                    return new CataloguePrice(newItem);
+                });
+            }),
+            tap((item) => this._collections$.next(item))
+        );
+    }
+
+    disconnect(): void {
+        this._collections$.next([]);
+        this._collections$.complete();
+    }
 }

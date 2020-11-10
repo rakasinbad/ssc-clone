@@ -1,6 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -21,32 +20,31 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { AuthFacadeService } from 'app/main/pages/core/auth/services';
 import { Selection } from 'app/shared/components/dropdowns/select-advanced/models';
 import { Warehouse } from 'app/shared/components/dropdowns/warehouses/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { FormStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { UserSupplier } from 'app/shared/models/supplier.model';
 import { environment } from 'environments/environment';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import {
     debounceTime,
+    delay,
     distinctUntilChanged,
     filter,
     map,
-    take,
     takeUntil,
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
+import { CataloguePriceSegmentationDataSource } from '../../datasources';
 import { Catalogue } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
 import { CatalogueFacadeService, CataloguesService } from '../../services';
 import { CatalogueActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
-import { CatalogueSelectors } from '../../store/selectors';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -58,8 +56,7 @@ type IFormMode = 'add' | 'view' | 'edit';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CataloguePriceSettingsComponent
-    implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDestroy {
     private trigger$: BehaviorSubject<string> = new BehaviorSubject('');
     private subs: Subscription = new Subscription();
     // Untuk keperluan subscription.
@@ -88,11 +85,11 @@ export class CataloguePriceSettingsComponent
     totalCataloguePrice$: Observable<number>;
     // Untuk menyimpan kolom tabel yang ingin dimunculkan.
     displayedColumns: string[] = [
-        'warehouse',
-        'storeType',
-        'storeGroup',
-        'storeChannel',
-        'storeCluster',
+        'warehouse-name',
+        'store-type',
+        'store-group',
+        'store-channel',
+        'store-cluster',
         'price',
     ];
 
@@ -103,6 +100,8 @@ export class CataloguePriceSettingsComponent
         'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
+    isLoading: boolean;
+    totalItem: number;
 
     formClass: {
         'custom-field-right': boolean;
@@ -111,6 +110,8 @@ export class CataloguePriceSettingsComponent
     };
 
     cataloguePriceTools: string[] = ['warehouse', 'type', 'group', 'channel', 'cluster'];
+
+    dataSource: CataloguePriceSegmentationDataSource;
 
     @Output()
     formStatusChange: EventEmitter<FormStatus> = new EventEmitter();
@@ -154,48 +155,49 @@ export class CataloguePriceSettingsComponent
         private route: ActivatedRoute,
         private router: Router,
         private dialog: MatDialog,
+        private authFacade: AuthFacadeService,
         private catalogueFacade: CatalogueFacadeService,
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
         private errorMessage$: ErrorMessageService
-    ) {
+    ) {}
+
+    ngOnInit(): void {
         const { id } = this.route.snapshot.params;
         this.selectedCatalogueId = id;
 
-        this.cataloguePrices$ = this.store
-            .select(CatalogueSelectors.getCataloguePriceSettings)
-            .pipe(
-                map((cataloguePrices) =>
-                    cataloguePrices.map((cataloguePrice) => {
-                        const newCataloguePrice: CataloguePrice = {
-                            ...cataloguePrice,
-                            price: (String(cataloguePrice.price).replace(
-                                '.',
-                                ','
-                            ) as unknown) as number,
-                        };
+        this.dataSource = new CataloguePriceSegmentationDataSource(this.catalogueFacade);
 
-                        return new CataloguePrice(newCataloguePrice);
-                    })
-                ),
+        this.form = this.fb.group({
+            id: null,
+            supplierId: null,
+            discountRetailBuyerPrice: null,
+            discountRetailBuyerPriceView: null,
+            retailBuyingPrice: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            retailBuyingPriceView: null,
+            priceToAll: null,
+            priceSettings: this.fb.array([]),
+            advancePrice: false,
+        });
+
+        /* this.dataSource
+            .collections$()
+            .pipe(
                 tap(() => {
                     if (this.formModeValue === 'edit') {
                         this.updateForm$.next(this.formModeValue);
                     }
                 }),
                 takeUntil(this.unSubs$)
-            );
-
-        this.totalCataloguePrice$ = this.store
-            .select(CatalogueSelectors.getTotalCataloguePriceSettings)
-            .pipe(
-                tap((value) => this.form.get('advancePrice').setValue(value > 0)),
-                takeUntil(this.unSubs$)
-            );
-
-        this.isLoading$ = this.store
-            .select(CatalogueSelectors.getIsLoading)
-            .pipe(takeUntil(this.unSubs$));
+            )
+            .subscribe(); */
 
         this.catalogue$
             .getUpdateForm()
@@ -213,124 +215,84 @@ export class CataloguePriceSettingsComponent
                 }
             });
 
-        this.store
-            .select(CatalogueSelectors.getRefreshStatus)
-            .pipe(takeUntil(this.unSubs$))
-            .subscribe((needRefresh) => {
-                if (needRefresh) {
-                    this.onApplyFilter();
-                }
+        this.catalogueFacade.isRefresh$.pipe(takeUntil(this.unSubs$)).subscribe((isRefresh) => {
+            if (isRefresh) {
+                this.onApplyFilter();
+            }
 
-                this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
+            this.catalogueFacade.setRefresh(false);
+        });
+
+        this.filterForm = this.fb.group({
+            warehouses: [''],
+            storeType: [''],
+            storeGroup: [''],
+            storeChannel: [''],
+            storeCluster: [''],
+        });
+
+        this._checkRoute();
+        this.initFormCheck();
+
+        combineLatest([this.dataSource.isLoading$, this.dataSource.totalCataloguePrice$])
+            .pipe(
+                map(([isLoading, totalItem]) => ({ isLoading, totalItem })),
+                tap(() => {
+                    if (this.formModeValue === 'edit') {
+                        this.updateForm$.next(this.formModeValue);
+                    }
+                }),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe(({ isLoading, totalItem }) => {
+                this.isLoading = isLoading;
+                this.totalItem = totalItem;
+
+                this.form.get('advancePrice').setValue(totalItem > 0);
             });
+
+        /* if (this.formMode === 'view' || this.formMode === 'edit') {
+            this._patchForm();
+        } */
     }
 
-    drop(event: CdkDragDrop<Array<string>>): void {
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['formMode']) {
+            if (
+                (!changes['formMode'].isFirstChange() &&
+                    changes['formMode'].currentValue === 'edit') ||
+                changes['formMode'].currentValue === 'view'
+            ) {
+                this.trigger$.next('');
+                this.updateForm$.next(changes['formMode'].currentValue);
+            }
+        }
+
+        // Need review
+        /* if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
+            this.updateForm$.next(changes['formMode'].currentValue);
+        } else if (changes['formMode'].currentValue) {
+            this.updateForm$.next(changes['formMode'].currentValue);
+        } */
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
+
+        this.updateForm$.next(null);
+        this.updateForm$.complete();
+
+        if (!this.subs.closed) {
+            this.subs.unsubscribe();
+        }
+
+        this.store.dispatch(CatalogueActions.resetCataloguePriceSettings());
+    }
+
+    drop(event: CdkDragDrop<string[]>): void {
         // this.cataloguePriceTools.
         moveItemInArray(this.cataloguePriceTools, event.previousIndex, event.currentIndex);
-    }
-
-    private prepareEditCatalogue(): void {
-        combineLatest([
-            this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
-            this.store.select(AuthSelectors.getUserSupplier),
-        ])
-            .pipe(withLatestFrom(this.cataloguePrices$), takeUntil(this.unSubs$))
-            .subscribe(
-                ([[catalogue, userSupplier], cataloguePrices]: [
-                    [Catalogue, UserSupplier],
-                    Array<CataloguePrice>
-                ]) => {
-                    /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
-                    const { id } = this.route.snapshot.params;
-
-                    /** Butuh mengambil data katalog jika belum ada di state. */
-                    if (!catalogue) {
-                        this.store.dispatch(
-                            CatalogueActions.fetchCatalogueRequest({
-                                payload: id,
-                            })
-                        );
-
-                        this.store.dispatch(
-                            CatalogueActions.setSelectedCatalogue({
-                                payload: id,
-                            })
-                        );
-
-                        return;
-                    }
-
-                    if (cataloguePrices.length === 0) {
-                        const query: IQueryParams = {
-                            paginate: true,
-                            limit: environment.pageSize,
-                            skip: 0,
-                        };
-
-                        query['catalogueId'] = catalogue.id;
-                        query['warehouseIds'] = [];
-                        query['typeIds'] = [];
-                        query['groupIds'] = [];
-                        query['channelIds'] = [];
-                        query['clusterIds'] = [];
-
-                        this.store.dispatch(
-                            CatalogueActions.fetchCataloguePriceSettingsRequest({
-                                payload: query,
-                            })
-                        );
-                    }
-
-                    /** Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut. */
-                    if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                        this.store.dispatch(
-                            CatalogueActions.spliceCatalogue({
-                                payload: id,
-                            })
-                        );
-
-                        this.notice$.open('Produk tidak ditemukan.', 'error', {
-                            verticalPosition: 'bottom',
-                            horizontalPosition: 'right',
-                        });
-
-                        setTimeout(
-                            () => this.router.navigate(['pages', 'catalogues', 'list']),
-                            1000
-                        );
-
-                        return;
-                    }
-
-                    if (this.isViewMode()) {
-                        this.form.get('advancePrice').disable();
-                    } else {
-                        this.form.get('advancePrice').enable();
-                    }
-
-                    /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
-                    this.form.patchValue({
-                        id: catalogue.id,
-                        supplierId: (catalogue.brand as any).supplierId,
-                        retailBuyingPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
-                        retailBuyingPriceView: catalogue.retailBuyingPrice,
-                        discountRetailBuyerPrice: String(
-                            catalogue.discountedRetailBuyingPrice
-                        ).replace('.', ','),
-                        discountRetailBuyerPriceView: catalogue.discountedRetailBuyingPrice,
-                    });
-
-                    // this.cdRef.markForCheck();
-
-                    this.selectedCatalogue$.next(catalogue);
-
-                    /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-                    this.form.markAsDirty({ onlySelf: false });
-                    this.form.markAllAsTouched();
-                    this.form.markAsPristine();
-                }
-            );
     }
 
     private initFormCheck(): void {
@@ -382,10 +344,13 @@ export class CataloguePriceSettingsComponent
                 tap((formMode) =>
                     HelperService.debug('CATALOGUE PRICE SETTINGS FORM MODE CHANGED:', formMode)
                 ),
-                withLatestFrom(this.cataloguePrices$),
+                withLatestFrom(
+                    this.catalogueFacade.cataloguePrices$,
+                    (formMode, cataloguePrices) => ({ formMode, cataloguePrices })
+                ),
                 takeUntil(this.unSubs$)
             )
-            .subscribe(([formMode, cataloguePrices]) => {
+            .subscribe(({ formMode, cataloguePrices }) => {
                 this.subs.unsubscribe();
                 this.subs = new Subscription();
 
@@ -424,6 +389,7 @@ export class CataloguePriceSettingsComponent
                                         value
                                     )
                                 )
+                                // finalize(() => control.enable())
                             )
                             .subscribe((value) => {
                                 if (value !== '0.00' || value) {
@@ -431,17 +397,11 @@ export class CataloguePriceSettingsComponent
 
                                     const priceSettingId = control.get('id').value;
 
-                                    this.store.dispatch(
-                                        CatalogueActions.updateCataloguePriceSettingRequest({
-                                            payload: {
-                                                priceSettingId,
-                                                price: value,
-                                                formIndex: idx,
-                                            },
-                                        })
+                                    this.catalogueFacade.updateCataloguePrice(
+                                        priceSettingId,
+                                        value,
+                                        idx
                                     );
-
-                                    // this.cdRef.markForCheck();
                                 }
                             });
 
@@ -453,28 +413,6 @@ export class CataloguePriceSettingsComponent
 
                 this._updateFormView();
             });
-    }
-
-    getFormError(form: any): string {
-        return this.errorMessage$.getFormError(form);
-    }
-
-    hasError(form: any, args: any = {}): boolean {
-        const { ignoreTouched, ignoreDirty } = args;
-
-        if (ignoreTouched && ignoreDirty) {
-            return !!form.errors;
-        }
-
-        if (ignoreDirty) {
-            return form.errors && form.touched;
-        }
-
-        if (ignoreTouched) {
-            return form.errors && form.dirty;
-        }
-
-        return form.errors && (form.dirty || form.touched);
     }
 
     isAddMode(): boolean {
@@ -668,119 +606,55 @@ export class CataloguePriceSettingsComponent
         this.updateForm$.next(null);
         this.changePage.emit();
 
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex,
-        };
-
-        data['paginate'] = true;
-        data['catalogueId'] = this.selectedCatalogue$.value.id;
-        data['warehouseIds'] = [];
-        data['typeIds'] = [];
-        data['groupIds'] = [];
-        data['channelIds'] = [];
-        data['clusterIds'] = [];
-
-        //         if (this.sort.direction) {
-        //             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-        //             data['sortBy'] = this.sort.active;
-        //         }
-
-        this.store.dispatch(
-            CatalogueActions.fetchCataloguePriceSettingsRequest({
-                payload: data,
-            })
-        );
-
-        // this.table.nativeElement.scrollIntoView();
+        this._initTable(this.selectedCatalogue$.value.id);
     }
 
-    ngOnInit(): void {
-        this.form = this.fb.group({
-            id: null,
-            supplierId: null,
-            discountRetailBuyerPrice: null,
-            discountRetailBuyerPriceView: null,
-            retailBuyingPrice: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
-            retailBuyingPriceView: null,
-            priceToAll: null,
-            priceSettings: this.fb.array([]),
-            advancePrice: false,
-        });
-
-        this.filterForm = this.fb.group({
-            warehouses: [''],
-            storeType: [''],
-            storeGroup: [''],
-            storeChannel: [''],
-            storeCluster: [''],
-        });
-
-        this._checkRoute();
-        this.initFormCheck();
-
-        if (this.formMode === 'view' || this.formMode === 'edit') {
-            this._patchForm();
-        }
-    }
-
-    ngAfterViewInit(): void {}
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['formMode']) {
-            if (
-                (!changes['formMode'].isFirstChange() &&
-                    changes['formMode'].currentValue === 'edit') ||
-                changes['formMode'].currentValue === 'view'
-            ) {
-                this.trigger$.next('');
-                this.updateForm$.next(changes['formMode'].currentValue);
-            }
+    onTrackPriceSetting(index: number, item: CataloguePrice): string {
+        if (!item) {
+            return null;
         }
 
-        // Need review
-        /* if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
-            this.updateForm$.next(changes['formMode'].currentValue);
-        } else if (changes['formMode'].currentValue) {
-            this.updateForm$.next(changes['formMode'].currentValue);
-        } */
-    }
-
-    ngOnDestroy(): void {
-        this.unSubs$.next();
-        this.unSubs$.complete();
-
-        this.updateForm$.next(null);
-        this.updateForm$.complete();
-
-        if (!this.subs.closed) {
-            this.subs.unsubscribe();
-        }
-
-        this.store.dispatch(CatalogueActions.resetCataloguePriceSettings());
+        return item.id;
     }
 
     private _checkRoute(): void {
-        this.route.url.pipe(take(1)).subscribe((urls) => {
-            if (urls.filter((url) => url.path === 'edit').length > 0) {
-                this.formMode = 'edit';
-                this.prepareEditCatalogue();
-            } else if (urls.filter((url) => url.path === 'view').length > 0) {
-                this.formMode = 'view';
-                this.prepareEditCatalogue();
-            } else if (urls.filter((url) => url.path === 'add').length > 0) {
-                this.formMode = 'add';
-            }
+        /* this.route.url.pipe(take(1)).subscribe((urls) => {
 
-            this._updateFormView();
-        });
+        }); */
+
+        const { id } = this.route.snapshot.params;
+        const urls = this.route.snapshot.url;
+
+        if (id) {
+            if (urls.filter((url) => url.path === 'edit').length) {
+                this.displayedColumns = [
+                    'warehouse-name',
+                    'store-type',
+                    'store-group',
+                    'store-channel',
+                    'store-cluster',
+                    'price',
+                    'actions',
+                ];
+                this.formMode = 'edit';
+                this._prepareEditCatalogue();
+            } else if (urls.filter((url) => url.path === 'view')) {
+                this.displayedColumns = [
+                    'warehouse-name',
+                    'store-type',
+                    'store-group',
+                    'store-channel',
+                    'store-cluster',
+                    'price',
+                ];
+                this.formMode = 'view';
+                this._prepareEditCatalogue();
+            }
+        } else if (urls.filter((url) => url.path === 'add').length) {
+            this.formMode = 'add';
+        }
+
+        this._updateFormView();
     }
 
     private _patchForm(): void {
@@ -796,6 +670,81 @@ export class CataloguePriceSettingsComponent
                 //     form: this.form,
                 //     formPrice: this.form.get('priceSettings'),
                 // });
+            });
+    }
+
+    private _prepareEditCatalogue(): void {
+        combineLatest([this.catalogueFacade.catalogue$, this.authFacade.getUserSupplier$])
+            .pipe(
+                withLatestFrom(
+                    this.catalogueFacade.cataloguePrices$,
+                    ([catalogue, userSupplier], cataloguePrices) => ({
+                        catalogue,
+                        userSupplier,
+                        cataloguePrices,
+                    })
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe(({ catalogue, userSupplier, cataloguePrices }) => {
+                /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
+                const { id } = this.route.snapshot.params;
+
+                /** Butuh mengambil data katalog jika belum ada di state. */
+                if (!catalogue) {
+                    this.catalogueFacade.getCatalogueById(id);
+                    return;
+                }
+
+                if (!cataloguePrices.length) {
+                    this._initTable(catalogue.id);
+                }
+
+                /** Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut. */
+                if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
+                    this.catalogueFacade.delete(id);
+
+                    this.notice$
+                        .open('Produk tidak ditemukan.', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        })
+                        .afterOpened()
+                        .pipe(delay(1000))
+                        .subscribe(() =>
+                            this.router.navigate(['pages', 'catalogues', 'list'], {
+                                replaceUrl: true,
+                            })
+                        );
+
+                    return;
+                }
+
+                if (this.isViewMode()) {
+                    this.form.get('advancePrice').disable();
+                } else {
+                    this.form.get('advancePrice').enable();
+                }
+
+                /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
+                this.form.patchValue({
+                    id: catalogue.id,
+                    supplierId: (catalogue.brand as any).supplierId,
+                    retailBuyingPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
+                    retailBuyingPriceView: catalogue.retailBuyingPrice,
+                    discountRetailBuyerPrice: String(catalogue.discountedRetailBuyingPrice).replace(
+                        '.',
+                        ','
+                    ),
+                    discountRetailBuyerPriceView: catalogue.discountedRetailBuyingPrice,
+                });
+
+                this.selectedCatalogue$.next(catalogue);
+
+                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+                this.form.markAsDirty({ onlySelf: false });
+                this.form.markAllAsTouched();
+                this.form.markAsPristine();
             });
     }
 
@@ -815,10 +764,32 @@ export class CataloguePriceSettingsComponent
         };
 
         if (this.isViewMode()) {
+            this.displayedColumns = [
+                'warehouse-name',
+                'store-type',
+                'store-group',
+                'store-channel',
+                'store-cluster',
+                'price',
+            ];
+
             this.form.get('advancePrice').disable();
         } else {
+            if (this.isEditMode()) {
+                this.displayedColumns = [
+                    'warehouse-name',
+                    'store-type',
+                    'store-group',
+                    'store-channel',
+                    'store-cluster',
+                    'price',
+                    'actions',
+                ];
+            }
             this.form.get('advancePrice').enable();
         }
+
+        this.cdRef.detectChanges();
 
         // setTimeout(() => {
         //     const catalogue = this.selectedCatalogue$.value;
@@ -827,5 +798,22 @@ export class CataloguePriceSettingsComponent
         // });
 
         // this.cdRef.markForCheck();
+    }
+
+    private _initTable(catalogueId: string): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || this.defaultPageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            paginate: true,
+        };
+
+        data['catalogueId'] = catalogueId;
+        data['warehouseIds'] = [];
+        data['typeIds'] = [];
+        data['groupIds'] = [];
+        data['channelIds'] = [];
+        data['clusterIds'] = [];
+
+        this.dataSource.getWithQuery(data);
     }
 }

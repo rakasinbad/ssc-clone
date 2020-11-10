@@ -51,20 +51,20 @@ export interface State {
  * CATALOGUE STATE
  */
 const adapterCatalogue: EntityAdapter<Catalogue> = createEntityAdapter<Catalogue>({
-    selectId: catalogue => catalogue.id
+    selectId: (catalogue) => catalogue.id,
 });
 const initialCatalogueState = adapterCatalogue.getInitialState({
     total: 0,
     limit: 10,
     skip: 0,
-    data: []
+    data: [],
 });
 
 /**
  * CATALOGUE PRICE STATE
  */
 const adapterCataloguePrice: EntityAdapter<CataloguePrice> = createEntityAdapter<CataloguePrice>({
-    selectId: catalogue => catalogue.id
+    selectId: (catalogue) => catalogue.id,
 });
 const initialCataloguePriceState = adapterCataloguePrice.getInitialState({
     total: 0,
@@ -97,7 +97,7 @@ const initialState: State = {
     totalActive: 0,
     totalInactive: 0,
     totalBanned: 0,
-    errors: initialErrorState
+    errors: initialErrorState,
 };
 
 const catalogueReducer = createReducer(
@@ -121,21 +121,21 @@ const catalogueReducer = createReducer(
                 id: payload.id,
                 name: payload.name,
                 parent: payload.parent,
-                hasChildren: payload.hasChildren
-            }
-        ]
+                hasChildren: payload.hasChildren,
+            },
+        ],
     })),
     on(CatalogueActions.setSelectedCategories, (state, { payload }) => ({
         ...state,
-        selectedCategories: payload
+        selectedCategories: payload,
     })),
     on(CatalogueActions.setProductName, (state, { payload }) => ({
         ...state,
-        productName: payload
+        productName: payload,
     })),
     on(CatalogueActions.spliceCatalogue, (state, { payload }) => ({
         ...state,
-        catalogues: adapterCatalogue.removeOne(payload, state.catalogues)
+        catalogues: adapterCatalogue.removeOne(payload, state.catalogues),
     })),
     /**
      *  ===================================================================
@@ -143,7 +143,7 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      */
 
-    on(CatalogueActions.fetchCatalogueStockRequest, state => state),
+    on(CatalogueActions.fetchCatalogueStockRequest, (state) => state),
     on(
         CatalogueActions.fetchCatalogueRequest,
         CatalogueActions.fetchCataloguesRequest,
@@ -155,9 +155,9 @@ const catalogueReducer = createReducer(
         CatalogueActions.addNewCatalogueRequest,
         CatalogueActions.applyFilteredCataloguePriceRequest,
         // CatalogueActions.fetchTotalCatalogueStatusRequest,
-        state => ({
+        (state) => ({
             ...state,
-            isLoading: true
+            isLoading: true,
         })
     ),
     on(
@@ -166,16 +166,16 @@ const catalogueReducer = createReducer(
         CatalogueActions.importCataloguesRequest,
         CatalogueActions.setCatalogueToActiveRequest,
         CatalogueActions.setCatalogueToInactiveRequest,
-        state => ({
+        (state) => ({
             ...state,
             isLoading: true,
-            isUpdating: true
+            isUpdating: true,
         })
     ),
-    on(CatalogueActions.removeCatalogueRequest, state => ({
+    on(CatalogueActions.removeCatalogueRequest, (state) => ({
         ...state,
         isLoading: true,
-        isDeleting: true
+        isDeleting: true,
     })),
     /**
      *  ===================================================================
@@ -192,7 +192,7 @@ const catalogueReducer = createReducer(
         (state, { payload }) => ({
             ...state,
             isLoading: false,
-            errors: adapterError.upsertOne(payload, state.errors)
+            errors: adapterError.upsertOne(payload, state.errors),
         })
     ),
     on(
@@ -205,7 +205,7 @@ const catalogueReducer = createReducer(
             ...state,
             isUpdating: initialState.isUpdating,
             isLoading: initialState.isLoading,
-            errors: adapterError.upsertOne(payload, state.errors)
+            errors: adapterError.upsertOne(payload, state.errors),
         })
     ),
     on(
@@ -218,7 +218,7 @@ const catalogueReducer = createReducer(
             ...state,
             isDeleting: initialState.isDeleting,
             isLoading: false,
-            errors: adapterError.upsertOne(payload, state.errors)
+            errors: adapterError.upsertOne(payload, state.errors),
         })
     ),
     /**
@@ -226,14 +226,14 @@ const catalogueReducer = createReducer(
      *  SUCCESSES
      *  ===================================================================
      */
-    on(CatalogueActions.applyFilteredCataloguePriceSuccess, state => ({
+    on(CatalogueActions.applyFilteredCataloguePriceSuccess, (state) => ({
         ...state,
         isLoading: false,
     })),
-    on(CatalogueActions.addNewCatalogueSuccess, state => ({
+    on(CatalogueActions.addNewCatalogueSuccess, (state) => ({
         ...state,
         isLoading: false,
-        errors: adapterError.removeOne('addNewCatalogueSuccess', state.errors)
+        errors: adapterError.removeOne('addNewCatalogueSuccess', state.errors),
     })),
     on(CatalogueActions.fetchCatalogueStockSuccess, (state, { payload }) => ({
         ...state,
@@ -242,44 +242,48 @@ const catalogueReducer = createReducer(
             {
                 id: payload.catalogueId,
                 changes: {
-                    stockEnRoute: payload.stock.stockEnRoute
-                }
+                    stockEnRoute: payload.stock.stockEnRoute,
+                },
             },
             state.catalogues
         ),
-        errors: adapterError.removeOne('fetchCatalogueStockFailure', state.errors)
+        errors: adapterError.removeOne('fetchCatalogueStockFailure', state.errors),
     })),
     on(CatalogueActions.fetchCatalogueCategorySuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         category: payload.category,
-        errors: adapterError.removeOne('fetchCatalogueCategoryFailure', state.errors)
+        errors: adapterError.removeOne('fetchCatalogueCategoryFailure', state.errors),
     })),
     on(CatalogueActions.fetchCategoryTreeSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         categoryTree: payload.categoryTree,
-        errors: adapterError.removeOne('fetchCategoryTreeFailure', state.errors)
+        errors: adapterError.removeOne('fetchCategoryTreeFailure', state.errors),
     })),
     on(CatalogueActions.fetchCatalogueCategoriesSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         categories: payload.categories,
-        errors: adapterError.removeOne('fetchCatalogueCategoriesFailure', state.errors)
+        errors: adapterError.removeOne('fetchCatalogueCategoriesFailure', state.errors),
     })),
-    on(CatalogueActions.patchCatalogueSuccess, CatalogueActions.patchCataloguesSuccess, state => ({
+    on(
+        CatalogueActions.patchCatalogueSuccess,
+        CatalogueActions.patchCataloguesSuccess,
+        (state) => ({
+            ...state,
+            isLoading: initialState.isLoading,
+            isDeleting: initialState.isDeleting,
+            isUpdating: initialState.isUpdating,
+            errors: adapterError.removeOne('fetchCatalogueFailure', state.errors),
+        })
+    ),
+    on(CatalogueActions.importCataloguesSuccess, (state) => ({
         ...state,
         isLoading: initialState.isLoading,
         isDeleting: initialState.isDeleting,
         isUpdating: initialState.isUpdating,
-        errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
-    })),
-    on(CatalogueActions.importCataloguesSuccess, state => ({
-        ...state,
-        isLoading: initialState.isLoading,
-        isDeleting: initialState.isDeleting,
-        isUpdating: initialState.isUpdating,
-        errors: adapterError.removeOne('importCataloguesFailure', state.errors)
+        errors: adapterError.removeOne('importCataloguesFailure', state.errors),
     })),
     on(CatalogueActions.fetchCatalogueSuccess, (state, { payload }) => ({
         ...state,
@@ -287,7 +291,7 @@ const catalogueReducer = createReducer(
         isDeleting: initialState.isDeleting,
         catalogue: payload.catalogue,
         catalogues: adapterCatalogue.upsertOne(payload.catalogue, state.catalogues),
-        errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
+        errors: adapterError.removeOne('fetchCatalogueFailure', state.errors),
     })),
     on(CatalogueActions.fetchCataloguesSuccess, (state, { payload }) => ({
         ...state,
@@ -295,9 +299,9 @@ const catalogueReducer = createReducer(
         isDeleting: initialState.isDeleting,
         catalogues: adapterCatalogue.upsertMany(payload.catalogues, {
             ...state.catalogues,
-            total: payload.total
+            total: payload.total,
         }),
-        errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
+        errors: adapterError.removeOne('fetchCataloguesFailure', state.errors),
     })),
     on(CatalogueActions.fetchCataloguePriceSettingsSuccess, (state, { payload }) => ({
         ...state,
@@ -307,15 +311,12 @@ const catalogueReducer = createReducer(
             ...state.cataloguePrices,
             total: payload.total,
         }),
-        errors: adapterError.removeOne('fetchCataloguePriceSettingsFailure', state.errors)
+        errors: adapterError.removeOne('fetchCataloguePriceSettingsFailure', state.errors),
     })),
-    on(
-        CatalogueActions.updateCataloguePriceSettingSuccess,
-        (state, { payload }) => ({
-            ...state,
-            cataloguePrices: adapterCataloguePrice.updateOne(payload.data, state.cataloguePrices)
-        })
-    ),
+    on(CatalogueActions.updateCataloguePriceSettingSuccess, (state, { payload }) => ({
+        ...state,
+        cataloguePrices: adapterCataloguePrice.updateOne(payload.data, state.cataloguePrices),
+    })),
     on(
         CatalogueActions.setCatalogueToActiveSuccess,
         CatalogueActions.setCatalogueToInactiveSuccess,
@@ -323,7 +324,7 @@ const catalogueReducer = createReducer(
             ...state,
             isLoading: false,
             errors: adapterError.removeOne('removeCatalogueFailure', state.errors),
-            catalogues: adapterCatalogue.updateOne(payload, state.catalogues)
+            catalogues: adapterCatalogue.updateOne(payload, state.catalogues),
         })
     ),
     on(CatalogueActions.removeCatalogueSuccess, (state, { payload }) => ({
@@ -331,13 +332,13 @@ const catalogueReducer = createReducer(
         isLoading: false,
         isDeleting: true,
         catalogues: adapterCatalogue.removeOne(payload.id, state.catalogues),
-        errors: adapterError.removeOne('removeCatalogueFailure', state.errors)
+        errors: adapterError.removeOne('removeCatalogueFailure', state.errors),
     })),
     on(CatalogueActions.fetchCatalogueUnitSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         units: payload.units,
-        errors: adapterError.removeOne('removeCatalogueFailure', state.errors)
+        errors: adapterError.removeOne('removeCatalogueFailure', state.errors),
     })),
     on(CatalogueActions.fetchTotalCatalogueStatusSuccess, (state, { payload }) => ({
         ...state,
@@ -356,7 +357,7 @@ const catalogueReducer = createReducer(
 
     on(CatalogueActions.updateCatalogue, (state, { catalogue }) => ({
         ...state,
-        catalogues: adapterCatalogue.updateOne(catalogue, state.catalogues)
+        catalogues: adapterCatalogue.updateOne(catalogue, state.catalogues),
     })),
     /**
      *  ===================================================================
@@ -365,11 +366,11 @@ const catalogueReducer = createReducer(
      */
     on(CatalogueActions.setSelectedCatalogue, (state, { payload: selectedCatalogueId }) => ({
         ...state,
-        selectedCatalogueId
+        selectedCatalogueId,
     })),
     on(CatalogueActions.setRefreshStatus, (state, { status }) => ({
         ...state,
-        needRefresh: status
+        needRefresh: status,
     })),
     /**
      *  ===================================================================
@@ -377,29 +378,41 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      */
 
-    on(CatalogueActions.resetSelectedCategories, state => ({
+    on(CatalogueActions.resetSelectedCategories, (state) => ({
         ...state,
-        selectedCategories: []
+        selectedCategories: [],
     })),
-    on(CatalogueActions.resetSelectedCatalogue, state => ({
+    on(CatalogueActions.resetSelectedCatalogue, (state) => ({
         ...state,
-        selectedCatalogueId: initialState.selectedCatalogueId
+        selectedCatalogueId: initialState.selectedCatalogueId,
     })),
-    on(CatalogueActions.resetCatalogue, state => ({
+    on(CatalogueActions.resetCatalogue, (state) => ({
         ...state,
         catalogue: initialState.catalogue,
-        errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
+        errors: adapterError.removeOne('fetchCatalogueFailure', state.errors),
     })),
-    on(CatalogueActions.resetCatalogues, state => ({
+    on(CatalogueActions.resetCatalogues, (state) => ({
         ...state,
         catalogues: initialState.catalogues,
-        errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
+        errors: adapterError.removeOne('fetchCataloguesFailure', state.errors),
     })),
-    on(CatalogueActions.resetCataloguePriceSettings, state => ({
+    on(CatalogueActions.resetCataloguePriceSettings, (state) => ({
         ...state,
         cataloguePrices: initialState.cataloguePrices,
     })),
-    on(CatalogueActions.resetCatalogueUnits, state => ({ ...state, units: initialState.units })),
+    on(CatalogueActions.resetCatalogueUnits, (state) => ({ ...state, units: initialState.units })),
+    on(CatalogueActions.updateCataloguePriceSettingRequest, (state) => ({
+        ...state,
+        isLoading: true,
+    })),
+    on(
+        CatalogueActions.updateCataloguePriceSettingFailure,
+        CatalogueActions.updateCataloguePriceSettingSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false,
+        })
+    )
 );
 
 export function reducer(state: State | undefined, action: Action): State {
@@ -414,12 +427,12 @@ export const {
     selectAll: selectAllCatalogues,
     selectEntities: selectCatalogueEntities,
     selectIds: selectCatalogueIds,
-    selectTotal: selectCataloguesTotal
+    selectTotal: selectCataloguesTotal,
 } = adapterCatalogue.getSelectors(getListCatalogueState);
 
 export const {
     selectAll: selectAllCataloguePrices,
     selectEntities: selectCataloguePriceEntities,
     selectIds: selectCataloguePriceIds,
-    selectTotal: selectCataloguePricesTotal
+    selectTotal: selectCataloguePricesTotal,
 } = adapterCataloguePrice.getSelectors((state: State) => state.cataloguePrices);

@@ -1,5 +1,5 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
-<div [ngClass]="catalogueContent" class="px-16 pb-40 page-layout carded fullwidth inner-scroll">
+<div [ngClass]="catalogueContent" class="p-16 page-layout carded fullwidth inner-scroll">
     <div class="py-16 pb-28">
         <div class="font-weight-600 font-size-24 line-height-20">Segmentation Settings</div>
     </div>
@@ -107,7 +107,12 @@
 
         <!-- ADVANCE PRICE -->
         <div [ngClass]="formClass">
-            <mat-checkbox formControlName="advancePrice" labelPosition="after" fxFlexAlign="center">
+            <mat-checkbox
+                formControlName="advancePrice"
+                labelPosition="after"
+                fxFlexAlign="center"
+                disableRipple
+            >
                 <ng-container
                     [class.sinbad-red-fg]="
                         !(formMode | hasFormMode: 'view') &&
@@ -220,65 +225,80 @@
             <!-- / PRICE SEGMENTATION -->
 
             <!-- APPLY BUTTON -->
-            <!-- <button mat-flat-button class="sinbad-yellow w-84 h-32 mb-28" (click)="onApplyFilter()">
+            <button mat-flat-button class="sinbad-yellow w-84 h-32 mb-28" (click)="onApplyFilter()">
                 Apply
-            </button> -->
+            </button>
             <!-- / APPLY BUTTON -->
         </div>
         <!-- / APPLICATION ADVANCE PRICE -->
 
         <!-- ADVANCE PRICE TABLE -->
-        <!-- <mat-table
+        <mat-table
             #table
-            class="catalogue-price-table grey-300-border"
-            [class.h-360]="(totalCataloguePrice$ | async) > 0"
-            [dataSource]="cataloguePrices$ | async"
+            class="catalogue-price-table sinbad-table sinbad-table__hover"
+            [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+            [class.h-360]="totalItem > 0"
+            [dataSource]="dataSource"
+            [trackBy]="onTrackPriceSetting"
             [@animateStagger]="{ value: '50' }"
             fusePerfectScrollbar
             [fxHide]="form.get('advancePrice').value === false"
-        > -->
-        <!-- Warehouse Column -->
-        <!-- <ng-container matColumnDef="warehouse">
+            [fusePerfectScrollbarOptions]="{
+                updateOnRouteChange: true,
+                suppressScrollX: totalItem ? false : true,
+                wheelSpeed: 0.5,
+                swipeEasing: true,
+                minScrollbarLength: 40,
+                maxScrollbarLength: 300
+            }"
+        >
+            <!-- Warehouse Column -->
+            <ng-container matColumnDef="warehouse-name">
                 <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.warehouseCatalogue?.warehouse?.name || '-' }}</p>
                 </mat-cell>
-            </ng-container> -->
+            </ng-container>
+            <!-- / Warehouse Column -->
 
-        <!-- Store Type Column -->
-        <!-- <ng-container matColumnDef="storeType">
+            <!-- Store Type Column -->
+            <ng-container matColumnDef="store-type">
                 <mat-header-cell *matHeaderCellDef>Store Type</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.type?.name || '-' }}</p>
                 </mat-cell>
-            </ng-container> -->
+            </ng-container>
+            <!-- / Store Type Column -->
 
-        <!-- Store Group Column -->
-        <!-- <ng-container matColumnDef="storeGroup">
+            <!-- Store Group Column -->
+            <ng-container matColumnDef="store-group">
                 <mat-header-cell *matHeaderCellDef>Store Group</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.group?.name || '-' }}</p>
                 </mat-cell>
-            </ng-container> -->
+            </ng-container>
+            <!-- / Store Group Column -->
 
-        <!-- Store Channel Column -->
-        <!-- <ng-container matColumnDef="storeChannel">
+            <!-- Store Channel Column -->
+            <ng-container matColumnDef="store-channel">
                 <mat-header-cell *matHeaderCellDef>Store Channel</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.channel?.name || '-' }}</p>
                 </mat-cell>
-            </ng-container> -->
+            </ng-container>
+            <!-- / Store Channel Column -->
 
-        <!-- Store Cluster Column -->
-        <!-- <ng-container matColumnDef="storeCluster">
+            <!-- Store Cluster Column -->
+            <ng-container matColumnDef="store-cluster">
                 <mat-header-cell *matHeaderCellDef>Store Cluster</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.cluster?.name || '-' }}</p>
                 </mat-cell>
-            </ng-container> -->
+            </ng-container>
+            <!-- / Store Cluster Column -->
 
-        <!-- SKU's Price Column -->
-        <!-- <ng-container matColumnDef="price">
+            <!-- SKU's Price Column -->
+            <ng-container matColumnDef="price">
                 <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <p *ngIf="formMode | hasFormMode: 'view'">
@@ -289,11 +309,9 @@
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="start center"
-                        fxFlex="40"
-                        fxLayoutGap="16px"
                         *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline">
+                        <mat-form-field appearance="outline" style="width: 70%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
@@ -313,29 +331,57 @@
                     </div>
                 </mat-cell>
             </ng-container>
+            <!-- / SKU's Price Column -->
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <button
+                        type="button"
+                        mat-icon-button
+                        [matMenuTriggerFor]="actionMenu"
+                        aria-label="More"
+                        title="More Action"
+                        (click)="$event.stopPropagation()"
+                    >
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu class="actions-panel" #actionMenu="matMenu">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Delete"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Delete</span>
+                        </button>
+                    </mat-menu>
+                </mat-cell>
+            </ng-container>
+            <!-- / Actions Column -->
 
             <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-        </mat-table> -->
+            <mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                class="catalogue-price-list__item"
+            ></mat-row>
+        </mat-table>
 
-        <!-- <div
-            class="no-records"
-            *ngIf="!(isLoading$ | async) && (totalCataloguePrice$ | async) === 0"
-        >
-            No records found
-        </div> -->
+        <div class="no-records" *ngIf="!isLoading && totalItem === 0">No records found</div>
 
-        <!-- <mat-paginator
-            [fxHide]="
-                (totalCataloguePrice$ | async) === 0 || form.get('advancePrice').value === false
-            "
-            [length]="totalCataloguePrice$ | async"
+        <mat-paginator
+            [fxHide]="totalItem === 0 || form.get('advancePrice').value === false"
+            [disabled]="(isLoading && !totalItem) || (!isLoading && totalItem === 0)"
+            [length]="totalItem"
             [pageSize]="defaultPageSize"
-            [pageSizeOptions]="defaultPageSizeTable"
+            [pageSizeOptions]="defaultPageOpts"
             (page)="onChangePage($event)"
             showFirstLastButtons
         >
-        </mat-paginator> -->
+        </mat-paginator>
         <!-- / ADVANCE PRICE TABLE -->
     </form>
 </div>
