@@ -6,6 +6,7 @@ import {
     FetchCataloguesEffects,
     FetchCatalogueSegmentationEffects,
     FetchCatalogueSegmentationsEffects,
+    UnassignedCatalogueEffects,
 } from './effects';
 import { CatalogueSegmentationsEffects } from './effects/catalogue-segmentations.effects';
 import { fromCatalogueSegmentation } from './reducers';
@@ -22,6 +23,7 @@ import { fromCatalogueSegmentation } from './reducers';
             FetchCataloguesEffects,
             FetchCatalogueSegmentationEffects,
             FetchCatalogueSegmentationsEffects,
+            UnassignedCatalogueEffects,
         ]),
     ],
 })

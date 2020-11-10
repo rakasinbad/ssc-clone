@@ -91,12 +91,14 @@ export class CatalogueSegmentationListComponent
     }
 
     ngOnInit(): void {
-        this.catalogueSegmentationFacade.isRefresh$.subscribe((data) => {
-            if (data) {
-                this._initTable();
-                this.catalogueSegmentationFacade.isRefresh(false); //set isRefresh state to false
-            }
-        });
+        this.catalogueSegmentationFacade.isRefresh$
+            .pipe(takeUntil(this.unSubs$))
+            .subscribe((data) => {
+                if (data) {
+                    this._initTable();
+                    this.catalogueSegmentationFacade.isRefresh(false); //set isRefresh state to false
+                }
+            });
 
         this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
 

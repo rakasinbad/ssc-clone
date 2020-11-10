@@ -209,7 +209,50 @@
                     </div>
                 </select-store-segmentation>
             </div>
-            <!-- STORE CHANNEL FIELD -->
+            <!-- / STORE CHANNEL FIELD -->
+
+            <!-- STORE CLUSTER FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    for="chosen-store-cluster"
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    [class.sinbad-red-fg]="
+                        form.get('chosenStoreCluster').value ||
+                            form.get('chosenStoreCluster').touched
+                            | hasErrorField: form.get('chosenStoreCluster'):false
+                    "
+                >
+                    Store Cluster<br />
+                    ({{ form.get('chosenStoreCluster').value?.length || 0 }} Selected)
+                </label>
+
+                <select-store-segmentation
+                    id="chosen-store-cluster"
+                    [initialSelection]="form.get('chosenStoreCluster').value || []"
+                    [disabled]="form.get('chosenStoreCluster').disabled"
+                    placeholder="Choose Store Cluster"
+                    title="Select Store Cluster"
+                    segmentationType="cluster"
+                    [required]="false"
+                    (selected)="onStoreClusterSelected($event)"
+                    fxFlex="50"
+                >
+                    <div error>
+                        {{
+                            form.get('chosenStoreCluster').value
+                                | errorMessage: form:'chosenStoreCluster'
+                        }}
+                    </div>
+                </select-store-segmentation>
+            </div>
+            <!-- / STORE CLUSTER FIELD -->
         </div>
     </form>
 
@@ -223,7 +266,9 @@
         [keyword]="keyword"
         [formMode]="formMode"
         [segmentationId]="item?.id"
+        [(clickResetSelection)]="isResetAllCatalogue"
         [(clickSelectAllCatalogue)]="isSelectAllCatalogue"
+        [(clickUnassignAllSelection)]="clickUnassignAllSelection"
         (changeCatalogue)="onCatalogueSelected($event)"
         (showBatchActions)="onUpdateBatchActions($event)"
     ></app-catalogue-list>
