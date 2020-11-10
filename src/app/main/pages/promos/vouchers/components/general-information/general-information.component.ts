@@ -553,7 +553,7 @@ export class VoucherGeneralInformationComponent
             id: [null],
             voucherAllocationType: [
                 VoucherAllocation.NONE ||
-                    VoucherAllocation.PROMOBUDGET ||
+                    // VoucherAllocation.PROMOBUDGET ||
                     VoucherAllocation.PROMOSLOT,
                 [
                     RxwebValidators.required({
@@ -796,11 +796,11 @@ export class VoucherGeneralInformationComponent
                         (rawValue.voucherSlot == null || rawValue.voucherSlot == '')
                     ) {
                         return 'INVALID';
-                    } else if (
-                        rawValue.voucherAllocationType == 'voucher_budget' &&
-                        (rawValue.voucherBudget == null || rawValue.voucherBudget == '')
-                    ) {
-                        return 'INVALID';
+                    // } else if (
+                    //     rawValue.voucherAllocationType == 'voucher_budget' &&
+                    //     (rawValue.voucherBudget == null || rawValue.voucherBudget == '')
+                    // ) {
+                    //     return 'INVALID';
                     } else if (
                         rawValue.termsAndConditions == '' ||
                         rawValue.termsAndConditions.length === 0

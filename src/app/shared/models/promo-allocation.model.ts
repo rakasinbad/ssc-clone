@@ -12,6 +12,6 @@ export enum PromoAllocationCross {
 
 export enum VoucherAllocation {
     NONE = 'none',
-    PROMOBUDGET = 'voucher_budget',
+    // PROMOBUDGET = 'voucher_budget',
     PROMOSLOT = 'voucher_slot'
 }
