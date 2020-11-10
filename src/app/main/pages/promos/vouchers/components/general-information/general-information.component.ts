@@ -352,21 +352,6 @@ export class VoucherGeneralInformationComponent
         }
     }
 
-    onInput(type: string, value) {
-        switch (type) {
-            case 'expirations':
-                if (value != '' || value != null || value != undefined) {
-                    let bbs = value.replace(/^0*/g, '');
-                    this.form.get('expirationDays').setValue(bbs);
-                } else {
-                    return value;
-                }
-                
-            break;
-        
-        }
-    }
-
     addVoucherTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
