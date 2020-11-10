@@ -76,7 +76,7 @@
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
-                    <input matInput name="qty" type="number" [formControl]="form.get('qty')" />
+                    <input matInput name="qty" [formControl]="form.get('qty')" />
                     <mat-error *ngIf="hasError(form.get('qty'))">
                         {{ getFormError(form.get('qty')) }}
                     </mat-error>

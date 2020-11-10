@@ -279,8 +279,12 @@ export class VoucherConditionSettingsComponent
                 [
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
+                        allowDecimal: false,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.pattern({
+                        expression:{'onlyNumber': /^[1-9][0-9]*$/},
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxNumber({
                         value:999999999999,

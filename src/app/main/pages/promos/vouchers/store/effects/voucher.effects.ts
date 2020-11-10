@@ -87,6 +87,23 @@ export class VoucherEffects {
         )
     );
 
+    fetchSupplierVoucherFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VoucherActions.fetchSupplierVoucherFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.notice$.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     addVoucherRequest$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action penambahan Supplier Voucher.
@@ -121,6 +138,25 @@ export class VoucherEffects {
                 }
             })
         )
+    );
+
+    addSupplierVoucherFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VoucherActions.addSupplierVoucherFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.VoucherStore.dispatch(FormActions.resetClickSaveButton());
+
+                    this.notice$.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     updateVoucherRequest$ = createEffect(() =>
@@ -163,6 +199,25 @@ export class VoucherEffects {
         )
     );
 
+    updateSupplierVoucherFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VoucherActions.updateSupplierVoucherFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.VoucherStore.dispatch(FormActions.resetClickSaveButton());
+
+                    this.notice$.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     removeVoucherRequest$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action penambahan Supplier Voucher.
@@ -193,6 +248,23 @@ export class VoucherEffects {
                 }
             })
         )
+    );
+
+    removeSupplierVoucherFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VoucherActions.removeSupplierVoucherFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to delete Supplier Voucher';
+
+                    this.notice$.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     addVoucherSuccess$ = createEffect(
@@ -322,23 +394,23 @@ export class VoucherEffects {
         { dispatch: false }
     );
 
-    failureActions$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                // Hanya untuk action fetch export logs failure.
-                ofType(
-                    VoucherActions.fetchSupplierVoucherFailure,
-                    VoucherActions.addSupplierVoucherFailure,
-                    VoucherActions.updateSupplierVoucherFailure,
-                    VoucherActions.removeSupplierVoucherFailure,
-                ),
-                // Hanya mengambil payload-nya saja.
-                map((action) => action.payload),
-                // Memunculkan notif bahwa request export gagal.
-                tap(err => this.helper$.showErrorNotification(err))
-            ),
-        { dispatch: false }
-    );
+    // failureActions$ = createEffect(
+    //     () =>
+    //         this.actions$.pipe(
+    //             // Hanya untuk action fetch export logs failure.
+    //             ofType(
+    //                 VoucherActions.fetchSupplierVoucherFailure,
+    //                 VoucherActions.addSupplierVoucherFailure,
+    //                 VoucherActions.updateSupplierVoucherFailure,
+    //                 VoucherActions.removeSupplierVoucherFailure,
+    //             ),
+    //             // Hanya mengambil payload-nya saja.
+    //             map((action) => action.payload),
+    //             // Memunculkan notif bahwa request export gagal.
+    //             tap(err => this.helper$.showErrorNotification(err))
+    //         ),
+    //     { dispatch: false }
+    // );
 
     setRefreshStatusToActive$ = createEffect(
         () =>
@@ -496,8 +568,6 @@ export class VoucherEffects {
         dispatchTo: VoucherFailureActionNames
     ): Observable<AnyAction> => {
         // Memunculkan error di console.
-        // console.error(err);
-
         if (err instanceof ErrorHandler) {
             return of(
                 VoucherActions[dispatchTo]({
@@ -548,4 +618,15 @@ export class VoucherEffects {
         // Me-reset state tombol save.
         this.VoucherStore.dispatch(FormActions.resetClickSaveButton());
     };
+
+    
+    private _handleErrMessage(resp: ErrorHandler): string {
+        if (typeof resp.errors === 'string') {
+            return resp.errors;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
+        } else {
+            return resp.errors.message;
+        }
+    }
 }
