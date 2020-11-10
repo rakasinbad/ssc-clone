@@ -385,11 +385,7 @@
                 </ng-container>
 
                 <ng-template #otherVoucherTerms>
-                    <mat-form-field
-                        *ngIf="isViewMode()"
-                        appearance="none"
-                        class="form-chip-list"
-                    >
+                    <mat-form-field *ngIf="isViewMode()" appearance="none" class="form-chip-list">
                         <mat-chip-list>
                             <mat-chip *ngFor="let terms of form.get('termsAndConditions').value">
                                 {{ terms }}
@@ -455,11 +451,7 @@
                 </ng-container>
 
                 <ng-template #otherVoucherIns>
-                    <mat-form-field
-                        *ngIf="isViewMode()"
-                        appearance="none"
-                        class="form-chip-list"
-                    >
+                    <mat-form-field *ngIf="isViewMode()" appearance="none" class="form-chip-list">
                         <mat-chip-list>
                             <mat-chip *ngFor="let instruction of form.get('instructions').value">
                                 {{ instruction }}
@@ -528,7 +520,6 @@
                     >
                         <input
                             matInput
-                            type="number"
                             min="1"
                             name="maxCollectionPerStore"
                             formControlName="maxCollectionPerStore"
@@ -595,7 +586,7 @@
                         placeholder="Rp"
                     />
 
-                    <mat-error *ngIf="hasError('voucherBudget', true)">
+                    <mat-error *ngIf="hasError(form.get('voucherBudget'))">
                         {{ getFormError(form.get('voucherBudget')) }}
                     </mat-error>
                 </mat-form-field>
@@ -623,9 +614,9 @@
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="40">
-                    <input matInput name="voucherSlot" formControlName="voucherSlot" mask="0*" />
+                    <input matInput name="voucherSlot" formControlName="voucherSlot"/>
 
-                    <mat-error *ngIf="hasError('voucherSlot', true)">
+                    <mat-error *ngIf="hasError(form.get('voucherSlot'))">
                         {{ getFormError(form.get('voucherSlot')) }}
                     </mat-error>
                 </mat-form-field>
@@ -715,14 +706,6 @@
 
                     <ng-template #notFoundImg> - </ng-template>
                 </ng-container>
-                <!-- <span
-                    class="form-value"
-                    fxFlexAlign="center"
-                    [fxFlex]="formFieldLength"
-                    *ngIf="isViewMode()"
-                >
-                    {{ (form.get('imageUrl').value | titlecase) || '-' }}
-                </span> -->
             </div>
             <!-- upload voucher banner image -->
 
@@ -955,7 +938,6 @@
                     <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
                         <input
                             matInput
-                            type="number"
                             name="expirationDays"
                             formControlName="expirationDays"
                         />
@@ -1014,11 +996,7 @@
                 </ng-container>
 
                 <ng-template #otherVoucherTag>
-                    <mat-form-field
-                        *ngIf="isViewMode()"
-                        appearance="none"
-                        class="form-chip-list"
-                    >
+                    <mat-form-field *ngIf="isViewMode()" appearance="none" class="form-chip-list">
                         <mat-chip-list>
                             <mat-chip *ngFor="let vtag of form.get('voucherTag').value">
                                 {{ vtag }}

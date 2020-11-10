@@ -279,23 +279,22 @@ export class VoucherGeneralInformationComponent
     getVoucherTerm(value) {
         let sumData = value;
         let vv = [];
-        for(let terms of value) {
+        for (let terms of value) {
             vv.push(terms.name);
         }
         this.form.get('termsAndConditions').setValue(vv);
-        
     }
 
     getVoucherIns(value) {
         let total = value;
         let vv = [];
-        for(let instvoucher of value) {
+        for (let instvoucher of value) {
             vv.push(instvoucher.name);
         }
         this.form.get('instructions').setValue(vv);
     }
 
-     /**
+    /**
      *
      * Handle File Browse (Image / File)
      * @param {Event} ev
@@ -353,6 +352,21 @@ export class VoucherGeneralInformationComponent
         }
     }
 
+    onInput(type: string, value) {
+        switch (type) {
+            case 'expirations':
+                if (value != '' || value != null || value != undefined) {
+                    let bbs = value.replace(/^0*/g, '');
+                    this.form.get('expirationDays').setValue(bbs);
+                } else {
+                    return value;
+                }
+                
+            break;
+        
+        }
+    }
+
     addVoucherTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
@@ -381,7 +395,7 @@ export class VoucherGeneralInformationComponent
     getVoucherTag(value) {
         let sumData = value;
         let vTag = [];
-        for(let tag of value) {
+        for (let tag of value) {
             vTag.push(tag.name);
         }
         this.form.get('voucherTag').setValue(vTag);
@@ -400,7 +414,7 @@ export class VoucherGeneralInformationComponent
 
         this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
         this.triggerStatus$.next('');
-        let stDateHrMn= moment(ev.value).format('YYYY-MM-DD 00:00');
+        let stDateHrMn = moment(ev.value).format('YYYY-MM-DD 00:00');
         let stDate = moment(stDateHrMn).format();
         this.form.get('startDate').setValue(stDate);
     }
@@ -418,7 +432,7 @@ export class VoucherGeneralInformationComponent
 
         this.maxActiveStartDate = activeEndDate.toDate();
         this.triggerStatus$.next('');
-        let edDateHrMn= moment(ev.value).format('YYYY-MM-DD 23:59');
+        let edDateHrMn = moment(ev.value).format('YYYY-MM-DD 23:59');
         let edDate = moment(edDateHrMn).format();
         this.form.get('endDate').setValue(edDate);
     }
@@ -525,7 +539,7 @@ export class VoucherGeneralInformationComponent
                     imageUrl: voucher.imageUrl,
                     expirationDays: voucher.expirationDays,
                     voucherTag: voucher.voucherTag,
-                    code: voucher.code
+                    code: voucher.code,
                 });
 
                 this.selectTypeVoucher = voucher.voucherType;
@@ -553,7 +567,9 @@ export class VoucherGeneralInformationComponent
         this.form = this.fb.group({
             id: [null],
             voucherAllocationType: [
-                VoucherAllocation.NONE || VoucherAllocation.PROMOBUDGET || VoucherAllocation.PROMOSLOT,
+                VoucherAllocation.NONE ||
+                    VoucherAllocation.PROMOBUDGET ||
+                    VoucherAllocation.PROMOSLOT,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -590,6 +606,10 @@ export class VoucherGeneralInformationComponent
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxLength({
+                        value: 20,
+                        message: 'Max input is 20 character',
+                    }),
                 ],
             ],
             category: [
@@ -600,8 +620,22 @@ export class VoucherGeneralInformationComponent
                     }),
                 ],
             ],
-            shortDescription: [''],
-            description: [''],
+            shortDescription: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            description: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             termsAndConditions: [
                 '',
                 [
@@ -634,6 +668,10 @@ export class VoucherGeneralInformationComponent
                         allowDecimal: false,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.pattern({
+                        expression:{'onlyNumber': /^[1-9][0-9]*$/},
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
                     RxwebValidators.minNumber({
                         value: 1,
                         message: 'Allowed minimum value is 1',
@@ -659,6 +697,10 @@ export class VoucherGeneralInformationComponent
                 [
                     RxwebValidators.digit({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                    RxwebValidators.pattern({
+                        expression:{'onlyNumber': /^[1-9][0-9]*$/},
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxLength({
                         value: 8,
@@ -704,6 +746,10 @@ export class VoucherGeneralInformationComponent
                         allowDecimal: false,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.pattern({
+                        expression:{'onlyNumber': /^[1-9][0-9]*$/},
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
                     RxwebValidators.minNumber({
                         value: 1,
                         message: 'Allowed minimum value is 1',
@@ -714,6 +760,10 @@ export class VoucherGeneralInformationComponent
             code: [
                 '',
                 [
+                    RxwebValidators.pattern({
+                        expression:{'onlyAlphaNumber': /^[A-Za-z0-9]+$/},
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
@@ -726,7 +776,7 @@ export class VoucherGeneralInformationComponent
                         message: 'Max input is 10 character',
                     }),
                 ],
-            ]
+            ],
         });
     }
 
@@ -745,9 +795,33 @@ export class VoucherGeneralInformationComponent
                     const rawValue = this.form.getRawValue();
                     if (!rawValue.startDate || !rawValue.endDate) {
                         return 'INVALID';
-                    } else if (rawValue.voucherType == 'collectible' && rawValue.expirationDays == null) {
+                    } else if (
+                        rawValue.voucherType == 'collectible' &&
+                        (rawValue.expirationDays == null || rawValue.expirationDays == '')
+                    ) {
                         return 'INVALID';
-                    } else if (rawValue.voucherType == 'collectible' && rawValue.maxCollectionPerStore == null) {
+                    } else if (
+                        rawValue.voucherType == 'collectible' &&
+                        (rawValue.maxCollectionPerStore == null ||
+                            rawValue.maxCollectionPerStore == '')
+                    ) {
+                        return 'INVALID';
+                    } else if (
+                        rawValue.voucherAllocationType == 'voucher_slot' &&
+                        (rawValue.voucherSlot == null || rawValue.voucherSlot == '')
+                    ) {
+                        return 'INVALID';
+                    } else if (
+                        rawValue.voucherAllocationType == 'voucher_budget' &&
+                        (rawValue.voucherBudget == null || rawValue.voucherBudget == '')
+                    ) {
+                        return 'INVALID';
+                    } else if (
+                        rawValue.termsAndConditions == '' ||
+                        rawValue.termsAndConditions.length === 0
+                    ) {
+                        return 'INVALID';
+                    } else if (rawValue.instructions == '' || rawValue.instructions.length === 0) {
                         return 'INVALID';
                     } else if (rawValue.imageUrl == null) {
                         return 'INVALID';
