@@ -231,35 +231,35 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         const newWarehouse =
             chosenWarehouse && chosenWarehouse.length
                 ? chosenWarehouse.map((item: Selection) => +item.id)
-                : [];
+                : null;
 
         // Store Type
         const chosenStoreType = formValues['productSegmentation']['chosenStoreType'];
         const newStoreType =
             chosenStoreType && chosenStoreType.length
                 ? chosenStoreType.map((item: Selection) => +item.id)
-                : [];
+                : null;
 
         // Store Group
         const chosenStoreGroup = formValues['productSegmentation']['chosenStoreGroup'];
         const newStoreGroup =
             chosenStoreGroup && chosenStoreGroup.length
                 ? chosenStoreGroup.map((item: Selection) => +item.id)
-                : [];
+                : null;
 
         // Store Channel
         const chosenStoreChannel = formValues['productSegmentation']['chosenStoreChannel'];
         const newStoreChannel =
             chosenStoreChannel && chosenStoreChannel.length
                 ? chosenStoreChannel.map((item: Selection) => +item.id)
-                : [];
+                : null;
 
         // Store Cluster
         const chosenStoreCluster = formValues['productSegmentation']['chosenStoreCluster'];
         const newStoreCluster =
             chosenStoreCluster && chosenStoreCluster.length
                 ? chosenStoreCluster.map((item: Selection) => +item.id)
-                : [];
+                : null;
 
         /** Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing. */
         const catalogueData: any = {
@@ -777,12 +777,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     private requestBrands(): void {
         const params: IQueryParams = {
-            paginate: false
+            paginate: false,
         };
 
         return this.store.dispatch(
             BrandActions.fetchBrandsRequest({
-                payload: params
+                payload: params,
             })
         );
     }
