@@ -57,7 +57,9 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
         },
     };
 
+    clickUnassignAllSelection: boolean = false;
     isShowSelectAllCatalogueAction: boolean = false;
+    isResetAllCatalogue: boolean = false;
     isSelectAllCatalogue: boolean = false;
     isSelectAllWarehouse: boolean = false;
     keyword: string = null;
@@ -80,8 +82,6 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('CHANGES CS FORM', { changes });
-
         if (changes['item']) {
             if (changes['item'].currentValue && this.formMode === 'edit') {
                 this._setEditForm(changes['item'].currentValue);
@@ -93,8 +93,6 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
         combineLatest([this.form.statusChanges, this.form.get('chosenCatalogue').valueChanges])
             .pipe(
                 map(([status, chosenCatalogue]) => {
-                    console.log('COMBINE LATEST A', { form: this.form, status, chosenCatalogue });
-
                     if (!chosenCatalogue || (chosenCatalogue && !chosenCatalogue.length)) {
                         return 'INVALID';
                     }
@@ -108,8 +106,6 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
                     this._handleFormValue();
                 }
 
-                console.log('COMBINE LATEST B', { form: this.form, status });
-
                 this.formStatus.emit(status);
             });
     }
@@ -120,9 +116,21 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
     }
 
     onActionSelected(action: CardHeaderActionConfig): void {
-        if (action.id === 'select-all') {
-            console.log('ON CLICK SELECT ALL', { action });
-            this.isSelectAllCatalogue = true;
+        switch (action.id) {
+            case 'select-all':
+                this.isSelectAllCatalogue = true;
+                break;
+
+            case 'reset-all':
+                this.isResetAllCatalogue = true;
+                break;
+
+            case 'unassigned-all-selection':
+                this.clickUnassignAllSelection = true;
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -237,7 +245,7 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
     }
 
     onSelectAllWarehouse(ev: boolean): void {
-        console.log('SELECT_ALL_WH', { ev });
+        return;
     }
 
     onUpdateBatchActions({
@@ -250,10 +258,29 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
         let actions: CardHeaderActionConfig[] = [];
 
         if (isShowBatchActions) {
+            if (this.formMode === 'add') {
+                actions = [
+                    {
+                        id: 'select-all',
+                        label: `Select all ${totalItem} product${totalItem > 1 ? 's' : ''}`,
+                    },
+                ];
+            }
+
+            if (this.formMode === 'edit') {
+                actions = [
+                    {
+                        id: 'unassigned-all-selection',
+                        label: 'Unassign',
+                    },
+                ];
+            }
+
             actions = [
+                ...actions,
                 {
-                    id: 'select-all',
-                    label: `Select all ${totalItem} product${totalItem > 1 ? 's' : ''}`,
+                    id: 'reset-all',
+                    label: 'Reset Selection',
                 },
             ];
         }
@@ -322,24 +349,94 @@ export class CatalogueSegmentationFormComponent implements OnChanges, OnInit, On
                 warehouseIds,
             };
 
-            console.log('ADD PAYLOAD', { payload });
-
             this.createFormValue.emit(payload);
-        } else if (this.formMode === 'edit') {
-            const payload = {};
         }
+
+        // else if (this.formMode === 'edit') {
+        //     const payload = {};
+        // }
     }
 
     private _setEditForm(item: CatalogueSegmentation): void {
-        console.log('EDIT FORM', { item });
         if (this.form) {
             const segmentationNameCtrl = this.form.get('segmentationName');
+            const warehouseCtrl = this.form.get('chosenWarehouse');
+            const storeTypeCtrl = this.form.get('chosenStoreType');
+            const storeGroupCtrl = this.form.get('chosenStoreGroup');
+            const storeChannelCtrl = this.form.get('chosenStoreChannel');
+            const storeClusterCtrl = this.form.get('chosenStoreCluster');
 
+            // Segmentation Name
             if (item.name) {
                 segmentationNameCtrl.setValue(item.name);
             }
 
             segmentationNameCtrl.disable({ onlySelf: true });
+
+            // Warehouse
+            if (item.warehouses && item.warehouses.length) {
+                const newWarehouses: Selection[] = item.warehouses.map((warehouse) => ({
+                    id: warehouse.id,
+                    label: warehouse.name,
+                    group: 'warehouses',
+                }));
+
+                warehouseCtrl.setValue(newWarehouses);
+            }
+
+            warehouseCtrl.disable({ onlySelf: true });
+
+            // Store Type
+            if (item.types && item.types.length) {
+                const newStoreTypes: Selection[] = item.types.map((type) => ({
+                    id: type.id,
+                    label: type.name,
+                    group: 'store-segmentation-types',
+                }));
+
+                storeTypeCtrl.setValue(newStoreTypes);
+            }
+
+            storeTypeCtrl.disable({ onlySelf: true });
+
+            // Store Group
+            if (item.groups && item.groups.length) {
+                const newStoreGroups: Selection[] = item.groups.map((group) => ({
+                    id: group.id,
+                    label: group.name,
+                    group: 'store-segmentation-groups',
+                }));
+
+                storeGroupCtrl.setValue(newStoreGroups);
+            }
+
+            storeGroupCtrl.disable({ onlySelf: true });
+
+            // Store Channel
+            if (item.channels && item.channels.length) {
+                const newStoreChannels = item.channels.map((channel) => ({
+                    id: channel.id,
+                    label: channel.name,
+                    group: 'store-segmentation-channels',
+                }));
+
+                storeChannelCtrl.setValue(newStoreChannels);
+            }
+
+            storeChannelCtrl.disable({ onlySelf: true });
+
+            // Store Cluster
+            if (item.clusters && item.clusters.length) {
+                const newStoreClusters: Selection[] = item.clusters.map((cluster) => ({
+                    id: cluster.id,
+                    label: cluster.name,
+                    group: 'store-segmentation-clusters',
+                }));
+
+                storeClusterCtrl.setValue(newStoreClusters);
+            }
+
+            storeClusterCtrl.disable({ onlySelf: true });
         }
     }
 }

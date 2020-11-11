@@ -1,8 +1,10 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
     OnInit,
+    Output,
     ViewEncapsulation,
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
@@ -44,7 +46,14 @@ export class CatalogueSegmentationDetailComponent implements OnInit {
     @Input()
     isLoading: boolean;
 
+    @Output()
+    loadingCatalogueList: EventEmitter<boolean> = new EventEmitter();
+
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit(): void {}
+
+    onLoadingCatalogueList(ev: boolean): void {
+        this.loadingCatalogueList.emit(ev);
+    }
 }

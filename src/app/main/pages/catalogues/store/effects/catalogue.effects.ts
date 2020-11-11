@@ -19,7 +19,7 @@ import {
     switchMap,
     tap,
     withLatestFrom,
-    retry
+    retry,
 } from 'rxjs/operators';
 
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
@@ -38,116 +38,128 @@ export class CatalogueEffects {
     updateCataloguePriceSettingRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.updateCataloguePriceSettingRequest),
-            map(action => action.payload),
-            switchMap(payload => {
-                return this._$catalogueApi.updatePriceSetting(payload.priceSettingId, payload.price).pipe(
-                    catchOffline(),
-                    map(cataloguePrice => {
-                        return CatalogueActions.updateCataloguePriceSettingSuccess({
-                            payload: {
-                                data: {
-                                    id: cataloguePrice.id,
-                                    changes: {
-                                        price: cataloguePrice.price
-                                    }
+            map((action) => action.payload),
+            switchMap((payload) => {
+                return this._$catalogueApi
+                    .updatePriceSetting(payload.priceSettingId, payload.price)
+                    .pipe(
+                        catchOffline(),
+                        map((cataloguePrice) => {
+                            return CatalogueActions.updateCataloguePriceSettingSuccess({
+                                payload: {
+                                    data: {
+                                        id: cataloguePrice.id,
+                                        changes: {
+                                            price: cataloguePrice.price,
+                                        },
+                                    },
+                                    formIndex: payload.formIndex,
                                 },
-                                formIndex: payload.formIndex
-                            }
-                        });
-                    }),
-                    catchError(err => this.sendErrorToState(err, 'updateCataloguePriceSettingFailure'))
-                );
+                            });
+                        }),
+                        catchError((err) =>
+                            this.sendErrorToState(err, 'updateCataloguePriceSettingFailure')
+                        )
+                    );
             })
         )
     );
 
-    updateCataloguePriceSettingFailure$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(CatalogueActions.updateCataloguePriceSettingFailure),
-            map(action => action.payload),
-            tap(payload => this.helper$.showErrorNotification(payload))
-        )
-    , { dispatch: false });
+    updateCataloguePriceSettingFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.updateCataloguePriceSettingFailure),
+                map((action) => action.payload),
+                tap((payload) => this.helper$.showErrorNotification(payload))
+            ),
+        { dispatch: false }
+    );
 
-    updateCataloguePriceSettingSuccess$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(CatalogueActions.updateCataloguePriceSettingSuccess),
-            map(action => action.payload),
-            tap(payload => {
-                this._$notice.open('Price settings applied.', 'success', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
+    updateCataloguePriceSettingSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.updateCataloguePriceSettingSuccess),
+                map((action) => action.payload),
+                tap((payload) => {
+                    this._$notice.open('Price settings applied.', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
 
-                if (payload.formIndex) {
-                    this._$catalogueApi.broadcastUpdateForm(payload.formIndex);
-                }
-            })
-        )
-    , { dispatch: false });
+                    if (payload.formIndex || payload.formIndex === 0) {
+                        this._$catalogueApi.broadcastUpdateForm(payload.formIndex);
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
 
     applyFilteredCataloguePriceRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.applyFilteredCataloguePriceRequest),
-            map(action => action.payload),
-            switchMap(payload => {
+            map((action) => action.payload),
+            switchMap((payload) => {
                 return this._$catalogueApi.applySegmentationPrice(payload).pipe(
                     catchOffline(),
                     map(({ message }) => {
                         return CatalogueActions.applyFilteredCataloguePriceSuccess({
                             payload: {
-                                message
-                            }
+                                message,
+                            },
                         });
                     }),
-                    catchError(err => this.sendErrorToState(err, 'applyFilteredCataloguePriceFailure'))
+                    catchError((err) =>
+                        this.sendErrorToState(err, 'applyFilteredCataloguePriceFailure')
+                    )
                 );
             })
         )
     );
 
-    applyFilteredCataloguePriceFailure$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(CatalogueActions.applyFilteredCataloguePriceFailure),
-            map(action => action.payload),
-            tap(payload => this.helper$.showErrorNotification(payload))
-        )
-    , { dispatch: false });
+    applyFilteredCataloguePriceFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.applyFilteredCataloguePriceFailure),
+                map((action) => action.payload),
+                tap((payload) => this.helper$.showErrorNotification(payload))
+            ),
+        { dispatch: false }
+    );
 
-    applyFilteredCataloguePriceSuccess$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(CatalogueActions.applyFilteredCataloguePriceSuccess),
-            map(action => action.payload),
-            tap(payload => {
-                this._$notice.open('Price settings applied.', 'success', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
+    applyFilteredCataloguePriceSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.applyFilteredCataloguePriceSuccess),
+                map((action) => action.payload),
+                tap((payload) => {
+                    this._$notice.open('Price settings applied.', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
 
-                this.store.dispatch(
-                    CatalogueActions.setRefreshStatus({ status: true })
-                );
-            })
-        )
-    , { dispatch: false });
-    
+                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
+                })
+            ),
+        { dispatch: false }
+    );
+
     patchCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.patchCatalogueRequest),
-            map(action => action.payload),
-            switchMap(payload => {
+            map((action) => action.payload),
+            switchMap((payload) => {
                 return this._$catalogueApi.patchCatalogue(payload.id, payload.data).pipe(
                     catchOffline(),
-                    map(catalogue => {
+                    map((catalogue) => {
                         return CatalogueActions.patchCatalogueSuccess({
                             payload: {
                                 data: catalogue,
                                 source: payload.source,
                                 section: payload.section,
-                            }
+                            },
                         });
                     }),
-                    catchError(err => {
+                    catchError((err) => {
                         if (payload.source === 'form') {
                             if (payload.section) {
                                 this.store.dispatch(UiActions.showFooterAction());
@@ -160,33 +172,35 @@ export class CatalogueEffects {
                             CatalogueActions.patchCatalogueFailure({
                                 payload: {
                                     id: 'patchCatalogueFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         );
-                    }),
+                    })
                 );
             })
         )
     );
 
-    patchCatalogueFailure$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(CatalogueActions.patchCatalogueFailure),
-            map(action => action.payload),
-            tap(payload => this.helper$.showErrorNotification(payload))
-        )
-    , { dispatch: false });
+    patchCatalogueFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.patchCatalogueFailure),
+                map((action) => action.payload),
+                tap((payload) => this.helper$.showErrorNotification(payload))
+            ),
+        { dispatch: false }
+    );
 
     patchCatalogueSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.patchCatalogueSuccess),
-                map(action => action.payload),
+                map((action) => action.payload),
                 tap(({ data: catalogue, source, section }) => {
                     this._$notice.open('Produk berhasil di-update', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
 
                     if (source === 'form') {
@@ -197,7 +211,7 @@ export class CatalogueEffects {
 
                             const updatedCatalogue: Update<Catalogue> = {
                                 id: catalogue.id,
-                                changes
+                                changes,
                             };
 
                             this.store.dispatch(
@@ -211,7 +225,7 @@ export class CatalogueEffects {
 
                         const updatedCatalogue: Update<Catalogue> = {
                             id: catalogue.id,
-                            changes
+                            changes,
                         };
 
                         this.store.dispatch(
@@ -228,7 +242,7 @@ export class CatalogueEffects {
     patchCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.patchCataloguesRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([{ file, type }, userSupplier]) => {
                 if (!userSupplier) {
@@ -236,8 +250,8 @@ export class CatalogueEffects {
                         CatalogueActions.patchCataloguesFailure({
                             payload: {
                                 id: 'patchCataloguesFailure',
-                                errors: 'Not authenticated'
-                            }
+                                errors: 'Not authenticated',
+                            },
                         })
                     );
                 }
@@ -249,20 +263,20 @@ export class CatalogueEffects {
 
                 return this._$catalogueApi.updateCataloguePrices(formData).pipe(
                     catchOffline(),
-                    map(response => {
+                    map((response) => {
                         return CatalogueActions.patchCataloguesSuccess({
                             payload: {
-                                status: response.status
-                            }
+                                status: response.status,
+                            },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.patchCataloguesFailure({
                                 payload: {
                                     id: 'patchCataloguesFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     ),
@@ -276,11 +290,11 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.patchCataloguesSuccess),
-                map(action => action.payload),
+                map((action) => action.payload),
                 tap(() => {
                     this._$notice.open('Produk berhasil di-update', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
 
                     this.matDialog.closeAll();
@@ -294,7 +308,7 @@ export class CatalogueEffects {
     importCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.importCataloguesRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([{ file, type }, userSupplier]) => {
                 if (!userSupplier) {
@@ -302,8 +316,8 @@ export class CatalogueEffects {
                         CatalogueActions.patchCataloguesFailure({
                             payload: {
                                 id: 'importCataloguesFailure',
-                                errors: 'Not authenticated'
-                            }
+                                errors: 'Not authenticated',
+                            },
                         })
                     );
                 }
@@ -315,20 +329,20 @@ export class CatalogueEffects {
 
                 return this._$catalogueApi.updateCataloguePrices(formData).pipe(
                     catchOffline(),
-                    map(response => {
+                    map((response) => {
                         return CatalogueActions.importCataloguesSuccess({
                             payload: {
-                                status: response.status
-                            }
+                                status: response.status,
+                            },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.importCataloguesFailure({
                                 payload: {
                                     id: 'importCataloguesFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     ),
@@ -342,13 +356,13 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.importCataloguesFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     let message: string;
 
                     if (resp.errors.code === 406) {
                         message = resp.errors.error.errors
-                            .map(r => {
+                            .map((r) => {
                                 return `${r.errCode}<br>${r.solve}`;
                             })
                             .join('<br><br>');
@@ -366,7 +380,7 @@ export class CatalogueEffects {
                     this._$notice.open(message, 'error', {
                         duration: 10000,
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
 
                     // this.matDialog.closeAll();
@@ -383,11 +397,11 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.patchCataloguesSuccess),
-                map(action => action.payload),
+                map((action) => action.payload),
                 tap(() => {
                     this._$notice.open('Import produk berhasil.', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
 
                     this.matDialog.closeAll();
@@ -401,7 +415,7 @@ export class CatalogueEffects {
     fetchCatalogueCategorySuccess$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueCategorySuccess),
-            map(action => {
+            map((action) => {
                 const { id, category: name, parentId: parent } = action.payload.category;
 
                 if (parent) {
@@ -411,7 +425,7 @@ export class CatalogueEffects {
                 }
 
                 return CatalogueActions.addSelectedCategory({
-                    payload: { id, name, parent }
+                    payload: { id, name, parent },
                 });
             })
         )
@@ -420,22 +434,22 @@ export class CatalogueEffects {
     fetchCatalogueCategoryRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueCategoryRequest),
-            map(action => action.payload),
-            switchMap(categoryId => {
+            map((action) => action.payload),
+            switchMap((categoryId) => {
                 return this._$catalogueApi.getCategory(Number(categoryId)).pipe(
-                    map(response => {
+                    map((response) => {
                         return CatalogueActions.fetchCatalogueCategorySuccess({
                             payload: {
                                 // category: actions[actions.length - 1],
                                 category: response,
-                                source: 'fetch'
-                            }
+                                source: 'fetch',
+                            },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.fetchCatalogueCategoryFailure({
-                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err }
+                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err },
                             })
                         )
                     )
@@ -455,8 +469,8 @@ export class CatalogueEffects {
                         CatalogueActions.fetchCataloguesFailure({
                             payload: {
                                 id: 'fetchCataloguesFailure',
-                                errors: 'Not authenticated'
-                            }
+                                errors: 'Not authenticated',
+                            },
                         })
                     );
                 }
@@ -471,7 +485,7 @@ export class CatalogueEffects {
                             totalEmptyStock,
                             totalActive,
                             totalInactive,
-                            totalBanned
+                            totalBanned,
                         }) => {
                             return CatalogueActions.fetchTotalCatalogueStatusSuccess({
                                 payload: {
@@ -479,15 +493,15 @@ export class CatalogueEffects {
                                     totalEmptyStock,
                                     totalActive,
                                     totalInactive,
-                                    totalBanned
-                                }
+                                    totalBanned,
+                                },
                             });
                         }
                     ),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.fetchTotalCatalogueStatusFailure({
-                                payload: { id: 'fetchTotalCatalogueStatusFailure', errors: err }
+                                payload: { id: 'fetchTotalCatalogueStatusFailure', errors: err },
                             })
                         )
                     )
@@ -499,18 +513,18 @@ export class CatalogueEffects {
     addNewCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.addNewCatalogueRequest),
-            map(action => action.payload),
-            switchMap(payload => {
+            map((action) => action.payload),
+            switchMap((payload) => {
                 return this._$catalogueApi.addNewCatalogue(payload).pipe(
-                    map<Catalogue, any>(catalogue => {
+                    map<Catalogue, any>((catalogue) => {
                         return CatalogueActions.addNewCatalogueSuccess({
-                            payload: catalogue
+                            payload: catalogue,
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.addNewCatalogueFailure({
-                                payload: { id: 'addNewCatalogueFailure', errors: err }
+                                payload: { id: 'addNewCatalogueFailure', errors: err },
                             })
                         )
                     ),
@@ -523,21 +537,21 @@ export class CatalogueEffects {
     fetchCatalogueUnitRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueUnitRequest),
-            switchMap(_ => {
+            switchMap((_) => {
                 return this._$catalogueApi
                     .getCatalogueUnitOfMeasurement({
                         limit: 10,
                         skip: 0,
                         sort: 'desc',
-                        sortBy: 'id'
+                        sortBy: 'id',
                     })
                     .pipe(
                         catchOffline(),
-                        map<Array<CatalogueUnit>, any>(units => {
+                        map<Array<CatalogueUnit>, any>((units) => {
                             return CatalogueActions.fetchCatalogueUnitSuccess({
                                 payload: {
                                     units: [
-                                        ...units.map(unit => ({
+                                        ...units.map((unit) => ({
                                             ...new CatalogueUnit(
                                                 unit.id,
                                                 unit.unit,
@@ -545,11 +559,11 @@ export class CatalogueEffects {
                                                 unit.createdAt,
                                                 unit.updatedAt,
                                                 unit.deletedAt
-                                            )
-                                        }))
+                                            ),
+                                        })),
                                     ],
-                                    source: 'fetch'
-                                }
+                                    source: 'fetch',
+                                },
                             });
                         })
                     );
@@ -560,16 +574,16 @@ export class CatalogueEffects {
     fetchCatalogueCategoriesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueCategoriesRequest),
-            map(action => action.payload),
-            switchMap(payload => {
+            map((action) => action.payload),
+            switchMap((payload) => {
                 return this._$catalogueApi.getCatalogueCategories(payload).pipe(
                     catchOffline(),
-                    map<Array<CatalogueCategory>, any>(categories => {
+                    map<Array<CatalogueCategory>, any>((categories) => {
                         if (categories.length > 0) {
                             return CatalogueActions.fetchCatalogueCategoriesSuccess({
                                 payload: {
                                     categories: [
-                                        ...categories.map(category => ({
+                                        ...categories.map((category) => ({
                                             ...new CatalogueCategory(
                                                 category.id,
                                                 category.parentId,
@@ -583,18 +597,18 @@ export class CatalogueEffects {
                                                 category.updatedAt,
                                                 category.deletedAt,
                                                 category.children
-                                            )
-                                        }))
+                                            ),
+                                        })),
                                     ],
-                                    source: 'fetch'
-                                }
+                                    source: 'fetch',
+                                },
                             });
                         }
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.fetchCatalogueCategoryFailure({
-                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err }
+                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err },
                             })
                         )
                     )
@@ -606,15 +620,15 @@ export class CatalogueEffects {
     fetchCategoryTreeRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCategoryTreeRequest),
-            switchMap(_ => {
+            switchMap((_) => {
                 return this._$catalogueApi.getCategoryTree().pipe(
                     catchOffline(),
-                    map<Array<CatalogueCategory>, any>(categories => {
+                    map<Array<CatalogueCategory>, any>((categories) => {
                         if (categories.length > 0) {
                             return CatalogueActions.fetchCategoryTreeSuccess({
                                 payload: {
                                     categoryTree: [
-                                        ...categories.map(category => ({
+                                        ...categories.map((category) => ({
                                             ...new CatalogueCategory(
                                                 category.id,
                                                 category.parentId,
@@ -628,18 +642,18 @@ export class CatalogueEffects {
                                                 category.updatedAt,
                                                 category.deletedAt,
                                                 category.children
-                                            )
-                                        }))
+                                            ),
+                                        })),
                                     ],
-                                    source: 'fetch'
-                                }
+                                    source: 'fetch',
+                                },
                             });
                         }
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.fetchCategoryTreeFailure({
-                                payload: { id: 'fetchCategoryTreeFailure', errors: err }
+                                payload: { id: 'fetchCategoryTreeFailure', errors: err },
                             })
                         )
                     )
@@ -651,7 +665,7 @@ export class CatalogueEffects {
     fetchCataloguePriceSettingsRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCataloguePriceSettingsRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
@@ -659,27 +673,35 @@ export class CatalogueEffects {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
-                        switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processCataloguePriceSettingsRequest),
-                        catchError(err => this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure'))
+                        switchMap((userData) => of([userData, queryParams])),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this.processCataloguePriceSettingsRequest
+                        ),
+                        catchError((err) =>
+                            this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure')
+                        )
                     );
                 } else {
                     return of(authState.user).pipe(
                         map(this.checkUserSupplier),
                         retry(3),
-                        switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processCataloguePriceSettingsRequest),
-                        catchError(err => this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure'))
+                        switchMap((userData) => of([userData, queryParams])),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this.processCataloguePriceSettingsRequest
+                        ),
+                        catchError((err) =>
+                            this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure')
+                        )
                     );
                 }
-            }),
+            })
         )
     );
 
     fetchCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCataloguesRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([payload, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
@@ -688,40 +710,40 @@ export class CatalogueEffects {
                         CatalogueActions.fetchCataloguesFailure({
                             payload: {
                                 id: 'fetchCataloguesFailure',
-                                errors: 'Not authenticated'
-                            }
+                                errors: 'Not authenticated',
+                            },
                         })
                     );
                 }
 
                 const newPayload: IQueryParams = {
-                    ...payload
+                    ...payload,
                 };
                 newPayload['supplierId'] = supplierId;
 
                 return this._$catalogueApi.findAll(newPayload).pipe(
                     catchOffline(),
-                    map(resp => {
+                    map((resp) => {
                         let newResp = {
                             total: 0,
-                            data: []
+                            data: [],
                         };
 
                         if (resp.total > 0) {
                             newResp = {
                                 total: resp.total,
-                                data: [...resp.data.map(catalogue => new Catalogue(catalogue))]
+                                data: [...resp.data.map((catalogue) => new Catalogue(catalogue))],
                             };
                         }
 
                         return CatalogueActions.fetchCataloguesSuccess({
-                            payload: { catalogues: newResp.data, total: newResp.total }
+                            payload: { catalogues: newResp.data, total: newResp.total },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.fetchCataloguesFailure({
-                                payload: { id: 'fetchCataloguesFailure', errors: err }
+                                payload: { id: 'fetchCataloguesFailure', errors: err },
                             })
                         )
                     )
@@ -733,25 +755,25 @@ export class CatalogueEffects {
     fetchCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueRequest),
-            map(action => action.payload),
-            switchMap(id => {
+            map((action) => action.payload),
+            switchMap((id) => {
                 return this._$catalogueApi.findById(id).pipe(
                     catchOffline(),
-                    map(resp =>
+                    map((resp) =>
                         CatalogueActions.fetchCatalogueSuccess({
                             payload: {
                                 catalogue: new Catalogue(resp),
-                                source: 'fetch'
-                            }
+                                source: 'fetch',
+                            },
                         })
                     ),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.fetchCatalogueFailure({
                                 payload: {
                                     id: 'fetchCatalogueFailure',
-                                    errors: err
-                                }
+                                    errors: err,
+                                },
                             })
                         )
                     )
@@ -764,27 +786,27 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.fetchCatalogueStockRequest),
-                map(action => action.payload),
-                switchMap(id => {
+                map((action) => action.payload),
+                switchMap((id) => {
                     return this._$catalogueApi.getStock(id).pipe(
                         catchOffline(),
-                        map(resp =>
+                        map((resp) =>
                             this.store.dispatch(
                                 CatalogueActions.fetchCatalogueStockSuccess({
                                     payload: {
                                         catalogueId: id,
-                                        stock: resp
-                                    }
+                                        stock: resp,
+                                    },
                                 })
                             )
                         ),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 CatalogueActions.fetchCatalogueStockFailure({
                                     payload: {
                                         id: 'fetchCatalogueStockFailure',
-                                        errors: err
-                                    }
+                                        errors: err,
+                                    },
                                 })
                             )
                         )
@@ -797,18 +819,18 @@ export class CatalogueEffects {
     deleteCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.removeCatalogueRequest),
-            map(action => action.payload),
-            switchMap(id => {
+            map((action) => action.payload),
+            switchMap((id) => {
                 return this._$catalogueApi.removeCatalogue(id).pipe(
-                    map(response => {
+                    map((response) => {
                         console.log('RESPONSE', response);
 
                         return CatalogueActions.removeCatalogueSuccess({ payload: response });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.removeCatalogueFailure({
-                                payload: { id: 'removeCatalogueFailure', errors: err }
+                                payload: { id: 'removeCatalogueFailure', errors: err },
                             })
                         )
                     ),
@@ -826,9 +848,9 @@ export class CatalogueEffects {
             this.actions$.pipe(
                 ofType(
                     CatalogueActions.setCatalogueToActiveSuccess,
-                    CatalogueActions.setCatalogueToInactiveSuccess,
+                    CatalogueActions.setCatalogueToInactiveSuccess
                 ),
-                map(action => action.payload),
+                map((action) => action.payload),
                 tap(() => {
                     this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
                 })
@@ -839,25 +861,25 @@ export class CatalogueEffects {
     setCatalogueToActive$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.setCatalogueToActiveRequest),
-            map(action => action.payload),
-            switchMap(id => {
+            map((action) => action.payload),
+            switchMap((id) => {
                 return this._$catalogueApi.setCatalogueToActive(id).pipe(
-                    map(response => {
+                    map((response) => {
                         console.log('RESPONSE', response);
 
                         return CatalogueActions.setCatalogueToActiveSuccess({
                             payload: {
                                 id: response.id,
                                 changes: {
-                                    ...response
-                                }
-                            }
+                                    ...response,
+                                },
+                            },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.setCatalogueToActiveFailure({
-                                payload: { id: 'setCatalogueToActiveFailure', errors: err }
+                                payload: { id: 'setCatalogueToActiveFailure', errors: err },
                             })
                         )
                     ),
@@ -872,25 +894,25 @@ export class CatalogueEffects {
     setCatalogueToInactive$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.setCatalogueToInactiveRequest),
-            map(action => action.payload),
-            switchMap(id => {
+            map((action) => action.payload),
+            switchMap((id) => {
                 return this._$catalogueApi.setCatalogueToInactive(id).pipe(
-                    map(response => {
+                    map((response) => {
                         console.log('RESPONSE', response);
 
                         return CatalogueActions.setCatalogueToInactiveSuccess({
                             payload: {
                                 id: response.id,
                                 changes: {
-                                    ...response
-                                }
-                            }
+                                    ...response,
+                                },
+                            },
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CatalogueActions.setCatalogueToInactiveFailure({
-                                payload: { id: 'setCatalogueToInactiveFailure', errors: err }
+                                payload: { id: 'setCatalogueToInactiveFailure', errors: err },
                             })
                         )
                     ),
@@ -918,20 +940,20 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.confirmRemoveCatalogue),
-                map(action => action.payload),
-                exhaustMap(params => {
+                map((action) => action.payload),
+                exhaustMap((params) => {
                     const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                         data: {
                             title: 'Delete',
                             message: `Are you sure want to delete product <strong>${params.name}</strong>?`,
-                            id: params.id
+                            id: params.id,
                         },
-                        disableClose: true
+                        disableClose: true,
                     });
 
                     return dialogRef.afterClosed();
                 }),
-                map(response => {
+                map((response) => {
                     console.log('CONFIRM DELETE', response);
 
                     if (response) {
@@ -950,20 +972,20 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.confirmSetCatalogueToActive),
-                map(action => action.payload),
-                exhaustMap(params => {
+                map((action) => action.payload),
+                exhaustMap((params) => {
                     const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                         data: {
                             title: 'Set Product to Active',
                             message: `Are you sure want to set product <strong>${params.name}</strong> to <strong>Active</strong>?`,
-                            id: params.id
+                            id: params.id,
                         },
-                        disableClose: true
+                        disableClose: true,
                     });
 
                     return dialogRef.afterClosed();
                 }),
-                map(response => {
+                map((response) => {
                     console.log('CONFIRM SET TO ACTIVE', response);
 
                     if (response) {
@@ -982,20 +1004,20 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.confirmSetCatalogueToInactive),
-                map(action => action.payload),
-                exhaustMap(params => {
+                map((action) => action.payload),
+                exhaustMap((params) => {
                     const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                         data: {
                             title: 'Set Product to Inactive',
                             message: `Are you sure want to set product <strong>${params.name}</strong> to <strong>Inactive</strong>?`,
-                            id: params.id
+                            id: params.id,
                         },
-                        disableClose: true
+                        disableClose: true,
                     });
 
                     return dialogRef.afterClosed();
                 }),
-                map(response => {
+                map((response) => {
                     console.log('CONFIRM SET TO INACTIVE', response);
 
                     if (response) {
@@ -1025,11 +1047,11 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.fetchCategoryTreeFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1040,11 +1062,11 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.fetchCatalogueCategoryFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1055,11 +1077,11 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.fetchCatalogueFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1070,11 +1092,11 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.addNewCatalogueFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1085,13 +1107,13 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.removeCatalogueFailure),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('GAGAL', response);
 
                     this._$notice.open('Produk gagal dihapus', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1102,13 +1124,13 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.setCatalogueToActiveFailure),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('GAGAL', response);
 
                     this._$notice.open('Status produk gagal diubah menjadi aktif', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1119,13 +1141,13 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.setCatalogueToInactiveFailure),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('GAGAL', response);
 
                     this._$notice.open('Status produk gagal diubah menjadi tidak aktif', 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1148,12 +1170,12 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.removeCatalogueSuccess),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('SUKSES', response);
                     this._$notice.open('Produk berhasil dihapus', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1164,12 +1186,12 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.addNewCatalogueSuccess),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('SUKSES', response);
                     this._$notice.open('Berhasil menambah produk baru', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                     this.router.navigate(['pages', 'catalogues']);
                 })
@@ -1181,12 +1203,12 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.setCatalogueToActiveSuccess),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('SUKSES', response);
                     this._$notice.open('Status produk berhasil diubah menjadi aktif', 'success', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -1197,15 +1219,15 @@ export class CatalogueEffects {
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.setCatalogueToInactiveSuccess),
-                map(action => action.payload),
-                tap(response => {
+                map((action) => action.payload),
+                tap((response) => {
                     console.log('SUKSES', response);
                     this._$notice.open(
                         'Status produk berhasil diubah menjadi tidak aktif',
                         'success',
                         {
                             verticalPosition: 'bottom',
-                            horizontalPosition: 'right'
+                            horizontalPosition: 'right',
                         }
                     );
                 })
@@ -1218,75 +1240,96 @@ export class CatalogueEffects {
         if (!userData.userSupplier) {
             throw new ErrorHandler({
                 id: 'ERR_USER_SUPPLIER_NOT_FOUND',
-                errors: `User Data: ${userData}`
+                errors: `User Data: ${userData}`,
             });
         }
-    
+
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
-    }
+    };
 
-    processCataloguePriceSettingsRequest = ([_, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processCataloguePriceSettingsRequest = ([_, queryParams]: [User, IQueryParams]): Observable<
+        AnyAction
+    > => {
         // Hanya mengambil ID supplier saja.
         // const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
         const newQuery: IQueryParams = {
-            ...queryParams
+            ...queryParams,
         };
 
         // Memasukkan ID supplier ke dalam parameter.
         // newQuery['supplierId'] = supplierId;
 
-        return this._$catalogueApi.getCataloguePriceSettings<IPaginatedResponse<CataloguePrice>>(newQuery).pipe(
-            catchOffline(),
-            switchMap(response => {
-                if (newQuery.paginate) {
-                    return of(CatalogueActions.fetchCataloguePriceSettingsSuccess({
-                        payload: {
-                            catalogues: (response).data.map(wh => new CataloguePrice(wh)),
-                            total: response.total,
-                        }
-                    }));
-                } else {
-                    return of(CatalogueActions.fetchCataloguePriceSettingsSuccess({
-                        payload: {
-                            catalogues: (response as unknown as Array<CataloguePrice>).map(wh => new CataloguePrice(wh)),
-                            total: (response as unknown as Array<CataloguePrice>).length,
-                        }
-                    }));
-                }
-            }),
-            catchError(err => this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure'))
-        );
+        return this._$catalogueApi
+            .getCataloguePriceSettings<IPaginatedResponse<CataloguePrice>>(newQuery)
+            .pipe(
+                catchOffline(),
+                switchMap((response) => {
+                    if (newQuery.paginate) {
+                        return of(
+                            CatalogueActions.fetchCataloguePriceSettingsSuccess({
+                                payload: {
+                                    catalogues: response.data.map((wh) => new CataloguePrice(wh)),
+                                    total: response.total,
+                                },
+                            })
+                        );
+                    } else {
+                        return of(
+                            CatalogueActions.fetchCataloguePriceSettingsSuccess({
+                                payload: {
+                                    catalogues: ((response as unknown) as Array<
+                                        CataloguePrice
+                                    >).map((wh) => new CataloguePrice(wh)),
+                                    total: ((response as unknown) as Array<CataloguePrice>).length,
+                                },
+                            })
+                        );
+                    }
+                }),
+                catchError((err) =>
+                    this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure')
+                )
+            );
     };
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: FailureActionNames): Observable<AnyAction> => {
+    sendErrorToState = (
+        err: ErrorHandler | HttpErrorResponse | object,
+        dispatchTo: FailureActionNames
+    ): Observable<AnyAction> => {
         // Memunculkan error di console.
         HelperService.debug('catalogue.effects error', err);
-        
+
         if (err instanceof ErrorHandler) {
-            return of(CatalogueActions[dispatchTo]({
-                payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
-            }));
-        }
-        
-        if (err instanceof HttpErrorResponse) {
-            return of(CatalogueActions[dispatchTo]({
-                payload: {
-                    id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
-                    errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
-                }
-            }));
+            return of(
+                CatalogueActions[dispatchTo]({
+                    payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))),
+                })
+            );
         }
 
-        return of(CatalogueActions[dispatchTo]({
-            payload: {
-                id: `ERR_UNRECOGNIZED`,
-                // Referensi: https://stackoverflow.com/a/26199752
-                errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
-            }
-        }));
-    }
+        if (err instanceof HttpErrorResponse) {
+            return of(
+                CatalogueActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                        errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))),
+                    },
+                })
+            );
+        }
+
+        return of(
+            CatalogueActions[dispatchTo]({
+                payload: {
+                    id: `ERR_UNRECOGNIZED`,
+                    // Referensi: https://stackoverflow.com/a/26199752
+                    errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))),
+                },
+            })
+        );
+    };
 
     constructor(
         private actions$: Actions,

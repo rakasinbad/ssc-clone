@@ -1,3 +1,4 @@
+@import 'src/@fuse/scss/fuse';
 @import 'src/@sinbad/scss/helper';
 
 // .btn-sinbad-dashed {
@@ -16,10 +17,117 @@ catalogue-price-settings {
 
     .catalogue-price-table {
         flex: 1 1 auto;
-        border: 1px solid;
+        border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: sinbad-color('black', '5') !important;
+
+        // No record table
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+
+            // For horizontal scroll
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-header-cell,
+        .mat-cell {
+            padding: 0 16px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+        }
+
+        .catalogue-price-list__item {
+            position: relative;
+
+            // If row can be click
+            // cursor: pointer;
+            // min-height: unset;
+        }
+
+        mat-header-cell:first-of-type,
+        mat-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-right: 0;
+        }
+
+        .mat-header-cell:nth-last-of-type(2),
+        .mat-cell:nth-last-of-type(2) {
+            padding-right: 0;
+        }
+
+        mat-header-cell:last-of-type,
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-left: 0;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .mat-column-warehouse-name {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-type {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-group {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-channel {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-store-cluster {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-price {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
 
         .mat-form-field-wrapper {
             padding-bottom: 0 !important;
@@ -28,7 +136,6 @@ catalogue-price-settings {
 }
 
 .dnd-catalogue-price-toolbar {
-    width: 1000px;
     max-width: 100%;
     // border: solid 1px #ccc;
     min-height: 60px;
@@ -36,7 +143,7 @@ catalogue-price-settings {
     flex-direction: row;
     background: white;
     border-radius: 4px;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .dnd-catalogue-price-tools {
@@ -128,4 +235,8 @@ catalogue-price-settings {
 
 .catalogue-price-toolbar.cdk-drop-list-dragging .catalogue-price-tools:not(.cdk-drag-placeholder) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }
