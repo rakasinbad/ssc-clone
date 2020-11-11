@@ -28,8 +28,12 @@ import { CataloguePriceSettingsComponent } from './components/catalogue-price-se
 import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
 import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
-import { BrandFacadeService, CatalogueFacadeService } from './services';
-import { CatalogueEffects } from './store/effects';
+import {
+    BrandFacadeService,
+    CatalogueFacadeService,
+    CataloguePriceSegmentationApiService,
+} from './services';
+import { CatalogueEffects, DeletePriceSegmentationEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
 
@@ -75,7 +79,12 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
         StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
 
-        EffectsModule.forFeature([BrandEffects, CatalogueEffects, ExportsEffects]),
+        EffectsModule.forFeature([
+            BrandEffects,
+            CatalogueEffects,
+            DeletePriceSegmentationEffects,
+            ExportsEffects,
+        ]),
     ],
     entryComponents: [
         CatalogueAmountSettingsComponent,
@@ -87,6 +96,6 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         CataloguesSelectCategoryComponent,
         CatalogueWeightAndDimensionComponent,
     ],
-    providers: [BrandFacadeService, CatalogueFacadeService],
+    providers: [BrandFacadeService, CatalogueFacadeService, CataloguePriceSegmentationApiService],
 })
 export class CataloguesModule {}

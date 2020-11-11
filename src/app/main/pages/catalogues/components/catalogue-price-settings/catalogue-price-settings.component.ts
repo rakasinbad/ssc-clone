@@ -11,6 +11,7 @@ import {
     OnInit,
     Output,
     SimpleChanges,
+    TemplateRef,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
@@ -21,6 +22,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthFacadeService } from 'app/main/pages/core/auth/services';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { Selection } from 'app/shared/components/dropdowns/select-advanced/models';
 import { Warehouse } from 'app/shared/components/dropdowns/warehouses/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
@@ -64,6 +66,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     // Untuk keperluan memicu adanya perubahan view.
     private updateForm$: BehaviorSubject<IFormMode> = new BehaviorSubject<IFormMode>(null);
     private selectedCatalogue$: BehaviorSubject<Catalogue> = new BehaviorSubject<Catalogue>(null);
+    private isDelete: boolean = false;
 
     defaultPageSizeTable: Array<number> = environment.pageSizeTable;
 
@@ -71,6 +74,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     readonly defaultPageOpts = environment.pageSizeTable;
 
     selectedCatalogueId: number;
+    selectedSegmentId: string;
 
     // Untuk form.
     form: FormGroup;
@@ -148,6 +152,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     @ViewChild('filter', { static: true })
     filter: ElementRef;
 
+    @ViewChild('alertDelete', { static: false })
+    alertDelete: TemplateRef<any>;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
@@ -159,6 +166,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         private catalogueFacade: CatalogueFacadeService,
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
+        private applyDialogFactoryService: ApplyDialogFactoryService,
         private errorMessage$: ErrorMessageService
     ) {}
 
@@ -207,11 +215,19 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             )
             .subscribe((value) => {
                 if (value) {
-                    const formControl = this.form.get(['priceSettings', value, 'price']);
+                    if (this.isDelete) {
+                        // const priceSettingsCtrl = this.form.get('priceSettings') as FormArray;
 
-                    formControl.enable({ onlySelf: true, emitEvent: false });
-                    formControl.markAsPristine();
-                    formControl.markAsUntouched();
+                        // priceSettingsCtrl.removeAt(+value);
+                        // this._initTable;
+                        this.isDelete = null;
+                    } else {
+                        const formControl = this.form.get(['priceSettings', value, 'price']);
+
+                        formControl.enable({ onlySelf: true, emitEvent: false });
+                        formControl.markAsPristine();
+                        formControl.markAsUntouched();
+                    }
                 }
             });
 
@@ -232,7 +248,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         });
 
         this._checkRoute();
-        this.initFormCheck();
+        this._initFormCheck();
 
         combineLatest([this.dataSource.isLoading$, this.dataSource.totalCataloguePrice$])
             .pipe(
@@ -295,126 +311,6 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         moveItemInArray(this.cataloguePriceTools, event.previousIndex, event.currentIndex);
     }
 
-    private initFormCheck(): void {
-        // (this.form.statusChanges as Observable<FormStatus>).pipe(
-        //     distinctUntilChanged(),
-        //     debounceTime(100),
-        //     tap(value => HelperService.debug('CATALOGUE PRICE SETTINGS FORM STATUS CHANGED:', value)),
-        //     takeUntil(this.unSubs$)
-        // ).subscribe(status => {
-        //     this.formStatusChange.emit(status);
-        // });
-
-        this.form
-            .get('retailBuyingPrice')
-            .valueChanges.pipe(
-                distinctUntilChanged(),
-                debounceTime(100),
-                tap((value) =>
-                    HelperService.debug(
-                        'CATALOGUE PRICE SETTINGS -> RETAIL BUYING PRICE FORM VALUE CHANGED',
-                        value
-                    )
-                ),
-                takeUntil(this.unSubs$)
-            )
-            .subscribe((value) => {
-                this.formValueChange.emit({ retailBuyingPrice: value } as Catalogue);
-            });
-
-        this.form
-            .get('retailBuyingPrice')
-            .statusChanges.pipe(
-                distinctUntilChanged(),
-                debounceTime(100),
-                tap((status) =>
-                    HelperService.debug(
-                        'CATALOGUE PRICE SETTINGS -> RETAIL BUYING PRICE FORM STATUS CHANGED',
-                        status
-                    )
-                ),
-                takeUntil(this.unSubs$)
-            )
-            .subscribe((status) => {
-                this.formStatusChange.emit(status);
-            });
-
-        this.updateForm$
-            .pipe(
-                tap((formMode) =>
-                    HelperService.debug('CATALOGUE PRICE SETTINGS FORM MODE CHANGED:', formMode)
-                ),
-                withLatestFrom(
-                    this.catalogueFacade.cataloguePrices$,
-                    (formMode, cataloguePrices) => ({ formMode, cataloguePrices })
-                ),
-                takeUntil(this.unSubs$)
-            )
-            .subscribe(({ formMode, cataloguePrices }) => {
-                this.subs.unsubscribe();
-                this.subs = new Subscription();
-
-                if (formMode === 'edit') {
-                    (this.form.get('priceSettings') as FormArray).clear();
-
-                    for (const [idx, cataloguePrice] of cataloguePrices.entries()) {
-                        const control = this.fb.group({
-                            id: [cataloguePrice.id],
-                            price: [
-                                cataloguePrice.price,
-                                {
-                                    validators: [
-                                        RxwebValidators.required({
-                                            message: this.errorMessage$.getErrorMessageNonState(
-                                                'default',
-                                                'required'
-                                            ),
-                                        }),
-                                    ],
-                                    updateOn: 'blur',
-                                },
-                            ],
-                        });
-
-                        (this.form.get('priceSettings') as FormArray).push(control);
-
-                        const sub = control
-                            .get('price')
-                            .valueChanges.pipe(
-                                distinctUntilChanged(),
-                                debounceTime(100),
-                                tap((value) =>
-                                    HelperService.debug(
-                                        'CATALOGUE PRICE SETTINGS FORM VALUE CHANGED',
-                                        value
-                                    )
-                                )
-                                // finalize(() => control.enable())
-                            )
-                            .subscribe((value) => {
-                                if (value !== '0.00' || value) {
-                                    control.disable();
-
-                                    const priceSettingId = control.get('id').value;
-
-                                    this.catalogueFacade.updateCataloguePrice(
-                                        priceSettingId,
-                                        value,
-                                        idx
-                                    );
-                                }
-                            });
-
-                        this.subs.add(sub);
-                    }
-
-                    this.form.updateValueAndValidity();
-                }
-
-                this._updateFormView();
-            });
-    }
-
     isAddMode(): boolean {
         return this.formMode === 'add';
     }
@@ -425,6 +321,45 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
     isViewMode(): boolean {
         return this.formMode === 'view';
+    }
+
+    onDelete(item: CataloguePrice, idx: number): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.selectedSegmentId = item.id || null;
+
+        const dialogRef = this.applyDialogFactoryService.open(
+            {
+                title: 'Delete',
+                template: this.alertDelete,
+                isApplyEnabled: true,
+                showApplyButton: true,
+                showCloseButton: true,
+                applyButtonLabel: 'Delete',
+                closeButtonLabel: 'Cancel',
+            },
+            {
+                autoFocus: false,
+                restoreFocus: false,
+                disableClose: true,
+                width: '35vw',
+                minWidth: '30vw',
+                maxWidth: '50vw',
+                panelClass: 'dialog-container-no-padding',
+            }
+        );
+
+        dialogRef.closed$.subscribe((res) => {
+            if (res === 'apply') {
+                this.isDelete = true;
+                this.catalogueFacade.deleteCataloguePrice(item.id, idx);
+            }
+
+            this.selectedSegmentId = null;
+            this.cdRef.markForCheck();
+        });
     }
 
     onSelectedWarehouses($event: Array<Warehouse>): void {
@@ -615,6 +550,126 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         }
 
         return item.id;
+    }
+
+    private _initFormCheck(): void {
+        // (this.form.statusChanges as Observable<FormStatus>).pipe(
+        //     distinctUntilChanged(),
+        //     debounceTime(100),
+        //     tap(value => HelperService.debug('CATALOGUE PRICE SETTINGS FORM STATUS CHANGED:', value)),
+        //     takeUntil(this.unSubs$)
+        // ).subscribe(status => {
+        //     this.formStatusChange.emit(status);
+        // });
+
+        this.form
+            .get('retailBuyingPrice')
+            .valueChanges.pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((value) =>
+                    HelperService.debug(
+                        'CATALOGUE PRICE SETTINGS -> RETAIL BUYING PRICE FORM VALUE CHANGED',
+                        value
+                    )
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((value) => {
+                this.formValueChange.emit({ retailBuyingPrice: value } as Catalogue);
+            });
+
+        this.form
+            .get('retailBuyingPrice')
+            .statusChanges.pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((status) =>
+                    HelperService.debug(
+                        'CATALOGUE PRICE SETTINGS -> RETAIL BUYING PRICE FORM STATUS CHANGED',
+                        status
+                    )
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((status) => {
+                this.formStatusChange.emit(status);
+            });
+
+        this.updateForm$
+            .pipe(
+                tap((formMode) =>
+                    HelperService.debug('CATALOGUE PRICE SETTINGS FORM MODE CHANGED:', formMode)
+                ),
+                withLatestFrom(
+                    this.catalogueFacade.cataloguePrices$,
+                    (formMode, cataloguePrices) => ({ formMode, cataloguePrices })
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe(({ formMode, cataloguePrices }) => {
+                this.subs.unsubscribe();
+                this.subs = new Subscription();
+
+                if (formMode === 'edit') {
+                    (this.form.get('priceSettings') as FormArray).clear();
+
+                    for (const [idx, cataloguePrice] of cataloguePrices.entries()) {
+                        const control = this.fb.group({
+                            id: [cataloguePrice.id],
+                            price: [
+                                cataloguePrice.price,
+                                {
+                                    validators: [
+                                        RxwebValidators.required({
+                                            message: this.errorMessage$.getErrorMessageNonState(
+                                                'default',
+                                                'required'
+                                            ),
+                                        }),
+                                    ],
+                                    updateOn: 'blur',
+                                },
+                            ],
+                        });
+
+                        (this.form.get('priceSettings') as FormArray).push(control);
+
+                        const sub = control
+                            .get('price')
+                            .valueChanges.pipe(
+                                distinctUntilChanged(),
+                                debounceTime(100),
+                                tap((value) =>
+                                    HelperService.debug(
+                                        'CATALOGUE PRICE SETTINGS FORM VALUE CHANGED',
+                                        value
+                                    )
+                                )
+                                // finalize(() => control.enable())
+                            )
+                            .subscribe((value) => {
+                                if (value !== '0.00' || value) {
+                                    control.disable();
+
+                                    const priceSettingId = control.get('id').value;
+
+                                    this.catalogueFacade.updateCataloguePrice(
+                                        priceSettingId,
+                                        value,
+                                        idx
+                                    );
+                                }
+                            });
+
+                        this.subs.add(sub);
+                    }
+
+                    this.form.updateValueAndValidity();
+                }
+
+                this._updateFormView();
+            });
     }
 
     private _checkRoute(): void {

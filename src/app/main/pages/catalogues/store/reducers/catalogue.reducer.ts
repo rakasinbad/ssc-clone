@@ -1,11 +1,10 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TNullable, TSource } from 'app/shared/models/global.model';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
-
 import { Catalogue, CatalogueCategory, CatalogueUnit, SimpleCatalogueCategory } from '../../models';
-import { CatalogueActions } from '../actions';
 import { CataloguePrice } from '../../models/catalogue-price.model';
+import { CatalogueActions, CataloguePriceSegmentationActions } from '../actions';
 
 export const FEATURE_KEY = 'catalogues';
 
@@ -412,7 +411,14 @@ const catalogueReducer = createReducer(
             ...state,
             isLoading: false,
         })
-    )
+    ),
+    on(CataloguePriceSegmentationActions.deleteSuccess, (state, { id }) => ({
+        ...state,
+        cataloguePrices: adapterCataloguePrice.removeOne(id, {
+            ...state.cataloguePrices,
+            total: state.cataloguePrices.total > 0 ? state.cataloguePrices.total - 1 : 0,
+        }),
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {
