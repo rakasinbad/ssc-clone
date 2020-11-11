@@ -339,32 +339,40 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
         this.changeCatalogue.emit(this.selectedCatalogue.toArray());
 
         if (!selectedIds.length) {
-            this._updateTickHeadCheckbox(false, false);
+            this._updateTickHeadCheckbox(false, false, totalSelectedOnPage);
         } else if (selectedIds.length === collectionIds.length) {
             if (!totalSelectedOnPage) {
-                this._updateTickHeadCheckbox(false, false);
+                this._updateTickHeadCheckbox(false, false, totalSelectedOnPage);
             } else {
-                this._updateTickHeadCheckbox(true, false);
+                this._updateTickHeadCheckbox(true, false, totalSelectedOnPage);
             }
         } else {
             if (!totalSelectedOnPage) {
-                this._updateTickHeadCheckbox(false, false);
+                this._updateTickHeadCheckbox(false, false, totalSelectedOnPage);
             } else if (totalSelectedOnPage === collectionIds.length) {
-                this._updateTickHeadCheckbox(true, false);
+                this._updateTickHeadCheckbox(true, false, totalSelectedOnPage);
             } else {
-                this._updateTickHeadCheckbox(false, true);
+                this._updateTickHeadCheckbox(false, true, totalSelectedOnPage);
             }
         }
     }
 
-    private _updateTickHeadCheckbox(checked: boolean, indeterminate: boolean): void {
+    private _updateTickHeadCheckbox(
+        checked: boolean,
+        indeterminate: boolean,
+        totalSelectedOnPage?: number
+    ): void {
         this.isHeadChecked = checked;
         this.isHeadIndeterminate = indeterminate;
 
         if (checked === true) {
             this._showBatchActions(true);
         } else {
-            this._showBatchActions(false);
+            if (totalSelectedOnPage && this.formMode === 'edit') {
+                this._showBatchActions(true);
+            } else {
+                this._showBatchActions(false);
+            }
         }
     }
 
