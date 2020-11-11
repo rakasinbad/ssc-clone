@@ -1,7 +1,17 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Condition</div>
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Condition</div>
+        <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+            <mat-icon
+                class="active-icon s-14 ml-8 cursor-pointer"
+                color="accent"
+                matTooltip="Define the condition of the supplier voucher;&#10;how user can be eligible&#10;to use the supplier voucher."
+                matTooltipClass="tooltip-br"
+            >
+                help
+            </mat-icon>
+        </label>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -18,119 +28,106 @@
             <!-- / *HIDDEN* ID -->
 
             <!-- WRAPPER BOX -->
-            <div fxLayout="row" fxLayoutAlign="start start" fxFlex>
-                <!-- FORM -->
-                <div
+            <!-- <div fxLayout="row" fxLayoutAlign="start start" fxFlex> -->
+            <!-- FORM -->
+            <!-- <div
                     class="p-16"
                     [fxFlex]="labelLength + formFieldLength"
                     fxLayout="column"
                     [fxLayoutGap]="!isViewMode() ? '5px' : '10px'"
+                > -->
+            <!-- BASE (CONDITION) -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
-                    <!-- BASE (CONDITION) -->
-                    <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label
-                            fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
-                            class="pr-0 form-label"
-                            [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
-                        >
-                            <span class="sinbad-red-fg">* </span>Base
-                        </label>
+                    <span class="sinbad-red-fg">*</span>Base
+                </label>
 
-                        <mat-radio-group
-                            formControlName="base"
-                            [fxFlex]="formFieldLength"
-                            fxLayout="row"
-                            fxLayoutAlign="start center"
-                            fxLayoutGap="16px"
-                        >
-                            <mat-radio-button value="qty"> QTY </mat-radio-button>
-                            <mat-radio-button value="order-value"> Order Value </mat-radio-button>
-                        </mat-radio-group>
-                    </div>
-                    <!-- / BASE (CONDITION) -->
-                    <!-- QTY (BASE) -->
-                    <div
-                        [ngClass]="formClass"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        [fxHide]="form.get('base').value !== 'qty'"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
-                            class="pr-0 form-label"
-                            [class.mat-error]="!isViewMode() && hasError(form.get('qty'))"
-                        >
-                            Qty >=
-                        </label>
-
-                        <mat-form-field
-                            appearance="outline"
-                            [fxFlex]="formFieldLength * 2 - 1"
-                            *ngIf="!isViewMode()"
-                        >
-                            <input
-                                matInput
-                                name="qty"
-                                type="number"
-                                [formControl]="form.get('qty')"
-                            />
-                            <mat-error *ngIf="hasError(form.get('qty'))">
-                                {{ getFormError(form.get('qty')) }}
-                            </mat-error>
-                        </mat-form-field>
-
-                        <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
-                            {{ form.get('qty').value || '-' }}
-                        </span>
-                    </div>
-                    <!-- / QTY (BASE) -->
-                    <!-- ORDER VALUE (BASE) -->
-                    <div
-                        [ngClass]="formClass"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        [fxHide]="form.get('base').value !== 'order-value'"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            [fxFlex]="labelLength * 2 - 1"
-                            class="pr-0 form-label"
-                            [class.mat-error]="!isViewMode() && hasError(form.get('orderValue'))"
-                        >
-                            Order Value >=
-                        </label>
-
-                        <mat-form-field
-                            appearance="outline"
-                            [fxFlex]="formFieldLength * 2 - 1"
-                            *ngIf="!isViewMode()"
-                        >
-                            <input
-                                matInput
-                                name="orderValue"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                prefix="Rp"
-                                [formControl]="form.get('orderValue')"
-                            />
-                            <mat-error *ngIf="hasError(form.get('orderValue'))">
-                                {{ getFormError(form.get('orderValue')) }}
-                            </mat-error>
-                        </mat-form-field>
-
-                        <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
-                            {{
-                                (form.get('orderValue').value
-                                    | price: 'full':'IDR':'narrow':'1.0-2') || '-'
-                            }}
-                        </span>
-                    </div>
-                    <!-- / ORDER VALUE (BASE) -->
-                </div>
-                <!-- / FORM -->
+                <mat-radio-group
+                    formControlName="base"
+                    [fxFlex]="formFieldLength"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                >
+                    <mat-radio-button value="qty"> QTY </mat-radio-button>
+                    <mat-radio-button value="order-value"> Order Value </mat-radio-button>
+                </mat-radio-group>
             </div>
+            <!-- / BASE (CONDITION) -->
+            <!-- QTY (BASE) -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'qty'"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('qty'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Qty >=
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
+                    <input matInput name="qty" [formControl]="form.get('qty')" />
+                    <mat-error *ngIf="hasError(form.get('qty'))">
+                        {{ getFormError(form.get('qty')) }}
+                    </mat-error>
+                </mat-form-field>
+
+                <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('qty').value || '-' }}
+                </span>
+            </div>
+            <!-- / QTY (BASE) -->
+            <br/>
+            <!-- ORDER VALUE (BASE) -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'order-value'"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('orderValue'))"
+                >
+                    <span class="sinbad-red-fg">*</span>Order Value >=
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="40" *ngIf="!isViewMode()">
+                    <input
+                        matInput
+                        name="orderValue"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                        [formControl]="form.get('orderValue')"
+                    />
+                    <mat-error *ngIf="hasError(form.get('orderValue'))">
+                        {{ getFormError(form.get('orderValue')) }}
+                    </mat-error>
+                </mat-form-field>
+
+                <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
+                    {{
+                        (form.get('orderValue').value | price: 'full':'IDR':'narrow':'1.0-2') || '-'
+                    }}
+                </span>
+            </div>
+            <!-- / ORDER VALUE (BASE) -->
+            <!-- </div> -->
+            <!-- / FORM -->
+            <!-- </div> -->
             <!-- / WRAPPER BOX -->
         </form>
     </div>
