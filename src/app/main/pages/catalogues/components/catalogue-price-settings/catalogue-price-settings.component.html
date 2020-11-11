@@ -237,7 +237,7 @@
             #table
             class="catalogue-price-table sinbad-table sinbad-table__hover"
             [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
-            [class.h-360]="totalItem > 0"
+            [class.h-360]="formMode === 'edit'"
             [dataSource]="dataSource"
             [trackBy]="onTrackPriceSetting"
             [@animateStagger]="{ value: '50' }"
@@ -336,7 +336,7 @@
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
                 <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row; index as idx">
                     <button
                         type="button"
                         mat-icon-button
@@ -354,6 +354,7 @@
                             mat-menu-item
                             class="sinbad-mat-menu-item"
                             aria-label="Delete"
+                            (click)="onDelete(row, idx)"
                         >
                             <mat-icon>delete</mat-icon>
                             <span>Delete</span>
@@ -363,14 +364,27 @@
             </ng-container>
             <!-- / Actions Column -->
 
+            <!-- No Record Column -->
+            <ng-container matColumnDef="no-record">
+                <mat-footer-cell *matFooterCellDef [attr.colspan]="formMode === 'view' ? 6 : 7">
+                    No records found
+                </mat-footer-cell>
+            </ng-container>
+            <!-- / No Record Column -->
+
             <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
             <mat-row
                 *matRowDef="let row; columns: displayedColumns"
                 class="catalogue-price-list__item"
+                [class.highlight-row]="selectedSegmentId === row.id"
             ></mat-row>
+            <mat-footer-row
+                *matFooterRowDef="['no-record']"
+                [fxShow]="!isLoading && totalItem === 0"
+            ></mat-footer-row>
         </mat-table>
 
-        <div class="no-records" *ngIf="!isLoading && totalItem === 0">No records found</div>
+        <!-- <div class="no-records" *ngIf="!isLoading && totalItem === 0">No records found</div> -->
 
         <mat-paginator
             [fxHide]="totalItem === 0 || form.get('advancePrice').value === false"
@@ -386,3 +400,9 @@
     </form>
 </div>
 <!-- / CONTENT CARD (INFORMASI PRODUK) -->
+
+<ng-template #alertDelete>
+    <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
+        Are you sure want to delete segmentation from this catalogue?
+    </p>
+</ng-template>

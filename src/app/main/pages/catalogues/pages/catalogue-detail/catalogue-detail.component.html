@@ -27,7 +27,14 @@
                     style="width: 70px; height: 70px"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <ng-container
+                    <img
+                        class="fit-image fuse-white"
+                        style="border-radius: 5px"
+                        [defaultImage]="'assets/images/catalogue/no_photo.png'"
+                        [lazyLoad]="(selectedCatalogue$ | async)?.catalogueImages[0]?.imageUrl"
+                        [errorImage]="'assets/images/catalogue/no_photo.png'"
+                    />
+                    <!-- <ng-container
                         *ngIf="
                             (selectedCatalogue$ | async)?.catalogueImages[0];
                             else noCatalogueImage
@@ -45,7 +52,7 @@
                         <ngx-skeleton-loader
                             [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                         ></ngx-skeleton-loader>
-                    </ng-template>
+                    </ng-template> -->
                 </div>
 
                 <div
@@ -157,7 +164,7 @@
             <!-- VISIBILITY TAB -->
             <mat-tab label="Visibility" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <app-catalogue-visibility 
+                    <app-catalogue-visibility
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
