@@ -266,6 +266,8 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
                 closeButtonLabel: 'Cancel',
             },
             {
+                autoFocus: false,
+                restoreFocus: false,
                 disableClose: true,
                 width: '30vw',
                 minWidth: '30vw',
