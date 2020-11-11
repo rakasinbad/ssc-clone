@@ -1,35 +1,136 @@
 voucher-general-information {
-    // .view-field-right {
-    //     label {
-    //         font-weight: 600;
-    //         position: relative;
-    //         // top: -0.78em;
-    //         text-align: right;
-    //         padding-right: 2em;
-    //         // padding-right: 10px;
-    //     }
+    .mat-radio-button ~ .mat-radio-button {
+        margin-left: 16px;
+    }
+    
+   .form-chip-list {
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1 1 100%;
+        box-sizing: border-box;
+        max-width: 40%;
+        margin-bottom: 25px;
+        height: 71px;
+        border-radius: 5px;
+    }
 
-    //     .mat-form-field-prefix {
-    //         top: -0.2em;
-    //     }
+    .form-chip-list-input {
+        cursor: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1 1 100%;
+        box-sizing: border-box;
+        max-width: 40%;
+        margin-bottom: 25px;
+        height: 71px;
+        border-radius: 5px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+    }
+    
 
-    //     .mat-form-field-infix {
-    //         padding: 0.5em 0 !important;
-    //         top: -0.25em;
-    //     }
+    .form-box {
+        .custom-field {
+            label {
+                font-weight: normal;
+                // color: sinbad-color('black', '80');
 
-    //     &.sinbad-textarea {
-    //         label {
-    //             top: -3em;
-    //         }
-    //     }
+                + div {
+                    a[href] {
+                        margin-left: 16px;
+                        position: relative;
+                        top: -0.6em;
+                    }
+                }
+            }
 
-    //     &.sinbad-button {
-    //         label {
-    //             top: 0;
-    //         }
-    //     }
-    // }
+            .mat-radio-group {
+                position: relative;
+                top: 0.1em;
+            }
+
+            .mat-form-field-outline {
+                background: #ffffff !important;
+            }
+
+            .mat-datetimepicker-toggle {
+                /* Set color icon in datepicker */
+                .mat-icon {
+                    color: sinbad-color('red', '50');
+                }
+            }
+
+            .form-info {
+                .mat-radio-group {
+                    top: 0.7em;
+                }
+
+                .mat-form-field-outline {
+                    visibility: hidden;
+                }
+            }
+        }
+
+        .box-group {
+            margin-bottom: 16px;
+
+            .field-head-wrapper {
+                width: 700px;
+                min-width: 700px;
+                max-width: 700px;
+            }
+
+            .box-title {
+                font-size: 16px;
+                font-weight: 600;
+            }
+
+            .field-wrapper {
+                background-color: rgba(232, 232, 232, 0.25);
+                width: 700px;
+                min-width: 700px;
+                max-width: 700px;
+                height: 100%;
+                border-radius: 4px;
+
+                &.benefit-qty-full {
+                    height: 100%;
+                }
+
+                &.benefit-qty-empty {
+                    height: 100%;
+                }
+
+                &.benefit-amount {
+                    height: 100%;
+                }
+
+                .field-title {
+                    font-weight: 600;
+                    color: sinbad-color('black', '100');
+                    margin-bottom: 18px;
+                }
+
+                .custom-field {
+                    .mat-form-field {
+                        max-width: 400px !important;
+                    }
+                }
+            }
+
+            card-instruction {
+                .title {
+                    font-size: 18px;
+                    font-weight: 600;
+                    text-decoration: underline;
+                }
+            }
+
+            // &:not(:last-child) {
+            //     margin-bottom: 16px;
+            // }
+        }
+    }
+
     .img-container {
         width: 160px; /*any size*/
         height: 120px; /*any size*/
@@ -73,4 +174,6 @@ voucher-general-information {
             }
         }
     }
+
+    
 }

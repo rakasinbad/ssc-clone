@@ -1,7 +1,7 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Eligible Product</div>
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Eligible Product</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -20,11 +20,11 @@
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
-                    [fxFlex]="labelLength"
                     class="pr-0 form-label"
+                    fxFlex="12"
                     [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Base
+                    <span class="sinbad-red-fg">*</span>Base
                 </label>
 
                 <mat-radio-group
@@ -49,11 +49,11 @@
             >
                 <label
                     [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
-                    [fxFlex]="labelLength"
                     class="pr-0 form-label"
+                    fxFlex="12"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Chosen SKU<br />({{
+                    <span class="sinbad-red-fg">*</span>Chosen SKU<br />({{
                         form.get('chosenSku').value?.length || '0'
                     }}
                     Selected)
@@ -87,11 +87,11 @@
             >
                 <label
                     [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
-                    [fxFlex]="labelLength"
+                    fxFlex="12"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Chosen Brand<br />({{
+                    <span class="sinbad-red-fg">*</span>Chosen Brand<br />({{
                         form.get('chosenBrand').value?.length || '0'
                     }}
                     Selected)
@@ -125,11 +125,11 @@
             >
                 <label
                     [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
-                    [fxFlex]="labelLength"
+                    fxFlex="12"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Chosen Faktur<br />({{
+                    <span class="sinbad-red-fg">*</span>Chosen Faktur<br />({{
                         form.get('chosenFaktur').value?.length || '0'
                     }}
                     Selected)

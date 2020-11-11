@@ -15,13 +15,14 @@ import { BenefitMultiType, BenefitType } from '../models/benefit-type.model';
 import { CalculationMechanism } from '../models/calculation-mechanism.model';
 import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
-import { PlatformSinbad } from '../models/platform.model';
-import { PromoAllocation, PromoAllocationCross } from '../models/promo-allocation.model';
+import { PlatformSinbad, PlatformSupplierVoucer } from '../models/platform.model';
+import { PromoAllocation, PromoAllocationCross, VoucherAllocation } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
 import { SegmentationBase } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
+import { SupplierVoucherType, SupplierVoucherCategory} from '../models/supplier-voucher.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -177,6 +178,21 @@ export class HelperService {
         },
     ];
 
+    private static readonly _platformSupplierVoucher: { id: PlatformSupplierVoucer; label: string }[] = [
+        // {
+        //     id: PlatformSupplierVoucer.ALL,
+        //     label: 'All',
+        // },
+        // {
+        //     id: PlatformSupplierVoucer.AGENT_APP,
+        //     label: 'Sinbad White',
+        // },
+        {
+            id: PlatformSupplierVoucer.SINBAD_APP,
+            label: 'Sinbad Red',
+        },
+    ];
+
     private static readonly _segmentationBase: { id: SegmentationBase; label: string }[] = [
         {
             id: SegmentationBase.STORE,
@@ -217,6 +233,46 @@ export class HelperService {
             label: 'Max Promo Redemption (transaction)',
         },
     ];
+
+    private static readonly _voucherAllocation: { id: VoucherAllocation; label: string }[] = [
+        {
+            id: VoucherAllocation.NONE,
+            label: 'None',
+        },
+        {
+            id: VoucherAllocation.PROMOSLOT,
+            label: 'Max Promo Redemption (transaction)',
+        },
+        // {
+        //     id: VoucherAllocation.PROMOBUDGET,
+        //     label: 'Max Promo Redemption (Rp)',
+        // },
+    ];
+    
+
+    private static readonly _supplierVoucherType: { id: SupplierVoucherType; label: string }[] = [
+        {
+            id: SupplierVoucherType.DIRECT,
+            label: 'Direct',
+        },
+        {
+            id: SupplierVoucherType.COLLECTIBLE,
+            label: 'Collectible',
+        }
+       
+    ];  
+
+    private static readonly _supplierVoucherCategory: { id: SupplierVoucherCategory; label: string }[] = [
+        {
+            id: SupplierVoucherCategory.PRICE_CUT,
+            label: 'Price Cut',
+        }
+        // {
+        //     id: SupplierVoucherCategory.BONUS,
+        //     label: 'Bonus',
+        // }
+       
+    ];  
 
     private static _catalogueStatuses: Array<{ id: string; label: string }> = [
         {
@@ -766,6 +822,9 @@ export class HelperService {
         return HelperService._platformSinbad;
     }
 
+    platformSupplierVoucher(): {id: PlatformSupplierVoucer; label: string }[] {
+        return HelperService._platformSupplierVoucher;
+    }
     segmentationBase(): { id: SegmentationBase; label: string }[] {
         return HelperService._segmentationBase;
     }
@@ -777,6 +836,19 @@ export class HelperService {
     promoAllocationCross(): { id: PromoAllocationCross; label: string }[] {
         return HelperService._promoAllocationCross;
     }
+
+    voucherAllocation(): { id: VoucherAllocation; label: string }[] {
+        return HelperService._voucherAllocation;
+    }
+
+    supplierVoucherType(): { id: SupplierVoucherType; label: string }[] {
+        return HelperService._supplierVoucherType;
+    }
+
+    supplierVoucherCategory(): { id: SupplierVoucherCategory; label: string }[] {
+        return HelperService._supplierVoucherCategory;
+    }
+    
 
     specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
         return HelperService._specifiedTarget;

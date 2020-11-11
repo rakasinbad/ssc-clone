@@ -175,11 +175,11 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     externalId,
                     name,
                     platform,
-                    maxRedemptionPerBuyer,
+                    maxCollectionPerStore,
                     maxVoucherRedemption,
                     // budget,
-                    activeStartDate,
-                    activeEndDate,
+                    startDate,
+                    endDate,
                     description,
                     shortDescription,
                     // imageSuggestion,
@@ -192,11 +192,11 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                     externalId,
                     name,
                     platform,
-                    maxRedemptionPerBuyer,
+                    maxCollectionPerStore,
                     maxVoucherRedemption,
                     // budget,
-                    activeStartDate,
-                    activeEndDate,
+                    startDate,
+                    endDate,
                     description,
                     shortDescription,
                     // imageSuggestion,
@@ -307,15 +307,15 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     }
 
-    editCatalogue(): void {
-        this.formMode = 'edit';
+    // editCatalogue(): void {
+    //     this.formMode = 'edit';
 
-        this.VoucherStore.dispatch(UiActions.showFooterAction());
-        this.VoucherStore.dispatch(FormActions.setFormStatusInvalid());
-        this.VoucherStore.dispatch(FormActions.resetClickCancelButton());
+    //     this.VoucherStore.dispatch(UiActions.showFooterAction());
+    //     this.VoucherStore.dispatch(FormActions.setFormStatusInvalid());
+    //     this.VoucherStore.dispatch(FormActions.resetClickCancelButton());
 
-        this.cdRef.markForCheck();
-    }
+    //     this.cdRef.markForCheck();
+    // }
 
     scrollTop(element: ElementRef<HTMLElement>): void {
         element.nativeElement.scrollTop = 0;
@@ -328,9 +328,9 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
             externalId: formValue.externalId,
             name: formValue.name,
             platform: formValue.platform,
-            maxRedemptionPerStore: +formValue.maxRedemptionPerBuyer,
-            startDate: ((formValue.activeStartDate as unknown) as moment.Moment).toISOString(),
-            endDate: ((formValue.activeEndDate as unknown) as moment.Moment).toISOString(),
+            maxCollectionPerStore: +formValue.maxCollectionPerStore,
+            startDate: ((formValue.startDate as unknown) as moment.Moment).toISOString(),
+            endDate: ((formValue.endDate as unknown) as moment.Moment).toISOString(),
             description: formValue.description,
             shortDescription: formValue.shortDescription,
         };
