@@ -115,11 +115,16 @@ pipeline {
         }
         stage('Download ENV') {
             steps {
-                withAWS(credentials: "${AWS_CREDENTIAL}") {
-                    s3Download(file: 'src/environments/environment.ts', bucket: 'sinbad-env', path: "${SINBAD_ENV}/${SINBAD_REPO}/environment.ts", force: true)
+                script{
+                    withAWS(credentials: "${AWS_CREDENTIAL}") {
+                        s3Download(file: 'src/environments/environment.ts', bucket: 'sinbad-env', path: "${SINBAD_ENV}/${SINBAD_REPO}/environment.ts", force: true)
+                        if(SINBAD_ENV == 'production'){
+                            s3Download(file: 'src/assets/js/newrelic.js', bucket: 'sinbad-env', path: "${SINBAD_ENV}/${SINBAD_REPO}/newrelic.js", force: true)
+                        }
+                    }
+                    sh "sed -i 's/GIT_TAG/${env.GIT_TAG}/g' src/environments/environment.ts"
+                    sh "sed -i 's/GIT_COMMIT_SHORT/${env.GIT_COMMIT_SHORT}/g' src/environments/environment.ts"
                 }
-                sh "sed -i 's/GIT_TAG/${env.GIT_TAG}/g' src/environments/environment.ts"
-                sh "sed -i 's/GIT_COMMIT_SHORT/${env.GIT_COMMIT_SHORT}/g' src/environments/environment.ts"
             }
         }
         stage('Install') {
