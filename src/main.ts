@@ -5,6 +5,11 @@ import { environment } from 'environments/environment';
 import { hmrBootstrap } from 'hmr';
 
 if (environment.production) {
+    const newrelic = document.createElement('script');
+    newrelic.src = 'assets/js/newrelic.js';
+    newrelic.type = 'text/javascript';
+    document.head.appendChild(newrelic);
+
     enableProdMode();
 }
 

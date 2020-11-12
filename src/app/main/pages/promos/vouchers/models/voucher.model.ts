@@ -1,6 +1,11 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
-import { Catalogue, StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
+import {
+    Catalogue,
+    StoreSegmentationGroup,
+    StoreSegmentationChannel,
+    StoreSegmentationCluster,
+} from 'app/main/pages/catalogues/models';
 import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { Store } from 'app/shared/models/store.model';
@@ -17,13 +22,28 @@ interface ISupplierVoucher extends Timestamp {
     code: string;
     name: string;
     platform: string;
-    maxRedemptionPerStore: string;
+    maxCollectionPerStore: string;
     maxVoucherRedemption: number;
     startDate: string;
     endDate: string;
     description: string;
     shortDescription: string;
+    // imageUrl: string;
+    voucherAllocationType: string;
+    voucherSlot: number;
+    voucherBudget: number;
+    voucherType: string;
+    voucherHeader: string;
+    category: string;
+    termsAndConditions?: Array<any>;
+    instructions?: Array<any>;
     imageUrl: string;
+    expirationDays: number;
+    voucherTag?: Array<any>;
+    totalOrderValue: number;
+    used: string;
+    collected: string;
+
     base: string;
     conditionBase: string;
     conditionQty: TNullable<string>;
@@ -60,13 +80,28 @@ export class SupplierVoucher implements ISupplierVoucher {
     code: string;
     name: string;
     platform: string;
-    maxRedemptionPerStore: string;
+    maxCollectionPerStore: string;
     maxVoucherRedemption: number;
     startDate: string;
     endDate: string;
     description: string;
     shortDescription: string;
+    // imageUrl: string;
+    voucherAllocationType: string;
+    voucherSlot: number;
+    voucherBudget: number;
+    voucherType: string;
+    voucherHeader: string;
+    category: string;
+    termsAndConditions?: Array<any>;
+    instructions?: Array<any>;
     imageUrl: string;
+    expirationDays: number;
+    voucherTag?: Array<any>;
+    totalOrderValue: number;
+    used: string;
+    collected: string;
+
     base: string;
     conditionBase: string;
     conditionQty: TNullable<string>;
@@ -103,13 +138,28 @@ export class SupplierVoucher implements ISupplierVoucher {
             code,
             name,
             platform,
-            maxRedemptionPerStore,
+            maxCollectionPerStore,
             maxVoucherRedemption,
             startDate,
             endDate,
             description,
             shortDescription,
+            // imageUrl,
+            voucherAllocationType,
+            voucherSlot,
+            voucherBudget,
+            voucherType,
+            voucherHeader,
+            category,
+            termsAndConditions,
+            instructions,
             imageUrl,
+            expirationDays,
+            voucherTag,
+            totalOrderValue,
+            used,
+            collected,
+
             base,
             conditionBase,
             conditionQty,
@@ -144,13 +194,30 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.code = code;
         this.name = name;
         this.platform = platform;
-        this.maxRedemptionPerStore = maxRedemptionPerStore;
+        this.maxCollectionPerStore = maxCollectionPerStore;
         this.maxVoucherRedemption = maxVoucherRedemption;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        // this.startDate = startDate;
+        // this.endDate = endDate;
         this.description = description;
         this.shortDescription = shortDescription;
-        this.imageUrl = imageUrl;
+        // this.imageUrl = imageUrl;
+        this.voucherAllocationType = voucherAllocationType;
+        this.voucherSlot = voucherSlot || null;
+        this.voucherBudget = voucherBudget || null;
+        this.voucherType = voucherType;
+        this.voucherHeader = voucherHeader || null;
+        this.category = category || null;
+        this.termsAndConditions = termsAndConditions || null;
+        this.instructions = instructions || null;
+        this.imageUrl = imageUrl || null;
+        this.expirationDays = expirationDays || null;
+        this.startDate = startDate || null;
+        this.endDate = endDate || null;
+        this.voucherTag = voucherTag || null;
+        this.totalOrderValue = totalOrderValue || null;
+        this.used = used || null;
+        this.collected = collected || null;
+        
         this.base = base;
         this.conditionBase = conditionBase;
         this.conditionQty = conditionQty;
@@ -194,7 +261,7 @@ export class SupplierVoucherPayload implements ISupplierVoucherPayload {
 //     externalId: generalInformationValue.sellerId,
 //     name: generalInformationValue.name,
 //     platform: generalInformationValue.platform,
-//     maxRedemptionPerStore: +generalInformationValue.maxRedemptionPerBuyer,
+//     maxCollectionPerStore: +generalInformationValue.maxCollectionPerStore,
 //     promoBudget: +generalInformationValue.budget,
 //     startDate: (generalInformationValue.activeStartDate as unknown as moment.Moment).toISOString(),
 //     endDate: (generalInformationValue.activeEndDate as unknown as moment.Moment).toISOString(),
