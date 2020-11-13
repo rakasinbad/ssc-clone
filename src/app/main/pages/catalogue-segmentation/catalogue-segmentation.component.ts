@@ -1,6 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
+import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
 
 @Component({
     selector: 'app-catalogue-segmentation',
@@ -8,7 +11,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     styleUrls: ['./catalogue-segmentation.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class CatalogueSegmentationComponent implements OnInit {
+export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
             label: 'Catalogue Segmentation',
@@ -19,15 +22,43 @@ export class CatalogueSegmentationComponent implements OnInit {
         add: {
             permissions: [],
         },
+        filter: {
+            permissions: [],
+        },
+    };
+
+    filterConfig: SinbadFilterConfig = {
+        by: {
+            warehouse: null,
+            type: null,
+            group: null,
+            channel: null,
+            cluster: null,
+        },
+        showFilter: true,
     };
 
     keyword: string = null;
 
-    constructor(private router: Router) {}
+    constructor(
+        private router: Router,
+        private fuseSidebarService: FuseSidebarService,
+        private sinbadFilterService: SinbadFilterService
+    ) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.sinbadFilterService.setConfig(this.filterConfig);
+    }
+
+    ngOnDestroy(): void {
+        this.sinbadFilterService.resetConfig();
+    }
 
     onClickAdd(): void {
         this.router.navigateByUrl('/pages/catalogue-segmentations/add');
+    }
+
+    onClickFilter(): void {
+        this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
     }
 }
