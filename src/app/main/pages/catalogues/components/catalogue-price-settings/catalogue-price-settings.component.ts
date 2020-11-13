@@ -67,6 +67,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     private updateForm$: BehaviorSubject<IFormMode> = new BehaviorSubject<IFormMode>(null);
     private selectedCatalogue$: BehaviorSubject<Catalogue> = new BehaviorSubject<Catalogue>(null);
     private isDelete: boolean = false;
+    private isApplyFilter: boolean = false;
 
     defaultPageSizeTable: Array<number> = environment.pageSizeTable;
 
@@ -264,7 +265,11 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 this.isLoading = isLoading;
                 this.totalItem = totalItem;
 
-                this.form.get('advancePrice').setValue(totalItem > 0);
+                this.form
+                    .get('advancePrice')
+                    .setValue(this.isApplyFilter ? this.isApplyFilter : totalItem > 0);
+
+                this.cdRef.markForCheck();
             });
 
         /* if (this.formMode === 'view' || this.formMode === 'edit') {
@@ -487,6 +492,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
     onApplyFilter(): void {
         HelperService.debug('onApplyFilter', {});
+        this.isApplyFilter = true;
         this.updateForm$.next(null);
 
         const filterFormValue = this.filterForm.getRawValue();
