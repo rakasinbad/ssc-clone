@@ -262,7 +262,7 @@ export class VoucherBenefitInformationComponent
             id: [''],
             base: ['amount'],
             rupiah: [
-                '',
+                null,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -270,7 +270,7 @@ export class VoucherBenefitInformationComponent
                 ],
             ],
             percent: [
-                { value: '', disabled: true },
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -291,7 +291,7 @@ export class VoucherBenefitInformationComponent
                 ],
             ],
             benefitMaxRebate: [
-                { value: '', disabled: true },
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -322,6 +322,18 @@ export class VoucherBenefitInformationComponent
                         value
                     )
                 ),
+                map((status) => {
+                    const rawValue = this.form.getRawValue();
+                    if (rawValue.base == 'amount' && (rawValue.rupiah == '' || rawValue.rupiah == null)) {
+                        return 'INVALID';
+                    } else if (rawValue.base == 'percent' && 
+                    (rawValue.benefitMaxRebate == '' || rawValue.benefitMaxRebate == null) &&
+                    (rawValue.percent == '' || rawValue.percent == null)) {
+                        return 'INVALID';
+                    } else {
+                        return status;
+                    }
+                }),
                 takeUntil(this.subs$)
             )
             .subscribe((status) => {
@@ -375,6 +387,7 @@ export class VoucherBenefitInformationComponent
                 if (value === 'amount') {
                     this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('benefitMaxRebate').enable({ onlySelf: true, emitEvent: true });
                 } else if (value === 'percent') {
                     this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').enable({ onlySelf: true, emitEvent: true });

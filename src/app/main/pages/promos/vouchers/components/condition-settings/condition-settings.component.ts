@@ -335,6 +335,16 @@ export class VoucherConditionSettingsComponent
                         value
                     )
                 ),
+                map((status) => {
+                    const rawValue = this.form.getRawValue();
+                    if (rawValue.base == 'qty' && (rawValue.qty == '' || rawValue.qty == null)) {
+                        return 'INVALID';
+                    } else if (rawValue.base == 'order-value' && (rawValue.orderValue == '' || rawValue.orderValue == null)) {
+                        return 'INVALID';
+                    } else {
+                        return status;
+                    }
+                }),
                 takeUntil(this.subs$)
             )
             .subscribe((status) => {
