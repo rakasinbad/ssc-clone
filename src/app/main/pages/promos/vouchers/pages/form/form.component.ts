@@ -341,6 +341,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             payload['benefitRebate'] = benefitValue.rupiah;
         } else if (payload.benefitType === 'percent') {
             payload['benefitDiscount'] = benefitValue.percent;
+            payload['benefitMaxRebate'] = benefitValue.benefitMaxRebate;
         }
 
         // Klasifikasi "dataTarget" untuk Eligible Store Settings.

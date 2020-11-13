@@ -44,7 +44,7 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Base
+                    <span class="sinbad-red-fg">*</span>Base
                 </label>
 
                 <mat-radio-group
@@ -60,11 +60,11 @@
             </div>
             <!-- / BASE (CONDITION) -->
             <!-- RUPIAH (BASE) -->
-            <div
+            <ng-container *ngIf="form.get('base').value == 'amount'">
+                <div
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
-                [fxHide]="form.get('base').value !== 'amount'"
             >
                 <label
                     fxFlexAlign="center"
@@ -72,7 +72,7 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('rupiah'))"
                 >
-                    <span class="sinbad-red-fg">* </span>Rebate
+                    <span class="sinbad-red-fg">*</span>Rebate
                 </label>
 
                 <mat-form-field
@@ -97,13 +97,15 @@
                     {{ (form.get('rupiah').value | price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
                 </span>
             </div>
+            </ng-container>
+            
             <!-- / RUPIAH (BASE) -->
             <!-- PERCENT (BASE) -->
-            <div
+            <ng-container *ngIf="form.get('base').value == 'percent'">
+                <div
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
-                [fxHide]="form.get('base').value !== 'percent'"
             >
                 <label
                     fxFlexAlign="center"
@@ -111,7 +113,7 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('percent'))"
                 >
-                    <span class="sinbad-red-fg">* </span> Percent
+                    <span class="sinbad-red-fg">*</span> Percent
                 </label>
 
                 <mat-form-field
@@ -134,6 +136,47 @@
                     {{ form.get('percent').value || '-' }}
                 </span>
             </div>
+
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                    class="pr-0 form-label"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('benefitMaxRebate'))"
+                >
+                    <span class="sinbad-red-fg">*</span> Max Rebate
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    fxFlex="40"
+                    *ngIf="!isViewMode()"
+                >
+                    <input
+                        matInput
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                        placeholder="Rp"
+                        autocomplete="off"
+                        name="benefitMaxRebate"
+                        formControlName="benefitMaxRebate"
+                    />
+                    <mat-error *ngIf="hasError(form.get('benefitMaxRebate'))">
+                        {{ getFormError(form.get('benefitMaxRebate')) }}
+                    </mat-error>
+                </mat-form-field>
+
+                <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
+                    {{ (form.get('benefitMaxRebate').value | price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
+                </span>
+            </div>
+            </ng-container>
+            
             <!-- / PERCENT (BASE) -->
             <!-- </div> -->
             <!-- / FORM -->

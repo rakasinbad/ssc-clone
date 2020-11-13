@@ -28,7 +28,7 @@ import {
     ValidationErrors,
     FormControl,
 } from '@angular/forms';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { RxwebValidators, NumericValueType } from '@rxweb/reactive-form-validators';
 import {
     distinctUntilChanged,
     debounceTime,
@@ -231,14 +231,17 @@ export class VoucherBenefitInformationComponent
                     base: voucher.benefitType,
                     rupiah: voucher.benefitRebate,
                     percent: voucher.benefitDiscount,
+                    benefitMaxRebate: voucher.benefitMaxRebate,
                 });
 
                 if (voucher.benefitType === 'amount') {
                     this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
+                    this.form.get('benefitMaxRebate').enable({ onlySelf: true, emitEvent: true });
                 } else if (voucher.benefitType === 'percent') {
                     this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('benefitMaxRebate').enable({ onlySelf: true, emitEvent: true });
                 }
 
                 if (this.formMode === 'view') {
@@ -271,6 +274,37 @@ export class VoucherBenefitInformationComponent
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.pattern({
+                        expression:{'onlyNumber': /^(0|[1-9]\d*)(\.\d+)?$/},
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.maxNumber({
+                        value: 100,
+                        message: 'Max input is 100',
+                    }),
+                ],
+            ],
+            benefitMaxRebate: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    // max length 12 character
+                    RxwebValidators.maxLength({
+                        value: 12,
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
                 ],
             ],
@@ -344,6 +378,7 @@ export class VoucherBenefitInformationComponent
                 } else if (value === 'percent') {
                     this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('benefitMaxRebate').enable({ onlySelf: true, emitEvent: true });
                 }
 
                 this.form.updateValueAndValidity();
@@ -390,10 +425,6 @@ export class VoucherBenefitInformationComponent
 
         this.checkRoute();
         this.initFormCheck();
-        // this.initCatalogueBrand();
-        // this.initCatalogueUnitState();
-        // this.initCatalogueCategoryState();
-        // this.checkSelectedCatalogueCategory();
     }
 
     ngAfterViewInit(): void {}
@@ -417,16 +448,5 @@ export class VoucherBenefitInformationComponent
 
         this.trigger$.next('');
         this.trigger$.complete();
-
-        // this.catalogueCategories$.next([]);
-        // this.catalogueCategories$.complete();
-
-        // this.catalogueUnits$.next([]);
-        // this.catalogueUnits$.complete();
-
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
-        // this.store.dispatch(UiActions.hideFooterAction());
-        // this.store.dispatch(FormActions.resetCancelButtonAction());
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
     }
 }
