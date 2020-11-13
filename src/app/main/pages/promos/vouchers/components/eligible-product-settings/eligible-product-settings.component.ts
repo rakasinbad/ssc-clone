@@ -475,16 +475,5 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
 
         this.trigger$.next('');
         this.trigger$.complete();
-
-        // this.catalogueCategories$.next([]);
-        // this.catalogueCategories$.complete();
-
-        // this.catalogueUnits$.next([]);
-        // this.catalogueUnits$.complete();
-
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
-        // this.store.dispatch(UiActions.hideFooterAction());
-        // this.store.dispatch(FormActions.resetCancelButtonAction());
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
     }
 }
