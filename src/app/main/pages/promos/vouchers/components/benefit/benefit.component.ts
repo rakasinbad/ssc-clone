@@ -280,6 +280,10 @@ export class VoucherBenefitInformationComponent
                         expression:{'onlyNumber': /^(0|[1-9]\d*)(\.\d+)?$/},
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.minNumber({
+                        value: 0,
+                        message: 'Min input is 0',
+                    }),
                     RxwebValidators.maxNumber({
                         value: 100,
                         message: 'Max input is 100',
