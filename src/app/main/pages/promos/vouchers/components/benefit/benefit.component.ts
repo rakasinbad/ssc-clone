@@ -54,10 +54,6 @@ import * as moment from 'moment';
 import { Catalogue } from 'app/main/pages/catalogues/models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { Selection } from 'app/shared/components/multiple-selection/models';
-// import { UserSupplier } from 'app/shared/models/supplier.model';
-// import { TNullable } from 'app/shared/models/global.model';
-// import { UiActions, FormActions } from 'app/shared/store/actions';
-// import { FormSelectors } from 'app/shared/store/selectors';
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
@@ -350,21 +346,6 @@ export class VoucherBenefitInformationComponent
                         value
                     )
                 ),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[BEFORE MAP] SUPPLIER VOUCHER BENEFIT INFORMATON FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
-                // map(() => {
-                //     const rawValue = this.form.getRawValue();
-                // }),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[AFTER MAP] SUPPLIER VOUCHER BENEFIT INFORMATON FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {

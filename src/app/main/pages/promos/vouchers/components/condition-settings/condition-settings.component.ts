@@ -356,24 +356,6 @@ export class VoucherConditionSettingsComponent
                 distinctUntilChanged(),
                 debounceTime(200),
                 tap(value => HelperService.debug('SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED', value)),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[BEFORE MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
-                // map((value) => ({
-                //     ...value,
-                //     chosenSku: !value.chosenSku ? [] : value.chosenSku,
-                //     chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
-                //     chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
-                // })),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[AFTER MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
