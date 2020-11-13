@@ -62,44 +62,24 @@
             </div>
 
             <div class="p-16 pt-0 pb-40 line-height-1.75">
-                <form
-                    class="w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    fxFlex
-                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '5px'"
-                    novalidate
-                >
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex
+                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '5px'" novalidate>
                     <!-- PRODUCT ID -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productInfo.externalId').value ||
                                     form.get('productInfo.externalId').touched
                                     | hasErrorField: form.get('productInfo.externalId'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Product ID
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input hidden name="id" formControlName="id" />
-                            <input
-                                matInput
-                                name="externalId"
-                                formControlName="externalId"
-                                autocapitalize="characters"
-                                autocomplete="off"
-                            />
+                            <input matInput name="externalId" formControlName="externalId" autocapitalize="characters"
+                                autocomplete="off" />
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productInfo.externalId')) }} -->
                                 {{
@@ -108,26 +88,20 @@
                                 }}
                             </mat-error>
 
-                            <mat-error
-                                *ngIf="
+                            <mat-error *ngIf="
                                     $any(form.get('productInfo.externalId').errors)
                                         ?.skuSupplierExist
-                                "
-                            >
+                                ">
                                 SKU already exist.
                             </mat-error>
 
-                            <mat-hint
-                                class="mb-4 primary-fg"
-                                *ngIf="form.get('productInfo.externalId').status === 'PENDING'"
-                            >
+                            <mat-hint class="mb-4 primary-fg"
+                                *ngIf="form.get('productInfo.externalId').status === 'PENDING'">
                                 Checking ...
                             </mat-hint>
 
-                            <mat-hint
-                                class="mb-4 green-800-fg"
-                                *ngIf="form.get('productInfo.externalId').status === 'VALID'"
-                            >
+                            <mat-hint class="mb-4 green-800-fg"
+                                *ngIf="form.get('productInfo.externalId').status === 'VALID'">
                                 SKU is available.
                             </mat-hint>
                         </mat-form-field>
@@ -139,34 +113,20 @@
                     <!-- / PRODUCT ID -->
 
                     <!-- NAMA PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productInfo.name').value ||
                                     form.get('productInfo.name').touched
                                     | hasErrorField: form.get('productInfo.name'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Product Name
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="name"
-                                formControlName="name"
-                                autocapitalize="words"
-                                autocomplete="off"
-                            />
+                            <input matInput name="name" formControlName="name" autocapitalize="words"
+                                autocomplete="off" />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productInfo.name')) }} -->
@@ -184,38 +144,20 @@
                     <!-- / NAMA PRODUK -->
 
                     <!-- DETAIL PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        [class.pb-20]="!(formMode | hasFormMode: 'view')"
-                        fxLayoutAlign="space-between strectch"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlex="18"
-                            fxFlexAlign="start"
-                            class="pr-0"
-                            [class.pt-20]="!(formMode | hasFormMode: 'view')"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" [class.pb-20]="!(formMode | hasFormMode: 'view')"
+                        fxLayoutAlign="space-between strectch" formGroupName="productInfo">
+                        <label fxFlex="18" fxFlexAlign="start" class="pr-0"
+                            [class.pt-20]="!(formMode | hasFormMode: 'view')" [class.sinbad-red-fg]="
                                 form.get('productInfo.information').value ||
                                     form.get('productInfo.information').touched
                                     | hasErrorField: form.get('productInfo.information'):false
-                            "
-                        >
+                            ">
                             Product Detail
                         </label>
 
-                        <div
-                            fxFlex="80"
-                            fxLayout="column"
-                            fxLayoutAlign="start start"
-                            fxLayoutGap="20px"
-                        >
-                            <quill-editor
-                                [class.ql-error]="hasError(form.get('productInfo.information'))"
-                                format="html"
-                                formControlName="information"
-                            ></quill-editor>
+                        <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+                            <quill-editor [class.ql-error]="hasError(form.get('productInfo.information'))" format="html"
+                                formControlName="information"></quill-editor>
 
                             <!-- <code>
                                 {{ form.get('productInfo.description').value }}
@@ -260,23 +202,14 @@
                     <!-- / DETAIL PRODUK -->
 
                     <!-- DESKRIPSI PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between strectch"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlex="18"
-                            fxFlexAlign="start"
-                            class="pr-0"
-                            [class.pt-28]="!(formMode | hasFormMode: 'view')"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between strectch"
+                        formGroupName="productInfo">
+                        <label fxFlex="18" fxFlexAlign="start" class="pr-0"
+                            [class.pt-28]="!(formMode | hasFormMode: 'view')" [class.sinbad-red-fg]="
                                 form.get('productInfo.description').value ||
                                     form.get('productInfo.description').touched
                                     | hasErrorField: form.get('productInfo.description'):false
-                            "
-                        >
+                            ">
                             Product Description
                         </label>
 
@@ -347,22 +280,13 @@
                     <!-- / VARIAN PRODUK -->
 
                     <!-- BRAND PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productInfo.brandId').value ||
                                     form.get('productInfo.brandId').touched
                                     | hasErrorField: form.get('productInfo.brandId'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Brand
                         </label>
@@ -409,64 +333,38 @@
                     <!-- / BRAND PRODUK -->
 
                     <!-- KATEGORI PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.mt-16]="!(formMode | hasFormMode: 'view')"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0"
+                            [class.mt-16]="!(formMode | hasFormMode: 'view')" [class.sinbad-red-fg]="
                                 form.get('productInfo.category').value ||
                                     form.get('productInfo.category').touched
                                     | hasErrorField: form.get('productInfo.category'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Category
                         </label>
 
-                        <span
-                            class="ml-20 grey-fg"
-                            fxFlexAlign="center"
-                            fxFlex="80"
-                            fxLayout="column"
-                            fxLayoutAlign="start start"
-                        >
+                        <span class="ml-20 grey-fg" fxFlexAlign="center" fxFlex="80" fxLayout="column"
+                            fxLayoutAlign="start start">
                             <div fxFlex fxLayout="row">
-                                <strong
-                                    [innerHTML]="productCategory$"
-                                    fxFlexAlign="center"
-                                ></strong>
+                                <strong [innerHTML]="productCategory$" fxFlexAlign="center"></strong>
 
-                                <button
-                                    fxFlexAlign="center"
-                                    class="red-fg"
-                                    mat-icon-button
-                                    [disableRipple]="true"
-                                    style="margin-left: 10px"
-                                    matTooltip="Change the category"
+                                <button fxFlexAlign="center" class="red-fg" mat-icon-button [disableRipple]="true"
+                                    style="margin-left: 10px" matTooltip="Change the category"
                                     matTooltipPosition="right"
                                     (click)="onEditCategory(form.get('productInfo.id').value)"
-                                    *ngIf="!(formMode | hasFormMode: 'view')"
-                                >
+                                    *ngIf="!(formMode | hasFormMode: 'view')">
                                     <mat-icon>edit</mat-icon>
                                 </button>
                             </div>
-                            <p
-                                class="mat-error my-0"
-                                *ngIf="
+                            <p class="mat-error my-0" *ngIf="
                                     !(formMode | hasFormMode: 'view') &&
                                     hasError(form.get('productInfo.category'), {
                                         ignoreTouched: true,
                                         ignoreDirty: true
                                     })
-                                "
-                            >
+                                ">
                                 {{ getFormError(form.get('productInfo.category')) }}
                             </p>
                         </span>
@@ -553,22 +451,13 @@
                     <!-- / PRODUK STOK -->
 
                     <!-- UOM -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between start"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between start"
+                        formGroupName="productInfo">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productInfo.uom').value ||
                                     form.get('productInfo.uom').touched
                                     | hasErrorField: form.get('productInfo.uom'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             UOM
                         </label>
@@ -609,77 +498,47 @@
                     <!-- / UOM -->
 
                     <!-- TAG PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSale"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.mat-error]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.mat-error]="
                                 !(formMode | hasFormMode: 'view') &&
                                 hasError(form.get('productSale.tags'), {
                                     ignoreTouched: true,
                                     ignoreDirty: true
                                 })
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Product Tag
                         </label>
 
-                        <div
-                            fxFlex="80"
-                            fxFlexAlign="center"
-                            fxLayout="column"
-                            fxLayoutAlign="start stretch"
-                        >
+                        <div fxFlex="80" fxFlexAlign="center" fxLayout="column" fxLayoutAlign="start stretch">
                             <div fxLayout="row">
-                                <mat-form-field
-                                    fxFlex
-                                    appearance="outline"
-                                    [class.mat-form-field-invalid]="
+                                <mat-form-field fxFlex appearance="outline" [class.mat-form-field-invalid]="
                                         hasError(form.get('productSale.tags'), {
                                             ignoreTouched: true,
                                             ignoreDirty: true
                                         })
-                                    "
-                                    *ngIf="!(formMode | hasFormMode: 'view')"
-                                >
+                                    " *ngIf="!(formMode | hasFormMode: 'view')">
                                     <mat-chip-list #chipList aria-label="Tags">
-                                        <mat-chip
-                                            *ngFor="
+                                        <mat-chip *ngFor="
                                                 let tag of productTagsControls?.controls;
                                                 index as $index
-                                            "
-                                            selectable="true"
-                                            removable="true"
-                                            (removed)="onRemoveTag($index)"
-                                        >
+                                            " selectable="true" removable="true" (removed)="onRemoveTag($index)">
                                             {{ tag.value }}
                                             <mat-icon matChipRemove>cancel</mat-icon>
                                         </mat-chip>
 
-                                        <input
-                                            [matChipInputFor]="chipList"
+                                        <input [matChipInputFor]="chipList"
                                             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                            [matChipInputAddOnBlur]="true"
-                                            (matChipInputTokenEnd)="onAddTag($event)"
-                                        />
+                                            [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="onAddTag($event)" />
                                     </mat-chip-list>
 
-                                    <mat-hint
-                                        class="mat-error pb-4"
-                                        *ngIf="
+                                    <mat-hint class="mat-error pb-4" *ngIf="
                                             hasError(form.get('productSale.tags'), {
                                                 ignoreTouched: true,
                                                 ignoreDirty: true
                                             })
-                                        "
-                                    >
+                                        ">
                                         <!-- {{ getFormError(form.get('productSale.tags')) }} -->
                                         {{
                                             form.get('productSale.tags').value
@@ -714,45 +573,24 @@
             </div>
 
             <div class="p-16 pt-0 line-height-1.75">
-                <form
-                    class="w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '0px'"
-                    fxFlex
-                    novalidate
-                >
+                <form class="w-100-p" [formGroup]="form" fxLayout="column"
+                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '0px'" fxFlex novalidate>
                     <!-- HARGA PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSale"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productSale.productPrice').value ||
                                     form.get('productSale.productPrice').touched
                                     | hasErrorField: form.get('productSale.productPrice'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Retail<br />
                             Buyer Price
                         </label>
 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="price"
-                                formControlName="productPrice"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                prefix="Rp"
-                            />
+                            <input matInput name="price" formControlName="productPrice" mask="separator.2"
+                                thousandSeparator="." prefix="Rp" />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productSale.productPrice')) }} -->
@@ -786,35 +624,20 @@
                     <!-- / HARGA PRODUK -->
 
                     <!-- HARGA RETAIL -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSale"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productSale.retailPrice').value ||
                                     form.get('productSale.retailPrice').touched
                                     | hasErrorField: form.get('productSale.retailPrice'):false
-                            "
-                        >
+                            ">
                             Discount Retail<br />
                             Buyer Price
                         </label>
 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="price"
-                                formControlName="retailPrice"
-                                mask="separator.2"
-                                thousandSeparator="."
-                                prefix="Rp"
-                            />
+                            <input matInput name="price" formControlName="retailPrice" mask="separator.2"
+                                thousandSeparator="." prefix="Rp" />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productSale.retailPrice')) }} -->
@@ -1217,90 +1040,45 @@
             <div class="p-16 pt-0 line-height-1.75">
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
                     <!-- HARGA PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productMedia"
-                    >
-                        <label
-                            class="pr-0 mt-12"
-                            fxFlex="18"
-                            fxFlexAlign="start"
-                            [class.mat-error]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productMedia">
+                        <label class="pr-0 mt-12" fxFlex="18" fxFlexAlign="start" [class.mat-error]="
                                 hasError(form.get('productMedia.photos.0'), {
                                     ignoreTouched: true,
                                     ignoreDirty: true
                                 })
-                            "
-                        >
+                            ">
                             Product Photos
                         </label>
 
-                        <div
-                            appearance="outline"
-                            fxFlex="80"
-                            fxLayout="column"
-                            fxLayoutGap="10px"
-                            fxLayoutAlign="start start"
-                        >
-                            <div
-                                appearance="outline"
-                                fxFlex="80"
-                                fxLayout="row"
-                                fxLayoutGap="10px"
-                                fxLayoutAlign="start start"
-                            >
-                                <div
-                                    fxLayout="column"
-                                    fxLayoutAlign="start center"
-                                    *ngFor="let photo of productPhotos.controls; let i = index"
-                                >
-                                    <input
-                                        hidden
-                                        #photos
-                                        type="file"
-                                        accept=".bmp, .jpg, .jpeg, .png"
-                                        (change)="onFileBrowse($event, i)"
-                                    />
-                                    <ng-container
-                                        *ngIf="
+                        <div appearance="outline" fxFlex="80" fxLayout="column" fxLayoutGap="10px"
+                            fxLayoutAlign="start start">
+                            <div appearance="outline" fxFlex="80" fxLayout="row" fxLayoutGap="10px"
+                                fxLayoutAlign="start start">
+                                <div fxLayout="column" fxLayoutAlign="start center"
+                                    *ngFor="let photo of productPhotos.controls; let i = index">
+                                    <input hidden #photos type="file" accept=".bmp, .jpg, .jpeg, .png"
+                                        (change)="onFileBrowse($event, i)" />
+                                    <ng-container *ngIf="
                                             !photo.value && !(formMode | hasFormMode: 'view');
                                             else hasPhoto
-                                        "
-                                    >
+                                        ">
                                         <div class="img-container">
-                                            <button
-                                                (click)="photos.click()"
-                                                mat-stroked-button
-                                                style="border-style: dashed"
-                                                class="red-fg red-border fit-image"
-                                            >
+                                            <button (click)="photos.click()" mat-stroked-button
+                                                style="border-style: dashed" class="red-fg red-border fit-image">
                                                 <mat-icon>add_circle</mat-icon>
                                             </button>
                                         </div>
                                     </ng-container>
 
                                     <ng-template #hasPhoto>
-                                        <div
-                                            class="img-container"
-                                            fxLayout="row"
-                                            fxLayoutAlign="space-between start"
-                                            *ngIf="photo.value"
-                                        >
-                                            <img
-                                                class="fit-image"
-                                                [src]="photo.value.base64"
-                                                *ngIf="photo.value"
-                                            />
+                                        <div class="img-container" fxLayout="row" fxLayoutAlign="space-between start"
+                                            *ngIf="photo.value">
+                                            <img class="fit-image" [src]="photo.value.base64" *ngIf="photo.value" />
 
-                                            <button
-                                                class="red-fg"
-                                                mat-icon-button
-                                                style="bottom: 22px; right: 22px"
+                                            <button class="red-fg" mat-icon-button style="bottom: 22px; right: 22px"
                                                 (click)="onAbortUploadPhoto(photos, i)"
-                                                *ngIf="!(formMode | hasFormMode: 'view')"
-                                            >
+                                                *ngIf="!(formMode | hasFormMode: 'view')">
                                                 <mat-icon>remove_circle</mat-icon>
                                             </button>
                                         </div>
@@ -1308,17 +1086,13 @@
 
                                     <ng-container *ngIf="i === 0; else optionalPhoto">
                                         <div fxLayout="column" fxLayoutAlign="space-between center">
-                                            <p
-                                                *ngIf="
+                                            <p *ngIf="
                                                     hasError(form.get('productMedia.photos.0'), {
                                                         ignoreTouched: true,
                                                         ignoreDirty: true
                                                     });
                                                     else noPhotoError
-                                                "
-                                                class="mat-error"
-                                                style="margin-bottom: 0px"
-                                            >
+                                                " class="mat-error" style="margin-bottom: 0px">
                                                 <span class="red-200-fg">*</span>
                                                 Main Photo
                                             </p>
@@ -1330,12 +1104,8 @@
                                                 </p>
                                             </ng-template>
 
-                                            <button
-                                                class="red-fg"
-                                                matTooltip="Reset to original image"
-                                                mat-icon-button
-                                                (click)="onResetImage(i)"
-                                                *ngIf="
+                                            <button class="red-fg" matTooltip="Reset to original image" mat-icon-button
+                                                (click)="onResetImage(i)" *ngIf="
                                                     productOldPhotos?.controls[i]?.get('value')
                                                         ?.value &&
                                                         productPhotos?.controls[i]?.value !==
@@ -1343,8 +1113,7 @@
                                                                 'value'
                                                             )?.value;
                                                     else noUndo
-                                                "
-                                            >
+                                                ">
                                                 <mat-icon>undo</mat-icon>
                                             </button>
 
@@ -1357,38 +1126,26 @@
                                     </ng-container>
 
                                     <ng-template #optionalPhoto>
-                                        <div
-                                            fxLayout="column"
-                                            fxLayoutAlign="space-between center"
-                                            *ngIf="
+                                        <div fxLayout="column" fxLayoutAlign="space-between center" *ngIf="
                                                 !(formMode | hasFormMode: 'view') ||
                                                 ((formMode | hasFormMode: 'view') && photo.value)
-                                            "
-                                        >
-                                            <p
-                                                style="margin-bottom: 0px"
-                                                [class.grey-400-fg]="
+                                            ">
+                                            <p style="margin-bottom: 0px" [class.grey-400-fg]="
                                                     !hasError(
                                                         form.get(['productMedia', 'photos', i]),
                                                         { ignoreTouched: true, ignoreDirty: true }
                                                     )
-                                                "
-                                                [class.mat-error]="
+                                                " [class.mat-error]="
                                                     hasError(
                                                         form.get(['productMedia', 'photos', i]),
                                                         { ignoreTouched: true, ignoreDirty: true }
                                                     )
-                                                "
-                                            >
+                                                ">
                                                 Photo {{ i }}
                                             </p>
 
-                                            <button
-                                                class="red-fg"
-                                                matTooltip="Reset to original image"
-                                                mat-icon-button
-                                                (click)="onResetImage(i)"
-                                                *ngIf="
+                                            <button class="red-fg" matTooltip="Reset to original image" mat-icon-button
+                                                (click)="onResetImage(i)" *ngIf="
                                                     productOldPhotos?.controls[i]?.get('value')
                                                         ?.value &&
                                                         productPhotos?.controls[i]?.value !==
@@ -1396,8 +1153,7 @@
                                                                 'value'
                                                             )?.value;
                                                     else noUndo
-                                                "
-                                            >
+                                                ">
                                                 <mat-icon>undo</mat-icon>
                                             </button>
 
@@ -1412,21 +1168,16 @@
                             </div>
 
                             <ng-container *ngIf="!(formMode | hasFormMode: 'view')">
-                                <p
-                                    fxFlexAlign="start"
-                                    class="my-0"
-                                    *ngFor="
+                                <p fxFlexAlign="start" class="my-0" *ngFor="
                                         let productPhoto of form.get('productMedia.photos')
                                             .controls;
                                         index as $index
-                                    "
-                                    [class.mat-error]="
+                                    " [class.mat-error]="
                                         hasError(form.get(['productMedia', 'photos', $index]), {
                                             ignoreTouched: true,
                                             ignoreDirty: true
                                         })
-                                    "
-                                >
+                                    ">
                                     {{ getFormError(form.get(['productMedia', 'photos', $index])) }}
                                 </p>
                             </ng-container>
@@ -1445,46 +1196,25 @@
             </div>
 
             <div class="p-16 pt-0 pb-40 line-height-1.75">
-                <form
-                    class="w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    fxFlex
-                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '0px'"
-                    novalidate
-                >
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex
+                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '0px'" novalidate>
                     <!-- BERAT PER PCS PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productShipment"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment">
+                        <label class="pr-0" fxFlexAlign="center" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productShipment.catalogueWeight').value ||
                                     form.get('productShipment.catalogueWeight').touched
                                     | hasErrorField
                                         : form.get('productShipment.catalogueWeight')
                                         : false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
-                            Weight per Pcs
+                            Weight per Items
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center">
-                            <input
-                                matInput
-                                formControlName="catalogueWeight"
-                                mask="separator"
-                                thousandSeparator="."
-                                suffix=" gr"
-                                placeholder="in gram(s)"
-                            />
+                            <input matInput formControlName="catalogueWeight" mask="separator" thousandSeparator="."
+                                suffix=" gr" placeholder="in gram(s)" />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productShipment.catalogueWeight')) }} -->
@@ -1524,37 +1254,22 @@
                     <!-- / BERAT PER PCS PRODUK -->
 
                     <!-- BERAT PER MASTER BOX PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productShipment"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment">
+                        <label class="pr-0" fxFlexAlign="center" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productShipment.packagedWeight').value ||
                                     form.get('productShipment.packagedWeight').touched
                                     | hasErrorField
                                         : form.get('productShipment.packagedWeight')
                                         : false
-                            "
-                        >
+                            ">
                             Weight per <br />
                             Master Box
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center">
-                            <input
-                                matInput
-                                formControlName="packagedWeight"
-                                mask="separator"
-                                thousandSeparator="."
-                                suffix=" gr"
-                                placeholder="in gram(s)"
-                            />
+                            <input matInput formControlName="packagedWeight" mask="separator" thousandSeparator="."
+                                suffix=" gr" placeholder="in gram(s)" />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productShipment.packagedWeight')) }} -->
@@ -1589,38 +1304,23 @@
                     <!-- / BERAT PER MASTER BOX PRODUK -->
 
                     <!-- DIMENSI PER PCS PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productShipment"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment">
+                        <label class="pr-0" fxFlexAlign="center" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productShipment.catalogueDimension').value ||
                                     form.get('productShipment.catalogueDimension').touched
                                     | hasErrorField
                                         : form.get('productShipment.catalogueDimension')
                                         : false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Dimension per<br />
-                            Pcs
+                            Items
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center">
-                            <input
-                                matInput
-                                formControlName="catalogueDimension"
-                                mask="separator"
-                                placeholder="in cm³"
-                                suffix=" cm³"
-                                thousandSeparator="."
-                            />
+                            <input matInput formControlName="catalogueDimension" mask="separator" placeholder="in cm³"
+                                suffix=" cm³" thousandSeparator="." />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productShipment.catalogueDimension')) }} -->
@@ -1661,38 +1361,22 @@
                     <!-- / DIMENSI PER PCS PRODUK -->
 
                     <!-- DIMENSI PER MASTER BOX PRODUK -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productShipment"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            class="pr-0"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0" [class.sinbad-red-fg]="
                                 form.get('productShipment.packagedDimension').value ||
                                     form.get('productShipment.packagedDimension').touched
                                     | hasErrorField
                                         : form.get('productShipment.packagedDimension')
                                         : false
-                            "
-                        >
+                            ">
                             Dimension per<br />
                             Master Box
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center">
-                            <input
-                                matInput
-                                name="width"
-                                formControlName="packagedDimension"
-                                mask="separator"
-                                thousandSeparator="."
-                                placeholder="in cm³"
-                                suffix=" cm³"
-                            />
+                            <input matInput name="width" formControlName="packagedDimension" mask="separator"
+                                thousandSeparator="." placeholder="in cm³" suffix=" cm³" />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productShipment.packagedDimension')) }} -->
@@ -1810,43 +1494,23 @@
             </div>
 
             <div class="p-16 pt-0 pb-40 line-height-1.75">
-                <form
-                    class="w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
-                    fxFlex
-                    novalidate
-                >
+                <form class="w-100-p" [formGroup]="form" fxLayout="column"
+                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'" fxFlex novalidate>
                     <!-- QUANTITY PER MASTER BOX -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between center"
-                        formGroupName="productCount"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="center"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between center"
+                        formGroupName="productCount">
+                        <label class="pr-0" fxFlexAlign="center" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productCount.qtyPerMasterBox').value ||
                                     form.get('productCount.qtyPerMasterBox').touched
                                     | hasErrorField: form.get('productCount.qtyPerMasterBox'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Quantity <br />
                             per Master Box
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center">
-                            <input
-                                matInput
-                                formControlName="qtyPerMasterBox"
-                                mask="separator"
-                                thousandSeparator="."
-                            />
+                            <input matInput formControlName="qtyPerMasterBox" mask="separator" thousandSeparator="." />
 
                             <mat-error>
                                 <!-- {{ getFormError(form.get('productCount.qtyPerMasterBox')) }} -->
@@ -1878,39 +1542,22 @@
                     <!-- / QUANTITY PER MASTER BOX -->
 
                     <!-- MINIMUM OF QUANTITY -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productCount"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productCount.minQtyValue').value ||
                                     form.get('productCount.minQtyValue').touched
                                     | hasErrorField: form.get('productCount.minQtyValue'):false
-                            "
-                        >
+                            ">
                             Minimum Order<br />
                             Quantity
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
                             <!-- RADIO BUTTON SELECT TYPE -->
                             <mat-radio-group formControlName="minQtyOption">
-                                <mat-radio-button
-                                    class="pr-36"
-                                    *ngFor="let choice of quantityChoices"
-                                    [value]="choice.id"
-                                >
+                                <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id">
                                     {{ choice.label }}
                                 </mat-radio-button>
                             </mat-radio-group>
@@ -1918,12 +1565,7 @@
 
                             <!-- INPUT TEXT BOX -->
                             <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="minQtyValue"
-                                    mask="separator"
-                                    thousandSeparator="."
-                                />
+                                <input matInput formControlName="minQtyValue" mask="separator" thousandSeparator="." />
 
                                 <mat-error>
                                     <!--  {{ getFormError(form.get('productCount.minQtyValue')) }} -->
@@ -1957,41 +1599,24 @@
                     <!-- / MINIMUM OF QUANTITY -->
 
                     <!-- ADDITIONAL QUANTITY -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productCount"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productCount.additionalQtyValue').value ||
                                     form.get('productCount.additionalQtyValue').touched
                                     | hasErrorField
                                         : form.get('productCount.additionalQtyValue')
                                         : false
-                            "
-                        >
+                            ">
                             Additional<br />
                             Quantity
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
                             <!-- RADIO BUTTON SELECT TYPE -->
                             <mat-radio-group formControlName="additionalQtyOption">
-                                <mat-radio-button
-                                    class="pr-36"
-                                    *ngFor="let choice of quantityChoices"
-                                    [value]="choice.id"
-                                >
+                                <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id">
                                     {{ choice.label }}
                                 </mat-radio-button>
                             </mat-radio-group>
@@ -1999,12 +1624,8 @@
 
                             <!-- INPUT TEXT BOX -->
                             <mat-form-field appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="additionalQtyValue"
-                                    mask="separator"
-                                    thousandSeparator="."
-                                />
+                                <input matInput formControlName="additionalQtyValue" mask="separator"
+                                    thousandSeparator="." />
 
                                 <mat-error>
                                     <!-- {{ getFormError(form.get('productCount.additionalQtyValue')) }} -->
@@ -2054,41 +1675,21 @@
             </div>
 
             <div class="p-16 pt-0 pb-40 line-height-1.75">
-                <form
-                    class="w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
-                    fxFlex
-                    novalidate
-                >
+                <form class="w-100-p" [formGroup]="form" fxLayout="column"
+                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'" fxFlex novalidate>
                     <!-- STATUS -->
-                    <div
-                        [ngClass]="formClass"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productVisibility"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productVisibility">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productVisibility.status').value ||
                                     form.get('productVisibility.status').touched
                                     | hasErrorField: form.get('productVisibility.status'):false
-                            "
-                        >
+                            ">
                             Status
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                            *ngIf="!(formMode | hasFormMode: 'view')"
-                        >
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80"
+                            *ngIf="!(formMode | hasFormMode: 'view')">
                             <!-- RADIO BUTTON SELECT STATUS -->
                             <mat-radio-group formControlName="status">
                                 <mat-radio-button class="pr-36" [value]="'active'">
@@ -2101,55 +1702,31 @@
                             <!-- / RADIO BUTTON SELECT STATUS -->
                         </div>
 
-                        <span
-                            class="grey-fg"
-                            fxFlexAlign="center"
-                            fxFlex="80"
-                            *ngIf="formMode | hasFormMode: 'view'"
-                        >
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="formMode | hasFormMode: 'view'">
                             {{ form.get('productVisibility.status').value || '-' }}
                         </span>
                     </div>
                     <!-- / STATUS -->
 
                     <!-- TYPE -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productVisibility"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productVisibility">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productVisibility.isBonus').value ||
                                     form.get('productVisibility.isBonus').touched
                                     | hasErrorField: form.get('productVisibility.isBonus'):false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Type
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                            *ngIf="!(formMode | hasFormMode: 'view')"
-                        >
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80"
+                            *ngIf="!(formMode | hasFormMode: 'view')">
                             <mat-checkbox formControlName="isBonus" labelPosition="after">
                                 Bonus
                             </mat-checkbox>
                         </div>
-                        <span
-                            class="grey-fg"
-                            fxFlexAlign="center"
-                            fxFlex="80"
-                            *ngIf="formMode | hasFormMode: 'view'"
-                        >
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="formMode | hasFormMode: 'view'">
                             {{ form.get('productVisibility.isBonus').value }}
                         </span>
                     </div>
@@ -2166,33 +1743,18 @@
             </div>
 
             <div class="p-16 pt-0 pb-40 line-height-1.75">
-                <form
-                    class="w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
-                    fxFlex
-                    novalidate
-                >
+                <form class="w-100-p" [formGroup]="form" fxLayout="column"
+                    [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'" fxFlex novalidate>
                     <!-- WAREHOUSE -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSegmentation"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSegmentation">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productSegmentation.chosenWarehouse').value ||
                                     form.get('productSegmentation.chosenWarehouse').touched
                                     | hasErrorField
                                         : form.get('productSegmentation.chosenWarehouse')
                                         : false
-                            "
-                        >
+                            ">
                             <span class="red-500-fg">*</span>
                             Warehouse<br />
                             ({{
@@ -2201,24 +1763,13 @@
                             Selected)
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
-                            <select-warehouses
-                                [initialSelection]="
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <select-warehouses [initialSelection]="
                                     form.get('productSegmentation.chosenWarehouse').value || []
-                                "
-                                [disabled]="
+                                " [disabled]="
                                     form.get('productSegmentation.chosenWarehouse').disabled
-                                "
-                                placeholder="Choose Warehouse"
-                                [required]="true"
-                                (selected)="onWarehouseSelected($event)"
-                                fxFlex="50"
-                            >
+                                " placeholder="Choose Warehouse" [required]="true"
+                                (selected)="onWarehouseSelected($event)" fxFlex="50">
                                 <div error>
                                     {{
                                         form.get('productSegmentation.chosenWarehouse').value
@@ -2241,24 +1792,15 @@
                     <!-- / WAREHOUSE -->
 
                     <!-- STORE TYPE -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSegmentation"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSegmentation">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productSegmentation.chosenStoreType').value ||
                                     form.get('productSegmentation.chosenStoreType').touched
                                     | hasErrorField
                                         : form.get('productSegmentation.chosenStoreType')
                                         : false
-                            "
-                        >
+                            ">
                             Store Type<br />
                             ({{
                                 form.get('productSegmentation.chosenStoreType').value?.length || 0
@@ -2266,26 +1808,14 @@
                             Selected)
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
-                            <select-store-segmentation
-                                [initialSelection]="
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <select-store-segmentation [initialSelection]="
                                     form.get('productSegmentation.chosenStoreType').value || []
-                                "
-                                [disabled]="
+                                " [disabled]="
                                     form.get('productSegmentation.chosenStoreType').disabled
-                                "
-                                placeholder="Choose Store Type"
-                                title="Select Store Type"
-                                segmentationType="type"
-                                [required]="false"
-                                (selected)="onStoreTypeSelected($event)"
-                                fxFlex="50"
-                            ></select-store-segmentation>
+                                " placeholder="Choose Store Type" title="Select Store Type" segmentationType="type"
+                                [required]="false" (selected)="onStoreTypeSelected($event)" fxFlex="50">
+                            </select-store-segmentation>
                         </div>
 
                         <!-- <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode()">
@@ -2299,24 +1829,15 @@
                     <!-- / STORE TYPE -->
 
                     <!-- STORE GROUP -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSegmentation"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSegmentation">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productSegmentation.chosenStoreGroup').value ||
                                     form.get('productSegmentation.chosenStoreGroup').touched
                                     | hasErrorField
                                         : form.get('productSegmentation.chosenStoreGroup')
                                         : false
-                            "
-                        >
+                            ">
                             Store Group<br />
                             ({{
                                 form.get('productSegmentation.chosenStoreGroup').value?.length || 0
@@ -2324,26 +1845,14 @@
                             Selected)
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
-                            <select-store-segmentation
-                                [initialSelection]="
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <select-store-segmentation [initialSelection]="
                                     form.get('productSegmentation.chosenStoreGroup').value || []
-                                "
-                                [disabled]="
+                                " [disabled]="
                                     form.get('productSegmentation.chosenStoreGroup').disabled
-                                "
-                                placeholder="Choose Store Group"
-                                title="Select Store Group"
-                                segmentationType="group"
-                                [required]="false"
-                                (selected)="onStoreGroupSelected($event)"
-                                fxFlex="50"
-                            ></select-store-segmentation>
+                                " placeholder="Choose Store Group" title="Select Store Group" segmentationType="group"
+                                [required]="false" (selected)="onStoreGroupSelected($event)" fxFlex="50">
+                            </select-store-segmentation>
                         </div>
 
                         <!-- <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode()">
@@ -2357,24 +1866,15 @@
                     <!-- / STORE GROUP -->
 
                     <!-- STORE CHANNEL -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSegmentation"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSegmentation">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productSegmentation.chosenStoreChannel').value ||
                                     form.get('productSegmentation.chosenStoreChannel').touched
                                     | hasErrorField
                                         : form.get('productSegmentation.chosenStoreChannel')
                                         : false
-                            "
-                        >
+                            ">
                             Store Channel<br />
                             ({{
                                 form.get('productSegmentation.chosenStoreChannel').value?.length ||
@@ -2383,26 +1883,14 @@
                             Selected)
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
-                            <select-store-segmentation
-                                [initialSelection]="
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <select-store-segmentation [initialSelection]="
                                     form.get('productSegmentation.chosenStoreChannel').value || []
-                                "
-                                [disabled]="
+                                " [disabled]="
                                     form.get('productSegmentation.chosenStoreChannel').disabled
-                                "
-                                placeholder="Choose Store Channel"
-                                title="Select Store Channel"
-                                segmentationType="channel"
-                                [required]="false"
-                                (selected)="onStoreChannelSelected($event)"
-                                fxFlex="50"
-                            ></select-store-segmentation>
+                                " placeholder="Choose Store Channel" title="Select Store Channel"
+                                segmentationType="channel" [required]="false"
+                                (selected)="onStoreChannelSelected($event)" fxFlex="50"></select-store-segmentation>
                         </div>
 
                         <!-- <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode()">
@@ -2416,24 +1904,15 @@
                     <!-- / STORE CHANNEL -->
 
                     <!-- STORE CLUSTER -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between stretch"
-                        formGroupName="productSegmentation"
-                    >
-                        <label
-                            class="pr-0"
-                            fxFlexAlign="start"
-                            fxFlex="18"
-                            [class.sinbad-red-fg]="
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch"
+                        formGroupName="productSegmentation">
+                        <label class="pr-0" fxFlexAlign="start" fxFlex="18" [class.sinbad-red-fg]="
                                 form.get('productSegmentation.chosenStoreCluster').value ||
                                     form.get('productSegmentation.chosenStoreCluster').touched
                                     | hasErrorField
                                         : form.get('productSegmentation.chosenStoreCluster')
                                         : false
-                            "
-                        >
+                            ">
                             Store Cluster<br />
                             ({{
                                 form.get('productSegmentation.chosenStoreCluster').value?.length ||
@@ -2442,26 +1921,14 @@
                             Selected)
                         </label>
 
-                        <div
-                            fxLayout="column"
-                            fxLayoutAlign="space-between stretch"
-                            fxLayoutGap="5px"
-                            fxFlex="80"
-                        >
-                            <select-store-segmentation
-                                [initialSelection]="
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <select-store-segmentation [initialSelection]="
                                     form.get('productSegmentation.chosenStoreCluster').value || []
-                                "
-                                [disabled]="
+                                " [disabled]="
                                     form.get('productSegmentation.chosenStoreCluster').disabled
-                                "
-                                placeholder="Choose Store Cluster"
-                                title="Select Store Cluster"
-                                segmentationType="cluster"
-                                [required]="false"
-                                (selected)="onStoreClusterSelected($event)"
-                                fxFlex="50"
-                            ></select-store-segmentation>
+                                " placeholder="Choose Store Cluster" title="Select Store Cluster"
+                                segmentationType="cluster" [required]="false"
+                                (selected)="onStoreClusterSelected($event)" fxFlex="50"></select-store-segmentation>
                         </div>
 
                         <!-- <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode()">
