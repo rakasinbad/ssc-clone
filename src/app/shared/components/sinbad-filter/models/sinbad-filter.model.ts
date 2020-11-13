@@ -1,15 +1,19 @@
+import { FormGroup } from '@angular/forms';
+
+export type SinbadFilterActionType = 'reset' | 'submit';
+
 export interface SinbadFilterAction {
     readonly id: NonNullable<string>;
+    action: SinbadFilterActionType;
     title: NonNullable<string>;
-    color?: 'accent' | 'primary';
     class?: string;
-    action: 'reset' | 'submit';
+    color?: 'accent' | 'primary';
 }
 
-export interface SinbadFilterForm<T> {}
-
 export interface SinbadFilterConfig {
-    title: NonNullable<string>;
-    form?: any;
+    showFilter: boolean;
     actions?: SinbadFilterAction[];
+    by?: any;
+    form?: FormGroup;
+    title?: NonNullable<string>;
 }
