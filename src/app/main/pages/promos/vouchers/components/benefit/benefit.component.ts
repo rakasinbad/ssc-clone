@@ -368,7 +368,7 @@ export class VoucherBenefitInformationComponent
                 if (value === 'amount') {
                     this.form.get('rupiah').enable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').disable({ onlySelf: true, emitEvent: true });
-                    this.form.get('benefitMaxRebate').enable({ onlySelf: true, emitEvent: true });
+                    this.form.get('benefitMaxRebate').disable({ onlySelf: true, emitEvent: true });
                 } else if (value === 'percent') {
                     this.form.get('rupiah').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('percent').enable({ onlySelf: true, emitEvent: true });
