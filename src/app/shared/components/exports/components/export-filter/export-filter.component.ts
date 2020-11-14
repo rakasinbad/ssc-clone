@@ -1,3 +1,11 @@
+import { Warehouse as Entity } from 'app/main/pages/logistics/warehouses/models';
+import {
+    WarehousesApiService as EntitiesApiService,
+    SingleWarehouseDropdownService,
+} from 'app/shared/components/dropdowns/single-warehouse/services';
+import { tap } from 'rxjs/operators';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -21,6 +29,7 @@ import {
     ExportFilterConfiguration,
     ExportFormFilterConfiguration,
 } from '../../models';
+import { Observable } from 'rxjs';
 
 @Component({
     templateUrl: './export-filter.component.html',
@@ -35,6 +44,9 @@ export class ExportFilterComponent implements OnInit {
     formConfig: any;
     activeConfiguration: ExportFormFilterConfiguration;
     statusSources: Array<{ id: string; label: string }> = [];
+    typeSources: Array<{ id: string; label: string }> = [];
+
+    warehouse: any;
 
     minStartDate: Date;
     maxStartDate: Date = moment().toDate();
@@ -48,7 +60,8 @@ export class ExportFilterComponent implements OnInit {
         private matDialogRef: MatDialogRef<ExportFilterComponent>,
         private errorMessageSvc: ErrorMessageService,
         private helper$: HelperService,
-        private notice$: NoticeService
+        private notice$: NoticeService,
+        private entityApi$: EntitiesApiService
     ) {}
 
     ngOnInit(): void {
@@ -63,6 +76,7 @@ export class ExportFilterComponent implements OnInit {
             case 'sales-rep':
                 hasDefaultConfig = true;
                 this.statusSources = HelperService.getStatusList(this.data.page);
+                this.typeSources = HelperService.getTypesList(this.data.page);
                 break;
 
             case 'journey-plans':
@@ -127,6 +141,64 @@ export class ExportFilterComponent implements OnInit {
                 );
                 this.form.get('status').setValidators(rules);
             }
+        }
+
+        if (filterAspect.type) {
+            const rules: Array<ValidatorFn> = [];
+
+            this.form.addControl('type', this.formBuilder.control(''));
+
+            if (filterAspect.type.required) {
+                rules.push(
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        ),
+                    }),
+                    RxwebValidators.oneOf({
+                        matchValues: [...this.typeSources.map((r) => r.id)],
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                    })
+                );
+                this.form.get('type').setValidators(rules);
+            }
+        }
+
+        if (filterAspect.warehouse) {
+            //mendapatkan warehouse dari api
+            const newQuery: IQueryParams = {
+                paginate: true,
+                limit: 15,
+                skip: 0,
+            };
+            newQuery['supplierId'] = '1';
+            this.form.addControl('warehouse', this.formBuilder.control(''));
+            this.entityApi$
+                .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
+                .subscribe((data) => {
+                    console.log('ANGGRI========', data);
+
+                    const rules: Array<ValidatorFn> = [];
+                    if (filterAspect.warehouse.required) {
+                        rules.push(
+                            RxwebValidators.required({
+                                message: this.errorMessageSvc.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                            RxwebValidators.oneOf({
+                                matchValues: [...this.statusSources.map((r) => r.id)],
+                                message: this.errorMessageSvc.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                ),
+                            })
+                        );
+                        this.form.get('warehouse').setValidators(rules);
+                    }
+                });
         }
 
         if (filterAspect.rangeDate) {

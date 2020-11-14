@@ -82,89 +82,93 @@
                 </mat-error>
             </mat-form-field>
 
-            <div
-                fxFlex="1 0 auto"
-                fxLayout="column"
-                fxLayout.gt-xs="row"
-                *ngIf="activeConfiguration?.filterAspect?.rangeDate"
+            <mat-form-field
+                *ngIf="activeConfiguration?.filterAspect?.type"
+                appearance="outline"
+                floatLabel="always"
+                class="w-100-p"
             >
-                <mat-form-field
-                    appearance="outline"
-                    floatLabel="always"
-                    class="pr-sm-8 datepicker-red"
-                    fxFlex="50"
-                >
-                    <mat-label>
-                        Start Date
-                    </mat-label>
-                    <input
-                        matInput
-                        [matDatepicker]="startDatePicker"
-                        formControlName="startDate"
-                        [min]="minStartDate"
-                        [max]="maxStartDate"
-                        name="start"
-                        (dateChange)="onChangeDate($event, 'startDate')"
-                        required
-                        *ngIf="isRequired('rangeDate')"
-                    />
-                    <input
-                        matInput
-                        [matDatepicker]="startDatePicker"
-                        formControlName="startDate"
-                        [min]="minStartDate"
-                        [max]="maxStartDate"
-                        name="start"
-                        (dateChange)="onChangeDate($event, 'startDate')"
-                        *ngIf="!isRequired('rangeDate')"
-                    />
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="startDatePicker"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #startDatePicker touchUi></mat-datepicker>
+                <mat-label>
+                    {{ activeConfiguration?.filterAspect?.type?.label || 'Type' }}
+                </mat-label>
+                <ng-container *ngIf="typeSources; else noTypeSources">
+                    <mat-select
+                        formControlName="type"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.type?.placeholder ||
+                            'Choose Type'
+                        "
+                        [required]="activeConfiguration?.filterAspect?.type?.required"
+                    >
+                        <mat-option>(None)</mat-option>
+                        <mat-option *ngFor="let row of typeSources" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-option>
+                    </mat-select>
+                </ng-container>
 
-                    <mat-error *ngIf="hasError(form.get('startDate'))">
-                        {{ getFormError(form.get('startDate')) }}
-                    </mat-error>
-                </mat-form-field>
+                <ng-template #noTypeSources>
+                    <mat-select
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.type?.placeholder ||
+                            'Choose Type'
+                        "
+                    >
+                        <mat-option
+                            >{{ activeConfiguration?.filterAspect?.type?.label || 'Type' }} not
+                            found</mat-option
+                        >
+                    </mat-select>
+                </ng-template>
 
-                <mat-form-field
-                    appearance="outline"
-                    floatLabel="always"
-                    class="pl-sm-8 datepicker-red"
-                    fxFlex="50"
-                >
-                    <mat-label>
-                        End Date
-                    </mat-label>
-                    <input
-                        matInput
-                        [matDatepicker]="endDatePicker"
-                        formControlName="endDate"
-                        [min]="minEndDate"
-                        [max]="maxEndDate"
-                        name="end"
-                        required
-                        *ngIf="isRequired('rangeDate')"
-                    />
-                    <input
-                        matInput
-                        [matDatepicker]="endDatePicker"
-                        formControlName="endDate"
-                        [min]="minEndDate"
-                        [max]="maxEndDate"
-                        name="end"
-                        *ngIf="!isRequired('rangeDate')"
-                    />
-                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-                    <mat-datepicker #endDatePicker touchUi></mat-datepicker>
+                <mat-error *ngIf="hasError(form.get('type'))">
+                    {{ getFormError(form.get('type')) }}
+                </mat-error>
+            </mat-form-field>
 
-                    <mat-error *ngIf="hasError(form.get('endDate'))">
-                        {{ getFormError(form.get('endDate')) }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
+            <mat-form-field
+                *ngIf="activeConfiguration?.filterAspect?.warehouse"
+                appearance="outline"
+                floatLabel="always"
+                class="w-100-p"
+            >
+                <mat-label>
+                    {{ activeConfiguration?.filterAspect?.warehouse?.label || 'Warehouse' }}
+                </mat-label>
+                <ng-container *ngIf="statusSources; else noStatusSources">
+                    <mat-select
+                        formControlName="warehouse"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.warehouse?.placeholder ||
+                            'Choose Warehouse'
+                        "
+                        [required]="activeConfiguration?.filterAspect?.warehouse?.required"
+                    >
+                        <mat-option>(None)</mat-option>
+                        <mat-option *ngFor="let row of statusSources" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-option>
+                    </mat-select>
+                </ng-container>
+
+                <ng-template #noStatusSources>
+                    <mat-select
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.warehouse?.placeholder ||
+                            'Choose Warehouse'
+                        "
+                    >
+                        <mat-option
+                            >{{ activeConfiguration?.filterAspect?.warehouse?.label || 'Warehouse' }} not
+                            found</mat-option
+                        >
+                    </mat-select>
+                </ng-template>
+
+                <mat-error *ngIf="hasError(form.get('warehouse'))">
+                    {{ getFormError(form.get('warehouse')) }}
+                </mat-error>
+            </mat-form-field>
         </form>
     </div>
 

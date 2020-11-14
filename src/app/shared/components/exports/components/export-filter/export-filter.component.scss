@@ -1,5 +1,9 @@
 @import 'src/@fuse/scss/fuse';
 
+mat-label {
+    font-weight: bold;
+}
+
 .event-form-export-dialog {
     @include media-breakpoint('xs') {
         width: 100%;
