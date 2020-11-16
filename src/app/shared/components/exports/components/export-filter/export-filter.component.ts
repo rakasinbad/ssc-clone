@@ -156,7 +156,6 @@ export class ExportFilterComponent implements OnInit {
 
         //tampilkan input untuk page 'catalogues'
         if (this.data.page === 'catalogues'){
-            console.log('ANGGRI PAGE================',this.data.page);
             if (filterAspect.type) {
                 const rules: Array<ValidatorFn> = [];
 
