@@ -1,3 +1,4 @@
+import { MultiselectComponent } from './../dropdowns/multiselect/multiselect.component';
 import { NgModule } from '@angular/core';
 import {
     MatButtonModule,
@@ -11,7 +12,7 @@ import {
     MatSelectModule,
     MatSlideToggleModule,
     MatTableModule,
-    MatToolbarModule
+    MatToolbarModule,
 } from '@angular/material';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
@@ -21,14 +22,19 @@ import { SearchBarModule } from '../search-bar/search-bar.module';
 import { ExportFilterComponent } from './components/export-filter/export-filter.component';
 import { ExportsStoreModule } from './exports-store.module';
 import { ExportsComponent } from './exports.component';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 
 @NgModule({
     declarations: [
         ExportsComponent,
-        ExportFilterComponent
+        ExportFilterComponent,
+        MultiselectComponent,
         // OrderManagementExportFilterComponent,
     ],
     imports: [
+        //multiple select dropdown
+        NgMultiSelectDropDownModule,
+
         // Shared components
         FuseSharedModule,
         SearchBarModule,
@@ -53,17 +59,17 @@ import { ExportsComponent } from './exports.component';
         RxReactiveDynamicFormsModule,
 
         // Store
-        ExportsStoreModule
+        ExportsStoreModule,
     ],
     exports: [
         // SearchBarComponent,
-        ExportsComponent
+        ExportsComponent,
     ],
     entryComponents: [
         ExportsComponent,
-        ExportFilterComponent
+        ExportFilterComponent,
         // OrderManagementExportFilterComponent,
         // FilterCataloguesComponent,
-    ]
+    ],
 })
 export class ExportsModule {}

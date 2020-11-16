@@ -14,7 +14,7 @@ import {
     OnInit,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormBuilder, FormGroup, ValidatorFn } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -48,10 +48,21 @@ export class ExportFilterComponent implements OnInit {
 
     warehouse: any;
 
+    //dropdown list
+    disabled = false;
+    ShowFilter = true;
+    limitSelection = false;
+    dataWarehouse: Array<any> = [];
+    selectedItems: Array<any> = [];
+    dropdownSettings: any = {};
+
     minStartDate: Date;
     maxStartDate: Date = moment().toDate();
     minEndDate: Date;
     maxEndDate: Date = moment().toDate();
+
+    //multiselect variable
+    formName:string = 'warehouse' ;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: ExportConfiguration,
@@ -178,24 +189,20 @@ export class ExportFilterComponent implements OnInit {
                 .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
                 .subscribe((data) => {
                     console.log('ANGGRI========', data);
+                    this.dataWarehouse = data.data;
+                    this.dropdownSettings = {
+                        singleSelection: false,
+                        idField: 'id',
+                        textField: 'code',
+                        selectAllText: 'Select All',
+                        unSelectAllText: 'UnSelect All',
+                        itemsShowLimit: 3,
+                        allowSearchFilter: this.ShowFilter,
+                    };
 
                     const rules: Array<ValidatorFn> = [];
                     if (filterAspect.warehouse.required) {
-                        rules.push(
-                            RxwebValidators.required({
-                                message: this.errorMessageSvc.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                ),
-                            }),
-                            RxwebValidators.oneOf({
-                                matchValues: [...this.statusSources.map((r) => r.id)],
-                                message: this.errorMessageSvc.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                ),
-                            })
-                        );
+                        rules.push(Validators.required);
                         this.form.get('warehouse').setValidators(rules);
                     }
                 });
@@ -224,6 +231,10 @@ export class ExportFilterComponent implements OnInit {
         }
 
         this.cd$.markForCheck();
+    }
+
+    onItemSelect(item: any) {
+        console.log('onItemSelect', item);
     }
 
     isRequired(type: string): boolean {

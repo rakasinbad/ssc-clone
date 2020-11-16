@@ -4,6 +4,98 @@ mat-label {
     font-weight: bold;
 }
 
+//fof ng multi select
+ng-multiselect-dropdown {}
+
+#warehouse-label {
+    margin-top: -8px;
+    margin-bottom: -6px !important;
+    margin-left: 5px;
+    padding: 0px 5px 0px 8px;
+    font-size: 12px;
+    background: white;
+    z-index: 10000;
+    width: fit-content;
+}
+
+#warehouse-error {
+    font-size: 12px;
+    margin-left: 12px;
+    margin-top: -5px;
+}
+
+.dropdown-list {
+    position: fixed !important;
+    width: auto!important;
+}
+
+.multiselect-dropdown .dropdown-btn {
+    border: 1px solid rgb(177 177 177 / 42%) !important;
+    transition: box-shadow 0.1s;
+    height: 43px;
+    padding-top: 9px !important;
+}
+
+ng-multiselect-dropdown.ng-untouched.ng-pristine.ng-invalid .multiselect-dropdown .dropdown-btn:hover {
+    // outline: 2px solid black !important;
+    box-shadow: 0 0 0 1.4px black;
+}
+
+ng-multiselect-dropdown.ng-untouched.ng-dirty.ng-invalid .multiselect-dropdown .dropdown-btn {
+    border: 2px solid red !important;
+}
+
+ng-multiselect-dropdown.ng-untouched.ng-pristine.ng-invalid .ng-star-inserted {
+    color: rgba(0, 0, 0, 0.42) !important;
+    font-size: 15px;
+}
+
+ng-multiselect-dropdown.ng-untouched.ng-dirty.ng-invalid .ng-star-inserted {
+    color: red !important;
+    font-size: 15px;
+}
+
+.multiselect-dropdown .dropdown-btn .selected-item {
+    border: 1px solid #f34343 !important;
+    background: #f34343 !important;
+}
+
+.multiselect-item-checkbox input[type=checkbox]:checked+div:before {
+    background: #f34343 !important;
+    border-color: #f34343 !important;
+}
+
+.multiselect-item-checkbox input[type=checkbox]+div:before {
+    color: #f34343 !important;
+    border: 2px solid #919191 !important;
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-down {
+    top: 15px !important;
+    margin-top: 8px !important;
+    border-top: 4.9px solid #848484 !important;
+    border-left: 4.9px solid transparent !important;
+    border-right: 4.9px solid transparent !important;
+}
+
+.multiselect-dropdown .dropdown-btn .dropdown-up {
+    top: 15px !important;
+    margin-top: 8px !important;
+    border-bottom: 4.9px solid #848484 !important;
+    border-left: 4.9px solid transparent !important;
+    border-right: 4.9px solid transparent !important;
+}
+
+ng-multiselect-dropdown.ng-untouched.ng-dirty.ng-invalid .multiselect-dropdown .dropdown-btn .dropdown-down {
+    border-top-color: #f34343 !important;
+}
+
+ng-multiselect-dropdown.ng-untouched.ng-dirty.ng-invalid .multiselect-dropdown .dropdown-btn .dropdown-up {
+    border-bottom-color: #f34343 !important;
+}
+
+//fof ng multi select end
+
 .event-form-export-dialog {
     @include media-breakpoint('xs') {
         width: 100%;

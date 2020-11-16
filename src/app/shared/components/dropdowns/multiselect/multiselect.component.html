@@ -1,0 +1,6 @@
+<div [formGroup]="form_parent">
+    <ng-multiselect-dropdown name="name_parent" [placeholder]="placeholder_parent" [data]="data_parent"
+        [formControlName]="form_control_name_parent" [disabled]="disabled_parent" [settings]="settings_parent"
+        (onSelect)="onItemSelect($event)">
+    </ng-multiselect-dropdown>
+</div>
