@@ -126,7 +126,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-label [style.color]="hasError(form.get('warehouse'))?'red':'rgba(0, 0, 0, 0.6)'" id="warehouse-label">
+            <mat-label [style.color]="hasError(form.get('warehouse'))?'red':'rgba(0, 0, 0, 0.6)'" id="warehouse-label" *ngIf="activeConfiguration?.filterAspect?.warehouse">
                 {{ activeConfiguration?.filterAspect?.warehouse?.label || 'Warehouses' }} *
             </mat-label>
 
@@ -134,7 +134,7 @@
                 activeConfiguration?.filterAspect?.warehouse?.placeholder ||
                 'Choose Warehouse'
                 " [data]="dataWarehouse" [required]="activeConfiguration?.filterAspect?.warehouse?.required"
-                formControlName="warehouse" [disabled]="disabled" [settings]="dropdownSettings" 
+                formControlName="warehouse" [disabled]="disabled" [settings]="dropdownSettings" *ngIf="activeConfiguration?.filterAspect?.warehouse"
             >
             </ng-multiselect-dropdown>
                         
@@ -226,7 +226,7 @@
                 </mat-form-field>
             </div>
 
-            <br>
+            <br *ngIf="activeConfiguration?.filterAspect?.warehouse">
         </form>
     </div>
 
