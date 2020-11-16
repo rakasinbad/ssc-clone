@@ -141,6 +141,91 @@
             <mat-error *ngIf="hasError(form.get('warehouse'))" id="warehouse-error">
                 This field is required
             </mat-error>
+
+            <div
+                fxFlex="1 0 auto"
+                fxLayout="column"
+                fxLayout.gt-xs="row"
+                *ngIf="activeConfiguration?.filterAspect?.rangeDate"
+            >
+                <mat-form-field
+                    appearance="outline"
+                    floatLabel="always"
+                    class="pr-sm-8 datepicker-red"
+                    fxFlex="50"
+                >
+                    <mat-label>
+                        Start Date
+                    </mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="startDatePicker"
+                        formControlName="startDate"
+                        [min]="minStartDate"
+                        [max]="maxStartDate"
+                        name="start"
+                        (dateChange)="onChangeDate($event, 'startDate')"
+                        required
+                        *ngIf="isRequired('rangeDate')"
+                    />
+                    <input
+                        matInput
+                        [matDatepicker]="startDatePicker"
+                        formControlName="startDate"
+                        [min]="minStartDate"
+                        [max]="maxStartDate"
+                        name="start"
+                        (dateChange)="onChangeDate($event, 'startDate')"
+                        *ngIf="!isRequired('rangeDate')"
+                    />
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="startDatePicker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #startDatePicker touchUi></mat-datepicker>
+
+                    <mat-error *ngIf="hasError(form.get('startDate'))">
+                        {{ getFormError(form.get('startDate')) }}
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field
+                    appearance="outline"
+                    floatLabel="always"
+                    class="pl-sm-8 datepicker-red"
+                    fxFlex="50"
+                >
+                    <mat-label>
+                        End Date
+                    </mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="endDatePicker"
+                        formControlName="endDate"
+                        [min]="minEndDate"
+                        [max]="maxEndDate"
+                        name="end"
+                        required
+                        *ngIf="isRequired('rangeDate')"
+                    />
+                    <input
+                        matInput
+                        [matDatepicker]="endDatePicker"
+                        formControlName="endDate"
+                        [min]="minEndDate"
+                        [max]="maxEndDate"
+                        name="end"
+                        *ngIf="!isRequired('rangeDate')"
+                    />
+                    <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endDatePicker touchUi></mat-datepicker>
+
+                    <mat-error *ngIf="hasError(form.get('endDate'))">
+                        {{ getFormError(form.get('endDate')) }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
             <br>
         </form>
     </div>

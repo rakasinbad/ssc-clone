@@ -101,7 +101,7 @@ export class ExportsEffects {
                                             configuration: queryParams.configuration,
                                         },
                                         maxWidth: '60vw',
-                                        height: 'auto',
+                                        maxHeight: '70vh',
                                         panelClass: 'event-form-export-dialog',
                                     });
 

@@ -373,9 +373,6 @@ export class ExportFilterComponent implements OnInit {
         // Untuk menyimpan data form yang ingin dikirim.
         const formSend = {};
 
-       
-        console.log('ANGGRI========', this.form.value);
-
         if (formData.status) {
             formSend['status'] = formData.status;
         }
