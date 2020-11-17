@@ -1,9 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-@Pipe({
-    name: 'highlight'
-})
+@Pipe({ name: 'highlight' })
 export class HighlightPipe implements PipeTransform {
     constructor(private domSanitizer: DomSanitizer) {}
 
@@ -15,11 +13,11 @@ export class HighlightPipe implements PipeTransform {
         const pattern = search
             .replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
             .split(' ')
-            .filter(t => t.length > 0)
+            .filter((t) => t.length > 0)
             .join('|');
 
         const regex = new RegExp(pattern, 'gi');
-        const newValue = search ? value.replace(regex, match => `<b>${match}</b>`) : value;
+        const newValue = search ? value.replace(regex, (match) => `<b>${match}</b>`) : value;
 
         return this.domSanitizer.bypassSecurityTrustHtml(newValue);
     }

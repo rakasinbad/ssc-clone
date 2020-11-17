@@ -1,4 +1,4 @@
-@import "src/@fuse/scss/fuse";
+@import 'src/@fuse/scss/fuse';
 
 fuse-sidebar {
     display: flex;
@@ -20,6 +20,17 @@ fuse-sidebar {
         min-width: 0 !important;
         max-width: 80vw !important;
         width: 80vw !important;
+    }
+
+    &.sinbad-filter {
+        width: 280px;
+        min-width: 280px;
+        max-width: 280px;
+        background: #ffffff !important;
+
+        &.locked-open {
+            position: absolute !important;
+        }
     }
 
     &.left-positioned {

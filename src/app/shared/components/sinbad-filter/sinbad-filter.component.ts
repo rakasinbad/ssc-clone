@@ -1,38 +1,86 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { Observable } from 'rxjs';
-
+import { shareReplay, tap } from 'rxjs/operators';
 import { SinbadFilterConfig } from './models/sinbad-filter.model';
-import { SinbadFilterService } from './services/sinbad-filter.service';
+import { SinbadFilterService } from './services';
 
 @Component({
     selector: 'app-sinbad-filter',
     templateUrl: './sinbad-filter.component.html',
     styleUrls: ['./sinbad-filter.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    // encapsulation: ViewEncapsulation.None,
+    encapsulation: ViewEncapsulation.None,
 })
 export class SinbadFilterComponent implements OnInit {
-    config$: Observable<SinbadFilterConfig>;
+    form: FormGroup;
     showPanel = true;
-    date: Date;
-    events: any[];
-    notes: any[];
-    settings: any;
+    filterSegmentType: boolean = false;
+    filterWarehouse: boolean = false;
 
-    constructor(private _$sinbadFilterService: SinbadFilterService) {
-        // Set the defaults
-        this.date = new Date();
-        this.settings = {
-            notify: true,
-            cloud: false,
-            retro: true,
-        };
-    }
+    selectedSuppliers: any[] = [];
+    sourceStatus: { id: string; label: string }[] = [];
+    sourceOrderStatus: any[] = [];
+    sourceSuppliers: any[] = [];
+
+    maxDate = new Date();
+
+    config$: Observable<SinbadFilterConfig>;
+
+    constructor(
+        private fuseSidebarService: FuseSidebarService,
+        private sinbadFilterService: SinbadFilterService
+    ) {}
 
     ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
+        this.config$ = this.sinbadFilterService.getConfig$().pipe(
+            tap((config) => {
+                if (config.form) {
+                    this.form = config.form;
 
-        this.config$ = this._$sinbadFilterService.getConfig$();
+                    if (config.by && Object.keys(config.by).length > 0) {
+                        if (typeof config.by['status'] !== 'undefined') {
+                            if (config.by['status'].sources) {
+                                this.sourceStatus = config.by['status'].sources;
+                            }
+                        }
+
+                        if (typeof config.by['segmentType'] !== 'undefined') {
+                            this.filterSegmentType = true;
+                        }
+
+                        if (typeof config.by['warehouse'] !== 'undefined') {
+                            this.filterWarehouse = true;
+                        }
+
+                        // if (config.by['suppliers']) {
+                        //     this.sourceSuppliers = config.by['suppliers'];
+                        // }
+                    }
+                }
+            }),
+            shareReplay()
+        );
+    }
+
+    close(): void {
+        this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+    }
+
+    onClickReset(): void {
+        this.sinbadFilterService.setClickAction('reset');
+    }
+
+    onClickSubmit(): void {
+        this.sinbadFilterService.setClickAction('submit');
+        this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+    }
+
+    trackByStatus(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
     }
 }
