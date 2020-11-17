@@ -141,6 +141,22 @@ export class ExportsApiService {
             });
         }
 
+        if (params['type']) {
+            newArgs.push({
+                key: 'type',
+                value: params['type'],
+            });
+        }
+
+        if (params['warehouse']) {
+            params['warehouse'].forEach( (warehouseValue) => {
+                newArgs.push({
+                    key: 'warehouseIds[]',
+                    value: warehouseValue.id,
+                });
+            });
+        }
+
         if (params['dateGte']) {
             newArgs.push({
                 key: 'dateGte',
@@ -167,7 +183,9 @@ export class ExportsApiService {
 
         this._url = this.helperSvc.handleApiRouter(this._exportEndpoint + params['page']);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
-
+        
+        console.log('ANGGRI', newParams);
+        
         return this.http.get<{ message: string }>(this._url, { params: newParams });
     }
 

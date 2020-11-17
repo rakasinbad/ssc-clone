@@ -380,6 +380,16 @@ export class ExportFilterComponent implements OnInit {
             formSend['status'] = formData.status;
         }
 
+        if(this.data.page === 'catalogues'){
+            if (formData.type) {
+                formSend['type'] = formData.type;
+            }
+
+            if (formData.warehouse) {
+                formSend['warehouse'] = formData.warehouse;
+            }
+        }
+
         // Memproses data form berdasarkan halamannya.
         // switch (this.data.page) {
         //     case 'orders': {
