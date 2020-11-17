@@ -297,6 +297,21 @@ export class HelperService {
         },
     ];
 
+    private static _catalogueTypes: Array<{ id: string; label: string }> = [
+        {
+            id: 'all',
+            label: 'All',
+        },
+        {
+            id: 'regular',
+            label: 'Regular',
+        },
+        {
+            id: 'bonus',
+            label: 'Bonus',
+        },
+    ];
+
     private static readonly _specifiedTarget: { id: SpecifiedTarget; label: string }[] = [
         {
             id: SpecifiedTarget.NONE,
@@ -447,6 +462,17 @@ export class HelperService {
             case 'sales-rep':
                 return HelperService._globalStatuses;
 
+            default:
+                return [];
+        }
+    }
+
+    static getTypesList(
+        page: 'stores' | 'catalogues' | 'payments' | 'orders' | 'sales-rep'
+    ): Array<{ id: string; label: string }> {
+        switch (page) {
+            case 'catalogues':
+                return HelperService._catalogueTypes;
             default:
                 return [];
         }
@@ -796,6 +822,10 @@ export class HelperService {
 
     catalogueStatus(): { id: string; label: string }[] {
         return HelperService._catalogueStatuses;
+    }
+
+    catalogueType(): { id: string; label: string }[] {
+        return HelperService._catalogueTypes;
     }
 
     conditionBase(): { id: ConditionBase; label: string }[] {

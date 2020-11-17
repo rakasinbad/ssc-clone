@@ -82,6 +82,66 @@
                 </mat-error>
             </mat-form-field>
 
+            <mat-form-field
+                *ngIf="activeConfiguration?.filterAspect?.type"
+                appearance="outline"
+                floatLabel="always"
+                class="w-100-p"
+            >
+                <mat-label>
+                    {{ activeConfiguration?.filterAspect?.type?.label || 'Type' }}
+                </mat-label>
+                <ng-container *ngIf="typeSources; else noTypeSources">
+                    <mat-select
+                        formControlName="type"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.type?.placeholder ||
+                            'Choose Type'
+                        "
+                        [required]="activeConfiguration?.filterAspect?.type?.required"
+                    >
+                        <mat-option>(None)</mat-option>
+                        <mat-option *ngFor="let row of typeSources" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-option>
+                    </mat-select>
+                </ng-container>
+
+                <ng-template #noTypeSources>
+                    <mat-select
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.type?.placeholder ||
+                            'Choose Type'
+                        "
+                    >
+                        <mat-option
+                            >{{ activeConfiguration?.filterAspect?.type?.label || 'Type' }} not
+                            found</mat-option
+                        >
+                    </mat-select>
+                </ng-template>
+
+                <mat-error *ngIf="hasError(form.get('type'))">
+                    {{ getFormError(form.get('type')) }}
+                </mat-error>
+            </mat-form-field>
+
+            <mat-label [style.color]="hasError(form.get('warehouse'))?'red':'rgba(0, 0, 0, 0.6)'" id="warehouse-label" *ngIf="activeConfiguration?.filterAspect?.warehouse">
+                {{ activeConfiguration?.filterAspect?.warehouse?.label || 'Warehouses' }} *
+            </mat-label>
+
+            <ng-multiselect-dropdown [placeholder]="
+                activeConfiguration?.filterAspect?.warehouse?.placeholder ||
+                'Choose Warehouse'
+                " [data]="dataWarehouse" [required]="activeConfiguration?.filterAspect?.warehouse?.required"
+                formControlName="warehouse" [disabled]="disabled" [settings]="dropdownSettings" *ngIf="activeConfiguration?.filterAspect?.warehouse"
+            >
+            </ng-multiselect-dropdown>
+                        
+            <mat-error *ngIf="hasError(form.get('warehouse'))" id="warehouse-error">
+                This field is required
+            </mat-error>
+
             <div
                 fxFlex="1 0 auto"
                 fxLayout="column"
@@ -165,6 +225,8 @@
                     </mat-error>
                 </mat-form-field>
             </div>
+
+            <br *ngIf="activeConfiguration?.filterAspect?.warehouse">
         </form>
     </div>
 

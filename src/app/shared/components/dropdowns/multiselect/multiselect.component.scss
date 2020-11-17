@@ -1,0 +1,21 @@
+ng-multiselect-dropdown{
+}
+ng-multiselect-dropdown.ng-untouched.ng-dirty.ng-invalid .multiselect-dropdown .dropdown-btn{
+    border:2px solid red !important;
+}
+ng-multiselect-dropdown.ng-untouched.ng-dirty.ng-invalid .ng-star-inserted{
+    color: red !important;
+}
+.multiselect-dropdown .dropdown-btn .selected-item{
+    border: 1px solid #f34343 !important;
+    background: #f34343 !important;
+}
+
+.multiselect-item-checkbox input[type=checkbox]:checked + div:before{
+    background: #f34343 !important;
+    border-color: #f34343 !important;
+}
+.multiselect-item-checkbox input[type=checkbox] + div:before{
+    color: #f34343 !important;
+    border: 2px solid #919191 !important;
+}
