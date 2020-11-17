@@ -198,6 +198,7 @@ export class ExportFilterComponent implements OnInit {
                             selectAllText: 'Select All',
                             unSelectAllText: 'UnSelect All',
                             itemsShowLimit: 3,
+                            maxHeight:100,
                             allowSearchFilter: this.ShowFilter,
                         };
 
