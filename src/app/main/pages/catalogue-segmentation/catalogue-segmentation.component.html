@@ -9,7 +9,7 @@
                 [config]="cardHeaderConfig"
                 (onClickAdd)="onClickAdd()"
                 (onClickFilterList)="onClickFilter()"
-                (onSearchChanged)="keyword = $event"
+                (onSearchChanged)="onSearch($event)"
             ></sinbad-card-header>
 
             <app-catalogue-segmentation-list

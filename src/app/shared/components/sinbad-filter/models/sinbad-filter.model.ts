@@ -2,6 +2,13 @@ import { FormGroup } from '@angular/forms';
 
 export type SinbadFilterActionType = 'reset' | 'submit';
 
+export interface SinbadFilterBy {
+    [key: string]: {
+        sources: any[];
+        title?: string;
+    };
+}
+
 export interface SinbadFilterAction {
     readonly id: NonNullable<string>;
     action: SinbadFilterActionType;
@@ -13,7 +20,7 @@ export interface SinbadFilterAction {
 export interface SinbadFilterConfig {
     showFilter: boolean;
     actions?: SinbadFilterAction[];
-    by?: any;
+    by?: SinbadFilterBy;
     form?: FormGroup;
     title?: NonNullable<string>;
 }
