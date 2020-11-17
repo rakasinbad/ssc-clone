@@ -104,9 +104,15 @@
 <!-- / QUICK PANEL -->
 
 <!-- SINBAD FILTER -->
-<!-- <fuse-sidebar name="sinbadFilter" position="right" class="sinbad-filter">
+<fuse-sidebar
+    name="sinbadFilter"
+    position="right"
+    [invisibleOverlay]="true"
+    class="sinbad-filter"
+    *ngIf="filterConfig.showFilter"
+>
     <app-sinbad-filter></app-sinbad-filter>
-</fuse-sidebar> -->
+</fuse-sidebar>
 <!-- / SINBAD FILTER -->
 
 <!-- ----------------------------------------------------------------------------------------------------- -->

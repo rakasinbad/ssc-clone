@@ -41,6 +41,9 @@ import { HttpErrorInterceptor } from './shared/interceptors/http-error.intercept
 import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
 
+
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+
 numeral.register('locale', 'id-sinbad', {
     delimiters: {
         thousands: '.',
@@ -135,7 +138,9 @@ registerLocaleData(localId, 'id');
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
 
         // App modules
-        LayoutModule
+        LayoutModule,
+
+        NgMultiSelectDropDownModule.forRoot()
     ],
     providers: [
         AppService,

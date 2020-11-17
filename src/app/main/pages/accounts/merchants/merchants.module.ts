@@ -3,7 +3,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { ImportAdvancedModule } from 'app/shared';
+import { ImportAdvancedModule, PipeSharedModule } from 'app/shared';
 import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
@@ -28,7 +28,6 @@ import { fromMerchant } from './store/reducers';
 
 @NgModule({
     declarations: [
-        // MerchantSettingComponent
         MerchantDetailComponent,
         MerchantEmployeeComponent,
         MerchantEmployeeDetailComponent,
@@ -44,14 +43,13 @@ import { fromMerchant } from './store/reducers';
     imports: [
         MerchantsRoutingModule,
 
-        SharedModule,
-        SharedComponentsModule,
         MaterialModule,
+        PipeSharedModule,
+        SharedComponentsModule,
+        SharedModule,
 
         ImportAdvancedModule,
 
-        // AgmCoreModule,
-        // LeafletModule,
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),

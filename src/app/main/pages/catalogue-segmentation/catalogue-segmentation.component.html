@@ -8,7 +8,8 @@
             <sinbad-card-header
                 [config]="cardHeaderConfig"
                 (onClickAdd)="onClickAdd()"
-                (onSearchChanged)="keyword = $event"
+                (onClickFilterList)="onClickFilter()"
+                (onSearchChanged)="onSearch($event)"
             ></sinbad-card-header>
 
             <app-catalogue-segmentation-list
