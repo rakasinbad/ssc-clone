@@ -1,16 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { MaterialModule, SharedModule } from 'app/shared';
+import { MaterialModule, PipeSharedModule, SharedModule } from 'app/shared';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
-
 import { WarehousesStoreModule } from './store';
 import {
     WarehouseDetailCoverageComponent,
     WarehouseDetailGeneralComponent,
     WarehouseDetailLocationComponent,
-    WarehouseDetailSkuStockComponent
+    WarehouseDetailSkuStockComponent,
 } from './warehouse-detail';
 import { WarehouseDetailComponent } from './warehouse-detail/warehouse-detail.component';
 import { WarehouseFormComponent } from './warehouse-form';
@@ -25,13 +24,14 @@ import { WarehousesComponent } from './warehouses.component';
         WarehouseDetailLocationComponent,
         WarehouseDetailSkuStockComponent,
         WarehouseFormComponent,
-        WarehousesComponent
+        WarehousesComponent,
     ],
     imports: [
         WarehousesRoutingModule,
 
         SharedModule,
         SharedComponentsModule,
+        PipeSharedModule,
         MaterialModule,
 
         // Third Party (RxWeb: https://www.rxweb.io)
@@ -42,7 +42,7 @@ import { WarehousesComponent } from './warehouses.component';
         NgxPermissionsModule.forChild(),
 
         // Store
-        WarehousesStoreModule
-    ]
+        WarehousesStoreModule,
+    ],
 })
 export class WarehousesModule {}
