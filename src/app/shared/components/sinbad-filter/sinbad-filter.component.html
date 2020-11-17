@@ -60,6 +60,41 @@
         </mat-list>
         <!-- / STATUS -->
 
+        <!-- TYPE -->
+        <mat-list *ngIf="sourceType && sourceType.length > 0">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.type?.title as typeTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ typeTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div [class.sinbad__filter-checkbox--container]="sourceType.length > 2">
+                        <div
+                            class="sinbad__filter-checkbox"
+                            [class.reset]="sourceType.length < 3"
+                        >
+                            <mat-checkbox
+                                *ngFor="let type of sourceType; trackBy: trackByType"
+                                [value]="type?.id"
+                                [matTooltip]="type?.label"
+                                disableRipple
+                            >
+                                {{ type?.label }}
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / TYPE -->
+
         <!-- WAREHOUSE -->
         <mat-list *ngIf="filterWarehouse">
             <mat-expansion-panel

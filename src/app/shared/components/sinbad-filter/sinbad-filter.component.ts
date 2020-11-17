@@ -20,6 +20,7 @@ export class SinbadFilterComponent implements OnInit {
 
     selectedSuppliers: any[] = [];
     sourceStatus: { id: string; label: string }[] = [];
+    sourceType: { id: string; label: string }[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
@@ -42,6 +43,12 @@ export class SinbadFilterComponent implements OnInit {
                         if (typeof config.by['status'] !== 'undefined') {
                             if (config.by['status'].sources) {
                                 this.sourceStatus = config.by['status'].sources;
+                            }
+                        }
+
+                        if (typeof config.by['type'] !== 'undefined') {
+                            if (config.by['type'].sources) {
+                                this.sourceType = config.by['type'].sources;
                             }
                         }
 
@@ -77,6 +84,14 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     trackByStatus(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
+    }
+
+    trackByType(index: number, item: any): string {
         if (!item) {
             return null;
         }

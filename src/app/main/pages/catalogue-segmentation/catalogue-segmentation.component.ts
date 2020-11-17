@@ -42,6 +42,13 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
                     { id: 'inactive', label: 'Inactive' },
                 ],
             },
+            type: {
+                title: 'Type',
+                sources: [
+                    { id: 'active', label: 'Active' },
+                    { id: 'inactive', label: 'Inactive' },
+                ],
+            },
             warehouse: null,
             segmentType: {
                 title: 'Type',
