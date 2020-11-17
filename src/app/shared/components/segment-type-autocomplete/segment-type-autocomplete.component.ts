@@ -1,8 +1,11 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
+    OnDestroy,
     OnInit,
+    Output,
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -10,8 +13,8 @@ import { AuthFacadeService } from 'app/main/pages/core/auth/services';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { debounceTime, filter, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-import { SinbadAutocompleteType } from '../sinbad-autocomplete/models';
+import { debounceTime, filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { SinbadAutocompleteSource, SinbadAutocompleteType } from '../sinbad-autocomplete/models';
 import { SegmentTypeAutocomplete } from './models';
 import { SegmentTypeService } from './services';
 
@@ -22,18 +25,30 @@ import { SegmentTypeService } from './services';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SegmentTypeAutocompleteComponent implements OnInit {
+export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     readonly form: FormControl = new FormControl('');
 
     collections$: Observable<SegmentTypeAutocomplete[]>;
+    loading$: Observable<boolean>;
 
     @Input()
     limitItem: number = 10;
 
     @Input()
     limitLength: number;
+
+    @Input()
+    loading: boolean;
+
+    @Output()
+    loadingChange: EventEmitter<boolean> = new EventEmitter();
+
+    @Output()
+    selectedValue: EventEmitter<
+        SinbadAutocompleteSource | SinbadAutocompleteSource[]
+    > = new EventEmitter();
 
     @Input()
     type: SinbadAutocompleteType = 'single';
@@ -45,12 +60,13 @@ export class SegmentTypeAutocompleteComponent implements OnInit {
 
     ngOnInit(): void {
         this.collections$ = this.segmentTypeService.collections$;
+        this.loading$ = this.segmentTypeService.loading$;
 
         combineLatest([this.form.valueChanges])
             .pipe(
                 debounceTime(500),
                 withLatestFrom(this.authFacade.getUserSupplier$, ([value], { supplierId }) => ({
-                    value,
+                    value: this._convertKeyword(value),
                     supplierId,
                 })),
                 tap(({ value, supplierId }) =>
@@ -73,33 +89,85 @@ export class SegmentTypeAutocompleteComponent implements OnInit {
                     this._initCollections(value, supplierId);
                 },
             });
+    }
 
-        /* this.form.valueChanges
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
+
+        this.segmentTypeService.reset();
+    }
+
+    onClosedAutocompete(): void {
+        HelperService.debug('[SegmentTypeAutocompleteComponent] onClosedAutocompete');
+
+        this.form.reset();
+    }
+
+    onOpenedAutocomplete(): void {
+        HelperService.debug('[SegmentTypeAutocompleteComponent] onOpenedAutocomplete');
+
+        this.authFacade.getUserSupplier$
             .pipe(
-                debounceTime(500),
-                tap((value) =>
-                    HelperService.debug('[SegmentTypeAutocompleteComponent] valueChanges', {
-                        value,
-                    })
-                ),
-                filter((value) => {
-                    if (this.limitLength > 0) {
-                        return value && value.length >= this.limitLength;
-                    }
-
-                    return true;
-                }),
-                takeUntil(this.unSubs$)
+                take(1),
+                map(({ supplierId }) => ({
+                    value: this._convertKeyword(this.form.value),
+                    supplierId,
+                })),
+                filter(({ supplierId }) => !!supplierId)
             )
-            .subscribe((value) => {
-                this._initCollections(value);
-            }); */
+            .subscribe({
+                next: ({ value, supplierId }) => {
+                    this._initCollections(value, supplierId);
+                },
+                complete: () =>
+                    HelperService.debug(
+                        '[SegmentTypeAutocompleteComponent] onOpenedAutocomplete complete'
+                    ),
+            });
+    }
+
+    onScrollToBottom(): void {
+        combineLatest([this.segmentTypeService.totalCollections$, this.segmentTypeService.total$])
+            .pipe(
+                map(([totalCollections, total]) => ({ totalCollections, total })),
+                filter(
+                    ({ totalCollections, total }) =>
+                        totalCollections && total && totalCollections < total
+                ),
+                take(1)
+            )
+            .subscribe({
+                next: (x) => {
+                    HelperService.debug(
+                        '[SegmentTypeAutocompleteComponent] onScrollToBottom next',
+                        {
+                            x,
+                        }
+                    );
+                },
+                complete: () =>
+                    HelperService.debug(
+                        '[SegmentTypeAutocompleteComponent] onScrollToBottom complete'
+                    ),
+            });
+    }
+
+    onSelectedAutocomplete(value: SinbadAutocompleteSource): void {
+        HelperService.debug('[SegmentTypeAutocompleteComponent] onSelectedAutocomplete', { value });
+
+        this.selectedValue.emit(value);
     }
 
     private _initCollections(keyword: string, supplierId: string): void {
         HelperService.debug('[SegmentTypeAutocompleteComponent] _initCollections', {
             keyword,
         });
+
+        keyword =
+            keyword && keyword.hasOwnProperty('id')
+                ? ((keyword as unknown) as SegmentTypeAutocomplete).label
+                : keyword;
 
         const params: IQueryParams = {
             paginate: true,
@@ -133,5 +201,11 @@ export class SegmentTypeAutocompleteComponent implements OnInit {
             limit: this.limitItem,
             skip,
         };
+    }
+
+    private _convertKeyword(value: any): string {
+        return value && value.hasOwnProperty('id') && typeof value !== 'string'
+            ? ((value as unknown) as SegmentTypeAutocomplete).label
+            : value;
     }
 }

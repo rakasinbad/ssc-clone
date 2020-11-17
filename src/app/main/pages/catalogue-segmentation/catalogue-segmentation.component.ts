@@ -5,6 +5,7 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
 import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
+import { HelperService } from 'app/shared/helpers';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
@@ -87,6 +88,10 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
                 } else {
                     // this._handleApplyFilter();1
                 }
+
+                HelperService.debug('[CatalogueSegmentationComponent] ngOnInit getClickAction$()', {
+                    form: this.form,
+                });
             });
     }
 
