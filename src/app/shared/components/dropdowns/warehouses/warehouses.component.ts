@@ -211,7 +211,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
-                console.log('isi response warehouse ->', response)
                 this.valueSelectAll.emit(response);
                 let addedAvailableEntities: Array<Selection> = [];
                 let addedRawAvailableEntities: Array<Entity> = [];

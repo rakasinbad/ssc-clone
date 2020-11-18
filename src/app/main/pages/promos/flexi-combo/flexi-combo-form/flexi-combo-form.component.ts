@@ -168,6 +168,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public disableMulti = false;
     public warehouseSelectAll: string;
     public warehouseLength: number;
+    public storeTypeSelectAll: string;
+    public storeTypeLength: number;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -1321,9 +1324,27 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let warehouseValue = value.data[0];
         this.warehouseLength = value.total;
         if (value.total > 1) {
-            this.warehouseSelectAll = warehouseValue.name + '(+'+(this.warehouseLength - 1)+' others)';
+            this.warehouseSelectAll = warehouseValue.name + ' (+'+(this.warehouseLength - 1)+' others)';
         } else {
             this.warehouseSelectAll = warehouseValue.name;
+        }
+    }
+
+     /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store type
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    dataValueStore(value): void {
+        let storeTypeValue = value.data[0];
+        this.storeTypeLength = value.total;
+        if (value.total > 1) {
+            this.storeTypeSelectAll = storeTypeValue.name + ' (+'+(this.storeTypeLength - 1)+' others)';
+        } else {
+            this.storeTypeSelectAll = storeTypeValue.name;
         }
     }
 

@@ -91,6 +91,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
+    @Output() valueSelectAllStore = new EventEmitter<any>();
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
@@ -219,6 +220,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
+                this.valueSelectAllStore.emit(response);
                 let addedAvailableEntities: Array<Selection> = [];
                 let addedRawAvailableEntities: Array<Entity> = [];
 

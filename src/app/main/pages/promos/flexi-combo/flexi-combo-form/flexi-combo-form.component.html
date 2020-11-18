@@ -2384,20 +2384,17 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreType')"
                                 >
-                                    Store Type<br />({{
-                                        form.get('chosenStoreType').value?.length || 0
-                                    }}
-                                    Selected)
+                                    Store Type<br />({{storeTypeLength || 0 }} Selected)
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="form.get('chosenStoreType').value || []"
-                                    [disabled]="form.get('chosenStoreType').disabled"
-                                    placeholder="Choose Store Type"
-                                    title="Select Store Type"
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeTypeSelectAll}}"
                                     segmentationType="type"
                                     [required]="false"
                                     (selected)="onStoreTypeSelected($event)"
+                                    (valueSelectAllStore)="dataValueStore($event)"
                                     fxFlex="50"
                                 >
                                     <div error>
