@@ -157,34 +157,34 @@ export class ExportsApiService {
             });
         }
 
-        if (params['dateGte']) {
-            newArgs.push({
-                key: 'dateGte',
-                value: params['dateGte'],
-            });
-        } else {
-            newArgs.push({
-                key: 'dateGte',
-                value: '',
-            });
-        }
-
-        if (params['dateLte']) {
-            newArgs.push({
-                key: 'dateLte',
-                value: params['dateLte'],
-            });
-        } else {
-            newArgs.push({
-                key: 'dateLte',
-                value: '',
-            });
+        if(params['page'] !== 'catalogues'){
+            if (params['dateGte']) {
+                newArgs.push({
+                    key: 'dateGte',
+                    value: params['dateGte'],
+                });
+            } else {
+                newArgs.push({
+                    key: 'dateGte',
+                    value: '',
+                });
+            }
+    
+            if (params['dateLte']) {
+                newArgs.push({
+                    key: 'dateLte',
+                    value: params['dateLte'],
+                });
+            } else {
+                newArgs.push({
+                    key: 'dateLte',
+                    value: '',
+                });
+            }
         }
 
         this._url = this.helperSvc.handleApiRouter(this._exportEndpoint + params['page']);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
-        
-        console.log('ANGGRI', newParams);
         
         return this.http.get<{ message: string }>(this._url, { params: newParams });
     }
