@@ -155,59 +155,58 @@ export class ExportFilterComponent implements OnInit {
         }
 
         //tampilkan input untuk page 'catalogues'
-        if (this.data.page === 'catalogues'){
-            if (filterAspect.type) {
-                const rules: Array<ValidatorFn> = [];
+        if (filterAspect.type) {
+            const rules: Array<ValidatorFn> = [];
 
-                this.form.addControl('type', this.formBuilder.control(''));
+            this.form.addControl('type', this.formBuilder.control(''));
 
-                if (filterAspect.type.required) {
-                    rules.push(
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.oneOf({
-                            matchValues: [...this.typeSources.map((r) => r.id)],
-                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
-                        })
-                    );
-                    this.form.get('type').setValidators(rules);
-                }
+            if (filterAspect.type.required) {
+                rules.push(
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        ),
+                    }),
+                    RxwebValidators.oneOf({
+                        matchValues: [...this.typeSources.map((r) => r.id)],
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                    })
+                );
+                this.form.get('type').setValidators(rules);
             }
+        }
 
-            if (filterAspect.warehouse) {
-                //mendapatkan warehouse dari api
-                const newQuery: IQueryParams = {
-                    paginate: true,
-                    limit: 15,
-                    skip: 0,
-                };
-                newQuery['supplierId'] = '1';
-                this.form.addControl('warehouse', this.formBuilder.control(''));
-                this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
-                    .subscribe((data) => {
-                        this.dataWarehouse = data.data;
-                        this.dropdownSettings = {
-                            singleSelection: false,
-                            idField: 'id',
-                            textField: 'code',
-                            selectAllText: 'Select All',
-                            unSelectAllText: 'UnSelect All',
-                            itemsShowLimit: 3,
-                            allowSearchFilter: this.ShowFilter,
-                        };
+        if (filterAspect.warehouse) {
+            //mendapatkan warehouse dari api
+            const newQuery: IQueryParams = {
+                paginate: true,
+                limit: 15,
+                skip: 0,
+            };
+            newQuery['supplierId'] = '1';
+            this.form.addControl('warehouse', this.formBuilder.control(''));
+            this.entityApi$
+                .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
+                .subscribe((data) => {
+                    this.dataWarehouse = data.data;
+                    this.dropdownSettings = {
+                        singleSelection: false,
+                        idField: 'id',
+                        textField: 'code',
+                        selectAllText: 'Select All',
+                        unSelectAllText: 'UnSelect All',
+                        itemsShowLimit: 3,
+                        maxHeight:100,
+                        allowSearchFilter: this.ShowFilter,
+                    };
 
-                        const rules: Array<ValidatorFn> = [];
-                        if (filterAspect.warehouse.required) {
-                            rules.push(Validators.required);
-                            this.form.get('warehouse').setValidators(rules);
-                        }
-                    });
-            }
+                    const rules: Array<ValidatorFn> = [];
+                    if (filterAspect.warehouse.required) {
+                        rules.push(Validators.required);
+                        this.form.get('warehouse').setValidators(rules);
+                    }
+                });
         }
 
         if (filterAspect.rangeDate) {
@@ -376,8 +375,28 @@ export class ExportFilterComponent implements OnInit {
         // Untuk menyimpan data form yang ingin dikirim.
         const formSend = {};
 
+        if (formData.startDate) {
+            formSend['dateGte'] = (formData.startDate as Moment).format('YYYY-MM-DD');
+        } else {
+            formSend['dateGte'] = '';
+        }
+
+        if (formData.endDate) {
+            formSend['dateLte'] = (formData.endDate as Moment).format('YYYY-MM-DD');
+        } else {
+            formSend['dateLte'] = '';
+        }
+
         if (formData.status) {
             formSend['status'] = formData.status;
+        }
+
+        if (formData.type) {
+            formSend['type'] = formData.type;
+        }
+
+        if (formData.warehouse) {
+            formSend['warehouse'] = formData.warehouse;
         }
 
         // Memproses data form berdasarkan halamannya.
