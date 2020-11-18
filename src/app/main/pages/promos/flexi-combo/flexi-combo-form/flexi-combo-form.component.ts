@@ -48,9 +48,10 @@ import {
     IFooterActionConfig,
     LifecyclePlatform,
 } from 'app/shared/models/global.model';
+import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
@@ -95,10 +96,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     eBenefitType = BenefitType;
     benefitMultiType = this._$helperService.benefitMultiType();
     eBenefitMultiType = BenefitMultiType;
-    segmentBase = this._$helperService.segmentationBase();
-    eSegmentBase = SegmentationBase;
+    segmentBase = this._$helperService.segmentationBasePromo();
+    eSegmentBase = SegmentationBasePromo;
     promoAllocation = this._$helperService.promoAllocation();
     ePromoAllocation = PromoAllocation;
+    specifiedTargets = this._$helperService.specifiedTarget();
+    eSpecifiedTargets = SpecifiedTarget;
 
     minStartDate: Date = new Date();
     maxStartDate: Date = null;
@@ -154,13 +157,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     };
 
     private _unSubs$: Subject<void> = new Subject<void>();
-
-    public listPromoAlloc: any = [
-        { label: 'None', value: 'none', checked: true },
-        { label: 'Promo Budget', value: 'promo_budget', checked: false },
-        { label: 'Promo Slot', value: 'promo_slot', checked: false },
-    ];
     public selectPromo: string;
+    public selectSpecifiedTarget: string;
     public selectNewStore = false;
     public selectActiveOutlet = false;
     public maxRedemStat = false;
@@ -791,7 +789,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             return;
         }
 
-        if (ev.value === SegmentationBase.STORE) {
+        if (ev.value === SegmentationBasePromo.STORE) {
             this.form.get('chosenStore').setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -811,7 +809,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.selectActiveOutlet = false;
             this.form.get('isNewStore').setValue(false);
             this.form.get('isActiveStore').setValue(false);
-        } else if (ev.value === SegmentationBase.SEGMENTATION) {
+        } else if (ev.value === SegmentationBasePromo.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
 
             // this.form.get('chosenWarehouse').setValidators([
@@ -871,6 +869,27 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.form.get('chosenStoreGroup').updateValueAndValidity();
         this.form.get('chosenStoreChannel').updateValueAndValidity();
         this.form.get('chosenStoreCluster').updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle change event for Specified Target Field
+     * @param {MatRadioChange} ev
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    onChangeSpecifiedTargets(ev: MatRadioChange): void {
+        this.selectSpecifiedTarget = ev.value;
+        if (ev.value == 'isNewStore') {
+            this.form.get('isNewStore').setValue(true);
+            this.form.get('isActiveStore').setValue(false);
+        } else if (ev.value == 'isActiveStore') {
+            this.form.get('isNewStore').setValue(false);
+            this.form.get('isActiveStore').setValue(true);
+        } else {
+            this.form.get('isNewStore').setValue(false);
+            this.form.get('isActiveStore').setValue(false);
+        }
     }
 
     /**
@@ -2332,7 +2351,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     private _setFormStatus(status: string): void {
-        // console.log(`Test Form ${status}`, this.form, this.form.getRawValue());
 
         if (!status) {
             return;
@@ -2441,16 +2459,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
                 this._initForm();
 
-                // merge(
-                //     ...this.conditionsCtrl.map((ctrl: AbstractControl, idx: number) =>
-                //         ctrl.valueChanges.pipe(map((value) => ({ rowIdx: idx, value })))
-                //     )
-                // )
-                //     .pipe(takeUntil(this.conditions.valueChanges))
-                //     .subscribe((changes) => {
-                //         console.log(`Condition Changes`, changes);
-                //     });
-
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -2488,6 +2496,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
     private _initForm(): void {
         this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
+        // this.form.get('specifiedTarget').setValue('new_store');
 
         this.form = this.formBuilder.group({
             promoId: [
@@ -2658,7 +2667,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                SegmentationBase.SEGMENTATION,
+                SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -2671,6 +2680,14 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStoreGroup: null,
             chosenStoreChannel: null,
             chosenStoreCluster: null,
+            specifiedTarget: [
+                SpecifiedTarget.NONE || SpecifiedTarget.NEW_STORE || SpecifiedTarget.ACTIVE_STORE,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             isNewStore: false,
             isActiveStore: false
         });
@@ -2697,7 +2714,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     private _setEditForm(row: FlexiCombo): void {
-        // console.log('ROW', row);
         const promoSellerIdCtrl = this.form.get('promoId');
         const promoNameCtrl = this.form.get('promoName');
         const platformCtrl = this.form.get('platform');
@@ -2724,7 +2740,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const newStoreCtrl = this.form.get('isNewStore');
         const promoAllocationTypeCtrl = this.form.get('promoAllocationType');
         const promoSlotCtrl = this.form.get('promoSlot');
-        
+
         //  Handle Promo Allocation Type
         if (row.promoAllocationType) {
             promoAllocationTypeCtrl.setValue(row.promoAllocationType);
@@ -2736,25 +2752,25 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             promoSlotCtrl.setValue(row.promoSlot);
         }
 
-        // Handle Active Store
-        if (row.isActiveStore) {
+        //Handle Specified Target
+        // if (row.isActiveStore && row.isNewStore) {
             activeStoreCtrl.setValue (row.isActiveStore);
-            if (row.isActiveStore == true) {
-                this.selectNewStore = true;
-            } else {
-                this.selectNewStore = false;
-            }
-        }
-
-        // Handle New Store
-        if (row.isNewStore) {
             newStoreCtrl.setValue (row.isNewStore);
-            if (row.isNewStore === true) {
-                this.selectActiveOutlet = true;
+            const specifiedTargetCtrl = this.form.get('specifiedTarget');
+
+            if (row.isActiveStore == true) {
+                this.selectSpecifiedTarget = 'isActiveStore';
+                specifiedTargetCtrl.setValue('isActiveStore');
+                // this.form.get('specifiedTarget').setValue('isActiveStore');
+            } else if (row.isNewStore === true) {
+                this.selectSpecifiedTarget = 'isNewStore';
+                specifiedTargetCtrl.setValue('isNewStore');
+                // this.form.get('specifiedTarget').setValue('isNewStore');
             } else {
-                this.selectActiveOutlet = false;
+                this.selectSpecifiedTarget = 'none';
+                specifiedTargetCtrl.setValue('none');
+                // this.form.get('specifiedTarget').setValue('none');
             }
-        }
 
         // Handle Promo Seller ID
         if (row.externalId) {
@@ -2931,7 +2947,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             segmentationBaseCtrl.setValue(row.target);
 
             // Handle Segmentation Base Direct Store
-            if (row.target === SegmentationBase.STORE) {
+            if (row.target === SegmentationBasePromo.STORE) {
                 // Handle Chosen Store
                 if (row.promoStores && row.promoStores.length > 0) {
                     const newStores = _.orderBy(
@@ -2963,7 +2979,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }
 
             // Handle Segmentation Base Segmentation
-            else if (row.target === SegmentationBase.SEGMENTATION) {
+            else if (row.target === SegmentationBasePromo.SEGMENTATION) {
                 // Handle Chosen Warehouse
                 if (row.promoWarehouses && row.promoWarehouses.length > 0) {
                     const newWarehouses = _.orderBy(
@@ -3312,37 +3328,37 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ? chosenInvoice.map((invoice: Selection) => invoice.id)
                 : [];
         const newChosenStore =
-            chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBase.STORE
+            chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBasePromo.STORE
                 ? chosenStore.map((store: Selection) => store.id)
                 : [];
         const newChosenWarehouse =
             chosenWarehouse &&
             chosenWarehouse.length > 0 &&
-            segmentationBase === SegmentationBase.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
                 : [];
         const newChosenStoreType =
             chosenStoreType &&
             chosenStoreType.length > 0 &&
-            segmentationBase === SegmentationBase.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreType.map((storeType: Selection) => storeType.id)
                 : [];
         const newChosenStoreGroup =
             chosenStoreGroup &&
             chosenStoreGroup.length > 0 &&
-            segmentationBase === SegmentationBase.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
                 : [];
         const newChosenStoreChannel =
             chosenStoreChannel &&
             chosenStoreChannel.length > 0 &&
-            segmentationBase === SegmentationBase.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
                 : [];
         const newChosenStoreCluster =
             chosenStoreCluster &&
             chosenStoreCluster.length > 0 &&
-            segmentationBase === SegmentationBase.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
                 : [];
 
@@ -3470,9 +3486,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataBase.invoiceGroupId = newChosenFaktur;
             }
 
-            if (segmentationBase === SegmentationBase.STORE) {
+            if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBase.SEGMENTATION) {
+            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
                 payload.dataTarget.warehouseId = newChosenWarehouse;
                 payload.dataTarget.typeId = newChosenStoreType;
                 payload.dataTarget.groupId = newChosenStoreGroup;
@@ -3480,8 +3496,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataTarget.clusterId = newChosenStoreCluster;
             }
 
-            // console.log('[NEW] OnSubmit 1', body);
-            // console.log('[NEW] OnSubmit 2', payload);
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
@@ -3524,9 +3538,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataBase.invoiceGroupId = newChosenFaktur;
             }
 
-            if (segmentationBase === SegmentationBase.STORE) {
+            if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBase.SEGMENTATION) {
+            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
                 payload.dataTarget.warehouseId = newChosenWarehouse;
                 payload.dataTarget.typeId = newChosenStoreType;
                 payload.dataTarget.groupId = newChosenStoreGroup;

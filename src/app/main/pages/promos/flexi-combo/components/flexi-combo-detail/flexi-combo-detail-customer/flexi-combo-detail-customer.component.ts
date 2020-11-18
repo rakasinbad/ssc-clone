@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
-import { Observable } from 'rxjs';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
+import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
+import { Observable, Subscription } from 'rxjs';
 
 import {
     FlexiCombo,
@@ -30,12 +31,20 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
     flexiCombo$: Observable<FlexiCombo>;
     isLoading$: Observable<boolean>;
 
-    segmentBase = this._$helperService.segmentationBase();
-    eSegmentBase = SegmentationBase;
+    segmentBase = this._$helperService.segmentationBasePromo();
+    eSegmentBase = SegmentationBasePromo;
+    specifiedTargets = this._$helperService.specifiedTarget();
+    eSpecifiedTargets = SpecifiedTarget;
+
+    public subs: Subscription;
+    public benefitSetting = [];
+    public statNewStore = false;
+    public statActiveStore = false;
+    public specifiedTargetValue = 'none';
 
     constructor(
         private store: Store<fromFlexiCombos.FeatureState>,
-        private _$helperService: HelperService
+        private _$helperService: HelperService,
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -51,6 +60,18 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
                 return item;
             })
         );
+        this.subs = this.flexiCombo$.subscribe(val => {
+            this.benefitSetting.push(val);
+            this.statNewStore = this.benefitSetting[0].isNewStore;
+            this.statActiveStore = this.benefitSetting[0].isActiveStore;
+            if (this.statNewStore == false && this.statActiveStore == false){
+                this.specifiedTargetValue = 'none';
+            } else if (this.statNewStore == true && this.statActiveStore == false) {
+                this.specifiedTargetValue = 'isNewStore';
+            } else if (this.statNewStore == false && this.statActiveStore == true) {
+                this.specifiedTargetValue = 'isActiveStore';
+            }
+        });
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
 
     }
@@ -117,5 +138,9 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
         }
 
         return '-';
+    }
+
+    ngOnDestroy(): void{
+        this.subs.unsubscribe();
     }
 }

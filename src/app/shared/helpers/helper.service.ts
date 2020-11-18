@@ -18,7 +18,7 @@ import { ErrorHandler, TNullable } from '../models/global.model';
 import { PlatformSinbad, PlatformSupplierVoucer } from '../models/platform.model';
 import { PromoAllocation, PromoAllocationCross, VoucherAllocation } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
-import { SegmentationBase } from '../models/segmentation-base.model';
+import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
@@ -201,6 +201,21 @@ export class HelperService {
         {
             id: SegmentationBase.SEGMENTATION,
             label: 'Segmentation',
+        },
+    ];
+
+    private static readonly _segmentationBasePromo: { id: SegmentationBasePromo; label: string }[] = [
+        {
+            id: SegmentationBasePromo.STORE,
+            label: 'Direct Store',
+        },
+        {
+            id: SegmentationBasePromo.SEGMENTATION,
+            label: 'Selected Segment Only',
+        },
+        {
+            id: SegmentationBasePromo.ALLSEGMENTATION,
+            label: 'Apply to All Linked Segments',
         },
     ];
 
@@ -825,8 +840,13 @@ export class HelperService {
     platformSupplierVoucher(): {id: PlatformSupplierVoucer; label: string }[] {
         return HelperService._platformSupplierVoucher;
     }
+
     segmentationBase(): { id: SegmentationBase; label: string }[] {
         return HelperService._segmentationBase;
+    }
+
+    segmentationBasePromo(): { id: SegmentationBasePromo; label: string }[] {
+        return HelperService._segmentationBasePromo;
     }
 
     promoAllocation(): { id: PromoAllocation; label: string }[] {
@@ -849,7 +869,6 @@ export class HelperService {
         return HelperService._supplierVoucherCategory;
     }
     
-
     specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
         return HelperService._specifiedTarget;
     }
