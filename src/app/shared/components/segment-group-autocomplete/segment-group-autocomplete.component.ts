@@ -15,23 +15,23 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { SinbadAutocompleteSource, SinbadAutocompleteType } from '../sinbad-autocomplete/models';
-import { SegmentTypeAutocomplete } from './models';
-import { SegmentTypeService } from './services';
+import { SegmentGroupAutocomplete } from './models';
+import { SegmentGroupService } from './services';
 
 @Component({
-    selector: 'segment-type-autocomplete',
-    templateUrl: './segment-type-autocomplete.component.html',
-    styleUrls: ['./segment-type-autocomplete.component.scss'],
+    selector: 'segment-group-autocomplete',
+    templateUrl: './segment-group-autocomplete.component.html',
+    styleUrls: ['./segment-group-autocomplete.component.scss'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
+export class SegmentGroupAutocompleteComponent implements OnInit, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     readonly form: FormControl = new FormControl('');
-    readonly placeholder: string = 'Type';
+    readonly placeholder: string = 'Group';
 
-    collections$: Observable<SegmentTypeAutocomplete[]>;
+    collections$: Observable<SegmentGroupAutocomplete[]>;
     loading$: Observable<boolean>;
 
     @Input()
@@ -56,12 +56,12 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
 
     constructor(
         private authFacade: AuthFacadeService,
-        private segmentTypeService: SegmentTypeService
+        private segmentGroupService: SegmentGroupService
     ) {}
 
     ngOnInit(): void {
-        this.collections$ = this.segmentTypeService.collections$;
-        this.loading$ = this.segmentTypeService.loading$;
+        this.collections$ = this.segmentGroupService.collections$;
+        this.loading$ = this.segmentGroupService.loading$;
 
         combineLatest([this.form.valueChanges])
             .pipe(
@@ -72,7 +72,7 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
                 })),
                 tap(({ value, supplierId }) =>
                     HelperService.debug(
-                        '[SegmentTypeAutocompleteComponent] ngOnInit combineLatest',
+                        '[SegmentGroupAutocompleteComponent] ngOnInit combineLatest',
                         {
                             value,
                             supplierId,
@@ -99,17 +99,17 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
         this.unSubs$.next();
         this.unSubs$.complete();
 
-        this.segmentTypeService.reset();
+        this.segmentGroupService.reset();
     }
 
     onClosedAutocompete(): void {
-        HelperService.debug('[SegmentTypeAutocompleteComponent] onClosedAutocompete');
+        HelperService.debug('[SegmentGroupAutocompleteComponent] onClosedAutocompete');
 
         this.form.reset();
     }
 
     onOpenedAutocomplete(): void {
-        HelperService.debug('[SegmentTypeAutocompleteComponent] onOpenedAutocomplete');
+        HelperService.debug('[SegmentGroupAutocompleteComponent] onOpenedAutocomplete');
 
         this.authFacade.getUserSupplier$
             .pipe(
@@ -126,13 +126,13 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
                 },
                 complete: () =>
                     HelperService.debug(
-                        '[SegmentTypeAutocompleteComponent] onOpenedAutocomplete complete'
+                        '[SegmentGroupAutocompleteComponent] onOpenedAutocomplete complete'
                     ),
             });
     }
 
     onScrollToBottom(): void {
-        combineLatest([this.segmentTypeService.totalCollections$, this.segmentTypeService.total$])
+        combineLatest([this.segmentGroupService.totalCollections$, this.segmentGroupService.total$])
             .pipe(
                 map(([totalCollections, total]) => ({ totalCollections, total })),
                 withLatestFrom(
@@ -153,7 +153,7 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
             .subscribe({
                 next: ({ totalCollections, value, supplierId }) => {
                     HelperService.debug(
-                        '[SegmentTypeAutocompleteComponent] onScrollToBottom next',
+                        '[SegmentGroupAutocompleteComponent] onScrollToBottom next',
                         {
                             totalCollections,
                             value,
@@ -165,19 +165,21 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
                 },
                 complete: () =>
                     HelperService.debug(
-                        '[SegmentTypeAutocompleteComponent] onScrollToBottom complete'
+                        '[SegmentGroupAutocompleteComponent] onScrollToBottom complete'
                     ),
             });
     }
 
     onSelectedAutocomplete(value: SinbadAutocompleteSource): void {
-        HelperService.debug('[SegmentTypeAutocompleteComponent] onSelectedAutocomplete', { value });
+        HelperService.debug('[SegmentGroupAutocompleteComponent] onSelectedAutocomplete', {
+            value,
+        });
 
         this.selectedValue.emit(value);
     }
 
     private _initCollections(keyword: string, supplierId: string): void {
-        HelperService.debug('[SegmentTypeAutocompleteComponent] _initCollections', {
+        HelperService.debug('[SegmentGroupAutocompleteComponent] _initCollections', {
             keyword,
         });
 
@@ -205,11 +207,11 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
             });
         }
 
-        this.segmentTypeService.getWithQuery(params);
+        this.segmentGroupService.getWithQuery(params);
     }
 
     private _initScrollCollections(skip: number = 0, keyword: string, supplierId: string): void {
-        HelperService.debug('[SegmentTypeAutocompleteComponent] _initScrollCollections', {
+        HelperService.debug('[SegmentGroupAutocompleteComponent] _initScrollCollections', {
             skip,
         });
 
@@ -237,12 +239,12 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
             });
         }
 
-        this.segmentTypeService.getWithQuery(params);
+        this.segmentGroupService.getWithQuery(params);
     }
 
     private _convertKeyword(value: any): string {
         return value && value.hasOwnProperty('id') && typeof value !== 'string'
-            ? ((value as unknown) as SegmentTypeAutocomplete).label
+            ? ((value as unknown) as SegmentGroupAutocomplete).label
             : value;
     }
 }

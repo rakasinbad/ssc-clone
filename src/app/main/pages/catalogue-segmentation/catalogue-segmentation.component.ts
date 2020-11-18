@@ -55,6 +55,10 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
                 title: 'Type',
                 sources: [],
             },
+            segmentGroup: {
+                title: 'Group',
+                sources: [],
+            },
             group: null,
             channel: null,
             cluster: null,
@@ -75,6 +79,7 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
         // Form for the filter
         this.form = this.fb.group({
             search: null,
+            segmentGroup: null,
             segmentType: null,
         });
 

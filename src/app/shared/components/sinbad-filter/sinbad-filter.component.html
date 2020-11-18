@@ -135,6 +135,29 @@
         </mat-list>
         <!-- / SEGMENTATION TYPE -->
 
+        <!-- SEGMENTATION TYPE -->
+        <mat-list *ngIf="filterSegmentGroup">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.segmentGroup?.title as segmentGroupTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ segmentGroupTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <segment-group-autocomplete
+                        (selectedValue)="onSelectedSegmentGroup($event)"
+                    ></segment-group-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / SEGMENTATION TYPE -->
+
         <!-- SUPPLIER -->
         <!-- <mat-list *ngIf="sourceSuppliers && sourceSuppliers.length > 0">
             <mat-expansion-panel

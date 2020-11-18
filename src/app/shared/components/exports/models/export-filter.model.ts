@@ -27,6 +27,8 @@ export interface ExportFormData {
     dateGte?: string;
     dateLte?: string;
     status?: string;
+    type?: string;
+    warehouse?: any;
     viewHistory?: boolean;
 }
 
@@ -85,13 +87,6 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
                 placeholder: 'Choose Warehouse',
                 required: true,
             },
-            // rangeDate: {
-            //     required: false,
-            //     maxRange: {
-            //         number: 1,
-            //         duration: 'month',
-            //     },
-            // },
         },
     },
     payments: {
