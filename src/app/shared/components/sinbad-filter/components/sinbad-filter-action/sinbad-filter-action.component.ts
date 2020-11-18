@@ -1,13 +1,14 @@
-import { SinbadFilterAction } from './../../models/sinbad-filter.model';
 import {
-    Component,
-    OnInit,
     ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
     Input,
     OnChanges,
+    OnInit,
+    Output,
     SimpleChanges,
 } from '@angular/core';
-import { SinbadFilterConfig } from '../../models/sinbad-filter.model';
+import { SinbadFilterAction } from './../../models/sinbad-filter.model';
 
 @Component({
     selector: 'app-sinbad-filter-action',
@@ -19,20 +20,17 @@ export class SinbadFilterActionComponent implements OnInit, OnChanges {
     @Input()
     config: SinbadFilterAction[];
 
+    @Output()
+    clickReset: EventEmitter<void> = new EventEmitter();
+
+    @Output()
+    clickSubmit: EventEmitter<void> = new EventEmitter();
+
     constructor() {}
 
-    ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
-        // console.log('Action 1', this.config);
-    }
+    ngOnInit(): void {}
 
-    ngOnChanges(changes: SimpleChanges): void {
-        // Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-        // Add '${implements OnChanges}' to the class.
-        // console.log('Action 2A', this.config);
-        // console.log('Action 2B', changes);
-    }
+    ngOnChanges(changes: SimpleChanges): void {}
 
     getReset(): SinbadFilterAction {
         return this.config && this.config.length > 0
@@ -44,5 +42,13 @@ export class SinbadFilterActionComponent implements OnInit, OnChanges {
         return this.config && this.config.length > 0
             ? this.config.find((conf) => conf.action === 'submit')
             : null;
+    }
+
+    onClickReset(): void {
+        this.clickReset.emit();
+    }
+
+    onClickSubmit(): void {
+        this.clickSubmit.emit();
     }
 }

@@ -1,11 +1,12 @@
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    EventEmitter,
     Input,
     OnChanges,
     OnInit,
+    Output,
     SimpleChange,
     SimpleChanges,
     ViewChild,
@@ -19,7 +20,7 @@ import {
 } from '@angular/material/autocomplete';
 import { HelperService } from 'app/shared/helpers';
 import { fromEvent, Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil, tap } from 'rxjs/operators';
 import { SinbadAutocompleteSource, SinbadAutocompleteType } from './models';
 
 @Component({
@@ -29,7 +30,7 @@ import { SinbadAutocompleteSource, SinbadAutocompleteType } from './models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SinbadAutocompleteComponent implements OnChanges, OnInit, AfterViewInit {
+export class SinbadAutocompleteComponent implements OnChanges, OnInit {
     private unSubs$: Subject<any> = new Subject();
 
     @Input()
@@ -42,6 +43,9 @@ export class SinbadAutocompleteComponent implements OnChanges, OnInit, AfterView
     hintValue: string;
 
     @Input()
+    loading: boolean;
+
+    @Input()
     placeholder: string;
 
     @Input()
@@ -49,6 +53,18 @@ export class SinbadAutocompleteComponent implements OnChanges, OnInit, AfterView
 
     @Input()
     type: SinbadAutocompleteType = 'single';
+
+    @Output()
+    closed: EventEmitter<void> = new EventEmitter();
+
+    @Output()
+    opened: EventEmitter<void> = new EventEmitter();
+
+    @Output()
+    scrollToBottom: EventEmitter<void> = new EventEmitter();
+
+    @Output()
+    selectedAutocomplete: EventEmitter<SinbadAutocompleteSource> = new EventEmitter();
 
     @ViewChild('autoComplete', { static: false })
     autocomplete: MatAutocomplete;
@@ -70,29 +86,9 @@ export class SinbadAutocompleteComponent implements OnChanges, OnInit, AfterView
         if (changes['type']) {
             this._handleTypeChanges(changes['type']);
         }
-
-        // this.cdRef.markForCheck();
     }
 
     ngOnInit(): void {}
-
-    ngAfterViewInit(): void {
-        if (this.autocomplete.isOpen) {
-            this.autocompleteTrigger.panelClosingActions.pipe(takeUntil(this.unSubs$)).subscribe({
-                next: (ev) => {
-                    HelperService.debug('[SinbadAutocomplete next] ngAfterViewInit panelClosing', {
-                        ev,
-                    });
-
-                    // this.panelAutocompleteClosing.emit();
-                },
-                complete: () =>
-                    HelperService.debug(
-                        '[SinbadAutocomplete complete] ngAfterViewInit panelClosing'
-                    ),
-            });
-        }
-    }
 
     onDisplayAutocompleteFn(item: SinbadAutocompleteSource): string {
         HelperService.debug('[SinbadAutocomplete] onDisplayAutocompleteFn', {
@@ -102,50 +98,72 @@ export class SinbadAutocompleteComponent implements OnChanges, OnInit, AfterView
         return item && item.label;
     }
 
-    onOpenAutocomplete(): void {
-        HelperService.debug('[SinbadAutocomplete next] onOpenAutocomplete', {
+    onClosedAutocomplete(): void {
+        HelperService.debug('[SinbadAutocomplete] onClosedAutocomplete', {
             autocomplete: this.autocomplete,
             panel: this.autocomplete.panel,
             autocompleteTrigger: this.autocompleteTrigger,
         });
 
-        // this.cdRef.detectChanges();
+        this.closed.emit();
+    }
 
-        if (this.autocomplete && this.autocomplete.panel && this.autocompleteTrigger) {
-            fromEvent(this.autocomplete.panel.nativeElement, 'scroll')
-                .pipe(
-                    map(() => ({
-                        scrollTop: this.autocomplete.panel.nativeElement.scrollTop,
-                        scrollHeight: this.autocomplete.panel.nativeElement.scrollHeight,
-                        elHeight: this.autocomplete.panel.nativeElement.clientHeight,
-                    })),
-                    filter(
-                        ({ scrollTop, scrollHeight, elHeight }) =>
-                            scrollHeight === scrollTop + elHeight
+    onOpenedAutocomplete(): void {
+        HelperService.debug('[SinbadAutocomplete] onOpenedAutocomplete', {
+            autocomplete: this.autocomplete,
+            panel: this.autocomplete.panel,
+            autocompleteTrigger: this.autocompleteTrigger,
+        });
+
+        this.cdRef.detectChanges();
+
+        this.opened.emit();
+
+        fromEvent(this.autocomplete.panel.nativeElement, 'scroll')
+            .pipe(
+                map(() => ({
+                    scrollTop: this.autocomplete.panel.nativeElement.scrollTop,
+                    scrollHeight: this.autocomplete.panel.nativeElement.scrollHeight,
+                    elHeight: this.autocomplete.panel.nativeElement.clientHeight,
+                })),
+                filter(
+                    ({ scrollTop, scrollHeight, elHeight }) => scrollHeight === scrollTop + elHeight
+                ),
+                tap(({ scrollTop, scrollHeight, elHeight }) =>
+                    HelperService.debug('[SinbadAutocomplete tap] onOpenAutocomplete fromEvent', {
+                        scrollTop,
+                        scrollX,
+                        scrollHeight,
+                        elHeight,
+                    })
+                ),
+                takeUntil(this.autocompleteTrigger.panelClosingActions)
+            )
+            .subscribe({
+                next: ({ scrollTop, scrollHeight, elHeight }) => {
+                    const atBottom = scrollHeight === scrollTop + elHeight;
+
+                    HelperService.debug('[SinbadAutocomplete next] onOpenAutocomplete fromEvent', {
+                        scrollTop,
+                        scrollX,
+                        scrollHeight,
+                        elHeight,
+                        atBottom,
+                    });
+
+                    this.scrollToBottom.emit();
+                },
+                complete: () =>
+                    HelperService.debug(
+                        '[SinbadAutocomplete complete] onOpenAutocomplete fromEvent'
                     ),
-                    takeUntil(this.autocompleteTrigger.panelClosingActions)
-                )
-                .subscribe({
-                    next: ({ scrollTop, scrollHeight, elHeight }) => {
-                        const atBottom = scrollHeight === scrollTop + elHeight;
-
-                        HelperService.debug(
-                            '[SinbadAutocomplete next] onOpenAutocomplete fromEvent',
-                            { scrollTop, scrollX, scrollHeight, elHeight, atBottom }
-                        );
-                    },
-                    complete: () =>
-                        HelperService.debug(
-                            '[SinbadAutocomplete next] onOpenAutocomplete fromEvent'
-                        ),
-                });
-        }
+            });
     }
 
     onSelectAutocomplete(ev: MatAutocompleteSelectedEvent): void {
         HelperService.debug('[SinbadAutocomplete] onSelectAutocomplete', { ev });
 
-        // this.selectedAutocomplete.emit(ev.option.value);
+        this.selectedAutocomplete.emit(ev.option.value);
     }
 
     private _handlePlaceholderChanges(value: SimpleChange): void {

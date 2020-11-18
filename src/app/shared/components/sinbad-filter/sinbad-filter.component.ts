@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
+import { SinbadAutocompleteSource } from '../sinbad-autocomplete/models';
 import { SinbadFilterConfig } from './models/sinbad-filter.model';
 import { SinbadFilterService } from './services';
 
@@ -74,6 +75,10 @@ export class SinbadFilterComponent implements OnInit {
     onClickSubmit(): void {
         this.sinbadFilterService.setClickAction('submit');
         this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+    }
+
+    onSelectedSegmentType(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentType').setValue(value);
     }
 
     trackByStatus(index: number, item: any): string {
