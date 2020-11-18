@@ -39,8 +39,8 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
             status: {
                 title: 'Status',
                 sources: [
-                    { id: 'active', label: 'Active' },
-                    { id: 'inactive', label: 'Inactive' },
+                    { id: 'active', label: 'Active', checked: false },
+                    { id: 'inactive', label: 'Inactive', checked: false },
                 ],
             },
             warehouse: null,
@@ -54,6 +54,10 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
             },
             segmentChannel: {
                 title: 'Channel',
+                sources: [],
+            },
+            segmentCluster: {
+                title: 'Cluster',
                 sources: [],
             },
             group: null,
@@ -76,7 +80,9 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
         // Form for the filter
         this.form = this.fb.group({
             search: null,
+            status: null,
             segmentChannel: null,
+            segmentCluster: null,
             segmentGroup: null,
             segmentType: null,
         });

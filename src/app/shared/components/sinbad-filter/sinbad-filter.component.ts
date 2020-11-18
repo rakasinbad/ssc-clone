@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
 import { SinbadAutocompleteSource } from '../sinbad-autocomplete/models';
@@ -17,12 +19,13 @@ export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
     showPanel = true;
     filterSegmentChannel: boolean = false;
+    filterSegmentCluster: boolean = false;
     filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
-    sourceStatus: { id: string; label: string }[] = [];
+    sourceStatus: { id: string; label: string; checked: boolean }[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
@@ -50,6 +53,10 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['segmentChannel'] !== 'undefined') {
                             this.filterSegmentChannel = true;
+                        }
+
+                        if (typeof config.by['segmentCluster'] !== 'undefined') {
+                            this.filterSegmentCluster = true;
                         }
 
                         if (typeof config.by['segmentGroup'] !== 'undefined') {
@@ -87,8 +94,24 @@ export class SinbadFilterComponent implements OnInit {
         this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
     }
 
+    onChangeStatus(ev: MatCheckboxChange): void {
+        const sourceSelected = this.sourceStatus.filter((item) => item.checked);
+
+        HelperService.debug('[SinbadFilterComponent] onChangeStatus', {
+            sourceStatus: this.sourceStatus,
+            sourceSelected,
+            ev,
+        });
+
+        this.form.get('status').setValue(sourceSelected);
+    }
+
     onSelectedSegmentChannel(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
         this.form.get('segmentChannel').setValue(value);
+    }
+
+    onSelectedSegmentCluster(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentCluster').setValue(value);
     }
 
     onSelectedSegmentGroup(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {

@@ -47,8 +47,9 @@
                         >
                             <mat-checkbox
                                 *ngFor="let status of sourceStatus; trackBy: trackByStatus"
-                                [value]="status?.id"
+                                [(ngModel)]="status.checked"
                                 [matTooltip]="status?.label"
+                                (change)="onChangeStatus($event)"
                                 disableRipple
                             >
                                 {{ status?.label }}
@@ -145,6 +146,29 @@
             </mat-expansion-panel>
         </mat-list>
         <!-- / SEGMENTATION CHANNEL -->
+
+        <!-- SEGMENTATION CLUSTER -->
+        <mat-list *ngIf="filterSegmentCluster">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.segmentCluster?.title as segmentClusterTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ segmentClusterTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <segment-cluster-autocomplete
+                        (selectedValue)="onSelectedSegmentCluster($event)"
+                    ></segment-cluster-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / SEGMENTATION CLUSTER -->
 
         <!-- SUPPLIER -->
         <!-- <mat-list *ngIf="sourceSuppliers && sourceSuppliers.length > 0">
