@@ -170,6 +170,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public warehouseLength: number;
     public storeTypeSelectAll: string;
     public storeTypeLength: number;
+    public storeGroupSelectAll: string;
+    public storeGroupLength: number;
+    public storeChannelSelectAll: string;
+    public storeChannelLength: number;
+    public storeClusterSelectAll: string;
+    public storeClusterLength: number;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -1339,12 +1345,67 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @memberof FlexiComboFormComponent
      */
     dataValueStore(value): void {
+        console.log('value store->',value)
         let storeTypeValue = value.data[0];
         this.storeTypeLength = value.total;
         if (value.total > 1) {
             this.storeTypeSelectAll = storeTypeValue.name + ' (+'+(this.storeTypeLength - 1)+' others)';
         } else {
             this.storeTypeSelectAll = storeTypeValue.name;
+        }
+    }
+
+       /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store group
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    dataValueGroup(value): void {
+        let storeGroupValue = value.data[0];
+        this.storeGroupLength = value.total;
+        if (value.total > 1) {
+            this.storeGroupSelectAll = storeGroupValue.name + ' (+'+(this.storeGroupLength - 1)+' others)';
+        } else {
+            this.storeGroupSelectAll = storeGroupValue.name;
+        }
+    }
+
+      /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store channel
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    dataValueChannel(value): void {
+        let storeChannelValue = value.data[0];
+        this.storeChannelLength = value.total;
+        if (value.total > 1) {
+            this.storeChannelSelectAll = storeChannelValue.name + ' (+'+(this.storeChannelLength - 1)+' others)';
+        } else {
+            this.storeChannelSelectAll = storeChannelValue.name;
+        }
+    }
+
+    /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store cluster
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    dataValueCluster(value): void {
+        let storeClusterValue = value.data[0];
+        this.storeClusterLength = value.total;
+        if (value.total > 1) {
+            this.storeClusterSelectAll = storeClusterValue.name + ' (+'+(this.storeClusterLength - 1)+' others)';
+        } else {
+            this.storeClusterSelectAll = storeClusterValue.name;
         }
     }
 

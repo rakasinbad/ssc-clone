@@ -2382,7 +2382,6 @@
                                 <label
                                     fxFlexAlign="center"
                                     fxFlex="10"
-                                    [class.sinbad-red-fg]="hasError('chosenStoreType')"
                                 >
                                     Store Type<br />({{storeTypeLength || 0 }} Selected)
                                 </label>
@@ -2397,9 +2396,6 @@
                                     (valueSelectAllStore)="dataValueStore($event)"
                                     fxFlex="50"
                                 >
-                                    <div error>
-                                        {{ getErrorMessage('chosenStoreType') }}
-                                    </div>
                                 </select-store-segmentation>
                             </div>
 
@@ -2412,27 +2408,21 @@
                                 <label
                                     fxFlexAlign="center"
                                     fxFlex="10"
-                                    [class.sinbad-red-fg]="hasError('chosenStoreGroup')"
                                 >
-                                    Store Group<br />({{
-                                        form.get('chosenStoreGroup').value?.length || 0
-                                    }}
-                                    Selected)
+                                    Store Group<br />({{storeGroupLength|| 0}} Selected)
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="form.get('chosenStoreGroup').value || []"
-                                    [disabled]="form.get('chosenStoreGroup').disabled"
-                                    placeholder="Choose Store Group"
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeGroupSelectAll}}"
                                     title="Select Store Group"
                                     segmentationType="group"
                                     [required]="false"
                                     (selected)="onStoreGroupSelected($event)"
+                                    (valueSelectAllStore)="dataValueGroup($event)"
                                     fxFlex="50"
                                 >
-                                    <div error>
-                                        {{ getErrorMessage('chosenStoreGroup') }}
-                                    </div>
                                 </select-store-segmentation>
                             </div>
 
@@ -2445,27 +2435,21 @@
                                 <label
                                     fxFlexAlign="center"
                                     fxFlex="10"
-                                    [class.sinbad-red-fg]="hasError('chosenStoreChannel')"
                                 >
-                                    Store Channel<br />({{
-                                        form.get('chosenStoreChannel').value?.length || 0
-                                    }}
-                                    Selected)
+                                    Store Channel<br />({{storeChannelLength|| 0}} Selected)
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="form.get('chosenStoreChannel').value || []"
-                                    [disabled]="form.get('chosenStoreChannel').disabled"
-                                    placeholder="Choose Store Channel"
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeChannelSelectAll}}"
                                     title="Select Store Channel"
                                     segmentationType="channel"
                                     [required]="false"
                                     (selected)="onStoreChannelSelected($event)"
+                                    (valueSelectAllStore)="dataValueChannel($event)"
                                     fxFlex="50"
                                 >
-                                    <div error>
-                                        {{ getErrorMessage('chosenStoreChannel') }}
-                                    </div>
                                 </select-store-segmentation>
                             </div>
 
@@ -2478,27 +2462,22 @@
                                 <label
                                     fxFlexAlign="center"
                                     fxFlex="10"
-                                    [class.sinbad-red-fg]="hasError('chosenStoreCluster')"
                                 >
-                                    Store Cluster<br />({{
-                                        form.get('chosenStoreCluster').value?.length || 0
-                                    }}
-                                    Selected)
+                                    Store Cluster<br />({{storeClusterLength|| 0}} Selected)
                                 </label>
 
                                 <select-store-segmentation
-                                    [initialSelection]="form.get('chosenStoreCluster').value || []"
-                                    [disabled]="form.get('chosenStoreCluster').disabled"
-                                    placeholder="Choose Store Cluster"
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeClusterSelectAll}}"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
                                     [required]="false"
                                     (selected)="onStoreClusterSelected($event)"
+                                    (valueSelectAllStore)="dataValueCluster($event)"
                                     fxFlex="50"
                                 >
-                                    <div error>
-                                        {{ getErrorMessage('chosenStoreCluster') }}
-                                    </div>
+                                    
                                 </select-store-segmentation>
                             </div>
                         </ng-container>
