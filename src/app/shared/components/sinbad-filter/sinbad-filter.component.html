@@ -127,12 +127,9 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <!-- <sinbad-autocomplete
-                        [control]="form.get('segmentType')"
-                        [placeholder]="'Type'"
-                        [sources]="(config$ | async)?.by?.segmentType?.sources || []"
-                    ></sinbad-autocomplete> -->
-                    <segment-type-autocomplete></segment-type-autocomplete>
+                    <segment-type-autocomplete
+                        (selectedValue)="onSelectedSegmentType($event)"
+                    ></segment-type-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
