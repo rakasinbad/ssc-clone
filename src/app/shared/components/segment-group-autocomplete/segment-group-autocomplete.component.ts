@@ -26,6 +26,7 @@ import { SegmentGroupService } from './services';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SegmentGroupAutocompleteComponent implements OnInit, OnDestroy {
+    private selectedItem: string;
     private unSubs$: Subject<any> = new Subject();
 
     readonly form: FormControl = new FormControl('');
@@ -103,9 +104,19 @@ export class SegmentGroupAutocompleteComponent implements OnInit, OnDestroy {
     }
 
     onClosedAutocompete(): void {
-        HelperService.debug('[SegmentGroupAutocompleteComponent] onClosedAutocompete');
+        HelperService.debug('[SegmentGroupAutocompleteComponent] onClosedAutocompete', {
+            form: this.form,
+            typeForm: typeof this.form.value,
+        });
 
-        this.form.reset();
+        const formValue =
+            typeof this.form.value === 'object' ? JSON.stringify(this.form.value) : this.form.value;
+
+        if (!this.selectedItem || this.selectedItem !== formValue) {
+            this.form.reset();
+            this.selectedItem = null;
+            this.selectedValue.emit(null);
+        }
     }
 
     onOpenedAutocomplete(): void {
@@ -118,7 +129,7 @@ export class SegmentGroupAutocompleteComponent implements OnInit, OnDestroy {
                     value: this._convertKeyword(this.form.value),
                     supplierId,
                 })),
-                filter(({ supplierId }) => !!supplierId)
+                filter(({ value, supplierId }) => !value && !!supplierId)
             )
             .subscribe({
                 next: ({ value, supplierId }) => {
@@ -174,6 +185,8 @@ export class SegmentGroupAutocompleteComponent implements OnInit, OnDestroy {
         HelperService.debug('[SegmentGroupAutocompleteComponent] onSelectedAutocomplete', {
             value,
         });
+
+        this.selectedItem = value ? JSON.stringify(value) : null;
 
         this.selectedValue.emit(value);
     }
