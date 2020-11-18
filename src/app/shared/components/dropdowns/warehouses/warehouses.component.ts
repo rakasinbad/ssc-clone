@@ -84,6 +84,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
+    @Output() valueSelectAll = new EventEmitter<any>();
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
     @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
@@ -102,12 +103,12 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         private ngZone: NgZone,
     ) {
         this.availableEntities$.pipe(
-            tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
+            tap(x => HelperService.debug('AVAILABLE ENTITIES warehouse promo ->', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
         this.selectedEntity$.pipe(
-            tap(x => HelperService.debug('SELECTED ENTITY', x)),
+            tap(x => HelperService.debug('SELECTED ENTITY warehouse promo->', x)),
             takeUntil(this.subs$)
         ).subscribe(value => this.selected.emit(value));
 
@@ -117,7 +118,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         ).subscribe();
 
         this.totalEntities$.pipe(
-            tap(x => HelperService.debug('TOTAL ENTITIES', x)),
+            tap(x => HelperService.debug('TOTAL ENTITIES warehouse promo ->', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
@@ -184,7 +185,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             withLatestFrom<any, UserSupplier>(
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE warehouse promo ->', x)),
             switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
                 // Jika user tidak ada data supplier.
                 if (!userSupplier) {
@@ -210,6 +211,8 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
+                console.log('isi response warehouse ->', response)
+                this.valueSelectAll.emit(response);
                 let addedAvailableEntities: Array<Selection> = [];
                 let addedRawAvailableEntities: Array<Entity> = [];
 
@@ -445,45 +448,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         this.dialogRef$.next('clear-all');
     }
 
-    // processEntityAutoComplete(): void {
-    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
-    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
-    //             .pipe(
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
-    //                 // Kasih jeda ketika scrolling.
-    //                 debounceTime(500),
-    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
-    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
-    //                 ),
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
-    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-    //                 filter(({ isLoading, entities, totalEntities }) =>
-    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
-    //                 ),
-    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
-    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
-    //                 ))
-    //             ).subscribe(({ entities }) => {
-    //                 const params: IQueryParams = {
-    //                     paginate: true,
-    //                     limit: 10,
-    //                     skip: entities.length
-    //                 };
-
-    //                 // Memulai request data store entity.
-    //                 this.requestEntity(params);
-    //             });
-    //     }
-    // }
-
-    // listenEntityAutoComplete(): void {
-    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
-    //     setTimeout(() => this.processEntityAutoComplete());
-    // }
-
     private initForm(): void {
         // this.entityFormView = new FormControl('');
         // this.entityFormValue = new FormControl('');
@@ -516,45 +480,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngOnInit(): void {
         this.initForm();
-        
-        // Menangani Form Control-nya warehouse.
-        // (this.entityForm.valueChanges).pipe(
-        //     startWith(''),
-        //     debounceTime(200),
-        //     distinctUntilChanged(),
-        //     withLatestFrom(this.selectedEntity$),
-        //     filter(([formValue, selectedEntity]) => {
-        //         if (selectedEntity && formValue && !this.entityAutoComplete.isOpen) {
-        //             return false;
-        //         }
-                
-        //         if (selectedEntity || (!formValue && !this.entityAutoComplete.isOpen)) {
-        //             this.selectedEntity$.next(null);
-        //             return false;
-        //         }
-
-        //         if (!formValue && selectedEntity && !this.entityAutoComplete.isOpen) {
-        //             this.entityForm.patchValue(selectedEntity);
-        //             return false;
-        //         }
-
-        //         return true;
-        //     }),
-        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
-        //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
-        //     }),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([formValue]) => {
-        //     const queryParams: IQueryParams = {
-        //         paginate: true,
-        //         limit: 10,
-        //         skip: 0
-        //     };
-
-        //     queryParams['keyword'] = formValue;
-
-        //     this.requestEntity(queryParams);
-        // });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -610,4 +535,3 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
 }
-

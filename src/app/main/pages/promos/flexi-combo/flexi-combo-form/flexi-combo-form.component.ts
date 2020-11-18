@@ -166,7 +166,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public ratioBaseEdit: string;
     public firstBuyCheck = false;
     public disableMulti = false;
-
+    public warehouseSelectAll: string;
+    public warehouseLength: number;
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -1305,6 +1306,24 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     this._orderValueValidationByRatioConditionBaseEdit(null, 0);
                 }
             }
+        }
+    }
+
+     /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value warehouse
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    dataValueWarehouse(value): void {
+        let warehouseValue = value.data[0];
+        this.warehouseLength = value.total;
+        if (value.total > 1) {
+            this.warehouseSelectAll = warehouseValue.name + '(+'+(this.warehouseLength - 1)+' others)';
+        } else {
+            this.warehouseSelectAll = warehouseValue.name;
         }
     }
 

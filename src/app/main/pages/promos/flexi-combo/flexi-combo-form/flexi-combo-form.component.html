@@ -2357,25 +2357,19 @@
                                 <label
                                     fxFlexAlign="center"
                                     fxFlex="10"
-                                    [class.sinbad-red-fg]="hasError('chosenWarehouse')"
                                 >
-                                    Warehouse<br />({{
-                                        form.get('chosenWarehouse').value?.length || 0
-                                    }}
-                                    Selected)
+                                    Warehouse<br />({{warehouseLength || 0 }} Selected)
                                 </label>
 
                                 <select-warehouses
-                                    [initialSelection]="form.get('chosenWarehouse').value || []"
-                                    [disabled]="form.get('chosenWarehouse').disabled"
-                                    placeholder="Choose Warehouse"
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{warehouseSelectAll}}"
                                     [required]="false"
-                                    (selected)="onWarehouseSelected($event)"
+                                    (valueSelectAll)="dataValueWarehouse($event)"
                                     fxFlex="50"
                                 >
-                                    <div error>
-                                        {{ getErrorMessage('chosenWarehouse') }}
-                                    </div>
+                                  
                                 </select-warehouses>
                             </div>
 
