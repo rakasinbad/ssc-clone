@@ -1,7 +1,7 @@
 <sinbad-autocomplete
     [control]="form"
     [loading]="loading$ | async"
-    [placeholder]="'Type'"
+    [placeholder]="placeholder"
     [sources]="collections$ | async"
     (opened)="onOpenedAutocomplete()"
     (scrollToBottom)="onScrollToBottom()"

@@ -29,6 +29,7 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     readonly form: FormControl = new FormControl('');
+    readonly placeholder: string = 'Type';
 
     collections$: Observable<SegmentTypeAutocomplete[]>;
     loading$: Observable<boolean>;
@@ -70,10 +71,13 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
                     supplierId,
                 })),
                 tap(({ value, supplierId }) =>
-                    HelperService.debug('[SegmentTypeAutocompleteComponent] combineLatest', {
-                        value,
-                        supplierId,
-                    })
+                    HelperService.debug(
+                        '[SegmentTypeAutocompleteComponent] ngOnInit combineLatest',
+                        {
+                            value,
+                            supplierId,
+                        }
+                    )
                 ),
                 filter(({ value, supplierId }) => {
                     if (this.limitLength > 0) {
@@ -131,6 +135,15 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
         combineLatest([this.segmentTypeService.totalCollections$, this.segmentTypeService.total$])
             .pipe(
                 map(([totalCollections, total]) => ({ totalCollections, total })),
+                withLatestFrom(
+                    this.authFacade.getUserSupplier$,
+                    ({ totalCollections, total }, { supplierId }) => ({
+                        totalCollections,
+                        total,
+                        value: this._convertKeyword(this.form.value),
+                        supplierId,
+                    })
+                ),
                 filter(
                     ({ totalCollections, total }) =>
                         totalCollections && total && totalCollections < total
@@ -138,13 +151,17 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
                 take(1)
             )
             .subscribe({
-                next: (x) => {
+                next: ({ totalCollections, value, supplierId }) => {
                     HelperService.debug(
                         '[SegmentTypeAutocompleteComponent] onScrollToBottom next',
                         {
-                            x,
+                            totalCollections,
+                            value,
+                            supplierId,
                         }
                     );
+
+                    this._initScrollCollections(totalCollections, value, supplierId);
                 },
                 complete: () =>
                     HelperService.debug(
@@ -163,11 +180,6 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
         HelperService.debug('[SegmentTypeAutocompleteComponent] _initCollections', {
             keyword,
         });
-
-        keyword =
-            keyword && keyword.hasOwnProperty('id')
-                ? ((keyword as unknown) as SegmentTypeAutocomplete).label
-                : keyword;
 
         const params: IQueryParams = {
             paginate: true,
@@ -196,11 +208,36 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
         this.segmentTypeService.getWithQuery(params);
     }
 
-    private _initScrollCollections$(skip: number = 0): void {
+    private _initScrollCollections(skip: number = 0, keyword: string, supplierId: string): void {
+        HelperService.debug('[SegmentTypeAutocompleteComponent] _initScrollCollections', {
+            skip,
+        });
+
         const params: IQueryParams = {
+            paginate: true,
             limit: this.limitItem,
             skip,
         };
+
+        params['search'] = [
+            {
+                fieldName: 'hasChild',
+                keyword: 'false',
+            },
+            {
+                fieldName: 'supplierId',
+                keyword: supplierId,
+            },
+        ];
+
+        if (keyword) {
+            params['search'].push({
+                fieldName: 'keyword',
+                keyword,
+            });
+        }
+
+        this.segmentTypeService.getWithQuery(params);
     }
 
     private _convertKeyword(value: any): string {
