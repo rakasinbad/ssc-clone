@@ -8,7 +8,7 @@ import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import * as numeral from 'numeral';
 import { Observable } from 'rxjs';
@@ -48,8 +48,8 @@ export class CrossSellingPromoFormService {
         return this.helperService.promoAllocation();
     }
 
-    get segmentationBase(): { id: SegmentationBase; label: string }[] {
-        return this.helperService.segmentationBase();
+    get segmentationBasePromo(): { id: SegmentationBasePromo; label: string }[] {
+        return this.helperService.segmentationBasePromo();
     }
 
     get specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
@@ -284,7 +284,7 @@ export class CrossSellingPromoFormService {
             }),
             segmentSetting: this.fb.group({
                 segmentationBase: [
-                    SegmentationBase.SEGMENTATION,
+                    SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageService.getErrorMessageNonState(

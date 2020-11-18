@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
@@ -27,8 +27,8 @@ export class CrossSellingDetailCsComponent implements OnInit {
     crossSellingPromo$: Observable<CrossSelling>;
     isLoading$: Observable<boolean>;
 
-    segmentBase = this._$helperService.segmentationBase();
-    eSegmentBase = SegmentationBase;
+    segmentBase = this._$helperService.segmentationBasePromo();
+    eSegmentBase = SegmentationBasePromo;
 
     public subs: Subscription;
     public specifiedTarget = [

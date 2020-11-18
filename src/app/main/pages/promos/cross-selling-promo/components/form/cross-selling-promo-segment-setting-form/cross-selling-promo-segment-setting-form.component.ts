@@ -24,7 +24,7 @@ import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-seg
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { FormMode, FormStatus, SpecifiedTarget } from 'app/shared/models';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -42,9 +42,9 @@ import { CrossSellingPromoFormService } from '../../../services';
 export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
-    segmentationBase: { id: SegmentationBase; label: string }[];
+    segmentationBasePromo: { id: SegmentationBasePromo; label: string }[];
     specifiedTarget: { id: SpecifiedTarget; label: string }[];
-    segmentBase = SegmentationBase;
+    segmentBasePromo = SegmentationBasePromo;
     specifiedTargetType = SpecifiedTarget;
 
     @Input()
@@ -66,7 +66,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     ) {}
 
     ngOnInit(): void {
-        this.segmentationBase = this.crossSellingPromoFormService.segmentationBase;
+        this.segmentationBasePromo = this.crossSellingPromoFormService.segmentationBasePromo;
         this.specifiedTarget = this.crossSellingPromoFormService.specifiedTarget;
 
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
@@ -103,11 +103,15 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
     onChangeSegmentBase(ev: MatRadioChange): void {
         switch (ev.value) {
-            case SegmentationBase.SEGMENTATION:
+            case SegmentationBasePromo.SEGMENTATION:
                 this._setSpecifiedTargetValidation();
                 break;
 
-            case SegmentationBase.STORE:
+            case SegmentationBasePromo.ALLSEGMENTATION:
+                this._setSpecifiedTargetValidation();
+                break;
+
+            case SegmentationBasePromo.STORE:
                 this._clearSpecifiedTargetValidation();
                 break;
 
@@ -242,19 +246,20 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreGroup,
             chosenStoreType,
             chosenWarehouse,
-            segmentationBase,
+            segmentationBasePromo,
             specifiedTarget,
         } = this.form.getRawValue();
 
         const payload: SegmentSettingFormDto = {
             dataTarget: {},
-            target: segmentationBase,
+            target: this.form.get('segmentationBase').value,
             isNewStore: specifiedTarget === SpecifiedTarget.NEW_STORE,
             isActiveStore: specifiedTarget === SpecifiedTarget.ACTIVE_STORE,
         };
 
         switch (payload['target']) {
-            case SegmentationBase.SEGMENTATION:
+            case SegmentationBasePromo.SEGMENTATION:
+
                 payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
                     chosenStoreChannel,
                     chosenStoreCluster,
@@ -264,20 +269,29 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
                 });
                 break;
 
-            case SegmentationBase.STORE:
+                case SegmentationBasePromo.ALLSEGMENTATION:
+                    payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
+                        chosenStoreChannel,
+                        chosenStoreCluster,
+                        chosenStoreGroup,
+                        chosenStoreType,
+                        chosenWarehouse,
+                    });
+                    break;
+
+            case SegmentationBasePromo.STORE:
                 payload['dataTarget'] = this._payloadTypeDirectStore(payload['dataTarget'], {
                     chosenStore,
                 });
                 break;
 
-            default:
-                this.noticeService.open('Sorry, unknown segmentation base!', 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right',
-                });
-                return;
+            // default:
+            //     this.noticeService.open('Sorry, unknown segmentation base!', 'error', {
+            //         verticalPosition: 'bottom',
+            //         horizontalPosition: 'right',
+            //     });
+            //     return;
         }
-
         this.formValue.emit(payload);
     }
 
