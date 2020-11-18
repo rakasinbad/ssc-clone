@@ -821,56 +821,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('isActiveStore').setValue(false);
         } else if (ev.value === SegmentationBasePromo.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
-
-            // this.form.get('chosenWarehouse').setValidators([
-            //     RxwebValidators.required({
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            //     RxwebValidators.choice({
-            //         minLength: 1,
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            // ]);
-
-            // this.form.get('chosenStoreType').setValidators([
-            //     RxwebValidators.required({
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            //     RxwebValidators.choice({
-            //         minLength: 1,
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            // ]);
-
-            // this.form.get('chosenStoreGroup').setValidators([
-            //     RxwebValidators.required({
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            //     RxwebValidators.choice({
-            //         minLength: 1,
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            // ]);
-
-            // this.form.get('chosenStoreChannel').setValidators([
-            //     RxwebValidators.required({
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            //     RxwebValidators.choice({
-            //         minLength: 1,
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            // ]);
-
-            // this.form.get('chosenCluster').setValidators([
-            //     RxwebValidators.required({
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            //     RxwebValidators.choice({
-            //         minLength: 1,
-            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-            //     }),
-            // ]);
         }
 
         this.form.get('chosenStore').updateValueAndValidity();
@@ -1345,7 +1295,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @memberof FlexiComboFormComponent
      */
     dataValueStore(value): void {
-        console.log('value store->',value)
         let storeTypeValue = value.data[0];
         this.storeTypeLength = value.total;
         if (value.total > 1) {
@@ -1445,39 +1394,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Handle validation for Max Rebate Field (New Tier) (FormControl = benefitMaxRebate)
         this._benefitMaxRebateValidationNewTier(idx, prevIdx);
-
-        //   switch (conditionBase.value) {
-        //       case ConditionBase.QTY:
-        //           // Handle validation for Qty Field (New Tier) (FormControl = conditionQty)
-        //           this._qtyValueValidationNewTier(
-        //               idx,
-        //               prevIdx
-        //           );
-
-        //           // Handle validation for Bonus Qty Field (New Tier) (FormControl = benefitBonusQty)
-        //           this._benefitBonusQtyValidationNewTier(
-        //               idx,
-        //               prevIdx
-        //           );
-        //           return;
-
-        //       case ConditionBase.ORDER_VALUE:
-        //           // Handle validation for Order Value Field (New Tier) (FormControl = conditionValue)
-        //           this._orderValueValidationNewTier(
-        //               idx,
-        //               prevIdx
-        //           );
-
-        //           // Handle validation for Rebate Field (New Tier) (FormControl = benefitRebate)
-        //           this._benefitRebateValidationNewTier(
-        //               idx,
-        //               prevIdx
-        //           );
-        //           return;
-
-        //       default:
-        //           return;
-        //   }
     }
 
     /**
@@ -3098,18 +3014,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenWarehouseCtrl.setValue([]);
                 }
 
-                // chosenWarehouseCtrl.setValidators([
-                //     RxwebValidators.required({
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                //     RxwebValidators.choice({
-                //         minLength: 1,
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                // ]);
-
-                // chosenWarehouseCtrl.updateValueAndValidity();
-
                 // Handle Chosen Store Type
                 if (row.promoTypes && row.promoTypes.length > 0) {
                     const newStoreTypes = _.orderBy(
@@ -3126,18 +3030,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 } else {
                     chosenStoreTypeCtrl.setValue([]);
                 }
-
-                // chosenStoreTypeCtrl.setValidators([
-                //     RxwebValidators.required({
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                //     RxwebValidators.choice({
-                //         minLength: 1,
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                // ]);
-
-                // chosenStoreTypeCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Group
                 if (row.promoGroups && row.promoGroups.length > 0) {
@@ -3156,18 +3048,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenStoreGroupCtrl.setValue([]);
                 }
 
-                // chosenStoreGroupCtrl.setValidators([
-                //     RxwebValidators.required({
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                //     RxwebValidators.choice({
-                //         minLength: 1,
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                // ]);
-
-                // chosenStoreGroupCtrl.updateValueAndValidity();
-
                 // Handle Chosen Store Channel
                 if (row.promoChannels && row.promoChannels.length > 0) {
                     const newStoreChannels = _.orderBy(
@@ -3184,18 +3064,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 } else {
                     chosenStoreChannelCtrl.setValue([]);
                 }
-
-                // chosenStoreChannelCtrl.setValidators([
-                //     RxwebValidators.required({
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                //     RxwebValidators.choice({
-                //         minLength: 1,
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                // ]);
-
-                // chosenStoreChannelCtrl.updateValueAndValidity();
 
                 // Handle Chosen Store Cluster
                 if (row.promoClusters && row.promoClusters.length > 0) {
@@ -3214,34 +3082,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     chosenStoreClusterCtrl.setValue([]);
                 }
 
-                // chosenStoreClusterCtrl.setValidators([
-                //     RxwebValidators.required({
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                //     RxwebValidators.choice({
-                //         minLength: 1,
-                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                //     }),
-                // ]);
-
-                // chosenStoreClusterCtrl.updateValueAndValidity();
             }
         }
-
-        // Trigger Base
-        // this.form.get('base').disable();
-        // this.form.get('chosenSku').disable();
-        // this.form.get('chosenBrand').disable();
-        // this.form.get('chosenInvoice').disable();
-
-        // Customer Segmentation Setting
-        // this.form.get('segmentationBase').disable();
-        // this.form.get('chosenStore').disable();
-        // this.form.get('chosenWarehouse').disable();
-        // this.form.get('chosenStoreType').disable();
-        // this.form.get('chosenStoreGroup').disable();
-        // this.form.get('chosenStoreChannel').disable();
-        // this.form.get('chosenStoreCluster').disable();
 
         setTimeout(() => {
             if (this.form.invalid) {
@@ -3269,24 +3111,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (this.firstBuyCheck == true) {
                 this.maxRedemStat = true;
             }
-            // if (idx !== limitIdx) {
-            //     // Disable not last tier
-            //     this.conditionsCtrl[idx].disable({
-            //         onlySelf: true,
-            //     });
-            // }
-
-            // if (idx === limitIdx) {
-            //     // Disable conditionBase control (New Tier)
-            //     this.conditionsCtrl[idx].get('conditionBase').disable({
-            //         onlySelf: true,
-            //     });
-
-            //     // Disable benefitType control (New Tier)
-            //     this.conditionsCtrl[idx].get('benefitType').disable({
-            //         onlySelf: true,
-            //     });
-            // }
 
             if (idx < limitIdx) {
                 this.conditionsCtrl[idx].disable({ onlySelf: true });
