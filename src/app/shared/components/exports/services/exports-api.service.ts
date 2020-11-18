@@ -149,7 +149,7 @@ export class ExportsApiService {
         }
 
         if (params['warehouse']) {
-            params['warehouse'].forEach( (warehouseValue) => {
+            params['warehouse'].forEach((warehouseValue) => {
                 newArgs.push({
                     key: 'warehouseIds[]',
                     value: warehouseValue.id,
@@ -185,7 +185,7 @@ export class ExportsApiService {
 
         this._url = this.helperSvc.handleApiRouter(this._exportEndpoint + params['page']);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
-        
+
         return this.http.get<{ message: string }>(this._url, { params: newParams });
     }
 
