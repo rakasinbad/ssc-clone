@@ -16,6 +16,7 @@ import { SinbadFilterService } from './services';
 export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
     showPanel = true;
+    filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
     filterWarehouse: boolean = false;
 
@@ -44,6 +45,10 @@ export class SinbadFilterComponent implements OnInit {
                             if (config.by['status'].sources) {
                                 this.sourceStatus = config.by['status'].sources;
                             }
+                        }
+
+                        if (typeof config.by['segmentGroup'] !== 'undefined') {
+                            this.filterSegmentGroup = true;
                         }
 
                         if (typeof config.by['segmentType'] !== 'undefined') {
@@ -75,6 +80,10 @@ export class SinbadFilterComponent implements OnInit {
     onClickSubmit(): void {
         this.sinbadFilterService.setClickAction('submit');
         this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+    }
+
+    onSelectedSegmentGroup(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentGroup').setValue(value);
     }
 
     onSelectedSegmentType(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
