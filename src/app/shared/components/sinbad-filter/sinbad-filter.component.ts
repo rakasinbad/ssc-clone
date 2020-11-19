@@ -5,8 +5,10 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
+import { Warehouse } from '../dropdowns/single-warehouse/models';
+import { SingleWarehouseDropdownService } from '../dropdowns/single-warehouse/services';
 import { SinbadAutocompleteSource } from '../sinbad-autocomplete/models';
-import { SinbadFilterConfig } from './models/sinbad-filter.model';
+import { DefaultCheckbox, SinbadFilterConfig } from './models';
 import { SinbadFilterService } from './services';
 
 @Component({
@@ -25,7 +27,7 @@ export class SinbadFilterComponent implements OnInit {
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
-    sourceStatus: { id: string; label: string; checked: boolean }[] = [];
+    sourceStatus: DefaultCheckbox[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
@@ -35,7 +37,8 @@ export class SinbadFilterComponent implements OnInit {
 
     constructor(
         private fuseSidebarService: FuseSidebarService,
-        private sinbadFilterService: SinbadFilterService
+        private sinbadFilterService: SinbadFilterService,
+        private singleWarehouseService: SingleWarehouseDropdownService
     ) {}
 
     ngOnInit(): void {
@@ -47,7 +50,7 @@ export class SinbadFilterComponent implements OnInit {
                     if (config.by && Object.keys(config.by).length > 0) {
                         if (typeof config.by['status'] !== 'undefined') {
                             if (config.by['status'].sources) {
-                                this.sourceStatus = config.by['status'].sources;
+                                this.sourceStatus = [...config.by['status'].sources];
                             }
                         }
 
@@ -86,6 +89,8 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     onClickReset(): void {
+        this._resetStatus();
+        this.singleWarehouseService.selectWarehouse(null);
         this.sinbadFilterService.setClickAction('reset');
     }
 
@@ -122,11 +127,23 @@ export class SinbadFilterComponent implements OnInit {
         this.form.get('segmentType').setValue(value);
     }
 
+    onSelectedWarehouse(value: Warehouse): void {
+        this.form.get('warehouse').setValue(new Warehouse(value));
+    }
+
     trackByStatus(index: number, item: any): string {
         if (!item) {
             return null;
         }
 
         return item.id || index;
+    }
+
+    private _resetStatus(): void {
+        this.sourceStatus = this.sourceStatus.map(({ id, label }) => ({
+            id,
+            label,
+            checked: false,
+        }));
     }
 }

@@ -72,7 +72,9 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <select-single-warehouse #selectWarehouse></select-single-warehouse>
+                    <select-single-warehouse
+                        (selected)="onSelectedWarehouse($event)"
+                    ></select-single-warehouse>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
