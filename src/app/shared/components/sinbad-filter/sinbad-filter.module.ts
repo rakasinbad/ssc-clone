@@ -5,6 +5,8 @@ import { NgxMaskModule } from 'ngx-mask';
 import { SingleWarehouseDropdownModule } from '../dropdowns/single-warehouse/single-warehouse.module';
 import { SegmentGroupAutocompleteModule } from '../segment-group-autocomplete';
 import { SegmentTypeAutocompleteModule } from '../segment-type-autocomplete';
+import { BrandAutocompleteModule } from '../brand-autocomplete';
+import { FakturAutocompleteModule } from '../faktur-autocomplete';
 import { SinbadFilterActionComponent } from './components';
 import { SinbadFilterComponent } from './sinbad-filter.component';
 
@@ -16,6 +18,8 @@ import { SinbadFilterComponent } from './sinbad-filter.component';
         NgxMaskModule,
         SegmentGroupAutocompleteModule,
         SegmentTypeAutocompleteModule,
+        BrandAutocompleteModule,
+        FakturAutocompleteModule,
         SingleWarehouseDropdownModule,
     ],
     exports: [SinbadFilterComponent],

@@ -55,6 +55,14 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
                 title: 'Type',
                 sources: [],
             },
+            brand: {
+                title: 'Brand',
+                sources: [],
+            },
+            faktur: {
+                title: 'Faktur',
+                sources: [],
+            },
             segmentGroup: {
                 title: 'Group',
                 sources: [],

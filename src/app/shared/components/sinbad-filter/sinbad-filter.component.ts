@@ -18,6 +18,8 @@ export class SinbadFilterComponent implements OnInit {
     showPanel = true;
     filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
+    filterBrand: boolean = false;
+    filterFaktur: boolean = false;
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
@@ -62,6 +64,14 @@ export class SinbadFilterComponent implements OnInit {
                             this.filterSegmentType = true;
                         }
 
+                        if (typeof config.by['brand'] !== 'undefined') {
+                            this.filterBrand = true;
+                        }
+
+                        if (typeof config.by['faktur'] !== 'undefined') {
+                            this.filterFaktur = true;
+                        }
+
                         if (typeof config.by['warehouse'] !== 'undefined') {
                             this.filterWarehouse = true;
                         }
@@ -95,6 +105,14 @@ export class SinbadFilterComponent implements OnInit {
 
     onSelectedSegmentType(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
         this.form.get('segmentType').setValue(value);
+    }
+
+    onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('brand').setValue(value);
+    }
+
+    onSelectedFaktur(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('faktur').setValue(value);
     }
 
     trackByStatus(index: number, item: any): string {
