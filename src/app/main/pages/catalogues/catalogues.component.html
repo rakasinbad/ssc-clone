@@ -6,6 +6,8 @@
             <sinbad-card-header
                 [config]="cardHeaderConfig"
                 (onClickAdd)="onClickAddCatalogue()"
+                (onClickFilterList)="onClickFilter()"
+                (onSearchChanged)="onSearch($event)"
             ></sinbad-card-header>
 
             <mat-table

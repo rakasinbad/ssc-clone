@@ -22,9 +22,13 @@ export class SinbadFilterComponent implements OnInit {
     filterSegmentCluster: boolean = false;
     filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
+    filterBrand: boolean = false;
+    filterFaktur: boolean = false;
+    filterbasePrice: boolean = false;
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
+    sourceType: { id: string; label: string }[] = [];
     sourceStatus: { id: string; label: string; checked: boolean }[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
@@ -51,6 +55,24 @@ export class SinbadFilterComponent implements OnInit {
                             }
                         }
 
+                        if (typeof config.by['type'] !== 'undefined') {
+                            if (config.by['type'].sources) {
+                                this.sourceType = config.by['type'].sources;
+                            }
+                        }
+
+                        if (typeof config.by['brand'] !== 'undefined') {
+                            this.filterBrand = true;
+                        }
+
+                        if (typeof config.by['faktur'] !== 'undefined') {
+                            this.filterFaktur = true;
+                        }
+
+                        if (typeof config.by['basePrice'] !== 'undefined') {
+                            this.filterbasePrice = true;
+                        }
+                            
                         if (typeof config.by['segmentChannel'] !== 'undefined') {
                             this.filterSegmentChannel = true;
                         }
@@ -122,7 +144,23 @@ export class SinbadFilterComponent implements OnInit {
         this.form.get('segmentType').setValue(value);
     }
 
+    onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('brand').setValue(value);
+    }
+
+    onSelectedFaktur(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('faktur').setValue(value);
+    }
+
     trackByStatus(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
+    }
+
+    trackByType(index: number, item: any): string {
         if (!item) {
             return null;
         }
