@@ -252,4 +252,24 @@ export const navigation: FuseNavigation[] = [
             
         ],
     },
+    {
+        id: 'survey',
+        title: 'Sinbad Survey',
+        type: 'collapsable',
+        icon: 'custom-sinbad-survey-logo',
+        children: [
+            {
+                id: 'survey-manage',
+                title: 'Manage',
+                type: 'item',
+                url: '/pages/survey/manage',
+            },
+            {
+                id: 'survey-response',
+                title: 'Response',
+                type: 'item',
+                url: '/pages/survey/response',
+            },            
+        ],
+    }
 ];

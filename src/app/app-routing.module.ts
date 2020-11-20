@@ -314,6 +314,24 @@ const routes: Routes = [
                 },
             },
             {
+                path: 'survey',
+                loadChildren: () =>
+                    import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true,
+                        },
+                    },
+                },
+            },
+            {
                 path: '',
                 redirectTo: 'account',
                 pathMatch: 'full',
