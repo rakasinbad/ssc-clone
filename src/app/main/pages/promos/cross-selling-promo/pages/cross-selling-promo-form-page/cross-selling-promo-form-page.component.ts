@@ -148,7 +148,10 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (this.form.invalid) {
             return;
         }
-
+        
+        if(this.segmentFormDto.target !== 'store') {
+            this.segmentFormDto['dataTarget']['warehouseId'] = this.groupFormDto.dataTarget.warehouseId;
+        }
         const payload: CreateFormDto = {
             base: 'sku',
             supplierId: null,
@@ -159,7 +162,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             ...this.groupFormDto,
             ...this.segmentFormDto,
         };
-
         this.crossSellingPromoFacade.create(payload);
     }
 
@@ -172,11 +174,11 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         ])
             .pipe(takeUntil(this.unSubs$))
             .subscribe((statuses) => {
-                if (statuses.every((status) => status === 'VALID')) {
-                    this.crossSellingPromoFacade.setFormValid();
-                } else {
-                    this.crossSellingPromoFacade.setFormInvalid();
-                }
+                    if (statuses.every((status) => status === 'VALID')) {
+                        this.crossSellingPromoFacade.setFormValid();
+                    } else {
+                        this.crossSellingPromoFacade.setFormInvalid();
+                    }
             });
     }
 }

@@ -29,8 +29,10 @@ import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { GroupFormDto } from '../../../models';
+import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
+import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
+import { MAT_MENU_SCROLL_STRATEGY_FACTORY } from '@angular/material/menu/typings/menu-trigger';
 
 @Component({
     selector: 'app-cross-selling-promo-group-form',
@@ -56,6 +58,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
     conditionBaseType = ConditionBase;
     groups: FormArray;
     hiddenInoviceGroup: boolean = false;
+    warehouseSelected = [];
+    errorWarehouse: boolean = false;
 
     @Input()
     form: FormGroup;
@@ -86,7 +90,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
 
     @ViewChildren('selectSku')
     selectSku: QueryList<CataloguesDropdownComponent>;
-
+    
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
@@ -116,6 +120,27 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.unSubs$.next();
         this.unSubs$.complete();
+    }
+
+    onWarehouseSelected(ev: Warehouse[]): void {
+        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+        // chosenWarehouseCtrl.markAsDirty();
+        // chosenWarehouseCtrl.markAsTouched();
+        if (!ev.length) {
+            // chosenWarehouseCtrl.setValue('');
+            this.errorWarehouse = true;
+            this.warehouseSelected = [];
+        } else {
+            this.errorWarehouse = false;
+            const newWarehouses: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'warehouses',
+            }));
+            
+            this.warehouseSelected = newWarehouses;
+            // chosenWarehouseCtrl.setValue(this.warehouseSelected);
+        }
     }
 
     onApplySku(value: Selection[], idx: number): void {
@@ -193,6 +218,11 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
 
     private _handleFormValue(): void {
         const { groups } = this.form.getRawValue();
+        const payloadWarehouse = {
+            dataTarget: {}
+        };
+
+        payloadWarehouse['dataTarget'] = this._payloadTypeSegment(payloadWarehouse['dataTarget'], this.warehouseSelected);
 
         const groupOne = groups && groups.length ? groups[0] : null;
         const skuGroupOne = groupOne['chosenSku'];
@@ -247,9 +277,27 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
                 catalogueId: [...newGroupOne, ...newGroupTwo].map((item) => item.catalogueId),
             },
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
+            dataTarget: payloadWarehouse['dataTarget']
         };
 
         this.formValue.emit(payload);
+    }
+
+    private _payloadTypeSegment(payloadSegment: SettingTargetDto, chosenWarehouse: any): SettingTargetDto {
+        delete payloadSegment['chosenStore'];
+
+        // Warehouse
+        const newWarehouse =
+            chosenWarehouse && chosenWarehouse.length
+                ? chosenWarehouse.map((item: Selection) => +item.id)
+                : [];
+        payloadSegment['warehouseId'] = newWarehouse;
+        payloadSegment['channelId'] = [];
+        payloadSegment['clusterId'] = [];
+        payloadSegment['groupId'] = [];
+        payloadSegment['typeId'] = [];
+
+        return payloadSegment;
     }
 
     private _ruleShowAlert(value: Selection[], idx: number): void {

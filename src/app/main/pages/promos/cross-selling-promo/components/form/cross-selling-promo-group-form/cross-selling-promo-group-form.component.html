@@ -7,6 +7,33 @@
             Cross Selling Group
         </span>
 
+        <div
+            class="custom-field"
+            fxLayout="row"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="16px"
+            [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+        >
+            <label fxFlexAlign="center" fxFlex="12">
+                <span class="sinbad-red-fg">*</span>
+                Warehouse<br />
+                ({{ warehouseSelected.length || 0 }} Selected)
+            </label>
+
+            <select-warehouses
+                [initialSelection]="[]"
+                [disabled]="false"
+                placeholder="Choose Warehouse"
+                [required]="false"
+                (selected)="onWarehouseSelected($event)"
+                fxFlex="50"
+            >
+                <mat-hint class="mat-error" *ngIf="errorWarehouse == true">
+                    This field is required.
+                </mat-hint>
+            </select-warehouses>
+        </div>
+
         <div class="form-box" formArrayName="groups">
             <div
                 class="box-group"
