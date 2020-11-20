@@ -6,6 +6,7 @@
         <!-- SECTION CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header
+                #cardHeader
                 [config]="cardHeaderConfig"
                 (onClickAdd)="onClickAdd()"
                 (onClickFilterList)="onClickFilter()"
@@ -15,6 +16,7 @@
             <app-catalogue-segmentation-list
                 class="px-16"
                 [keyword]="keyword"
+                [globalFilter]="globalFilterDto"
             ></app-catalogue-segmentation-list>
         </div>
         <!-- !SECTION CONTENT CARD -->

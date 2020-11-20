@@ -1,31 +1,55 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges, NgZone } from '@angular/core';
-import { Store as NgRxStore } from '@ngrx/store';
-import { fuseAnimations } from '@fuse/animations';
-import { environment } from 'environments/environment';
-
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    NgZone,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
+    SimpleChanges,
+    TemplateRef,
+    ViewChild,
+    ViewEncapsulation,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
-import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
-import { Warehouse as Entity } from './models';
-import { WarehousesApiService as EntitiesApiService, SingleWarehouseDropdownService } from './services';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
+import {
+    MatAutocomplete,
+    MatAutocompleteSelectedEvent,
+    MatAutocompleteTrigger,
+} from '@angular/material';
+import { fuseAnimations } from '@fuse/animations';
+import { Store as NgRxStore } from '@ngrx/store';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { UserSupplier } from 'app/shared/models/supplier.model';
-import { Selection } from '../select-advanced/models';
-import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
-import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
-import { SelectionList } from 'app/shared/components/multiple-selection/models';
-import { DeleteConfirmationComponent } from 'app/shared/modals';
-import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
-import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { HashTable } from 'app/shared/models/hashtable.model';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
+import { ErrorHandler, IPaginatedResponse, TNullable } from 'app/shared/models/global.model';
 import { HashTable2 } from 'app/shared/models/hashtable2.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { BehaviorSubject, fromEvent, Observable, of, Subject } from 'rxjs';
+import {
+    catchError,
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    switchMap,
+    take,
+    takeUntil,
+    tap,
+    withLatestFrom,
+} from 'rxjs/operators';
+import { Selection } from '../select-advanced/models';
+import { Warehouse as Entity } from './models';
+import {
+    SingleWarehouseDropdownService,
+    WarehousesApiService as EntitiesApiService,
+} from './services';
 
 @Component({
     selector: 'select-single-warehouse',
@@ -33,10 +57,10 @@ import { HashTable2 } from 'app/shared/models/hashtable2.model';
     styleUrls: ['./single-warehouse.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
 })
-export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-
+export class SingleWarehouseDropdownComponent
+    implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     // Form
     entityForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
@@ -75,36 +99,41 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
-    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
-    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
+    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger })
+    triggerEntity: MatAutocompleteTrigger;
+    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<
+        MultipleSelectionComponent
+    >;
 
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
         private errorMessage$: ErrorMessageService,
         private entityApi$: EntitiesApiService,
-        private applyDialogFactory$: ApplyDialogFactoryService<MultipleSelectionComponent>,
-        private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
-        private notice$: NoticeService,
-        private multiple$: MultipleSelectionService,
         private ngZone: NgZone,
-        private singleWarehouse: SingleWarehouseDropdownService,
+        private singleWarehouse: SingleWarehouseDropdownService
     ) {
-        this.selectedEntity$.pipe(
-            tap(x => HelperService.debug('SELECTED ENTITY', x)),
-            takeUntil(this.subs$)
-        ).subscribe(value => this.selected.emit(value));
+        this.selectedEntity$
+            .pipe(
+                tap((x) => HelperService.debug('SELECTED ENTITY', x)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((value) => this.selected.emit(value));
 
-        this.isEntityLoading$.pipe(
-            tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
+        this.isEntityLoading$
+            .pipe(
+                tap((x) => HelperService.debug('IS ENTITY LOADING?', x)),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
 
-        this.totalEntities$.pipe(
-            tap(x => HelperService.debug('TOTAL ENTITIES', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
+        this.totalEntities$
+            .pipe(
+                tap((x) => HelperService.debug('TOTAL ENTITIES', x)),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
     }
 
     private toggleLoading(loading: boolean): void {
@@ -120,59 +149,70 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
     private requestEntity(params: IQueryParams): void {
         this.toggleLoading(true);
 
-        of(null).pipe(
-            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-            // delay(1000),
-            withLatestFrom<any, UserSupplier>(
-                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-            ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
-                // Jika user tidak ada data supplier.
-                if (!userSupplier) {
-                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                }
+        of(null)
+            .pipe(
+                // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+                // delay(1000),
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(
+                    ([_, userSupplier]) => {
+                        // Jika user tidak ada data supplier.
+                        if (!userSupplier) {
+                            throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                        }
 
-                // Mengambil ID supplier-nya.
-                const { supplierId } = userSupplier;
+                        // Mengambil ID supplier-nya.
+                        const { supplierId } = userSupplier;
 
-                // Membentuk query baru.
-                const newQuery: IQueryParams = { ... params };
-                // Memasukkan ID supplier ke dalam params baru.
-                newQuery['supplierId'] = supplierId;
+                        // Membentuk query baru.
+                        const newQuery: IQueryParams = { ...params };
+                        // Memasukkan ID supplier ke dalam params baru.
+                        newQuery['supplierId'] = supplierId;
 
-                // Melakukan request data warehouse.
-                return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-                    );
-            }),
-            take(1),
-            catchError(err => { throw err; }),
-        ).subscribe({
-            next: (response) => {
-                // Menetampan nilai available entities yang akan ditambahkan.
-                if (Array.isArray(response)) {
-                    this.entities.upsert(response as Array<Entity>);
-                    this.totalEntities$.next((response as Array<Entity>).length);
-                } else {
-                    this.entities.upsert(response.data as Array<Entity>);
-                    this.totalEntities$.next(response.total);
-                }
+                        // Melakukan request data warehouse.
+                        return this.entityApi$
+                            .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
+                            .pipe(
+                                tap((response) =>
+                                    HelperService.debug('FIND ENTITY', {
+                                        params: newQuery,
+                                        response,
+                                    })
+                                )
+                            );
+                    }
+                ),
+                take(1),
+                catchError((err) => {
+                    throw err;
+                })
+            )
+            .subscribe({
+                next: (response) => {
+                    // Menetampan nilai available entities yang akan ditambahkan.
+                    if (Array.isArray(response)) {
+                        this.entities.upsert(response as Array<Entity>);
+                        this.totalEntities$.next((response as Array<Entity>).length);
+                    } else {
+                        this.entities.upsert(response.data as Array<Entity>);
+                        this.totalEntities$.next(response.total);
+                    }
 
-                this.cdRef.markForCheck();
-            },
-            error: (err) => {
-                this.toggleLoading(false);
-                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
-            },
-            complete: () => {
-                this.toggleLoading(false);
-                HelperService.debug('FIND ENTITY COMPLETED');
-            }
-        });
+                    this.cdRef.markForCheck();
+                },
+                error: (err) => {
+                    this.toggleLoading(false);
+                    HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+                        this.helper$.showErrorNotification(new ErrorHandler(err));
+                },
+                complete: () => {
+                    this.toggleLoading(false);
+                    HelperService.debug('FIND ENTITY COMPLETED');
+                },
+            });
     }
 
     private initEntity(): void {
@@ -180,7 +220,7 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
         const params: IQueryParams = {
             paginate: true,
             limit: this.limit,
-            skip: 0
+            skip: 0,
         };
 
         // Reset form-nya store entity.
@@ -245,7 +285,7 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
                 const queryParams: IQueryParams = {
                     paginate: true,
                     limit: this.limit,
-                    skip: 0
+                    skip: 0,
                 };
 
                 this.search = value;
@@ -263,7 +303,7 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
         const params: IQueryParams = {
             paginate: true,
             limit: this.limit,
-            skip: entitiesLength
+            skip: entitiesLength,
         };
 
         if (this.search) {
@@ -279,26 +319,43 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
             fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
                     // Debugging.
-                    tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() =>
+                        HelperService.debug(
+                            `fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`
+                        )
+                    ),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-                    withLatestFrom(this.totalEntities$, this.isEntityLoading$,
-                        ($event, totalEntities, isLoading) => ({ $event, entities: this.entities.toArray(), totalEntities, isLoading }),
+                    withLatestFrom(
+                        this.totalEntities$,
+                        this.isEntityLoading$,
+                        ($event, totalEntities, isLoading) => ({
+                            $event,
+                            entities: this.entities.toArray(),
+                            totalEntities,
+                            isLoading,
+                        })
                     ),
                     // Debugging.
                     tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
                     // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, entities, totalEntities }) =>
-                        !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
+                    filter(
+                        ({ isLoading, entities, totalEntities }) =>
+                            !isLoading &&
+                            totalEntities > entities.length &&
+                            this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerEntity.panelClosingActions.pipe(
-                        tap(() => {
-                            HelperService.debug('SELECT ENTITY IS CLOSING ...');
-                            this.selectedEntity$.next(this.selectedEntity$.value);
-                        })
-                    ))
-                ).subscribe(() => {
+                    takeUntil(
+                        this.triggerEntity.panelClosingActions.pipe(
+                            tap(() => {
+                                HelperService.debug('SELECT ENTITY IS CLOSING ...');
+                                this.selectedEntity$.next(this.selectedEntity$.value);
+                            })
+                        )
+                    )
+                )
+                .subscribe(() => {
                     // Memulai request data.
                     this.onEntityReachedBottom();
                 });
@@ -318,13 +375,15 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
     }
 
     private initForm(): void {
-        this.entityForm.valueChanges.pipe(
-            distinctUntilChanged(),
-            debounceTime(500),
-            filter(() => this.entityAutoComplete.isOpen),
-            tap(value => HelperService.debug('entityForm value changed', value)),
-            takeUntil(this.subs$)
-        ).subscribe(value => this.onEntitySearch(value));
+        this.entityForm.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(500),
+                filter(() => this.entityAutoComplete.isOpen),
+                tap((value) => HelperService.debug('entityForm value changed', value)),
+                takeUntil(this.subs$)
+            )
+            .subscribe((value) => this.onEntitySearch(value));
 
         if (this.required) {
             this.entityForm.setValidators(RxwebValidators.required());
@@ -334,24 +393,33 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
     ngOnInit(): void {
         this.initForm();
 
-        this.singleWarehouse.getSelectedWarehouse().pipe(
-            tap(value => HelperService.debug('SINGLE WAREHOUSE GET SELECTED WAREHOUSE', value)),
-            takeUntil(this.subs$)
-        ).subscribe(warehouse => {
-            if (warehouse) {
+        this.singleWarehouse
+            .getSelectedWarehouse()
+            .pipe(
+                tap((value) =>
+                    HelperService.debug('SINGLE WAREHOUSE GET SELECTED WAREHOUSE', value)
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe((warehouse) => {
+                /* if (warehouse) {
                 this.entityForm.setValue(warehouse);
                 this.selectedEntity$.next(warehouse);
                 this.triggerEntity.closePanel();
                 this.cdRef.detectChanges();
-            }
-        });
+            } */
+
+                this.entityForm.setValue(warehouse);
+                this.selectedEntity$.next(warehouse);
+                this.triggerEntity.closePanel();
+                this.cdRef.detectChanges();
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['required']) {
             // if (!changes['required'].isFirstChange()) {
             //     this.entityFormView.clearValidators();
-
             //     if (changes['required'].currentValue === true) {
             //         this.entityFormView.setValidators(RxwebValidators.required());
             //     }
@@ -389,6 +457,4 @@ export class SingleWarehouseDropdownComponent implements OnInit, OnChanges, Afte
     ngAfterViewInit(): void {
         this.initEntity();
     }
-
 }
-

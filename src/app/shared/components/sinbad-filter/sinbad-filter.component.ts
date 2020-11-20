@@ -5,8 +5,10 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
+import { Warehouse } from '../dropdowns/single-warehouse/models';
+import { SingleWarehouseDropdownService } from '../dropdowns/single-warehouse/services';
 import { SinbadAutocompleteSource } from '../sinbad-autocomplete/models';
-import { SinbadFilterConfig } from './models/sinbad-filter.model';
+import { DefaultCheckbox, SinbadFilterConfig } from './models';
 import { SinbadFilterService } from './services';
 
 @Component({
@@ -17,7 +19,12 @@ import { SinbadFilterService } from './services';
 })
 export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
+    resetSegmentChannel: boolean = false;
+    resetSegmentCluster: boolean = false;
+    resetSegmentGroup: boolean = false;
+    resetSegmentType: boolean = false;
     showPanel = true;
+
     filterSegmentChannel: boolean = false;
     filterSegmentCluster: boolean = false;
     filterSegmentGroup: boolean = false;
@@ -28,8 +35,9 @@ export class SinbadFilterComponent implements OnInit {
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
+
+    sourceStatus: DefaultCheckbox[] = [];
     sourceType: { id: string; label: string }[] = [];
-    sourceStatus: { id: string; label: string; checked: boolean }[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
@@ -39,7 +47,8 @@ export class SinbadFilterComponent implements OnInit {
 
     constructor(
         private fuseSidebarService: FuseSidebarService,
-        private sinbadFilterService: SinbadFilterService
+        private sinbadFilterService: SinbadFilterService,
+        private singleWarehouseService: SingleWarehouseDropdownService
     ) {}
 
     ngOnInit(): void {
@@ -51,7 +60,7 @@ export class SinbadFilterComponent implements OnInit {
                     if (config.by && Object.keys(config.by).length > 0) {
                         if (typeof config.by['status'] !== 'undefined') {
                             if (config.by['status'].sources) {
-                                this.sourceStatus = config.by['status'].sources;
+                                this.sourceStatus = [...config.by['status'].sources];
                             }
                         }
 
@@ -72,7 +81,7 @@ export class SinbadFilterComponent implements OnInit {
                         if (typeof config.by['basePrice'] !== 'undefined') {
                             this.filterbasePrice = true;
                         }
-                            
+
                         if (typeof config.by['segmentChannel'] !== 'undefined') {
                             this.filterSegmentChannel = true;
                         }
@@ -108,6 +117,9 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     onClickReset(): void {
+        this._resetSegment();
+        this._resetStatus();
+        this.singleWarehouseService.selectWarehouse(null);
         this.sinbadFilterService.setClickAction('reset');
     }
 
@@ -128,6 +140,14 @@ export class SinbadFilterComponent implements OnInit {
         this.form.get('status').setValue(sourceSelected);
     }
 
+    onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('brand').setValue(value);
+    }
+
+    onSelectedFaktur(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('faktur').setValue(value);
+    }
+
     onSelectedSegmentChannel(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
         this.form.get('segmentChannel').setValue(value);
     }
@@ -144,12 +164,8 @@ export class SinbadFilterComponent implements OnInit {
         this.form.get('segmentType').setValue(value);
     }
 
-    onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
-        this.form.get('brand').setValue(value);
-    }
-
-    onSelectedFaktur(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
-        this.form.get('faktur').setValue(value);
+    onSelectedWarehouse(value: Warehouse): void {
+        this.form.get('warehouse').setValue(value ? new Warehouse(value) : value);
     }
 
     trackByStatus(index: number, item: any): string {
@@ -166,5 +182,20 @@ export class SinbadFilterComponent implements OnInit {
         }
 
         return item.id || index;
+    }
+
+    private _resetStatus(): void {
+        this.sourceStatus = this.sourceStatus.map(({ id, label }) => ({
+            id,
+            label,
+            checked: false,
+        }));
+    }
+
+    private _resetSegment(): void {
+        this.resetSegmentChannel = true;
+        this.resetSegmentCluster = true;
+        this.resetSegmentGroup = true;
+        this.resetSegmentType = true;
     }
 }

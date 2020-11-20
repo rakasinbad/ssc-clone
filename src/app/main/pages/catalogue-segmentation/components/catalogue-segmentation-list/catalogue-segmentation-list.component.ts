@@ -20,8 +20,8 @@ import { environment } from 'environments/environment';
 import { combineLatest, merge, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { CatalogueSegmentationDataSource } from '../../datasources';
-import { CatalogueSegmentation } from '../../models';
-import { CatalogueSegmentationFacadeService } from '../../services';
+import { CatalogueSegmentation, CatalogueSegmentationFilterDto } from '../../models';
+import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from '../../services';
 
 @Component({
     selector: 'app-catalogue-segmentation-list',
@@ -68,6 +68,9 @@ export class CatalogueSegmentationListComponent
     @Input()
     keyword: string;
 
+    @Input()
+    globalFilter: CatalogueSegmentationFilterDto;
+
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
 
@@ -79,7 +82,8 @@ export class CatalogueSegmentationListComponent
 
     constructor(
         private cdRef: ChangeDetectorRef,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService
+        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private catalogueSegmentationService: CatalogueSegmentationService
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -87,6 +91,11 @@ export class CatalogueSegmentationListComponent
             if (!changes['keyword'].isFirstChange()) {
                 this._initTable();
             }
+        }
+
+        if (!changes['globalFilter'].isFirstChange()) {
+            this.paginator.pageIndex = 0;
+            this._initTable();
         }
     }
 
@@ -174,6 +183,11 @@ export class CatalogueSegmentationListComponent
                     },
                 ];
             }
+
+            data['search'] = this.catalogueSegmentationService.handleSearchGlobalFilter(
+                data['search'],
+                this.globalFilter
+            );
 
             this.dataSource.getWithQuery(data);
         }

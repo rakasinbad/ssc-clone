@@ -8,18 +8,18 @@ import {
     OnInit,
     Output,
     SimpleChanges,
-    ViewEncapsulation
+    ViewChild,
+    ViewEncapsulation,
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
+import { ButtonDesignType } from 'app/shared/models/button.model';
 import { TNullable } from 'app/shared/models/global.model';
-import { NgxPermissionsService } from 'ngx-permissions';
-
 import { ExportActions } from '../exports/store/actions';
 import { fromExport } from '../exports/store/reducers';
 import { IButtonImportConfig } from '../import-advanced/models';
+import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-header.model';
-import { ButtonDesignType } from 'app/shared/models/button.model';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -188,13 +188,15 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     }> = new EventEmitter<{ id: string; label: string }>();
 
     /**
+     * Untuk berinteraksi dengan Sinbad Search Bar.
+     */
+    @ViewChild('searchBar', { static: false })
+    searchBar: SearchBarComponent;
+
+    /**
      * Constructor.
      */
-    constructor(
-        private cd$: ChangeDetectorRef,
-        private ngxPermissionsService: NgxPermissionsService,
-        private exportStore: NgRxStore<fromExport.State>
-    ) {}
+    constructor(private cd$: ChangeDetectorRef, private exportStore: NgRxStore<fromExport.State>) {}
 
     private updateCardHeader(): void {
         if (this.config) {
@@ -301,10 +303,10 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                             cssClass: ['w-92', 'h-32'],
                             dialogConf: {
                                 title: 'Import',
-                                cssToolbar: 'fuse-white-bg'
+                                cssToolbar: 'fuse-white-bg',
                             },
                             title: 'Import',
-                            type: ButtonDesignType.MAT_STROKED_BUTTON
+                            type: ButtonDesignType.MAT_STROKED_BUTTON,
                         };
                     }
                 }
@@ -341,6 +343,13 @@ export class CardHeaderComponent implements OnInit, OnChanges {
 
                 this.cd$.detectChanges();
             }, 100);
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.config) {
+            this.config = changes.config.currentValue;
+            this.updateCardHeader();
         }
     }
 
@@ -453,10 +462,10 @@ export class CardHeaderComponent implements OnInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.config) {
-            this.config = changes.config.currentValue;
-            this.updateCardHeader();
-        }
+    /**
+     * Untuk reset value search.
+     */
+    reset(): void {
+        this.searchBar.reset();
     }
 }

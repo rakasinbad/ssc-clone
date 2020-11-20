@@ -6,7 +6,7 @@ import {
     OnDestroy,
     OnInit,
     Output,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -17,7 +17,7 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
     templateUrl: './search-bar.component.html',
     styleUrls: ['./search-bar.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
     // Untuk menandakan penggunaan border atau tidak
@@ -51,11 +51,15 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
         this.search.valueChanges
             .pipe(debounceTime(this.threshold), takeUntil(this.subs$))
-            .subscribe(value => this.changed.emit(value));
+            .subscribe((value) => this.changed.emit(value));
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+    }
+
+    reset(): void {
+        this.search.reset();
     }
 }

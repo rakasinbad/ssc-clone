@@ -214,7 +214,9 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <select-single-warehouse #selectWarehouse></select-single-warehouse>
+                    <select-single-warehouse
+                        (selected)="onSelectedWarehouse($event)"
+                    ></select-single-warehouse>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -236,6 +238,7 @@
 
                 <ng-template matExpansionPanelContent>
                     <segment-type-autocomplete
+                        [(reset)]="resetSegmentType"
                         (selectedValue)="onSelectedSegmentType($event)"
                     ></segment-type-autocomplete>
                 </ng-template>
@@ -259,6 +262,7 @@
 
                 <ng-template matExpansionPanelContent>
                     <segment-group-autocomplete
+                        [(reset)]="resetSegmentGroup"
                         (selectedValue)="onSelectedSegmentGroup($event)"
                     ></segment-group-autocomplete>
                 </ng-template>
@@ -282,6 +286,7 @@
 
                 <ng-template matExpansionPanelContent>
                     <segment-channel-autocomplete
+                        [(reset)]="resetSegmentChannel"
                         (selectedValue)="onSelectedSegmentChannel($event)"
                     ></segment-channel-autocomplete>
                 </ng-template>
@@ -305,6 +310,7 @@
 
                 <ng-template matExpansionPanelContent>
                     <segment-cluster-autocomplete
+                        [(reset)]="resetSegmentCluster"
                         (selectedValue)="onSelectedSegmentCluster($event)"
                     ></segment-cluster-autocomplete>
                 </ng-template>
