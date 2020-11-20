@@ -45,13 +45,15 @@ export class CatalogueSegmentationService {
         globalFilter: CatalogueSegmentationFilterDto
     ): IQuerySearchParams[] {
         if (globalFilter) {
-            paramsSearch = [
-                ...paramsSearch,
-                {
-                    fieldName: 'status',
-                    keyword: globalFilter.status,
-                },
-            ];
+            if (globalFilter.status) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'status',
+                        keyword: globalFilter.status,
+                    },
+                ];
+            }
 
             if (globalFilter.warehouseId) {
                 paramsSearch = [
