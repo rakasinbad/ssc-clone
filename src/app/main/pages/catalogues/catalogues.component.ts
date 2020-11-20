@@ -266,6 +266,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             brand: null,
             faktur: null,
             basePrice: null,
+            minAmount: null,
+            maxAmount: null,
+
         });
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
         // Handle action in filter
@@ -543,6 +546,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+        this.sinbadFilterService.resetConfig();
     }
 
     // -----------------------------------------------------------------------------------------------------
