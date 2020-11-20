@@ -1,3 +1,7 @@
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
+import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
 import {
     AfterViewInit,
     Component,
@@ -29,7 +33,7 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil, filter } from 'rxjs/operators';
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { locale as english } from './i18n/en';
@@ -51,6 +55,9 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
     encapsulation: ViewEncapsulation.None,
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
+    private form: FormGroup;
+    private unSubs$: Subject<any> = new Subject<any>();
+    
     private breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -89,7 +96,43 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             useAdvanced: true,
             pageType: 'catalogues',
         },
+        filter: {
+            permissions: [],
+        },
     };
+
+    filterConfig: SinbadFilterConfig = {
+        by: {
+            status: {
+                title: 'Status',
+                sources: [
+                    { id: 'active', label: 'Active', checked: false },
+                    { id: 'inactive', label: 'Inactive', checked: false },
+                ],
+            },
+            type: {
+                title: 'Type',
+                sources: [
+                    { id: 'bonus', label: 'Bonus' },
+                ],
+            },
+            brand: {
+                title: 'Brand',
+                sources: [],
+            },
+            faktur: {
+                title: 'Faktur',
+                sources: [],
+            },
+            basePrice: {
+                title: 'Base Price',
+                sources: [],
+            },
+        },
+        showFilter: true,
+    };
+
+    keyword: string = null;
 
     dataSource: MatTableDataSource<Catalogue>;
     initialDisplayedColumns = [
@@ -131,14 +174,14 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private fb: FormBuilder,
         private router: Router,
         private store: Store<fromCatalogue.FeatureState>,
-        private exportStore: Store<fromExport.State>,
+        private fuseSidebarService: FuseSidebarService,
+        private sinbadFilterService: SinbadFilterService,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private catalogueFacade: CatalogueFacadeService,
-        private _$catalogue: CataloguesService,
-        private _$generate: GeneratorService,
         private matDialog: MatDialog,
         public translate: TranslateService,
         private readonly sanitizer: DomSanitizer,
@@ -215,6 +258,41 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        // Form for the filter
+        this.form = this.fb.group({
+            search: null,
+            status: null,
+            type: null,
+            brand: null,
+            faktur: null,
+            basePrice: null,
+            minAmount: null,
+            maxAmount: null,
+
+        });
+        this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+        // Handle action in filter
+        this.sinbadFilterService
+        .getClickAction$()
+        .pipe(
+            filter((action) => action === 'reset' || action === 'submit'),
+            takeUntil(this.unSubs$)
+        )
+        .subscribe((action) => {
+            if (action === 'reset') {
+                // this.cardHeader.reset();
+                // this._form.reset();
+                // this.globalFilterDto = null;
+            } else {
+                // this._handleApplyFilter();1
+            }
+
+            HelperService.debug('[CatalogueComponent] ngOnInit getClickAction$()', {
+                form: this.form,
+            });
+        });
+        // Form for the filter end
+
         this.catalogueFacade.createBreadcrumb(this.breadCrumbs);
         // Mengimplementasi event-event dari konfigurasi card header.
         this.applyCardHeaderEvent();
@@ -432,6 +510,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.initTable();
     }
 
+    onClickFilter(): void {
+        this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+    }
+
     onClickAddCatalogue(): void {
         this.router.navigateByUrl('/pages/catalogues/add');
     }
@@ -447,6 +529,12 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             this.search = sanitized;
             this.onRefreshTable();
         }
+
+        this.keyword = $event;
+
+        if (this.form && this.form.get('search')) {
+            this.form.get('search').setValue($event);
+        }
     }
 
     ngOnDestroy(): void {
@@ -458,6 +546,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+        this.sinbadFilterService.resetConfig();
     }
 
     // -----------------------------------------------------------------------------------------------------

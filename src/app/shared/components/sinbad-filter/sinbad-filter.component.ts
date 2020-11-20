@@ -29,10 +29,15 @@ export class SinbadFilterComponent implements OnInit {
     filterSegmentCluster: boolean = false;
     filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
+    filterBrand: boolean = false;
+    filterFaktur: boolean = false;
+    filterbasePrice: boolean = false;
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
+
     sourceStatus: DefaultCheckbox[] = [];
+    sourceType: { id: string; label: string }[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
@@ -57,6 +62,24 @@ export class SinbadFilterComponent implements OnInit {
                             if (config.by['status'].sources) {
                                 this.sourceStatus = [...config.by['status'].sources];
                             }
+                        }
+
+                        if (typeof config.by['type'] !== 'undefined') {
+                            if (config.by['type'].sources) {
+                                this.sourceType = config.by['type'].sources;
+                            }
+                        }
+
+                        if (typeof config.by['brand'] !== 'undefined') {
+                            this.filterBrand = true;
+                        }
+
+                        if (typeof config.by['faktur'] !== 'undefined') {
+                            this.filterFaktur = true;
+                        }
+
+                        if (typeof config.by['basePrice'] !== 'undefined') {
+                            this.filterbasePrice = true;
                         }
 
                         if (typeof config.by['segmentChannel'] !== 'undefined') {
@@ -117,6 +140,14 @@ export class SinbadFilterComponent implements OnInit {
         this.form.get('status').setValue(sourceSelected);
     }
 
+    onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('brand').setValue(value);
+    }
+
+    onSelectedFaktur(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('faktur').setValue(value);
+    }
+
     onSelectedSegmentChannel(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
         this.form.get('segmentChannel').setValue(value);
     }
@@ -138,6 +169,14 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     trackByStatus(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
+    }
+
+    trackByType(index: number, item: any): string {
         if (!item) {
             return null;
         }
