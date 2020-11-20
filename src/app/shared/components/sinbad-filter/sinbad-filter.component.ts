@@ -19,7 +19,12 @@ import { SinbadFilterService } from './services';
 })
 export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
+    resetSegmentChannel: boolean = false;
+    resetSegmentCluster: boolean = false;
+    resetSegmentGroup: boolean = false;
+    resetSegmentType: boolean = false;
     showPanel = true;
+
     filterSegmentChannel: boolean = false;
     filterSegmentCluster: boolean = false;
     filterSegmentGroup: boolean = false;
@@ -89,6 +94,7 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     onClickReset(): void {
+        this._resetSegment();
         this._resetStatus();
         this.singleWarehouseService.selectWarehouse(null);
         this.sinbadFilterService.setClickAction('reset');
@@ -128,7 +134,7 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     onSelectedWarehouse(value: Warehouse): void {
-        this.form.get('warehouse').setValue(new Warehouse(value));
+        this.form.get('warehouse').setValue(value ? new Warehouse(value) : value);
     }
 
     trackByStatus(index: number, item: any): string {
@@ -145,5 +151,12 @@ export class SinbadFilterComponent implements OnInit {
             label,
             checked: false,
         }));
+    }
+
+    private _resetSegment(): void {
+        this.resetSegmentChannel = true;
+        this.resetSegmentCluster = true;
+        this.resetSegmentGroup = true;
+        this.resetSegmentType = true;
     }
 }

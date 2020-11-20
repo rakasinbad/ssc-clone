@@ -3,9 +3,11 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
+    SimpleChanges,
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -25,8 +27,9 @@ import { SegmentTypeService } from './services';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
+export class SegmentTypeAutocompleteComponent implements OnChanges, OnInit, OnDestroy {
     private selectedItem: string;
+    private triggerSelected: boolean = false;
     private unSubs$: Subject<any> = new Subject();
 
     readonly form: FormControl = new FormControl('');
@@ -55,37 +58,63 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
     @Input()
     type: SinbadAutocompleteType = 'single';
 
+    @Input()
+    reset: boolean;
+
+    @Output()
+    resetChange: EventEmitter<boolean> = new EventEmitter();
+
     constructor(
         private authFacade: AuthFacadeService,
         private segmentTypeService: SegmentTypeService
     ) {}
 
+    ngOnChanges(changes: SimpleChanges): void {
+        HelperService.debug('[SegmentTypeAutocompleteComponent] ngOnChanges', {
+            changes,
+        });
+
+        if (changes['reset']) {
+            if (!changes['reset'].isFirstChange()) {
+                if (changes['reset'].currentValue === true) {
+                    this.form.reset();
+                    this.resetChange.emit(false);
+                }
+            }
+        }
+    }
+
     ngOnInit(): void {
         this.collections$ = this.segmentTypeService.collections$;
         this.loading$ = this.segmentTypeService.loading$;
 
-        combineLatest([this.form.valueChanges])
+        this.form.valueChanges
             .pipe(
                 debounceTime(500),
-                withLatestFrom(this.authFacade.getUserSupplier$, ([value], { supplierId }) => ({
+                withLatestFrom(this.authFacade.getUserSupplier$, (value, { supplierId }) => ({
                     value: this._convertKeyword(value),
                     supplierId,
                 })),
                 tap(({ value, supplierId }) =>
                     HelperService.debug(
-                        '[SegmentTypeAutocompleteComponent] ngOnInit combineLatest',
+                        '[SegmentTypeAutocompleteComponent] ngOnInit valueChanges',
                         {
                             value,
                             supplierId,
+                            triggerSelected: this.triggerSelected,
                         }
                     )
                 ),
                 filter(({ value, supplierId }) => {
-                    if (this.limitLength > 0) {
-                        return value && value.length >= this.limitLength && !!supplierId;
-                    }
+                    if (this.triggerSelected) {
+                        return (this.triggerSelected = false);
+                    } else {
+                        if (this.limitLength > 0) {
+                            return value && value.length >= this.limitLength && !!supplierId;
+                        }
 
-                    return !!supplierId;
+                        return !!supplierId;
+                    }
                 }),
                 takeUntil(this.unSubs$)
             )
@@ -185,6 +214,7 @@ export class SegmentTypeAutocompleteComponent implements OnInit, OnDestroy {
         HelperService.debug('[SegmentTypeAutocompleteComponent] onSelectedAutocomplete', { value });
 
         this.selectedItem = value ? JSON.stringify(value) : null;
+        this.triggerSelected = true;
 
         this.selectedValue.emit(value);
     }
