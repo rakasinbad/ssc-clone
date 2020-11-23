@@ -195,6 +195,7 @@ export class CrossSellingPromoFormService {
                 ],
                 shortDescription: null,
                 firstBuy: false,
+                multiplication: false
             }),
             groupSetting: this.fb.group({
                 groups: this.fb.array([this._createGroupForm(), this._createGroupForm()]),
@@ -298,6 +299,16 @@ export class CrossSellingPromoFormService {
                 chosenStore: null,
                 // Segmentation Base = Segmentation
                 chosenWarehouse: null,
+                // chosenWarehouse: [null, 
+                //     [
+                //     RxwebValidators.required({
+                //         message: this.errorMessageService.getErrorMessageNonState(
+                //             'default',
+                //             'required'
+                //         ),
+                //     }),
+                //     ],
+                // ],
                 chosenStoreType: null,
                 chosenStoreGroup: null,
                 chosenStoreChannel: null,

@@ -5,6 +5,7 @@ export interface GeneralInfoFormDto {
     endDate: string;
     externalId: string;
     firstBuy: boolean;
+    multiplication: boolean;
     image: string;
     maxRedemptionPerStore: number;
     name: string;

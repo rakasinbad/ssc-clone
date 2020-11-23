@@ -1,16 +1,19 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
     OnDestroy,
     OnInit,
+    OnChanges,
     Output,
     QueryList,
     TemplateRef,
     ViewChild,
     ViewChildren,
     ViewEncapsulation,
+    SimpleChanges
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { MatRadioChange, MatSelect, MatSelectChange } from '@angular/material';
@@ -29,9 +32,11 @@ import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { GroupFormDto } from '../../../models';
+import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
-
+import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
+import { MAT_MENU_SCROLL_STRATEGY_FACTORY } from '@angular/material/menu/typings/menu-trigger';
+import { CrossSellingPromoFormPageComponent } from '../../../pages/cross-selling-promo-form-page/cross-selling-promo-form-page.component'
 @Component({
     selector: 'app-cross-selling-promo-group-form',
     templateUrl: './cross-selling-promo-group-form.component.html',
@@ -40,7 +45,7 @@ import { CrossSellingPromoFormService } from '../../../services';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
+export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     readonly prefixPayloadGroup: string = 'Group';
@@ -56,7 +61,12 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
     conditionBaseType = ConditionBase;
     groups: FormArray;
     hiddenInoviceGroup: boolean = false;
+    warehouseSelected = [];
+    errorWarehouse: boolean = false;
+    statusMulti: boolean = false;
 
+    @Input() getGeneral: FormGroup;
+    @Output() getGeneralChange = new EventEmitter();
     @Input()
     form: FormGroup;
 
@@ -86,12 +96,13 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
 
     @ViewChildren('selectSku')
     selectSku: QueryList<CataloguesDropdownComponent>;
-
+    
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
         private errorMessageService: ErrorMessageService,
-        private helperService: HelperService
+        private helperService: HelperService,
+        private cdRef: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
@@ -103,7 +114,6 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
             .subscribe((item) => (this.invoiceGroups = item));
 
         this.groups = this.form.get('groups') as FormArray;
-
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
                 this._handleFormValue();
@@ -111,11 +121,41 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
 
             this.formStatus.emit(status);
         });
+         // Mark for check
+         this.cdRef.detectChanges();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['getGeneral'].currentValue) {
+            this.statusMulti = this.getGeneral['multiplication'];
+        }
+         
     }
 
     ngOnDestroy(): void {
         this.unSubs$.next();
         this.unSubs$.complete();
+    }
+
+    onWarehouseSelected(ev: Warehouse[]): void {
+        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+        // chosenWarehouseCtrl.markAsDirty();
+        // chosenWarehouseCtrl.markAsTouched();
+        if (!ev.length) {
+            // chosenWarehouseCtrl.setValue('');
+            this.errorWarehouse = true;
+            this.warehouseSelected = [];
+        } else {
+            this.errorWarehouse = false;
+            const newWarehouses: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'warehouses',
+            }));
+            
+            this.warehouseSelected = newWarehouses;
+            // chosenWarehouseCtrl.setValue(this.warehouseSelected);
+        }
     }
 
     onApplySku(value: Selection[], idx: number): void {
@@ -131,12 +171,29 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
     }
 
     onChangeConditionBase(ev: MatRadioChange, idx: number): void {
-        if (ev.value === ConditionBase.ORDER_VALUE) {
-            this._clearOrderQtyValidation(idx);
-            this._setOrderValueValidation(idx);
+        if (this.statusMulti == true) {
+            const choosenBase = this.form.get(['groups', 1, 'conditionBase']);
+                if (ev.value === ConditionBase.ORDER_VALUE) {
+                    choosenBase.setValue('value');
+                    this._clearOrderQtyValidation(0);
+                    this._clearOrderQtyValidation(1);
+                    this._setOrderValueValidation(0);
+                    this._setOrderValueValidation(1);
+                } else {
+                    choosenBase.setValue('qty');
+                    this._clearOrderValueValidation(0);
+                    this._clearOrderValueValidation(1);
+                    this._setOrderQtyValidation(0);
+                    this._setOrderQtyValidation(1);
+                }
         } else {
-            this._clearOrderValueValidation(idx);
-            this._setOrderQtyValidation(idx);
+            if (ev.value === ConditionBase.ORDER_VALUE) {
+                this._clearOrderQtyValidation(idx);
+                this._setOrderValueValidation(idx);
+            } else {
+                this._clearOrderValueValidation(idx);
+                this._setOrderQtyValidation(idx);
+            }
         }
     }
 
@@ -193,6 +250,11 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
 
     private _handleFormValue(): void {
         const { groups } = this.form.getRawValue();
+        const payloadWarehouse = {
+            dataTarget: {}
+        };
+
+        payloadWarehouse['dataTarget'] = this._payloadTypeSegment(payloadWarehouse['dataTarget'], this.warehouseSelected);
 
         const groupOne = groups && groups.length ? groups[0] : null;
         const skuGroupOne = groupOne['chosenSku'];
@@ -247,9 +309,26 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
                 catalogueId: [...newGroupOne, ...newGroupTwo].map((item) => item.catalogueId),
             },
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
+            dataTarget: payloadWarehouse['dataTarget']
         };
-
         this.formValue.emit(payload);
+    }
+
+    private _payloadTypeSegment(payloadSegment: SettingTargetDto, chosenWarehouse: any): SettingTargetDto {
+        delete payloadSegment['chosenStore'];
+
+        // Warehouse
+        const newWarehouse =
+            chosenWarehouse && chosenWarehouse.length
+                ? chosenWarehouse.map((item: Selection) => +item.id)
+                : [];
+        payloadSegment['warehouseId'] = newWarehouse;
+        payloadSegment['channelId'] = [];
+        payloadSegment['clusterId'] = [];
+        payloadSegment['groupId'] = [];
+        payloadSegment['typeId'] = [];
+
+        return payloadSegment;
     }
 
     private _ruleShowAlert(value: Selection[], idx: number): void {

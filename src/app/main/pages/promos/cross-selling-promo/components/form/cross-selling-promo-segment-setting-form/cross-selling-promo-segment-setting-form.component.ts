@@ -19,7 +19,7 @@ import {
     StoreSegmentationCluster,
     StoreSegmentationGroup,
 } from 'app/main/pages/catalogues/models';
-import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
+// import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
@@ -58,6 +58,16 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
     @Output()
     formValue: EventEmitter<SegmentSettingFormDto> = new EventEmitter();
+
+    public storeTypeSelectAll: string;
+    public storeTypeLength: number;
+    public storeGroupSelectAll: string;
+    public storeGroupLength: number;
+    public storeChannelSelectAll: string;
+    public storeChannelLength: number;
+    public storeClusterSelectAll: string;
+    public storeClusterLength: number;
+    message:any;
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
@@ -121,6 +131,78 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
                     horizontalPosition: 'right',
                 });
                 return;
+        }
+    }
+
+    /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store type
+     * @param {event} 
+     * @returns {void}
+     * @memberof Cross Selling Promo Segmentation Setting
+     */
+    dataValueStore(value): void {
+        let storeTypeValue = value.data[0];
+        this.storeTypeLength = value.total;
+        if (value.total > 1) {
+            this.storeTypeSelectAll = storeTypeValue.name + ' (+'+(this.storeTypeLength - 1)+' others)';
+        } else {
+            this.storeTypeSelectAll = storeTypeValue.name;
+        }
+    }
+
+       /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store group
+     * @param {event} 
+     * @returns {void}
+     * @memberof Cross Selling Promo Segmentation Setting
+     */
+    dataValueGroup(value): void {
+        let storeGroupValue = value.data[0];
+        this.storeGroupLength = value.total;
+        if (value.total > 1) {
+            this.storeGroupSelectAll = storeGroupValue.name + ' (+'+(this.storeGroupLength - 1)+' others)';
+        } else {
+            this.storeGroupSelectAll = storeGroupValue.name;
+        }
+    }
+
+      /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store channel
+     * @param {event} 
+     * @returns {void}
+     * @memberof Cross Selling Promo Segmentation Setting
+     */
+    dataValueChannel(value): void {
+        let storeChannelValue = value.data[0];
+        this.storeChannelLength = value.total;
+        if (value.total > 1) {
+            this.storeChannelSelectAll = storeChannelValue.name + ' (+'+(this.storeChannelLength - 1)+' others)';
+        } else {
+            this.storeChannelSelectAll = storeChannelValue.name;
+        }
+    }
+
+    /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value store cluster
+     * @param {event} 
+     * @returns {void}
+     * @memberof Cross Selling Promo Segmentation Setting
+     */
+    dataValueCluster(value): void {
+        let storeClusterValue = value.data[0];
+        this.storeClusterLength = value.total;
+        if (value.total > 1) {
+            this.storeClusterSelectAll = storeClusterValue.name + ' (+'+(this.storeClusterLength - 1)+' others)';
+        } else {
+            this.storeClusterSelectAll = storeClusterValue.name;
         }
     }
 
@@ -219,24 +301,24 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
     }
 
-    onWarehouseSelected(ev: Warehouse[]): void {
-        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+    // onWarehouseSelected(ev: Warehouse[]): void {
+    //     const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
 
-        chosenWarehouseCtrl.markAsDirty();
-        chosenWarehouseCtrl.markAsTouched();
+    //     chosenWarehouseCtrl.markAsDirty();
+    //     chosenWarehouseCtrl.markAsTouched();
 
-        if (!ev.length) {
-            chosenWarehouseCtrl.setValue(null);
-        } else {
-            const newWarehouses: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
-                group: 'warehouses',
-            }));
+    //     if (!ev.length) {
+    //         chosenWarehouseCtrl.setValue(null);
+    //     } else {
+    //         const newWarehouses: Selection[] = ev.map((item) => ({
+    //             id: item.id,
+    //             label: item.name,
+    //             group: 'warehouses',
+    //         }));
 
-            chosenWarehouseCtrl.setValue(newWarehouses);
-        }
-    }
+    //         chosenWarehouseCtrl.setValue(newWarehouses);
+    //     }
+    // }
 
     private _handleFormValue(): void {
         const {
@@ -265,7 +347,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
                     chosenStoreCluster,
                     chosenStoreGroup,
                     chosenStoreType,
-                    chosenWarehouse,
                 });
                 break;
 
@@ -275,7 +356,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
                         chosenStoreCluster,
                         chosenStoreGroup,
                         chosenStoreType,
-                        chosenWarehouse,
                     });
                     break;
 
@@ -303,15 +383,15 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreCluster,
             chosenStoreGroup,
             chosenStoreType,
-            chosenWarehouse,
+            // chosenWarehouse,
         } = body;
 
-        // Warehouse
-        const newWarehouse =
-            chosenWarehouse && chosenWarehouse.length
-                ? chosenWarehouse.map((item: Selection) => +item.id)
-                : [];
-        payload['warehouseId'] = newWarehouse;
+        // // Warehouse
+        // const newWarehouse =
+        //     chosenWarehouse && chosenWarehouse.length
+        //         ? chosenWarehouse.map((item: Selection) => +item.id)
+        //         : [];
+        // payload['warehouseId'] = newWarehouse;
 
         // Store Type
         const newStoreType =

@@ -7,6 +7,33 @@
             Cross Selling Group
         </span>
 
+        <div
+            class="custom-field"
+            fxLayout="row"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="16px"
+            [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+        >
+            <label fxFlexAlign="center" fxFlex="12">
+                <!-- <span class="sinbad-red-fg">*</span> -->
+                Warehouse<br />
+                ({{ warehouseSelected.length || 0 }} Selected)
+            </label>
+
+            <select-warehouses
+                [initialSelection]="[]"
+                [disabled]="false"
+                placeholder="Choose Warehouse"
+                [required]="false"
+                (selected)="onWarehouseSelected($event)"
+                fxFlex="50"
+            >
+                <mat-hint class="mat-error" *ngIf="errorWarehouse == true">
+                    This field is required.
+                </mat-hint>
+            </select-warehouses>
+        </div>
+
         <div class="form-box" formArrayName="groups">
             <div
                 class="box-group"
@@ -53,40 +80,132 @@
                                 Base
                             </label>
 
-                            <div fxFlexAlign="center" fxFlex="50">
-                                <ng-container *ngIf="conditionBase; else noConditionBase">
-                                    <mat-radio-group
-                                        [formControl]="
-                                            form.get(['groups', groupIdx, 'conditionBase'])
-                                        "
-                                        (change)="onChangeConditionBase($event, groupIdx)"
-                                    >
-                                        <mat-radio-button
-                                            *ngFor="let row of conditionBase"
-                                            [value]="row.id"
+                            <ng-container *ngIf="statusMulti == true">
+                                <ng-container *ngIf="groupIdx == 0">
+                                    <div fxFlexAlign="center" fxFlex="50">
+                                        <ng-container *ngIf="conditionBase; else noConditionBase">
+                                            <mat-radio-group
+                                                [formControl]="form.get(['groups', groupIdx, 'conditionBase'])"
+                                                (change)="onChangeConditionBase($event, groupIdx)"
+                                            >
+                                                <mat-radio-button
+                                                    *ngFor="let row of conditionBase"
+                                                    [value]="row.id"
+                                                >
+                                                    {{ row.label }}
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </ng-container>
+
+                                        <ng-template #noConditionBase> - </ng-template>
+
+                                        <mat-hint
+                                            class="mat-error"
+                                            *ngIf="
+                                                form.get(['groups', groupIdx, 'conditionBase'])
+                                                    .value ||
+                                                    form.get(['groups', groupIdx, 'conditionBase'])
+                                                        .touched
+                                                    | hasErrorField
+                                                        : form.get([
+                                                              'groups',
+                                                              groupIdx,
+                                                              'conditionBase'
+                                                          ])
+                                            "
                                         >
-                                            {{ row.label }}
-                                        </mat-radio-button>
-                                    </mat-radio-group>
+                                            {{
+                                                form.get(['groups', groupIdx, 'conditionBase'])
+                                                    .value
+                                                    | errorMessage
+                                                        : form
+                                                        : 'conditionBase'
+                                                        : 'groups'
+                                                        : groupIdx
+                                            }}
+                                        </mat-hint>
+                                    </div>
                                 </ng-container>
 
-                                <ng-template #noConditionBase> - </ng-template>
+                                <ng-container *ngIf="groupIdx == 1">
+                                    <div fxFlexAlign="center" fxFlex="50">
+                                        <ng-container *ngIf="conditionBase; else noConditionBase">
+                                            <mat-radio-group
+                                                [value]="form.get(['groups', 1, 'conditionBase']).value"
+                                                [disabled]="true"
+                                            >
+                                                <mat-radio-button
+                                                    *ngFor="let row of conditionBase"
+                                                    [value]="row.id"
+                                                >
+                                                    {{ row.label }}
+                                                </mat-radio-button>
+                                            </mat-radio-group>
+                                        </ng-container>
 
-                                <mat-hint
-                                    class="mat-error"
-                                    *ngIf="
-                                        form.get(['groups', groupIdx, 'conditionBase']).value ||
-                                            form.get(['groups', groupIdx, 'conditionBase']).touched
-                                            | hasErrorField
-                                                : form.get(['groups', groupIdx, 'conditionBase'])
-                                    "
-                                >
-                                    {{
-                                        form.get(['groups', groupIdx, 'conditionBase']).value
-                                            | errorMessage: form:'conditionBase':'groups':groupIdx
-                                    }}
-                                </mat-hint>
-                            </div>
+                                        <ng-template #noConditionBase> - </ng-template>
+
+                                        <mat-hint
+                                            class="mat-error"
+                                            *ngIf="
+                                                form.get(['groups', 1, 'conditionBase']).value ||
+                                                    form.get(['groups', 1, 'conditionBase']).touched
+                                                    | hasErrorField
+                                                        : form.get(['groups', 1, 'conditionBase'])
+                                            "
+                                        >
+                                            {{
+                                                form.get(['groups', 1, 'conditionBase']).value
+                                                    | errorMessage: form:'conditionBase':'groups':1
+                                            }}
+                                        </mat-hint>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+
+                            <ng-container *ngIf="statusMulti == false">
+                                <div fxFlexAlign="center" fxFlex="50">
+                                    <ng-container *ngIf="conditionBase; else noConditionBase">
+                                        <mat-radio-group
+                                            [formControl]="form.get(['groups', groupIdx, 'conditionBase'])"
+                                            (change)="onChangeConditionBase($event, groupIdx)"
+                                        >
+                                            <mat-radio-button
+                                                *ngFor="let row of conditionBase"
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </ng-container>
+
+                                    <ng-template #noConditionBase> - </ng-template>
+
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="
+                                            form.get(['groups', groupIdx, 'conditionBase']).value ||
+                                                form.get(['groups', groupIdx, 'conditionBase'])
+                                                    .touched
+                                                | hasErrorField
+                                                    : form.get([
+                                                          'groups',
+                                                          groupIdx,
+                                                          'conditionBase'
+                                                      ])
+                                        "
+                                    >
+                                        {{
+                                            form.get(['groups', groupIdx, 'conditionBase']).value
+                                                | errorMessage
+                                                    : form
+                                                    : 'conditionBase'
+                                                    : 'groups'
+                                                    : groupIdx
+                                        }}
+                                    </mat-hint>
+                                </div>
+                            </ng-container>
                         </div>
 
                         <div
