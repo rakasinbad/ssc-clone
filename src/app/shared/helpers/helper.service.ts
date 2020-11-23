@@ -43,6 +43,7 @@ export class HelperService {
         'groupId',
         'hasChild',
         'keyword',
+        'search',
         'status',
         'statusPayment',
         'supplierId',
