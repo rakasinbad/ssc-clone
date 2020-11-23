@@ -71,6 +71,15 @@ app-sinbad-filter {
         max-width: 118px;
         height: 40px;
     }
+
+    // Custom text suffix
+    .mat-form-field-suffix {
+        .text-suffix {
+            top: -5.5px;
+            position: relative;
+            color: sinbad-color('black', '60');
+        }
+    }
 }
 
 // :host-context(.sinbad-filter) app-sinbad-filter {

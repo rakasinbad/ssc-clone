@@ -1,7 +1,3 @@
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
-import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
-import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
 import {
     AfterViewInit,
     Component,
@@ -12,6 +8,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -19,13 +16,16 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
+import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { CardHeaderComponent } from 'app/shared/components/card-header/card-header.component';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
-import { GeneratorService, HelperService, NoticeService } from 'app/shared/helpers';
+import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
+import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
@@ -33,13 +33,13 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { Catalogue } from './models';
-import { CatalogueFacadeService, CataloguesService } from './services';
+import { Catalogue, CatalogueFilterDto } from './models';
+import { CatalogueFacadeService } from './services';
 import { statusCatalogue } from './status';
 import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
@@ -57,7 +57,7 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private form: FormGroup;
     private unSubs$: Subject<any> = new Subject<any>();
-    
+
     private breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -112,9 +112,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             type: {
                 title: 'Type',
-                sources: [
-                    { id: 'bonus', label: 'Bonus' },
-                ],
+                sources: [{ id: 'bonus', label: 'Bonus' }],
             },
             brand: {
                 title: 'Brand',
@@ -133,6 +131,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     keyword: string = null;
+    globalFilterDto: CatalogueFilterDto;
 
     dataSource: MatTableDataSource<Catalogue>;
     initialDisplayedColumns = [
@@ -170,6 +169,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild('filter', { static: true })
     filter: ElementRef;
+
+    @ViewChild('cardHeader', { static: true })
+    cardHeader: CardHeaderComponent;
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
@@ -260,37 +262,39 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         // Form for the filter
         this.form = this.fb.group({
+            basePrice: null,
+            brand: null,
+            faktur: null,
+            maxAmount: null,
+            minAmount: null,
             search: null,
             status: null,
             type: null,
-            brand: null,
-            faktur: null,
-            basePrice: null,
-            minAmount: null,
-            maxAmount: null,
-
         });
+
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+
         // Handle action in filter
         this.sinbadFilterService
-        .getClickAction$()
-        .pipe(
-            filter((action) => action === 'reset' || action === 'submit'),
-            takeUntil(this.unSubs$)
-        )
-        .subscribe((action) => {
-            if (action === 'reset') {
-                // this.cardHeader.reset();
-                // this._form.reset();
-                // this.globalFilterDto = null;
-            } else {
-                // this._handleApplyFilter();1
-            }
+            .getClickAction$()
+            .pipe(
+                filter((action) => action === 'reset' || action === 'submit'),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((action) => {
+                if (action === 'reset') {
+                    this.cardHeader.reset();
+                    this.form.reset();
+                    this.globalFilterDto = null;
+                } else {
+                    // this._handleApplyFilter();1
+                }
 
-            HelperService.debug('[CatalogueComponent] ngOnInit getClickAction$()', {
-                form: this.form,
+                HelperService.debug('[CatalogueComponent] ngOnInit getClickAction$()', {
+                    form: this.form,
+                    filterConfig: this.filterConfig,
+                });
             });
-        });
         // Form for the filter end
 
         this.catalogueFacade.createBreadcrumb(this.breadCrumbs);
@@ -790,5 +794,72 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 })
             );
         }
+    }
+
+    private _handleApplyFilter(): void {
+        this.globalFilterDto = {};
+
+        const { brand, faktur, maxAmount, minAmount, status, type } = this.form.value;
+
+        const configStatus = this.filterConfig.by['status'];
+        const totalStatusSource =
+            configStatus && configStatus.sources && configStatus.sources.length;
+        /* const newStatus = this.catalogueSegmentationService.prepareStatusValue(
+            status,
+            totalStatusSource
+        );
+        const channelId = this.catalogueSegmentationService.prepareSegmentChannelValue(
+            segmentChannel
+        );
+        const clusterId = this.catalogueSegmentationService.prepareSegmentClusterValue(
+            segmentCluster
+        );
+        const groupId = this.catalogueSegmentationService.prepareSegmentGroupValue(segmentGroup);
+        const typeId = this.catalogueSegmentationService.prepareSegmentGroupValue(segmentType);
+        const warehouseId = this.catalogueSegmentationService.prepareWarehouseValue(warehouse);
+
+        this.globalFilterDto = {
+            status: newStatus,
+        };
+
+        // Handle filter segment channel
+        if (channelId) {
+            this.globalFilterDto = {
+                ...this.globalFilterDto,
+                channelId,
+            };
+        }
+
+        // Handle filter segment cluster
+        if (clusterId) {
+            this.globalFilterDto = {
+                ...this.globalFilterDto,
+                clusterId,
+            };
+        }
+
+        // Handle filter segment group
+        if (groupId) {
+            this.globalFilterDto = {
+                ...this.globalFilterDto,
+                groupId,
+            };
+        }
+
+        // Handle filter segment type
+        if (typeId) {
+            this.globalFilterDto = {
+                ...this.globalFilterDto,
+                typeId,
+            };
+        }
+
+        // Handle filter warehouse
+        if (warehouseId) {
+            this.globalFilterDto = {
+                ...this.globalFilterDto,
+                warehouseId,
+            };
+        } */
     }
 }

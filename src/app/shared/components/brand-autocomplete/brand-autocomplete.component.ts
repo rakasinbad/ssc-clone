@@ -3,9 +3,11 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
+    SimpleChanges,
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -25,7 +27,9 @@ import { BrandService } from './services';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BrandAutocompleteComponent implements OnInit, OnDestroy {
+export class BrandAutocompleteComponent implements OnChanges, OnInit, OnDestroy {
+    private selectedItem: string;
+    private triggerSelected: boolean = false;
     private unSubs$: Subject<any> = new Subject();
 
     readonly form: FormControl = new FormControl('');
@@ -54,37 +58,57 @@ export class BrandAutocompleteComponent implements OnInit, OnDestroy {
     @Input()
     brand: SinbadAutocompleteType = 'single';
 
-    constructor(
-        private authFacade: AuthFacadeService,
-        private BrandService: BrandService
-    ) {}
+    @Input()
+    reset: boolean;
+
+    @Output()
+    resetChange: EventEmitter<boolean> = new EventEmitter();
+
+    constructor(private authFacade: AuthFacadeService, private BrandService: BrandService) {}
+
+    ngOnChanges(changes: SimpleChanges): void {
+        HelperService.debug('[BrandAutocompleteComponent] ngOnChanges', {
+            changes,
+        });
+
+        if (changes['reset']) {
+            if (!changes['reset'].isFirstChange()) {
+                if (changes['reset'].currentValue === true) {
+                    this.form.reset();
+                    this.resetChange.emit(false);
+                }
+            }
+        }
+    }
 
     ngOnInit(): void {
         this.collections$ = this.BrandService.collections$;
         this.loading$ = this.BrandService.loading$;
 
-        combineLatest([this.form.valueChanges])
+        this.form.valueChanges
             .pipe(
                 debounceTime(500),
-                withLatestFrom(this.authFacade.getUserSupplier$, ([value], { supplierId }) => ({
+                withLatestFrom(this.authFacade.getUserSupplier$, (value, { supplierId }) => ({
                     value: this._convertKeyword(value),
                     supplierId,
                 })),
                 tap(({ value, supplierId }) =>
-                    HelperService.debug(
-                        '[BrandAutocompleteComponent] ngOnInit combineLatest',
-                        {
-                            value,
-                            supplierId,
-                        }
-                    )
+                    HelperService.debug('[BrandAutocompleteComponent] ngOnInit valueChanges', {
+                        value,
+                        supplierId,
+                        triggerSelected: this.triggerSelected,
+                    })
                 ),
                 filter(({ value, supplierId }) => {
-                    if (this.limitLength > 0) {
-                        return value && value.length >= this.limitLength && !!supplierId;
-                    }
+                    if (this.triggerSelected) {
+                        return (this.triggerSelected = false);
+                    } else {
+                        if (this.limitLength > 0) {
+                            return value && value.length >= this.limitLength && !!supplierId;
+                        }
 
-                    return !!supplierId;
+                        return !!supplierId;
+                    }
                 }),
                 takeUntil(this.unSubs$)
             )
@@ -103,9 +127,19 @@ export class BrandAutocompleteComponent implements OnInit, OnDestroy {
     }
 
     onClosedAutocompete(): void {
-        HelperService.debug('[BrandAutocompleteComponent] onClosedAutocompete');
+        HelperService.debug('[BrandAutocompleteComponent] onClosedAutocompete', {
+            form: this.form,
+            typeForm: typeof this.form.value,
+        });
 
-        this.form.reset();
+        const formValue =
+            typeof this.form.value === 'object' ? JSON.stringify(this.form.value) : this.form.value;
+
+        if (!this.selectedItem || this.selectedItem !== formValue) {
+            this.form.reset();
+            this.selectedItem = null;
+            this.selectedValue.emit(null);
+        }
     }
 
     onOpenedAutocomplete(): void {
@@ -118,7 +152,7 @@ export class BrandAutocompleteComponent implements OnInit, OnDestroy {
                     value: this._convertKeyword(this.form.value),
                     supplierId,
                 })),
-                filter(({ supplierId }) => !!supplierId)
+                filter(({ value, supplierId }) => !value && !!supplierId)
             )
             .subscribe({
                 next: ({ value, supplierId }) => {
@@ -152,26 +186,24 @@ export class BrandAutocompleteComponent implements OnInit, OnDestroy {
             )
             .subscribe({
                 next: ({ totalCollections, value, supplierId }) => {
-                    HelperService.debug(
-                        '[BrandAutocompleteComponent] onScrollToBottom next',
-                        {
-                            totalCollections,
-                            value,
-                            supplierId,
-                        }
-                    );
+                    HelperService.debug('[BrandAutocompleteComponent] onScrollToBottom next', {
+                        totalCollections,
+                        value,
+                        supplierId,
+                    });
 
                     this._initScrollCollections(totalCollections, value, supplierId);
                 },
                 complete: () =>
-                    HelperService.debug(
-                        '[BrandAutocompleteComponent] onScrollToBottom complete'
-                    ),
+                    HelperService.debug('[BrandAutocompleteComponent] onScrollToBottom complete'),
             });
     }
 
     onSelectedAutocomplete(value: SinbadAutocompleteSource): void {
         HelperService.debug('[BrandAutocompleteComponent] onSelectedAutocomplete', { value });
+
+        this.selectedItem = value ? JSON.stringify(value) : null;
+        this.triggerSelected = true;
 
         this.selectedValue.emit(value);
     }
@@ -196,7 +228,7 @@ export class BrandAutocompleteComponent implements OnInit, OnDestroy {
 
         if (keyword) {
             params['search'].push({
-                fieldName: 'keyword',
+                fieldName: 'search',
                 keyword,
             });
         }
@@ -224,7 +256,7 @@ export class BrandAutocompleteComponent implements OnInit, OnDestroy {
 
         if (keyword) {
             params['search'].push({
-                fieldName: 'keyword',
+                fieldName: 'search',
                 keyword,
             });
         }

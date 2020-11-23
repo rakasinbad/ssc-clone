@@ -1,4 +1,5 @@
 export * from './catalogue-amount.model';
+export * from './catalogue-filter.model';
 export * from './catalogue-information.model';
 export * from './catalogue-media.model';
 export * from './catalogue-price.model';

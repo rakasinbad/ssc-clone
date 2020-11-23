@@ -19,6 +19,8 @@ import { SinbadFilterService } from './services';
 })
 export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
+    resetBrand: boolean = false;
+    resetFaktur: boolean = false;
     resetSegmentChannel: boolean = false;
     resetSegmentCluster: boolean = false;
     resetSegmentGroup: boolean = false;
@@ -117,6 +119,8 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     onClickReset(): void {
+        this.resetBrand = true;
+        this.resetFaktur = true;
         this._resetSegment();
         this._resetStatus();
         this.singleWarehouseService.selectWarehouse(null);

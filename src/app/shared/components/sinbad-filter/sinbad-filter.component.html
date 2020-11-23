@@ -67,9 +67,7 @@
                 class="sinbad__expansion-panel--filter mat-elevation-z0"
                 [expanded]="showPanel"
             >
-                <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.type?.title as typeTitle"
-                >
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.type?.title as typeTitle">
                     <mat-panel-title class="sinbad__filter-title">
                         {{ typeTitle }}
                     </mat-panel-title>
@@ -77,12 +75,10 @@
 
                 <ng-template matExpansionPanelContent>
                     <div [class.sinbad__filter-checkbox--container]="sourceType.length > 2">
-                        <div
-                            class="sinbad__filter-checkbox"
-                            [class.reset]="sourceType.length < 3"
-                        >
+                        <div class="sinbad__filter-checkbox" [class.reset]="sourceType.length < 3">
                             <mat-checkbox
                                 *ngFor="let type of sourceType; trackBy: trackByType"
+                                [formControl]="form.get('type')"
                                 [value]="type?.id"
                                 [matTooltip]="type?.label"
                                 disableRipple
@@ -112,6 +108,7 @@
 
                 <ng-template matExpansionPanelContent>
                     <brand-autocomplete
+                        [(reset)]="resetBrand"
                         (selectedValue)="onSelectedBrand($event)"
                     ></brand-autocomplete>
                 </ng-template>
@@ -135,6 +132,7 @@
 
                 <ng-template matExpansionPanelContent>
                     <faktur-autocomplete
+                        [(reset)]="resetFaktur"
                         (selectedValue)="onSelectedFaktur($event)"
                     ></faktur-autocomplete>
                 </ng-template>
@@ -148,12 +146,16 @@
                 class="sinbad__expansion-panel--filter mat-elevation-z0"
                 [expanded]="showPanel"
             >
-                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.basePrice?.title as basePriceTitle">
-                    <mat-panel-title class="sinbad__filter-title">{{ basePriceTitle }}</mat-panel-title>
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.basePrice?.title as basePriceTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ basePriceTitle }}
+                    </mat-panel-title>
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <div fxLayout="column">
+                    <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
                             <input
                                 #minTargetInput
@@ -245,7 +247,7 @@
             </mat-expansion-panel>
         </mat-list>
         <!-- / SEGMENTATION TYPE -->
-        
+
         <!-- SEGMENTATION GROUP -->
         <mat-list *ngIf="filterSegmentGroup">
             <mat-expansion-panel

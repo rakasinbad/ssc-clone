@@ -2,8 +2,8 @@ import { SinbadAutocompleteSource } from '../../sinbad-autocomplete/models';
 
 export interface FakturResponse {
     readonly id: NonNullable<string>;
-    description: string;
-    externalId: string;
+    code: string;
+    minimumOrder: number;
     name: string;
     status: 'active' | 'inactive';
 }
