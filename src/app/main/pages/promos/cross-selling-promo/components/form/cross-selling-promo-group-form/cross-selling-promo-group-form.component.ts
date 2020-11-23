@@ -1,16 +1,19 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
     OnDestroy,
     OnInit,
+    OnChanges,
     Output,
     QueryList,
     TemplateRef,
     ViewChild,
     ViewChildren,
     ViewEncapsulation,
+    SimpleChanges
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import { MatRadioChange, MatSelect, MatSelectChange } from '@angular/material';
@@ -33,7 +36,7 @@ import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../
 import { CrossSellingPromoFormService } from '../../../services';
 import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
 import { MAT_MENU_SCROLL_STRATEGY_FACTORY } from '@angular/material/menu/typings/menu-trigger';
-
+import { CrossSellingPromoFormPageComponent } from '../../../pages/cross-selling-promo-form-page/cross-selling-promo-form-page.component'
 @Component({
     selector: 'app-cross-selling-promo-group-form',
     templateUrl: './cross-selling-promo-group-form.component.html',
@@ -42,7 +45,7 @@ import { MAT_MENU_SCROLL_STRATEGY_FACTORY } from '@angular/material/menu/typings
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
+export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     readonly prefixPayloadGroup: string = 'Group';
@@ -60,7 +63,10 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
     hiddenInoviceGroup: boolean = false;
     warehouseSelected = [];
     errorWarehouse: boolean = false;
+    statusMulti: boolean = false;
 
+    @Input() getGeneral: any;
+    @Output() getGeneralChange = new EventEmitter();
     @Input()
     form: FormGroup;
 
@@ -95,7 +101,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
         private errorMessageService: ErrorMessageService,
-        private helperService: HelperService
+        private helperService: HelperService,
+        private cdRef: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
@@ -107,7 +114,6 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
             .subscribe((item) => (this.invoiceGroups = item));
 
         this.groups = this.form.get('groups') as FormArray;
-
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
                 this._handleFormValue();
@@ -115,7 +121,18 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnDestroy {
 
             this.formStatus.emit(status);
         });
+         // Mark for check
+         this.cdRef.detectChanges();
     }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['getGeneral'].currentValue) {
+            this.statusMulti = changes['getGeneral'].currentValue;
+        }
+         
+    }
+
+    
 
     ngOnDestroy(): void {
         this.unSubs$.next();

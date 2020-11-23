@@ -503,6 +503,23 @@
                                         help
                                     </mat-icon> -->
                     </mat-checkbox>
+
+                    <mat-checkbox
+                        [formControl]="form.get('multiplication')"
+                        (change)="onChangeMultiplication($event)"
+
+                    >
+                        Multiplication
+
+                        <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Check this checkbox if you want&#10;to apply multiplication logic for&#10;cross selling promo"
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                    </mat-checkbox>
                 </div>
             </div>
             <!-- / FIRST BUY -->

@@ -195,6 +195,7 @@ export class CrossSellingPromoFormService {
                 ],
                 shortDescription: null,
                 firstBuy: false,
+                multiplication: false
             }),
             groupSetting: this.fb.group({
                 groups: this.fb.array([this._createGroupForm(), this._createGroupForm()]),
