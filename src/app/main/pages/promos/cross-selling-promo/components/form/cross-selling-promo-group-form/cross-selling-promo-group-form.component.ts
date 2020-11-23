@@ -65,7 +65,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     errorWarehouse: boolean = false;
     statusMulti: boolean = false;
 
-    @Input() getGeneral: any;
+    @Input() getGeneral: FormGroup;
     @Output() getGeneralChange = new EventEmitter();
     @Input()
     form: FormGroup;
@@ -127,12 +127,10 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['getGeneral'].currentValue) {
-            this.statusMulti = changes['getGeneral'].currentValue;
+            this.statusMulti = this.getGeneral['multiplication'];
         }
          
     }
-
-    
 
     ngOnDestroy(): void {
         this.unSubs$.next();
@@ -173,12 +171,29 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     }
 
     onChangeConditionBase(ev: MatRadioChange, idx: number): void {
-        if (ev.value === ConditionBase.ORDER_VALUE) {
-            this._clearOrderQtyValidation(idx);
-            this._setOrderValueValidation(idx);
+        if (this.statusMulti == true) {
+            const choosenBase = this.form.get(['groups', 1, 'conditionBase']);
+                if (ev.value === ConditionBase.ORDER_VALUE) {
+                    choosenBase.setValue('value');
+                    this._clearOrderQtyValidation(0);
+                    this._clearOrderQtyValidation(1);
+                    this._setOrderValueValidation(0);
+                    this._setOrderValueValidation(1);
+                } else {
+                    choosenBase.setValue('qty');
+                    this._clearOrderValueValidation(0);
+                    this._clearOrderValueValidation(1);
+                    this._setOrderQtyValidation(0);
+                    this._setOrderQtyValidation(1);
+                }
         } else {
-            this._clearOrderValueValidation(idx);
-            this._setOrderQtyValidation(idx);
+            if (ev.value === ConditionBase.ORDER_VALUE) {
+                this._clearOrderQtyValidation(idx);
+                this._setOrderValueValidation(idx);
+            } else {
+                this._clearOrderValueValidation(idx);
+                this._setOrderQtyValidation(idx);
+            }
         }
     }
 
@@ -296,7 +311,6 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
             dataTarget: payloadWarehouse['dataTarget']
         };
-
         this.formValue.emit(payload);
     }
 

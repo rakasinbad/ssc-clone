@@ -14,7 +14,7 @@
 
         <app-cross-selling-promo-group-form
             [form]="form.get('groupSetting')"
-            [getGeneral]= "form.get('generalInformation').value.multiplication"
+            [getGeneral]= "form.get('generalInformation').value"
             (formStatus)="onSetGroupSettingFormStatus($event)"
             (formValue)="groupFormDto = $event"
             (fakturName)="fakturName = $event"
