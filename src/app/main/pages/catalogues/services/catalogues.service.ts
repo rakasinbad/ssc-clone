@@ -5,11 +5,12 @@ import { BrandAutocomplete } from 'app/shared/components/brand-autocomplete/mode
 import { FakturAutocomplete } from 'app/shared/components/faktur-autocomplete/models';
 import { DefaultCheckbox } from 'app/shared/components/sinbad-filter/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQuerySearchParams } from 'app/shared/models/query.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
     Catalogue,
     CatalogueCategory,
+    CatalogueFilterDto,
     CatalogueInformation,
     ICatalogue,
     ICataloguesResponse,
@@ -345,6 +346,75 @@ export class CataloguesService implements OnDestroy {
     updatePriceSetting(priceSettingId: string, price: number): Observable<CataloguePrice> {
         this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
         return this.http.patch<CataloguePrice>(`${this._url}/${priceSettingId}`, { price });
+    }
+
+    handleSearchGlobalFilter(
+        paramsSearch: IQuerySearchParams[] = [],
+        globalFilter: CatalogueFilterDto
+    ): IQuerySearchParams[] {
+        if (globalFilter) {
+            if (globalFilter.status) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'status',
+                        keyword: globalFilter.status,
+                    },
+                ];
+            }
+
+            if (globalFilter.brandId) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'brandId',
+                        keyword: globalFilter.brandId,
+                    },
+                ];
+            }
+
+            if (globalFilter.invoiceGroupId) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'invoiceGroupId',
+                        keyword: globalFilter.invoiceGroupId,
+                    },
+                ];
+            }
+
+            if (globalFilter.type) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'type',
+                        keyword: globalFilter.type,
+                    },
+                ];
+            }
+
+            if (globalFilter.priceGte) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'priceGte',
+                        keyword: globalFilter.priceGte,
+                    },
+                ];
+            }
+
+            if (globalFilter.priceLte) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'priceLte',
+                        keyword: globalFilter.priceLte,
+                    },
+                ];
+            }
+        }
+
+        return paramsSearch;
     }
 
     prepareBrandValue(value: BrandAutocomplete): number {
