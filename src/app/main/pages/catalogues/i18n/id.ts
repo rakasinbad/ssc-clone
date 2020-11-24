@@ -22,34 +22,49 @@ export const locale = {
         },
         STATUS: {
             CATALOGUE: {
+                ACTIVE: {
+                    TITLE: 'Active',
+                },
                 ALL: {
-                    TITLE: 'All'
+                    TITLE: 'All',
                 },
                 ALL_PARAM: {
-                    TITLE: 'All ({{ allCount }})'
+                    TITLE: 'All ({{ allCount }})',
                 },
-                LIVE: {
-                    TITLE: 'Live'
+                BANNED: {
+                    TITLE: 'Banned',
                 },
-                LIVE_PARAM: {
-                    TITLE: 'Live ({{ liveCount }})'
-                },
-                EMPTY: {
-                    TITLE: 'Empty'
-                },
-                EMPTY_PARAM: {
-                    TITLE: 'Empty ({{ emptyCount }})'
+                BANNED_PARAM: {
+                    TITLE: 'Banned ({{ bannedCount }})',
                 },
                 BLOCKED: {
-                    TITLE: 'Banned'
+                    TITLE: 'Blocked',
                 },
                 BLOCKED_PARAM: {
-                    TITLE: 'Banned ({{ blockedCount }})'
+                    TITLE: 'Blocked ({{ blockedCount }})',
+                },
+                BONUS: {
+                    TITLE: 'Bonus',
+                },
+                LIVE: {
+                    TITLE: 'Live',
+                },
+                LIVE_PARAM: {
+                    TITLE: 'Live ({{ liveCount }})',
+                },
+                EMPTY: {
+                    TITLE: 'Empty',
+                },
+                EMPTY_PARAM: {
+                    TITLE: 'Empty ({{ emptyCount }})',
+                },
+                REGULAR: {
+                    TITLE: 'Regular',
                 },
                 INACTIVE: {
-                    TITLE: 'Inactive'
-                }
-            }
-        }
-    }
+                    TITLE: 'Inactive',
+                },
+            },
+        },
+    },
 };

@@ -86,10 +86,10 @@ export class CataloguesService implements OnDestroy {
         params: IQueryParams
     ): Observable<{
         total: string;
-        totalEmptyStock: string;
         totalActive: string;
+        totalBonus: string;
         totalInactive: string;
-        totalBanned: string;
+        totalRegular: string;
     }> {
         const newArgs = [];
 
@@ -106,10 +106,10 @@ export class CataloguesService implements OnDestroy {
 
         return this.http.get<{
             total: string;
-            totalEmptyStock: string;
             totalActive: string;
+            totalBonus: string;
             totalInactive: string;
-            totalBanned: string;
+            totalRegular: string;
         }>(this._url, { params: newParams });
     }
 
@@ -118,7 +118,7 @@ export class CataloguesService implements OnDestroy {
 
         const STATUS_CATALOGUES_KEYS = [
             'STATUS.CATALOGUE.ALL_PARAM.TITLE',
-            'STATUS.CATALOGUE.LIVE_PARAM.TITLE',
+            'STATUS.CATALOGUE.ACTIVE_PARAM.TITLE',
             'STATUS.CATALOGUE.EMPTY_PARAM.TITLE',
             'STATUS.CATALOGUE.BLOCKED_PARAM.TITLE',
             'STATUS.CATALOGUE.INACTIVE.TITLE',

@@ -43,7 +43,7 @@ import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 
-type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
+type TFindCatalogueMode = 'all' | 'live' | 'bonus' | 'regular' | 'inactive';
 
 @Component({
     selector: 'app-catalogues',
@@ -196,7 +196,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private updatePrivileges(): void {
-        this.ngxPermissionsService
+        /* this.ngxPermissionsService
             .hasPermission(['CATALOGUE.UPDATE', 'CATALOGUE.DELETE'])
             .then((result) => {
                 // Jika ada permission-nya.
@@ -214,7 +214,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     } else {
                         this.displayedColumns = this.initialDisplayedColumns;
                     }
-                } else {
+                }
+
+                else {
                     if (this.findCatalogueMode === 'blocked') {
                         this.displayedColumns = [
                             'name',
@@ -239,7 +241,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         ];
                     }
                 }
-            });
+            }); */
     }
 
     private applyCardHeaderEvent(): void {
@@ -361,17 +363,18 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe((payload) => {
                 const {
-                    totalAllStatus: allCount,
-                    totalActive: liveCount,
-                    totalEmptyStock: emptyStock,
-                    totalBanned: blockedCount,
+                    totalAllStatus,
+                    totalActive,
+                    totalBonus,
+                    totalRegular,
+                    totalInactive,
                 } = payload;
 
                 this.store.dispatch(
                     UiActions.updateItemNavigation({
                         payload: {
                             id: 'all-type',
-                            properties: { title: `All (${allCount})` },
+                            properties: { title: `All (${totalAllStatus})` },
                             key: 'customNavigation',
                         },
                     })
@@ -381,7 +384,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     UiActions.updateItemNavigation({
                         payload: {
                             id: 'live',
-                            properties: { title: `Active (${liveCount})` },
+                            properties: { title: `Active (${totalActive})` },
                             key: 'customNavigation',
                         },
                     })
@@ -390,8 +393,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store.dispatch(
                     UiActions.updateItemNavigation({
                         payload: {
-                            id: 'empty',
-                            properties: { title: `Empty (${emptyStock})` },
+                            id: 'bonus',
+                            properties: { title: `Bonus (${totalBonus})` },
                             key: 'customNavigation',
                         },
                     })
@@ -400,8 +403,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store.dispatch(
                     UiActions.updateItemNavigation({
                         payload: {
-                            id: 'banned',
-                            properties: { title: `Banned (${blockedCount})` },
+                            id: 'regular',
+                            properties: { title: `Regular (${totalRegular})` },
                             key: 'customNavigation',
                         },
                     })
@@ -411,7 +414,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     UiActions.updateItemNavigation({
                         payload: {
                             id: 'inactive',
-                            properties: { title: `Inactive` },
+                            properties: { title: `Inactive (${totalInactive})` },
                             key: 'customNavigation',
                         },
                     })
@@ -426,10 +429,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.findCatalogueMode = 'all';
                 } else if (index === 'live') {
                     this.findCatalogueMode = 'live';
-                } else if (index === 'empty') {
-                    this.findCatalogueMode = 'empty';
-                } else if (index === 'blocked') {
-                    this.findCatalogueMode = 'blocked';
+                } else if (index === 'bonus') {
+                    this.findCatalogueMode = 'bonus';
+                } else if (index === 'regular') {
+                    this.findCatalogueMode = 'regular';
                 } else if (index === 'inactive') {
                     this.findCatalogueMode = 'inactive';
                 }
@@ -642,12 +645,26 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 case 'live':
                     data['status'] = 'active';
                     break;
-                case 'empty':
+                case 'bonus':
+                    data['status'] = 'active';
+                    data['search'] = [
+                        ...(data['search'] && data['search'].length ? data['search'] : []),
+                        { fieldName: 'type', keyword: 'bonus' },
+                    ];
+                    break;
+                case 'regular':
+                    data['status'] = 'active';
+                    data['search'] = [
+                        ...(data['search'] && data['search'].length ? data['search'] : []),
+                        { fieldName: 'type', keyword: 'regular' },
+                    ];
+                    break;
+                /* case 'empty':
                     data['emptyStock'] = true;
                     break;
                 case 'blocked':
                     data['status'] = 'banned';
-                    break;
+                    break; */
                 case 'inactive':
                     data['status'] = 'inactive';
                     break;
@@ -655,6 +672,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
             if (this.search) {
                 data['search'] = [
+                    ...(data['search'] && data['search'].length ? data['search'] : []),
                     {
                         fieldName: 'name',
                         keyword: this.search,
