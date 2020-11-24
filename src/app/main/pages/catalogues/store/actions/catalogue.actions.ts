@@ -1,18 +1,17 @@
 import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, TNullable, TSource } from 'app/shared/models/global.model';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-
 import {
     Catalogue,
     CatalogueCategory,
+    CatalogueInformation,
     CatalogueUnit,
+    CatalogueVisibility,
+    CatalogueWeightDimension,
     ICatalogueDemo,
     ICatalogueStockResponse,
     SimpleCatalogueCategory,
-    CatalogueInformation,
-    CatalogueWeightDimension,
-    CatalogueVisibility
 } from '../../models';
 import { CatalogueMedia } from '../../models/catalogue-media.model';
 import { CataloguePrice } from '../../models/catalogue-price.model';
@@ -36,9 +35,18 @@ export interface ApplyFilteredCataloguePricePayload {
     supplierId: number;
 }
 
-type CatalogueSection = 'sku-information' | 'price-settings' | 'media-settings' | 'weight-and-dimension' | 'amount-settings' | 'visibility';
+type CatalogueSection =
+    | 'sku-information'
+    | 'price-settings'
+    | 'media-settings'
+    | 'weight-and-dimension'
+    | 'amount-settings'
+    | 'visibility';
 
-export type FailureActionNames = 'fetchCataloguePriceSettingsFailure' | 'updateCataloguePriceSettingFailure' | 'applyFilteredCataloguePriceFailure';
+export type FailureActionNames =
+    | 'fetchCataloguePriceSettingsFailure'
+    | 'updateCataloguePriceSettingFailure'
+    | 'applyFilteredCataloguePriceFailure';
 
 /**
  * FILTER CATALOGUES
@@ -99,7 +107,19 @@ export const startPatchCatalogue = createAction(
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
     // tslint:disable-next-line
-    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia> | Partial<CatalogueWeightDimension> | Partial<CatalogueVisibility>; source: TSourceEdit; section?: CatalogueSection; } }>()
+    props<{
+        payload: {
+            id: string;
+            data:
+                | Partial<Catalogue>
+                | Partial<CatalogueInformation>
+                | Partial<CatalogueMedia>
+                | Partial<CatalogueWeightDimension>
+                | Partial<CatalogueVisibility>;
+            source: TSourceEdit;
+            section?: CatalogueSection;
+        };
+    }>()
 );
 
 export const patchCatalogueFailure = createAction(
@@ -109,7 +129,9 @@ export const patchCatalogueFailure = createAction(
 
 export const patchCatalogueSuccess = createAction(
     '[Catalogues API] Patch Catalogue Success',
-    props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit; section?: CatalogueSection; } }>()
+    props<{
+        payload: { data: Partial<Catalogue>; source: TSourceEdit; section?: CatalogueSection };
+    }>()
 );
 
 export const patchCataloguesRequest = createAction(
@@ -303,11 +325,11 @@ export const fetchTotalCatalogueStatusSuccess = createAction(
     '[Catalogues API] Fetch Total Catalogue Status Success',
     props<{
         payload: {
-            totalAllStatus: string;
-            totalEmptyStock: string;
             totalActive: string;
+            totalAllStatus: string;
+            totalBonus: string;
             totalInactive: string;
-            totalBanned: string;
+            totalRegular: string;
         };
     }>()
 );
@@ -360,7 +382,7 @@ export const fetchCataloguePriceSettingsSuccess = createAction(
 
 export const updateCataloguePriceSettingRequest = createAction(
     '[Catalogues API] Update Catalogue Price Setting Request',
-    props<{ payload: { priceSettingId: string; price: number; formIndex?: number; } }>()
+    props<{ payload: { priceSettingId: string; price: number; formIndex?: number } }>()
 );
 
 export const updateCataloguePriceSettingFailure = createAction(
@@ -370,7 +392,7 @@ export const updateCataloguePriceSettingFailure = createAction(
 
 export const updateCataloguePriceSettingSuccess = createAction(
     '[Catalogues API] Update Catalogue Price Setting Success',
-    props<{ payload: { data: Update<CataloguePrice>; formIndex?: number; } }>()
+    props<{ payload: { data: Update<CataloguePrice>; formIndex?: number } }>()
 );
 
 /**
@@ -482,7 +504,9 @@ export const resetCatalogue = createAction('[Catalogues Page] Reset Catalogue St
 
 export const resetCatalogues = createAction('[Catalogues Page] Reset Catalogues State');
 
-export const resetCataloguePriceSettings = createAction('[Catalogues Page] Reset Catalogue Price Settings State');
+export const resetCataloguePriceSettings = createAction(
+    '[Catalogues Page] Reset Catalogue Price Settings State'
+);
 
 /**
  * HELPERS
@@ -504,19 +528,21 @@ export const setProductName = createAction(
 
 export const addSelectedCategory = createAction(
     '[Catalogues Page] Add Selected Category',
-    props<{ payload: SimpleCatalogueCategory; }>()
+    props<{ payload: SimpleCatalogueCategory }>()
 );
 
 export const setSelectedCategories = createAction(
     '[Catalogues Page] Set Selected Category',
-    props<{ payload: Array<SimpleCatalogueCategory>; }>()
+    props<{ payload: Array<SimpleCatalogueCategory> }>()
 );
 
 export const resetSelectedCategories = createAction('[Catalogues Page] Reset Selected Categories');
 
 export const resetSelectedCatalogue = createAction('[Catalogue Page] Reset Selected Catalogue');
 
-export const resetCatalogueUnits = createAction('[Catalogue/SKU Information] Reset Catalogue Units');
+export const resetCatalogueUnits = createAction(
+    '[Catalogue/SKU Information] Reset Catalogue Units'
+);
 
 /**
  * FOR DEMO PURPOSE ONLY

@@ -1,18 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { BrandAutocomplete } from 'app/shared/components/brand-autocomplete/models';
+import { FakturAutocomplete } from 'app/shared/components/faktur-autocomplete/models';
+import { DefaultCheckbox } from 'app/shared/components/sinbad-filter/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { Observable, BehaviorSubject } from 'rxjs';
-
+import { IQueryParams, IQuerySearchParams } from 'app/shared/models/query.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
     Catalogue,
     CatalogueCategory,
+    CatalogueFilterDto,
+    CatalogueInformation,
     ICatalogue,
     ICataloguesResponse,
     ICatalogueStockResponse,
     ICatalogueUnitResponse,
-    CatalogueInformation
 } from '../models';
 import { CatalogueMedia } from '../models/catalogue-media.model';
 import { CataloguePrice } from '../models/catalogue-price.model';
@@ -26,7 +29,7 @@ interface ICatalogueTitleParameter {
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class CataloguesService implements OnDestroy {
     /**
@@ -79,19 +82,21 @@ export class CataloguesService implements OnDestroy {
         this.updateForm$.next(String(formIndex));
     }
 
-    fetchTotalCatalogueStatuses(params: IQueryParams): Observable<{
+    fetchTotalCatalogueStatuses(
+        params: IQueryParams
+    ): Observable<{
         total: string;
-        totalEmptyStock: string;
         totalActive: string;
+        totalBonus: string;
         totalInactive: string;
-        totalBanned: string;
+        totalRegular: string;
     }> {
         const newArgs = [];
 
         if (!isNaN(params['supplierId'])) {
             newArgs.push({
                 key: 'supplierId',
-                value: params['supplierId']
+                value: params['supplierId'],
             });
         }
         delete params['paginate'];
@@ -101,10 +106,10 @@ export class CataloguesService implements OnDestroy {
 
         return this.http.get<{
             total: string;
-            totalEmptyStock: string;
             totalActive: string;
+            totalBonus: string;
             totalInactive: string;
-            totalBanned: string;
+            totalRegular: string;
         }>(this._url, { params: newParams });
     }
 
@@ -113,17 +118,17 @@ export class CataloguesService implements OnDestroy {
 
         const STATUS_CATALOGUES_KEYS = [
             'STATUS.CATALOGUE.ALL_PARAM.TITLE',
-            'STATUS.CATALOGUE.LIVE_PARAM.TITLE',
+            'STATUS.CATALOGUE.ACTIVE_PARAM.TITLE',
             'STATUS.CATALOGUE.EMPTY_PARAM.TITLE',
             'STATUS.CATALOGUE.BLOCKED_PARAM.TITLE',
-            'STATUS.CATALOGUE.INACTIVE.TITLE'
+            'STATUS.CATALOGUE.INACTIVE.TITLE',
         ];
 
         return this.translate.instant(STATUS_CATALOGUES_KEYS, {
             allCount,
             liveCount,
             emptyCount,
-            blockedCount
+            blockedCount,
         });
     }
 
@@ -140,28 +145,28 @@ export class CataloguesService implements OnDestroy {
         if (params['emptyStock']) {
             newArgs.push({
                 key: 'emptyStock',
-                value: true
+                value: true,
             });
         }
 
         if (params['status']) {
             newArgs.push({
                 key: 'status',
-                value: params['status']
+                value: params['status'],
             });
         }
 
         if (!isNaN(params['supplierId'])) {
             newArgs.push({
                 key: 'supplierId',
-                value: params['supplierId']
+                value: params['supplierId'],
             });
         }
 
         if (params['externalId']) {
             newArgs.push({
                 key: 'externalId',
-                value: params['externalId']
+                value: params['externalId'],
             });
         }
 
@@ -177,28 +182,28 @@ export class CataloguesService implements OnDestroy {
         if (params['emptyStock']) {
             newArgs.push({
                 key: 'emptyStock',
-                value: true
+                value: true,
             });
         }
 
         if (params['status']) {
             newArgs.push({
                 key: 'status',
-                value: params['status']
+                value: params['status'],
             });
         }
 
         if (!isNaN(params['supplierId'])) {
             newArgs.push({
                 key: 'supplierId',
-                value: params['supplierId']
+                value: params['supplierId'],
             });
         }
 
         if (!isNaN(params['externalId'])) {
             newArgs.push({
                 key: 'externalId',
-                value: params['externalId']
+                value: params['externalId'],
             });
         }
 
@@ -208,7 +213,10 @@ export class CataloguesService implements OnDestroy {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    patchCatalogue(id: string, data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia>): Observable<Catalogue> {
+    patchCatalogue(
+        id: string,
+        data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia>
+    ): Observable<Catalogue> {
         this._url = this._$helper.handleApiRouter(`${this._endpoint}/${id}`);
         return this.http.patch<Catalogue>(this._url, data);
     }
@@ -262,7 +270,7 @@ export class CataloguesService implements OnDestroy {
     getCategoryTree(): Observable<Array<CatalogueCategory>> {
         this._url = this._$helper.handleApiRouter(this._categoryTreeEndpoint);
         return this.http.get<Array<CatalogueCategory>>(`${this._url}`, {
-            params: { source: 'sc' }
+            params: { source: 'sc' },
         });
     }
 
@@ -277,7 +285,9 @@ export class CataloguesService implements OnDestroy {
         return this.http.post<Catalogue>(this._url, data);
     }
 
-    applySegmentationPrice(data: ApplyFilteredCataloguePricePayload): Observable<{ message: string }> {
+    applySegmentationPrice(
+        data: ApplyFilteredCataloguePricePayload
+    ): Observable<{ message: string }> {
         this._url = this._$helper.handleApiRouter(this._segmentationPriceEndpoint);
         return this.http.post<{ message: string }>(this._url, data);
     }
@@ -285,14 +295,14 @@ export class CataloguesService implements OnDestroy {
     updateCataloguePrices(data: FormData): Observable<{ status: string }> {
         this._url = this._$helper.handleApiRouter(this._catalogueImportEndpoint);
         return this.http.post<{ status: string }>(this._url, data, {
-            reportProgress: true
+            reportProgress: true,
         });
     }
 
     getCataloguePriceSettings<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        if (!(params['catalogueId'])) {
+        if (!params['catalogueId']) {
             throw new Error('catalogueId is required.');
         } else {
             newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
@@ -336,6 +346,117 @@ export class CataloguesService implements OnDestroy {
     updatePriceSetting(priceSettingId: string, price: number): Observable<CataloguePrice> {
         this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
         return this.http.patch<CataloguePrice>(`${this._url}/${priceSettingId}`, { price });
+    }
+
+    handleSearchGlobalFilter(
+        paramsSearch: IQuerySearchParams[] = [],
+        globalFilter: CatalogueFilterDto
+    ): IQuerySearchParams[] {
+        if (globalFilter) {
+            if (globalFilter.status) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'status',
+                        keyword: globalFilter.status,
+                    },
+                ];
+            }
+
+            if (globalFilter.brandId) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'brandId',
+                        keyword: globalFilter.brandId,
+                    },
+                ];
+            }
+
+            if (globalFilter.invoiceGroupId) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'invoiceGroupId',
+                        keyword: globalFilter.invoiceGroupId,
+                    },
+                ];
+            }
+
+            if (globalFilter.type) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'type',
+                        keyword: globalFilter.type,
+                    },
+                ];
+            }
+
+            if (globalFilter.priceGte) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'priceGte',
+                        keyword: globalFilter.priceGte,
+                    },
+                ];
+            }
+
+            if (globalFilter.priceLte) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'priceLte',
+                        keyword: globalFilter.priceLte,
+                    },
+                ];
+            }
+        }
+
+        return paramsSearch;
+    }
+
+    prepareBrandValue(value: BrandAutocomplete): number {
+        if (typeof value !== 'object') {
+            return null;
+        }
+
+        return value && value.hasOwnProperty('id') ? +value.id : null;
+    }
+
+    prepareFakturValue(value: FakturAutocomplete): number {
+        if (typeof value !== 'object') {
+            return null;
+        }
+
+        return value && value.hasOwnProperty('id') ? +value.id : null;
+    }
+
+    prepareStatusValue(
+        status: DefaultCheckbox[],
+        totalSource: number
+    ): 'all' | 'active' | 'inactive' {
+        if (status && status.length) {
+            if (status.length === totalSource) {
+                return 'all';
+            }
+
+            const statusId = status.length === 1 ? status.map((item) => item.id)[0] : null;
+
+            switch (statusId) {
+                case 'active':
+                    return 'active';
+
+                case 'inactive':
+                    return 'inactive';
+
+                default:
+                    return null;
+            }
+        }
+
+        return null;
     }
 
     // findPriceSettings<T>(params: IQueryParams): Observable<T> {

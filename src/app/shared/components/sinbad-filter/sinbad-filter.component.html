@@ -47,8 +47,9 @@
                         >
                             <mat-checkbox
                                 *ngFor="let status of sourceStatus; trackBy: trackByStatus"
-                                [value]="status?.id"
+                                [(ngModel)]="status.checked"
                                 [matTooltip]="status?.label"
+                                (change)="onChangeStatus($event)"
                                 disableRipple
                             >
                                 {{ status?.label }}
@@ -59,6 +60,150 @@
             </mat-expansion-panel>
         </mat-list>
         <!-- / STATUS -->
+
+        <!-- TYPE -->
+        <mat-list *ngIf="sourceType && sourceType.length > 0">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header *ngIf="(config$ | async)?.by?.type?.title as typeTitle">
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ typeTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div [class.sinbad__filter-checkbox--container]="sourceType.length > 2">
+                        <div class="sinbad__filter-checkbox" [class.reset]="sourceType.length < 3">
+                            <mat-checkbox
+                                *ngFor="let type of sourceType; trackBy: trackByType"
+                                [formControl]="form.get('type')"
+                                [value]="type?.id"
+                                [matTooltip]="type?.label"
+                                disableRipple
+                            >
+                                {{ type?.label }}
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / TYPE -->
+
+        <!-- BRAND -->
+        <mat-list *ngIf="filterBrand">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.brand?.title as brandTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ brandTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <brand-autocomplete
+                        [(reset)]="resetBrand"
+                        (selectedValue)="onSelectedBrand($event)"
+                    ></brand-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / BRAND -->
+
+        <!-- FAKTUR -->
+        <mat-list *ngIf="filterFaktur">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.faktur?.title as fakturTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ fakturTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <faktur-autocomplete
+                        [(reset)]="resetFaktur"
+                        (selectedValue)="onSelectedFaktur($event)"
+                    ></faktur-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / FAKTUR -->
+
+        <!-- BASE PRICE -->
+        <mat-list *ngIf="filterFaktur">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.basePrice?.title as basePriceTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ basePriceTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div fxLayout="column" class="custom-field">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <input
+                                #minTargetInput
+                                matInput
+                                [formControl]="form.get('minAmount')"
+                                mask="separator.2"
+                                thousandSeparator="."
+                                placeholder="Rp"
+                            />
+                            <span
+                                class="text-suffix"
+                                matSuffix
+                                *ngIf="
+                                    !minTargetInput?.value ||
+                                    minTargetInput?.value === 'Rp' ||
+                                    !minTargetInput?.value?.length
+                                "
+                            >
+                                Minimum
+                            </span>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <input
+                                #maxTargetInput
+                                matInput
+                                [formControl]="form.get('maxAmount')"
+                                mask="separator.2"
+                                thousandSeparator="."
+                                placeholder="Rp"
+                            />
+                            <span
+                                class="text-suffix"
+                                matSuffix
+                                *ngIf="
+                                    !maxTargetInput?.value ||
+                                    maxTargetInput?.value === 'Rp' ||
+                                    !maxTargetInput?.value?.length
+                                "
+                            >
+                                Maximum
+                            </span>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / BASE PRICE -->
 
         <!-- WAREHOUSE -->
         <mat-list *ngIf="filterWarehouse">
@@ -71,7 +216,9 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <select-single-warehouse #selectWarehouse></select-single-warehouse>
+                    <select-single-warehouse
+                        (selected)="onSelectedWarehouse($event)"
+                    ></select-single-warehouse>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
@@ -92,16 +239,86 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <!-- <sinbad-autocomplete
-                        [control]="form.get('segmentType')"
-                        [placeholder]="'Type'"
-                        [sources]="(config$ | async)?.by?.segmentType?.sources || []"
-                    ></sinbad-autocomplete> -->
-                    <segment-type-autocomplete></segment-type-autocomplete>
+                    <segment-type-autocomplete
+                        [(reset)]="resetSegmentType"
+                        (selectedValue)="onSelectedSegmentType($event)"
+                    ></segment-type-autocomplete>
                 </ng-template>
             </mat-expansion-panel>
         </mat-list>
         <!-- / SEGMENTATION TYPE -->
+
+        <!-- SEGMENTATION GROUP -->
+        <mat-list *ngIf="filterSegmentGroup">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.segmentGroup?.title as segmentGroupTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ segmentGroupTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <segment-group-autocomplete
+                        [(reset)]="resetSegmentGroup"
+                        (selectedValue)="onSelectedSegmentGroup($event)"
+                    ></segment-group-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / SEGMENTATION GROUP -->
+
+        <!-- SEGMENTATION CHANNEL -->
+        <mat-list *ngIf="filterSegmentChannel">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.segmentChannel?.title as segmentChannelTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ segmentChannelTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <segment-channel-autocomplete
+                        [(reset)]="resetSegmentChannel"
+                        (selectedValue)="onSelectedSegmentChannel($event)"
+                    ></segment-channel-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / SEGMENTATION CHANNEL -->
+
+        <!-- SEGMENTATION CLUSTER -->
+        <mat-list *ngIf="filterSegmentCluster">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.segmentCluster?.title as segmentClusterTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ segmentClusterTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <segment-cluster-autocomplete
+                        [(reset)]="resetSegmentCluster"
+                        (selectedValue)="onSelectedSegmentCluster($event)"
+                    ></segment-cluster-autocomplete>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / SEGMENTATION CLUSTER -->
 
         <!-- SUPPLIER -->
         <!-- <mat-list *ngIf="sourceSuppliers && sourceSuppliers.length > 0">

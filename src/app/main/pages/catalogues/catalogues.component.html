@@ -4,12 +4,18 @@
         <!-- CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header
+                #cardHeader
                 [config]="cardHeaderConfig"
                 (onClickAdd)="onClickAddCatalogue()"
+                (onClickFilterList)="onClickFilter()"
+                (onSearchChanged)="onSearch($event)"
             ></sinbad-card-header>
 
             <mat-table
-                class="catalogues-table mx-16"
+                class="catalogues-table sinbad-table sinbad-table__hover mx-16"
+                [class.sinbad-table-no-record]="
+                    !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                "
                 #table
                 [dataSource]="dataSource$ | async"
                 matSort
@@ -17,7 +23,7 @@
                 fusePerfectScrollbar
                 [fusePerfectScrollbarOptions]="{
                     updateOnRouteChange: true,
-                    suppressScrollX: false,
+                    suppressScrollX: (totalDataSource$ | async) ? false : true,
                     wheelSpeed: 0.5,
                     swipeEasing: true,
                     minScrollbarLength: 40,
@@ -352,21 +358,31 @@
                     </mat-cell>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                <!-- No Record Column -->
+                <ng-container matColumnDef="no-record">
+                    <mat-footer-cell *matFooterCellDef colspan="7">
+                        No records found
+                    </mat-footer-cell>
+                </ng-container>
 
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
                 <mat-row
                     matRipple
                     *matRowDef="let row; columns: displayedColumns"
                     (click)="viewProduct(row?.id)"
                     class="catalogue clickable"
                 ></mat-row>
+                <mat-footer-row
+                    *matFooterRowDef="['no-record']"
+                    [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                ></mat-footer-row>
 
-                <div
+                <!-- <div
                     class="no-records"
                     *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
                 >
                     No records found
-                </div>
+                </div> -->
             </mat-table>
 
             <mat-paginator

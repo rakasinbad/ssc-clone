@@ -1,9 +1,14 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
-import { SinbadFilterConfig } from './models/sinbad-filter.model';
+import { Warehouse } from '../dropdowns/single-warehouse/models';
+import { SingleWarehouseDropdownService } from '../dropdowns/single-warehouse/services';
+import { SinbadAutocompleteSource } from '../sinbad-autocomplete/models';
+import { DefaultCheckbox, SinbadFilterConfig } from './models';
 import { SinbadFilterService } from './services';
 
 @Component({
@@ -14,12 +19,27 @@ import { SinbadFilterService } from './services';
 })
 export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
+    resetBrand: boolean = false;
+    resetFaktur: boolean = false;
+    resetSegmentChannel: boolean = false;
+    resetSegmentCluster: boolean = false;
+    resetSegmentGroup: boolean = false;
+    resetSegmentType: boolean = false;
     showPanel = true;
+
+    filterSegmentChannel: boolean = false;
+    filterSegmentCluster: boolean = false;
+    filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
+    filterBrand: boolean = false;
+    filterFaktur: boolean = false;
+    filterbasePrice: boolean = false;
     filterWarehouse: boolean = false;
 
     selectedSuppliers: any[] = [];
-    sourceStatus: { id: string; label: string }[] = [];
+
+    sourceStatus: DefaultCheckbox[] = [];
+    sourceType: { id: string; label: string }[] = [];
     sourceOrderStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
@@ -29,7 +49,8 @@ export class SinbadFilterComponent implements OnInit {
 
     constructor(
         private fuseSidebarService: FuseSidebarService,
-        private sinbadFilterService: SinbadFilterService
+        private sinbadFilterService: SinbadFilterService,
+        private singleWarehouseService: SingleWarehouseDropdownService
     ) {}
 
     ngOnInit(): void {
@@ -41,8 +62,38 @@ export class SinbadFilterComponent implements OnInit {
                     if (config.by && Object.keys(config.by).length > 0) {
                         if (typeof config.by['status'] !== 'undefined') {
                             if (config.by['status'].sources) {
-                                this.sourceStatus = config.by['status'].sources;
+                                this.sourceStatus = [...config.by['status'].sources];
                             }
+                        }
+
+                        if (typeof config.by['type'] !== 'undefined') {
+                            if (config.by['type'].sources) {
+                                this.sourceType = config.by['type'].sources;
+                            }
+                        }
+
+                        if (typeof config.by['brand'] !== 'undefined') {
+                            this.filterBrand = true;
+                        }
+
+                        if (typeof config.by['faktur'] !== 'undefined') {
+                            this.filterFaktur = true;
+                        }
+
+                        if (typeof config.by['basePrice'] !== 'undefined') {
+                            this.filterbasePrice = true;
+                        }
+
+                        if (typeof config.by['segmentChannel'] !== 'undefined') {
+                            this.filterSegmentChannel = true;
+                        }
+
+                        if (typeof config.by['segmentCluster'] !== 'undefined') {
+                            this.filterSegmentCluster = true;
+                        }
+
+                        if (typeof config.by['segmentGroup'] !== 'undefined') {
+                            this.filterSegmentGroup = true;
                         }
 
                         if (typeof config.by['segmentType'] !== 'undefined') {
@@ -68,6 +119,11 @@ export class SinbadFilterComponent implements OnInit {
     }
 
     onClickReset(): void {
+        this.resetBrand = true;
+        this.resetFaktur = true;
+        this._resetSegment();
+        this._resetStatus();
+        this.singleWarehouseService.selectWarehouse(null);
         this.sinbadFilterService.setClickAction('reset');
     }
 
@@ -76,11 +132,74 @@ export class SinbadFilterComponent implements OnInit {
         this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
     }
 
+    onChangeStatus(ev: MatCheckboxChange): void {
+        const sourceSelected = this.sourceStatus.filter((item) => item.checked);
+
+        HelperService.debug('[SinbadFilterComponent] onChangeStatus', {
+            sourceStatus: this.sourceStatus,
+            sourceSelected,
+            ev,
+        });
+
+        this.form.get('status').setValue(sourceSelected);
+    }
+
+    onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('brand').setValue(value);
+    }
+
+    onSelectedFaktur(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('faktur').setValue(value);
+    }
+
+    onSelectedSegmentChannel(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentChannel').setValue(value);
+    }
+
+    onSelectedSegmentCluster(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentCluster').setValue(value);
+    }
+
+    onSelectedSegmentGroup(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentGroup').setValue(value);
+    }
+
+    onSelectedSegmentType(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
+        this.form.get('segmentType').setValue(value);
+    }
+
+    onSelectedWarehouse(value: Warehouse): void {
+        this.form.get('warehouse').setValue(value ? new Warehouse(value) : value);
+    }
+
     trackByStatus(index: number, item: any): string {
         if (!item) {
             return null;
         }
 
         return item.id || index;
+    }
+
+    trackByType(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
+    }
+
+    private _resetStatus(): void {
+        this.sourceStatus = this.sourceStatus.map(({ id, label }) => ({
+            id,
+            label,
+            checked: false,
+        }));
+    }
+
+    private _resetSegment(): void {
+        this.resetSegmentChannel = true;
+        this.resetSegmentCluster = true;
+        this.resetSegmentGroup = true;
+        this.resetSegmentType = true;
     }
 }

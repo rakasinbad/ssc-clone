@@ -11,10 +11,17 @@ import { SegmentTypeApiService } from './segment-type-api.service';
 @Injectable({ providedIn: SegmentTypeAutocompleteModule })
 export class SegmentTypeService {
     private _collections$: BehaviorSubject<SegmentTypeAutocomplete[]> = new BehaviorSubject([]);
+    private _loading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     private _totalCollections$: BehaviorSubject<number> = new BehaviorSubject(0);
     private _total$: BehaviorSubject<number> = new BehaviorSubject(0);
+    // private _collections: SegmentTypeAutocomplete[] = [];
 
-    collections$: Observable<SegmentTypeAutocomplete[]> = this._collections$.asObservable();
+    readonly collections$: Observable<
+        SegmentTypeAutocomplete[]
+    > = this._collections$.asObservable();
+    readonly loading$: Observable<boolean> = this._loading$.asObservable();
+    readonly totalCollections$: Observable<number> = this._totalCollections$.asObservable();
+    readonly total$: Observable<number> = this._total$.asObservable();
 
     constructor(
         private segmentTypeApiService: SegmentTypeApiService,
@@ -22,6 +29,8 @@ export class SegmentTypeService {
     ) {}
 
     getWithQuery(params: IQueryParams): void {
+        this._loading$.next(true);
+
         this.segmentTypeApiService
             .getWithQuery<PaginateResponse<SegmentTypeResponse>>(params)
             .pipe(
@@ -49,10 +58,13 @@ export class SegmentTypeService {
                 next: ({ data, total }) => {
                     this._collections$.next(data);
                     this._totalCollections$.next(data.length);
+
                     this._total$.next(total);
+                    this._loading$.next(false);
                 },
+                complete: () => HelperService.debug('[SegmentTypeService] getWithQuery complete'),
                 error: (err) => {
-                    // throw new Error(err);
+                    this._loading$.next(false);
                     HelperService.debug('[SegmentTypeService] getWithQuery error', { err });
                     this.helperService.showErrorNotification(
                         new ErrorHandler({ id: err.code, errors: err })
@@ -60,4 +72,36 @@ export class SegmentTypeService {
                 },
             });
     }
+
+    reset(): void {
+        this._collections$.next([]);
+        this._totalCollections$.next(0);
+        this._total$.next(0);
+        this._loading$.next(false);
+    }
+
+    /* private _setCollections(value: SegmentTypeAutocomplete[]): void {
+        if (Array.isArray(value) && value.length) {
+            if (this._collections.length) {
+                this._collections = this._collections.map((item) => {
+                    const addItem = value.find((newItem) => newItem.id === item.id);
+
+                    if (addItem) {
+                        item = { ...item, ...addItem };
+                    }
+
+                    HelperService.debug('[SegmentTypeService] _setCollections', { item });
+
+                    return item;
+                });
+            } else {
+                this._collections.push(...value);
+            }
+        } else {
+            this._collections = [];
+        }
+
+        this._collections$.next(this._collections);
+        this._totalCollections$.next(this._collections.length);
+    } */
 }

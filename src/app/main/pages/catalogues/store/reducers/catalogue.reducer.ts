@@ -38,11 +38,11 @@ export interface State {
     catalogue?: Catalogue;
     catalogues: CatalogueState;
     cataloguePrices: CataloguePriceState;
-    totalAllStatus: number;
-    totalEmptyStock: number;
     totalActive: number;
+    totalAllStatus: number;
+    totalBonus: number;
     totalInactive: number;
-    totalBanned: number;
+    totalRegular: number;
     errors: ErrorState;
 }
 
@@ -92,10 +92,10 @@ const initialState: State = {
     catalogues: initialCatalogueState,
     cataloguePrices: initialCataloguePriceState,
     totalAllStatus: 0,
-    totalEmptyStock: 0,
+    totalBonus: 0,
     totalActive: 0,
     totalInactive: 0,
-    totalBanned: 0,
+    totalRegular: 0,
     errors: initialErrorState,
 };
 
@@ -342,11 +342,11 @@ const catalogueReducer = createReducer(
     on(CatalogueActions.fetchTotalCatalogueStatusSuccess, (state, { payload }) => ({
         ...state,
         // isLoading: false,
-        totalAllStatus: isNaN(+payload.totalAllStatus) ? 0 : +payload.totalAllStatus,
-        totalEmptyStock: isNaN(+payload.totalEmptyStock) ? 0 : +payload.totalEmptyStock,
         totalActive: isNaN(+payload.totalActive) ? 0 : +payload.totalActive,
+        totalAllStatus: isNaN(+payload.totalAllStatus) ? 0 : +payload.totalAllStatus,
+        totalBonus: isNaN(+payload.totalBonus) ? 0 : +payload.totalBonus,
         totalInactive: isNaN(+payload.totalInactive) ? 0 : +payload.totalInactive,
-        totalBanned: isNaN(+payload.totalBanned) ? 0 : +payload.totalBanned,
+        totalRegular: isNaN(+payload.totalRegular) ? 0 : +payload.totalRegular,
     })),
     /**
      *  ===================================================================
