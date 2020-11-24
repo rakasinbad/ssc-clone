@@ -2,9 +2,9 @@ import { SinbadAutocompleteSource } from '../../sinbad-autocomplete/models';
 
 export interface BrandResponse {
     readonly id: NonNullable<string>;
-    description: string;
-    externalId: string;
+    code: string;
     name: string;
+    official: boolean;
     status: 'active' | 'inactive';
 }
 
