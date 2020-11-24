@@ -43,6 +43,8 @@ export class HelperService {
         'groupId',
         'hasChild',
         'keyword',
+        'priceGte',
+        'priceLte',
         'search',
         'status',
         'statusPayment',
