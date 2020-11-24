@@ -37,7 +37,7 @@ export const statusCatalogue: FuseNavigation[] = [
         // translate: 'STATUS.CATALOGUE.INACTIVE.TITLE',
         type: 'item',
         function: (store) => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'inactive' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'bonus' }));
         },
     },
     {
@@ -46,7 +46,7 @@ export const statusCatalogue: FuseNavigation[] = [
         // translate: 'STATUS.CATALOGUE.INACTIVE.TITLE',
         type: 'item',
         function: (store) => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'inactive' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'regular' }));
         },
     },
     /* {

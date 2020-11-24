@@ -482,18 +482,18 @@ export class CatalogueEffects {
                     map(
                         ({
                             total: totalAllStatus,
-                            totalEmptyStock,
+                            totalBonus,
                             totalActive,
                             totalInactive,
-                            totalBanned,
+                            totalRegular,
                         }) => {
                             return CatalogueActions.fetchTotalCatalogueStatusSuccess({
                                 payload: {
                                     totalAllStatus,
-                                    totalEmptyStock,
+                                    totalBonus,
                                     totalActive,
                                     totalInactive,
-                                    totalBanned,
+                                    totalRegular,
                                 },
                             });
                         }
@@ -1248,9 +1248,10 @@ export class CatalogueEffects {
         return userData;
     };
 
-    processCataloguePriceSettingsRequest = ([_, queryParams]: [User, IQueryParams]): Observable<
-        AnyAction
-    > => {
+    processCataloguePriceSettingsRequest = ([_, queryParams]: [
+        User,
+        IQueryParams
+    ]): Observable<AnyAction> => {
         // Hanya mengambil ID supplier saja.
         // const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
@@ -1279,9 +1280,9 @@ export class CatalogueEffects {
                         return of(
                             CatalogueActions.fetchCataloguePriceSettingsSuccess({
                                 payload: {
-                                    catalogues: ((response as unknown) as Array<
-                                        CataloguePrice
-                                    >).map((wh) => new CataloguePrice(wh)),
+                                    catalogues: ((response as unknown) as Array<CataloguePrice>).map(
+                                        (wh) => new CataloguePrice(wh)
+                                    ),
                                     total: ((response as unknown) as Array<CataloguePrice>).length,
                                 },
                             })
