@@ -2,6 +2,7 @@
     "browsers": "chrome",
     "src": "test/",
     "reporter": [
+        "list",
         {
             "name": "html",
             "output": "reports/report.html"
