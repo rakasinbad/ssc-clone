@@ -228,7 +228,7 @@ export class FakturAutocompleteComponent implements OnChanges, OnInit, OnDestroy
 
         if (keyword) {
             params['search'].push({
-                fieldName: 'search',
+                fieldName: 'name',
                 keyword,
             });
         }
@@ -256,7 +256,7 @@ export class FakturAutocompleteComponent implements OnChanges, OnInit, OnDestroy
 
         if (keyword) {
             params['search'].push({
-                fieldName: 'search',
+                fieldName: 'name',
                 keyword,
             });
         }
