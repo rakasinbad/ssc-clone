@@ -18,6 +18,6 @@
         "pathPattern": "${DATE}_${TIME}/test-${FIXTURE}_${TEST}_${USERAGENT}.png"
     },
     "filter": {
-        "testGrep": "@sanity"
+        "testGrep": "@test"
     }
 }
