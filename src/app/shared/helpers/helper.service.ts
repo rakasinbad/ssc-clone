@@ -308,14 +308,14 @@ export class HelperService {
             id: 'active',
             label: 'Live (Active)',
         },
-        {
+        /* {
             id: 'empty',
             label: 'Empty',
         },
         {
             id: 'banned',
             label: 'Banned',
-        },
+        }, */
         {
             id: 'inactive',
             label: 'Inactive',
