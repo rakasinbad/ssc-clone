@@ -1,0 +1,23 @@
+{
+    "browsers": "chrome",
+    "src": "test/",
+    "reporter": [
+        "list",
+        {
+            "name": "html",
+            "output": "reports/report.html"
+        },
+        {
+            "name": "json",
+            "output": "reports/report.json"
+        }
+    ],
+    "screenshots": {
+        "takeOnFails": true,
+        "path": "screenshots/",
+        "pathPattern": "${DATE}_${TIME}/test-${FIXTURE}_${TEST}_${USERAGENT}.png"
+    },
+    "filter": {
+        "testGrep": "@sanity"
+    }
+}
