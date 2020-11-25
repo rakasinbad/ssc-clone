@@ -1,11 +1,3 @@
-import { Warehouse as Entity } from 'app/main/pages/logistics/warehouses/models';
-import {
-    WarehousesApiService as EntitiesApiService,
-    SingleWarehouseDropdownService,
-} from 'app/shared/components/dropdowns/single-warehouse/services';
-import { tap } from 'rxjs/operators';
-import { IPaginatedResponse } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -17,19 +9,21 @@ import {
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { Warehouse as Entity } from 'app/main/pages/logistics/warehouses/models';
+import { WarehousesApiService as EntitiesApiService } from 'app/shared/components/dropdowns/single-warehouse/services';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { Moment } from 'moment';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import * as moment from 'moment';
-
+import { Moment } from 'moment';
 import {
     defaultExportFilterConfiguration,
     ExportConfiguration,
     ExportFilterConfiguration,
     ExportFormFilterConfiguration,
 } from '../../models';
-import { Observable } from 'rxjs';
 
 @Component({
     templateUrl: './export-filter.component.html',
@@ -62,7 +56,7 @@ export class ExportFilterComponent implements OnInit {
     maxEndDate: Date = moment().toDate();
 
     //multiselect variable
-    formName:string = 'warehouse' ;
+    formName: string = 'warehouse';
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: ExportConfiguration,
@@ -189,15 +183,16 @@ export class ExportFilterComponent implements OnInit {
             this.entityApi$
                 .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
                 .subscribe((data) => {
+                    HelperService.debug('[ExportFilterComponent] warehouse', { data });
                     this.dataWarehouse = data.data;
                     this.dropdownSettings = {
                         singleSelection: false,
                         idField: 'id',
-                        textField: 'code',
+                        textField: 'name',
                         selectAllText: 'Select All',
                         unSelectAllText: 'UnSelect All',
                         itemsShowLimit: 3,
-                        maxHeight:100,
+                        maxHeight: 100,
                         allowSearchFilter: this.ShowFilter,
                     };
 
