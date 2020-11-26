@@ -55,6 +55,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     conditionBase: { id: ConditionBase; label: string }[];
     logicRelation: { id: LogicRelation; label: string }[];
+    logicRelationMulti: { id: LogicRelation; label: string }[];
+
     triggerBase: { id: TriggerBase; label: string }[];
     invoiceGroups: InvoiceGroup[];
     conditionBaseType = ConditionBase;
@@ -109,6 +111,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     ngOnInit(): void {
         this.conditionBase = this.crossSellingPromoFormService.conditionBase;
         this.logicRelation = this.crossSellingPromoFormService.logicRelation;
+        this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;
+
         this.statusMulti = false;
         this.errorWarehouse = false;
         this.triggerBase = this.crossSellingPromoFormService.triggerBase;
@@ -137,9 +141,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
         if (this.statusMulti === true) {
             const idToMulti = 'AND';
-            const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
-            this.logicRelation = filteredLogic;
-        } else  {
+            const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+            this.logicRelationMulti = filteredLogic;
+        } else if (this.statusMulti === false)  { 
             this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
         }
         
@@ -159,12 +163,13 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             this.errorWarehouse = true;
             this.warehouseSelected = [];
             this.fakturStatus = true;
-            // else if (this.fakturStatus == true) {
-            // Reset faktur select in Group 1 & 2
+            // Reset faktur & sku select in Group 1 & 2
             this._resetFakturGroup1();
             this._resetFakturGroup2();
-            //  return;
-            // }
+            const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
+            const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
+            chosenSkuCtrl1.setValue(null);
+            chosenSkuCtrl2.setValue(null);
         } else {
             this.errorWarehouse = false;
             const newWarehouses: Selection[] = ev.map((item) => ({
@@ -262,12 +267,67 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         } else {
             const selectLogicControl = this.selectLogic.toArray()[idx];
 
-            if (ev.length === 1 && this.statusMulti == false) {
-                if (selectLogicControl) {
-                    selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+            if (this.statusMulti == false) {
+                if (ev.length === 1) {
+                    this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+                    const idToMulti = 'N/A';
+                    const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
+                    this.logicRelation = filteredLogic;
+                    if (selectLogicControl) {
+                        selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+                    }
+                } else if (ev.length > 1 ) {
+                    this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
                 }
             } else {
+                if (ev.length === 1) {
+                    this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
+                    const idToMulti = 'AND';
+                    const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+                    this.logicRelationMulti = filteredLogic;
+                    if (selectLogicControl) {
+                        selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
+                    }
+                } else if (ev.length > 1 ) {
+                    this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
+                    const idToMulti = 'AND';
+                    const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+                    this.logicRelationMulti = filteredLogic;
+                    if (selectLogicControl) {
+                        selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
+                    }
+                }
+
             }
+
+
+            // if (ev.length === 1 && this.statusMulti == false) {
+            //     this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+            //     const idToMulti = 'N/A';
+            //     const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
+            //     this.logicRelation = filteredLogic;
+            //     if (selectLogicControl) {
+            //         selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+            //     }
+            // } else if (ev.length === 1 && this.statusMulti == true) {
+            //         this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
+            //         const idToMulti = 'AND';
+            //         const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+            //         this.logicRelationMulti = filteredLogic;
+            //         if (selectLogicControl) {
+            //             selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
+            //         }
+            // } else if (ev.length > 1 && this.statusMulti == false) {
+            //     this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+            // } else if (ev.length > 1 && this.statusMulti == true) {
+            //     this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
+            //         const idToMulti = 'AND';
+            //         const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+            //         this.logicRelationMulti = filteredLogic;
+            //         if (selectLogicControl) {
+            //             selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
+            //         }
+            // }
 
             const newSku: Selection[] = ev.map((item) => ({
                 id: item.id,

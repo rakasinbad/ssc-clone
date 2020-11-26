@@ -387,7 +387,8 @@
                             </select-catalogues>
                         </div>
 
-                        <div
+                        <ng-container *ngIf="statusMulti == true">
+                            <div
                             class="custom-field"
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
@@ -409,7 +410,7 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="60">
-                                <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                <ng-container *ngIf="logicRelationMulti; else noLogicRelation">
                                     <mat-select
                                         #selectLogic
                                         [id]="prefixLogic + groupIdx"
@@ -419,15 +420,7 @@
                                         <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="
-                                                let row of logicRelation
-                                                    | filterLogicRelation
-                                                        : (form.get([
-                                                              'groups',
-                                                              groupIdx,
-                                                              'chosenSku'
-                                                          ]).value?.length === 1
-                                                              ? true
-                                                              : false || false)
+                                                let row of logicRelationMulti
                                             "
                                             [value]="row.id"
                                         >
@@ -450,6 +443,159 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="statusMulti == false">
+                            <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label
+                                [class.sinbad-red-fg]="
+                                    form.get(['groups', groupIdx, 'relation']).value ||
+                                        form.get(['groups', groupIdx, 'relation']).touched
+                                        | hasErrorField
+                                            : form.get(['groups', groupIdx, 'relation'])
+                                            : false
+                                "
+                                fxFlexAlign="center"
+                                fxFlex="16"
+                            >
+                                <span class="sinbad-red-fg">*</span>
+                                Relation
+                            </label>
+
+                            <ng-container *ngIf="groupIdx == 0">
+                                <mat-form-field appearance="outline" fxFlex="60">
+                                    <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                        <mat-select
+                                            #selectLogic
+                                            [id]="prefixLogic + 0"
+                                            [formControl]="form.get(['groups', 0, 'relation'])"
+                                            placeholder="Choose Logic"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="
+                                                    let row of logicRelation | filterLogicRelation
+                                                    : (form.get([
+                                                          'groups',
+                                                          0,
+                                                          'chosenSku'
+                                                      ]).value?.length === 1
+                                                          ? true
+                                                          : false || false)
+                                                "
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+    
+                                    <ng-template #noLogicRelation>
+                                        <mat-select placeholder="Logic not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+    
+                                    <mat-error>
+                                        {{
+                                            form.get(['groups', 0, 'relation']).value
+                                                | errorMessage: form:'relation':'groups':0
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+
+                            <ng-container *ngIf="groupIdx == 1">
+                                <mat-form-field appearance="outline" fxFlex="60">
+                                    <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                        <mat-select
+                                            #selectLogic
+                                            [id]="prefixLogic + 1"
+                                            [formControl]="form.get(['groups', 1, 'relation'])"
+                                            placeholder="Choose Logic"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="
+                                                    let row of logicRelation | filterLogicRelation
+                                                    : (form.get([
+                                                          'groups',
+                                                          1,
+                                                          'chosenSku'
+                                                      ]).value?.length === 1
+                                                          ? true
+                                                          : false || false)
+                                                "
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+    
+                                    <ng-template #noLogicRelation>
+                                        <mat-select placeholder="Logic not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+    
+                                    <mat-error>
+                                        {{
+                                            form.get(['groups', 1, 'relation']).value
+                                                | errorMessage: form:'relation':'groups':1
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+                            <!-- <mat-form-field appearance="outline" fxFlex="60">
+                                <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                    <mat-select
+                                        #selectLogic
+                                        [id]="prefixLogic + groupIdx"
+                                        [formControl]="form.get(['groups', groupIdx, 'relation'])"
+                                        placeholder="Choose Logic"
+                                    >
+                                        <mat-option>None</mat-option>
+                                        <mat-option
+                                            *ngFor="
+                                                let row of logicRelation | filterLogicRelation
+                                                : (form.get([
+                                                      'groups',
+                                                      groupIdx,
+                                                      'chosenSku'
+                                                  ]).value?.length === 1
+                                                      ? true
+                                                      : false || false)
+                                            "
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noLogicRelation>
+                                    <mat-select placeholder="Logic not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error>
+                                    {{
+                                        form.get(['groups', groupIdx, 'relation']).value
+                                            | errorMessage: form:'relation':'groups':groupIdx
+                                    }}
+                                </mat-error>
+                            </mat-form-field> -->
+                        </div>
+                        </ng-container>
+
+                       
 
                         <ng-container
                             [ngSwitch]="form.get(['groups', groupIdx, 'conditionBase']).value"
