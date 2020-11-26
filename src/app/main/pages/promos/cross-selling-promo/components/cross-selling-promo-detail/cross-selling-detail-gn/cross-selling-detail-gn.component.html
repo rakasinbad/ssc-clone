@@ -288,6 +288,12 @@
                 </mat-checkbox>
             </ng-container>
 
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <mat-checkbox [checked]="(crossSellingPromo$ | async)?.multiplication" [disabled]="true" style="font-size: 14px;">
+                    Multiplication
+                </mat-checkbox>
+            </ng-container>
+
             <ng-container *ngIf="isLoading$ | async">
                 <ngx-skeleton-loader
                     [theme]="{ width: '150px', 'margin-bottom': '-5px', 'margin-right': '16px' }"
