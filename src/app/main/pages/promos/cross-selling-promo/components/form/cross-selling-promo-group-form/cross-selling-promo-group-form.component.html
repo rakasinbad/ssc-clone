@@ -512,7 +512,7 @@
 
                             <ng-container *ngIf="groupIdx == 1">
                                 <mat-form-field appearance="outline" fxFlex="60">
-                                    <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                    <ng-container *ngIf="logicRelation2; else noLogicRelation">
                                         <mat-select
                                             #selectLogic
                                             [id]="prefixLogic + 1"
@@ -522,7 +522,7 @@
                                             <mat-option>None</mat-option>
                                             <mat-option
                                                 *ngFor="
-                                                    let row of logicRelation | filterLogicRelation
+                                                    let row of logicRelation2 | filterLogicRelation
                                                     : (form.get([
                                                           'groups',
                                                           1,

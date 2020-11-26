@@ -55,6 +55,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     conditionBase: { id: ConditionBase; label: string }[];
     logicRelation: { id: LogicRelation; label: string }[];
+    logicRelation2: { id: LogicRelation; label: string }[];
     logicRelationMulti: { id: LogicRelation; label: string }[];
 
     triggerBase: { id: TriggerBase; label: string }[];
@@ -98,8 +99,6 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     @ViewChildren('selectSku')
     selectSku: QueryList<CataloguesDropdownComponent>;
     
-    // logicRelationMulti = [{ id: "AND", label: "AND" }];
-
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
@@ -111,6 +110,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     ngOnInit(): void {
         this.conditionBase = this.crossSellingPromoFormService.conditionBase;
         this.logicRelation = this.crossSellingPromoFormService.logicRelation;
+        this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;
         this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;
 
         this.statusMulti = false;
@@ -144,7 +144,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
             this.logicRelationMulti = filteredLogic;
         } else if (this.statusMulti === false)  { 
-            this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+            this.logicRelation = this.crossSellingPromoFormService.logicRelation;    
+            this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;         
         }
         
     }
@@ -268,17 +269,32 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             const selectLogicControl = this.selectLogic.toArray()[idx];
 
             if (this.statusMulti == false) {
-                if (ev.length === 1) {
-                    this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
-                    const idToMulti = 'N/A';
-                    const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
-                    this.logicRelation = filteredLogic;
-                    if (selectLogicControl) {
-                        selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+                if (idx == 0) {
+                    if (ev.length === 1) {
+                        this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+                        const idToMulti = 'N/A';
+                        const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
+                        this.logicRelation = filteredLogic;
+                        if (selectLogicControl) {
+                            selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+                        }
+                    } else if (ev.length > 1 ) {
+                        this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
                     }
-                } else if (ev.length > 1 ) {
-                    this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+                } else {
+                    if (ev.length === 1) {
+                        this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;            
+                        const idToMulti = 'N/A';
+                        const filteredLogic = this.logicRelation2.filter((item) => item.id == idToMulti);
+                        this.logicRelation2 = filteredLogic;
+                        if (selectLogicControl) {
+                            selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+                        }
+                    } else if (ev.length > 1 ) {
+                        this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;            
+                    }
                 }
+                
             } else {
                 if (ev.length === 1) {
                     this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
@@ -297,37 +313,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                         selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
                     }
                 }
-
             }
-
-
-            // if (ev.length === 1 && this.statusMulti == false) {
-            //     this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
-            //     const idToMulti = 'N/A';
-            //     const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
-            //     this.logicRelation = filteredLogic;
-            //     if (selectLogicControl) {
-            //         selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
-            //     }
-            // } else if (ev.length === 1 && this.statusMulti == true) {
-            //         this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
-            //         const idToMulti = 'AND';
-            //         const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
-            //         this.logicRelationMulti = filteredLogic;
-            //         if (selectLogicControl) {
-            //             selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
-            //         }
-            // } else if (ev.length > 1 && this.statusMulti == false) {
-            //     this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
-            // } else if (ev.length > 1 && this.statusMulti == true) {
-            //     this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
-            //         const idToMulti = 'AND';
-            //         const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
-            //         this.logicRelationMulti = filteredLogic;
-            //         if (selectLogicControl) {
-            //             selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
-            //         }
-            // }
 
             const newSku: Selection[] = ev.map((item) => ({
                 id: item.id,
