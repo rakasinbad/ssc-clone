@@ -88,7 +88,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         this.crossSellingPromoFacade.getInvoiceGroup();
 
         this.form = this.crossSellingPromoFormService.createForm();
-
         // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
         this._setFormStatus();
 

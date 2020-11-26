@@ -35,8 +35,7 @@ import { takeUntil } from 'rxjs/operators';
 import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
 import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
-import { MAT_MENU_SCROLL_STRATEGY_FACTORY } from '@angular/material/menu/typings/menu-trigger';
-import { CrossSellingPromoFormPageComponent } from '../../../pages/cross-selling-promo-form-page/cross-selling-promo-form-page.component'
+
 @Component({
     selector: 'app-cross-selling-promo-group-form',
     templateUrl: './cross-selling-promo-group-form.component.html',
@@ -56,6 +55,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     conditionBase: { id: ConditionBase; label: string }[];
     logicRelation: { id: LogicRelation; label: string }[];
+    logicRelation2: { id: LogicRelation; label: string }[];
+    logicRelationMulti: { id: LogicRelation; label: string }[];
+
     triggerBase: { id: TriggerBase; label: string }[];
     invoiceGroups: InvoiceGroup[];
     conditionBaseType = ConditionBase;
@@ -64,7 +66,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     warehouseSelected = [];
     errorWarehouse: boolean = false;
     statusMulti: boolean = false;
-
+    fakturStatus: boolean = true;
     @Input() getGeneral: FormGroup;
     @Output() getGeneralChange = new EventEmitter();
     @Input()
@@ -108,6 +110,11 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     ngOnInit(): void {
         this.conditionBase = this.crossSellingPromoFormService.conditionBase;
         this.logicRelation = this.crossSellingPromoFormService.logicRelation;
+        this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;
+        this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;
+
+        this.statusMulti = false;
+        this.errorWarehouse = false;
         this.triggerBase = this.crossSellingPromoFormService.triggerBase;
         this.crossSellingPromoFormService.invoiceGroups$
             .pipe(takeUntil(this.unSubs$))
@@ -121,6 +128,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
             this.formStatus.emit(status);
         });
+       
+
          // Mark for check
          this.cdRef.detectChanges();
     }
@@ -129,7 +138,16 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         if (changes['getGeneral'].currentValue) {
             this.statusMulti = this.getGeneral['multiplication'];
         }
-         
+
+        if (this.statusMulti === true) {
+            const idToMulti = 'AND';
+            const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+            this.logicRelationMulti = filteredLogic;
+        } else if (this.statusMulti === false)  { 
+            this.logicRelation = this.crossSellingPromoFormService.logicRelation;    
+            this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;         
+        }
+        
     }
 
     ngOnDestroy(): void {
@@ -145,6 +163,14 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             // chosenWarehouseCtrl.setValue('');
             this.errorWarehouse = true;
             this.warehouseSelected = [];
+            this.fakturStatus = true;
+            // Reset faktur & sku select in Group 1 & 2
+            this._resetFakturGroup1();
+            this._resetFakturGroup2();
+            const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
+            const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
+            chosenSkuCtrl1.setValue(null);
+            chosenSkuCtrl2.setValue(null);
         } else {
             this.errorWarehouse = false;
             const newWarehouses: Selection[] = ev.map((item) => ({
@@ -154,6 +180,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             }));
             
             this.warehouseSelected = newWarehouses;
+            this.fakturStatus = false;
             // chosenWarehouseCtrl.setValue(this.warehouseSelected);
         }
     }
@@ -197,6 +224,16 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         }
     }
 
+    condMultiQty(value): void {
+        const conditionQtyGroup2 = this.form.get(['groups', 1, 'conditionQty']);
+            // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
+            if (value == '' || value == undefined) {
+            conditionQtyGroup2.setValue(null);
+            } else {
+                conditionQtyGroup2.setValue(value);
+            }
+    }
+
     onChangeInvoiceGroup(ev: MatSelectChange, idx: number): void {
         if (!ev.value || !this.invoiceGroups || !this.invoiceGroups.length) {
             // Reset faktur select in Group 2
@@ -231,11 +268,51 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         } else {
             const selectLogicControl = this.selectLogic.toArray()[idx];
 
-            if (ev.length === 1) {
-                if (selectLogicControl) {
-                    selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+            if (this.statusMulti == false) {
+                if (idx == 0) {
+                    if (ev.length === 1) {
+                        this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+                        const idToMulti = 'N/A';
+                        const filteredLogic = this.logicRelation.filter((item) => item.id == idToMulti);
+                        this.logicRelation = filteredLogic;
+                        if (selectLogicControl) {
+                            selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+                        }
+                    } else if (ev.length > 1 ) {
+                        this.logicRelation = this.crossSellingPromoFormService.logicRelation;            
+                    }
+                } else {
+                    if (ev.length === 1) {
+                        this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;            
+                        const idToMulti = 'N/A';
+                        const filteredLogic = this.logicRelation2.filter((item) => item.id == idToMulti);
+                        this.logicRelation2 = filteredLogic;
+                        if (selectLogicControl) {
+                            selectLogicControl.ngControl.control.setValue(LogicRelation.NA);
+                        }
+                    } else if (ev.length > 1 ) {
+                        this.logicRelation2 = this.crossSellingPromoFormService.logicRelation;            
+                    }
                 }
+                
             } else {
+                if (ev.length === 1) {
+                    this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
+                    const idToMulti = 'AND';
+                    const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+                    this.logicRelationMulti = filteredLogic;
+                    if (selectLogicControl) {
+                        selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
+                    }
+                } else if (ev.length > 1 ) {
+                    this.logicRelationMulti = this.crossSellingPromoFormService.logicRelation;            
+                    const idToMulti = 'AND';
+                    const filteredLogic = this.logicRelationMulti.filter((item) => item.id == idToMulti);
+                    this.logicRelationMulti = filteredLogic;
+                    if (selectLogicControl) {
+                        selectLogicControl.ngControl.control.setValue(LogicRelation.AND);
+                    }
+                }
             }
 
             const newSku: Selection[] = ev.map((item) => ({
@@ -401,6 +478,10 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                 panelClass: 'dialog-container-no-padding',
             }
         );
+    }
+
+    private _resetFakturGroup1(): void {
+        this.selectInvoice.first.ngControl.reset();
     }
 
     private _resetFakturGroup2(): void {

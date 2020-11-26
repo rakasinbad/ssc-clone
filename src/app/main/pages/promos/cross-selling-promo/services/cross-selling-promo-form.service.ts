@@ -310,6 +310,16 @@ export class CrossSellingPromoFormService {
                 //     ],
                 // ],
                 chosenStoreType: null,
+                // chosenStoreType: [null, 
+                //     [
+                //     RxwebValidators.required({
+                //         message: this.errorMessageService.getErrorMessageNonState(
+                //             'default',
+                //             'required'
+                //         ),
+                //     }),
+                //     ],
+                // ],
                 chosenStoreGroup: null,
                 chosenStoreChannel: null,
                 chosenStoreCluster: null,

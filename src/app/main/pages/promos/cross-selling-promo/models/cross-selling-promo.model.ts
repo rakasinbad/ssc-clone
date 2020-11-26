@@ -315,6 +315,7 @@ export class CrossSelling implements ITimestamp {
     deletedAt: TNullable<string>;
     isNewStore: boolean;
     isActiveStore: boolean;
+    multiplication: boolean;
 
     constructor(data: CrossSelling) {
         const {
@@ -359,6 +360,7 @@ export class CrossSelling implements ITimestamp {
             deletedAt,
             isNewStore,
             isActiveStore,
+            multiplication,
         } = data;
 
         this.id = id;
@@ -392,7 +394,8 @@ export class CrossSelling implements ITimestamp {
         this.deletedAt = deletedAt || null;
         this.isActiveStore = isActiveStore;
         this.isNewStore = isNewStore;
-
+        this.multiplication = multiplication || false;
+        
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {
             this.promoBrands =

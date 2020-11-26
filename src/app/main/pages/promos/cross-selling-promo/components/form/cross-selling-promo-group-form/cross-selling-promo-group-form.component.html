@@ -15,7 +15,7 @@
             [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
         >
             <label fxFlexAlign="center" fxFlex="12">
-                <!-- <span class="sinbad-red-fg">*</span> -->
+                <span class="sinbad-red-fg">*</span>
                 Warehouse<br />
                 ({{ warehouseSelected.length || 0 }} Selected)
             </label>
@@ -28,9 +28,11 @@
                 (selected)="onWarehouseSelected($event)"
                 fxFlex="50"
             >
-                <mat-hint class="mat-error" *ngIf="errorWarehouse == true">
-                    This field is required.
-                </mat-hint>
+                <ng-container *ngIf="errorWarehouse == true">
+                    <mat-hint class="mat-error">
+                        This field is required.
+                    </mat-hint>
+                </ng-container>
             </select-warehouses>
         </div>
 
@@ -85,7 +87,9 @@
                                     <div fxFlexAlign="center" fxFlex="50">
                                         <ng-container *ngIf="conditionBase; else noConditionBase">
                                             <mat-radio-group
-                                                [formControl]="form.get(['groups', groupIdx, 'conditionBase'])"
+                                                [formControl]="
+                                                    form.get(['groups', groupIdx, 'conditionBase'])
+                                                "
                                                 (change)="onChangeConditionBase($event, groupIdx)"
                                             >
                                                 <mat-radio-button
@@ -131,7 +135,9 @@
                                     <div fxFlexAlign="center" fxFlex="50">
                                         <ng-container *ngIf="conditionBase; else noConditionBase">
                                             <mat-radio-group
-                                                [value]="form.get(['groups', 1, 'conditionBase']).value"
+                                                [value]="
+                                                    form.get(['groups', 1, 'conditionBase']).value
+                                                "
                                                 [disabled]="true"
                                             >
                                                 <mat-radio-button
@@ -167,7 +173,9 @@
                                 <div fxFlexAlign="center" fxFlex="50">
                                     <ng-container *ngIf="conditionBase; else noConditionBase">
                                         <mat-radio-group
-                                            [formControl]="form.get(['groups', groupIdx, 'conditionBase'])"
+                                            [formControl]="
+                                                form.get(['groups', groupIdx, 'conditionBase'])
+                                            "
                                             (change)="onChangeConditionBase($event, groupIdx)"
                                         >
                                             <mat-radio-button
@@ -229,7 +237,7 @@
                                 Faktur
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="60">
+                            <mat-form-field appearance="outline" fxFlex="60" >
                                 <ng-container *ngIf="invoiceGroups; else noInvoiceGroup">
                                     <mat-select
                                         #selectInvoice
@@ -239,6 +247,7 @@
                                         "
                                         (selectionChange)="onChangeInvoiceGroup($event, groupIdx)"
                                         placeholder="Choose Faktur"
+                                        [disabled]="fakturStatus"
                                     >
                                         <mat-option>None</mat-option>
                                         <mat-option
@@ -356,7 +365,8 @@
                                 "
                                 [disabled]="
                                     form.get(['groups', groupIdx, 'chosenSku']).disabled ||
-                                    !form.get(['groups', groupIdx, 'invoiceGroup']).value
+                                    !form.get(['groups', groupIdx, 'invoiceGroup']).value || 
+                                    fakturStatus
                                 "
                                 [required]="true"
                                 [handleEventManually]="true"
@@ -377,7 +387,8 @@
                             </select-catalogues>
                         </div>
 
-                        <div
+                        <ng-container *ngIf="statusMulti == true">
+                            <div
                             class="custom-field"
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
@@ -399,7 +410,7 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="60">
-                                <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                <ng-container *ngIf="logicRelationMulti; else noLogicRelation">
                                     <mat-select
                                         #selectLogic
                                         [id]="prefixLogic + groupIdx"
@@ -409,15 +420,7 @@
                                         <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="
-                                                let row of logicRelation
-                                                    | filterLogicRelation
-                                                        : (form.get([
-                                                              'groups',
-                                                              groupIdx,
-                                                              'chosenSku'
-                                                          ]).value?.length === 1
-                                                              ? true
-                                                              : false || false)
+                                                let row of logicRelationMulti
                                             "
                                             [value]="row.id"
                                         >
@@ -440,6 +443,159 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="statusMulti == false">
+                            <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label
+                                [class.sinbad-red-fg]="
+                                    form.get(['groups', groupIdx, 'relation']).value ||
+                                        form.get(['groups', groupIdx, 'relation']).touched
+                                        | hasErrorField
+                                            : form.get(['groups', groupIdx, 'relation'])
+                                            : false
+                                "
+                                fxFlexAlign="center"
+                                fxFlex="16"
+                            >
+                                <span class="sinbad-red-fg">*</span>
+                                Relation
+                            </label>
+
+                            <ng-container *ngIf="groupIdx == 0">
+                                <mat-form-field appearance="outline" fxFlex="60">
+                                    <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                        <mat-select
+                                            #selectLogic
+                                            [id]="prefixLogic + 0"
+                                            [formControl]="form.get(['groups', 0, 'relation'])"
+                                            placeholder="Choose Logic"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="
+                                                    let row of logicRelation | filterLogicRelation
+                                                    : (form.get([
+                                                          'groups',
+                                                          0,
+                                                          'chosenSku'
+                                                      ]).value?.length === 1
+                                                          ? true
+                                                          : false || false)
+                                                "
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+    
+                                    <ng-template #noLogicRelation>
+                                        <mat-select placeholder="Logic not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+    
+                                    <mat-error>
+                                        {{
+                                            form.get(['groups', 0, 'relation']).value
+                                                | errorMessage: form:'relation':'groups':0
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+
+                            <ng-container *ngIf="groupIdx == 1">
+                                <mat-form-field appearance="outline" fxFlex="60">
+                                    <ng-container *ngIf="logicRelation2; else noLogicRelation">
+                                        <mat-select
+                                            #selectLogic
+                                            [id]="prefixLogic + 1"
+                                            [formControl]="form.get(['groups', 1, 'relation'])"
+                                            placeholder="Choose Logic"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="
+                                                    let row of logicRelation2 | filterLogicRelation
+                                                    : (form.get([
+                                                          'groups',
+                                                          1,
+                                                          'chosenSku'
+                                                      ]).value?.length === 1
+                                                          ? true
+                                                          : false || false)
+                                                "
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+    
+                                    <ng-template #noLogicRelation>
+                                        <mat-select placeholder="Logic not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+    
+                                    <mat-error>
+                                        {{
+                                            form.get(['groups', 1, 'relation']).value
+                                                | errorMessage: form:'relation':'groups':1
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+                            <!-- <mat-form-field appearance="outline" fxFlex="60">
+                                <ng-container *ngIf="logicRelation; else noLogicRelation">
+                                    <mat-select
+                                        #selectLogic
+                                        [id]="prefixLogic + groupIdx"
+                                        [formControl]="form.get(['groups', groupIdx, 'relation'])"
+                                        placeholder="Choose Logic"
+                                    >
+                                        <mat-option>None</mat-option>
+                                        <mat-option
+                                            *ngFor="
+                                                let row of logicRelation | filterLogicRelation
+                                                : (form.get([
+                                                      'groups',
+                                                      groupIdx,
+                                                      'chosenSku'
+                                                  ]).value?.length === 1
+                                                      ? true
+                                                      : false || false)
+                                            "
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noLogicRelation>
+                                    <mat-select placeholder="Logic not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error>
+                                    {{
+                                        form.get(['groups', groupIdx, 'relation']).value
+                                            | errorMessage: form:'relation':'groups':groupIdx
+                                    }}
+                                </mat-error>
+                            </mat-form-field> -->
+                        </div>
+                        </ng-container>
+
+                       
 
                         <ng-container
                             [ngSwitch]="form.get(['groups', groupIdx, 'conditionBase']).value"
@@ -471,36 +627,117 @@
 
 <!-- TEMPLATE CONDITION BASE VALUE -->
 <ng-template let-form="form" let-groupIdx="groupIdx" #conditionQty>
-    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
-        <label
-            [class.sinbad-red-fg]="
-                form.get(['groups', groupIdx, 'conditionQty']).value ||
-                    form.get(['groups', groupIdx, 'conditionQty']).touched
-                    | hasErrorField: form.get(['groups', groupIdx, 'conditionQty']):false
-            "
-            fxFlexAlign="center"
-            fxFlex="16"
-        >
-            <span class="sinbad-red-fg">*</span>
-            Qty >=
-        </label>
+    <!-- when multi true -->
+    <ng-container *ngIf="statusMulti == true">
+        <ng-container *ngIf="groupIdx == 0">
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get(['groups', 0, 'conditionQty']).value ||
+                            form.get(['groups', 0, 'conditionQty']).touched
+                            | hasErrorField: form.get(['groups', 0, 'conditionQty']):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="16"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Qty >=
+                </label>
+                <mat-form-field appearance="outline" fxFlex="60">
+                    <input
+                        matInput
+                        [formControl]="form.get(['groups', 0, 'conditionQty'])"
+                        (ngModelChange)="condMultiQty($event)"
+                        mask="09999"
+                        autocomplete="off"
+                    />
 
-        <mat-form-field appearance="outline" fxFlex="60">
-            <input
-                matInput
-                [formControl]="form.get(['groups', groupIdx, 'conditionQty'])"
-                mask="09999"
-                autocomplete="off"
-            />
+                    <mat-error>
+                        {{
+                            form.get(['groups', 0, 'conditionQty']).value
+                                | errorMessage: form:'conditionQty':'groups':0
+                        }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="groupIdx == 1">
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+            >
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get(['groups', 1, 'conditionQty']).value ||
+                            form.get(['groups', 1, 'conditionQty']).touched
+                            | hasErrorField: form.get(['groups', 1, 'conditionQty']):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="16"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Qty >=
+                </label>
+                <mat-form-field appearance="outline" fxFlex="60">
+                    <input
+                        matInput
+                        [formControl]="form.get(['groups', 1, 'conditionQty'])"
+                        mask="09999"
+                        autocomplete="off"
+                        readonly
+                        style="color:lightgray;"
+                    />
 
-            <mat-error>
-                {{
-                    form.get(['groups', groupIdx, 'conditionQty']).value
-                        | errorMessage: form:'conditionQty':'groups':groupIdx
-                }}
-            </mat-error>
-        </mat-form-field>
-    </div>
+                    <mat-error>
+                        {{
+                            form.get(['groups', 1, 'conditionQty']).value
+                                | errorMessage: form:'conditionQty':'groups':1
+                        }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <!-- when multi false -->
+    <ng-container *ngIf="statusMulti == false">
+        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+            <label
+                [class.sinbad-red-fg]="
+                    form.get(['groups', groupIdx, 'conditionQty']).value ||
+                        form.get(['groups', groupIdx, 'conditionQty']).touched
+                        | hasErrorField: form.get(['groups', groupIdx, 'conditionQty']):false
+                "
+                fxFlexAlign="center"
+                fxFlex="16"
+            >
+                <span class="sinbad-red-fg">*</span>
+                Qty >=
+            </label>
+            <mat-form-field appearance="outline" fxFlex="60">
+                <input
+                    matInput
+                    [formControl]="form.get(['groups', groupIdx, 'conditionQty'])"
+                    mask="09999"
+                    autocomplete="off"
+                />
+
+                <mat-error>
+                    {{
+                        form.get(['groups', groupIdx, 'conditionQty']).value
+                            | errorMessage: form:'conditionQty':'groups':groupIdx
+                    }}
+                </mat-error>
+            </mat-form-field>
+        </div>
+    </ng-container>
 </ng-template>
 
 <ng-template let-form="form" let-groupIdx="groupIdx" #conditionValue>
