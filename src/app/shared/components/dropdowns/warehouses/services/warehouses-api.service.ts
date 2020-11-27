@@ -54,20 +54,26 @@ export class WarehousesApiService {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
-        if (params['keyword']) {
-            newArgs.push({ key: 'keyword', value: params['keyword'] });
-        }
-
-        // newQuery['segment'] = 'warehouse';
-        // newQuery['catalogueId'] = this.catalogueIdSelect;
         if (params['catalogueId']) {
             newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
+        }
+
+        if (params['brandId']) {
+            newArgs.push({ key: 'brandId', value: params['brandId'] });
+        }
+
+        if (params['fakturId']) {
+            newArgs.push({ key: 'fakturId', value: params['fakturId'] });
         }
 
         if (params['segment']) {
             newArgs.push({ key: 'segment', value: params['segment'] });
         }
-        
+
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
         this._url = this.helper$.handleApiRouter(this._endpointPromo);
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
         return this.http.get<T>(this._url, { params: newParams });

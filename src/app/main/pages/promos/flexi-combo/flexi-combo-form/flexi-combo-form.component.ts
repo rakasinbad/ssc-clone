@@ -178,6 +178,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public storeClusterLength: number;
     public typePromo = 'flexiCombo';
     public catalogueIdSelected: string;
+    public brandIdSelected: string;
+    public fakturIdSelected: string;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -639,6 +641,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenBrand').setValue(newBrands);
+            let idBrand = [];
+            idBrand = ev.map((item) => (item.id));
+            this.brandIdSelected = idBrand.toString();
         }
     }
 
@@ -995,6 +1000,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenInvoice').setValue(newFaktur);
+            let idFaktur = [];
+            idFaktur = ev.map((item) => (item.id));
+            this.fakturIdSelected = idFaktur.toString();
         }
     }
 

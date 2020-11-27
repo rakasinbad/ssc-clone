@@ -207,9 +207,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 if (this.typePromo == 'flexiCombo') {
                     newQuery['segment'] = 'warehouse';
+                    newQuery['segment'] = 'warehouse';
 
                     if (this.catalogueIdSelect) {
-                    newQuery['segment'] = 'warehouse';
                     newQuery['catalogueId'] = this.catalogueIdSelect;
                         // Melakukan request data warehouse.
                         return this.entityApi$
@@ -217,8 +217,23 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         .pipe(
                             tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                         );
+                    } else if(this.brandIdSelect) {
+                    newQuery['brandId'] = this.brandIdSelect;
+                        // Melakukan request data warehouse.
+                        return this.entityApi$
+                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                        .pipe(
+                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                        );
+                    } else if (this.fakturIdSelect) {
+                        newQuery['fakturId'] = this.fakturIdSelect;
+                            // Melakukan request data warehouse.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
                     } else {
-                        
                     }
                     
                 } else {
@@ -518,6 +533,35 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             };
 
             params['catalogueId'] = this.catalogueIdSelect;
+            this.requestEntity(params);
+        }
+
+        if (changes['brandIdSelect']) {
+            this.availableEntities$.next([]);
+            this.rawAvailableEntities$.next([]);
+
+            const params: IQueryParams = {
+                paginate: true,
+                limit: this.limit,
+                skip: 0,
+            };
+
+            params['brandId'] = this.brandIdSelect;
+            this.requestEntity(params);
+        }
+
+        if (changes['fakturIdSelect']) {
+            // brandIdSelect
+            this.availableEntities$.next([]);
+            this.rawAvailableEntities$.next([]);
+
+            const params: IQueryParams = {
+                paginate: true,
+                limit: this.limit,
+                skip: 0,
+            };
+
+            params['fakturId'] = this.fakturIdSelect;
             this.requestEntity(params);
         }
 
