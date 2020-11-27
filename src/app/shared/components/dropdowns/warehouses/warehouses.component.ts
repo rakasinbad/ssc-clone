@@ -294,11 +294,11 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 this.cdRef.markForCheck();
             },
-            error: (err) => {
-                this.toggleLoading(false);
-                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
-            },
+            // error: (err) => {
+            //     this.toggleLoading(false);
+            //     HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+            //     this.helper$.showErrorNotification(new ErrorHandler(err));
+            // },
             complete: () => {
                 this.toggleLoading(false);
                 HelperService.debug('FIND ENTITY COMPLETED');
