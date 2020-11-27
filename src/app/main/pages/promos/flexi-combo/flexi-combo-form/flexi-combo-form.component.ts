@@ -176,6 +176,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public storeChannelLength: number;
     public storeClusterSelectAll: string;
     public storeClusterLength: number;
+    public typePromo = 'flexiCombo';
+    public catalogueIdSelected: string;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -1014,8 +1016,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 label: item.name,
                 group: 'catalogues',
             }));
-
+            let idSku = [];
+            idSku = ev.map((item) => (item.id));
             this.form.get('chosenSku').setValue(newSku);
+            this.catalogueIdSelected = idSku.toString();            
         }
     }
 

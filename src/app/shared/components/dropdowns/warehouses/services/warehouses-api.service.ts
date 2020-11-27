@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 export class WarehousesApiService {
     private _url: string;
     private readonly _endpoint = '/warehouses';
+    private readonly _endpointPromo = '/get-segmentation-promo';
 
     constructor(
         private http: HttpClient,
@@ -38,6 +39,36 @@ export class WarehousesApiService {
         }
 
         this._url = this.helper$.handleApiRouter(this._endpoint);
+        const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
+        return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    findSegmentPromo<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_WAREHOUSE_REQUIRES_SUPPLIERID');
+        }
+        
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        // newQuery['segment'] = 'warehouse';
+        // newQuery['catalogueId'] = this.catalogueIdSelect;
+        if (params['catalogueId']) {
+            newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
+        }
+
+        if (params['segment']) {
+            newArgs.push({ key: 'segment', value: params['segment'] });
+        }
+        
+        this._url = this.helper$.handleApiRouter(this._endpointPromo);
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
         return this.http.get<T>(this._url, { params: newParams });
     }
