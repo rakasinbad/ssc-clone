@@ -257,14 +257,22 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
+                    if (this.typePromo == 'flexiCombo') {
+                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    } else {
                     addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    }
 
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    if (this.typePromo == 'flexiCombo') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    } else {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    }
 
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);

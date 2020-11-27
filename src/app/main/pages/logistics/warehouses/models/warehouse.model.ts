@@ -22,6 +22,8 @@ export interface IWarehouse extends ITimestamp {
     warehouseInvoiceGroups: Array<WarehouseInvoiceGroup>;
     warehouseTemperatureId: string;
     warehouseValueId: string;
+    warehouseId: string;
+    warehouseName: string;
 }
 
 export class Warehouse implements IWarehouse {
@@ -46,6 +48,8 @@ export class Warehouse implements IWarehouse {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    warehouseId: string;
+    warehouseName: string;
 
     constructor(data: IWarehouse) {
         const {
@@ -69,7 +73,9 @@ export class Warehouse implements IWarehouse {
             warehouseValueId,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
+            warehouseId,
+            warehouseName
         } = data;
 
         this.id = id;
@@ -94,6 +100,9 @@ export class Warehouse implements IWarehouse {
 
         this.setUrban = urban;
         this.setWarehouseInvoiceGroups = warehouseInvoiceGroups;
+        this.warehouseId = warehouseId || null;
+        this.warehouseName = warehouseName || null;
+
     }
 
     set setUrban(value: Urban) {
