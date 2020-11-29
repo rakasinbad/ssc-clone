@@ -212,26 +212,40 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // Hanya mengambil yang tidak punya child.
                 // newQuery['hasChild'] = false;
                 // Request berdasarkan segmentasinya
-                newQuery['segmentation'] = this.segmentationType;
 
                 if (this.typePromo == 'flexiCombo') {
+                    newQuery['segmentation'] = this.segmentationType;
 
                     if (this.catalogueIdSelect) {
                         newQuery['catalogueId'] = this.catalogueIdSelect;
-                    } else if(this.brandIdSelect) {
-                        newQuery['brandId'] = this.brandIdSelect;
-                    } else if (this.fakturIdSelect) {
-                        newQuery['fakturId'] = this.fakturIdSelect;
-                    } 
-
-                      // Melakukan request data
+                         // Melakukan request data
                       return this.entityApi$
                       .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
                       .pipe(
                           tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                       );
+                    } else if(this.brandIdSelect) {
+                        newQuery['brandId'] = this.brandIdSelect;
+                         // Melakukan request data
+                      return this.entityApi$
+                      .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                      .pipe(
+                          tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                      );
+                    } else if (this.fakturIdSelect) {
+                        newQuery['fakturId'] = this.fakturIdSelect;
+                        // Melakukan request data
+                      return this.entityApi$
+                      .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                      .pipe(
+                          tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                      );
+                    } else {
+                    }
 
                 } else {
+                    newQuery['segmentation'] = this.segmentationType;
+                    
                     // Melakukan request data warehouse.
                     return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
@@ -253,14 +267,16 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    if (this.segmentationType == 'type') {
-                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
-                    } else if (this.segmentationType == 'group') {
-                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
-                    } else if (this.segmentationType == 'channel') {
-                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
-                    } else if (this.segmentationType == 'cluster') {
-                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                    if (this.typePromo == 'flexiCombo') {
+                        if (this.segmentationType == 'type') {
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                        } else if (this.segmentationType == 'group') {
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                        } else if (this.segmentationType == 'channel') {
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                        } else if (this.segmentationType == 'cluster') {
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                        } 
                     } else {
                         addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
                     }
@@ -271,14 +287,16 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 } else {
                     addedRawAvailableEntities = response.data;
 
-                    if (this.segmentationType == 'type') {
-                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
-                    } else if (this.segmentationType == 'group') {
-                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
-                    } else if (this.segmentationType == 'channel') {
-                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
-                    } else if (this.segmentationType == 'cluster') {
-                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                    if (this.typePromo == 'flexiCombo') {
+                        if (this.segmentationType == 'type') {
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                        } else if (this.segmentationType == 'group') {
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                        } else if (this.segmentationType == 'channel') {
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                        } else if (this.segmentationType == 'cluster') {
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                        }
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
                     }
@@ -610,7 +628,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['catalogueIdSelect'].currentValue === true) {
+        if (changes['catalogueIdSelect']) {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
 
@@ -624,7 +642,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             this.requestEntity(params);
         }
 
-        if (changes['brandIdSelect'].currentValue === true) {
+        if (changes['brandIdSelect']) {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
 
@@ -638,7 +656,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             this.requestEntity(params);
         }
 
-        if (changes['fakturIdSelect'].currentValue === true) {
+        if (changes['fakturIdSelect']) {
             // brandIdSelect
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
