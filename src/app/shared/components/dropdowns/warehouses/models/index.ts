@@ -1,1 +1,1 @@
-export * from 'app/main/pages/logistics/warehouses/models/warehouse.model';
+export * from './warehouse.model';

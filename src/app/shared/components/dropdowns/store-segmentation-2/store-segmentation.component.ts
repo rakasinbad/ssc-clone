@@ -217,32 +217,20 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 if (this.typePromo == 'flexiCombo') {
 
                     if (this.catalogueIdSelect) {
-                    newQuery['catalogueId'] = this.catalogueIdSelect;
-                        // Melakukan request data warehouse.
-                        return this.entityApi$
-                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                        );
+                        newQuery['catalogueId'] = this.catalogueIdSelect;
                     } else if(this.brandIdSelect) {
-                    newQuery['brandId'] = this.brandIdSelect;
-                        // Melakukan request data warehouse.
-                        return this.entityApi$
-                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                        );
+                        newQuery['brandId'] = this.brandIdSelect;
                     } else if (this.fakturIdSelect) {
                         newQuery['fakturId'] = this.fakturIdSelect;
-                            // Melakukan request data warehouse.
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                    } else {
-                    }
-                    
+                    } 
+
+                      // Melakukan request data
+                      return this.entityApi$
+                      .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                      .pipe(
+                          tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                      );
+
                 } else {
                     // Melakukan request data warehouse.
                     return this.entityApi$
@@ -265,14 +253,35 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+                    if (this.segmentationType == 'type') {
+                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                    } else if (this.segmentationType == 'group') {
+                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                    } else if (this.segmentationType == 'channel') {
+                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                    } else if (this.segmentationType == 'cluster') {
+                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                    } else {
+                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+                    }
 
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+
+                    if (this.segmentationType == 'type') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                    } else if (this.segmentationType == 'group') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                    } else if (this.segmentationType == 'channel') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                    } else if (this.segmentationType == 'cluster') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                    } else {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+                    }
 
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
@@ -601,7 +610,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['catalogueIdSelect']) {
+        if (changes['catalogueIdSelect'].currentValue === true) {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
 
@@ -615,7 +624,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             this.requestEntity(params);
         }
 
-        if (changes['brandIdSelect']) {
+        if (changes['brandIdSelect'].currentValue === true) {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
 
@@ -629,7 +638,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             this.requestEntity(params);
         }
 
-        if (changes['fakturIdSelect']) {
+        if (changes['fakturIdSelect'].currentValue === true) {
             // brandIdSelect
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
