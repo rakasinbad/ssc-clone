@@ -85,6 +85,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     @Input() catalogueIdSelect: string;
     @Input() brandIdSelect: string = '';
     @Input() fakturIdSelect: string = '';
+    @Input() segmentBases: string = '';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -206,7 +207,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 newQuery['supplierId'] = supplierId;
 
                 if (this.typePromo == 'flexiCombo') {
-                    newQuery['segment'] = 'warehouse';
                     newQuery['segment'] = 'warehouse';
 
                     if (this.catalogueIdSelect) {
@@ -529,6 +529,11 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('isi segmentBases=>', changes['segmentBases'])
+        if (changes['segmentBases']) {
+            this.availableEntities$.next([]);
+            this.rawAvailableEntities$.next([]);
+        }
 
         if (changes['catalogueIdSelect']) {
             this.availableEntities$.next([]);

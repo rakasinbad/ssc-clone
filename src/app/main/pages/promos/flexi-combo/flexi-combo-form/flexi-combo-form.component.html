@@ -2202,6 +2202,7 @@
                                     [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
                                     [required]="false"
+                                    [segmentBases]="eSegmentBase.SEGMENTATION"
                                     [typePromo]="typePromo"
                                     [catalogueIdSelect]="catalogueIdSelected"
                                     [brandIdSelect]="brandIdSelected"
@@ -2386,6 +2387,10 @@
                                     [disabled]="true"
                                     placeholder="{{warehouseSelectAll}}"
                                     [required]="false"
+                                    [segmentBases]="eSegmentBase.ALLSEGMENTATION"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (valueSelectAll)="dataValueWarehouse($event)"
                                     fxFlex="50"
                                 >
