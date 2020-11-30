@@ -22,14 +22,14 @@ fixture(`${tc.testCase.describe}`)
 
     .page `${process.env.SSC_BASE_URL}/pages/account/stores`
 
-test(`@test ${tc.testCase.positive.getOMSPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getOMSPage}`, async t => {
     await page
         .clickOMSPage()
     await t
         .expect((element.omsTitlePage).exists).ok()
 });
 
-test(`@test ${tc.testCase.positive.getOMSDetail}`, async t => {
+test(`@sanity ${tc.testCase.positive.getOMSDetail}`, async t => {
     await page
         .clickOMSPage()
     const storeName = await (element.omsStoreNameRow).innerText; 
@@ -48,7 +48,7 @@ test(`@test ${tc.testCase.positive.getOMSDetail}`, async t => {
         .expect(storeStatusDetail).eql(storeStatus)
 });
 
-test(`@test ${tc.testCase.positive.getPendingPaymentTab}`, async t => {
+test(`@sanity ${tc.testCase.positive.getPendingPaymentTab}`, async t => {
     await page
         .clickPendingPaymentSection()
     const storeStatus = await (element.omsStatusValueRow).innerText;
