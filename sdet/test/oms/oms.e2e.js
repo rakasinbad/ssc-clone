@@ -1,8 +1,8 @@
-import page from '../page/oms_page.js'
-import roles from '../helper/supplier_account.js'
-import element from '../element/oms_element.js'
+import page from '../../page/oms_page.js'
+import roles from '../../helper/supplier_account.js'
+import element from '../../element/oms_element.js'
 
-const tc = require('../test_case/tc_oms.js')
+const tc = require('../../test_case/oms/tc_oms.js')
 const env = require('dotenv').config(); 
 
 fixture(`${tc.testCase.describe}`)
