@@ -205,48 +205,53 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
-
-                if (this.typePromo == 'flexiCombo') {
-                    newQuery['segment'] = 'warehouse';
-
-                    if (this.catalogueIdSelect) {
-                    newQuery['catalogueId'] = this.catalogueIdSelect;
-                        // Melakukan request data warehouse.
-                        return this.entityApi$
-                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                        );
-                    } else if(this.brandIdSelect) {
-                    newQuery['brandId'] = this.brandIdSelect;
-                        // Melakukan request data warehouse.
-                        return this.entityApi$
-                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                        );
-                    } else if (this.fakturIdSelect) {
-                        newQuery['fakturId'] = this.fakturIdSelect;
-                            // Melakukan request data warehouse.
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                    } else {
+                newQuery['segment'] = 'warehouse'
+                console.log('isi segmentBases req ent->', this.segmentBases)
+                console.log('this.catalogueIdSelect->', this.catalogueIdSelect)
+                console.log('this.fakturIdSelect->', this.fakturIdSelect)
+                console.log('this.brandIdSelect->', this.brandIdSelect)
+                if (this.segmentBases == 'segmentation' || this.segmentBases == 'all_segmentation') {
+                    if (this.typePromo == 'flexiCombo') {   
+                        if (this.catalogueIdSelect != undefined) {
+                            newQuery['catalogueId'] = this.catalogueIdSelect;
+                             // Melakukan request data warehouse.
+                             return this.entityApi$
+                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                             .pipe(
+                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                             );
+                        } else if (this.brandIdSelect != undefined) {
+                            newQuery['brandId'] = this.brandIdSelect;
+                             // Melakukan request data warehouse.
+                             return this.entityApi$
+                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                             .pipe(
+                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                             );
+                        } else if (this.fakturIdSelect != undefined) {
+                            newQuery['fakturId'] = this.fakturIdSelect;
+                             // Melakukan request data warehouse.
+                             return this.entityApi$
+                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                             .pipe(
+                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                             );
+                        } 
+                            
                     }
-                    
                 } else {
+                    if(this.typePromo != 'flexiCombo') {
                     // Melakukan request data warehouse.
                     return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
                         tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
                     );
+                    }
                 }
                 
             }),
-            take(1),
+            // take(1),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -529,52 +534,46 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('isi segmentBases=>', changes['segmentBases'])
-        if (changes['segmentBases']) {
+        console.log('isi segmentBases onchanges1->', this.segmentBases)
+        console.log('isi changes segment->', changes['segmentBases'])
+        if (this.segmentBases == 'segmentation' || this.segmentBases == 'all_segmentation') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
+            if (this.typePromo == 'flexiCombo') {
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
+                if (changes['catalogueIdSelect'].currentValue != undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueId'] = this.catalogueIdSelect;
+                    this.requestEntity(params);
+                } else if (changes['brandIdSelect'].currentValue != undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['brandId'] = this.brandIdSelect;
+                    this.requestEntity(params);
+                } else if (changes['fakturIdSelect'].currentValue != undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['fakturId'] = this.fakturIdSelect;
+                    this.requestEntity(params);
+                }
+            } else {
+
+            }
         }
 
-        if (changes['catalogueIdSelect']) {
+        if (this.typePromo == 'crossSelling') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
-
             const params: IQueryParams = {
                 paginate: true,
                 limit: this.limit,
                 skip: 0,
             };
-
-            params['catalogueId'] = this.catalogueIdSelect;
-            this.requestEntity(params);
-        }
-
-        if (changes['brandIdSelect']) {
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
-
-            const params: IQueryParams = {
-                paginate: true,
-                limit: this.limit,
-                skip: 0,
-            };
-
-            params['brandId'] = this.brandIdSelect;
-            this.requestEntity(params);
-        }
-
-        if (changes['fakturIdSelect']) {
-            // brandIdSelect
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
-
-            const params: IQueryParams = {
-                paginate: true,
-                limit: this.limit,
-                skip: 0,
-            };
-
-            params['fakturId'] = this.fakturIdSelect;
             this.requestEntity(params);
         }
 
@@ -626,7 +625,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
+        // this.initEntity();
     }
 
 }

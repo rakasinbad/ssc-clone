@@ -180,7 +180,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public catalogueIdSelected: string;
     public brandIdSelected: string;
     public fakturIdSelected: string;
-
+    public segmentBases: string;
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -206,7 +206,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        
+        this.segmentBases = 'segmentation';
         this._initPage();
     }
 
@@ -644,6 +644,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             let idBrand = [];
             idBrand = ev.map((item) => (item.id));
             this.brandIdSelected = idBrand.toString();
+            this.catalogueIdSelected = undefined;     
+            this.fakturIdSelected = undefined;
         }
     }
 
@@ -836,6 +838,32 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.form.get('chosenStoreGroup').updateValueAndValidity();
         this.form.get('chosenStoreChannel').updateValueAndValidity();
         this.form.get('chosenStoreCluster').updateValueAndValidity();
+        this.segmentBases = this.form.get('segmentationBase').value;
+        if (this.form.get('chosenInvoice').value != null) {
+            let idFaktur = [];
+            let fakturChoosen = this.form.get('chosenInvoice').value;
+            idFaktur = fakturChoosen.map((item) => (item.id));
+            this.fakturIdSelected = idFaktur.toString(); 
+            this.brandIdSelected = undefined;
+            this.catalogueIdSelected = undefined;        
+            console.log('fakturChoosen->', this.fakturIdSelected)
+        } else if (this.form.get('chosenSku').value != null) {
+            let idSku = [];
+            let skuChoosen = this.form.get('chosenSku').value;
+            idSku = skuChoosen.map((item) => (item.id));
+            this.catalogueIdSelected = idSku.toString();  
+            console.log('skuChoosen->', this.catalogueIdSelected)
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;
+        } else if (this.form.get('chosenBrand').value != null) {
+            let idBrand = [];
+            let brandChoosen = this.form.get('chosenBrand').value;
+            idBrand = brandChoosen.map((item) => (item.id));
+            this.brandIdSelected = idBrand.toString();  
+            console.log('brandchoosen->', this.brandIdSelected)
+            this.catalogueIdSelected = undefined;        
+            this.fakturIdSelected = undefined;
+        }
     }
 
     /**
@@ -1003,6 +1031,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             let idFaktur = [];
             idFaktur = ev.map((item) => (item.id));
             this.fakturIdSelected = idFaktur.toString();
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
         }
     }
 
@@ -1027,7 +1057,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             let idSku = [];
             idSku = ev.map((item) => (item.id));
             this.form.get('chosenSku').setValue(newSku);
-            this.catalogueIdSelected = idSku.toString();            
+            this.catalogueIdSelected = idSku.toString();        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
         }
     }
 

@@ -29,6 +29,7 @@
 
         <app-cross-selling-promo-segment-setting-form
             [form]="form.get('segmentSetting')"
+            [fakturName]="fakturName"
             (formStatus)="onSetSegmentSettingFormStatus($event)"
             (formValue)="segmentFormDto = $event"
         ></app-cross-selling-promo-segment-setting-form>

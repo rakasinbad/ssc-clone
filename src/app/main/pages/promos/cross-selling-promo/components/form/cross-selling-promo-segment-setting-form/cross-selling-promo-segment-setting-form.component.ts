@@ -53,6 +53,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     @Input()
     formMode: FormMode;
 
+    @Input() fakturName: string;
+
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
 
@@ -68,6 +70,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     public storeClusterSelectAll: string;
     public storeClusterLength: number;
     message:any;
+    selectFaktur: string;
+    public typePromo = 'crossSelling';
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
@@ -89,6 +93,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log('fakturName->', changes['fakturName'])
+        if (changes['fakturName']) {
+            this.selectFaktur = this.fakturName;
+        }
+
         if (changes['form']) {
             if (changes['form'].firstChange) {
                 const status: FormStatus = this.form.valid

@@ -87,7 +87,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     @Input() catalogueIdSelect: string;
     @Input() brandIdSelect: string = '';
     @Input() fakturIdSelect: string = '';
-
+    @Input() segmentBases: string = '';
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
@@ -211,52 +211,54 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 newQuery['supplierId'] = supplierId;
                 // Hanya mengambil yang tidak punya child.
                 // newQuery['hasChild'] = false;
+
                 // Request berdasarkan segmentasinya
-
-                if (this.typePromo == 'flexiCombo') {
+                if (this.segmentBases == 'all_segmentation' || this.segmentBases == 'segmentation') {
                     newQuery['segmentation'] = this.segmentationType;
-
-                    if (this.catalogueIdSelect) {
-                        newQuery['catalogueId'] = this.catalogueIdSelect;
-                         // Melakukan request data
-                      return this.entityApi$
-                      .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                      .pipe(
-                          tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                      );
-                    } else if(this.brandIdSelect) {
-                        newQuery['brandId'] = this.brandIdSelect;
-                         // Melakukan request data
-                      return this.entityApi$
-                      .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                      .pipe(
-                          tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                      );
-                    } else if (this.fakturIdSelect) {
-                        newQuery['fakturId'] = this.fakturIdSelect;
-                        // Melakukan request data
-                      return this.entityApi$
-                      .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                      .pipe(
-                          tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                      );
-                    } else {
+                    if (this.typePromo == 'flexiCombo') {
+                        if (this.catalogueIdSelect != undefined) {
+                            newQuery['catalogueId'] = this.catalogueIdSelect;
+                            // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        } else if(this.brandIdSelect != undefined) {
+                            newQuery['brandId'] = this.brandIdSelect;
+                             // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        } else if (this.fakturIdSelect != undefined) {
+                            newQuery['fakturId'] = this.fakturIdSelect;
+                             // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        } 
+                        
                     }
-
                 } else {
+                    if(this.typePromo != 'flexiCombo') {
+
                     newQuery['segmentation'] = this.segmentationType;
-                    
                     // Melakukan request data warehouse.
                     return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
                     );
+                    }
                 }
 
                
             }),
-            take(1),
+            // take(1),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -628,48 +630,35 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['catalogueIdSelect']) {
+        if (this.segmentBases == 'segmentation' || this.segmentBases == 'all_segmentation') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
+            if (this.typePromo == 'flexiCombo') {
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
+                if (changes['catalogueIdSelect'].currentValue != undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueId'] = this.catalogueIdSelect;
+                    this.requestEntity(params);
+                } else if (changes['brandIdSelect'].currentValue != undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['brandId'] = this.brandIdSelect;
+                    this.requestEntity(params);
+                } else if (changes['fakturIdSelect'].currentValue != undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['fakturId'] = this.fakturIdSelect;
+                    this.requestEntity(params);
+                }
+            }
+        } 
 
-            const params: IQueryParams = {
-                paginate: true,
-                limit: this.limit,
-                skip: 0,
-            };
-
-            params['catalogueId'] = this.catalogueIdSelect;
-            this.requestEntity(params);
-        }
-
-        if (changes['brandIdSelect']) {
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
-
-            const params: IQueryParams = {
-                paginate: true,
-                limit: this.limit,
-                skip: 0,
-            };
-
-            params['brandId'] = this.brandIdSelect;
-            this.requestEntity(params);
-        }
-
-        if (changes['fakturIdSelect']) {
-            // brandIdSelect
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
-
-            const params: IQueryParams = {
-                paginate: true,
-                limit: this.limit,
-                skip: 0,
-            };
-
-            params['fakturId'] = this.fakturIdSelect;
-            this.requestEntity(params);
-        }
+       
         
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
@@ -719,7 +708,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
+        // this.initEntity();
     }
 
 }

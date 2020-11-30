@@ -98,7 +98,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     @ViewChildren('selectSku')
     selectSku: QueryList<CataloguesDropdownComponent>;
-    
+
+    public typePromo = 'crossSelling';
+
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
