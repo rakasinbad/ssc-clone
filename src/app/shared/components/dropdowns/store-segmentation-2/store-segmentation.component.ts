@@ -242,10 +242,19 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                             );
                         } 
                         
+                    } else if (this.typePromo == 'crossSelling') {
+                        if (this.fakturIdSelect != null) {
+                            newQuery['fakturId'] = this.fakturIdSelect;
+                             // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        }
                     }
                 } else {
-                    if(this.typePromo != 'flexiCombo') {
-
+                    if (this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
                     newQuery['segmentation'] = this.segmentationType;
                     // Melakukan request data warehouse.
                     return this.entityApi$
@@ -655,11 +664,23 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     params['fakturId'] = this.fakturIdSelect;
                     this.requestEntity(params);
                 }
+            } else if (this.typePromo == 'crossSelling') {
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
+                 if (changes['fakturIdSelect'].currentValue != null) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['fakturId'] = this.fakturIdSelect;
+                    this.requestEntity(params);
+                }
             }
         } 
 
        
-        
+
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();

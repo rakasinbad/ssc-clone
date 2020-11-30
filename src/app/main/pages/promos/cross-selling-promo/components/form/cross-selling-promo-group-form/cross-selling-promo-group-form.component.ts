@@ -84,6 +84,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     @Output()
     fakturName: EventEmitter<string> = new EventEmitter();
 
+    @Output()
+    fakturId: EventEmitter<string> = new EventEmitter();
+
     @ViewChild('beforeLimit', { static: false })
     beforeLimit: TemplateRef<any>;
 
@@ -247,7 +250,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
         if (this.invoiceGroups[invoiceIdx]) {
             this.fakturName.emit(this.invoiceGroups[invoiceIdx].name || null);
-
+            this.fakturId.emit(this.invoiceGroups[invoiceIdx].id || null);
+            
             if (idx === 0) {
                 // Disable faktur select in Group 2
                 this.selectInvoice.last.ngControl.control.setValue(ev.value);

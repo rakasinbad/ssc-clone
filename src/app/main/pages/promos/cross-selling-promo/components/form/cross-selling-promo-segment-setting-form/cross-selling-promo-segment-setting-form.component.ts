@@ -53,7 +53,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     @Input()
     formMode: FormMode;
 
-    @Input() fakturName: string;
+    @Input() fakturId: string;
 
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
@@ -70,6 +70,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     public storeClusterSelectAll: string;
     public storeClusterLength: number;
     message:any;
+    segmentBases: string;
     selectFaktur: string;
     public typePromo = 'crossSelling';
 
@@ -83,6 +84,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.segmentationBasePromo = this.crossSellingPromoFormService.segmentationBasePromo;
         this.specifiedTarget = this.crossSellingPromoFormService.specifiedTarget;
 
+        this.segmentBases = 'segmentation';
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
                 this._handleFormValue();
@@ -93,9 +95,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('fakturName->', changes['fakturName'])
-        if (changes['fakturName']) {
-            this.selectFaktur = this.fakturName;
+        console.log('fakturId->', changes['fakturId'])
+        if (changes['fakturId']) {
+            this.selectFaktur = changes['fakturId'].currentValue;
         }
 
         if (changes['form']) {
@@ -124,10 +126,12 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         switch (ev.value) {
             case SegmentationBasePromo.SEGMENTATION:
                 this._setSpecifiedTargetValidation();
+                this.segmentBases = this.form.get('specifiedTarget').value;
                 break;
 
             case SegmentationBasePromo.ALLSEGMENTATION:
                 this._setSpecifiedTargetValidation();
+                this.segmentBases = this.form.get('specifiedTarget').value;
                 break;
 
             case SegmentationBasePromo.STORE:

@@ -69,6 +69,7 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
     private unSubs$: Subject<any> = new Subject();
 
     fakturName: string = null;
+    fakturId: string = null;
     form: FormGroup;
     benefitFormDto: BenefitFormDto;
     generalInfoFormDto: GeneralInfoFormDto;
