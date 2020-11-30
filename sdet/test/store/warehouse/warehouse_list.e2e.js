@@ -1,8 +1,8 @@
-import page from '../page/warehouse_page.js'
-import roles from '../helper/supplier_account.js'
-import element from '../element/warehouse_element.js'
+import page from '../../../page/warehouse_page.js'
+import roles from '../../../helper/supplier_account.js'
+import element from '../../../element/warehouse_element.js'
 
-const tc = require('../test_case/tc_warehouse.js')
+const tc = require('../../../test_case/warehouse/tc_warehouse_list.js')
 const env = require('dotenv').config(); 
 
 fixture(`${tc.testCase.describe}`)

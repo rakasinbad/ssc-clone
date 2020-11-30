@@ -3,6 +3,8 @@ import {Selector } from 'testcafe';
 const warehouseSection = Selector('.nav-item:nth-child(9) .nav-link')
 const warehouseListSection = Selector('.nav-item:nth-child(9) .ng-trigger-slideInOut .ng-star-inserted:nth-child(1) .nav-link')
 const warehouseListTitle = Selector('.m-0')
+
+//Warehouse List Elements
 const warehouseRow = Selector('.mat-row:nth-child(2)')
 const warehouseNameRow = Selector('.mat-row:nth-child(2) .mat-cell:nth-child(2)')
 const warehouseDetailName = Selector('div.h2')
@@ -14,6 +16,8 @@ const warehouseSKUTab = Selector('.mat-tab-label:nth-child(4)')
 const warehouseEditButton = Selector('.mat-raised-button')
 const warehouseEditText = Selector('.mat-headline')
 const warehouseAddButton = Selector('.mat-flat-button')
+
+//Warehouse Coverage Elements
 
 module.exports = {
     warehouseSection,
