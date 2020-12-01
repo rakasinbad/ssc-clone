@@ -820,7 +820,60 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('isNewStore').setValue(false);
             this.form.get('isActiveStore').setValue(false);
         } else if (ev.value === SegmentationBasePromo.SEGMENTATION) {
+            this.form.get('chosenWarehouse').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+            this.form.get('chosenStoreType').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+            this.form.get('chosenStoreGroup').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+            this.form.get('chosenStoreChannel').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+            this.form.get('chosenStoreCluster').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+
             this.form.get('chosenStore').clearValidators();
+        } else if (ev.value === SegmentationBasePromo.ALLSEGMENTATION) {
+            this.form.get('chosenStore').clearValidators();
+            this.form.get('chosenWarehouse').clearValidators();
+            this.form.get('chosenStoreType').clearValidators();
+            this.form.get('chosenStoreGroup').clearValidators();
+            this.form.get('chosenStoreChannel').clearValidators();
+            this.form.get('chosenStoreCluster').clearValidators();
         }
 
         this.form.get('chosenStore').updateValueAndValidity();
@@ -2473,9 +2526,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         payload: this._breadCrumbs,
                     })
                 );
-
+                
                 this._initForm();
-
+                
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -2514,7 +2567,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     private _initForm(): void {
         this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
         // this.form.get('specifiedTarget').setValue('new_store');
-
+        
         this.form = this.formBuilder.group({
             promoId: [
                 null,
@@ -2684,7 +2737,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
+                SegmentationBasePromo.STORE || SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
