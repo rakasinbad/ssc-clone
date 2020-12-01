@@ -7,6 +7,7 @@ interface IVoucherBenefit {
     base: string;
     rupiah: string;
     percent: string;
+    benefitMaxRebate: number;
 }
 
 export class VoucherBenefit implements IVoucherBenefit {
@@ -14,6 +15,7 @@ export class VoucherBenefit implements IVoucherBenefit {
     base: string;
     rupiah: string;
     percent: string;
+    benefitMaxRebate: number;
 
     constructor(data: IVoucherBenefit) {
         const {
@@ -21,11 +23,13 @@ export class VoucherBenefit implements IVoucherBenefit {
             base,
             rupiah,
             percent,
+            benefitMaxRebate
         } = data;
 
         this.id = id;
         this.base = base;
         this.rupiah = rupiah;
         this.percent = percent;
+        this.benefitMaxRebate = benefitMaxRebate || null;
     }
 }
