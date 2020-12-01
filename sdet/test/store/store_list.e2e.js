@@ -1,8 +1,8 @@
-import page from '../../../page/store/store_list_page.js'
-import roles from '../../../helper/supplier_account.js'
-import element from '../../../element/store/store_list_element.js'
+import page from '../../page/store/store_list_page.js'
+import roles from '../../helper/supplier_account.js'
+import element from '../../element/store/store_list_element.js'
 
-const tc = require('../../../test_case/store/store_list/tc_store_list.js')
+const tc = require('../../test_case/store/store_list/tc_store_list.js')
 const env = require('dotenv').config(); 
 
 fixture(`${tc.testCase.describe}`)
