@@ -22,25 +22,27 @@ fixture(`${tc.testCase.describe}`)
 
     .page `${process.env.SSC_BASE_URL}/pages/account/stores`
 
-test(`@test ${tc.testCase.positive.getWarehouseListPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseListPage}`, async t => {
     await page.clickWarehouseListSection()
 
-    await t.expect((element.warehouseListTitle).exists).ok()
+    await t.expect((element.warehouseListTitle).exists).ok("No Records Found")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetail}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetail}`, async t => {
     await page.clickWarehouseListSection()
     const warehouseName = await (element.warehouseNameRow).innerText;
+    const nameUppercased = warehouseName.toUpperCase();
     
     await page.clickWarehouseDetail()
     const warehouseDetailName = await (element.warehouseDetailName).innerText;
+    const detailNameUppercased = warehouseDetailName.toUpperCase();
 
     await t
-        .expect((element.warehouseDetailName).exists).ok()
-        .expect(warehouseDetailName).eql(warehouseName)
+        .expect((element.warehouseDetailName).exists).ok("No Records Found")
+        .expect(detailNameUppercased).eql(nameUppercased, "No Records Found")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
     await page.clickWarehouseListSection()
     await page.clickWarehouseLocationTab()
 
@@ -48,10 +50,10 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
 
     await t
         .expect((element.warehouseLocationTitle).exists).ok()
-        .expect(warehouseLocationTabText).eql("Warehouse Location")
+        .expect(warehouseLocationTabText).eql("Warehouse Location", "No Records Found")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
     await page.clickWarehouseListSection()
     await page.clickWarehouseCoverageTab()
 
@@ -59,10 +61,10 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
 
     await t
         .expect((element.warehouseTabsTitle).exists).ok()
-        .expect(warehouseCoverageTabText).eql("Warehouse Coverage Information")
+        .expect(warehouseCoverageTabText).eql("Warehouse Coverage Information", "No Records Found")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
     await page.clickWarehouseListSection()
     await page.clickWarehouseSKUTab()
 
@@ -70,10 +72,10 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
 
     await t
         .expect((element.warehouseTabsTitle).exists).ok()
-        .expect(warehouseSKUTabText).eql("List SKU and Stock")
+        .expect(warehouseSKUTabText).eql("List SKU and Stock", "No Records Found")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
     await page.clickWarehouseListSection()
     await page.clickWarehouseEditButton()
 
@@ -81,15 +83,15 @@ test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
 
     await t
         .expect((element.warehouseEditText).exists).ok()
-        .expect(warehouseEditText).eql("Warehouse Information")
+        .expect(warehouseEditText).eql("Warehouse Information", "No Records Found")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
     await page.clickAddWarehouseButton()
 
     const warehouseAddText = await (element.warehouseEditText).innerText;
 
     await t
         .expect((element.warehouseEditText).exists).ok()
-        .expect(warehouseAddText).eql("Warehouse Information")
+        .expect(warehouseAddText).eql("Warehouse Information", "No Records Found")
 });

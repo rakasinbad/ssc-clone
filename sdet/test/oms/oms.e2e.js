@@ -26,7 +26,7 @@ test(`@sanity ${tc.testCase.positive.getOMSPage}`, async t => {
     await page
         .clickOMSPage()
     await t
-        .expect((element.omsTitlePage).exists).ok()
+        .expect((element.omsTitlePage).exists).ok("No Records Found")
 });
 
 test(`@sanity ${tc.testCase.positive.getOMSDetail}`, async t => {
@@ -43,9 +43,9 @@ test(`@sanity ${tc.testCase.positive.getOMSDetail}`, async t => {
     const storeStatusDetail = await (element.omsDetailStatuValue).innerText;
 
     await t
-        .expect(storeNameDetail).eql(storeName)
-        .expect(storeValueDetail).eql(storeValue)
-        .expect(storeStatusDetail).eql(storeStatus)
+        .expect(storeNameDetail).eql(storeName, "No Records Found")
+        .expect(storeValueDetail).eql(storeValue, "No Records Found")
+        .expect(storeStatusDetail).eql(storeStatus, "No Records Found")
 });
 
 test(`@sanity ${tc.testCase.positive.getPendingPaymentTab}`, async t => {
@@ -53,5 +53,5 @@ test(`@sanity ${tc.testCase.positive.getPendingPaymentTab}`, async t => {
         .clickPendingPaymentSection()
     const storeStatus = await (element.omsStatusValueRow).innerText;
     await t
-        .expect(storeStatus).eql("Pending Payment")
+        .expect(storeStatus).eql("Pending Payment", "No Records Found")
 });

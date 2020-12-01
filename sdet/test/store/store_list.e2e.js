@@ -24,17 +24,19 @@ fixture(`${tc.testCase.describe}`)
 
 test(`@sanity ${tc.testCase.positive.getStoreList}`, async t => {
     await t
-        .expect((element.titlePage).exists).ok()
+        .expect((element.titlePage).exists).ok("No Records Found")
 });
 
 test(`@sanity ${tc.testCase.positive.getStoreDetail}`, async t => {
     const storeName = await (element.storeNameTitle).innerText;
+    const storeUpperCased = storeName.toUpperCase();
     await page
         .clickStoreDetail()
     
     const storeNameDetail = await (element.storeNameDetailTitle).innerText;
+    const detailUpperCased = storeNameDetail.toUpperCase();
     await t
-        .expect(storeNameDetail).eql(storeName)
+        .expect(detailUpperCased).eql(storeUpperCased, "No Records Found")
 });
 
 test(`@sanity ${tc.testCase.positive.getVerifTab}`, async t => {
@@ -42,5 +44,5 @@ test(`@sanity ${tc.testCase.positive.getVerifTab}`, async t => {
         .clickVerifTab()
     const storeStatus = await (element.storeStatusTitle).innerText;
     await t
-        .expect(storeStatus).eql('Verified')
+        .expect(storeStatus).eql('Verified', "No Records Found")
 });

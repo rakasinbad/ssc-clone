@@ -1,5 +1,5 @@
 {
-    "browsers": "chrome",
+    "browsers": "chrome:headless",
     "src": "test/",
     "reporter": [
         "list",
@@ -18,6 +18,6 @@
         "pathPattern": "${DATE}_${TIME}/test-${FIXTURE}_${TEST}_${USERAGENT}.png"
     },
     "filter": {
-        "testGrep": "@test"
+        "testGrep": "@sanity"
     }
 }
