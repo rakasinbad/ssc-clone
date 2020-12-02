@@ -248,10 +248,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             }
             case 'visibility': {
-                const {
-                    status,
-                    isBonus,
-                } = $event as Catalogue;
+                const { status, isBonus } = $event as Catalogue;
 
                 this.formValue = {
                     status,
@@ -499,5 +496,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this.navigationSub$.complete();
 
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(UiActions.hideFooterAction());
+        this.store.dispatch(UiActions.hideCustomToolbar());
+        this.store.dispatch(FormActions.resetFormStatus());
     }
 }
