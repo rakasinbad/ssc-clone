@@ -306,6 +306,10 @@ export class VoucherBenefitInformationComponent
                         value: 12,
                         message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: 'Min input is 1',
+                    }),
                 ],
             ],
         });
