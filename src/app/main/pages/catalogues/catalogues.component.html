@@ -76,28 +76,39 @@
                                     <!-- <p class="text-truncate" style="color: grey">
                                         SKU Induk:
                                     </p> -->
-                                    <mat-chip-list aria-label="Catalogue status">
+                                    <mat-chip-list
+                                        aria-label="Catalogue status"
+                                        [selectable]="false"
+                                    >
                                         <mat-chip
                                             *ngIf="row?.status === 'active'"
                                             class="h-20 green-800"
+                                            disableRipple
+                                            [selectable]="false"
                                         >
-                                            <strong>Live</strong>
+                                            <strong>Active</strong>
                                         </mat-chip>
                                         <mat-chip
                                             *ngIf="row?.status === 'inactive'"
                                             class="h-20 orange-800"
+                                            disableRipple
+                                            [selectable]="false"
                                         >
                                             <strong>Inactive</strong>
                                         </mat-chip>
                                         <mat-chip
                                             *ngIf="row?.status === 'banned'"
                                             class="h-20 warn"
+                                            disableRipple
+                                            [selectable]="false"
                                         >
                                             <strong>Diblokir</strong>
                                         </mat-chip>
                                         <mat-chip
                                             *ngIf="row?.stock < row?.minQty && !row?.unlimitedStock"
                                             class="h-20 fuse-black"
+                                            disableRipple
+                                            [selectable]="false"
                                         >
                                             <strong>Habis</strong>
                                         </mat-chip>
