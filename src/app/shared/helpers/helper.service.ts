@@ -37,11 +37,13 @@ interface TTemplateFiles {
 @Injectable({ providedIn: 'root' })
 export class HelperService {
     private readonly customParams = [
+        'brandId',
         'channelId',
         'clusterId',
         'dueDay',
         'groupId',
         'hasChild',
+        'invoiceGroupId',
         'keyword',
         'priceGte',
         'priceLte',
