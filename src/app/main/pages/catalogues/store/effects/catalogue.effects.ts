@@ -1262,19 +1262,19 @@ export class CatalogueEffects {
         return userData;
     };
 
-    processCataloguePriceSettingsRequest = ([_, queryParams]: [
+    processCataloguePriceSettingsRequest = ([userData, queryParams]: [
         User,
         IQueryParams
     ]): Observable<AnyAction> => {
         // Hanya mengambil ID supplier saja.
-        // const { supplierId } = userData.userSupplier;
+        const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
         const newQuery: IQueryParams = {
             ...queryParams,
         };
 
         // Memasukkan ID supplier ke dalam parameter.
-        // newQuery['supplierId'] = supplierId;
+        newQuery['supplierId'] = supplierId;
 
         return this._$catalogueApi
             .getCataloguePriceSettings<IPaginatedResponse<CataloguePrice>>(newQuery)

@@ -302,6 +302,13 @@ export class CataloguesService implements OnDestroy {
     getCataloguePriceSettings<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
+        if (!isNaN(params['supplierId'])) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId'],
+            });
+        }
+
         if (!params['catalogueId']) {
             throw new Error('catalogueId is required.');
         } else {
