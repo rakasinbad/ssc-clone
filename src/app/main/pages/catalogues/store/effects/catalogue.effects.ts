@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -5,33 +6,31 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Update } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService, HelperService } from 'app/shared/helpers';
+import { HelperService, LogService, NoticeService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { AnyAction } from 'app/shared/models/actions.model';
+import { ErrorHandler, IPaginatedResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
-import { of, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
     catchError,
     exhaustMap,
     finalize,
     map,
+    retry,
     switchMap,
     tap,
     withLatestFrom,
-    retry,
 } from 'rxjs/operators';
-
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
+import { CataloguePrice } from '../../models/catalogue-price.model';
 import { CataloguesService } from '../../services';
 import { CatalogueActions, FailureActionNames } from '../actions';
 import { fromCatalogue } from '../reducers';
-import { ErrorHandler, TNullable, IPaginatedResponse } from 'app/shared/models/global.model';
-import { HttpErrorResponse } from '@angular/common/http';
-import { User } from 'app/shared/models/user.model';
-import { AnyAction } from 'app/shared/models/actions.model';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { CataloguePrice } from '../../models/catalogue-price.model';
 
 @Injectable()
 export class CatalogueEffects {
@@ -750,6 +749,21 @@ export class CatalogueEffects {
                 );
             })
         )
+    );
+
+    fetchCataloguesFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.fetchCataloguesFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    this._$notice.open(resp.errors.error.message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     fetchCatalogueRequest$ = createEffect(() =>
