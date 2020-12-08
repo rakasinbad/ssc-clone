@@ -252,4 +252,12 @@ export const navigation: FuseNavigation[] = [
             
         ],
     },
+    {
+        id: 'skp',
+        title: 'SKP',
+        // translate: 'NAV.SKP.TITLE',
+        type: 'item',
+        icon: 'custom-sinbad-skp-logo',
+        url: '/pages/skp',
+    },
 ];
