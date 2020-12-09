@@ -14,7 +14,7 @@
     ],
     "screenshots": {
         "takeOnFails": true,
-        "path": "screenshots/",
+        "path": "reports/screenshots/",
         "pathPattern": "${DATE}_${TIME}/test-${FIXTURE}_${TEST}_${USERAGENT}.png"
     },
     "filter": {
