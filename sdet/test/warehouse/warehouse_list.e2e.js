@@ -23,11 +23,11 @@ fixture(`${tc.testCase.describe}`)
 
     .page `${process.env.SSC_BASE_URL}/pages/logistics/warehouses`
 
-test(`@test ${tc.testCase.positive.getWarehouseListPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseListPage}`, async t => {
     await t.expect((element.warehouseListTitle).exists).ok()
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetail}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetail}`, async t => {
     const warehouseName = await (element.warehouseNameRow).innerText;
     
     await page.clickWarehouseDetail()
@@ -38,7 +38,7 @@ test(`@test ${tc.testCase.positive.getWarehouseDetail}`, async t => {
         .expect(warehouseDetailName.toUpperCase()).eql(warehouseName.toUpperCase())
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
     await page.clickWarehouseDetail()
     await pageDetail.clickWarehouseLocationTab()
 
@@ -49,7 +49,7 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
         .expect(warehouseLocationTabText).eql("Warehouse Location")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
     await page.clickWarehouseDetail()
     await pageDetail.clickWarehouseCoverageTab()
 
@@ -60,7 +60,7 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
         .expect(warehouseCoverageTabText).eql("Warehouse Coverage Information")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
     await page.clickWarehouseDetail()
     await pageDetail.clickWarehouseSKUTab()
 
@@ -71,7 +71,7 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
         .expect(warehouseSKUTabText).eql("List SKU and Stock")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
     await page.clickWarehouseDetail()
     await pageDetail.clickWarehouseEditButton()
 
@@ -82,7 +82,7 @@ test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
         .expect(warehouseEditText).eql("Warehouse Information")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
+test(`@sanity ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
     await page.clickAddWarehouseButton()
 
     const warehouseAddText = await (element.warehouseEditText).innerText;

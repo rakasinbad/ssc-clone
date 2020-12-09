@@ -5,7 +5,7 @@ import element from '../../element/warehouse_element.js'
 class warehouseListPage{
 
     async warehouseListTableLoaded() {
-        await (element.warehouseRow).exists
+        await (element.warehouseRow).with({ visibilityCheck: true })();
     }
 
     async clickWarehouseMenu() {
