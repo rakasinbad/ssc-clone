@@ -34,7 +34,7 @@ test(`@sanity ${tc.testCase.positive.getStoreDetail}`, async t => {
     
     const storeNameDetail = await (element.storeNameDetailTitle).innerText;
     await t
-        .expect(storeNameDetail).eql(storeName)
+        .expect(storeNameDetail.toUpperCase()).eql(storeName.toUpperCase())
 });
 
 test(`@sanity ${tc.testCase.positive.getVerifTab}`, async t => {
