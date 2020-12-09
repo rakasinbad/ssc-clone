@@ -19,6 +19,6 @@
     },
     "pageLoadTimeout": 2000,
     "filter": {
-        "testGrep": "@test"
+        "testGrep": "@sanity"
     }
 }
