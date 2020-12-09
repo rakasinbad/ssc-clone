@@ -4,7 +4,7 @@
   "description": "AT WEB SSC Sanity Level",
   "main": "index.js",
   "scripts": {
-    "test": "testcafe"
+    "test": "./node_modules/.bin/testcafe"
   },
   "author": "Sinbad SDET Team",
   "license": "ISC",

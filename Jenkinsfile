@@ -168,6 +168,46 @@ pipeline {
                 }
             }
         }
+        stage('Automation UI Test') {
+            agent {
+                docker { 
+                        image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
+                    }
+            }
+            steps {
+                script{
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+                        try{
+                            sh """
+                                #!/bin/bash
+                                cd sdet && \
+                                mv .envexample.${env.JOB_BASE_NAME} .env && \
+                                npm install --verbose && \
+                                npm run test
+                            """
+                        }catch (Exception e) {
+                            echo 'Exception occurred: ' + e.toString()
+                            sh "exit 1"
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    publishHTML (
+                        target : [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'sdet/reports',
+                            reportFiles: 'report.html',
+                            reportName: 'Automation UI Test Report',
+                            reportTitles: "automation-ui-test-reports"
+                            ]
+                    )
+                }
+            }
+        }
     }
 
     post {
