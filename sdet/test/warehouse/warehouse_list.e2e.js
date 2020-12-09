@@ -1,11 +1,12 @@
-import page from '../../page/warehouse_page.js'
+import page from '../../page/warehouse/warehouse_list_page.js'
+import pageDetail from '../../page/warehouse/warehouse_detail_page.js'
 import roles from '../../helper/supplier_account.js'
 import element from '../../element/warehouse_element.js'
 
 const tc = require('../../test_case/warehouse/tc_warehouse_list.js')
 const env = require('dotenv').config(); 
 
-fixture(`joss ${tc.testCase.describe}`)
+fixture(`${tc.testCase.describe}`)
     .before(async ctx  => {
         ctx.alreadyLoggedIn = false;
     })
@@ -38,7 +39,8 @@ test(`@test ${tc.testCase.positive.getWarehouseDetail}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
-    await page.clickWarehouseLocationTab()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseLocationTab()
 
     const warehouseLocationTabText = await (element.warehouseLocationTitle).innerText;
 
@@ -48,7 +50,8 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
-    await page.clickWarehouseCoverageTab()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseCoverageTab()
 
     const warehouseCoverageTabText = await (element.warehouseTabsTitle).innerText;
 
@@ -58,7 +61,8 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
-    await page.clickWarehouseSKUTab()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseSKUTab()
 
     const warehouseSKUTabText = await (element.warehouseTabsTitle).innerText;
 
@@ -68,7 +72,8 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
-    await page.clickWarehouseEditButton()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseEditButton()
 
     const warehouseEditText = await (element.warehouseEditText).innerText;
 
@@ -77,7 +82,7 @@ test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
         .expect(warehouseEditText).eql("Warehouse Information")
 });
 
-test(`@boss ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
+test(`@test ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
     await page.clickAddWarehouseButton()
 
     const warehouseAddText = await (element.warehouseEditText).innerText;
