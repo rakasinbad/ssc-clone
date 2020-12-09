@@ -5,7 +5,7 @@ import element from '../../element/warehouse_element.js'
 const tc = require('../../test_case/warehouse/tc_warehouse_list.js')
 const env = require('dotenv').config(); 
 
-fixture(`${tc.testCase.describe}`)
+fixture(`joss ${tc.testCase.describe}`)
     .before(async ctx  => {
         ctx.alreadyLoggedIn = false;
     })
@@ -20,16 +20,13 @@ fixture(`${tc.testCase.describe}`)
         }
     })
 
-    .page `${process.env.SSC_BASE_URL}/pages/account/stores`
+    .page `${process.env.SSC_BASE_URL}/pages/logistics/warehouses`
 
 test(`@test ${tc.testCase.positive.getWarehouseListPage}`, async t => {
-    await page.clickWarehouseListSection()
-
     await t.expect((element.warehouseListTitle).exists).ok()
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetail}`, async t => {
-    await page.clickWarehouseListSection()
     const warehouseName = await (element.warehouseNameRow).innerText;
     
     await page.clickWarehouseDetail()
@@ -37,11 +34,10 @@ test(`@test ${tc.testCase.positive.getWarehouseDetail}`, async t => {
 
     await t
         .expect((element.warehouseDetailName).exists).ok()
-        .expect(warehouseDetailName).eql(warehouseName)
+        .expect(warehouseDetailName.toUpperCase()).eql(warehouseName.toUpperCase())
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
-    await page.clickWarehouseListSection()
     await page.clickWarehouseLocationTab()
 
     const warehouseLocationTabText = await (element.warehouseLocationTitle).innerText;
@@ -52,7 +48,6 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
-    await page.clickWarehouseListSection()
     await page.clickWarehouseCoverageTab()
 
     const warehouseCoverageTabText = await (element.warehouseTabsTitle).innerText;
@@ -63,7 +58,6 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
-    await page.clickWarehouseListSection()
     await page.clickWarehouseSKUTab()
 
     const warehouseSKUTabText = await (element.warehouseTabsTitle).innerText;
@@ -74,7 +68,6 @@ test(`@test ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
 });
 
 test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
-    await page.clickWarehouseListSection()
     await page.clickWarehouseEditButton()
 
     const warehouseEditText = await (element.warehouseEditText).innerText;
@@ -84,7 +77,7 @@ test(`@test ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
         .expect(warehouseEditText).eql("Warehouse Information")
 });
 
-test(`@test ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
+test(`@boss ${tc.testCase.positive.getWarehouseAddPage}`, async t => {
     await page.clickAddWarehouseButton()
 
     const warehouseAddText = await (element.warehouseEditText).innerText;

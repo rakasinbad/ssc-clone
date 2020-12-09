@@ -4,6 +4,10 @@ import element from '../element/warehouse_element.js'
 
 class warehousePage{
 
+    async warehouseListTableLoaded() {
+        await (element.warehouseRow).exists
+    }
+
     async clickWarehouseMenu() {
         await t
             .click(element.warehouseSection)
@@ -11,12 +15,12 @@ class warehousePage{
 
     async clickWarehouseListSection() {
         this.clickWarehouseMenu()
-        this.clickWarehouseMenu()
         await t
             .click(element.warehouseListSection)
     }
 
     async clickWarehouseDetail() {
+        this.warehouseListTableLoaded()
         await t
             .click(element.warehouseRow)
     }
@@ -46,7 +50,7 @@ class warehousePage{
     }
 
     async clickAddWarehouseButton() {
-        this.clickWarehouseListSection()
+        this.warehouseListTableLoaded()
         await t
             .click(element.warehouseAddButton)
     }
