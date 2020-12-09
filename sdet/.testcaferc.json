@@ -1,5 +1,5 @@
 {
-    "browsers": "chrome",
+    "browsers": "chrome:headless",
     "src": "test/",
     "reporter": [
         "list",
@@ -17,6 +17,7 @@
         "path": "reports/screenshots/",
         "pathPattern": "${DATE}_${TIME}/test-${FIXTURE}_${TEST}_${USERAGENT}.png"
     },
+    "pageLoadTimeout": 2000,
     "filter": {
         "testGrep": "@test"
     }
