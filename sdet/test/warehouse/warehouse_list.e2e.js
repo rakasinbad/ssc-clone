@@ -1,4 +1,5 @@
-import page from '../../page/warehouse_page.js'
+import page from '../../page/warehouse/warehouse_list_page.js'
+import pageDetail from '../../page/warehouse/warehouse_detail_page.js'
 import roles from '../../helper/supplier_account.js'
 import element from '../../element/warehouse_element.js'
 
@@ -20,16 +21,13 @@ fixture(`${tc.testCase.describe}`)
         }
     })
 
-    .page `${process.env.SSC_BASE_URL}/pages/account/stores`
+    .page `${process.env.SSC_BASE_URL}/pages/logistics/warehouses`
 
 test(`@sanity ${tc.testCase.positive.getWarehouseListPage}`, async t => {
-    await page.clickWarehouseListSection()
-
-    await t.expect((element.warehouseListTitle).exists).ok("No Records Found")
+    await t.expect((element.warehouseListTitle).exists).ok()
 });
 
 test(`@sanity ${tc.testCase.positive.getWarehouseDetail}`, async t => {
-    await page.clickWarehouseListSection()
     const warehouseName = await (element.warehouseNameRow).innerText;
     const nameUppercased = warehouseName.toUpperCase();
     
@@ -43,8 +41,8 @@ test(`@sanity ${tc.testCase.positive.getWarehouseDetail}`, async t => {
 });
 
 test(`@sanity ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
-    await page.clickWarehouseListSection()
-    await page.clickWarehouseLocationTab()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseLocationTab()
 
     const warehouseLocationTabText = await (element.warehouseLocationTitle).innerText;
 
@@ -54,8 +52,8 @@ test(`@sanity ${tc.testCase.positive.getWarehouseDetailLocation}`, async t => {
 });
 
 test(`@sanity ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
-    await page.clickWarehouseListSection()
-    await page.clickWarehouseCoverageTab()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseCoverageTab()
 
     const warehouseCoverageTabText = await (element.warehouseTabsTitle).innerText;
 
@@ -65,8 +63,8 @@ test(`@sanity ${tc.testCase.positive.getWarehouseDetailCoverage}`, async t => {
 });
 
 test(`@sanity ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
-    await page.clickWarehouseListSection()
-    await page.clickWarehouseSKUTab()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseSKUTab()
 
     const warehouseSKUTabText = await (element.warehouseTabsTitle).innerText;
 
@@ -76,8 +74,8 @@ test(`@sanity ${tc.testCase.positive.getWarehouseDetailSKU}`, async t => {
 });
 
 test(`@sanity ${tc.testCase.positive.getWarehouseEditPage}`, async t => {
-    await page.clickWarehouseListSection()
-    await page.clickWarehouseEditButton()
+    await page.clickWarehouseDetail()
+    await pageDetail.clickWarehouseEditButton()
 
     const warehouseEditText = await (element.warehouseEditText).innerText;
 
