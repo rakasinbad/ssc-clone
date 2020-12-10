@@ -1277,7 +1277,7 @@ export class CatalogueEffects {
         newQuery['supplierId'] = supplierId;
 
         return this._$catalogueApi
-            .getCataloguePriceSettings<IPaginatedResponse<CataloguePrice>>(newQuery)
+            .getCataloguePriceSettings<IPaginatedResponse<any>>(newQuery)
             .pipe(
                 catchOffline(),
                 switchMap((response) => {
@@ -1285,7 +1285,14 @@ export class CatalogueEffects {
                         return of(
                             CatalogueActions.fetchCataloguePriceSettingsSuccess({
                                 payload: {
-                                    catalogues: response.data.map((wh) => new CataloguePrice(wh)),
+                                    catalogues: response.data.map((wh) => {
+                                        const newWh: CataloguePrice = {
+                                            ...wh,
+                                            id: wh._id,
+                                        };
+
+                                        return new CataloguePrice(newWh);
+                                    }),
                                     total: response.total,
                                 },
                             })

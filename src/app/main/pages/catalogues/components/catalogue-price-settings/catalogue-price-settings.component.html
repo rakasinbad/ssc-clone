@@ -257,7 +257,7 @@
             <ng-container matColumnDef="warehouse-name">
                 <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.warehouseCatalogue?.warehouse?.name || '-' }}</p>
+                    <p>{{ row?.warehouse?.name || '-' }}</p>
                 </mat-cell>
             </ng-container>
             <!-- / Warehouse Column -->
