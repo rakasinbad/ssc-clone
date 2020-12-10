@@ -166,5 +166,11 @@ export class IconModule {
             'sinbad-store-logo',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/store-logo.svg')
         );
+
+        // Survey logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-survey-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/survey-icon.svg')
+        );
     }
 }

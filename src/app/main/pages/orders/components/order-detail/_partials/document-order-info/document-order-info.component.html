@@ -302,7 +302,7 @@
                             ></ngx-skeleton-loader>
 
                             <ng-container *ngIf="!loading">
-                                {{ data?.paymentTypeSupplierMethod?.paymentMethod?.name || '-' }}
+                                {{ data?.paymentChannel?.name || '-' }}
                             </ng-container>
                         </div>
                     </div>

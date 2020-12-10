@@ -1,0 +1,24 @@
+{
+    "browsers": "chrome:headless",
+    "src": "test/",
+    "reporter": [
+        "list",
+        {
+            "name": "html",
+            "output": "reports/report.html"
+        },
+        {
+            "name": "json",
+            "output": "reports/report.json"
+        }
+    ],
+    "screenshots": {
+        "takeOnFails": true,
+        "path": "reports/screenshots/",
+        "pathPattern": "${DATE}_${TIME}/test-${FIXTURE}_${TEST}_${USERAGENT}.png"
+    },
+    "pageLoadTimeout": 2000,
+    "filter": {
+        "testGrep": "@sanity"
+    }
+}
