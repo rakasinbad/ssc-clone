@@ -367,11 +367,11 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         });
     }
 
-    onSelectedWarehouses($event: Array<Warehouse>): void {
+    onSelectedWarehouses($event: any[]): void {
         HelperService.debug('onSelectedWarehouses', $event);
 
         if ($event && Array.isArray($event)) {
-            this.filterForm.get('warehouses').setValue($event.map((e) => e.id));
+            this.filterForm.get('warehouses').setValue($event.map((e) => e.warehouseId));
         }
     }
 
