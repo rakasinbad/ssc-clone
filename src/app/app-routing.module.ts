@@ -337,8 +337,8 @@ const routes: Routes = [
             },
             {
                 path: 'survey',
-                    loadChildren: () =>
-                        import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
+                loadChildren: () =>
+                    import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
