@@ -25,6 +25,10 @@ import {
     ExportFormFilterConfiguration,
 } from '../../models';
 
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
+import { Store as NgRxStore } from '@ngrx/store';
+
 @Component({
     templateUrl: './export-filter.component.html',
     styleUrls: ['./export-filter.component.scss'],
@@ -66,6 +70,8 @@ export class ExportFilterComponent implements OnInit {
         private errorMessageSvc: ErrorMessageService,
         private helper$: HelperService,
         private notice$: NoticeService,
+        private authStore: NgRxStore<fromAuth.FeatureState>,
+        private store: NgRxStore<fromAuth.FeatureState>,
         private entityApi$: EntitiesApiService
     ) {}
 
@@ -173,35 +179,39 @@ export class ExportFilterComponent implements OnInit {
 
         if (filterAspect.warehouse) {
             //mendapatkan warehouse dari api
-            const newQuery: IQueryParams = {
-                paginate: true,
-                limit: 15,
-                skip: 0,
-            };
-            newQuery['supplierId'] = '1';
-            this.form.addControl('warehouse', this.formBuilder.control(''));
-            this.entityApi$
-                .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
-                .subscribe((data) => {
-                    HelperService.debug('[ExportFilterComponent] warehouse', { data });
-                    this.dataWarehouse = data.data;
-                    this.dropdownSettings = {
-                        singleSelection: false,
-                        idField: 'id',
-                        textField: 'name',
-                        selectAllText: 'Select All',
-                        unSelectAllText: 'UnSelect All',
-                        itemsShowLimit: 3,
-                        maxHeight: 100,
-                        allowSearchFilter: this.ShowFilter,
+            this.store.select(AuthSelectors.getUserSupplier).subscribe(({ supplierId }) => {
+                if (supplierId) {
+                    const newQuery: IQueryParams = {
+                        paginate: true,
+                        limit: 1000,
+                        skip: 0,
                     };
+                    newQuery['supplierId'] = supplierId;
+                    this.form.addControl('warehouse', this.formBuilder.control(''));
+                    this.entityApi$
+                        .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
+                        .subscribe((data) => {
+                            HelperService.debug('[ExportFilterComponent] warehouse', { data });
+                            this.dataWarehouse = data.data;
+                            this.dropdownSettings = {
+                                singleSelection: false,
+                                idField: 'id',
+                                textField: 'name',
+                                selectAllText: 'Select All',
+                                unSelectAllText: 'UnSelect All',
+                                itemsShowLimit: 3,
+                                maxHeight: 100,
+                                allowSearchFilter: this.ShowFilter,
+                            };
 
-                    const rules: Array<ValidatorFn> = [];
-                    if (filterAspect.warehouse.required) {
-                        rules.push(Validators.required);
-                        this.form.get('warehouse').setValidators(rules);
-                    }
-                });
+                            const rules: Array<ValidatorFn> = [];
+                            if (filterAspect.warehouse.required) {
+                                rules.push(Validators.required);
+                                this.form.get('warehouse').setValidators(rules);
+                            }
+                        });
+                }
+            });
         }
 
         if (filterAspect.rangeDate) {
