@@ -1288,7 +1288,7 @@ export class CatalogueEffects {
                                     catalogues: response.data.map((wh) => {
                                         const newWh: CataloguePrice = {
                                             ...wh,
-                                            id: wh._id,
+                                            id: wh.segmentedCatalogueId,
                                         };
 
                                         return new CataloguePrice(newWh);
