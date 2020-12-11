@@ -153,7 +153,7 @@
                             <p
                                 *ngIf="
                                     !!row?.discountedRetailBuyingPrice ||
-                                        row?.discountedRetailBuyingPrice === 0;
+                                        row?.discountedRetailBuyingPrice > 0;
                                     else noDiscount
                                 "
                                 class="text-truncate"
