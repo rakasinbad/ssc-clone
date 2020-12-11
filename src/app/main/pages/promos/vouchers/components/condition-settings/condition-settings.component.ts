@@ -335,6 +335,16 @@ export class VoucherConditionSettingsComponent
                         value
                     )
                 ),
+                map((status) => {
+                    const rawValue = this.form.getRawValue();
+                    if (rawValue.base == 'qty' && (rawValue.qty == '' || rawValue.qty == null)) {
+                        return 'INVALID';
+                    } else if (rawValue.base == 'order-value' && (rawValue.orderValue == '' || rawValue.orderValue == null)) {
+                        return 'INVALID';
+                    } else {
+                        return status;
+                    }
+                }),
                 takeUntil(this.subs$)
             )
             .subscribe((status) => {
@@ -346,24 +356,6 @@ export class VoucherConditionSettingsComponent
                 distinctUntilChanged(),
                 debounceTime(200),
                 tap(value => HelperService.debug('SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED', value)),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[BEFORE MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
-                // map((value) => ({
-                //     ...value,
-                //     chosenSku: !value.chosenSku ? [] : value.chosenSku,
-                //     chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
-                //     chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
-                // })),
-                // tap((value) =>
-                //     HelperService.debug(
-                //         '[AFTER MAP] SUPPLIER VOUCHER CONDITION INFORMATION FORM VALUE CHANGED',
-                //         value
-                //     )
-                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {

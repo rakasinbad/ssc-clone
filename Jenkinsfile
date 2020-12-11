@@ -3,8 +3,8 @@ def getSshKeyFromEnv(env) {
         return 'private_key_prod'
     } else if (env == 'demo') {
         return 'private_key_demo'
-    } else if(env == 'preproduction') {
-        return 'release'
+    } else if(env == 'sandbox') {
+        return 'private_key_sandbox'
     } else if(env == 'staging') {
         return 'private_key_stg'
     } else {
@@ -17,8 +17,8 @@ def getIpFromEnv(env) {
         return '10.0.10.20'
     } else if (env == 'demo') {
         return '10.0.30.27'
-    } else if(env == 'preproduction') {
-        return 'release'
+    } else if(env == 'sandbox') {
+        return '10.0.10.163'
     } else if(env == 'staging') {
         return '10.0.30.30'
     } else {
@@ -31,8 +31,8 @@ def getDirFromEnv(env) {
         return 'seller.sinbad.web.id'
     } else if (env == 'demo') {
         return 'seller-demo.sinbad.web.id'
-    } else if(env == 'preproduction') {
-        return 'release'
+    } else if(env == 'sandbox') {
+        return 'seller-sandbox.sinbad.web.id'
     } else if(env == 'staging') {
         return 'seller-stg.sinbad.web.id'
     } else {
@@ -165,6 +165,46 @@ pipeline {
                         ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "rsync -avz /var/www/$SSH_DIR/ /var/www/seller-center-bak" && \
                         rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/$SSH_KEY -o StrictHostKeyChecking=no" $WOKRSPACE/dist/supplier-center/ deploy@$SSH_IP:/var/www/$SSH_DIR
                     '''
+                }
+            }
+        }
+        stage('Automation UI Test') {
+            agent {
+                docker { 
+                        image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
+                    }
+            }
+            steps {
+                script{
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+                        try{
+                            sh """
+                                #!/bin/bash
+                                cd sdet && \
+                                mv .envexample.${env.JOB_BASE_NAME} .env && \
+                                npm install --verbose && \
+                                npm run test
+                            """
+                        }catch (Exception e) {
+                            echo 'Exception occurred: ' + e.toString()
+                            sh "exit 1"
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    publishHTML (
+                        target : [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'sdet/reports',
+                            reportFiles: 'report.html',
+                            reportName: 'Automation UI Test Report',
+                            reportTitles: "automation-ui-test-reports"
+                            ]
+                    )
                 }
             }
         }
