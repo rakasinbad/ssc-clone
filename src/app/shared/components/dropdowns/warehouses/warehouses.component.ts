@@ -210,7 +210,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 console.log('this.catalogueIdSelect->', this.catalogueIdSelect)
                 console.log('this.fakturIdSelect->', this.fakturIdSelect)
                 console.log('this.brandIdSelect->', this.brandIdSelect)
-                if (this.segmentBases == 'segmentation' || this.segmentBases == 'all_segmentation') {
+                if (this.segmentBases == 'segmentation' || this.segmentBases == 'all') {
                     if (this.typePromo == 'flexiCombo') {   
                         if (this.catalogueIdSelect != undefined) {
                             newQuery['catalogueId'] = this.catalogueIdSelect;
@@ -536,7 +536,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     ngOnChanges(changes: SimpleChanges): void {
         console.log('isi segmentBases onchanges1->', this.segmentBases)
         console.log('isi changes segment->', changes['segmentBases'])
-        if (this.segmentBases == 'segmentation' || this.segmentBases == 'all_segmentation') {
+        if (this.segmentBases == 'segmentation' || this.segmentBases == 'all') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {

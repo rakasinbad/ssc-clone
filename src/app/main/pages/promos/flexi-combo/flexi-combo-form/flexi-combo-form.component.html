@@ -2179,7 +2179,7 @@
                         </ng-container>
 
                         <!-- Segmentation Only -->
-                        <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
+                        <!-- <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -2367,7 +2367,7 @@
                                     </div>
                                 </select-store-segmentation>
                             </div>
-                        </ng-container>
+                        </ng-container> -->
 
                         <!-- All Segmentation -->
                         <ng-container
@@ -2534,7 +2534,6 @@
 
                         <ng-container
                             *ngIf="
-                                getSegmentationBase() === eSegmentBase.SEGMENTATION ||
                                 getSegmentationBase() === eSegmentBase.ALLSEGMENTATION
                             "
                         >

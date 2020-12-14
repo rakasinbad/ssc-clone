@@ -124,10 +124,10 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
     onChangeSegmentBase(ev: MatRadioChange): void {
         switch (ev.value) {
-            case SegmentationBasePromo.SEGMENTATION:
-                this._setSpecifiedTargetValidation();
-                this.segmentBases = this.form.get('specifiedTarget').value;
-                break;
+            // case SegmentationBasePromo.SEGMENTATION:
+            //     this._setSpecifiedTargetValidation();
+            //     this.segmentBases = this.form.get('specifiedTarget').value;
+            //     break;
 
             case SegmentationBasePromo.ALLSEGMENTATION:
                 this._setSpecifiedTargetValidation();
@@ -353,15 +353,15 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         };
 
         switch (payload['target']) {
-            case SegmentationBasePromo.SEGMENTATION:
+            // case SegmentationBasePromo.SEGMENTATION:
 
-                payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
-                    chosenStoreChannel,
-                    chosenStoreCluster,
-                    chosenStoreGroup,
-                    chosenStoreType,
-                });
-                break;
+            //     payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
+            //         chosenStoreChannel,
+            //         chosenStoreCluster,
+            //         chosenStoreGroup,
+            //         chosenStoreType,
+            //     });
+            //     break;
 
                 case SegmentationBasePromo.ALLSEGMENTATION:
                     payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {

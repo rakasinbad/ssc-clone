@@ -828,7 +828,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.selectActiveOutlet = false;
             this.form.get('isNewStore').setValue(false);
             this.form.get('isActiveStore').setValue(false);
-        } else if (ev.value === SegmentationBasePromo.SEGMENTATION) {
+        } else if (ev.value === SegmentationBasePromo.ALLSEGMENTATION ) {
             this.form.get('chosenStore').clearValidators();
         }
 
@@ -2728,7 +2728,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
+                SegmentationBasePromo.ALLSEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -3008,125 +3008,125 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             segmentationBaseCtrl.setValue(row.target);
 
             // Handle Segmentation Base Direct Store
-            if (row.target === SegmentationBasePromo.STORE) {
-                // Handle Chosen Store
-                if (row.promoStores && row.promoStores.length > 0) {
-                    const newStores = _.orderBy(
-                        row.promoStores.map((item) => ({
-                            id: item.store.id,
-                            label: item.store.name,
-                            group: 'supplier-stores',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            // if (row.target === SegmentationBasePromo.STORE) {
+            //     // Handle Chosen Store
+            //     if (row.promoStores && row.promoStores.length > 0) {
+            //         const newStores = _.orderBy(
+            //             row.promoStores.map((item) => ({
+            //                 id: item.store.id,
+            //                 label: item.store.name,
+            //                 group: 'supplier-stores',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreCtrl.setValue(newStores);
-                } else {
-                    chosenStoreCtrl.setValue([]);
-                }
+            //         chosenStoreCtrl.setValue(newStores);
+            //     } else {
+            //         chosenStoreCtrl.setValue([]);
+            //     }
 
-                chosenStoreCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+            //     chosenStoreCtrl.setValidators([
+            //         RxwebValidators.required({
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //         }),
+            //         RxwebValidators.choice({
+            //             minLength: 1,
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //         }),
+            //     ]);
 
-                chosenStoreCtrl.updateValueAndValidity();
-            }
+            //     chosenStoreCtrl.updateValueAndValidity();
+            // }
 
             // Handle Segmentation Base Segmentation
-            else if (row.target === SegmentationBasePromo.SEGMENTATION) {
-                // Handle Chosen Warehouse
-                if (row.promoWarehouses && row.promoWarehouses.length > 0) {
-                    const newWarehouses = _.orderBy(
-                        row.promoWarehouses.map((item) => ({
-                            id: item.warehouse.id,
-                            label: item.warehouse.name,
-                            group: 'warehouses',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            // else if (row.target === SegmentationBasePromo.SEGMENTATION) {
+            //     // Handle Chosen Warehouse
+            //     if (row.promoWarehouses && row.promoWarehouses.length > 0) {
+            //         const newWarehouses = _.orderBy(
+            //             row.promoWarehouses.map((item) => ({
+            //                 id: item.warehouse.id,
+            //                 label: item.warehouse.name,
+            //                 group: 'warehouses',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenWarehouseCtrl.setValue(newWarehouses);
-                } else {
-                    chosenWarehouseCtrl.setValue([]);
-                }
+            //         chosenWarehouseCtrl.setValue(newWarehouses);
+            //     } else {
+            //         chosenWarehouseCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Type
-                if (row.promoTypes && row.promoTypes.length > 0) {
-                    const newStoreTypes = _.orderBy(
-                        row.promoTypes.map((item) => ({
-                            id: item.type.id,
-                            label: item.type.name,
-                            group: 'store-segmentation-types',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Type
+            //     if (row.promoTypes && row.promoTypes.length > 0) {
+            //         const newStoreTypes = _.orderBy(
+            //             row.promoTypes.map((item) => ({
+            //                 id: item.type.id,
+            //                 label: item.type.name,
+            //                 group: 'store-segmentation-types',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreTypeCtrl.setValue(newStoreTypes);
-                } else {
-                    chosenStoreTypeCtrl.setValue([]);
-                }
+            //         chosenStoreTypeCtrl.setValue(newStoreTypes);
+            //     } else {
+            //         chosenStoreTypeCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Group
-                if (row.promoGroups && row.promoGroups.length > 0) {
-                    const newStoreGroups = _.orderBy(
-                        row.promoGroups.map((item) => ({
-                            id: item.group.id,
-                            label: item.group.name,
-                            group: 'store-segmentation-groups',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Group
+            //     if (row.promoGroups && row.promoGroups.length > 0) {
+            //         const newStoreGroups = _.orderBy(
+            //             row.promoGroups.map((item) => ({
+            //                 id: item.group.id,
+            //                 label: item.group.name,
+            //                 group: 'store-segmentation-groups',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreGroupCtrl.setValue(newStoreGroups);
-                } else {
-                    chosenStoreGroupCtrl.setValue([]);
-                }
+            //         chosenStoreGroupCtrl.setValue(newStoreGroups);
+            //     } else {
+            //         chosenStoreGroupCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Channel
-                if (row.promoChannels && row.promoChannels.length > 0) {
-                    const newStoreChannels = _.orderBy(
-                        row.promoChannels.map((item) => ({
-                            id: item.channel.id,
-                            label: item.channel.name,
-                            group: 'store-segmentation-channels',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Channel
+            //     if (row.promoChannels && row.promoChannels.length > 0) {
+            //         const newStoreChannels = _.orderBy(
+            //             row.promoChannels.map((item) => ({
+            //                 id: item.channel.id,
+            //                 label: item.channel.name,
+            //                 group: 'store-segmentation-channels',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreChannelCtrl.setValue(newStoreChannels);
-                } else {
-                    chosenStoreChannelCtrl.setValue([]);
-                }
+            //         chosenStoreChannelCtrl.setValue(newStoreChannels);
+            //     } else {
+            //         chosenStoreChannelCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Cluster
-                if (row.promoClusters && row.promoClusters.length > 0) {
-                    const newStoreClusters = _.orderBy(
-                        row.promoClusters.map((item) => ({
-                            id: item.cluster.id,
-                            label: item.cluster.name,
-                            group: 'store-segmentation-clusters',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Cluster
+            //     if (row.promoClusters && row.promoClusters.length > 0) {
+            //         const newStoreClusters = _.orderBy(
+            //             row.promoClusters.map((item) => ({
+            //                 id: item.cluster.id,
+            //                 label: item.cluster.name,
+            //                 group: 'store-segmentation-clusters',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreClusterCtrl.setValue(newStoreClusters);
-                } else {
-                    chosenStoreClusterCtrl.setValue([]);
-                }
+            //         chosenStoreClusterCtrl.setValue(newStoreClusters);
+            //     } else {
+            //         chosenStoreClusterCtrl.setValue([]);
+            //     }
 
-            }
+            // }
         }
 
         setTimeout(() => {
@@ -3300,36 +3300,36 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBasePromo.STORE
                 ? chosenStore.map((store: Selection) => store.id)
                 : [];
-        const newChosenWarehouse =
-            chosenWarehouse &&
-            chosenWarehouse.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
-                : [];
-        const newChosenStoreType =
-            chosenStoreType &&
-            chosenStoreType.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreType.map((storeType: Selection) => storeType.id)
-                : [];
-        const newChosenStoreGroup =
-            chosenStoreGroup &&
-            chosenStoreGroup.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
-                : [];
-        const newChosenStoreChannel =
-            chosenStoreChannel &&
-            chosenStoreChannel.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
-                : [];
-        const newChosenStoreCluster =
-            chosenStoreCluster &&
-            chosenStoreCluster.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
-                : [];
+        // const newChosenWarehouse =
+        //     chosenWarehouse &&
+        //     chosenWarehouse.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
+        //         : [];
+        // const newChosenStoreType =
+        //     chosenStoreType &&
+        //     chosenStoreType.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreType.map((storeType: Selection) => storeType.id)
+        //         : [];
+        // const newChosenStoreGroup =
+        //     chosenStoreGroup &&
+        //     chosenStoreGroup.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
+        //         : [];
+        // const newChosenStoreChannel =
+        //     chosenStoreChannel &&
+        //     chosenStoreChannel.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
+        //         : [];
+        // const newChosenStoreCluster =
+        //     chosenStoreCluster &&
+        //     chosenStoreCluster.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
+        //         : [];
 
         const newConditions =
             conditions && conditions.length > 0
@@ -3457,12 +3457,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
-                payload.dataTarget.warehouseId = newChosenWarehouse;
-                payload.dataTarget.typeId = newChosenStoreType;
-                payload.dataTarget.groupId = newChosenStoreGroup;
-                payload.dataTarget.channelId = newChosenStoreChannel;
-                payload.dataTarget.clusterId = newChosenStoreCluster;
+            // } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
+            //     payload.dataTarget.warehouseId = newChosenWarehouse;
+            //     payload.dataTarget.typeId = newChosenStoreType;
+            //     payload.dataTarget.groupId = newChosenStoreGroup;
+            //     payload.dataTarget.channelId = newChosenStoreChannel;
+            //     payload.dataTarget.clusterId = newChosenStoreCluster;
             }
 
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
@@ -3509,12 +3509,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
-                payload.dataTarget.warehouseId = newChosenWarehouse;
-                payload.dataTarget.typeId = newChosenStoreType;
-                payload.dataTarget.groupId = newChosenStoreGroup;
-                payload.dataTarget.channelId = newChosenStoreChannel;
-                payload.dataTarget.clusterId = newChosenStoreCluster;
+            // } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
+            //     payload.dataTarget.warehouseId = newChosenWarehouse;
+            //     payload.dataTarget.typeId = newChosenStoreType;
+            //     payload.dataTarget.groupId = newChosenStoreGroup;
+            //     payload.dataTarget.channelId = newChosenStoreChannel;
+            //     payload.dataTarget.clusterId = newChosenStoreCluster;
             }
 
             if (Object.keys(payload.dataBase).length < 1) {

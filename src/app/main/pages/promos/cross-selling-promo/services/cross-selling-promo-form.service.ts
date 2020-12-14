@@ -285,7 +285,7 @@ export class CrossSellingPromoFormService {
             }),
             segmentSetting: this.fb.group({
                 segmentationBase: [
-                    SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
+                    SegmentationBasePromo.ALLSEGMENTATION,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageService.getErrorMessageNonState(

@@ -209,10 +209,10 @@ export class HelperService {
             id: SegmentationBasePromo.STORE,
             label: 'Direct Store',
         },
-        {
-            id: SegmentationBasePromo.SEGMENTATION,
-            label: 'Selected Segment Only',
-        },
+        // {
+        //     id: SegmentationBasePromo.SEGMENTATION,
+        //     label: 'Selected Segment Only',
+        // },
         {
             id: SegmentationBasePromo.ALLSEGMENTATION,
             label: 'Apply to All Linked Segments',

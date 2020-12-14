@@ -105,7 +105,7 @@
             </ng-container>
 
             <!-- segmented only -->
-            <ng-container *ngIf="form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION">
+            <!-- <ng-container *ngIf="form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION">
 
                 <div
                     class="custom-field"
@@ -277,7 +277,7 @@
                         </div>
                     </select-store-segmentation>
                 </div>
-            </ng-container>
+            </ng-container> -->
 
             <!-- all segmented -->
             <ng-container
@@ -411,7 +411,6 @@
             <!-- specified target -->
             <ng-container
                 *ngIf="
-                    form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION ||
                     form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION
                 "
             >
