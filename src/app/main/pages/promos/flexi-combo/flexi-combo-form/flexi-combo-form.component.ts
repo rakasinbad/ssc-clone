@@ -181,6 +181,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public brandIdSelected: string;
     public fakturIdSelected: string;
     public segmentBases: string;
+    public triggerSelected: string = 'sku';
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
@@ -206,7 +208,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        this.segmentBases = 'segmentation';
+        this.segmentBases = 'all';
         this._initPage();
     }
 
@@ -646,6 +648,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.brandIdSelected = idBrand.toString();
             this.catalogueIdSelected = undefined;     
             this.fakturIdSelected = undefined;
+            this.triggerSelected = 'brand';
         }
     }
 
@@ -846,13 +849,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.fakturIdSelected = idFaktur.toString(); 
             this.brandIdSelected = undefined;
             this.catalogueIdSelected = undefined;        
-            console.log('fakturChoosen->', this.fakturIdSelected)
         } else if (this.form.get('chosenSku').value != null) {
             let idSku = [];
             let skuChoosen = this.form.get('chosenSku').value;
             idSku = skuChoosen.map((item) => (item.id));
             this.catalogueIdSelected = idSku.toString();  
-            console.log('skuChoosen->', this.catalogueIdSelected)
             this.brandIdSelected = undefined;
             this.fakturIdSelected = undefined;
         } else if (this.form.get('chosenBrand').value != null) {
@@ -860,7 +861,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             let brandChoosen = this.form.get('chosenBrand').value;
             idBrand = brandChoosen.map((item) => (item.id));
             this.brandIdSelected = idBrand.toString();  
-            console.log('brandchoosen->', this.brandIdSelected)
             this.catalogueIdSelected = undefined;        
             this.fakturIdSelected = undefined;
         }
@@ -1033,6 +1033,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.fakturIdSelected = idFaktur.toString();
             this.catalogueIdSelected = undefined;        
             this.brandIdSelected = undefined;
+            this.triggerSelected = 'faktur';
         }
     }
 
@@ -1060,6 +1061,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.catalogueIdSelected = idSku.toString();        
             this.brandIdSelected = undefined;
             this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'sku';
         }
     }
 
@@ -1324,9 +1326,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let warehouseValue = value.data[0];
         this.warehouseLength = value.total;
         if (value.total > 1) {
-            this.warehouseSelectAll = warehouseValue.name + ' (+'+(this.warehouseLength - 1)+' others)';
+            this.warehouseSelectAll = warehouseValue.warehouseName + ' (+'+(this.warehouseLength - 1)+' others)';
         } else {
-            this.warehouseSelectAll = warehouseValue.name;
+            this.warehouseSelectAll = warehouseValue.warehouseName;
         }
     }
 
@@ -1342,9 +1344,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeTypeValue = value.data[0];
         this.storeTypeLength = value.total;
         if (value.total > 1) {
-            this.storeTypeSelectAll = storeTypeValue.name + ' (+'+(this.storeTypeLength - 1)+' others)';
+            this.storeTypeSelectAll = storeTypeValue.typeName + ' (+'+(this.storeTypeLength - 1)+' others)';
         } else {
-            this.storeTypeSelectAll = storeTypeValue.name;
+            this.storeTypeSelectAll = storeTypeValue.typeName;
         }
     }
 
@@ -1360,9 +1362,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeGroupValue = value.data[0];
         this.storeGroupLength = value.total;
         if (value.total > 1) {
-            this.storeGroupSelectAll = storeGroupValue.name + ' (+'+(this.storeGroupLength - 1)+' others)';
+            this.storeGroupSelectAll = storeGroupValue.groupName + ' (+'+(this.storeGroupLength - 1)+' others)';
         } else {
-            this.storeGroupSelectAll = storeGroupValue.name;
+            this.storeGroupSelectAll = storeGroupValue.groupName;
         }
     }
 
@@ -1378,9 +1380,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeChannelValue = value.data[0];
         this.storeChannelLength = value.total;
         if (value.total > 1) {
-            this.storeChannelSelectAll = storeChannelValue.name + ' (+'+(this.storeChannelLength - 1)+' others)';
+            this.storeChannelSelectAll = storeChannelValue.channelName + ' (+'+(this.storeChannelLength - 1)+' others)';
         } else {
-            this.storeChannelSelectAll = storeChannelValue.name;
+            this.storeChannelSelectAll = storeChannelValue.channelName;
         }
     }
 
@@ -1396,9 +1398,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeClusterValue = value.data[0];
         this.storeClusterLength = value.total;
         if (value.total > 1) {
-            this.storeClusterSelectAll = storeClusterValue.name + ' (+'+(this.storeClusterLength - 1)+' others)';
+            this.storeClusterSelectAll = storeClusterValue.clusterName + ' (+'+(this.storeClusterLength - 1)+' others)';
         } else {
-            this.storeClusterSelectAll = storeClusterValue.name;
+            this.storeClusterSelectAll = storeClusterValue.clusterName;
         }
     }
 

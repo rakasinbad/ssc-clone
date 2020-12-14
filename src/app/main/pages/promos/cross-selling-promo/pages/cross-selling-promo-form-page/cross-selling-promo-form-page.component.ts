@@ -149,9 +149,9 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             return;
         }
         
-        if(this.segmentFormDto.target !== 'store') {
-            this.segmentFormDto['dataTarget']['warehouseId'] = this.groupFormDto.dataTarget.warehouseId;
-        }
+        // if(this.segmentFormDto.target !== 'store') {
+        //     this.segmentFormDto['dataTarget']['warehouseId'] = this.groupFormDto.dataTarget.warehouseId;
+        // }
         const payload: CreateFormDto = {
             base: 'sku',
             supplierId: null,

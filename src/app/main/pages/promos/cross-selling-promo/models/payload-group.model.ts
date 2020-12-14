@@ -27,4 +27,5 @@ export interface GroupFormDto {
     dataBase: GroupDatabaseDto;
     promoConditionCatalogues: GroupPromoConditionDto[];
     dataTarget: SettingSegmentation;
+    catalogueSegmentationObjectId: string;
 }

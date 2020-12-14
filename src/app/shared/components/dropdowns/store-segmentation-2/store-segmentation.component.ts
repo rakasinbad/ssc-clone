@@ -88,6 +88,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     @Input() brandIdSelect: string = '';
     @Input() fakturIdSelect: string = '';
     @Input() segmentBases: string = '';
+    @Input() typeTrigger: string = '';
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
@@ -213,10 +214,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // newQuery['hasChild'] = false;
 
                 // Request berdasarkan segmentasinya
-                if (this.segmentBases == 'all_segmentation' || this.segmentBases == 'segmentation') {
+                if (this.segmentBases == 'all') {
                     newQuery['segmentation'] = this.segmentationType;
                     if (this.typePromo == 'flexiCombo') {
-                        if (this.catalogueIdSelect != undefined) {
+                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
                             newQuery['catalogueId'] = this.catalogueIdSelect;
                             // Melakukan request data
                             return this.entityApi$
@@ -224,7 +225,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                             .pipe(
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
-                        } else if(this.brandIdSelect != undefined) {
+                        } else if(this.typeTrigger == 'brand' && this.brandIdSelect != undefined) {
                             newQuery['brandId'] = this.brandIdSelect;
                              // Melakukan request data
                             return this.entityApi$
@@ -232,7 +233,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                             .pipe(
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
-                        } else if (this.fakturIdSelect != undefined) {
+                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect != undefined) {
                             newQuery['fakturId'] = this.fakturIdSelect;
                              // Melakukan request data
                             return this.entityApi$
@@ -639,7 +640,9 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.segmentBases == 'segmentation' || this.segmentBases == 'all_segmentation') {
+        // console.log('typePromo->', this.typePromo)
+        // console.log('isi changes->', changes)
+        if (this.segmentBases == 'all') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {
@@ -648,17 +651,17 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     limit: this.limit,
                     skip: 0,
                 };
-                if (changes['catalogueIdSelect'].currentValue != undefined) {
+                if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueId'] = this.catalogueIdSelect;
                     this.requestEntity(params);
-                } else if (changes['brandIdSelect'].currentValue != undefined) {
+                } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['brandId'] = this.brandIdSelect;
                     this.requestEntity(params);
-                } else if (changes['fakturIdSelect'].currentValue != undefined) {
+                } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['fakturId'] = this.fakturIdSelect;

@@ -86,6 +86,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     @Input() brandIdSelect: string = '';
     @Input() fakturIdSelect: string = '';
     @Input() segmentBases: string = '';
+    @Input() typeTrigger: string = '';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -203,32 +204,39 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
+                
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse'
-                console.log('isi segmentBases req ent->', this.segmentBases)
-                console.log('this.catalogueIdSelect->', this.catalogueIdSelect)
-                console.log('this.fakturIdSelect->', this.fakturIdSelect)
-                console.log('this.brandIdSelect->', this.brandIdSelect)
-                if (this.segmentBases == 'segmentation' || this.segmentBases == 'all') {
+                // console.log('isi segmentBases req ent->', this.segmentBases)
+                // console.log('this.catalogueIdSelect->', this.catalogueIdSelect)
+                // console.log('this.fakturIdSelect->', this.fakturIdSelect)
+                // console.log('this.brandIdSelect->', this.brandIdSelect)
+                if (this.segmentBases == 'all') {
                     if (this.typePromo == 'flexiCombo') {   
-                        if (this.catalogueIdSelect != undefined) {
-                            newQuery['catalogueId'] = this.catalogueIdSelect;
-                             // Melakukan request data warehouse.
-                             return this.entityApi$
-                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                             .pipe(
-                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                             );
-                        } else if (this.brandIdSelect != undefined) {
-                            newQuery['brandId'] = this.brandIdSelect;
-                             // Melakukan request data warehouse.
-                             return this.entityApi$
-                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                             .pipe(
-                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                             );
-                        } else if (this.fakturIdSelect != undefined) {
+                        if (this.typeTrigger == 'sku') {
+                            if (this.typeTrigger == 'sku') {
+                                newQuery['catalogueId'] = this.catalogueIdSelect;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                .pipe(
+                                    tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                );
+                            } else {}
+                            
+                        } else if (this.typeTrigger == 'brand') {
+                            if (this.brandIdSelect !== undefined) {
+                                newQuery['brandId'] = this.brandIdSelect;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                .pipe(
+                                    tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                );
+                            } else {}
+                            
+                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
                             newQuery['fakturId'] = this.fakturIdSelect;
                              // Melakukan request data warehouse.
                              return this.entityApi$
@@ -236,7 +244,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                              .pipe(
                                  tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                              );
-                        } 
+                        } else {
+
+                        }
                             
                     }
                 } else {
@@ -534,28 +544,32 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('isi segmentBases onchanges1->', this.segmentBases)
-        console.log('isi changes segment->', changes['segmentBases'])
-        if (this.segmentBases == 'segmentation' || this.segmentBases == 'all') {
+        // console.log('isi segmentBases onchanges1->', this.segmentBases)
+        // console.log('isi changes segment->', changes['segmentBases'])
+        if (this.segmentBases == 'all') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {
-                const params: IQueryParams = {
-                    paginate: true,
-                    limit: this.limit,
-                    skip: 0,
+                // console.log('masuk type promo ini flexi')
+                const params = {
+                    // paginate: true,
+                    // limit: this.limit,
+                    // skip: 0,
                 };
-                if (changes['catalogueIdSelect'].currentValue != undefined) {
+                if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
+                    // console.log('masuk catalogue sini')
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueId'] = this.catalogueIdSelect;
                     this.requestEntity(params);
-                } else if (changes['brandIdSelect'].currentValue != undefined) {
+                } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
+                    // console.log('masuk brand sini');
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['brandId'] = this.brandIdSelect;
                     this.requestEntity(params);
-                } else if (changes['fakturIdSelect'].currentValue != undefined) {
+                } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
+                    // console.log('masuk faktur sini');
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['fakturId'] = this.fakturIdSelect;

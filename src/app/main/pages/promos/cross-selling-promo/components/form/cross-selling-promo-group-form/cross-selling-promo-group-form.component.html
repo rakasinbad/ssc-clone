@@ -37,6 +37,34 @@
             </select-warehouses>
         </div>
 
+        <div
+            class="custom-field"
+            fxLayout="row"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="16px"
+            [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+        >
+            <label fxFlexAlign="center" fxFlex="12">
+                <span class="sinbad-red-fg">*</span>
+                Selected<br />Segmentation<br />
+                (0 Selected)
+            </label>
+
+            <app-catalogue-segmentation
+            #selectSegmentation
+            [required]="true"
+            (selected)="onSelectedCatalogueSegment($event)"
+            fxFlexAlign="center"
+            fxFlex="50"
+            >
+            <ng-container *ngIf="errorCatalogueSegment == true">
+                <mat-hint class="mat-error">
+                    This field is required.
+                </mat-hint>
+            </ng-container>
+            </app-catalogue-segmentation>
+        </div>
+
         <div class="form-box" formArrayName="groups">
             <div
                 class="box-group"

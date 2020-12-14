@@ -2396,6 +2396,7 @@
                                     [catalogueIdSelect]="catalogueIdSelected"
                                     [brandIdSelect]="brandIdSelected"
                                     [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
                                     (valueSelectAll)="dataValueWarehouse($event)"
                                     fxFlex="50"
                                 >
@@ -2429,6 +2430,7 @@
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreTypeSelected($event)"
                                     (valueSelectAllStore)="dataValueStore($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                 </select-store-segmentation>
@@ -2461,6 +2463,7 @@
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreGroupSelected($event)"
                                     (valueSelectAllStore)="dataValueGroup($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                 </select-store-segmentation>
@@ -2493,6 +2496,7 @@
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreChannelSelected($event)"
                                     (valueSelectAllStore)="dataValueChannel($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                 </select-store-segmentation>
@@ -2525,6 +2529,7 @@
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreClusterSelected($event)"
                                     (valueSelectAllStore)="dataValueCluster($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     

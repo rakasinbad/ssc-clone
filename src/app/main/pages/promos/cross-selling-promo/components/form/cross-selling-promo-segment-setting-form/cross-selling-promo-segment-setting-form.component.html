@@ -15,10 +15,7 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label
-                    fxFlexAlign="center"
-                    fxFlex="12"
-                >
+                <label fxFlexAlign="center" fxFlex="12">
                     <span class="sinbad-red-fg">*</span>
                     Segmentation Base
                 </label>
@@ -27,7 +24,7 @@
                     <ng-container *ngIf="segmentationBasePromo; else noSegmentBase">
                         <mat-radio-group
                             [formControl]="form.get('segmentationBase')"
-                            (change)="onChangeSegmentBase($event)" 
+                            (change)="onChangeSegmentBase($event)"
                         >
                             <mat-radio-button
                                 *ngFor="let row of segmentationBasePromo"
@@ -290,17 +287,41 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
+                    <label fxFlexAlign="center" fxFlex="12">
+                        <span class="sinbad-red-fg">*</span>
+                        Warehouse<br />
+                        (0 Selected)
+                    </label>
+
+                        <select-warehouses
+                        [initialSelection]="[]"
+                        [disabled]="true"
+                        placeholder="'warehouse'"
+                        [required]="false"
+                        [typePromo]="typePromo"
+                        [segmentBases]="segmentBases"
+                        (valueSelectAll)="dataValueWarehouse($event)"
+                        fxFlex="50"
                     >
-                        Store Type<br />({{storeTypeLength || 0 }} Selected)
+                    
+                    </select-warehouses>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Type<br />({{ storeTypeLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeTypeSelectAll}}"
+                        placeholder="{{ storeTypeSelectAll }}"
                         title="Select Store Type"
                         segmentationType="type"
                         [required]="false"
@@ -321,17 +342,14 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
-                    >
-                        Store Group<br />({{storeGroupLength|| 0}} Selected)
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Group<br />({{ storeGroupLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeGroupSelectAll}}"
+                        placeholder="{{ storeGroupSelectAll }}"
                         title="Select Store Group"
                         segmentationType="group"
                         [required]="false"
@@ -352,17 +370,14 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
-                    >
-                        Store Channel<br />({{storeChannelLength|| 0}} Selected)
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Channel<br />({{ storeChannelLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeChannelSelectAll}}"
+                        placeholder="{{ storeChannelSelectAll }}"
                         title="Select Store Channel"
                         segmentationType="channel"
                         [required]="false"
@@ -383,17 +398,14 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
-                    >
-                        Store Cluster<br />({{storeClusterLength|| 0}} Selected)
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Cluster<br />({{ storeClusterLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeClusterSelectAll}}"
+                        placeholder="{{ storeClusterSelectAll }}"
                         title="Select Store Cluster"
                         segmentationType="cluster"
                         [required]="false"
@@ -410,9 +422,7 @@
 
             <!-- specified target -->
             <ng-container
-                *ngIf="
-                    form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION
-                "
+                *ngIf="form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION"
             >
                 <div
                     class="custom-field mb-8"

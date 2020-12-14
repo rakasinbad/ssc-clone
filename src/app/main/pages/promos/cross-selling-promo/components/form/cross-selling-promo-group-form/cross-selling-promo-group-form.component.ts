@@ -35,6 +35,7 @@ import { takeUntil } from 'rxjs/operators';
 import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
 import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
+import { CatalogueSegmentation } from 'app/shared/components/dropdowns/catalogue-segmentation/models/catalogue-segmentation.model';
 
 @Component({
     selector: 'app-cross-selling-promo-group-form',
@@ -64,7 +65,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     groups: FormArray;
     hiddenInoviceGroup: boolean = false;
     warehouseSelected = [];
+    catalogueSegmentSelected = [];
     errorWarehouse: boolean = false;
+    errorCatalogueSegment: boolean = false;
     statusMulti: boolean = false;
     fakturStatus: boolean = true;
     @Input() getGeneral: FormGroup;
@@ -188,6 +191,23 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             this.fakturStatus = false;
             // chosenWarehouseCtrl.setValue(this.warehouseSelected);
         }
+    }
+
+    onSelectedCatalogueSegment(value: CatalogueSegmentation[]): void {
+        if (value == null) {
+            this.errorCatalogueSegment = true;
+            // Reset faktur & sku select in Group 1 & 2
+            this._resetFakturGroup1();
+            this._resetFakturGroup2();
+            const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
+            const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
+            chosenSkuCtrl1.setValue(null);
+            chosenSkuCtrl2.setValue(null);
+        } else {
+            this.errorCatalogueSegment = false;
+            this.catalogueSegmentSelected.push(value);
+        }
+        // this.form.get('warehouse').setValue(value);
     }
 
     onApplySku(value: Selection[], idx: number): void {
@@ -392,7 +412,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                 catalogueId: [...newGroupOne, ...newGroupTwo].map((item) => item.catalogueId),
             },
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
-            dataTarget: payloadWarehouse['dataTarget']
+            dataTarget: payloadWarehouse['dataTarget'],
+            catalogueSegmentationObjectId: this.catalogueSegmentSelected[0].id
         };
         this.formValue.emit(payload);
     }

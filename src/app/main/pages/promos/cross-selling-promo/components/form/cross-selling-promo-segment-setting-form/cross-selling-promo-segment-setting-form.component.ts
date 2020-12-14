@@ -19,7 +19,7 @@ import {
     StoreSegmentationCluster,
     StoreSegmentationGroup,
 } from 'app/main/pages/catalogues/models';
-// import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
+import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
@@ -61,6 +61,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     @Output()
     formValue: EventEmitter<SegmentSettingFormDto> = new EventEmitter();
 
+    public storeWarehouseSelectAll: string;
+    public storeWarehouseLength: number;
     public storeTypeSelectAll: string;
     public storeTypeLength: number;
     public storeGroupSelectAll: string;
@@ -84,7 +86,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.segmentationBasePromo = this.crossSellingPromoFormService.segmentationBasePromo;
         this.specifiedTarget = this.crossSellingPromoFormService.specifiedTarget;
 
-        this.segmentBases = 'segmentation';
+        this.segmentBases = 'all';
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
                 this._handleFormValue();
@@ -95,7 +97,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('fakturId->', changes['fakturId'])
         if (changes['fakturId']) {
             this.selectFaktur = changes['fakturId'].currentValue;
         }
@@ -147,6 +148,25 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
     }
 
+     /**
+     *
+     * Handle change event for All Segmentation
+     * @output bring value warehouse
+     * @param {event} 
+     * @returns {void}
+     * @memberof Cross Selling Promo Segmentation Setting
+     */
+    dataValueWarehouse(value): void {
+        console.log('isi value warehouse->', value)
+        let storeWarehouseValue = value.data[0];
+        this.storeWarehouseLength = value.total;
+        if (value.total > 1) {
+            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName + ' (+'+(this.storeWarehouseLength - 1)+' others)';
+        } else {
+            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
+        }
+    }
+
     /**
      *
      * Handle change event for All Segmentation
@@ -159,9 +179,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         let storeTypeValue = value.data[0];
         this.storeTypeLength = value.total;
         if (value.total > 1) {
-            this.storeTypeSelectAll = storeTypeValue.name + ' (+'+(this.storeTypeLength - 1)+' others)';
+            this.storeTypeSelectAll = storeTypeValue.typeName + ' (+'+(this.storeTypeLength - 1)+' others)';
         } else {
-            this.storeTypeSelectAll = storeTypeValue.name;
+            this.storeTypeSelectAll = storeTypeValue.typeName;
         }
     }
 
@@ -177,9 +197,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         let storeGroupValue = value.data[0];
         this.storeGroupLength = value.total;
         if (value.total > 1) {
-            this.storeGroupSelectAll = storeGroupValue.name + ' (+'+(this.storeGroupLength - 1)+' others)';
+            this.storeGroupSelectAll = storeGroupValue.groupName + ' (+'+(this.storeGroupLength - 1)+' others)';
         } else {
-            this.storeGroupSelectAll = storeGroupValue.name;
+            this.storeGroupSelectAll = storeGroupValue.groupName;
         }
     }
 
@@ -195,9 +215,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         let storeChannelValue = value.data[0];
         this.storeChannelLength = value.total;
         if (value.total > 1) {
-            this.storeChannelSelectAll = storeChannelValue.name + ' (+'+(this.storeChannelLength - 1)+' others)';
+            this.storeChannelSelectAll = storeChannelValue.channelName + ' (+'+(this.storeChannelLength - 1)+' others)';
         } else {
-            this.storeChannelSelectAll = storeChannelValue.name;
+            this.storeChannelSelectAll = storeChannelValue.channelName;
         }
     }
 
@@ -213,9 +233,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         let storeClusterValue = value.data[0];
         this.storeClusterLength = value.total;
         if (value.total > 1) {
-            this.storeClusterSelectAll = storeClusterValue.name + ' (+'+(this.storeClusterLength - 1)+' others)';
+            this.storeClusterSelectAll = storeClusterValue.clusterName + ' (+'+(this.storeClusterLength - 1)+' others)';
         } else {
-            this.storeClusterSelectAll = storeClusterValue.name;
+            this.storeClusterSelectAll = storeClusterValue.clusterName;
         }
     }
 

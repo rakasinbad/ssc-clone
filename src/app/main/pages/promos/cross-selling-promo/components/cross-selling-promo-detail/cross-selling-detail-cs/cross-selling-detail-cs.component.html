@@ -52,7 +52,7 @@
         <!-- ./ Segmentation Base Direct Store -->
 
         <!-- Segmentation Base Segmentation -->
-        <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
+        <!-- <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -132,7 +132,7 @@
                     {{ getStoreClusters((crossSellingPromo$ | async)?.promoClusters) || '-' }}
                 </div>
             </div>
-        </ng-container>
+        </ng-container> -->
         <!-- ./ Segmentation Base Segmentation -->
 
         <!-- ALL Segmentation Base Segmentation -->
@@ -219,7 +219,7 @@
         </ng-container>
         <!-- ./ Segmentation Base Segmentation -->
 
-        <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION || eSegmentBase.ALLSEGMENTATION">
+        <ng-container *ngSwitchCase="eSegmentBase.ALLSEGMENTATION">
             <div
                 class="custom-field"
                 fxLayout="row"
