@@ -104,6 +104,53 @@ export class SkpApiService {
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
+    /**
+     *
+     *
+     * @template T
+     * @param {IQueryParams} params
+     * @returns {Observable<T>}
+     * @memberof SkpApiService
+     */
+    findDetailList<T>(id: string, type, params?: IQueryParams): Observable<T> {
+        const newArg = [];
+
+        // if (params['supplierId']) {
+        //     newArg.push({
+        //         key: 'supplierId',
+        //         value: params['supplierId'],
+        //     });
+        // }
+
+        if (params['data']) {
+            newArg.push({
+                key: 'data',
+                value: params['data'],
+            });
+        }
+
+        if (type== 'promo'){
+            if (params['promo_limit']) {
+                newArg.push({
+                    key: 'promo_limit',
+                    value: params['promo_limit'],
+                });
+            }
+            if (params['promo_skip']) {
+                newArg.push({
+                    key: 'promo_skip',
+                    value: params['promo_skip'],
+                });
+            }
+        } else {
+
+        }
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
+    }
+
     create<T>(body: T): Observable<CreateSkpDto> {
         return this.http.post<CreateSkpDto>(this._url, body);
     }

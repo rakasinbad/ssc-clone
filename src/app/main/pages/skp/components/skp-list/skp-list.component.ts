@@ -100,11 +100,10 @@ export class SkpListComponent implements OnInit {
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<SkpModel>(true, []);
+        this.dataSource = this.dataDummy;
 
         // this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
-        this.dataSource = this.dataDummy;
         // this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
-
         // this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
         //     takeUntil(this.subs$)
         // );
@@ -131,6 +130,7 @@ export class SkpListComponent implements OnInit {
                     this.dataSource = this.dataDummy;
                 break;
             }
+
         }
     }
 
@@ -150,14 +150,16 @@ export class SkpListComponent implements OnInit {
             }
            
             this.SkpStore.dispatch(SkpActions.clearState());
-            this.SkpStore.dispatch(
-                SkpActions.fetchSkpListRequest({
-                    payload: data,
-                })
-            );
+            // this.SkpStore.dispatch(
+            //     SkpActions.fetchSkpListRequest({
+            //         payload: data,
+            //     })
+            // );
+
         }
     }
 
+   
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
 
@@ -175,8 +177,8 @@ export class SkpListComponent implements OnInit {
         this.router.navigateByUrl('/pages/skp/detail/'+ id);
     }
 
-    onEditSkp(value): void {
-        this.router.navigateByUrl('/pages/skp/create');
+    onEditSkp(id): void {
+        this.router.navigateByUrl('/pages/skp/'+id);
     }
 
     ngOnDestroy(): void {

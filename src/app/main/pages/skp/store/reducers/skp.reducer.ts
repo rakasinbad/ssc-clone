@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { SkpModel, SkpDetail } from '../../models';
+import { SkpModel } from '../../models';
 import { SkpActions } from '../actions';
 
 // Keyname for reducer

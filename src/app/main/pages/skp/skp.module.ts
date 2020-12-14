@@ -13,13 +13,22 @@ import { StoreModule } from '@ngrx/store';
 import { SkpRoutingModule } from './skp-routing.module';
 import { SkpComponent } from './skp.component';
 import { SkpListComponent } from './components/skp-list/skp-list.component';
-import { SkpCreateComponent } from './components/skp-create/skp-create.component';
+import { SkpFormComponent } from './components/skp-form/skp-form.component';
 import { SkpDetailComponent } from './components/skp-detail/skp-detail.component';
+import { SkpNgrxModule } from './store/skp-ngrx.module';
+import { DetailGeneralComponent } from './components/skp-detail/detail-general/detail-general.component';
+import { DetailPromoListComponent } from './components/skp-detail/detail-promo-list/detail-promo-list.component';
+import { DetailCustomerListComponent } from './components/skp-detail/detail-customer-list/detail-customer-list.component';
 
 @NgModule({
     declarations: [
         SkpComponent, 
-        SkpListComponent, SkpCreateComponent, SkpDetailComponent
+        SkpListComponent, 
+        SkpFormComponent, 
+        SkpDetailComponent, 
+        DetailGeneralComponent, 
+        DetailPromoListComponent, 
+        DetailCustomerListComponent
     ],
     imports: [
         // CommonModule,
@@ -36,7 +45,7 @@ import { SkpDetailComponent } from './components/skp-detail/skp-detail.component
         NgxPermissionsModule.forChild(),
 
         // // Ngrx Store
-        // FlexiComboNgrxModule,
+        SkpNgrxModule,
         
         EffectsModule.forFeature([])
     ],

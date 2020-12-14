@@ -26,7 +26,7 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-import { CreateSkpDto, SkpModel, UpdateSkpDto, StoreList, PromoList, SkpDetail } from '../../models';
+import { CreateSkpDto, SkpModel, UpdateSkpDto, skpPromoList, skpStoreList  } from '../../models';
 import { SkpApiService } from '../../services/skp-api.service';
 import { SkpActions, SkpFailureActions } from '../actions';
 
@@ -631,6 +631,7 @@ export class SkpEffects {
         );
     };
 
+    //list skp
     _fetchSkpListRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
         AnyAction
     > => {
@@ -668,44 +669,31 @@ export class SkpEffects {
             paginate: false,
         };
 
-        // const { supplierId } = userData.userSupplier;
+        const { supplierId } = userData.userSupplier;
 
         // if (supplierId) {
         //     newParams['supplierId'] = supplierId;
         // }
 
-        //ini untuk split data detail general, promo, customer list
-        // if (parameter['splitRequest']) {
-        //     return forkJoin([
-        //         this._$skpComboApi.findById<SkpModel>(id, newParams).pipe(
-        //             catchOffline(),
-        //             retry(3),
-        //             catchError((err) => this._sendErrorToState$(err, 'fetchSkpFailure'))
-        //         ),
-        //         this._$skpComboApi.findById<SkpModel>(id, ({ ...newParams, data: 'promo' } as IQueryParams)).pipe(
-        //             catchOffline(),
-        //             retry(3),
-        //             catchError((err) => this._sendErrorToState$(err, 'fetchSkpFailure'))
-        //         ),
-        //         this._$skpComboApi.findById<SkpModel>(id, ({ ...newParams, data: 'store' } as IQueryParams)).pipe(
-        //             catchOffline(),
-        //             retry(3),
-        //             catchError((err) => this._sendErrorToState$(err, 'fetchSkpFailure'))
-        //         )
-        //     ]).pipe(
-        //         switchMap(([promo, store]: [PromoList, StoreList]) => {
-        //             let promo: Array<PromoList> = [];
-        //             let storeList: Array<StoreList> = [];
-
-        //             return of(SkpActions.fetchSkpSuccess({
-        //                 payload: new SkpDetail({
-        //                     ...general,
-                            
-        //                 } as SkpDetail),
-        //             }));
-        //         })
-        //     );
-        // } else {
+        //ini untuk split data detail general
+        //bagian promo dan customer list terpisah dibawah
+        if (parameter['splitRequest']) {
+            return forkJoin([
+                this._$skpComboApi.findById<SkpModel>(id, ({data: 'promo' } as IQueryParams)).pipe(
+                    catchOffline(),
+                    retry(3),
+                    catchError((err) => this._sendErrorToState$(err, 'fetchSkpFailure'))
+                ),
+            ]).pipe(
+                switchMap(([general]: [SkpModel]) => {
+                    return of(SkpActions.fetchSkpSuccess({
+                        payload: new SkpModel({
+                            ...general,
+                        } as SkpModel),
+                    }));
+                })
+            );
+        } else {
             return this._$skpComboApi.findById<SkpModel>(id, newParams).pipe(
                 catchOffline(),
                 map((resp) =>
@@ -715,8 +703,61 @@ export class SkpEffects {
                 ),
                 catchError((err) => this._sendErrorToState$(err, 'fetchSkpFailure'))
             );
-        // }
+        }
 
+    };
+
+    //detail promo and store list
+    _fetchSkpPromoListRequest$ =({ userData, id, type, params = {} }: { userData: User, id: string, type: string, params: IQueryParams }): Observable<
+        AnyAction
+    > => {
+        const newParams = {
+            ...params,
+        };
+        const { supplierId } = userData.userSupplier;
+
+        // if (supplierId) {
+        //     newParams['supplierId'] = supplierId;
+        // }
+        if (type == 'promo') {
+            return this._$skpComboApi.findDetailList<PaginateResponse<skpPromoList>>(id, type, newParams).pipe(
+                catchOffline(),
+                map((resp) => {
+                    const newResp = {
+                        data:
+                            (resp && resp.data.length > 0
+                                ? resp.data.map((v) => new skpPromoList(v))
+                                : []) || [],
+                        total: resp.total,
+                    };
+    
+                    return SkpActions.fetchSkpListDetailPromoSuccess({
+                        payload: newResp,
+                    });
+                }),
+                catchError((err) => this._sendErrorToState$(err, 'fetchSkpListDetailPromoFailure'))
+            );
+        } else {
+            return this._$skpComboApi.findDetailList<PaginateResponse<skpStoreList>>(id, type, newParams).pipe(
+                catchOffline(),
+                map((resp) => {
+                    const newResp = {
+                        data:
+                            (resp && resp.data.length > 0
+                                ? resp.data.map((v) => new skpStoreList(v))
+                                : []) || [],
+                        total: resp.total,
+                    };
+    
+                    return SkpActions.fetchSkpListDetailStoreSuccess({
+                        payload: newResp,
+                    });
+                }),
+                catchError((err) => this._sendErrorToState$(err, 'fetchSkpListDetailStoreFailure'))
+            );
+        }
+
+        
     };
 
     _sendErrorToState$ = (
