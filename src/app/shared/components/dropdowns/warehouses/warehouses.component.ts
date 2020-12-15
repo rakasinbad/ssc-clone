@@ -581,17 +581,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             }
         }
 
-        if (this.typePromo == 'crossSelling') {
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
-            const params: IQueryParams = {
-                paginate: true,
-                limit: this.limit,
-                skip: 0,
-            };
-            this.requestEntity(params);
-        }
-
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();

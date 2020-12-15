@@ -26,7 +26,7 @@ import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { FormMode, FormStatus, SpecifiedTarget } from 'app/shared/models';
 import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
-import { SupplierStore } from 'app/shared/models/supplier.model';
+import { SupplierStore } from 'app/shared/components/dropdowns/stores/models/supplier-store.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { SegmentSettingFormDto, SettingTargetDto } from '../../../models';
@@ -256,11 +256,10 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreCtrl.setValue(null);
         } else {
             const newStores: Selection[] = ev.map((item) => ({
-                id: item.store.id,
-                label: item.store.name,
+                id: item.storeId,
+                label: item.storeName,
                 group: 'supplier-stores',
             }));
-
             chosenStoreCtrl.setValue(newStores);
         }
     }

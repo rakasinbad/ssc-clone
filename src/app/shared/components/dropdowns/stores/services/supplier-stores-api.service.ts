@@ -66,6 +66,10 @@ export class SupplierStoresApiService {
             newArgs.push({ key: 'fakturId', value: params['fakturId'] });
         }
 
+        if (params['catalogueSegmentationId']) {
+            newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
+        }
+        
         if (params['segment']) {
             newArgs.push({ key: 'segment', value: params['segment'] });
         }

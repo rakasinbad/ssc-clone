@@ -89,6 +89,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     @Input() fakturIdSelect: string = '';
     @Input() typeTrigger: string = '';
     @Input() segmentBases: string = '';
+    @Input() idSelectedSegment: string = undefined;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -240,12 +241,16 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     }
                         
                 } else if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'voucher') {
-                        // Melakukan request data Store Segment.
-                        return this.entityApi$
-                        .find<IPaginatedResponse<Entity>>(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-                        );
+                        if (this.idSelectedSegment !== undefined || this.idSelectedSegment !== null) {
+                            newQuery['segment'] = 'store';
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                            // Melakukan request data warehouse.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                            );
+                        }
                 }
 
             }),
@@ -259,7 +264,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling' ) {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
@@ -270,7 +275,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling') {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
@@ -587,9 +592,15 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
                 }
 
-            } else {
-    
-            }
+            } else if (this.typePromo == 'crossSelling') {
+                    const params = {};
+                    if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null || this.idSelectedSegment !== undefined)) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueSegmentationId'] = this.idSelectedSegment;
+                        this.requestEntity(params);
+                    }
+            } else {}
         }
       
 

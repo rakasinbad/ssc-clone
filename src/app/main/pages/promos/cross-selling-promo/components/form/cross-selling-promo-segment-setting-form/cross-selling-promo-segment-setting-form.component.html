@@ -92,6 +92,11 @@
                         placeholder="Choose Store"
                         [required]="true"
                         (selected)="onStoreSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                         <div error>
