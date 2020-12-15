@@ -834,6 +834,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('isActiveStore').setValue(false);
         } else if (ev.value === SegmentationBasePromo.ALLSEGMENTATION ) {
             this.form.get('chosenStore').clearValidators();
+            this.form.get('chosenWarehouse').clearValidators();
+            this.form.get('chosenStoreType').clearValidators();
+            this.form.get('chosenStoreGroup').clearValidators();
+            this.form.get('chosenStoreChannel').clearValidators();
+            this.form.get('chosenStoreCluster').clearValidators();
         }
 
         this.form.get('chosenStore').updateValueAndValidity();
@@ -2520,9 +2525,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         payload: this._breadCrumbs,
                     })
                 );
-
+                
                 this._initForm();
-
+                
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -2561,7 +2566,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     private _initForm(): void {
         this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
         // this.form.get('specifiedTarget').setValue('new_store');
-
+        
         this.form = this.formBuilder.group({
             promoId: [
                 null,
