@@ -1,5 +1,6 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
@@ -75,11 +76,13 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     segmentBases: string;
     selectFaktur: string;
     public typePromo = 'crossSelling';
+    public idSelectSegment: string;
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private errorMessageService: ErrorMessageService,
-        private noticeService: NoticeService
+        private noticeService: NoticeService,
+        private cdRef: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
@@ -94,15 +97,16 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
             this.formStatus.emit(status);
         });
+     
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+       
         if (changes['fakturId']) {
             this.selectFaktur = changes['fakturId'].currentValue;
         }
-        if (changes['getGroup'].currentValue) {
-            let valueGrup = this.getGroup;
-            console.log('isi valueGrup->', valueGrup)
+        if (changes['getGroup']) {
+            this.idSelectSegment = changes['getGroup'].currentValue;
         }
 
         if (changes['form']) {
@@ -161,13 +165,14 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
      * @memberof Cross Selling Promo Segmentation Setting
      */
     dataValueWarehouse(value): void {
-        let storeWarehouseValue = value.data[0];
-        this.storeWarehouseLength = value.total;
-        if (value.total > 1) {
-            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName + ' (+'+(this.storeWarehouseLength - 1)+' others)';
-        } else {
-            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
-        }
+        this.storeWarehouseSelectAll = '';
+        // let storeWarehouseValue = value.data[0];
+        // this.storeWarehouseLength = value.total;
+        // if (value.total > 1) {
+        //     this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName + ' (+'+(this.storeWarehouseLength - 1)+' others)';
+        // } else {
+        //     this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
+        // }
     }
 
     /**

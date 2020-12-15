@@ -296,7 +296,7 @@
                         <select-warehouses
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="'warehouse'"
+                        placeholder="{{ storeWarehouseSelectAll }}"
                         [required]="false"
                         [typePromo]="'crossSelling'"
                         [segmentBases]="segmentBases"
@@ -304,7 +304,7 @@
                         [brandIdSelect]="undefined"
                         [fakturIdSelect]="undefined"
                         [typeTrigger]="'selectSegment'"
-                        [idSelectedSegment] = ''
+                        [idSelectedSegment]="idSelectSegment"
                         (valueSelectAll)="dataValueWarehouse($event)"
                         fxFlex="50"
                     >

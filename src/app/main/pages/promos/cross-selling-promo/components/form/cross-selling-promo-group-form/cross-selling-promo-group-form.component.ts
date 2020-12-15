@@ -105,6 +105,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     @ViewChildren('selectSku')
     selectSku: QueryList<CataloguesDropdownComponent>;
 
+    @Output()
+    segmentationSelectId: EventEmitter<string> = new EventEmitter();
     public typePromo = 'crossSelling';
 
     constructor(
@@ -207,6 +209,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             this.errorCatalogueSegment = false;
             this.catalogueSegmentSelected.push(value);
         }
+        this.segmentationSelectId.emit(this.catalogueSegmentSelected[0].id);
+
         //setting faktur
         // this.invoiceGroups = 
     }

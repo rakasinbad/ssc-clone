@@ -221,8 +221,6 @@ export class CatalogueSegmentationComponent implements OnInit, OnChanges, AfterV
             return;
         }
 
-        console.log('isi event onSelectedEntity->', event)
-
         const selectedId = (event.option.value as Selection).id;
         const selectedEntity = this.entities.get(selectedId);
 

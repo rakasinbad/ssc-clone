@@ -70,6 +70,7 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
 
     fakturName: string = null;
     fakturId: string = null;
+    segmentationSelectId: string = null;
     form: FormGroup;
     benefitFormDto: BenefitFormDto;
     generalInfoFormDto: GeneralInfoFormDto;

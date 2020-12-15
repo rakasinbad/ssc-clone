@@ -207,9 +207,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
-                console.log('isi typepromo supplier store->', this.typePromo)
-                console.log('isi typeTrigger ->', this.typeTrigger)
-                console.log('isi brandIdSelect->', this.brandIdSelect)
                 if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {  
                     newQuery['segment'] = 'store';
                     if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {

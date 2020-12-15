@@ -209,9 +209,8 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse';
-               
                 if (this.segmentBases == 'all') {
-                    if (this.typePromo == 'flexiCombo') {   
+                    if (this.typePromo === 'flexiCombo') {   
                         if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
                                 newQuery['catalogueId'] = this.catalogueIdSelect;
                                 // Melakukan request data warehouse.
@@ -243,7 +242,8 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         }
                             
                     }  else if (this.typePromo == 'crossSelling') {
-                        if (this.typeTrigger == 'selectSegment' && this.idSelectedSegment !== undefined) {
+                        if (this.idSelectedSegment !== undefined || this.idSelectedSegment !== null) {
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
                             // Melakukan request data warehouse.
                             return this.entityApi$
                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
@@ -358,12 +358,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -547,32 +545,26 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log('isi segmentBases onchanges1->', this.segmentBases)
-        // console.log('isi changes segment->', changes['segmentBases'])
         if (this.segmentBases == 'all') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {
-                // console.log('masuk type promo ini flexi')
                 const params = {
                     // paginate: true,
                     // limit: this.limit,
                     // skip: 0,
                 };
                 if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
-                    // console.log('masuk catalogue sini')
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueId'] = this.catalogueIdSelect;
                     this.requestEntity(params);
                 } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
-                    // console.log('masuk brand sini');
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['brandId'] = this.brandIdSelect;
                     this.requestEntity(params);
                 } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
-                    // console.log('masuk faktur sini');
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['fakturId'] = this.fakturIdSelect;
@@ -580,7 +572,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                if (this.typeTrigger == 'selectSegment' && this.idSelectedSegment !== undefined) {
+                if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null || this.idSelectedSegment !== undefined)) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueSegmentationId'] = this.idSelectedSegment;
