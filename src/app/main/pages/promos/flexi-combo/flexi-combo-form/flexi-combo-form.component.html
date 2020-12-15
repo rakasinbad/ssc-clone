@@ -2169,6 +2169,12 @@
                                     placeholder="Choose Store"
                                     [required]="true"
                                     (selected)="onStoreSelected($event)"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     <div error>

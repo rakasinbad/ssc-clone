@@ -102,7 +102,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     labelLength: number = 10;
     // tslint:disable-next-line: no-inferrable-types
     formFieldLength: number = 40;
-
+    @Input() selectedTrigger = [];
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
@@ -134,6 +134,13 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     };
 
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
+
+    public typePromo = 'voucher';
+    public catalogueIdSelected: string;
+    public brandIdSelected: string;
+    public fakturIdSelected: string;
+    public segmentBases: string;
+    public triggerSelected: string = 'sku';
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -610,18 +617,44 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         this.initFormCheck();
     }
 
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void {
+     
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
-            this.trigger$.next('');
+        // if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
+        //     this.trigger$.next('');
+        //     setTimeout(() => {
+        //         this.updateFormView();
+        //     });
+        // } else if (changes['formMode'].currentValue) {
+        //     this.trigger$.next('');
+        //     setTimeout(() => this.updateFormView());
+        // }
+        this.trigger$.next('');
+        this.updateFormView();
 
-            setTimeout(() => {
-                this.updateFormView();
-            });
-        } else if (changes['formMode'].currentValue) {
-            this.trigger$.next('');
-            setTimeout(() => this.updateFormView());
+         if (this.selectedTrigger['base'] == 'sku') {
+            let idSku = [];
+            idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
+            this.catalogueIdSelected = idSku.toString();
+            this.catalogueIdSelected = undefined;     
+            this.fakturIdSelected = undefined;
+            this.triggerSelected = 'brand';
+        } else if (this.selectedTrigger['base'] == 'brand') {
+            let idBrand = [];
+            idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
+            this.brandIdSelected = idBrand.toString();
+            this.catalogueIdSelected = undefined;     
+            this.fakturIdSelected = undefined;
+            this.triggerSelected = 'brand';
+        } else if (this.selectedTrigger['base'] == 'faktur') {
+            let idFaktur = [];
+            idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
+            this.fakturIdSelected = idFaktur.toString();
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.triggerSelected = 'faktur';
         }
     }
 

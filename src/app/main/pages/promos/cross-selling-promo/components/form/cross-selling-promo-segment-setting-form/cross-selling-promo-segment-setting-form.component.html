@@ -298,8 +298,13 @@
                         [disabled]="true"
                         placeholder="'warehouse'"
                         [required]="false"
-                        [typePromo]="typePromo"
+                        [typePromo]="'crossSelling'"
                         [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment] = ''
                         (valueSelectAll)="dataValueWarehouse($event)"
                         fxFlex="50"
                     >

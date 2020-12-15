@@ -52,7 +52,7 @@ import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
-import { SupplierStore } from 'app/shared/models/supplier.model';
+import { SupplierStore } from 'app/shared/components/dropdowns/stores/models/supplier-store.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
@@ -182,6 +182,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public fakturIdSelected: string;
     public segmentBases: string;
     public triggerSelected: string = 'sku';
+    public lengthStoreSelected: number;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -208,7 +209,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        this.segmentBases = 'all';
+        // this.segmentBases = '';
         this._initPage();
     }
 
@@ -1166,16 +1167,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     onStoreSelected(ev: SupplierStore[]): void {
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
-
         if (!ev.length) {
             this.form.get('chosenStore').setValue(null);
+            this.lengthStoreSelected = 0;
         } else {
             const newStores: Selection[] = ev.map((item) => ({
-                id: item.store.id,
-                label: item.store.name,
+                id: item.storeId,
+                label: item.storeName,
                 group: 'supplier-stores',
             }));
-
+            this.lengthStoreSelected = newStores.length;
             this.form.get('chosenStore').setValue(newStores);
         }
     }
@@ -2730,7 +2731,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                SegmentationBasePromo.ALLSEGMENTATION,
+                SegmentationBasePromo.STORE || SegmentationBasePromo.ALLSEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -3465,6 +3466,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             //     payload.dataTarget.groupId = newChosenStoreGroup;
             //     payload.dataTarget.channelId = newChosenStoreChannel;
             //     payload.dataTarget.clusterId = newChosenStoreCluster;
+            } else if (segmentationBase === SegmentationBasePromo.ALLSEGMENTATION) {
+                    payload.dataTarget.warehouseId = [];
+                    payload.dataTarget.typeId = [];
+                    payload.dataTarget.groupId = [];
+                    payload.dataTarget.channelId = [];
+                    payload.dataTarget.clusterId = [];
             }
 
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));

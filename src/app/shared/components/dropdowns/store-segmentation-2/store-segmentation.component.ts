@@ -640,16 +640,14 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // console.log('typePromo->', this.typePromo)
-        // console.log('isi changes->', changes)
         if (this.segmentBases == 'all') {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {
                 const params: IQueryParams = {
-                    paginate: true,
-                    limit: this.limit,
-                    skip: 0,
+                    // paginate: true,
+                    // limit: this.limit,
+                    // skip: 0,
                 };
                 if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
                     this.availableEntities$.next([]);

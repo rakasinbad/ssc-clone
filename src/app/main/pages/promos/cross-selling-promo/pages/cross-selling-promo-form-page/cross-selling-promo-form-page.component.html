@@ -33,6 +33,7 @@
             [fakturId]="fakturId"
             (formStatus)="onSetSegmentSettingFormStatus($event)"
             (formValue)="segmentFormDto = $event"
+            [getGroup]= "form.get('groupSetting').value"
         ></app-cross-selling-promo-segment-setting-form>
     </div>
     <!-- / CENTER -->

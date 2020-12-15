@@ -76,9 +76,6 @@ export class WarehousesApiService {
 
         this._url = this.helper$.handleApiRouter(this._endpointPromo);
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
-        delete newParams['$skip'];
-        delete newParams['$limit'];
-        delete newParams['paginate'];
 
         return this.http.get<T>(this._url, { params: newParams });
     }

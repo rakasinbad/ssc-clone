@@ -87,6 +87,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     @Input() fakturIdSelect: string = '';
     @Input() segmentBases: string = '';
     @Input() typeTrigger: string = '';
+    @Input() idSelectedSegment: string = undefined;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -207,15 +208,11 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
-                newQuery['segment'] = 'warehouse'
-                // console.log('isi segmentBases req ent->', this.segmentBases)
-                // console.log('this.catalogueIdSelect->', this.catalogueIdSelect)
-                // console.log('this.fakturIdSelect->', this.fakturIdSelect)
-                // console.log('this.brandIdSelect->', this.brandIdSelect)
+                newQuery['segment'] = 'warehouse';
+               
                 if (this.segmentBases == 'all') {
                     if (this.typePromo == 'flexiCombo') {   
-                        if (this.typeTrigger == 'sku') {
-                            if (this.typeTrigger == 'sku') {
+                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
                                 newQuery['catalogueId'] = this.catalogueIdSelect;
                                 // Melakukan request data warehouse.
                                 return this.entityApi$
@@ -223,10 +220,8 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                                 .pipe(
                                     tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                                 );
-                            } else {}
                             
-                        } else if (this.typeTrigger == 'brand') {
-                            if (this.brandIdSelect !== undefined) {
+                        } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
                                 newQuery['brandId'] = this.brandIdSelect;
                                 // Melakukan request data warehouse.
                                 return this.entityApi$
@@ -234,7 +229,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                                 .pipe(
                                     tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                                 );
-                            } else {}
                             
                         } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
                             newQuery['fakturId'] = this.fakturIdSelect;
@@ -248,9 +242,18 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                         }
                             
+                    }  else if (this.typePromo == 'crossSelling') {
+                        if (this.typeTrigger == 'selectSegment' && this.idSelectedSegment !== undefined) {
+                            // Melakukan request data warehouse.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                            );
+                        }
                     }
                 } else {
-                    if(this.typePromo != 'flexiCombo') {
+                    if(this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
                     // Melakukan request data warehouse.
                     return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
@@ -261,7 +264,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 }
                 
             }),
-            // take(1),
+            take(1),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -272,7 +275,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    if (this.typePromo == 'flexiCombo') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                     addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
                     } else {
                     addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
@@ -283,7 +286,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    if (this.typePromo == 'flexiCombo') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                         addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
@@ -575,8 +578,14 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                     params['fakturId'] = this.fakturIdSelect;
                     this.requestEntity(params);
                 }
-            } else {
-
+            } else if (this.typePromo == 'crossSelling') {
+                const params = {};
+                if (this.typeTrigger == 'selectSegment' && this.idSelectedSegment !== undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueSegmentationId'] = this.idSelectedSegment;
+                    this.requestEntity(params);
+                }
             }
         }
 

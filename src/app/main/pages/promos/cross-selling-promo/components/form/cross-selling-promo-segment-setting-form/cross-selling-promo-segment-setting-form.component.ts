@@ -46,7 +46,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     specifiedTarget: { id: SpecifiedTarget; label: string }[];
     segmentBasePromo = SegmentationBasePromo;
     specifiedTargetType = SpecifiedTarget;
-
+    @Input() getGroup: FormGroup;
     @Input()
     form: FormGroup;
 
@@ -99,6 +99,10 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['fakturId']) {
             this.selectFaktur = changes['fakturId'].currentValue;
+        }
+        if (changes['getGroup'].currentValue) {
+            let valueGrup = this.getGroup;
+            console.log('isi valueGrup->', valueGrup)
         }
 
         if (changes['form']) {
@@ -157,7 +161,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
      * @memberof Cross Selling Promo Segmentation Setting
      */
     dataValueWarehouse(value): void {
-        console.log('isi value warehouse->', value)
         let storeWarehouseValue = value.data[0];
         this.storeWarehouseLength = value.total;
         if (value.total > 1) {

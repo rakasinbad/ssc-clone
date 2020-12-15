@@ -69,7 +69,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     errorWarehouse: boolean = false;
     errorCatalogueSegment: boolean = false;
     statusMulti: boolean = false;
-    fakturStatus: boolean = true;
+    fakturStatus: boolean = false;
     @Input() getGeneral: FormGroup;
     @Output() getGeneralChange = new EventEmitter();
     @Input()
@@ -163,51 +163,52 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         this.unSubs$.complete();
     }
 
-    onWarehouseSelected(ev: Warehouse[]): void {
-        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
-        // chosenWarehouseCtrl.markAsDirty();
-        // chosenWarehouseCtrl.markAsTouched();
-        if (!ev.length) {
-            // chosenWarehouseCtrl.setValue('');
-            this.errorWarehouse = true;
-            this.warehouseSelected = [];
-            this.fakturStatus = true;
-            // Reset faktur & sku select in Group 1 & 2
-            this._resetFakturGroup1();
-            this._resetFakturGroup2();
-            const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
-            const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
-            chosenSkuCtrl1.setValue(null);
-            chosenSkuCtrl2.setValue(null);
-        } else {
-            this.errorWarehouse = false;
-            const newWarehouses: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
-                group: 'warehouses',
-            }));
+    // onWarehouseSelected(ev: Warehouse[]): void {
+    //     const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+    //     // chosenWarehouseCtrl.markAsDirty();
+    //     // chosenWarehouseCtrl.markAsTouched();
+    //     if (!ev.length) {
+    //         // chosenWarehouseCtrl.setValue('');
+    //         this.errorWarehouse = true;
+    //         this.warehouseSelected = [];
+    //         this.fakturStatus = true;
+    //         // Reset faktur & sku select in Group 1 & 2
+    //         this._resetFakturGroup1();
+    //         this._resetFakturGroup2();
+    //         const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
+    //         const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
+    //         chosenSkuCtrl1.setValue(null);
+    //         chosenSkuCtrl2.setValue(null);
+    //     } else {
+    //         this.errorWarehouse = false;
+    //         const newWarehouses: Selection[] = ev.map((item) => ({
+    //             id: item.id,
+    //             label: item.name,
+    //             group: 'warehouses',
+    //         }));
             
-            this.warehouseSelected = newWarehouses;
-            this.fakturStatus = false;
-            // chosenWarehouseCtrl.setValue(this.warehouseSelected);
-        }
-    }
+    //         this.warehouseSelected = newWarehouses;
+    //         this.fakturStatus = false;
+    //         // chosenWarehouseCtrl.setValue(this.warehouseSelected);
+    //     }
+    // }
 
     onSelectedCatalogueSegment(value: CatalogueSegmentation[]): void {
         if (value == null) {
             this.errorCatalogueSegment = true;
             // Reset faktur & sku select in Group 1 & 2
-            this._resetFakturGroup1();
-            this._resetFakturGroup2();
-            const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
-            const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
-            chosenSkuCtrl1.setValue(null);
-            chosenSkuCtrl2.setValue(null);
+            // this._resetFakturGroup1();
+            // this._resetFakturGroup2();
+            // const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
+            // const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
+            // chosenSkuCtrl1.setValue(null);
+            // chosenSkuCtrl2.setValue(null);
         } else {
             this.errorCatalogueSegment = false;
             this.catalogueSegmentSelected.push(value);
         }
-        // this.form.get('warehouse').setValue(value);
+        //setting faktur
+        // this.invoiceGroups = 
     }
 
     onApplySku(value: Selection[], idx: number): void {
@@ -353,12 +354,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     private _handleFormValue(): void {
         const { groups } = this.form.getRawValue();
-        const payloadWarehouse = {
-            dataTarget: {}
-        };
-
-        payloadWarehouse['dataTarget'] = this._payloadTypeSegment(payloadWarehouse['dataTarget'], this.warehouseSelected);
-
+      
         const groupOne = groups && groups.length ? groups[0] : null;
         const skuGroupOne = groupOne['chosenSku'];
         const newGroupOne =
@@ -412,27 +408,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                 catalogueId: [...newGroupOne, ...newGroupTwo].map((item) => item.catalogueId),
             },
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
-            dataTarget: payloadWarehouse['dataTarget'],
             catalogueSegmentationObjectId: this.catalogueSegmentSelected[0].id
         };
         this.formValue.emit(payload);
-    }
-
-    private _payloadTypeSegment(payloadSegment: SettingTargetDto, chosenWarehouse: any): SettingTargetDto {
-        delete payloadSegment['chosenStore'];
-
-        // Warehouse
-        const newWarehouse =
-            chosenWarehouse && chosenWarehouse.length
-                ? chosenWarehouse.map((item: Selection) => +item.id)
-                : [];
-        payloadSegment['warehouseId'] = newWarehouse;
-        payloadSegment['channelId'] = [];
-        payloadSegment['clusterId'] = [];
-        payloadSegment['groupId'] = [];
-        payloadSegment['typeId'] = [];
-
-        return payloadSegment;
     }
 
     private _ruleShowAlert(value: Selection[], idx: number): void {
