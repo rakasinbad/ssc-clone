@@ -242,7 +242,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         }
                             
                     }  else if (this.typePromo == 'crossSelling') {
-                        if (this.idSelectedSegment !== undefined || this.idSelectedSegment !== null) {
+                        if (this.idSelectedSegment != null) {
                             newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
                             // Melakukan request data warehouse.
                             return this.entityApi$
@@ -572,7 +572,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null || this.idSelectedSegment !== undefined)) {
+                if (this.idSelectedSegment != null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueSegmentationId'] = this.idSelectedSegment;
