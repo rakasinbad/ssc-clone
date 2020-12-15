@@ -50,7 +50,7 @@
         <!-- ./ Segmentation Base Direct Store -->
 
         <!-- Segmentation Base Segmentation -->
-        <!-- <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
+        <ng-container *ngSwitchCase="'segmentation'">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -130,7 +130,7 @@
                     {{ getStoreClusters((flexiCombo$ | async)?.promoClusters) || '-' }}
                 </div>
             </div>
-        </ng-container> -->
+        </ng-container>
         <!-- ./ Segmentation Base Segmentation -->
 
         <!-- All Segmentation Base Segmentation -->

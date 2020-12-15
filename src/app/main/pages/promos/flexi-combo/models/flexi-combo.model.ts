@@ -442,3 +442,24 @@ export class FlexiCombo implements ITimestamp {
         // }
     }
 }
+
+export class WarehouseDetail {
+    readonly id: NonNullable<string>;
+    warehouseId: string;
+    warehouseName: string;
+
+    constructor(data: WarehouseDetail) {
+        const {
+            id,
+            warehouseId,
+            warehouseName
+        } = data;
+
+        this.id = id;
+      
+        this.warehouseId = warehouseId || null;
+        this.warehouseName = warehouseName || null;
+
+    }
+
+}

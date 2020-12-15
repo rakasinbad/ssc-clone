@@ -31,7 +31,7 @@ export class InvoiceGroup implements IInvoiceGroup {
             supplierId,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;
@@ -43,5 +43,20 @@ export class InvoiceGroup implements IInvoiceGroup {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
+}
+
+export class InvoiceGroupPromo {
+    fakturId: string;
+    fakturName: string;
+
+    constructor(data: InvoiceGroupPromo) {
+        const {
+            fakturId,
+            fakturName
+        } = data;
+
+        this.fakturId = fakturId || null;
+        this.fakturName = fakturName || null;
     }
 }

@@ -281,9 +281,9 @@
                                         <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of invoiceGroups"
-                                            [value]="row?.id"
+                                            [value]="row?.fakturId"
                                         >
-                                            {{ row?.name }}
+                                            {{ row?.fakturName }}
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
@@ -411,6 +411,8 @@
                                 (selected)="onSkuSelected($event, groupIdx)"
                                 (applied)="onApplySku($event, groupIdx)"
                                 (closed)="onClosedSku($event, groupIdx)"
+                                [typeCatalogue]="'crossSelling'"
+                                [fakturIdSelect]="selectFaktur"
                                 fxFlex="60"
                             >
                             </select-catalogues>

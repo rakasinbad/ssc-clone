@@ -16,7 +16,10 @@ import {
 } from '../../../models';
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
+import { FlexiComboApiService } from '../../../services';
 
+import { WarehouseDetail as Entity } from '../../../models/flexi-combo.model';
+import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
 
@@ -45,6 +48,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
     constructor(
         private store: Store<fromFlexiCombos.FeatureState>,
         private _$helperService: HelperService,
+        private flexiComboApiService: FlexiComboApiService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -54,6 +58,27 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
+            map((item) => { return item; })
+        );
+        let valueDetail = [];
+        let addedRawAvailableEntities: Array<Entity> = [];
+        let params = {};
+        this.subs = this.flexiCombo$.subscribe(val => {
+            valueDetail.push(val);
+            console.log('isi valuedetail->', valueDetail)
+            params['catalogueId'] = valueDetail[0].id;
+            params['supplierId'] = valueDetail[0].supplierId;
+            params['segment'] = 'warehouse';
+            this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params).subscribe(res => {
+                // this.valueSelectAll.emit(response);
+                console.log('isi response warehouse', )
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+        });
+       
+
 
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
             map((item) => {

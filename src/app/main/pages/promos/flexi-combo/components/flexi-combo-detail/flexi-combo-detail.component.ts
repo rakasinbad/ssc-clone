@@ -52,7 +52,7 @@ export class FlexiComboDetailComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private store: Store<fromFlexiCombos.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
