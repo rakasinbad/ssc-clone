@@ -19,6 +19,7 @@
         mat-stroked-button
         [color]="color"
         [ngClass]="class ? class + ' sinbad__filter-action--item' : 'sinbad__filter-action--item'"
+        (click)="onClickReset()"
     >
         {{ title }}
     </button>
@@ -32,6 +33,7 @@
         mat-flat-button
         [color]="color"
         [ngClass]="class ? class + ' sinbad__filter-action--item' : 'sinbad__filter-action--item'"
+        (click)="onClickSubmit()"
     >
         {{ title }}
     </button>

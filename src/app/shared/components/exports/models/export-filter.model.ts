@@ -8,6 +8,8 @@ export interface ExportFormFilterConfiguration {
     requireFilter?: boolean;
     filterAspect?: {
         status?: ExportFilterFormConfiguration;
+        type?: ExportFilterFormConfiguration;
+        warehouse?: ExportFilterFormConfiguration;
         rangeDate?: ExportFilterFormConfiguration & {
             maxRange: {
                 number: number;
@@ -25,6 +27,8 @@ export interface ExportFormData {
     dateGte?: string;
     dateLte?: string;
     status?: string;
+    type?: string;
+    warehouse?: any;
     viewHistory?: boolean;
 }
 
@@ -73,12 +77,15 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
                 placeholder: 'Choose Catalogue Status',
                 required: true,
             },
-            rangeDate: {
-                required: false,
-                maxRange: {
-                    number: 1,
-                    duration: 'month',
-                },
+            type: {
+                label: 'Catalogue Type',
+                placeholder: 'Choose Catalogue Type',
+                required: true,
+            },
+            warehouse: {
+                label: 'Warehouse',
+                placeholder: 'Choose Warehouse',
+                required: true,
             },
         },
     },

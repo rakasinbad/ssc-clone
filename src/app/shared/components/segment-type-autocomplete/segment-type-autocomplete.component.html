@@ -1,0 +1,10 @@
+<sinbad-autocomplete
+    [control]="form"
+    [loading]="loading$ | async"
+    [placeholder]="placeholder"
+    [sources]="collections$ | async"
+    (closed)="onClosedAutocompete()"
+    (opened)="onOpenedAutocomplete()"
+    (scrollToBottom)="onScrollToBottom()"
+    (selectedAutocomplete)="onSelectedAutocomplete($event)"
+></sinbad-autocomplete>

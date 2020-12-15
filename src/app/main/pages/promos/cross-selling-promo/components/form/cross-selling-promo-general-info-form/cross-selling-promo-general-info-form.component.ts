@@ -3,6 +3,7 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnDestroy,
     OnInit,
     Output,
     ViewEncapsulation,
@@ -32,7 +33,7 @@ type TmpKey = 'imgSuggestion';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
+export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDestroy {
     private readonly strictISOString: boolean = false;
     private unSubs$: Subject<any> = new Subject();
 
@@ -92,6 +93,11 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit {
 
                 this.formStatus.emit(status);
             });
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     onChangePromoAllocationType(ev: MatRadioChange): void {

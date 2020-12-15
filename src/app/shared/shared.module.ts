@@ -6,7 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxMaskModule } from 'ngx-mask';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
-
+import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialog.module';
 import { ExportAdvancedModule } from './components/export-advanced/export-advanced.module';
 import { FilterAdvancedModule } from './components/filter-advanced/filter-advanced.module';
 import { FiltersModule } from './components/filters/filters.module';
@@ -20,26 +20,19 @@ import {
     ContentDirective,
     MaterialElevationDirective,
     TabAutocompleteDirective,
-    TrackScrollDirective
+    TrackScrollDirective,
 } from './directives';
 import { MaterialModule } from './material.module';
 import { ChangeConfirmationComponent } from './modals/change-confirmation/change-confirmation.component';
+import { DeleteCatalogueSegmentationsComponent } from './modals/delete-catalogue-segmentations/delete-catalogue-segmentations.component';
 import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
-import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
-import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialog.module';
+import { PricePipe, ReplacePipe, SafePipe } from './pipes';
 
-/**
- *
- *
- * @export
- * @class SharedModule
- */
 @NgModule({
     declarations: [
         // Pipe
-        HighlightPipe,
         PricePipe,
         ReplacePipe,
         SafePipe,
@@ -63,9 +56,10 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
 
         ChangeConfirmationComponent,
         DeleteConfirmationComponent,
+        DeleteCatalogueSegmentationsComponent,
 
         FilterAdvancedFormComponent,
-        ShowImageComponent
+        ShowImageComponent,
     ],
     imports: [
         // Custom Module
@@ -83,14 +77,13 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
         AgmCoreModule,
 
         // Fuse Theme
-        FuseSharedModule
+        FuseSharedModule,
         // ExportsModule,
         // CardHeaderModule,
         // SharedComponentsModule,
     ],
     exports: [
         // Pipe
-        HighlightPipe,
         PricePipe,
         ReplacePipe,
         SafePipe,
@@ -126,8 +119,9 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
 
         // Component (Dialog, Modal, Snackbar)
         DeleteConfirmationComponent,
+        DeleteCatalogueSegmentationsComponent,
         ChangeConfirmationComponent,
-        ShowImageComponent
+        ShowImageComponent,
     ],
     providers: [TitleCasePipe],
     entryComponents: [
@@ -138,10 +132,11 @@ import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialo
 
         ChangeConfirmationComponent,
         DeleteConfirmationComponent,
+        DeleteCatalogueSegmentationsComponent,
 
         FilterAdvancedFormComponent,
-        ShowImageComponent
+        ShowImageComponent,
         // SearchBarComponent,
-    ]
+    ],
 })
 export class SharedModule {}

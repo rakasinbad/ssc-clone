@@ -1,0 +1,49 @@
+<!-- CONTENT CARD (VISIBILTY) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">Visibility</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="true ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- STATUS -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Status </label>
+
+                <mat-radio-group [formControl]="form.get('status')" fxFlex="80">
+                    <mat-radio-button class="pr-36" [value]="'active'">Active</mat-radio-button>
+                    <mat-radio-button class="pr-36" [value]="'inactive'">Inactive</mat-radio-button>
+                </mat-radio-group>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('productInfo.name').value }}
+                </span> -->
+            </div>
+            <!-- / STATUS -->
+
+            <!-- STATUS -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label fxFlexAlign="center" fxFlex="18" class="pr-0"> Type </label>
+
+                <mat-checkbox [formControl]="form.get('isBonus')" [disabled]="formMode !== 'edit'" labelPosition="after" fxFlex="80">
+                    <ng-container
+                        [class.sinbad-red-fg]="
+                            !(formMode | hasFormMode: 'view') &&
+                            (form.get('isBonus').value || form.get('isBonus').touched
+                                | hasErrorField: form.get('isBonus'):false)
+                        "
+                    >
+                        Bonus
+                    </ng-container>
+                </mat-checkbox>
+            </div>
+            <!-- / STATUS -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (VISIBILTY) -->
