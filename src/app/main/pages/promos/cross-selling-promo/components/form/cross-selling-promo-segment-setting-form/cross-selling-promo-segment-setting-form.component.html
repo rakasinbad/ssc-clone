@@ -331,10 +331,16 @@
                         segmentationType="type"
                         [required]="false"
                         [segmentBases]="segmentBases"
-                        [typePromo]="typePromo"
                         [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreTypeSelected($event)"
                         (valueSelectAllStore)="dataValueStore($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                     </select-store-segmentation>

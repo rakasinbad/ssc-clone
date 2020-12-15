@@ -89,6 +89,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     @Input() fakturIdSelect: string = '';
     @Input() segmentBases: string = '';
     @Input() typeTrigger: string = '';
+    @Input() idSelectedSegment: string = '';
+
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
@@ -244,8 +246,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                         } 
                         
                     } else if (this.typePromo == 'crossSelling') {
-                        if (this.fakturIdSelect != null) {
-                            newQuery['fakturId'] = this.fakturIdSelect;
+                        if (this.idSelectedSegment != null) {
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
                              // Melakukan request data
                             return this.entityApi$
                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
@@ -666,15 +668,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     this.requestEntity(params);
                 }
             } else if (this.typePromo == 'crossSelling') {
-                const params: IQueryParams = {
-                    paginate: true,
-                    limit: this.limit,
-                    skip: 0,
-                };
-                 if (changes['fakturIdSelect'].currentValue != null) {
+                const params = {};
+                 if (this.idSelectedSegment != null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['fakturId'] = this.fakturIdSelect;
+                    params['catalogueSegmentationId'] = this.idSelectedSegment;
                     this.requestEntity(params);
                 }
             }

@@ -45,7 +45,7 @@ export class StoreSegmentationApiService {
         if (params['keyword']) {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
-
+        
         if (!params['segmentation']) {
             throw new Error('ERR_SERVICE_REQUIRE_VALID_SEGMENTATION');
         } else {
@@ -97,6 +97,10 @@ export class StoreSegmentationApiService {
 
         if (params['fakturId']) {
             newArgs.push({ key: 'fakturId', value: params['fakturId'] });
+        }
+
+        if (params['catalogueSegmentationId']) {
+            newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
         }
 
         if (!params['segmentation']) {

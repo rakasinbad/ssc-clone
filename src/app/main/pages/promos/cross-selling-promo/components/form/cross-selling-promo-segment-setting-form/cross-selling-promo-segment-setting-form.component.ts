@@ -165,14 +165,13 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
      * @memberof Cross Selling Promo Segmentation Setting
      */
     dataValueWarehouse(value): void {
-        this.storeWarehouseSelectAll = '';
-        // let storeWarehouseValue = value.data[0];
-        // this.storeWarehouseLength = value.total;
-        // if (value.total > 1) {
-        //     this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName + ' (+'+(this.storeWarehouseLength - 1)+' others)';
-        // } else {
-        //     this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
-        // }
+        let storeWarehouseValue = value.data[0];
+        this.storeWarehouseLength = value.total;
+        if (value.total > 1) {
+            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName + ' (+'+(this.storeWarehouseLength - 1)+' others)';
+        } else {
+            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
+        }
     }
 
     /**
