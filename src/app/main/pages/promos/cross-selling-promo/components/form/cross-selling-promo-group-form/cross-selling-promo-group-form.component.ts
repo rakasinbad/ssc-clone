@@ -31,7 +31,7 @@ import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { InvoiceGroupPromo } from 'app/shared/models/invoice-group.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
 import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
@@ -48,6 +48,7 @@ import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/g
 })
 export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
+    private subsFaktur$: Subject<any> = new Subject();
 
     readonly prefixPayloadGroup: string = 'Group';
     readonly prefixInvoiceGroup: string = 'invoice-';
@@ -161,6 +162,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     ngOnDestroy(): void {
         this.unSubs$.next();
         this.unSubs$.complete();
+        this.subsFaktur$.next();
+        this.subsFaktur$.complete();
     }
 
     // onWarehouseSelected(ev: Warehouse[]): void {
@@ -198,17 +201,23 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             this.errorCatalogueSegment = true;
         } else {
             this.errorCatalogueSegment = false;
-            this.catalogueSegmentSelected.push(value);
+            this.catalogueSegmentSelected = value;
+            this.segmentationSelectId.emit(value['id']);
             let params = {};
-            params['supplierId'] = '1';
-            params['catalogueSegmentationId'] = this.catalogueSegmentSelected[0].id;
+            params['supplierId'] = value['supplierId'];
+            params['catalogueSegmentationId'] = value['id'];
             params['segment'] = 'faktur';
-            this.crossSellingPromoFormService.findSegmentPromo(params).subscribe(res => {
-                console.log('isi res faktur->', res)
+            this.crossSellingPromoFormService.findSegmentPromo(params).pipe(takeUntil(this.subsFaktur$)).subscribe(res => {
                 this.invoiceGroups = res['data'];
+                // chosenSkuCtrl.setValue(null);
+                this.form.get(['groups', 0, 'chosenSku']).setValue(null);
+                this.form.get(['groups', 1, 'chosenSku']).setValue(null);
+                // Mark for check
+                this.cdRef.detectChanges();
             });
         }
-        this.segmentationSelectId.emit(this.catalogueSegmentSelected[0].id);
+        // this.selectInvoice.last.ngControl.reset();s
+
 
         
         // this.crossSellingPromoFormService.findSegmentPromo()
@@ -415,7 +424,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                 catalogueId: [...newGroupOne, ...newGroupTwo].map((item) => item.catalogueId),
             },
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
-            catalogueSegmentationObjectId: this.catalogueSegmentSelected[0].id
+            catalogueSegmentationObjectId: this.catalogueSegmentSelected['id']
         };
         this.formValue.emit(payload);
     }

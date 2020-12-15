@@ -96,6 +96,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
     @Input() typeCatalogue: string = '';
     @Input() fakturIdSelect: string = '';
+    @Input() segmentationSelectId: string = '';
 
     // Untuk mengirim data berupa catalogue yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -228,7 +229,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
                     // Memasukkan ID supplier ke dalam params baru.
                     newQuery['supplierId'] = supplierId;
-                    newQuery['catalogueSegmentationId'] = this.fakturIdSelect;
+                    newQuery['fakturId'] = this.fakturIdSelect;
+                    newQuery['catalogueSegmentationId'] = this.segmentationSelectId;
+                    newQuery['segment']= 'catalogue';
                     // Melakukan request data segment catalogue.
                     return this.entityApi$
                     .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
@@ -283,7 +286,6 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 } else {
                     addedRawAvailableEntities = response.data;
                     addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
-
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
@@ -720,6 +722,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         if (this.typeCatalogue == 'crossSelling' && this.fakturIdSelect != null) {
             this.availableEntities$.next([]);
             this.rawAvailableEntities$.next([]);
+            this.entityFormValue.setValue([]);
 
             const params: IQueryParams = {
                 paginate: true,
@@ -727,7 +730,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 skip: 0,
             };
 
-            params['catalogueSegmentationId'] = this.fakturIdSelect;
+            params['fakturId'] = this.fakturIdSelect;
+            params['catalogueSegmentationId'] = this.segmentationSelectId;
 
             this.requestEntity(params);
         }

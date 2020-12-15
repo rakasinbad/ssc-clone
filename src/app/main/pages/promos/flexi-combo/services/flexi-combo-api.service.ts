@@ -105,7 +105,7 @@ export class FlexiComboApiService {
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
-    findSegmentPromo<T>(params: IQueryParams): Observable<T> {
+    findSegmentPromo<T>(params: IQueryParams, type): Observable<T> {
         const newArgs = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {
@@ -132,14 +132,11 @@ export class FlexiComboApiService {
             newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
         }
 
-        if (params['segment']) {
-            newArgs.push({ key: 'segment', value: params['segment'] });
-        }
+        newArgs.push({ key: 'segment', value: type });
 
         if (params['keyword']) {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
-
         this._url = this._$helper.handleApiRouter(this._endpointPromo);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 

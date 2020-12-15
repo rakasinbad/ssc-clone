@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
@@ -30,7 +30,7 @@ import * as _ from 'lodash';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FlexiComboDetailCustomerComponent implements OnInit {
+export class FlexiComboDetailCustomerComponent implements OnInit, AfterViewInit {
     flexiCombo$: Observable<FlexiCombo>;
     isLoading$: Observable<boolean>;
 
@@ -40,10 +40,13 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
     eSpecifiedTargets = SpecifiedTarget;
 
     public subs: Subscription;
+    public subsDetail: Subscription;
     public benefitSetting = [];
     public statNewStore = false;
     public statActiveStore = false;
     public specifiedTargetValue = 'none';
+    public warehouseLength: string = '';
+    public warehouseList: string = '';
 
     constructor(
         private store: Store<fromFlexiCombos.FeatureState>,
@@ -58,28 +61,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
-            map((item) => { return item; })
-        );
-        let valueDetail = [];
-        let addedRawAvailableEntities: Array<Entity> = [];
-        let params = {};
-        this.subs = this.flexiCombo$.subscribe(val => {
-            valueDetail.push(val);
-            console.log('isi valuedetail->', valueDetail)
-            params['catalogueId'] = valueDetail[0].id;
-            params['supplierId'] = valueDetail[0].supplierId;
-            params['segment'] = 'warehouse';
-            this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params).subscribe(res => {
-                // this.valueSelectAll.emit(response);
-                console.log('isi response warehouse', )
-                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
-            });
-        });
-       
-
-
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
             map((item) => {
                 return item;
@@ -99,6 +80,61 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
         });
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
 
+    }
+
+    ngAfterViewInit(): void {
+        let params = {};
+
+        if (this.benefitSetting[0].base == 'sku') {
+            let sku = this.benefitSetting[0].promoCatalogues;
+            let idSku = [];
+            idSku = sku.map((item) => (item.catalogueId));
+            params['catalogueId'] = idSku.toString();
+            params['supplierId'] = this.benefitSetting[0].supplierId;
+            this.subsDetail = this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params, 'warehouse').subscribe(res => {
+                this.warehouseLength = res.total.toString();
+                let whList = [];
+                whList = res['data'].map((res) => (res.warehouseName));
+                this.warehouseList = whList.toString();
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+            this.subsDetail = this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params, 'type').subscribe(res => {
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+        } else if (this.benefitSetting[0].base == 'brand') {
+            let brand = this.benefitSetting[0].promoBrands;
+            let idBrand = [];
+            idBrand = brand.map((item) => (item.invoiceGroupId));
+            params['brandId'] = idBrand.toString();
+            params['supplierId'] = this.benefitSetting[0].supplierId;
+            this.subsDetail = this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params, 'warehouse').subscribe(res => {
+                this.warehouseLength = res.total.toString();
+                let whList = [];
+                whList = res['data'].map((res) => (res.warehouseName));
+                this.warehouseList = whList.toString();
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+            this.subsDetail = this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params, 'type').subscribe(res => {
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+
+        } else if (this.benefitSetting[0].base == 'invoice_group') {
+            let ev = this.benefitSetting[0].promoInvoiceGroups;
+            let idFaktur = [];
+            idFaktur = ev.map((item) => (item.invoiceGroupId));
+            params['fakturId'] = idFaktur.toString();
+            params['supplierId'] = this.benefitSetting[0].supplierId;
+            this.subsDetail = this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params, 'warehouse').subscribe(res => {
+                this.warehouseLength = res.total.toString();
+                let whList = [];
+                whList = res['data'].map((res) => (res.warehouseName));
+                this.warehouseList = whList.toString();
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+            this.subsDetail = this.flexiComboApiService.findSegmentPromo<IPaginatedResponse<Entity>>(params, 'type').subscribe(res => {
+                // addedAvailableEntities = (res as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+            });
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -155,9 +191,9 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
         return '-';
     }
 
-    getWarehouses(value: IPromoWarehouse[]): string {
+    getWarehouses(value: Entity[]): string {
         if (value && value.length > 0) {
-            const warehouse = value.map((v) => v.warehouse.name);
+            const warehouse = value.map((v) => v.warehouseName);
 
             return warehouse.length > 0 ? warehouse.join(', ') : '-';
         }
@@ -167,5 +203,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit {
 
     ngOnDestroy(): void{
         this.subs.unsubscribe();
+        this.subsDetail.unsubscribe();
     }
 }

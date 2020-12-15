@@ -341,24 +341,24 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
     }
 
-    // onWarehouseSelected(ev: Warehouse[]): void {
-    //     const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+    onWarehouseSelected(ev: Warehouse[]): void {
+        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
 
-    //     chosenWarehouseCtrl.markAsDirty();
-    //     chosenWarehouseCtrl.markAsTouched();
+        chosenWarehouseCtrl.markAsDirty();
+        chosenWarehouseCtrl.markAsTouched();
 
-    //     if (!ev.length) {
-    //         chosenWarehouseCtrl.setValue(null);
-    //     } else {
-    //         const newWarehouses: Selection[] = ev.map((item) => ({
-    //             id: item.id,
-    //             label: item.name,
-    //             group: 'warehouses',
-    //         }));
+        if (!ev.length) {
+            chosenWarehouseCtrl.setValue(null);
+        } else {
+            const newWarehouses: Selection[] = ev.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'warehouses',
+            }));
 
-    //         chosenWarehouseCtrl.setValue(newWarehouses);
-    //     }
-    // }
+            chosenWarehouseCtrl.setValue(newWarehouses);
+        }
+    }
 
     private _handleFormValue(): void {
         const {
@@ -380,8 +380,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         };
 
         switch (payload['target']) {
-            // case SegmentationBasePromo.SEGMENTATION:
 
+            // case SegmentationBasePromo.SEGMENTATION:
             //     payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
             //         chosenStoreChannel,
             //         chosenStoreCluster,
@@ -392,6 +392,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
                 case SegmentationBasePromo.ALLSEGMENTATION:
                     payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
+                        chosenWarehouse,
                         chosenStoreChannel,
                         chosenStoreCluster,
                         chosenStoreGroup,
@@ -423,15 +424,15 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreCluster,
             chosenStoreGroup,
             chosenStoreType,
-            // chosenWarehouse,
+            chosenWarehouse,
         } = body;
 
         // // Warehouse
-        // const newWarehouse =
-        //     chosenWarehouse && chosenWarehouse.length
-        //         ? chosenWarehouse.map((item: Selection) => +item.id)
-        //         : [];
-        // payload['warehouseId'] = newWarehouse;
+        const newWarehouse =
+            chosenWarehouse && chosenWarehouse.length
+                ? chosenWarehouse.map((item: Selection) => +item.id)
+                : [];
+        payload['warehouseId'] = newWarehouse;
 
         // Store Type
         const newStoreType =

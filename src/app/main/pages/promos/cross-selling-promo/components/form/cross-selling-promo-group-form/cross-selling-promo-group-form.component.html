@@ -47,7 +47,12 @@
             <label fxFlexAlign="center" fxFlex="12">
                 <span class="sinbad-red-fg">*</span>
                 Selected<br />Segmentation<br />
-                (0 Selected)
+                <ng-container *ngIf="errorCatalogueSegment == false; else otherCatalogueSeg">
+                    (1 Selected)
+                </ng-container>
+                <ng-template #otherCatalogueSeg>
+                    (0 Selected)
+                </ng-template>
             </label>
 
             <app-catalogue-segmentation
@@ -297,7 +302,7 @@
                                 <mat-error>
                                     {{
                                         form.get(['groups', groupIdx, 'invoiceGroup']).value
-                                            | errorMessage: form:'invoiceGroup':'groups':groupIdx
+                                        | errorMessage: form:'invoiceGroup':'groups':groupIdx
                                     }}
                                 </mat-error>
                             </mat-form-field>
@@ -413,6 +418,7 @@
                                 (closed)="onClosedSku($event, groupIdx)"
                                 [typeCatalogue]="'crossSelling'"
                                 [fakturIdSelect]="selectFaktur"
+                                [segmentationSelectId]="catalogueSegmentSelected['id']"
                                 fxFlex="60"
                             >
                             </select-catalogues>

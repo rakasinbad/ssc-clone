@@ -59,11 +59,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Warehouse<br />
-                    ({{ (flexiCombo$ | async)?.promoWarehouses?.length }} Selected)
+                    ({{ warehouseLength }} Selected)
                 </div>
 
-                <div class="info" fxFlex="90">
-                    {{ getWarehouses((flexiCombo$ | async)?.promoWarehouses) || '-' }}
+                <div class="info" fxFlex="90" *ngIf="!(isLoading$ | async)">
+                    {{ warehouseList || '-' }}
                 </div>
             </div>
 
@@ -134,7 +134,7 @@
         <!-- ./ Segmentation Base Segmentation -->
 
         <!-- All Segmentation Base Segmentation -->
-        <ng-container *ngSwitchCase="eSegmentBase.ALLSEGMENTATION">
+        <ng-container *ngSwitchCase="'all'">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -143,11 +143,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Warehouse<br />
-                    ({{ (flexiCombo$ | async)?.promoWarehouses?.length }} Selected)
+                    ({{ warehouseLength }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getWarehouses((flexiCombo$ | async)?.promoWarehouses) || '-' }}
+                    aaaa {{ warehouseList || '-' }}
                 </div>
             </div>
 

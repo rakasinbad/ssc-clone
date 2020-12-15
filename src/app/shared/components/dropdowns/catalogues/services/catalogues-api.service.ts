@@ -71,13 +71,17 @@ export class CatalogueApiService {
         if (params['supplierId'] && !params['noSupplierId']) {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
+
+        if(params['fakturId']) {
+            newArgs.push({ key: 'fakturId', value: params['fakturId'] });
+        }
         
         if (params['catalogueSegmentationId']) {
             newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
         }
 
         if (params['segment']) {
-            newArgs.push({ key: 'segment', value: 'faktur' });
+            newArgs.push({ key: 'segment', value: params['segment'] });
         }
 
         this._url = this.helper$.handleApiRouter(this._endpointPromo);
