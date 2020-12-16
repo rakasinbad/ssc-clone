@@ -15,14 +15,47 @@ import { Observable } from 'rxjs';
 import { CrossSellingPromoModule } from '../cross-selling-promo.module';
 import { CrossSellingPromoFacadeService } from './cross-selling-promo-facade.service';
 
+import { HttpClient } from '@angular/common/http';
+import { IQueryParams } from 'app/shared/models/query.model';
+
 @Injectable({ providedIn: CrossSellingPromoModule })
 export class CrossSellingPromoFormService {
+
+    private readonly _endpointPromo = '/get-segmentation-promo';
+    private _url: string;
+
     constructor(
         private fb: FormBuilder,
         private crossSellingPromoFacade: CrossSellingPromoFacadeService,
         private errorMessageService: ErrorMessageService,
-        private helperService: HelperService
+        private helperService: HelperService,
+        private http: HttpClient
     ) {}
+
+    findSegmentPromo<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_WAREHOUSE_REQUIRES_SUPPLIERID');
+        }
+        
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+        
+        if (params['catalogueSegmentationId']) {
+            newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
+        }
+
+        if (params['segment']) {
+            newArgs.push({ key: 'segment', value: 'faktur' });
+        }
+
+        this._url = this.helperService.handleApiRouter(this._endpointPromo);
+        const newParams = this.helperService.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
+    }
 
     get benefitType(): { id: BenefitType; label: string }[] {
         return this.helperService.benefitType();
@@ -285,7 +318,7 @@ export class CrossSellingPromoFormService {
             }),
             segmentSetting: this.fb.group({
                 segmentationBase: [
-                    SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
+                    SegmentationBasePromo.ALLSEGMENTATION,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageService.getErrorMessageNonState(

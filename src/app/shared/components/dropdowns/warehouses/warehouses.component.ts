@@ -81,6 +81,14 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Warehouse';
 
+    @Input() typePromo: string = '';
+    @Input() catalogueIdSelect: string;
+    @Input() brandIdSelect: string = '';
+    @Input() fakturIdSelect: string = '';
+    @Input() segmentBases: string = '';
+    @Input() typeTrigger: string = '';
+    @Input() idSelectedSegment: string = undefined;
+
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
@@ -197,17 +205,66 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
+                
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
+                newQuery['segment'] = 'warehouse';
+                // if (this.segmentBases == 'all') {
+                    if (this.typePromo === 'flexiCombo') {   
+                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined
+                                && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
+                                newQuery['catalogueId'] = this.catalogueIdSelect;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                .pipe(
+                                    tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                );
+                            
+                        } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
+                                newQuery['brandId'] = this.brandIdSelect;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                .pipe(
+                                    tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                );
+                            
+                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
+                            newQuery['fakturId'] = this.fakturIdSelect;
+                             // Melakukan request data warehouse.
+                             return this.entityApi$
+                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                             .pipe(
+                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                             );
+                        } else {
 
-                // Melakukan request data warehouse.
-                return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-                    );
+                        }
+                    }  else if (this.typePromo !== 'flexiPromo') {
+                        if (this.idSelectedSegment != null && this.catalogueIdSelect == undefined
+                            && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                            // Melakukan request data warehouse.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                            );
+                        }
+                    }
+
+                    // if(this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
+                    // // Melakukan request data warehouse.
+                    // return this.entityApi$
+                    // .find<IPaginatedResponse<Entity>>(newQuery)
+                    // .pipe(
+                    //     tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
+                    // );
+                    // }
+                
             }),
-            take(1),
+            takeUntil(this.subs$),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -218,14 +275,22 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    } else {
                     addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    }
 
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    } else {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    }
 
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
@@ -255,11 +320,11 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 this.cdRef.markForCheck();
             },
-            error: (err) => {
-                this.toggleLoading(false);
-                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
-            },
+            // error: (err) => {
+            //     this.toggleLoading(false);
+            //     HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+            //     this.helper$.showErrorNotification(new ErrorHandler(err));
+            // },
             complete: () => {
                 this.toggleLoading(false);
                 HelperService.debug('FIND ENTITY COMPLETED');
@@ -293,12 +358,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -482,6 +545,41 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (this.segmentBases !== undefined || this.segmentBases == 'all') {
+            if (this.typePromo == 'flexiCombo') {
+                const params = {
+                    // paginate: true,
+                    // limit: this.limit,
+                    // skip: 0,
+                };
+                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect'].currentValue !== null) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueId'] = this.catalogueIdSelect;
+                    this.requestEntity(params);
+                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect'].currentValue !== null) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['brandId'] = this.brandIdSelect;
+                    this.requestEntity(params);
+                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect'].currentValue !== null) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['fakturId'] = this.fakturIdSelect;
+                    this.requestEntity(params);
+                }
+            } else if (this.typePromo == 'crossSelling') {
+                const params = {};
+                if (changes['idSelectedSegment'].currentValue !== null) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueSegmentationId'] = this.idSelectedSegment;
+                    this.requestEntity(params);
+                }
+            } else {
+            }
+        }
+
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();
@@ -530,7 +628,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
+        // this.initEntity();
     }
 
 }

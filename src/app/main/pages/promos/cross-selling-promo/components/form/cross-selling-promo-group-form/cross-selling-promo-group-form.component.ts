@@ -28,13 +28,15 @@ import { MultipleSelectionComponent } from 'app/shared/components/multiple-selec
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { FormMode, FormStatus, LogicRelation } from 'app/shared/models';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
-import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { InvoiceGroupPromo } from 'app/shared/models/invoice-group.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { GroupFormDto, SegmentSettingFormDto, SettingTargetDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
 import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/models/warehouse.model';
+import { CatalogueSegmentation } from 'app/shared/components/dropdowns/catalogue-segmentation/models/catalogue-segmentation.model';
+import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 
 @Component({
     selector: 'app-cross-selling-promo-group-form',
@@ -46,6 +48,7 @@ import { Warehouse } from 'app/shared/components/dropdowns/single-warehouse/mode
 })
 export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
+    private subsFaktur$: Subject<any> = new Subject();
 
     readonly prefixPayloadGroup: string = 'Group';
     readonly prefixInvoiceGroup: string = 'invoice-';
@@ -59,14 +62,16 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     logicRelationMulti: { id: LogicRelation; label: string }[];
 
     triggerBase: { id: TriggerBase; label: string }[];
-    invoiceGroups: InvoiceGroup[];
+    invoiceGroups: InvoiceGroupPromo[];
     conditionBaseType = ConditionBase;
     groups: FormArray;
     hiddenInoviceGroup: boolean = false;
     warehouseSelected = [];
+    catalogueSegmentSelected = [];
     errorWarehouse: boolean = false;
+    errorCatalogueSegment: boolean = false;
     statusMulti: boolean = false;
-    fakturStatus: boolean = true;
+    fakturStatus: boolean = false;
     @Input() getGeneral: FormGroup;
     @Output() getGeneralChange = new EventEmitter();
     @Input()
@@ -84,6 +89,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     @Output()
     fakturName: EventEmitter<string> = new EventEmitter();
 
+    @Output()
+    fakturId: EventEmitter<string> = new EventEmitter();
+
     @ViewChild('beforeLimit', { static: false })
     beforeLimit: TemplateRef<any>;
 
@@ -98,7 +106,12 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     @ViewChildren('selectSku')
     selectSku: QueryList<CataloguesDropdownComponent>;
-    
+
+    @Output()
+    segmentationSelectId: EventEmitter<string> = new EventEmitter();
+    public typePromo = 'crossSelling';
+    public selectFaktur: string;
+
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
@@ -116,10 +129,6 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         this.statusMulti = false;
         this.errorWarehouse = false;
         this.triggerBase = this.crossSellingPromoFormService.triggerBase;
-        this.crossSellingPromoFormService.invoiceGroups$
-            .pipe(takeUntil(this.unSubs$))
-            .subscribe((item) => (this.invoiceGroups = item));
-
         this.groups = this.form.get('groups') as FormArray;
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
@@ -153,35 +162,59 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     ngOnDestroy(): void {
         this.unSubs$.next();
         this.unSubs$.complete();
+        this.subsFaktur$.next();
+        this.subsFaktur$.complete();
     }
 
-    onWarehouseSelected(ev: Warehouse[]): void {
-        const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
-        // chosenWarehouseCtrl.markAsDirty();
-        // chosenWarehouseCtrl.markAsTouched();
-        if (!ev.length) {
-            // chosenWarehouseCtrl.setValue('');
-            this.errorWarehouse = true;
-            this.warehouseSelected = [];
-            this.fakturStatus = true;
-            // Reset faktur & sku select in Group 1 & 2
-            this._resetFakturGroup1();
-            this._resetFakturGroup2();
-            const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
-            const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
-            chosenSkuCtrl1.setValue(null);
-            chosenSkuCtrl2.setValue(null);
-        } else {
-            this.errorWarehouse = false;
-            const newWarehouses: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
-                group: 'warehouses',
-            }));
+    // onWarehouseSelected(ev: Warehouse[]): void {
+    //     const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
+    //     // chosenWarehouseCtrl.markAsDirty();
+    //     // chosenWarehouseCtrl.markAsTouched();
+    //     if (!ev.length) {
+    //         // chosenWarehouseCtrl.setValue('');
+    //         this.errorWarehouse = true;
+    //         this.warehouseSelected = [];
+    //         this.fakturStatus = true;
+    //         // Reset faktur & sku select in Group 1 & 2
+    //         this._resetFakturGroup1();
+    //         this._resetFakturGroup2();
+    //         const chosenSkuCtrl1 = this.form.get(['groups', 0, 'chosenSku']);
+    //         const chosenSkuCtrl2 = this.form.get(['groups', 1, 'chosenSku']);
+    //         chosenSkuCtrl1.setValue(null);
+    //         chosenSkuCtrl2.setValue(null);
+    //     } else {
+    //         this.errorWarehouse = false;
+    //         const newWarehouses: Selection[] = ev.map((item) => ({
+    //             id: item.id,
+    //             label: item.name,
+    //             group: 'warehouses',
+    //         }));
             
-            this.warehouseSelected = newWarehouses;
-            this.fakturStatus = false;
-            // chosenWarehouseCtrl.setValue(this.warehouseSelected);
+    //         this.warehouseSelected = newWarehouses;
+    //         this.fakturStatus = false;
+    //         // chosenWarehouseCtrl.setValue(this.warehouseSelected);
+    //     }
+    // }
+
+    onSelectedCatalogueSegment(value: CatalogueSegmentation[]): void {
+        if (value == null) {
+            this.errorCatalogueSegment = true;
+        } else {
+            this.errorCatalogueSegment = false;
+            this.catalogueSegmentSelected = value;
+            this.segmentationSelectId.emit(value['id']);
+            let params = {};
+            params['supplierId'] = value['supplierId'];
+            params['catalogueSegmentationId'] = value['id'];
+            params['segment'] = 'faktur';
+            this.crossSellingPromoFormService.findSegmentPromo(params).pipe(takeUntil(this.subsFaktur$)).subscribe(res => {
+                this.invoiceGroups = res['data'];
+                // chosenSkuCtrl.setValue(null);
+                this.form.get(['groups', 0, 'chosenSku']).setValue(null);
+                this.form.get(['groups', 1, 'chosenSku']).setValue(null);
+                // Mark for check
+                this.cdRef.detectChanges();
+            });
         }
     }
 
@@ -241,11 +274,12 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             return;
         }
 
-        const invoiceIdx = this.invoiceGroups.findIndex((source) => source.id === ev.value);
+        const invoiceIdx = this.invoiceGroups.findIndex((source) => source.fakturId === ev.value);
 
         if (this.invoiceGroups[invoiceIdx]) {
-            this.fakturName.emit(this.invoiceGroups[invoiceIdx].name || null);
-
+            this.fakturName.emit(this.invoiceGroups[invoiceIdx].fakturName || null);
+            this.fakturId.emit(this.invoiceGroups[invoiceIdx].fakturId || null);
+            this.selectFaktur = this.invoiceGroups[invoiceIdx].fakturId || null;
             if (idx === 0) {
                 // Disable faktur select in Group 2
                 this.selectInvoice.last.ngControl.control.setValue(ev.value);
@@ -327,12 +361,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
 
     private _handleFormValue(): void {
         const { groups } = this.form.getRawValue();
-        const payloadWarehouse = {
-            dataTarget: {}
-        };
-
-        payloadWarehouse['dataTarget'] = this._payloadTypeSegment(payloadWarehouse['dataTarget'], this.warehouseSelected);
-
+      
         const groupOne = groups && groups.length ? groups[0] : null;
         const skuGroupOne = groupOne['chosenSku'];
         const newGroupOne =
@@ -386,26 +415,9 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                 catalogueId: [...newGroupOne, ...newGroupTwo].map((item) => item.catalogueId),
             },
             promoConditionCatalogues: [...newGroupOne, ...newGroupTwo],
-            dataTarget: payloadWarehouse['dataTarget']
+            catalogueSegmentationObjectId: this.catalogueSegmentSelected['id']
         };
         this.formValue.emit(payload);
-    }
-
-    private _payloadTypeSegment(payloadSegment: SettingTargetDto, chosenWarehouse: any): SettingTargetDto {
-        delete payloadSegment['chosenStore'];
-
-        // Warehouse
-        const newWarehouse =
-            chosenWarehouse && chosenWarehouse.length
-                ? chosenWarehouse.map((item: Selection) => +item.id)
-                : [];
-        payloadSegment['warehouseId'] = newWarehouse;
-        payloadSegment['channelId'] = [];
-        payloadSegment['clusterId'] = [];
-        payloadSegment['groupId'] = [];
-        payloadSegment['typeId'] = [];
-
-        return payloadSegment;
     }
 
     private _ruleShowAlert(value: Selection[], idx: number): void {

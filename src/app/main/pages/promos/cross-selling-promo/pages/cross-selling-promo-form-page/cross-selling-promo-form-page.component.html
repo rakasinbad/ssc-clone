@@ -18,6 +18,8 @@
             (formStatus)="onSetGroupSettingFormStatus($event)"
             (formValue)="groupFormDto = $event"
             (fakturName)="fakturName = $event"
+            (fakturId)="fakturId = $event"
+            (segmentationSelectId)="segmentationSelectId = $event"
         ></app-cross-selling-promo-group-form>
 
         <app-cross-selling-promo-benefit-form
@@ -25,12 +27,16 @@
             [fakturName]="fakturName"
             (formStatus)="onSetBenefitSettingFormStatus($event)"
             (formValue)="benefitFormDto = $event"
+            [fakturId]="fakturId"
+            [getGroup]= "segmentationSelectId"
         ></app-cross-selling-promo-benefit-form>
 
         <app-cross-selling-promo-segment-setting-form
             [form]="form.get('segmentSetting')"
+            [fakturId]="fakturId"
             (formStatus)="onSetSegmentSettingFormStatus($event)"
             (formValue)="segmentFormDto = $event"
+            [getGroup]= "segmentationSelectId"
         ></app-cross-selling-promo-segment-setting-form>
     </div>
     <!-- / CENTER -->

@@ -2170,6 +2170,12 @@
                                     placeholder="Choose Store"
                                     [required]="true"
                                     (selected)="onStoreSelected($event)"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     <div error>
@@ -2180,7 +2186,7 @@
                         </ng-container>
 
                         <!-- Segmentation Only -->
-                        <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
+                        <!-- <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -2204,6 +2210,11 @@
                                     [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onWarehouseSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2239,6 +2250,11 @@
                                     title="Select Store Type"
                                     segmentationType="type"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreTypeSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2273,6 +2289,11 @@
                                     title="Select Store Group"
                                     segmentationType="group"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreGroupSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2307,6 +2328,11 @@
                                     title="Select Store Channel"
                                     segmentationType="channel"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreChannelSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2342,6 +2368,11 @@
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreClusterSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2350,7 +2381,7 @@
                                     </div>
                                 </select-store-segmentation>
                             </div>
-                        </ng-container>
+                        </ng-container> -->
 
                         <!-- All Segmentation -->
                         <ng-container
@@ -2374,6 +2405,12 @@
                                     [disabled]="true"
                                     placeholder="{{warehouseSelectAll}}"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
                                     (valueSelectAll)="dataValueWarehouse($event)"
                                     fxFlex="50"
                                 >
@@ -2400,8 +2437,14 @@
                                     placeholder="{{storeTypeSelectAll}}"
                                     segmentationType="type"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreTypeSelected($event)"
                                     (valueSelectAllStore)="dataValueStore($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                 </select-store-segmentation>
@@ -2427,8 +2470,14 @@
                                     title="Select Store Group"
                                     segmentationType="group"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreGroupSelected($event)"
                                     (valueSelectAllStore)="dataValueGroup($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                 </select-store-segmentation>
@@ -2454,8 +2503,14 @@
                                     title="Select Store Channel"
                                     segmentationType="channel"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreChannelSelected($event)"
                                     (valueSelectAllStore)="dataValueChannel($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                 </select-store-segmentation>
@@ -2481,8 +2536,14 @@
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreClusterSelected($event)"
                                     (valueSelectAllStore)="dataValueCluster($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     
@@ -2492,7 +2553,6 @@
 
                         <ng-container
                             *ngIf="
-                                getSegmentationBase() === eSegmentBase.SEGMENTATION ||
                                 getSegmentationBase() === eSegmentBase.ALLSEGMENTATION
                             "
                         >

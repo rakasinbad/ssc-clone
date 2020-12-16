@@ -15,10 +15,7 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label
-                    fxFlexAlign="center"
-                    fxFlex="12"
-                >
+                <label fxFlexAlign="center" fxFlex="12">
                     <span class="sinbad-red-fg">*</span>
                     Segmentation Base
                 </label>
@@ -27,7 +24,7 @@
                     <ng-container *ngIf="segmentationBasePromo; else noSegmentBase">
                         <mat-radio-group
                             [formControl]="form.get('segmentationBase')"
-                            (change)="onChangeSegmentBase($event)" 
+                            (change)="onChangeSegmentBase($event)"
                         >
                             <mat-radio-button
                                 *ngFor="let row of segmentationBasePromo"
@@ -95,6 +92,11 @@
                         placeholder="Choose Store"
                         [required]="true"
                         (selected)="onStoreSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                         <div error>
@@ -105,7 +107,7 @@
             </ng-container>
 
             <!-- segmented only -->
-            <ng-container *ngIf="form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION">
+            <!-- <ng-container *ngIf="form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION">
 
                 <div
                     class="custom-field"
@@ -134,6 +136,9 @@
                         title="Select Store Type"
                         segmentationType="type"
                         [required]="false"
+                        [segmentBases]="segmentBases"
+                        [typePromo]="typePromo"
+                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreTypeSelected($event)"
                         fxFlex="50"
                     >
@@ -174,6 +179,9 @@
                         title="Select Store Group"
                         segmentationType="group"
                         [required]="false"
+                        [segmentBases]="segmentBases"
+                        [typePromo]="typePromo"
+                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreGroupSelected($event)"
                         fxFlex="50"
                     >
@@ -214,6 +222,9 @@
                         title="Select Store Channel"
                         segmentationType="channel"
                         [required]="false"
+                        [segmentBases]="segmentBases"
+                        [typePromo]="typePromo"
+                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreChannelSelected($event)"
                         fxFlex="50"
                     >
@@ -254,6 +265,9 @@
                         title="Select Store Cluster"
                         segmentationType="cluster"
                         [required]="false"
+                        [segmentBases]="segmentBases"
+                        [typePromo]="typePromo"
+                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreClusterSelected($event)"
                         fxFlex="50"
                     >
@@ -265,7 +279,7 @@
                         </div>
                     </select-store-segmentation>
                 </div>
-            </ng-container>
+            </ng-container> -->
 
             <!-- all segmented -->
             <ng-container
@@ -278,22 +292,58 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
+                    <label fxFlexAlign="center" fxFlex="12">
+                        <span class="sinbad-red-fg">*</span>
+                        Warehouse<br />
+                        ({{storeWarehouseLength}} Selected)
+                    </label>
+
+                        <select-warehouses
+                        [initialSelection]="[]"
+                        [disabled]="true"
+                        placeholder="{{ storeWarehouseSelectAll }}"
+                        [required]="false"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
+                        (valueSelectAll)="dataValueWarehouse($event)"
+                        fxFlex="50"
                     >
-                        Store Type<br />({{storeTypeLength || 0 }} Selected)
+                    
+                    </select-warehouses>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+                >
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Type<br />({{ storeTypeLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeTypeSelectAll}}"
+                        placeholder="{{ storeTypeSelectAll }}"
                         title="Select Store Type"
                         segmentationType="type"
                         [required]="false"
                         (selected)="onStoreTypeSelected($event)"
                         (valueSelectAllStore)="dataValueStore($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                     </select-store-segmentation>
@@ -306,20 +356,24 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
-                    >
-                        Store Group<br />({{storeGroupLength|| 0}} Selected)
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Group<br />({{ storeGroupLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeGroupSelectAll}}"
+                        placeholder="{{ storeGroupSelectAll }}"
                         title="Select Store Group"
                         segmentationType="group"
                         [required]="false"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         (selected)="onStoreGroupSelected($event)"
                         (valueSelectAllStore)="dataValueGroup($event)"
                         fxFlex="50"
@@ -334,21 +388,25 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
-                    >
-                        Store Channel<br />({{storeChannelLength|| 0}} Selected)
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Channel<br />({{ storeChannelLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeChannelSelectAll}}"
+                        placeholder="{{ storeChannelSelectAll }}"
                         title="Select Store Channel"
                         segmentationType="channel"
                         [required]="false"
                         (selected)="onStoreChannelSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         (valueSelectAllStore)="dataValueChannel($event)"
                         fxFlex="50"
                     >
@@ -362,20 +420,24 @@
                     fxLayoutGap="16px"
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
-                    <label
-                        fxFlexAlign="center"
-                        fxFlex="12"
-                    >
-                        Store Cluster<br />({{storeClusterLength|| 0}} Selected)
+                    <label fxFlexAlign="center" fxFlex="12">
+                        Store Cluster<br />({{ storeClusterLength || 0 }} Selected)
                     </label>
 
                     <select-store-segmentation
                         [initialSelection]="[]"
                         [disabled]="true"
-                        placeholder="{{storeClusterSelectAll}}"
+                        placeholder="{{ storeClusterSelectAll }}"
                         title="Select Store Cluster"
                         segmentationType="cluster"
                         [required]="false"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         (selected)="onStoreClusterSelected($event)"
                         (valueSelectAllStore)="dataValueCluster($event)"
                         fxFlex="50"
@@ -386,10 +448,7 @@
 
             <!-- specified target -->
             <ng-container
-                *ngIf="
-                    form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION ||
-                    form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION
-                "
+                *ngIf="form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION"
             >
                 <div
                     class="custom-field mb-8"

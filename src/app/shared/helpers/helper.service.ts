@@ -209,10 +209,10 @@ export class HelperService {
             id: SegmentationBasePromo.STORE,
             label: 'Direct Store',
         },
-        {
-            id: SegmentationBasePromo.SEGMENTATION,
-            label: 'Selected Segment Only',
-        },
+        // {
+        //     id: SegmentationBasePromo.SEGMENTATION,
+        //     label: 'Selected Segment Only',
+        // },
         {
             id: SegmentationBasePromo.ALLSEGMENTATION,
             label: 'Apply to All Linked Segments',
@@ -721,6 +721,93 @@ export class HelperService {
         }
 
         return newUrl.join(''); */
+    }
+
+    handleParamsCatalogue(url: string, params: IQueryParams, ...args): HttpParams {
+        let newParams = new HttpParams();
+
+        // if (params) {
+        //     if (params.paginate) {
+        //         if (!newParams.has('$limit')) {
+        //             newParams = !params.limit
+        //                 ? newParams.set('$limit', '5')
+        //                 : newParams.set('$limit', params.limit.toString());
+        //         }
+
+        //         // newParams = !params.limit
+        //         //     ? newParams.set('$limit', '5')
+        //         //     : newParams.set('$limit', params.limit.toString());
+
+        //         if (!newParams.has('$skip')) {
+        //             newParams = !params.skip
+        //                 ? newParams.set('$skip', '0')
+        //                 : newParams.set('$skip', params.skip.toString());
+        //         }
+
+        //         // newParams = !params.skip
+        //         //     ? newParams.set('$skip', '0')
+        //         //     : newParams.set('$skip', params.skip.toString());
+        //     } else {
+        //         newParams = !params.paginate
+        //             ? newParams.set('paginate', 'false')
+        //             : newParams.set('paginate', 'true');
+        //     }
+
+        //     if (!newParams.has('sort') && !newParams.has('sortby')) {
+        //         if (params.sort && params.sortBy) {
+        //             newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+        //         }
+        //     }
+
+        //     if (params.sort && params.sortBy) {
+        //         newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+        //     }
+
+        //     if (params.search) {
+        //         if (params.search.length) {
+        //             for (const search of params.search) {
+        //                 if (
+        //                     (search.fieldName && search.fieldName === 'keyword') ||
+        //                     search.fieldName === 'type' ||
+        //                     search.fieldName === 'statusPayment' ||
+        //                     search.fieldName === 'dueDay' ||
+        //                     search.fieldName === 'status'
+        //                 ) {
+        //                     if (search.fieldName === 'statusPayment') {
+        //                         if (newParams.has('dueDay')) {
+        //                             newParams.delete('dueDay');
+        //                         }
+        //                     }
+
+        //                     if (search.fieldName === 'dueDay') {
+        //                         if (newParams.has('statusPayment')) {
+        //                             newParams.delete('statusPayment');
+        //                         }
+        //                     }
+
+        //                     newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+        //                 } else if (search.fieldName && search.fieldName !== 'id') {
+        //                     newParams = newParams.append(
+        //                         `search[${search.fieldName}]`,
+        //                         `${search.keyword}`
+        //                     );
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        if (args && args.length > 0) {
+            args.forEach((arg) => {
+                if (arg.key && arg.key !== 'headers' && arg.value) {
+                    newParams = newParams.append(arg.key, arg.value);
+                } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
+                    newParams = newParams.append(arg.key, '');
+                }
+            });
+        }
+
+        return newParams;
     }
 
     isReachable(): Observable<boolean> {

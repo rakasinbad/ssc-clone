@@ -59,6 +59,12 @@
                     [required]="false"
                     [fxFlex]="formFieldLength"
                     (selected)="onStoreSelected($event)"
+                    [segmentBases]="'store'"
+                    [typePromo]="typePromo"
+                    [catalogueIdSelect]="catalogueIdSelected"
+                    [brandIdSelect]="brandIdSelected || undefined"
+                    [fakturIdSelect]="fakturIdSelected"
+                    [typeTrigger]="triggerSelected"
                 >
                     <div error>
                         {{ getFormError(form.get('chosenStore')) }}

@@ -52,7 +52,7 @@ import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
-import { SupplierStore } from 'app/shared/models/supplier.model';
+import { SupplierStore } from 'app/shared/components/dropdowns/stores/models/supplier-store.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
@@ -176,6 +176,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public storeChannelLength: number;
     public storeClusterSelectAll: string;
     public storeClusterLength: number;
+    public typePromo = 'flexiCombo';
+    public catalogueIdSelected: string;
+    public brandIdSelected: string;
+    public fakturIdSelected: string;
+    public segmentBases: string;
+    public triggerSelected: string = 'sku';
+    public lengthStoreSelected: number;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -202,7 +209,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        
+        // this.segmentBases = '';
         this._initPage();
     }
 
@@ -637,6 +644,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenBrand').setValue(newBrands);
+            let idBrand = [];
+            idBrand = ev.map((item) => (item.id));
+            this.brandIdSelected = idBrand.toString();
+            this.catalogueIdSelected = undefined;     
+            this.fakturIdSelected = undefined;
+            this.triggerSelected = 'brand';
         }
     }
 
@@ -819,55 +832,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.selectActiveOutlet = false;
             this.form.get('isNewStore').setValue(false);
             this.form.get('isActiveStore').setValue(false);
-        } else if (ev.value === SegmentationBasePromo.SEGMENTATION) {
-            this.form.get('chosenWarehouse').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
-            this.form.get('chosenStoreType').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
-            this.form.get('chosenStoreGroup').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
-            this.form.get('chosenStoreChannel').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
-            this.form.get('chosenStoreCluster').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
-
-            this.form.get('chosenStore').clearValidators();
-        } else if (ev.value === SegmentationBasePromo.ALLSEGMENTATION) {
+        } else if (ev.value === SegmentationBasePromo.ALLSEGMENTATION ) {
             this.form.get('chosenStore').clearValidators();
             this.form.get('chosenWarehouse').clearValidators();
             this.form.get('chosenStoreType').clearValidators();
@@ -882,6 +847,29 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.form.get('chosenStoreGroup').updateValueAndValidity();
         this.form.get('chosenStoreChannel').updateValueAndValidity();
         this.form.get('chosenStoreCluster').updateValueAndValidity();
+        this.segmentBases = this.form.get('segmentationBase').value;
+        if (this.form.get('chosenInvoice').value != null) {
+            let idFaktur = [];
+            let fakturChoosen = this.form.get('chosenInvoice').value;
+            idFaktur = fakturChoosen.map((item) => (item.id));
+            this.fakturIdSelected = idFaktur.toString(); 
+            this.brandIdSelected = undefined;
+            this.catalogueIdSelected = undefined;        
+        } else if (this.form.get('chosenSku').value != null) {
+            let idSku = [];
+            let skuChoosen = this.form.get('chosenSku').value;
+            idSku = skuChoosen.map((item) => (item.id));
+            this.catalogueIdSelected = idSku.toString();  
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;
+        } else if (this.form.get('chosenBrand').value != null) {
+            let idBrand = [];
+            let brandChoosen = this.form.get('chosenBrand').value;
+            idBrand = brandChoosen.map((item) => (item.id));
+            this.brandIdSelected = idBrand.toString();  
+            this.catalogueIdSelected = undefined;        
+            this.fakturIdSelected = undefined;
+        }
     }
 
     /**
@@ -1046,6 +1034,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenInvoice').setValue(newFaktur);
+            let idFaktur = [];
+            idFaktur = ev.map((item) => (item.id));
+            this.fakturIdSelected = idFaktur.toString();
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.triggerSelected = 'faktur';
         }
     }
 
@@ -1067,8 +1061,13 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 label: item.name,
                 group: 'catalogues',
             }));
-
+            let idSku = [];
+            idSku = ev.map((item) => (item.id));
             this.form.get('chosenSku').setValue(newSku);
+            this.catalogueIdSelected = idSku.toString();        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'sku';
         }
     }
 
@@ -1173,16 +1172,16 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     onStoreSelected(ev: SupplierStore[]): void {
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
-
         if (!ev.length) {
             this.form.get('chosenStore').setValue(null);
+            this.lengthStoreSelected = 0;
         } else {
             const newStores: Selection[] = ev.map((item) => ({
-                id: item.store.id,
-                label: item.store.name,
+                id: item.storeId,
+                label: item.storeName,
                 group: 'supplier-stores',
             }));
-
+            this.lengthStoreSelected = newStores.length;
             this.form.get('chosenStore').setValue(newStores);
         }
     }
@@ -1333,9 +1332,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let warehouseValue = value.data[0];
         this.warehouseLength = value.total;
         if (value.total > 1) {
-            this.warehouseSelectAll = warehouseValue.name + ' (+'+(this.warehouseLength - 1)+' others)';
+            this.warehouseSelectAll = warehouseValue.warehouseName + ' (+'+(this.warehouseLength - 1)+' others)';
         } else {
-            this.warehouseSelectAll = warehouseValue.name;
+            this.warehouseSelectAll = warehouseValue.warehouseName;
         }
     }
 
@@ -1351,9 +1350,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeTypeValue = value.data[0];
         this.storeTypeLength = value.total;
         if (value.total > 1) {
-            this.storeTypeSelectAll = storeTypeValue.name + ' (+'+(this.storeTypeLength - 1)+' others)';
+            this.storeTypeSelectAll = storeTypeValue.typeName + ' (+'+(this.storeTypeLength - 1)+' others)';
         } else {
-            this.storeTypeSelectAll = storeTypeValue.name;
+            this.storeTypeSelectAll = storeTypeValue.typeName;
         }
     }
 
@@ -1369,9 +1368,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeGroupValue = value.data[0];
         this.storeGroupLength = value.total;
         if (value.total > 1) {
-            this.storeGroupSelectAll = storeGroupValue.name + ' (+'+(this.storeGroupLength - 1)+' others)';
+            this.storeGroupSelectAll = storeGroupValue.groupName + ' (+'+(this.storeGroupLength - 1)+' others)';
         } else {
-            this.storeGroupSelectAll = storeGroupValue.name;
+            this.storeGroupSelectAll = storeGroupValue.groupName;
         }
     }
 
@@ -1387,9 +1386,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeChannelValue = value.data[0];
         this.storeChannelLength = value.total;
         if (value.total > 1) {
-            this.storeChannelSelectAll = storeChannelValue.name + ' (+'+(this.storeChannelLength - 1)+' others)';
+            this.storeChannelSelectAll = storeChannelValue.channelName + ' (+'+(this.storeChannelLength - 1)+' others)';
         } else {
-            this.storeChannelSelectAll = storeChannelValue.name;
+            this.storeChannelSelectAll = storeChannelValue.channelName;
         }
     }
 
@@ -1405,9 +1404,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         let storeClusterValue = value.data[0];
         this.storeClusterLength = value.total;
         if (value.total > 1) {
-            this.storeClusterSelectAll = storeClusterValue.name + ' (+'+(this.storeClusterLength - 1)+' others)';
+            this.storeClusterSelectAll = storeClusterValue.clusterName + ' (+'+(this.storeClusterLength - 1)+' others)';
         } else {
-            this.storeClusterSelectAll = storeClusterValue.name;
+            this.storeClusterSelectAll = storeClusterValue.clusterName;
         }
     }
 
@@ -2737,7 +2736,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                SegmentationBasePromo.STORE || SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
+                SegmentationBasePromo.STORE || SegmentationBasePromo.ALLSEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -3017,125 +3016,125 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             segmentationBaseCtrl.setValue(row.target);
 
             // Handle Segmentation Base Direct Store
-            if (row.target === SegmentationBasePromo.STORE) {
-                // Handle Chosen Store
-                if (row.promoStores && row.promoStores.length > 0) {
-                    const newStores = _.orderBy(
-                        row.promoStores.map((item) => ({
-                            id: item.store.id,
-                            label: item.store.name,
-                            group: 'supplier-stores',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            // if (row.target === SegmentationBasePromo.STORE) {
+            //     // Handle Chosen Store
+            //     if (row.promoStores && row.promoStores.length > 0) {
+            //         const newStores = _.orderBy(
+            //             row.promoStores.map((item) => ({
+            //                 id: item.store.id,
+            //                 label: item.store.name,
+            //                 group: 'supplier-stores',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreCtrl.setValue(newStores);
-                } else {
-                    chosenStoreCtrl.setValue([]);
-                }
+            //         chosenStoreCtrl.setValue(newStores);
+            //     } else {
+            //         chosenStoreCtrl.setValue([]);
+            //     }
 
-                chosenStoreCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ]);
+            //     chosenStoreCtrl.setValidators([
+            //         RxwebValidators.required({
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //         }),
+            //         RxwebValidators.choice({
+            //             minLength: 1,
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //         }),
+            //     ]);
 
-                chosenStoreCtrl.updateValueAndValidity();
-            }
+            //     chosenStoreCtrl.updateValueAndValidity();
+            // }
 
             // Handle Segmentation Base Segmentation
-            else if (row.target === SegmentationBasePromo.SEGMENTATION) {
-                // Handle Chosen Warehouse
-                if (row.promoWarehouses && row.promoWarehouses.length > 0) {
-                    const newWarehouses = _.orderBy(
-                        row.promoWarehouses.map((item) => ({
-                            id: item.warehouse.id,
-                            label: item.warehouse.name,
-                            group: 'warehouses',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            // else if (row.target === SegmentationBasePromo.SEGMENTATION) {
+            //     // Handle Chosen Warehouse
+            //     if (row.promoWarehouses && row.promoWarehouses.length > 0) {
+            //         const newWarehouses = _.orderBy(
+            //             row.promoWarehouses.map((item) => ({
+            //                 id: item.warehouse.id,
+            //                 label: item.warehouse.name,
+            //                 group: 'warehouses',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenWarehouseCtrl.setValue(newWarehouses);
-                } else {
-                    chosenWarehouseCtrl.setValue([]);
-                }
+            //         chosenWarehouseCtrl.setValue(newWarehouses);
+            //     } else {
+            //         chosenWarehouseCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Type
-                if (row.promoTypes && row.promoTypes.length > 0) {
-                    const newStoreTypes = _.orderBy(
-                        row.promoTypes.map((item) => ({
-                            id: item.type.id,
-                            label: item.type.name,
-                            group: 'store-segmentation-types',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Type
+            //     if (row.promoTypes && row.promoTypes.length > 0) {
+            //         const newStoreTypes = _.orderBy(
+            //             row.promoTypes.map((item) => ({
+            //                 id: item.type.id,
+            //                 label: item.type.name,
+            //                 group: 'store-segmentation-types',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreTypeCtrl.setValue(newStoreTypes);
-                } else {
-                    chosenStoreTypeCtrl.setValue([]);
-                }
+            //         chosenStoreTypeCtrl.setValue(newStoreTypes);
+            //     } else {
+            //         chosenStoreTypeCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Group
-                if (row.promoGroups && row.promoGroups.length > 0) {
-                    const newStoreGroups = _.orderBy(
-                        row.promoGroups.map((item) => ({
-                            id: item.group.id,
-                            label: item.group.name,
-                            group: 'store-segmentation-groups',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Group
+            //     if (row.promoGroups && row.promoGroups.length > 0) {
+            //         const newStoreGroups = _.orderBy(
+            //             row.promoGroups.map((item) => ({
+            //                 id: item.group.id,
+            //                 label: item.group.name,
+            //                 group: 'store-segmentation-groups',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreGroupCtrl.setValue(newStoreGroups);
-                } else {
-                    chosenStoreGroupCtrl.setValue([]);
-                }
+            //         chosenStoreGroupCtrl.setValue(newStoreGroups);
+            //     } else {
+            //         chosenStoreGroupCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Channel
-                if (row.promoChannels && row.promoChannels.length > 0) {
-                    const newStoreChannels = _.orderBy(
-                        row.promoChannels.map((item) => ({
-                            id: item.channel.id,
-                            label: item.channel.name,
-                            group: 'store-segmentation-channels',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Channel
+            //     if (row.promoChannels && row.promoChannels.length > 0) {
+            //         const newStoreChannels = _.orderBy(
+            //             row.promoChannels.map((item) => ({
+            //                 id: item.channel.id,
+            //                 label: item.channel.name,
+            //                 group: 'store-segmentation-channels',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreChannelCtrl.setValue(newStoreChannels);
-                } else {
-                    chosenStoreChannelCtrl.setValue([]);
-                }
+            //         chosenStoreChannelCtrl.setValue(newStoreChannels);
+            //     } else {
+            //         chosenStoreChannelCtrl.setValue([]);
+            //     }
 
-                // Handle Chosen Store Cluster
-                if (row.promoClusters && row.promoClusters.length > 0) {
-                    const newStoreClusters = _.orderBy(
-                        row.promoClusters.map((item) => ({
-                            id: item.cluster.id,
-                            label: item.cluster.name,
-                            group: 'store-segmentation-clusters',
-                        })),
-                        ['label'],
-                        ['asc']
-                    );
+            //     // Handle Chosen Store Cluster
+            //     if (row.promoClusters && row.promoClusters.length > 0) {
+            //         const newStoreClusters = _.orderBy(
+            //             row.promoClusters.map((item) => ({
+            //                 id: item.cluster.id,
+            //                 label: item.cluster.name,
+            //                 group: 'store-segmentation-clusters',
+            //             })),
+            //             ['label'],
+            //             ['asc']
+            //         );
 
-                    chosenStoreClusterCtrl.setValue(newStoreClusters);
-                } else {
-                    chosenStoreClusterCtrl.setValue([]);
-                }
+            //         chosenStoreClusterCtrl.setValue(newStoreClusters);
+            //     } else {
+            //         chosenStoreClusterCtrl.setValue([]);
+            //     }
 
-            }
+            // }
         }
 
         setTimeout(() => {
@@ -3309,36 +3308,36 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBasePromo.STORE
                 ? chosenStore.map((store: Selection) => store.id)
                 : [];
-        const newChosenWarehouse =
-            chosenWarehouse &&
-            chosenWarehouse.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
-                : [];
-        const newChosenStoreType =
-            chosenStoreType &&
-            chosenStoreType.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreType.map((storeType: Selection) => storeType.id)
-                : [];
-        const newChosenStoreGroup =
-            chosenStoreGroup &&
-            chosenStoreGroup.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
-                : [];
-        const newChosenStoreChannel =
-            chosenStoreChannel &&
-            chosenStoreChannel.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
-                : [];
-        const newChosenStoreCluster =
-            chosenStoreCluster &&
-            chosenStoreCluster.length > 0 &&
-            segmentationBase === SegmentationBasePromo.SEGMENTATION
-                ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
-                : [];
+        // const newChosenWarehouse =
+        //     chosenWarehouse &&
+        //     chosenWarehouse.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
+        //         : [];
+        // const newChosenStoreType =
+        //     chosenStoreType &&
+        //     chosenStoreType.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreType.map((storeType: Selection) => storeType.id)
+        //         : [];
+        // const newChosenStoreGroup =
+        //     chosenStoreGroup &&
+        //     chosenStoreGroup.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
+        //         : [];
+        // const newChosenStoreChannel =
+        //     chosenStoreChannel &&
+        //     chosenStoreChannel.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
+        //         : [];
+        // const newChosenStoreCluster =
+        //     chosenStoreCluster &&
+        //     chosenStoreCluster.length > 0 &&
+        //     segmentationBase === SegmentationBasePromo.SEGMENTATION
+        //         ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
+        //         : [];
 
         const newConditions =
             conditions && conditions.length > 0
@@ -3466,12 +3465,18 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
-                payload.dataTarget.warehouseId = newChosenWarehouse;
-                payload.dataTarget.typeId = newChosenStoreType;
-                payload.dataTarget.groupId = newChosenStoreGroup;
-                payload.dataTarget.channelId = newChosenStoreChannel;
-                payload.dataTarget.clusterId = newChosenStoreCluster;
+            // } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
+            //     payload.dataTarget.warehouseId = newChosenWarehouse;
+            //     payload.dataTarget.typeId = newChosenStoreType;
+            //     payload.dataTarget.groupId = newChosenStoreGroup;
+            //     payload.dataTarget.channelId = newChosenStoreChannel;
+            //     payload.dataTarget.clusterId = newChosenStoreCluster;
+            } else if (segmentationBase === SegmentationBasePromo.ALLSEGMENTATION) {
+                    payload.dataTarget.warehouseId = [];
+                    payload.dataTarget.typeId = [];
+                    payload.dataTarget.groupId = [];
+                    payload.dataTarget.channelId = [];
+                    payload.dataTarget.clusterId = [];
             }
 
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
@@ -3518,12 +3523,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
             if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
-                payload.dataTarget.warehouseId = newChosenWarehouse;
-                payload.dataTarget.typeId = newChosenStoreType;
-                payload.dataTarget.groupId = newChosenStoreGroup;
-                payload.dataTarget.channelId = newChosenStoreChannel;
-                payload.dataTarget.clusterId = newChosenStoreCluster;
+            // } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
+            //     payload.dataTarget.warehouseId = newChosenWarehouse;
+            //     payload.dataTarget.typeId = newChosenStoreType;
+            //     payload.dataTarget.groupId = newChosenStoreGroup;
+            //     payload.dataTarget.channelId = newChosenStoreChannel;
+            //     payload.dataTarget.clusterId = newChosenStoreCluster;
             }
 
             if (Object.keys(payload.dataBase).length < 1) {

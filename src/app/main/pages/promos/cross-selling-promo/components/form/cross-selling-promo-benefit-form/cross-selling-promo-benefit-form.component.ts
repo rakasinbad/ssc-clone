@@ -3,10 +3,12 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
     ViewEncapsulation,
+    SimpleChanges
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
@@ -30,7 +32,7 @@ import { CrossSellingPromoFormService } from '../../../services';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy {
+export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     benefitType: { id: BenefitType; label: string }[];
@@ -45,11 +47,17 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy 
     @Input()
     formMode: FormMode;
 
+    @Input() fakturId: string;
+    @Input() getGroup: FormGroup;
+
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
 
     @Output()
     formValue: EventEmitter<BenefitFormDto> = new EventEmitter();
+
+    selectFaktur: string;
+    public idSelectSegment: string;
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
@@ -67,6 +75,16 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy 
 
             this.formStatus.emit(status);
         });
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+
+        if (changes['fakturId']) {
+            this.selectFaktur = changes['fakturId'].currentValue;
+        }
+        if (changes['getGroup']) {
+            this.idSelectSegment = changes['getGroup'].currentValue;
+        }
     }
 
     ngOnDestroy(): void {

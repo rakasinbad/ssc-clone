@@ -7,7 +7,7 @@
             Cross Selling Group
         </span>
 
-        <div
+        <!-- <div
             class="custom-field"
             fxLayout="row"
             fxLayoutAlign="start stretch"
@@ -25,6 +25,7 @@
                 [disabled]="false"
                 placeholder="Choose Warehouse"
                 [required]="false"
+                [typePromo]="typePromo"
                 (selected)="onWarehouseSelected($event)"
                 fxFlex="50"
             >
@@ -34,6 +35,39 @@
                     </mat-hint>
                 </ng-container>
             </select-warehouses>
+        </div> -->
+
+        <div
+            class="custom-field"
+            fxLayout="row"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="16px"
+            [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+        >
+            <label fxFlexAlign="center" fxFlex="12">
+                <span class="sinbad-red-fg">*</span>
+                Selected<br />Segmentation<br />
+                <ng-container *ngIf="errorCatalogueSegment == false; else otherCatalogueSeg">
+                    (1 Selected)
+                </ng-container>
+                <ng-template #otherCatalogueSeg>
+                    (0 Selected)
+                </ng-template>
+            </label>
+
+            <app-catalogue-segmentation
+            #selectSegmentation
+            [required]="true"
+            (selected)="onSelectedCatalogueSegment($event)"
+            fxFlexAlign="center"
+            fxFlex="50"
+            >
+            <ng-container *ngIf="errorCatalogueSegment == true">
+                <mat-hint class="mat-error">
+                    This field is required.
+                </mat-hint>
+            </ng-container>
+            </app-catalogue-segmentation>
         </div>
 
         <div class="form-box" formArrayName="groups">
@@ -252,9 +286,9 @@
                                         <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of invoiceGroups"
-                                            [value]="row?.id"
+                                            [value]="row?.fakturId"
                                         >
-                                            {{ row?.name }}
+                                            {{ row?.fakturName }}
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
@@ -268,7 +302,7 @@
                                 <mat-error>
                                     {{
                                         form.get(['groups', groupIdx, 'invoiceGroup']).value
-                                            | errorMessage: form:'invoiceGroup':'groups':groupIdx
+                                        | errorMessage: form:'invoiceGroup':'groups':groupIdx
                                     }}
                                 </mat-error>
                             </mat-form-field>
@@ -382,6 +416,9 @@
                                 (selected)="onSkuSelected($event, groupIdx)"
                                 (applied)="onApplySku($event, groupIdx)"
                                 (closed)="onClosedSku($event, groupIdx)"
+                                [typeCatalogue]="'crossSelling'"
+                                [fakturIdSelect]="selectFaktur"
+                                [segmentationSelectId]="catalogueSegmentSelected['id']"
                                 fxFlex="60"
                             >
                             </select-catalogues>

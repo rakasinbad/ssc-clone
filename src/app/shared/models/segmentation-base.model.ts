@@ -5,7 +5,7 @@ export enum SegmentationBase {
 
 export enum SegmentationBasePromo {
     STORE = 'store',
-    SEGMENTATION = 'segmentation',
-    ALLSEGMENTATION = 'all_segmentation'
+    // SEGMENTATION = 'segmentation',
+    ALLSEGMENTATION = 'all'
 }
 

@@ -374,24 +374,24 @@ export class FlexiCombo implements ITimestamp {
         }
 
         /* Handle promoChannels */
-        if (typeof promoChannels !== 'undefined') {
-            this.promoChannels =
-                promoChannels &&
-                promoChannels.length > 0 &&
-                target === SegmentationBasePromo.SEGMENTATION
-                    ? promoChannels
-                    : [];
-        }
+        // if (typeof promoChannels !== 'undefined') {
+        //     this.promoChannels =
+        //         promoChannels &&
+        //         promoChannels.length > 0 &&
+        //         target === SegmentationBasePromo.SEGMENTATION
+        //             ? promoChannels
+        //             : [];
+        // }
 
         /* Handle promoClusters */
-        if (typeof promoClusters !== 'undefined') {
-            this.promoClusters =
-                promoClusters &&
-                promoClusters.length > 0 &&
-                target === SegmentationBasePromo.SEGMENTATION
-                    ? promoClusters
-                    : [];
-        }
+        // if (typeof promoClusters !== 'undefined') {
+        //     this.promoClusters =
+        //         promoClusters &&
+        //         promoClusters.length > 0 &&
+        //         target === SegmentationBasePromo.SEGMENTATION
+        //             ? promoClusters
+        //             : [];
+        // }
 
         /* Handle promoConditions */
         if (typeof promoConditions !== 'undefined') {
@@ -400,12 +400,12 @@ export class FlexiCombo implements ITimestamp {
         }
 
         /* Handle promoGroups */
-        if (typeof promoGroups !== 'undefined') {
-            this.promoGroups =
-                promoGroups && promoGroups.length > 0 && target === SegmentationBasePromo.SEGMENTATION
-                    ? promoGroups
-                    : [];
-        }
+        // if (typeof promoGroups !== 'undefined') {
+        //     this.promoGroups =
+        //         promoGroups && promoGroups.length > 0 && target === SegmentationBasePromo.SEGMENTATION
+        //             ? promoGroups
+        //             : [];
+        // }
 
         /* Handle promoInvoiceGroups */
         if (typeof promoInvoiceGroups !== 'undefined') {
@@ -424,21 +424,64 @@ export class FlexiCombo implements ITimestamp {
         }
 
         /* Handle promoTypes */
-        if (typeof promoTypes !== 'undefined') {
-            this.promoTypes =
-                promoTypes && promoTypes.length > 0 && target === SegmentationBasePromo.SEGMENTATION
-                    ? promoTypes
-                    : [];
-        }
+        // if (typeof promoTypes !== 'undefined') {
+        //     this.promoTypes =
+        //         promoTypes && promoTypes.length > 0 && target === SegmentationBasePromo.SEGMENTATION
+        //             ? promoTypes
+        //             : [];
+        // }
 
         /* Handle promoWarehouses */
         if (typeof promoWarehouses !== 'undefined') {
             this.promoWarehouses =
                 promoWarehouses &&
                 promoWarehouses.length > 0 &&
-                target === SegmentationBasePromo.SEGMENTATION
+                target === SegmentationBasePromo.ALLSEGMENTATION
                     ? promoWarehouses
                     : [];
         }
+    }
+}
+
+export class WarehouseDetail {
+    readonly id: NonNullable<string>;
+    warehouseId: string;
+    warehouseName: string;
+    typeId: string;
+    typeName: string;
+    groupId: string;
+    groupName: string;
+    clusterId: string;
+    clusterName: string;
+    channelId: string;
+    channelName: string;
+
+    constructor(data: WarehouseDetail) {
+        const {
+            id,
+            warehouseId,
+            warehouseName,
+            typeId,
+            typeName,
+            groupId,
+            groupName,
+            clusterId,
+            clusterName,
+            channelId,
+            channelName
+        } = data;
+
+        this.id = id;
+      
+        this.warehouseId = warehouseId || null;
+        this.warehouseName = warehouseName || null;
+        this.typeId = typeId || null;
+        this.typeName = typeName || null;
+        this.groupId = groupId || null;
+        this.groupName = groupName || null;
+        this.clusterId = clusterId || null;
+        this.clusterName = clusterName || null;
+        this.channelId = channelId || null;
+        this.channelName = channelName || null;
     }
 }

@@ -14,17 +14,8 @@ export interface GroupPromoConditionDto {
     crossSellingGroupRelation: LogicRelation.OR | LogicRelation.AND;
 }
 
-export interface SettingSegmentation {
-    channelId?: number[];
-    clusterId?: number[];
-    groupId?: number[];
-    storeId?: number[];
-    typeId?: number[];
-    warehouseId?: number[];
-}
-
 export interface GroupFormDto {
     dataBase: GroupDatabaseDto;
     promoConditionCatalogues: GroupPromoConditionDto[];
-    dataTarget: SettingSegmentation;
+    catalogueSegmentationObjectId: string;
 }
