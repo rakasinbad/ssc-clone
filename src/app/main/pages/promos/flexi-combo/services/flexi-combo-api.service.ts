@@ -24,6 +24,7 @@ export class FlexiComboApiService {
      * @memberof FlexiComboApiService
      */
     private _url: string;
+    private _urlSegment: string;
 
     /**
      *
@@ -132,15 +133,15 @@ export class FlexiComboApiService {
             newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
         }
 
-        newArgs.push({ key: 'segment', value: type });
+        newArgs.push({ key: 'segment', value: params['segment'] });
 
         if (params['keyword']) {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
-        this._url = this._$helper.handleApiRouter(this._endpointPromo);
-        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+        this._urlSegment = this._$helper.handleApiRouter(this._endpointPromo);
+        const newParams = this._$helper.handleParams(this._urlSegment, params, ...newArgs);
 
-        return this.http.get<T>(this._url, { params: newParams });
+        return this.http.get<T>(this._urlSegment, { params: newParams });
     }
 
     create<T>(body: T): Observable<FlexiCombo> {

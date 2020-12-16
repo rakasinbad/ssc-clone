@@ -82,109 +82,93 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
         private _$helperService: HelperService,
         private flexiComboApiService: FlexiComboApiService,
         private cdRef: ChangeDetectorRef,
-        private ngZone: NgZone
-    ) {
-        // this.isEntityLoading$.pipe(
-        //     tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
-        //     takeUntil(this.subs$)
-        // ).subscribe();
+    ) {}
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    private requestSegment(params, segment): void {
+        of(null)
+            .pipe(
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(
+                    ([_, userSupplier]) => {
+                        // Jika user tidak ada data supplier.
+                        if (!userSupplier) {
+                            throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                        }
+
+                        // Membentuk query baru.
+                        const newQuery = { ...params };
+                        
+                        params['segment'] = segment;
+                        // Melakukan request data warehouse.
+                        return this.flexiComboApiService
+                        .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
+                            .pipe(
+                                tap((response) =>
+                                    HelperService.debug('FIND ENTITY Cross Selling', {
+                                        params: newQuery,
+                                        response,
+                                    })
+                                )
+                            );
+                    }
+                ),
+                take(1),
+                catchError((err) => {
+                    throw err;
+                })
+            )
+            .subscribe({
+                next: (response) => {
+                    let addedRawAvailableEntities: Array<Entity> = [];
+
+                    // Menetampan nilai available entities yang akan ditambahkan.
+                    if (Array.isArray(response)) {
+                        addedRawAvailableEntities = response;
+                        if (segment == 'warehouse') {
+                            this.custWarehouse = addedRawAvailableEntities;
+                        } else if (segment == 'type'){
+                            this.custType = addedRawAvailableEntities;
+                        } else if (segment == 'group') {
+                            this.custGroup = addedRawAvailableEntities;
+                        } else if (segment == 'channel'){
+                            this.custChannel = addedRawAvailableEntities;
+                        } else if (segment == 'cluster'){
+                            this.custCluster = addedRawAvailableEntities;
+                        }
+
+                    } else {
+                        addedRawAvailableEntities = response.data;
+                        if (segment == 'warehouse') {
+                            this.custWarehouse = addedRawAvailableEntities;
+                        } else if (segment == 'type'){
+                            this.custType = addedRawAvailableEntities;
+                        } else if (segment == 'group') {
+                            this.custGroup = addedRawAvailableEntities;
+                        } else if (segment == 'channel'){
+                            this.custChannel = addedRawAvailableEntities;
+                        } else if (segment == 'cluster'){
+                            this.custCluster = addedRawAvailableEntities;
+                        }
+                    }
+
+                    this.cdRef.markForCheck();
+                },
+                error: (err) => {
+                    HelperService.debug('ERROR Detail Segment', { params, error: err });
+                    // this.helper$.showErrorNotification(new ErrorHandler(err));
+                },
+                complete: () => {
+                    HelperService.debug('Detail Segment COMPLETED');
+                },
+            });
     }
-
-    // private requestEntity(params, segment): void {
-    //     // this.toggleLoading(true);
-
-    //     of(null)
-    //     // of(null)
-    //         .pipe(
-    //             // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-    //             // delay(1000),
-    //             withLatestFrom<any, UserSupplier>(
-    //                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-    //             ),
-    //             tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-    //             switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(
-    //                 ([_, userSupplier]) => {
-    //                     // Jika user tidak ada data supplier.
-    //                     if (!userSupplier) {
-    //                         throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-    //                     }
-
-    //                     // Mengambil ID supplier-nya.
-    //                     const { supplierId } = userSupplier;
-
-    //                     // Membentuk query baru.
-    //                     const newQuery = { ...params };
-    //                     // Memasukkan ID supplier ke dalam params baru.
-    //                     // newQuery['supplierId'] = supplierId;
-    //                     params['segment'] = segment;
-    //                     // Melakukan request data warehouse.
-    //                     return this.flexiComboApiService
-    //                     .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
-    //                         .pipe(
-    //                             tap((response) =>
-    //                                 HelperService.debug('FIND ENTITY Cross Selling', {
-    //                                     params: newQuery,
-    //                                     response,
-    //                                 })
-    //                             )
-    //                         );
-    //                 }
-    //             ),
-    //             take(1),
-    //             catchError((err) => {
-    //                 throw err;
-    //             })
-    //         )
-    //         .subscribe({
-    //             next: (response) => {
-    //                 let addedRawAvailableEntities: Array<Entity> = [];
-
-    //                 // Menetampan nilai available entities yang akan ditambahkan.
-    //                 if (Array.isArray(response)) {
-    //                     addedRawAvailableEntities = response;
-    //                     if (segment == 'warehouse') {
-    //                         this.custWarehouse = addedRawAvailableEntities;
-    //                     } else if (segment == 'type'){
-    //                         this.custType = addedRawAvailableEntities;
-    //                     } else if (segment == 'group') {
-    //                         this.custGroup = addedRawAvailableEntities;
-    //                     } else if (segment == 'channel'){
-    //                         this.custChannel = addedRawAvailableEntities;
-    //                     } else if (segment == 'cluster'){
-    //                         this.custCluster = addedRawAvailableEntities;
-    //                     }
-
-    //                 } else {
-    //                     addedRawAvailableEntities = response.data;
-    //                     if (segment == 'warehouse') {
-    //                         this.custWarehouse = addedRawAvailableEntities;
-    //                     } else if (segment == 'type'){
-    //                         this.custType = addedRawAvailableEntities;
-    //                     } else if (segment == 'group') {
-    //                         this.custGroup = addedRawAvailableEntities;
-    //                     } else if (segment == 'channel'){
-    //                         this.custChannel = addedRawAvailableEntities;
-    //                     } else if (segment == 'cluster'){
-    //                         this.custCluster = addedRawAvailableEntities;
-    //                     }
-    //                 }
-
-    //                 // this.cdRef.markForCheck();
-
-    //             },
-    //             error: (err) => {
-    //                 // this.toggleLoading(false);
-    //                 HelperService.debug('ERROR FIND ENTITY', { params, error: err });
-    //                 // this.helper$.showErrorNotification(new ErrorHandler(err));
-    //             },
-    //             complete: () => {
-    //                 // this.toggleLoading(false);
-    //                 HelperService.debug('FIND ENTITY COMPLETED');
-    //             },
-    //         });
-    // }
-
-     
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -198,7 +182,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
 
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
             map((item) => {
-                console.log('isi item flexi cust detail->', item)
                 return item;
             })
         );
@@ -228,10 +211,10 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
                 params['catalogueId'] = idSku.toString();
                 params['supplierId'] = this.benefitSetting[0].supplierId;
                 this.requestSegment(params, 'warehouse');
-                this.requestSegmentType(params, 'type');
-                this.requestSegmentGroup(params, 'group');
-                // this.requestSegment(params, 'channel');
-                // this.requestSegment(params, 'cluster');
+                this.requestSegment(params, 'type');
+                this.requestSegment(params, 'group');
+                this.requestSegment(params, 'channel');
+                this.requestSegment(params, 'cluster');
             } else if (this.benefitSetting[0].base == 'brand') {
                 let brand = this.benefitSetting[0].promoBrands;
                 let idBrand = [];
@@ -239,10 +222,10 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
                 params['brandId'] = idBrand.toString();
                 params['supplierId'] = this.benefitSetting[0].supplierId;
                 this.requestSegment(params, 'warehouse');
-                this.requestSegmentType(params, 'type');
-                this.requestSegmentGroup(params, 'group');
-                // this.requestSegment(params, 'channel');
-                // this.requestSegment(params, 'cluster');
+                this.requestSegment(params, 'type');
+                this.requestSegment(params, 'group');
+                this.requestSegment(params, 'channel');
+                this.requestSegment(params, 'cluster');
             } else if (this.benefitSetting[0].base == 'invoice_group') {
                 let ev = this.benefitSetting[0].promoInvoiceGroups;
                 let idFaktur = [];
@@ -250,10 +233,10 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
                 params['fakturId'] = idFaktur.toString();
                 params['supplierId'] = this.benefitSetting[0].supplierId;
                 this.requestSegment(params, 'warehouse');
-                this.requestSegmentType(params, 'type');
-                this.requestSegmentGroup(params, 'group');
-                // this.requestSegment(params, 'channel');
-                // this.requestSegment(params, 'cluster');
+                this.requestSegment(params, 'type');
+                this.requestSegment(params, 'group');
+                this.requestSegment(params, 'channel');
+                this.requestSegment(params, 'cluster');
             }
         }
 
@@ -265,32 +248,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-
-    requestSegment(params, segment): void {
-        this.subsDetail = this.flexiComboApiService
-            .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
-            .subscribe((value) => {
-                console.log('isi value subsDetail->', value);
-                    this.custWarehouse = value['data'];
-               
-            });
-    }
-
-    requestSegmentType(params, segment): void {
-        this.subsDetail = this.flexiComboApiService
-            .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
-            .subscribe((value) => {
-                    this.custType = value['data'];
-            });
-    }
-
-    requestSegmentGroup(params, segment): void {
-        this.subsDetail = this.flexiComboApiService
-            .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
-            .subscribe((value) => {
-                    this.custGroup = value['data'];
-            });
-    }
 
     getStores(value: IPromoStore[]): string {
         if (value && value.length > 0) {
@@ -353,23 +310,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // this.cdRef.detach();
         this.subs.unsubscribe();
-        if (this.subsDetail) {
-            this.subsDetail.unsubscribe();
-        }
-        // this.notifier.next();
-        // this.notifier.complete();
-        // this.rawAvailableEntities$.next(null);
-        // this.rawAvailableEntities$.complete();
-        // this.availableEntities$.next(null);
-        // this.availableEntities$.complete();
-        // if(this.subs2$) {
-        //     this.subs2$.next();
-        //     this.subs2$.complete();
-        // }
-
-        // this.isEntityLoading$.next(null);
-        // this.isEntityLoading$.complete();
     }
 }
