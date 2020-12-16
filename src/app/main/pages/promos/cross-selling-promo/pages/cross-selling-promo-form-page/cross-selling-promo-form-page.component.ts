@@ -150,7 +150,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             return;
         }
         
-        delete this.groupFormDto['catalogueSegmentationObjectId'];
         const payload: CreateFormDto = {
             base: 'sku',
             supplierId: null,
@@ -161,6 +160,11 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             ...this.groupFormDto,
             ...this.segmentFormDto,
         };
+        if (payload.target == 'store') {
+            delete payload['catalogueSegmentationObjectId'];
+        } else if (payload.target == 'all') {
+            payload['catalogueSegmentationObjectId'] = this.groupFormDto['catalogueSegmentationObjectId'];
+        }
         this.crossSellingPromoFacade.create(payload);
     }
 

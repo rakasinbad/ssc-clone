@@ -25,7 +25,7 @@ import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/s
 import { CataloguesDropdownComponent } from 'app/shared/components/dropdowns/catalogues/catalogues.component';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { FormMode, FormStatus, LogicRelation } from 'app/shared/models';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { InvoiceGroupPromo } from 'app/shared/models/invoice-group.model';
@@ -69,7 +69,7 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     warehouseSelected = [];
     catalogueSegmentSelected = [];
     errorWarehouse: boolean = false;
-    errorCatalogueSegment: boolean = false;
+    errorCatalogueSegment: boolean = true;
     statusMulti: boolean = false;
     fakturStatus: boolean = false;
     @Input() getGeneral: FormGroup;
