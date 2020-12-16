@@ -140,10 +140,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
             case SegmentationBasePromo.ALLSEGMENTATION:
                 this._setSpecifiedTargetValidation();
-                this.segmentBases = this.form.get('specifiedTarget').value;
+                this.segmentBases = 'all';
                 break;
 
             case SegmentationBasePromo.STORE:
+                this.segmentBases = 'store';
                 this._clearSpecifiedTargetValidation();
                 break;
 

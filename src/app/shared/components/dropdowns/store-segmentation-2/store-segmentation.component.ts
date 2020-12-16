@@ -669,7 +669,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                 if (this.idSelectedSegment != null) {
+                if (changes['idSelectedSegment'].currentValue !== null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueSegmentationId'] = this.idSelectedSegment;

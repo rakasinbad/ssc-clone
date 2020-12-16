@@ -209,9 +209,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse';
-                if (this.segmentBases == 'all') {
+                // if (this.segmentBases == 'all') {
                     if (this.typePromo === 'flexiCombo') {   
-                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
+                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined
+                                && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
                                 newQuery['catalogueId'] = this.catalogueIdSelect;
                                 // Melakukan request data warehouse.
                                 return this.entityApi$
@@ -240,9 +241,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         } else {
 
                         }
-                            
-                    }  else if (this.typePromo == 'crossSelling') {
-                        if (this.idSelectedSegment != null) {
+                    }  else if (this.typePromo !== 'flexiPromo') {
+                        if (this.idSelectedSegment != null && this.catalogueIdSelect == undefined
+                            && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
                             newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
                             // Melakukan request data warehouse.
                             return this.entityApi$
@@ -252,19 +253,18 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                             );
                         }
                     }
-                } else {
-                    if(this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
-                    // Melakukan request data warehouse.
-                    return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
-                    );
-                    }
-                }
+
+                    // if(this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
+                    // // Melakukan request data warehouse.
+                    // return this.entityApi$
+                    // .find<IPaginatedResponse<Entity>>(newQuery)
+                    // .pipe(
+                    //     tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
+                    // );
+                    // }
                 
             }),
-            take(1),
+            takeUntil(this.subs$),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -545,9 +545,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.segmentBases == 'all') {
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
+        if (this.segmentBases !== undefined || this.segmentBases == 'all') {
             if (this.typePromo == 'flexiCombo') {
                 const params = {
                     // paginate: true,
@@ -572,12 +570,13 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                if (this.idSelectedSegment != null) {
+                if (changes['idSelectedSegment'].currentValue !== null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueSegmentationId'] = this.idSelectedSegment;
                     this.requestEntity(params);
                 }
+            } else {
             }
         }
 

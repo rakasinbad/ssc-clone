@@ -216,15 +216,6 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
                 this.cdRef.detectChanges();
             });
         }
-        // this.selectInvoice.last.ngControl.reset();s
-
-
-        
-        // this.crossSellingPromoFormService.findSegmentPromo()
-        //     .pipe(takeUntil(this.unSubs$))
-        //     .subscribe((item) => (this.invoiceGroups = item));
-        //setting faktur
-        // this.invoiceGroups = 
     }
 
     onApplySku(value: Selection[], idx: number): void {

@@ -61,7 +61,7 @@ export class CatalogueSegmentationComponent implements OnInit, OnChanges, AfterV
     // tslint:disable-next-line: no-inferrable-types
     @Input() disabled: boolean = false;
     // tslint:disable-next-line: no-inferrable-types no-input-rename
-    @Input('placeholder') placeholder: string = 'Search Warehouse';
+    @Input('placeholder') placeholder: string = 'Choose Selected Segmentation';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Entity>> = new EventEmitter<TNullable<Entity>>();
