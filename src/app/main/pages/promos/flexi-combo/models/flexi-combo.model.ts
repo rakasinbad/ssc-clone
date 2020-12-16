@@ -432,14 +432,14 @@ export class FlexiCombo implements ITimestamp {
         // }
 
         /* Handle promoWarehouses */
-        // if (typeof promoWarehouses !== 'undefined') {
-        //     this.promoWarehouses =
-        //         promoWarehouses &&
-        //         promoWarehouses.length > 0 &&
-        //         target === SegmentationBasePromo.SEGMENTATION
-        //             ? promoWarehouses
-        //             : [];
-        // }
+        if (typeof promoWarehouses !== 'undefined') {
+            this.promoWarehouses =
+                promoWarehouses &&
+                promoWarehouses.length > 0 &&
+                target === SegmentationBasePromo.ALLSEGMENTATION
+                    ? promoWarehouses
+                    : [];
+        }
     }
 }
 
@@ -447,19 +447,41 @@ export class WarehouseDetail {
     readonly id: NonNullable<string>;
     warehouseId: string;
     warehouseName: string;
+    typeId: string;
+    typeName: string;
+    groupId: string;
+    groupName: string;
+    clusterId: string;
+    clusterName: string;
+    channelId: string;
+    channelName: string;
 
     constructor(data: WarehouseDetail) {
         const {
             id,
             warehouseId,
-            warehouseName
+            warehouseName,
+            typeId,
+            typeName,
+            groupId,
+            groupName,
+            clusterId,
+            clusterName,
+            channelId,
+            channelName
         } = data;
 
         this.id = id;
       
         this.warehouseId = warehouseId || null;
         this.warehouseName = warehouseName || null;
-
+        this.typeId = typeId || null;
+        this.typeName = typeName || null;
+        this.groupId = groupId || null;
+        this.groupName = groupName || null;
+        this.clusterId = clusterId || null;
+        this.clusterName = clusterName || null;
+        this.channelId = channelId || null;
+        this.channelName = channelName || null;
     }
-
 }
