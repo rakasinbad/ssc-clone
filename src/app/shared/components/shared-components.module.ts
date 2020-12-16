@@ -29,6 +29,7 @@ import { StoreSegmentationTreeModule } from './selection-tree/store-segmentation
 import { SinbadFilterModule } from './sinbad-filter/sinbad-filter.module';
 import { SingleWarehouseDropdownModule } from './dropdowns/single-warehouse/single-warehouse.module';
 import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/single-sales-rep.module';
+import { CatalogueSegmentationDropdownModule } from './dropdowns/catalogue-segmentation/catalogue-segmentation.module';
 
 @NgModule({
     imports: [
@@ -60,6 +61,7 @@ import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/singl
         FakturDropdownModule,
         SingleWarehouseDropdownModule,
         SingleSalesRepDropdownModule,
+        CatalogueSegmentationDropdownModule,
 
         // Global filter sidebar
         SinbadFilterModule,
@@ -92,7 +94,8 @@ import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/singl
         FakturDropdownModule,
         SingleWarehouseDropdownModule,
         SingleSalesRepDropdownModule,
-
+        CatalogueSegmentationDropdownModule,
+        
         // Global filter sidebar
         SinbadFilterModule,
     ],

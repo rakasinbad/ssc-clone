@@ -52,7 +52,7 @@
         <!-- ./ Segmentation Base Direct Store -->
 
         <!-- Segmentation Base Segmentation -->
-        <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
+        <!-- <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -132,40 +132,130 @@
                     {{ getStoreClusters((crossSellingPromo$ | async)?.promoClusters) || '-' }}
                 </div>
             </div>
-        
+        </ng-container> -->
+        <!-- ./ Segmentation Base Segmentation -->
+
+        <!-- ALL Segmentation Base Segmentation -->
+        <ng-container *ngSwitchCase="eSegmentBase.ALLSEGMENTATION">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <div class="label" fxFlexAlign="center" fxFlex="10">
-                    Specified Target
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Warehouse<br />
+                    ({{ (crossSellingPromo$ | async)?.promoWarehouses?.length }} Selected)
                 </div>
 
-                <div class="info" fxFlex="100">
+                <div class="info" fxFlex="90">
+                    {{ getWarehouses((crossSellingPromo$ | async)?.promoWarehouses) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Type<br />
+                    ({{ (crossSellingPromo$ | async)?.promoTypes?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreTypes((crossSellingPromo$ | async)?.promoTypes) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Group<br />
+                    ({{ (crossSellingPromo$ | async)?.promoGroups?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreGroups((crossSellingPromo$ | async)?.promoGroups) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Channel<br />
+                    ({{ (crossSellingPromo$ | async)?.promoChannels?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreChannels((crossSellingPromo$ | async)?.promoChannels) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Cluster<br />
+                    ({{ (crossSellingPromo$ | async)?.promoClusters?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreClusters((crossSellingPromo$ | async)?.promoClusters) || '-' }}
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Segmentation Base Segmentation -->
+
+        <ng-container *ngSwitchCase="eSegmentBase.ALLSEGMENTATION">
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Specified Target</div>
+
+                <div fxFlexAlign="center" fxFlex="50" fxFill>
                     <ng-container *ngIf="!(isLoading$ | async)">
-                        <mat-radio-group [value]="selectTargetId">
-                            <mat-radio-button
-                                *ngFor="let row of specifiedTarget"
-                                [value]="row.id"
-                                [disabled]="true"
-                            >
-                                {{ row.label }}
-
-                                <mat-icon
-                                    class="active-icon s-14 ml-8 cursor-pointer"
-                                    color="accent"
-                                    matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
-                                    matTooltipClass="tooltip-br"
-                                    *ngIf="row.id === 2"
+                        <ng-container *ngIf="selectTargetId; else noSpecifiedTargets">
+                            <mat-radio-group [value]="selectTargetId">
+                                <mat-radio-button
+                                    *ngFor="let row of specifiedTarget"
+                                    [value]="row.id"
+                                    [disabled]="true"
                                 >
-                                    help
-                                </mat-icon>
-                            </mat-radio-button>
-                        </mat-radio-group>
-                    </ng-container>
+                                    {{ row.label }}
+    
+                                    <mat-icon
+                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                        color="accent"
+                                        matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                        matTooltipClass="tooltip-br"
+                                        *ngIf="row.id == 2"
+                                    >
+                                        help
+                                    </mat-icon>
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </ng-container>
 
+                        <ng-template #noSpecifiedTargets>
+                            <div fxFlexAlign="center" fxFlex="50">-</div>
+                        </ng-template>
+                    </ng-container>
                     <ng-container *ngIf="isLoading$ | async">
                         <ngx-skeleton-loader
                             [theme]="{
@@ -182,7 +272,6 @@
                 </div>
             </div>
         </ng-container>
-        <!-- ./ Segmentation Base Segmentation -->
 
         <ng-container *ngSwitchDefault>-</ng-container>
     </ng-container>

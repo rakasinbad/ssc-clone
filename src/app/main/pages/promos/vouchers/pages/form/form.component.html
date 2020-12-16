@@ -48,6 +48,7 @@
                 [formMode]="'add'"
                 (formStatusChange)="eligibleStoreStatus$.next($event)"
                 (formValueChange)="eligibleStoreValue$.next($event)"
+                [selectedTrigger]="eligibleProductValue$.value"
             ></voucher-eligible-store-settings>
         </div>
         <!-- / STORE SEGMENTATION -->

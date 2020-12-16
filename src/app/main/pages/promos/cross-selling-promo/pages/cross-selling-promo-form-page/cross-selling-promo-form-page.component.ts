@@ -69,6 +69,8 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
     private unSubs$: Subject<any> = new Subject();
 
     fakturName: string = null;
+    fakturId: string = null;
+    segmentationSelectId: string = null;
     form: FormGroup;
     benefitFormDto: BenefitFormDto;
     generalInfoFormDto: GeneralInfoFormDto;
@@ -88,7 +90,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         this.crossSellingPromoFacade.getInvoiceGroup();
 
         this.form = this.crossSellingPromoFormService.createForm();
-
         // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
         this._setFormStatus();
 
@@ -148,7 +149,8 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (this.form.invalid) {
             return;
         }
-
+        
+        delete this.groupFormDto['catalogueSegmentationObjectId'];
         const payload: CreateFormDto = {
             base: 'sku',
             supplierId: null,
@@ -159,7 +161,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             ...this.groupFormDto,
             ...this.segmentFormDto,
         };
-
         this.crossSellingPromoFacade.create(payload);
     }
 
@@ -172,11 +173,11 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         ])
             .pipe(takeUntil(this.unSubs$))
             .subscribe((statuses) => {
-                if (statuses.every((status) => status === 'VALID')) {
-                    this.crossSellingPromoFacade.setFormValid();
-                } else {
-                    this.crossSellingPromoFacade.setFormInvalid();
-                }
+                    if (statuses.every((status) => status === 'VALID')) {
+                        this.crossSellingPromoFacade.setFormValid();
+                    } else {
+                        this.crossSellingPromoFacade.setFormInvalid();
+                    }
             });
     }
 }

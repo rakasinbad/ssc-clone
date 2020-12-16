@@ -80,6 +80,18 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
     chosenFaktur$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
+    public warehouseSelectAll: string;
+    public warehouseLength: number;
+    public storeTypeSelectAll: string;
+    public storeTypeLength: number;
+    public storeGroupSelectAll: string;
+    public storeGroupLength: number;
+    public storeChannelSelectAll: string;
+    public storeChannelLength: number;
+    public storeClusterSelectAll: string;
+    public storeClusterLength: number;
+    public lengthStoreSelected: number;
+    
     // Untuk form.
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.

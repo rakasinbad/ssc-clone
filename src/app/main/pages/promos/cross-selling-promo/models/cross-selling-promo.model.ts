@@ -315,6 +315,7 @@ export class CrossSelling implements ITimestamp {
     deletedAt: TNullable<string>;
     isNewStore: boolean;
     isActiveStore: boolean;
+    multiplication: boolean;
 
     constructor(data: CrossSelling) {
         const {
@@ -359,6 +360,7 @@ export class CrossSelling implements ITimestamp {
             deletedAt,
             isNewStore,
             isActiveStore,
+            multiplication,
         } = data;
 
         this.id = id;
@@ -392,7 +394,8 @@ export class CrossSelling implements ITimestamp {
         this.deletedAt = deletedAt || null;
         this.isActiveStore = isActiveStore;
         this.isNewStore = isNewStore;
-
+        this.multiplication = multiplication || false;
+        
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {
             this.promoBrands =
@@ -410,24 +413,24 @@ export class CrossSelling implements ITimestamp {
         }
 
         /* Handle promoChannels */
-        if (typeof promoChannels !== 'undefined') {
-            this.promoChannels =
-                promoChannels &&
-                promoChannels.length > 0 &&
-                target === SegmentationBase.SEGMENTATION
-                    ? promoChannels
-                    : [];
-        }
+        // if (typeof promoChannels !== 'undefined') {
+        //     this.promoChannels =
+        //         promoChannels &&
+        //         promoChannels.length > 0 &&
+        //         target === SegmentationBase.SEGMENTATION
+        //             ? promoChannels
+        //             : [];
+        // }
 
         /* Handle promoClusters */
-        if (typeof promoClusters !== 'undefined') {
-            this.promoClusters =
-                promoClusters &&
-                promoClusters.length > 0 &&
-                target === SegmentationBase.SEGMENTATION
-                    ? promoClusters
-                    : [];
-        }
+        // if (typeof promoClusters !== 'undefined') {
+        //     this.promoClusters =
+        //         promoClusters &&
+        //         promoClusters.length > 0 &&
+        //         target === SegmentationBase.SEGMENTATION
+        //             ? promoClusters
+        //             : [];
+        // }
 
         /* Handle promoBenefit */
         if (typeof promoBenefit !== 'undefined') {
@@ -437,12 +440,12 @@ export class CrossSelling implements ITimestamp {
         }
 
         /* Handle promoGroups */
-        if (typeof promoGroups !== 'undefined') {
-            this.promoGroups =
-                promoGroups && promoGroups.length > 0 && target === SegmentationBase.SEGMENTATION
-                    ? promoGroups
-                    : [];
-        }
+        // if (typeof promoGroups !== 'undefined') {
+        //     this.promoGroups =
+        //         promoGroups && promoGroups.length > 0 && target === SegmentationBase.SEGMENTATION
+        //             ? promoGroups
+        //             : [];
+        // }
 
         /* Handle promoInvoiceGroups */
         if (typeof promoInvoiceGroups !== 'undefined') {
@@ -461,21 +464,21 @@ export class CrossSelling implements ITimestamp {
         }
 
         /* Handle promoTypes */
-        if (typeof promoTypes !== 'undefined') {
-            this.promoTypes =
-                promoTypes && promoTypes.length > 0 && target === SegmentationBase.SEGMENTATION
-                    ? promoTypes
-                    : [];
-        }
+        // if (typeof promoTypes !== 'undefined') {
+        //     this.promoTypes =
+        //         promoTypes && promoTypes.length > 0 && target === SegmentationBase.SEGMENTATION
+        //             ? promoTypes
+        //             : [];
+        // }
 
         /* Handle promoWarehouses */
-        if (typeof promoWarehouses !== 'undefined') {
-            this.promoWarehouses =
-                promoWarehouses &&
-                promoWarehouses.length > 0 &&
-                target === SegmentationBase.SEGMENTATION
-                    ? promoWarehouses
-                    : [];
-        }
+        // if (typeof promoWarehouses !== 'undefined') {
+        //     this.promoWarehouses =
+        //         promoWarehouses &&
+        //         promoWarehouses.length > 0 &&
+        //         target === SegmentationBase.SEGMENTATION
+        //             ? promoWarehouses
+        //             : [];
+        // }
     }
 }
