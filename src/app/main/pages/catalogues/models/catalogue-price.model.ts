@@ -1,10 +1,10 @@
 import { TNullable } from 'app/shared/models/global.model';
 import { WarehouseCatalogue } from 'app/shared/models/warehouse-catalogue.model';
 import {
-    StoreSegmentationType,
-    StoreSegmentationGroup,
     StoreSegmentationChannel,
     StoreSegmentationCluster,
+    StoreSegmentationGroup,
+    StoreSegmentationType,
 } from './index';
 
 interface ICataloguePrice {
@@ -22,6 +22,7 @@ interface ICataloguePrice {
     group: TNullable<StoreSegmentationGroup>;
     channel: TNullable<StoreSegmentationChannel>;
     cluster: TNullable<StoreSegmentationCluster>;
+    warehouse: any;
 }
 
 export class CataloguePrice implements CataloguePrice {
@@ -39,6 +40,7 @@ export class CataloguePrice implements CataloguePrice {
     group: TNullable<StoreSegmentationGroup>;
     channel: TNullable<StoreSegmentationChannel>;
     cluster: TNullable<StoreSegmentationCluster>;
+    warehouse: any;
 
     constructor(data: ICataloguePrice) {
         const {
@@ -56,6 +58,7 @@ export class CataloguePrice implements CataloguePrice {
             group,
             channel,
             cluster,
+            warehouse,
         } = data;
 
         this.id = id;
@@ -72,5 +75,6 @@ export class CataloguePrice implements CataloguePrice {
         this.group = group ? new StoreSegmentationGroup(group) : group;
         this.channel = channel ? new StoreSegmentationChannel(channel) : channel;
         this.cluster = cluster ? new StoreSegmentationCluster(cluster) : cluster;
+        this.warehouse = warehouse;
     }
 }

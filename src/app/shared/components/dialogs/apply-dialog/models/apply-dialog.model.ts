@@ -8,6 +8,8 @@ export interface ApplyDialog<T = undefined> {
     showCloseButton?: boolean;
     applyValue?: string;
     closeValue?: string;
+    applyButtonLabel?: string;
+    closeButtonLabel?: string;
     contentClass?: Array<string>;
     handleEventManually?: boolean;
     context?: T;

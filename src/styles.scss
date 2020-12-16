@@ -282,6 +282,15 @@ quill-editor {
 // Table helper
 .sinbad-table {
     min-height: 42px !important;
+
+    &.sinbad-table__hover {
+        .mat-row {
+            // Row hover color
+            &:hover {
+                background: sinbad-color('black', '10');
+            }
+        }
+    }
 }
 
 .mat-table {
@@ -602,12 +611,12 @@ mat-header-row {
 .sinbad-mat-tab-group {
     &.has-border {
         .mat-tab-header {
-            border-bottom: 1px solid rgba(0,0,0,0.12) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
         }
     }
 
     .mat-tab-header {
-        border-bottom: 0px solid rgba(0,0,0,0) !important;
+        border-bottom: 0px solid rgba(0, 0, 0, 0) !important;
     }
 
     &.narrow {
@@ -643,7 +652,7 @@ mat-header-row {
         font-size: 14px !important;
         color: rgba(37, 40, 43, 0.5);
     }
-    
+
     &.label-no-padding {
         label {
             font-weight: 600;

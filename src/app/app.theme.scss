@@ -135,6 +135,9 @@ $typography: mat-typography-config(
 // Catalogues
 @import 'src/app/main/pages/catalogues/catalogues.theme';
 
+// Catalogue Segmentation
+@import 'src/app/main/pages/catalogue-segmentation/catalogue-segmentation.theme';
+
 // Finances
 @import 'src/app/main/pages/finances/banks/banks.theme';
 @import 'src/app/main/pages/finances/credit-limit-balance/credit-limit-balance.theme';
@@ -202,6 +205,9 @@ $typography: mat-typography-config(
     // Catalogues
     @include catalogues-theme($theme);
 
+    // Catalogue Segmentation
+    @include catalogue-segmentation-theme($theme);
+
     // Finances
     @include banks-theme($theme);
     @include credit-limit-balance-theme($theme);
@@ -214,7 +220,7 @@ $typography: mat-typography-config(
     // Logistics
     @include warehouses-theme($theme);
     @include warehouse-coverages-theme($theme);
-    @include sku-assigments-theme($theme);
+    @include sku-assignments-theme($theme);
     @include stock-managements-theme($theme);
 
     // OMS

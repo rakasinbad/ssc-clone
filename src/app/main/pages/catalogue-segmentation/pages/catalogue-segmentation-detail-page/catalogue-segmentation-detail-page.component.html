@@ -1,0 +1,82 @@
+<div
+    id="catalogue-segmentation-detail-page"
+    class="page-layout carded fullwidth tabbed inner-scroll"
+>
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" backButton>
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        <ng-container *ngIf="!isLoading">
+                            {{ catalogueSegmentation?.name || '-' }}
+                        </ng-container>
+
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', height: '25px', 'margin-bottom': '-5px' }"
+                            *ngIf="isLoading"
+                        ></ngx-skeleton-loader>
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Catalogue Segmentation Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button
+                type="button"
+                mat-raised-button
+                class="accent-fg"
+                [routerLink]="['../', 'edit']"
+                *ngIf="!isLoadingCombine"
+            >
+                <span>Edit</span>
+            </button>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoadingCombine"
+            ></ngx-skeleton-loader>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <mat-tab-group color="accent" fxLayout="column" fxFlex>
+                    <mat-tab label="Catalogue Segmentation">
+                        <ng-template matTabContent>
+                            <div class="tab-content p-16" fusePerfectScrollbar>
+                                <app-catalogue-segmentation-detail
+                                    [formMode]="formMode"
+                                    [item]="catalogueSegmentation$ | async"
+                                    [isLoading]="isLoading$ | async"
+                                    (loadingCatalogueList)="onSetLoadingCatalogueList($event)"
+                                ></app-catalogue-segmentation-detail>
+                            </div>
+                        </ng-template>
+                    </mat-tab>
+                </mat-tab-group>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

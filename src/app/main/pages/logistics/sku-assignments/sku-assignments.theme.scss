@@ -1,4 +1,4 @@
-@mixin sku-assigments-theme($theme) {
+@mixin sku-assignments-theme($theme) {
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
