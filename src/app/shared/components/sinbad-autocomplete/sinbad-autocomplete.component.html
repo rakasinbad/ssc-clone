@@ -1,0 +1,59 @@
+<ng-container *ngIf="type === 'single'">
+    <div class="custom-field" fxLayout="row">
+        <mat-form-field appearance="outline" fxFlex>
+            <input
+                #autocompleteTrigger
+                matInput
+                [formControl]="control"
+                [matAutocomplete]="autoComplete"
+                [placeholder]="placeholder ? placeholder : null"
+            />
+
+            <mat-autocomplete
+                #autoComplete="matAutocomplete"
+                [displayWith]="onDisplayAutocompleteFn"
+                (closed)="onClosedAutocomplete()"
+                (opened)="onOpenedAutocomplete()"
+                (optionSelected)="onSelectAutocomplete($event)"
+            >
+                <ng-container *ngIf="sources && sources.length > 0">
+                    <mat-option *ngFor="let source of sources" [value]="source">
+                        <span [innerHTML]="source?.label | highlight: control?.value"></span>
+                    </mat-option>
+                </ng-container>
+
+                <ng-container *ngIf="!sources || (sources && !sources.length)">
+                    <mat-option>None</mat-option>
+                </ng-container>
+            </mat-autocomplete>
+
+            <mat-hint [align]="hintAlign" *ngIf="hintValue">
+                {{ hintValue }}
+            </mat-hint>
+
+            <!-- SECTION SPINNER LOADING -->
+            <!--  [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide" -->
+            <!-- <button mat-icon-button matSuffix>
+                <mat-icon>refresh</mat-icon>
+            </button> -->
+            <mat-spinner
+                matSuffix
+                class="loading"
+                color="accent"
+                diameter="25"
+                fxFlexAlign="center"
+                *ngIf="loading"
+            ></mat-spinner>
+            <!-- !SECTION SPINNER LOADING -->
+
+            <!-- <mat-error>
+        <sinbad-form-error [control]="control"></sinbad-form-error>
+    </mat-error> -->
+        </mat-form-field>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="type === 'multi'">
+    <span>Multi template not ready yet!</span>
+</ng-container>

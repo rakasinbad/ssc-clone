@@ -30,9 +30,10 @@ import {
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    MatTreeModule
+    MatTreeModule,
 } from '@angular/material';
-import { MAT_DATETIME_FORMATS, MatDatetimepickerModule } from '@mat-datetimepicker/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDatetimepickerModule, MAT_DATETIME_FORMATS } from '@mat-datetimepicker/core';
 import { MatMomentDatetimeModule } from '@mat-datetimepicker/moment';
 
 // import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -75,7 +76,7 @@ export const MY_FORMATS = {
         dateInput: 'L',
         monthInput: 'MMMM',
         timeInput: 'LT',
-        datetimeInput: 'L LT'
+        datetimeInput: 'L LT',
     },
     display: {
         dateInput: 'L',
@@ -85,8 +86,8 @@ export const MY_FORMATS = {
         monthYearLabel: 'MMM YYYY',
         dateA11yLabel: 'LL',
         monthYearA11yLabel: 'MMMM YYYY',
-        popupHeaderDateLabel: 'ddd, DD MMM'
-    }
+        popupHeaderDateLabel: 'ddd, DD MMM',
+    },
 };
 
 const matModule = [
@@ -107,6 +108,7 @@ const matModule = [
     MatListModule,
     MatMenuModule,
     MatPaginatorModule,
+    MatProgressBarModule,
     MatProgressSpinnerModule,
     MatRadioModule,
     MatRippleModule,
@@ -122,12 +124,12 @@ const matModule = [
     MatTooltipModule,
     MatDatetimepickerModule,
     MatMomentDatetimeModule,
-    ScrollingModule
+    ScrollingModule,
 ];
 
 @NgModule({
     imports: matModule,
     exports: matModule,
-    providers: [{ provide: MAT_DATETIME_FORMATS, useValue: MY_FORMATS }]
+    providers: [{ provide: MAT_DATETIME_FORMATS, useValue: MY_FORMATS }],
 })
 export class MaterialModule {}

@@ -2,117 +2,63 @@ import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { Store } from '@ngrx/store';
 import { navigation } from 'app/navigation/navigation';
+import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
+import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
 import { UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-/**
- *
- *
- * @export
- * @class VerticalLayout1Component
- * @implements {OnInit}
- * @implements {OnDestroy}
- */
 @Component({
     selector: 'vertical-layout-1',
     templateUrl: './layout-1.component.html',
     styleUrls: ['./layout-1.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
 })
 export class VerticalLayout1Component implements OnInit, OnDestroy {
-    /**
-     *
-     *
-     * @type {*}
-     * @memberof VerticalLayout1Component
-     */
+    private unSubs$: Subject<any> = new Subject();
+
     fuseConfig: any;
-
-    /**
-     *
-     *
-     * @type {*}
-     * @memberof VerticalLayout1Component
-     */
     navigation: any;
+    filterConfig: SinbadFilterConfig;
 
-    /**
-     *
-     *
-     * @type {Observable<boolean>}
-     * @memberof VerticalLayout1Component
-     */
     isShowCustomToolbar$: Observable<boolean>;
-
-    /**
-     *
-     *
-     * @type {Observable<boolean>}
-     * @memberof VerticalLayout1Component
-     */
     isShowFooterAction$: Observable<boolean>;
 
-    /**
-     *
-     *
-     * @private
-     * @type {Subject<any>}
-     * @memberof VerticalLayout1Component
-     */
-    private _unsubscribeAll: Subject<any>;
-
-    /**
-     * Creates an instance of VerticalLayout1Component.
-     * @param {Store<fromRoot.State>} store
-     * @param {FuseConfigService} _fuseConfigService
-     * @memberof VerticalLayout1Component
-     */
     constructor(
         private store: Store<fromRoot.State>,
-        private _fuseConfigService: FuseConfigService
+        private fuseConfigService: FuseConfigService,
+        private sinbadFilterService: SinbadFilterService
     ) {
         // Set the defaults
         this.navigation = navigation;
-
-        // Set the private defaults
-        this._unsubscribeAll = new Subject();
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
-    /**
-     *
-     * OnInit
-     * @memberof VerticalLayout1Component
-     */
     ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
-
         // Subscribe to config changes
-        this._fuseConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
+        this.fuseConfigService.config.pipe(takeUntil(this.unSubs$)).subscribe((config) => {
             this.fuseConfig = config;
         });
+
+        // Get sinbad filter config
+        this.sinbadFilterService
+            .getConfig$()
+            .pipe(takeUntil(this.unSubs$))
+            .subscribe((config) => {
+                this.filterConfig = config;
+            });
 
         this.isShowCustomToolbar$ = this.store.select(UiSelectors.getIsShowCustomToolbar);
         this.isShowFooterAction$ = this.store.select(UiSelectors.getIsShowFooterAction);
     }
 
-    /**
-     *
-     * OnDestroy
-     * @memberof VerticalLayout1Component
-     */
     ngOnDestroy(): void {
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
-
         // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next();
-        this._unsubscribeAll.complete();
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 }

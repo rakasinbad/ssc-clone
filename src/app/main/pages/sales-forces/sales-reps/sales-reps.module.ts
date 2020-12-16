@@ -1,29 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { PipeSharedModule } from 'app/shared';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
-
 import { SalesRepDetailInfoComponent } from './sales-rep-detail/sales-rep-detail-info/sales-rep-detail-info.component';
 import { SalesRepDetailPasswordComponent } from './sales-rep-detail/sales-rep-detail-password/sales-rep-detail-password.component';
 import { SalesRepDetailComponent } from './sales-rep-detail/sales-rep-detail.component';
 import {
     SalesRepFormComponent,
     SalesRepInfoComponent,
-    SalesRepPasswordComponent
+    SalesRepPasswordComponent,
 } from './sales-rep-form';
 import { SalesRepsRoutingModule } from './sales-reps-routing.module';
 import { SalesRepsStoreModule } from './sales-reps-store.module';
 import { SalesRepsComponent } from './sales-reps.component';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
-/**
- *
- *
- * @export
- * @class SalesRepsModule
- */
 @NgModule({
     declarations: [
         SalesRepsComponent,
@@ -32,14 +26,15 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         SalesRepPasswordComponent,
         SalesRepDetailComponent,
         SalesRepDetailInfoComponent,
-        SalesRepDetailPasswordComponent
+        SalesRepDetailPasswordComponent,
     ],
     imports: [
         SalesRepsRoutingModule,
 
-        SharedModule,
-        SharedComponentsModule,
         MaterialModule,
+        PipeSharedModule,
+        SharedComponentsModule,
+        SharedModule,
 
         // Third Party (RxWeb: https://www.rxweb.io)
         RxReactiveFormsModule,
@@ -49,7 +44,7 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         NgxPermissionsModule.forChild(),
 
         // Store
-        SalesRepsStoreModule
-    ]
+        SalesRepsStoreModule,
+    ],
 })
 export class SalesRepsModule {}

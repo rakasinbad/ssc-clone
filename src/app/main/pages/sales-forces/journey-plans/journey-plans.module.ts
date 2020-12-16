@@ -1,27 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { ImportAdvancedModule, MaterialModule, SharedModule } from 'app/shared';
+import { ImportAdvancedModule, MaterialModule, PipeSharedModule, SharedModule } from 'app/shared';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
-
 import { ExportFilterComponent, JourneyPlanSelectedStoresComponent } from './components';
 import {
     JourneyPlanActionComponent,
     JourneyPlanFormComponent,
     JourneyPlanInfoComponent,
-    JourneyPlanStoreComponent
+    JourneyPlanStoreComponent,
 } from './journey-plan-form';
 import { JourneyPlansRoutingModule } from './journey-plans-routing.module';
 import { JourneyPlansStoreModule } from './journey-plans-store.module';
 import { JourneyPlansComponent } from './journey-plans.component';
 
-/**
- *
- *
- * @export
- * @class JourneyPlansModule
- */
 @NgModule({
     declarations: [
         ExportFilterComponent,
@@ -30,14 +23,15 @@ import { JourneyPlansComponent } from './journey-plans.component';
         JourneyPlanInfoComponent,
         JourneyPlansComponent,
         JourneyPlanSelectedStoresComponent,
-        JourneyPlanStoreComponent
+        JourneyPlanStoreComponent,
     ],
     imports: [
         JourneyPlansRoutingModule,
 
-        SharedModule,
-        SharedComponentsModule,
         MaterialModule,
+        PipeSharedModule,
+        SharedComponentsModule,
+        SharedModule,
 
         ImportAdvancedModule,
 
@@ -49,8 +43,8 @@ import { JourneyPlansComponent } from './journey-plans.component';
         NgxPermissionsModule.forChild(),
 
         // Store
-        JourneyPlansStoreModule
+        JourneyPlansStoreModule,
     ],
-    entryComponents: [ExportFilterComponent]
+    entryComponents: [ExportFilterComponent],
 })
 export class JourneyPlansModule {}

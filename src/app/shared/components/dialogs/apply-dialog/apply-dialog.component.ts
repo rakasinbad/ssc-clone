@@ -19,17 +19,19 @@ export class ApplyDialogComponent<T> {
         private matDialogRef: MatDialogRef<ApplyDialogComponent<T>>,
         @Inject(MAT_DIALOG_DATA)
             public data: {
-                title: string,
-                template: TemplateRef<any>,
-                isApplyEnabled: boolean,
-                showApplyButton: boolean,
-                showCloseButton: boolean,
-                applyValue: string,
-                closeValue: string,
-                contentClass?: Array<string>,
-                handleEventManually?: boolean,
-                context?: T,
-                service?: ApplyDialogService<T>
+                title: string;
+                template: TemplateRef<any>;
+                isApplyEnabled: boolean;
+                showApplyButton?: boolean;
+                showCloseButton?: boolean;
+                applyValue?: string;
+                closeValue?: string;
+                applyButtonLabel?: string;
+                closeButtonLabel?: string;
+                contentClass?: Array<string>;
+                handleEventManually?: boolean;
+                context?: T;
+                service?: ApplyDialogService<T>;
             },
     ) {}
 

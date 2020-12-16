@@ -1,7 +1,7 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
-<div [ngClass]="catalogueContent" class="px-16 pb-40 page-layout carded fullwidth inner-scroll">
+<div [ngClass]="catalogueContent" class="p-16 page-layout carded fullwidth inner-scroll">
     <div class="py-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Price Settings</div>
+        <div class="font-weight-600 font-size-24 line-height-20">Segmentation Settings</div>
     </div>
 
     <ng-template #catalogueIsLoading>
@@ -12,49 +12,11 @@
 
     <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutGap="16px" novalidate>
         <!-- PRODUCT ID (HIDDEN) -->
-        <input
-            hidden
-            name="id"
-            formControlName="id"
-        />
+        <input hidden name="id" formControlName="id" />
         <!-- PRODUCT ID (HIDDEN) -->
+
         <!-- PRODUCT PRICE SECTION -->
         <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
-            <!-- PRODUCT BASE PRICE -->
-            <!-- <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxFlex="40"
-                fxLayoutGap="16px"
-            >
-                <label
-                    fxFlexAlign="center"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('basePrice'))"
-                >
-                    <span
-                        class="red-500-fg"
-                    >* </span>Base Price
-                </label>
-        
-                <mat-form-field appearance="outline" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        name="basePrice"
-                        formControlName="basePrice"
-                    />
-                    <mat-error
-                        *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
-                    >
-                        {{ getFormError(form.get('basePrice')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span fxFlexAlign="center" class="grey-fg" *ngIf="isViewMode()">
-                    {{ form.get('basePrice').value | price: 'full':'IDR':'narrow':'1.0-2' }}
-                </span>
-            </div> -->
-            <!-- / PRODUCT BASE PRICE -->
             <!-- PRODUCT RETAIL BUYING PRICE -->
             <div
                 [ngClass]="formClass"
@@ -65,15 +27,19 @@
             >
                 <label
                     fxFlexAlign="center"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('retailBuyingPrice'))"
+                    [class.pr-0]="formMode | hasFormMode: 'edit'"
+                    [class.sinbad-red-fg]="
+                        !(formMode | hasFormMode: 'view') &&
+                        (form.get('retailBuyingPrice').value ||
+                            form.get('retailBuyingPrice').touched
+                            | hasErrorField: form.get('retailBuyingPrice'):false)
+                    "
                 >
-                    <span
-                        class="red-500-fg"
-                    >* </span>Retail Buying Price
+                    <span class="red-500-fg">*</span>
+                    Retail Buyer Price
                 </label>
-        
-                <mat-form-field appearance="outline" *ngIf="!isViewMode()">
+
+                <mat-form-field appearance="outline" *ngIf="formMode | hasFormMode: 'edit'">
                     <input
                         matInput
                         name="retailBuyingPrice"
@@ -82,51 +48,99 @@
                         thousandSeparator="."
                         prefix="Rp"
                     />
-                    <mat-error
-                        *ngIf="!isViewMode() && hasError(form.get('retailBuyingPrice'))"
-                    >
-                        {{ getFormError(form.get('retailBuyingPrice')) }}
+                    <mat-error>
+                        {{
+                            form.get('retailBuyingPrice').value
+                                | errorMessage: form:'retailBuyingPrice'
+                        }}
                     </mat-error>
                 </mat-form-field>
-                <span fxFlexAlign="center" class="grey-fg" *ngIf="isViewMode()">
-                    {{ form.get('retailBuyingPriceView').value | price: 'full':'IDR':'narrow':'1.0-2' }}
+
+                <span fxFlexAlign="center" class="grey-fg" *ngIf="formMode | hasFormMode: 'view'">
+                    {{
+                        form.get('retailBuyingPriceView').value
+                            | price: 'full':'IDR':'narrow':'1.0-2'
+                    }}
                 </span>
             </div>
             <!-- / PRODUCT RETAIL BUYING PRICE -->
+
+            <!-- PRODUCT BASE PRICE -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label fxFlexAlign="center" [class.pr-0]="formMode | hasFormMode: 'edit'">
+                    Discount Retail Buyer Price
+                </label>
+
+                <mat-form-field appearance="outline" *ngIf="formMode | hasFormMode: 'edit'">
+                    <input
+                        matInput
+                        name="discountRetailBuyerPrice"
+                        formControlName="discountRetailBuyerPrice"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                    />
+                    <mat-error>
+                        {{
+                            form.get('discountRetailBuyerPrice').value
+                                | errorMessage: form:'discountRetailBuyerPrice'
+                        }}
+                    </mat-error>
+                </mat-form-field>
+
+                <span fxFlexAlign="center" class="grey-fg" *ngIf="formMode | hasFormMode: 'view'">
+                    {{
+                        form.get('discountRetailBuyerPriceView').value
+                            | price: 'full':'IDR':'narrow':'1.0-2' || '-'
+                    }}
+                </span>
+            </div>
+            <!-- / PRODUCT BASE PRICE -->
         </div>
         <!-- PRODUCT PRICE SECTION -->
+
         <!-- ADVANCE PRICE -->
-        <div
-            [ngClass]="formClass"
-        >
+        <div [ngClass]="formClass">
             <mat-checkbox
                 formControlName="advancePrice"
                 labelPosition="after"
                 fxFlexAlign="center"
+                disableRipple
             >
-                <ng-container [class.mat-error]="!isViewMode() && hasError(form.get('advancePrice'))">
+                <ng-container
+                    [class.sinbad-red-fg]="
+                        !(formMode | hasFormMode: 'view') &&
+                        (form.get('advancePrice').value || form.get('advancePrice').touched
+                            | hasErrorField: form.get('advancePrice'):false)
+                    "
+                >
                     Advance Price
                 </ng-container>
             </mat-checkbox>
         </div>
         <!-- / ADVANCE PRICE -->
+
         <!-- APPLY PRICE FOR ALL FILTERED -->
-        <div
+        <!-- Di hide untuk sementara -->
+        <!-- <div
             [ngClass]="formClass"
             fxLayout="row"
             fxLayoutAlign="start center"
             fxFlex="40"
             fxLayoutGap="16px"
-            *ngIf="isEditMode()"
+            *ngIf="formMode | hasFormMode: 'edit'"
         >
-            <label
-                fxFlexAlign="center"
-                class="pr-0"
-            >
+            <label fxFlexAlign="center" [class.pr-0]="formMode | hasFormMode: 'edit'">
                 Price to All
             </label>
 
-            <mat-form-field appearance="outline" *ngIf="isEditMode()">
+            <mat-form-field appearance="outline" *ngIf="formMode | hasFormMode: 'edit'">
                 <input
                     matInput
                     name="priceToAll"
@@ -135,30 +149,29 @@
                     thousandSeparator="."
                     prefix="Rp"
                 />
-                <mat-error
-                    *ngIf="isEditMode() && hasError(form.get('priceToAll'))"
-                >
-                    {{ getFormError(form.get('priceToAll')) }}
+                <mat-error>
+                    {{ form.get('priceToAll').value | errorMessage: form:'priceToAll' }}
                 </mat-error>
-            </mat-form-field>
+            </mat-form-field> -->
 
-            <!-- APPLY BUTTON -->
-            <button
+        <!-- APPLY BUTTON -->
+        <!-- <button
                 mat-flat-button
                 class="sinbad-yellow w-84 h-32 mb-28"
                 (click)="onApplyPriceToAll()"
             >
                 Apply
-            </button>
-            <!-- / APPLY BUTTON -->
-        </div>
+            </button> -->
+        <!-- / APPLY BUTTON -->
+        <!-- </div> -->
         <!-- / APPLY PRICE FOR ALL FILTERED -->
+
         <!-- APPLICATION ADVANCE PRICE -->
         <div
             fxLayout="row"
             fxLayoutAlign="start center"
             fxLayoutGap="16px"
-            *ngIf="isEditMode() && form.get('advancePrice').value === true"
+            *ngIf="(formMode | hasFormMode: 'edit') && form.get('advancePrice').value === true"
         >
             <!-- PRICE SEGMENTATION -->
             <div
@@ -169,7 +182,6 @@
             >
                 <ng-container *ngFor="let tool of cataloguePriceTools">
                     <div class="dnd-catalogue-price-tools" *ngIf="tool === 'warehouse'" cdkDrag>
-                        <!-- <span>A</span> -->
                         <select-warehouse-catalogues
                             [catalogueId]="selectedCatalogueId"
                             (selected)="onSelectedWarehouses($event)"
@@ -177,32 +189,32 @@
                         ></select-warehouse-catalogues>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
+
                     <div class="dnd-catalogue-price-tools" *ngIf="tool === 'type'" cdkDrag>
-                        <!-- <span>B</span> -->
                         <select-store-segmentation-types
                             class="w-100-p"
                             (selected)="onSelectedStoreSegmentationTypes($event)"
                         ></select-store-segmentation-types>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
+
                     <div class="dnd-catalogue-price-tools" *ngIf="tool === 'group'" cdkDrag>
-                        <!-- <span>C</span> -->
                         <select-store-segmentation-groups
                             class="w-100-p"
                             (selected)="onSelectedStoreSegmentationGroup($event)"
                         ></select-store-segmentation-groups>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
+
                     <div class="dnd-catalogue-price-tools" *ngIf="tool === 'channel'" cdkDrag>
-                        <!-- <span>D</span> -->
                         <select-store-segmentation-channels
                             class="w-100-p"
                             (selected)="onSelectedStoreSegmentationChannel($event)"
                         ></select-store-segmentation-channels>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
+
                     <div class="dnd-catalogue-price-tools" *ngIf="tool === 'cluster'" cdkDrag>
-                        <!-- <span>E</span> -->
                         <select-store-segmentation-clusters
                             class="w-100-p"
                             (selected)="onSelectedStoreSegmentationCluster($event)"
@@ -212,87 +224,106 @@
                 </ng-container>
             </div>
             <!-- / PRICE SEGMENTATION -->
+
             <!-- APPLY BUTTON -->
-            <button
-                mat-flat-button
-                class="sinbad-yellow w-84 h-32 mb-28"
-                (click)="onApplyFilter()"
-            >
+            <button mat-flat-button class="sinbad-yellow w-84 h-32 mb-28" (click)="onApplyFilter()">
                 Apply
             </button>
             <!-- / APPLY BUTTON -->
         </div>
         <!-- / APPLICATION ADVANCE PRICE -->
+
         <!-- ADVANCE PRICE TABLE -->
         <mat-table
             #table
-            class="catalogue-price-table grey-300-border"
-            [class.h-360]="(totalCataloguePrice$ | async) > 0"
-            [dataSource]="(cataloguePrices$ | async)"
+            class="catalogue-price-table sinbad-table sinbad-table__hover"
+            [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+            [class.h-360]="formMode === 'edit'"
+            [dataSource]="dataSource"
+            [trackBy]="onTrackPriceSetting"
             [@animateStagger]="{ value: '50' }"
             fusePerfectScrollbar
             [fxHide]="form.get('advancePrice').value === false"
+            [fusePerfectScrollbarOptions]="{
+                updateOnRouteChange: true,
+                suppressScrollX: totalItem ? false : true,
+                wheelSpeed: 0.5,
+                swipeEasing: true,
+                minScrollbarLength: 40,
+                maxScrollbarLength: 300
+            }"
         >
             <!-- Warehouse Column -->
-            <ng-container matColumnDef="warehouse">
+            <ng-container matColumnDef="warehouse-name">
                 <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.warehouseCatalogue?.warehouse?.name || '-' }}</p>
+                    <p>{{ row?.warehouse?.name || '-' }}</p>
                 </mat-cell>
             </ng-container>
+            <!-- / Warehouse Column -->
 
             <!-- Store Type Column -->
-            <ng-container matColumnDef="storeType">
+            <ng-container matColumnDef="store-type">
                 <mat-header-cell *matHeaderCellDef>Store Type</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.type?.name || '-' }}</p>
                 </mat-cell>
             </ng-container>
+            <!-- / Store Type Column -->
 
             <!-- Store Group Column -->
-            <ng-container matColumnDef="storeGroup">
+            <ng-container matColumnDef="store-group">
                 <mat-header-cell *matHeaderCellDef>Store Group</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.group?.name || '-' }}</p>
                 </mat-cell>
             </ng-container>
+            <!-- / Store Group Column -->
 
             <!-- Store Channel Column -->
-            <ng-container matColumnDef="storeChannel">
+            <ng-container matColumnDef="store-channel">
                 <mat-header-cell *matHeaderCellDef>Store Channel</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.channel?.name || '-' }}</p>
                 </mat-cell>
             </ng-container>
+            <!-- / Store Channel Column -->
 
             <!-- Store Cluster Column -->
-            <ng-container matColumnDef="storeCluster">
+            <ng-container matColumnDef="store-cluster">
                 <mat-header-cell *matHeaderCellDef>Store Cluster</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.cluster?.name || '-' }}</p>
                 </mat-cell>
             </ng-container>
+            <!-- / Store Cluster Column -->
 
             <!-- SKU's Price Column -->
             <ng-container matColumnDef="price">
                 <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
-                <mat-cell *matCellDef="let row; index as idx;">
-                    <p *ngIf="!isEditMode()">{{ row?.price  | price: 'full':'IDR':'narrow':'1.0-2' }}</p>
+                <mat-cell *matCellDef="let row; index as idx">
+                    <p *ngIf="formMode | hasFormMode: 'view'">
+                        {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
+                    </p>
 
                     <div
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="start center"
-                        fxFlex="40"
-                        fxLayoutGap="16px"
-                        *ngIf="isEditMode()"
+                        *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline" *ngIf="!isViewMode()">
+                        <mat-form-field appearance="outline" style="width: 70%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
                                 [formControl]="form.get(['priceSettings', idx, 'price'])"
-                                [class.mat-error]="hasError(form.get(['priceSettings', idx, 'price']))"
+                                [class.mat-error]="
+                                    form.get(['priceSettings', idx, 'price']).value ||
+                                        form.get(['priceSettings', idx, 'price']).touched
+                                        | hasErrorField
+                                            : form.get(['priceSettings', idx, 'price'])
+                                            : false
+                                "
                                 mask="separator.2"
                                 thousandSeparator="."
                                 prefix="Rp"
@@ -301,22 +332,67 @@
                     </div>
                 </mat-cell>
             </ng-container>
+            <!-- / SKU's Price Column -->
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+                <mat-cell *matCellDef="let row; index as idx">
+                    <button
+                        type="button"
+                        mat-icon-button
+                        [matMenuTriggerFor]="actionMenu"
+                        aria-label="More"
+                        title="More Action"
+                        (click)="$event.stopPropagation()"
+                    >
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu class="actions-panel" #actionMenu="matMenu">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Delete"
+                            (click)="onDelete(row, idx)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Delete</span>
+                        </button>
+                    </mat-menu>
+                </mat-cell>
+            </ng-container>
+            <!-- / Actions Column -->
+
+            <!-- No Record Column -->
+            <ng-container matColumnDef="no-record">
+                <mat-footer-cell *matFooterCellDef [attr.colspan]="formMode === 'view' ? 6 : 7">
+                    No records found
+                </mat-footer-cell>
+            </ng-container>
+            <!-- / No Record Column -->
 
             <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-
-            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-
+            <mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                class="catalogue-price-list__item"
+                [class.highlight-row]="selectedSegmentId === row.id"
+            ></mat-row>
+            <mat-footer-row
+                *matFooterRowDef="['no-record']"
+                [fxShow]="!isLoading && totalItem === 0"
+            ></mat-footer-row>
         </mat-table>
-        
-        <div class="no-records" *ngIf="!(isLoading$ | async) && (totalCataloguePrice$ | async) === 0">
-            No records found
-        </div>
+
+        <!-- <div class="no-records" *ngIf="!isLoading && totalItem === 0">No records found</div> -->
 
         <mat-paginator
-            [fxHide]="(totalCataloguePrice$ | async) === 0 || form.get('advancePrice').value === false"
-            [length]="totalCataloguePrice$ | async"
+            [fxHide]="totalItem === 0 || form.get('advancePrice').value === false"
+            [disabled]="(isLoading && !totalItem) || (!isLoading && totalItem === 0)"
+            [length]="totalItem"
             [pageSize]="defaultPageSize"
-            [pageSizeOptions]="defaultPageSizeTable"
+            [pageSizeOptions]="defaultPageOpts"
             (page)="onChangePage($event)"
             showFirstLastButtons
         >
@@ -325,3 +401,9 @@
     </form>
 </div>
 <!-- / CONTENT CARD (INFORMASI PRODUK) -->
+
+<ng-template #alertDelete>
+    <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
+        Are you sure want to delete segmentation from this catalogue?
+    </p>
+</ng-template>

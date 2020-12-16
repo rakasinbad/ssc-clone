@@ -6,21 +6,28 @@ import {
     OnInit,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormBuilder, FormGroup, ValidatorFn } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { Warehouse as Entity } from 'app/main/pages/logistics/warehouses/models';
+import { WarehousesApiService as EntitiesApiService } from 'app/shared/components/dropdowns/single-warehouse/services';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { Moment } from 'moment';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import * as moment from 'moment';
-
+import { Moment } from 'moment';
 import {
     defaultExportFilterConfiguration,
     ExportConfiguration,
     ExportFilterConfiguration,
     ExportFormFilterConfiguration,
 } from '../../models';
+
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
+import { Store as NgRxStore } from '@ngrx/store';
 
 @Component({
     templateUrl: './export-filter.component.html',
@@ -35,11 +42,25 @@ export class ExportFilterComponent implements OnInit {
     formConfig: any;
     activeConfiguration: ExportFormFilterConfiguration;
     statusSources: Array<{ id: string; label: string }> = [];
+    typeSources: Array<{ id: string; label: string }> = [];
+
+    warehouse: any;
+
+    //dropdown list
+    disabled = false;
+    ShowFilter = true;
+    limitSelection = false;
+    dataWarehouse: Array<any> = [];
+    selectedItems: Array<any> = [];
+    dropdownSettings: any = {};
 
     minStartDate: Date;
     maxStartDate: Date = moment().toDate();
     minEndDate: Date;
     maxEndDate: Date = moment().toDate();
+
+    //multiselect variable
+    formName: string = 'warehouse';
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: ExportConfiguration,
@@ -48,7 +69,10 @@ export class ExportFilterComponent implements OnInit {
         private matDialogRef: MatDialogRef<ExportFilterComponent>,
         private errorMessageSvc: ErrorMessageService,
         private helper$: HelperService,
-        private notice$: NoticeService
+        private notice$: NoticeService,
+        private authStore: NgRxStore<fromAuth.FeatureState>,
+        private store: NgRxStore<fromAuth.FeatureState>,
+        private entityApi$: EntitiesApiService
     ) {}
 
     ngOnInit(): void {
@@ -63,6 +87,7 @@ export class ExportFilterComponent implements OnInit {
             case 'sales-rep':
                 hasDefaultConfig = true;
                 this.statusSources = HelperService.getStatusList(this.data.page);
+                this.typeSources = HelperService.getTypesList(this.data.page);
                 break;
 
             case 'journey-plans':
@@ -129,6 +154,66 @@ export class ExportFilterComponent implements OnInit {
             }
         }
 
+        //tampilkan input untuk page 'catalogues'
+        if (filterAspect.type) {
+            const rules: Array<ValidatorFn> = [];
+
+            this.form.addControl('type', this.formBuilder.control(''));
+
+            if (filterAspect.type.required) {
+                rules.push(
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        ),
+                    }),
+                    RxwebValidators.oneOf({
+                        matchValues: [...this.typeSources.map((r) => r.id)],
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                    })
+                );
+                this.form.get('type').setValidators(rules);
+            }
+        }
+
+        if (filterAspect.warehouse) {
+            //mendapatkan warehouse dari api
+            this.store.select(AuthSelectors.getUserSupplier).subscribe(({ supplierId }) => {
+                if (supplierId) {
+                    const newQuery: IQueryParams = {
+                        paginate: true,
+                        limit: 1000,
+                        skip: 0,
+                    };
+                    newQuery['supplierId'] = supplierId;
+                    this.form.addControl('warehouse', this.formBuilder.control(''));
+                    this.entityApi$
+                        .find<IPaginatedResponse<Entity>>(newQuery, { version: '2' })
+                        .subscribe((data) => {
+                            HelperService.debug('[ExportFilterComponent] warehouse', { data });
+                            this.dataWarehouse = data.data;
+                            this.dropdownSettings = {
+                                singleSelection: false,
+                                idField: 'id',
+                                textField: 'name',
+                                selectAllText: 'Select All',
+                                unSelectAllText: 'UnSelect All',
+                                itemsShowLimit: 3,
+                                maxHeight: 100,
+                                allowSearchFilter: this.ShowFilter,
+                            };
+
+                            const rules: Array<ValidatorFn> = [];
+                            if (filterAspect.warehouse.required) {
+                                rules.push(Validators.required);
+                                this.form.get('warehouse').setValidators(rules);
+                            }
+                        });
+                }
+            });
+        }
+
         if (filterAspect.rangeDate) {
             const rangeDateRules: Array<ValidatorFn> = [];
 
@@ -152,6 +237,10 @@ export class ExportFilterComponent implements OnInit {
         }
 
         this.cd$.markForCheck();
+    }
+
+    onItemSelect(item: any) {
+        console.log('onItemSelect', item);
     }
 
     isRequired(type: string): boolean {
@@ -305,6 +394,14 @@ export class ExportFilterComponent implements OnInit {
 
         if (formData.status) {
             formSend['status'] = formData.status;
+        }
+
+        if (formData.type) {
+            formSend['type'] = formData.type;
+        }
+
+        if (formData.warehouse) {
+            formSend['warehouse'] = formData.warehouse;
         }
 
         // Memproses data form berdasarkan halamannya.
