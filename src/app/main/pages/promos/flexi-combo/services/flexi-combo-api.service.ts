@@ -133,7 +133,7 @@ export class FlexiComboApiService {
             newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
         }
 
-        newArgs.push({ key: 'segment', value: params['segment'] });
+        newArgs.push({ key: 'segment', value: type });
 
         if (params['keyword']) {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
