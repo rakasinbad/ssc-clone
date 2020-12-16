@@ -141,11 +141,13 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             case SegmentationBasePromo.ALLSEGMENTATION:
                 this._setSpecifiedTargetValidation();
                 this.segmentBases = 'all';
+                this._clearChosenStoreValidation();
                 break;
 
             case SegmentationBasePromo.STORE:
                 this.segmentBases = 'store';
                 this._clearSpecifiedTargetValidation();
+                this._setChosenStoreValidation();
                 break;
 
             default:
@@ -255,6 +257,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
         if (!ev.length) {
             chosenStoreCtrl.setValue(null);
+           this._setChosenStoreValidation();
         } else {
             const newStores: Selection[] = ev.map((item) => ({
                 id: item.storeId,
@@ -262,6 +265,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
                 group: 'supplier-stores',
             }));
             chosenStoreCtrl.setValue(newStores);
+
+            this._clearChosenStoreValidation();
         }
     }
 
@@ -494,5 +499,19 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     private _clearSpecifiedTargetValidation(): void {
         this.form.get('specifiedTarget').clearValidators();
         this.form.get('specifiedTarget').updateValueAndValidity();
+    }
+
+    private _setChosenStoreValidation(): void {
+        this.form.get('chosenStore').setValidators(
+            RxwebValidators.required({
+                message: this.errorMessageService.getErrorMessageNonState('default', 'required'),
+            })
+        );
+        this.form.get('chosenStore').updateValueAndValidity();
+    }
+
+    private _clearChosenStoreValidation(): void {
+        this.form.get('chosenStore').clearValidators();
+        this.form.get('chosenStore').updateValueAndValidity();
     }
 }
