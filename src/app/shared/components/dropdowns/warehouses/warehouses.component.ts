@@ -552,17 +552,17 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                     // limit: this.limit,
                     // skip: 0,
                 };
-                if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
+                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect'].currentValue !== null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['catalogueId'] = this.catalogueIdSelect;
                     this.requestEntity(params);
-                } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
+                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect'].currentValue !== null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['brandId'] = this.brandIdSelect;
                     this.requestEntity(params);
-                } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
+                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect'].currentValue !== null) {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     params['fakturId'] = this.fakturIdSelect;
