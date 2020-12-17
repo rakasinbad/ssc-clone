@@ -197,7 +197,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
             } else if (this.benefitSetting[0].base == 'brand') {
                 let brand = this.benefitSetting[0].promoBrands;
                 let idBrand = [];
-                idBrand = brand.map((item) => item.invoiceGroupId);
+                idBrand = brand.map((item) => item.brandId);
                 params['brandId'] = idBrand.toString();
                 params['supplierId'] = this.benefitSetting[0].supplierId;
                 this.requestSegment(params, 'warehouse');
