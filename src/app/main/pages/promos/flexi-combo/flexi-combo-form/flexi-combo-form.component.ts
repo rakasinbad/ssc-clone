@@ -223,11 +223,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStore').setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
+                })
             ]);
             this.form.get('chosenStore').updateValueAndValidity();
         } else {
@@ -834,10 +830,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                 }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
             ]);
 
             this.form.get('chosenWarehouse').clearValidators();
@@ -1190,16 +1182,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
         if (!ev.length) {
-            // this.form.get('chosenStore').setValue(null);
+            this.form.get('chosenStore').setValue(null);
             this.lengthStoreSelected = 0;
             this.form.get('chosenStore').setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.choice({
-                    minLength: 1,
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                }),
+                })
             ]);
             this.form.get('chosenStore').updateValueAndValidity();
         } else {
