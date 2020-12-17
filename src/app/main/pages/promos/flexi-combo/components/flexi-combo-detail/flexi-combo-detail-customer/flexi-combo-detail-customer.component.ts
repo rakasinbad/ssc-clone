@@ -5,22 +5,13 @@ import {
     OnDestroy,
     ChangeDetectorRef,
     ViewEncapsulation,
-    NgZone,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { Observable, Subscription, Subject, BehaviorSubject, of, fromEvent } from 'rxjs';
-import {
-    FlexiCombo,
-    IPromoChannel,
-    IPromoCluster,
-    IPromoGroup,
-    IPromoStore,
-    IPromoType,
-    IPromoWarehouse,
-} from '../../../models';
+import { FlexiCombo, IPromoStore } from '../../../models';
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
 import { FlexiComboApiService } from '../../../services';
@@ -56,16 +47,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     specifiedTargets = this._$helperService.specifiedTarget();
     eSpecifiedTargets = SpecifiedTarget;
 
-    //  // Subject untuk keperluan subscription.
-    subs2$: Subject<void> = new Subject<void>();
-    // // Menyimpan state loading-nya Entity.
-    // isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
-    availableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
-
-    notifier = new Subject();
     public subs: Subscription;
-    public subsDetail: Subscription;
     public benefitSetting = [];
     public statNewStore = false;
     public statActiveStore = false;
@@ -75,7 +57,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     public custGroup = [];
     public custCluster = [];
     public custChannel = [];
-    public warehouseDetailnya = [];
 
     constructor(
         private store: Store<fromFlexiCombos.FeatureState>,
@@ -85,7 +66,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
+    // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
     private requestSegment(params, segment): void {
@@ -111,7 +92,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
                         .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
                             .pipe(
                                 tap((response) =>
-                                    HelperService.debug('FIND ENTITY Cross Selling', {
+                                    HelperService.debug('FIND ENTITY request segment', {
                                         params: newQuery,
                                         response,
                                     })
@@ -177,8 +158,6 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        this.availableEntities$.next([]);
-        this.rawAvailableEntities$.next([]);
 
         this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
             map((item) => {

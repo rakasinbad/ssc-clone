@@ -61,11 +61,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Warehouse<br />
-                    ({{ (crossSellingPromo$ | async)?.promoWarehouses?.length }} Selected)
+                    ({{custWarehouse.length}} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getWarehouses((crossSellingPromo$ | async)?.promoWarehouses) || '-' }}
+                    {{ getWarehouses(custWarehouse) || '-' }}
                 </div>
             </div>
 
@@ -77,11 +77,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Type<br />
-                    ({{ (crossSellingPromo$ | async)?.promoTypes?.length }} Selected)
+                    ({{ custType.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreTypes((crossSellingPromo$ | async)?.promoTypes) || '-' }}
+                    {{ getStoreTypes(custType) || '-' }}
                 </div>
             </div>
 
@@ -93,11 +93,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Group<br />
-                    ({{ (crossSellingPromo$ | async)?.promoGroups?.length }} Selected)
+                    ({{ custGroup.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreGroups((crossSellingPromo$ | async)?.promoGroups) || '-' }}
+                    {{ getStoreGroups(custGroup) || '-' }}
                 </div>
             </div>
 
@@ -109,11 +109,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Channel<br />
-                    ({{ (crossSellingPromo$ | async)?.promoChannels?.length }} Selected)
+                    ({{ custChannel.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreChannels((crossSellingPromo$ | async)?.promoChannels) || '-' }}
+                    {{ getStoreChannels(custChannel) || '-' }}
                 </div>
             </div>
 
@@ -125,11 +125,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Cluster<br />
-                    ({{ (crossSellingPromo$ | async)?.promoClusters?.length }} Selected)
+                    ({{ custCluster.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreClusters((crossSellingPromo$ | async)?.promoClusters) || '-' }}
+                    {{ getStoreClusters(custCluster) || '-' }}
                 </div>
             </div>
         </ng-container> -->
@@ -145,11 +145,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Warehouse<br />
-                    ({{ (crossSellingPromo$ | async)?.promoWarehouses?.length }} Selected)
+                    ({{custWarehouse.length}} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getWarehouses((crossSellingPromo$ | async)?.promoWarehouses) || '-' }}
+                    {{ getWarehouses(custWarehouse) || '-' }}
                 </div>
             </div>
 
@@ -161,11 +161,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Type<br />
-                    ({{ (crossSellingPromo$ | async)?.promoTypes?.length }} Selected)
+                    ({{ custType.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreTypes((crossSellingPromo$ | async)?.promoTypes) || '-' }}
+                    {{ getStoreTypes(custType) || '-' }}
                 </div>
             </div>
 
@@ -177,11 +177,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Group<br />
-                    ({{ (crossSellingPromo$ | async)?.promoGroups?.length }} Selected)
+                    ({{ custGroup.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreGroups((crossSellingPromo$ | async)?.promoGroups) || '-' }}
+                    {{ getStoreGroups(custGroup) || '-' }}
                 </div>
             </div>
 
@@ -193,11 +193,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Channel<br />
-                    ({{ (crossSellingPromo$ | async)?.promoChannels?.length }} Selected)
+                    ({{ custChannel.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreChannels((crossSellingPromo$ | async)?.promoChannels) || '-' }}
+                    {{ getStoreChannels(custChannel) || '-' }}
                 </div>
             </div>
 
@@ -209,11 +209,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Cluster<br />
-                    ({{ (crossSellingPromo$ | async)?.promoClusters?.length }} Selected)
+                    ({{ custCluster.length }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreClusters((crossSellingPromo$ | async)?.promoClusters) || '-' }}
+                    {{ getStoreClusters(custCluster) || '-' }}
                 </div>
             </div>
         </ng-container>

@@ -98,6 +98,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    catalogueSegmentationObjectId: string;
 
     constructor(data: CrossSellingPromoDetail) {
         const {
@@ -129,6 +130,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
             createdAt,
             updatedAt,
             deletedAt,
+            catalogueSegmentationObjectId
         } = data;
 
         this.id = id;
@@ -159,5 +161,49 @@ export class CrossSellingPromoDetail implements ITimestamp {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.catalogueSegmentationObjectId = catalogueSegmentationObjectId || null;
+    }
+}
+
+export class WarehouseDetail {
+    readonly id: NonNullable<string>;
+    warehouseId: string;
+    warehouseName: string;
+    typeId: string;
+    typeName: string;
+    groupId: string;
+    groupName: string;
+    clusterId: string;
+    clusterName: string;
+    channelId: string;
+    channelName: string;
+
+    constructor(data: WarehouseDetail) {
+        const {
+            id,
+            warehouseId,
+            warehouseName,
+            typeId,
+            typeName,
+            groupId,
+            groupName,
+            clusterId,
+            clusterName,
+            channelId,
+            channelName
+        } = data;
+
+        this.id = id;
+      
+        this.warehouseId = warehouseId || null;
+        this.warehouseName = warehouseName || null;
+        this.typeId = typeId || null;
+        this.typeName = typeName || null;
+        this.groupId = groupId || null;
+        this.groupName = groupName || null;
+        this.clusterId = clusterId || null;
+        this.clusterName = clusterName || null;
+        this.channelId = channelId || null;
+        this.channelName = channelName || null;
     }
 }

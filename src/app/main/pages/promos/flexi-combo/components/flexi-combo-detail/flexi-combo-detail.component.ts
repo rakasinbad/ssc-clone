@@ -79,7 +79,7 @@ export class FlexiComboDetailComponent implements OnInit, OnDestroy {
     }
 
     onClickBack(): void {
-        this.router.navigateByUrl('/pages/promos/flexi-combo', { replaceUrl: true });
+        this.router.navigateByUrl('/pages/promos/flexi-combo');
     }
 
     // -----------------------------------------------------------------------------------------------------
