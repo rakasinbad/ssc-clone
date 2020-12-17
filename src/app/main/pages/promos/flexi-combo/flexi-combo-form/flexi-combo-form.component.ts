@@ -1332,9 +1332,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.warehouseLength = value.total;
         if (value.total > 1) {
             this.warehouseSelectAll = warehouseValue.warehouseName + ' (+'+(this.warehouseLength - 1)+' others)';
-        } else {
+        } else if (value.total == 1) {
             this.warehouseSelectAll = warehouseValue.warehouseName;
-        }
+        } else {
+            this.warehouseLength = 0;
+            this.warehouseSelectAll = 'Warehouse Not Found';
+        } 
     }
 
      /**
@@ -1350,8 +1353,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.storeTypeLength = value.total;
         if (value.total > 1) {
             this.storeTypeSelectAll = storeTypeValue.typeName + ' (+'+(this.storeTypeLength - 1)+' others)';
-        } else {
+        }  else if (value.total == 1) {
             this.storeTypeSelectAll = storeTypeValue.typeName;
+        } else {
+            this.storeTypeLength = 0;
+            this.storeTypeSelectAll = 'Store Type Not Found';
         }
     }
 
@@ -1368,9 +1374,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.storeGroupLength = value.total;
         if (value.total > 1) {
             this.storeGroupSelectAll = storeGroupValue.groupName + ' (+'+(this.storeGroupLength - 1)+' others)';
-        } else {
+        } else if (value.total == 1) {
             this.storeGroupSelectAll = storeGroupValue.groupName;
-        }
+        } else {
+            this.storeGroupLength = 0;
+            this.storeGroupSelectAll = 'Store Group Not Found';
+        } 
     }
 
       /**
@@ -1386,9 +1395,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.storeChannelLength = value.total;
         if (value.total > 1) {
             this.storeChannelSelectAll = storeChannelValue.channelName + ' (+'+(this.storeChannelLength - 1)+' others)';
-        } else {
+        } else if (value.total == 1) {
             this.storeChannelSelectAll = storeChannelValue.channelName;
-        }
+        } else {
+            this.storeChannelLength = 0;
+            this.storeChannelSelectAll = 'Store Channel Not Found';
+        } 
     }
 
     /**
@@ -1404,8 +1416,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.storeClusterLength = value.total;
         if (value.total > 1) {
             this.storeClusterSelectAll = storeClusterValue.clusterName + ' (+'+(this.storeClusterLength - 1)+' others)';
-        } else {
+        } else if (value.total == 1) {
             this.storeClusterSelectAll = storeClusterValue.clusterName;
+        } else {
+            this.storeClusterLength = 0;
+            this.storeClusterSelectAll = 'Store Cluster Not Found';
         }
     }
 

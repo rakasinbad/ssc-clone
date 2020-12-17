@@ -172,11 +172,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.storeWarehouseLength = value.total;
         if (value.total > 1) {
             this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName + ' (+'+(this.storeWarehouseLength - 1)+' others)';
-        } else if (value == null || value == undefined) {
+        } else if (value.total == 1) {
+            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
+        } else {
             this.storeWarehouseLength = 0;
             this.storeWarehouseSelectAll = 'Warehouse Not Found';
-        } else {
-            this.storeWarehouseSelectAll = storeWarehouseValue.warehouseName;
         }
     }
 
@@ -193,11 +193,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.storeTypeLength = value.total;
         if (value.total > 1) {
             this.storeTypeSelectAll = storeTypeValue.typeName + ' (+'+(this.storeTypeLength - 1)+' others)';
-        }  else if (value == null || value == undefined) {
+        }  else if (value.total == 1) {
+            this.storeTypeSelectAll = storeTypeValue.typeName;
+        } else {
             this.storeTypeLength = 0;
             this.storeTypeSelectAll = 'Store Type Not Found';
-        } else {
-            this.storeTypeSelectAll = storeTypeValue.typeName;
         }
     }
 
@@ -214,11 +214,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.storeGroupLength = value.total;
         if (value.total > 1) {
             this.storeGroupSelectAll = storeGroupValue.groupName + ' (+'+(this.storeGroupLength - 1)+' others)';
-        } else if (value == null || value == undefined) {
+        } else if (value.total == 1) {
+            this.storeGroupSelectAll = storeGroupValue.groupName;
+        } else {
             this.storeGroupLength = 0;
             this.storeGroupSelectAll = 'Store Group Not Found';
-        } else {
-            this.storeGroupSelectAll = storeGroupValue.groupName;
         }
     }
 
@@ -235,11 +235,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.storeChannelLength = value.total;
         if (value.total > 1) {
             this.storeChannelSelectAll = storeChannelValue.channelName + ' (+'+(this.storeChannelLength - 1)+' others)';
-        } else if (value == null || value == undefined) {
+        } else if (value.total == 1) {
+            this.storeChannelSelectAll = storeChannelValue.channelName;
+        } else {
             this.storeChannelLength = 0;
             this.storeChannelSelectAll = 'Store Channel Not Found';
-        } else {
-            this.storeChannelSelectAll = storeChannelValue.channelName;
         }
     }
 
@@ -256,11 +256,11 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.storeClusterLength = value.total;
         if (value.total > 1) {
             this.storeClusterSelectAll = storeClusterValue.clusterName + ' (+'+(this.storeClusterLength - 1)+' others)';
-        } else if (value == null || value == undefined) {
+        } else if (value.total == 1) {
+            this.storeClusterSelectAll = storeClusterValue.clusterName;
+        } else {
             this.storeClusterLength = 0;
             this.storeClusterSelectAll = 'Store Cluster Not Found';
-        } else {
-            this.storeClusterSelectAll = storeClusterValue.clusterName;
         }
     }
 
