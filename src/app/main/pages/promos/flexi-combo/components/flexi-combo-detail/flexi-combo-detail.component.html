@@ -12,7 +12,7 @@
                 <button
                     mat-icon-button
                     class="mr-0 mr-sm-16"
-                    [routerLink]="['/pages', 'promos', 'flexi-combo']"
+                    (click)="onClickBack()"
                 >
                     <mat-icon>arrow_back</mat-icon>
                 </button>
@@ -39,7 +39,7 @@
             </div>
             <!-- / APP TITLE -->
 
-            <button
+            <!-- <button
                 mat-raised-button
                 type="button"
                 class="accent-fg"
@@ -47,12 +47,12 @@
                 *ngIf="!(isLoading$ | async)"
             >
                 <span>Edit</span>
-            </button>
+            </button> -->
 
-            <ngx-skeleton-loader
+            <!-- <ngx-skeleton-loader
                 [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
                 *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader>
+            ></ngx-skeleton-loader> -->
         </div>
         <!-- / HEADER -->
 

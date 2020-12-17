@@ -93,6 +93,11 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     // Untuk menyimpan catalogues yang opsinya ingin di-disable. (tidak bisa dipilih)
     @Input() disabledCatalogues: Array<Selection> = [];
 
+
+    @Input() typeCatalogue: string = '';
+    @Input() fakturIdSelect: string = '';
+    @Input() segmentationSelectId: string = '';
+
     // Untuk mengirim data berupa catalogue yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
     // Untuk mengirim data berupa catalogue yang telah terpilih melalui tombol Apply. (hanya terkirim jika handleEventManually = true)
@@ -213,6 +218,27 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
 
+                if (this.typeCatalogue == 'crossSelling' && this.fakturIdSelect != null) {
+                    // Jika user tidak ada data supplier.
+                    if (!userSupplier) {
+                        throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                    }
+
+                    // Mengambil ID supplier-nya.
+                    const { supplierId } = userSupplier;
+
+                    // Memasukkan ID supplier ke dalam params baru.
+                    newQuery['supplierId'] = supplierId;
+                    newQuery['fakturId'] = this.fakturIdSelect;
+                    newQuery['catalogueSegmentationId'] = this.segmentationSelectId;
+                    newQuery['segment']= 'catalogue';
+                    // Melakukan request data segment catalogue.
+                    return this.entityApi$
+                    .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                    .pipe(
+                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
+                    );
+                } else {
                 // Memeriksa keberadaan input value dari invoiceGroupName.
                 if (this.invoiceGroupName) {
                     // Memberi flag bahwa ID supplier tidak diwajibkan.
@@ -233,13 +259,14 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                     newQuery['supplierId'] = supplierId;
                 }
 
-
                 // Melakukan request data warehouse.
                 return this.entityApi$
                     .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
+                }
+
             }),
             take(1),
             catchError(err => { throw err; }),
@@ -259,7 +286,6 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 } else {
                     addedRawAvailableEntities = response.data;
                     addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'catalogues' }));
-
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
@@ -689,6 +715,23 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 limit: this.limit,
                 skip: 0,
             };
+
+            this.requestEntity(params);
+        }
+
+        if (this.typeCatalogue == 'crossSelling' && this.fakturIdSelect != null) {
+            this.availableEntities$.next([]);
+            this.rawAvailableEntities$.next([]);
+            this.entityFormValue.setValue([]);
+
+            const params: IQueryParams = {
+                paginate: true,
+                limit: this.limit,
+                skip: 0,
+            };
+
+            params['fakturId'] = this.fakturIdSelect;
+            params['catalogueSegmentationId'] = this.segmentationSelectId;
 
             this.requestEntity(params);
         }

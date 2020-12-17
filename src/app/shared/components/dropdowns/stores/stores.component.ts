@@ -83,6 +83,14 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Store';
 
+    @Input() typePromo: string = '';
+    @Input() catalogueIdSelect: string;
+    @Input() brandIdSelect: string = '';
+    @Input() fakturIdSelect: string = '';
+    @Input() typeTrigger: string = '';
+    @Input() segmentBases: string = '';
+    @Input() idSelectedSegment: string = undefined;
+
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
@@ -200,14 +208,51 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
-                newQuery['catalogueId'] = this.catalogueId;
+                if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {  
+                    newQuery['segment'] = 'store';
+                    if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
+                            newQuery['catalogueId'] = this.catalogueIdSelect;
+                            // Melakukan request data  Store Segment.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        
+                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== '' || this.brandIdSelect !== undefined)) {
+                            newQuery['brandId'] = this.brandIdSelect;
+                            // Melakukan request data  Store Segment.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        
+                    } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
+                        newQuery['fakturId'] = this.fakturIdSelect;
+                         // Melakukan request data  Store Segment.
+                         return this.entityApi$
+                         .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                         .pipe(
+                             tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                         );
+                    } else {
 
-                // Melakukan request data warehouse.
-                return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-                    );
+                    }
+                        
+                } else if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'voucher') {
+                        if (this.idSelectedSegment !== undefined || this.idSelectedSegment !== null) {
+                            newQuery['segment'] = 'store';
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                            // Melakukan request data warehouse.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                            );
+                        }
+                }
+
             }),
             take(1),
             catchError(err => { throw err; }),
@@ -219,14 +264,22 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling' ) {
+                        addedAvailableEntities = (response as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                    } else {
+                        addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
+                    }
 
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling') {
+                        addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                    } else {
+                        addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
+                    }
 
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
@@ -511,48 +564,46 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     ngOnInit(): void {
         this.initForm();
-        
-        // Menangani Form Control-nya warehouse.
-        // (this.entityForm.valueChanges).pipe(
-        //     startWith(''),
-        //     debounceTime(200),
-        //     distinctUntilChanged(),
-        //     withLatestFrom(this.selectedEntity$),
-        //     filter(([formValue, selectedEntity]) => {
-        //         if (selectedEntity && formValue && !this.entityAutoComplete.isOpen) {
-        //             return false;
-        //         }
-                
-        //         if (selectedEntity || (!formValue && !this.entityAutoComplete.isOpen)) {
-        //             this.selectedEntity$.next(null);
-        //             return false;
-        //         }
-
-        //         if (!formValue && selectedEntity && !this.entityAutoComplete.isOpen) {
-        //             this.entityForm.patchValue(selectedEntity);
-        //             return false;
-        //         }
-
-        //         return true;
-        //     }),
-        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
-        //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
-        //     }),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([formValue]) => {
-        //     const queryParams: IQueryParams = {
-        //         paginate: true,
-        //         limit: 10,
-        //         skip: 0
-        //     };
-
-        //     queryParams['keyword'] = formValue;
-
-        //     this.requestEntity(queryParams);
-        // });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (this.segmentBases == undefined || this.segmentBases == 'store') {
+            if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {
+                const params = {
+                    // paginate: true,
+                    // limit: this.limit,
+                    // skip: 0,
+                };
+                if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueId'] = this.catalogueIdSelect;
+                    this.requestEntity(params);
+                } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined || this.brandIdSelect !== '')) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['brandId'] = this.brandIdSelect;
+                    this.requestEntity(params);
+                } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['fakturId'] = this.fakturIdSelect;
+                    this.requestEntity(params);
+
+                }
+
+            } else if (this.typePromo == 'crossSelling') {
+                    const params = {};
+                    if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null || this.idSelectedSegment !== undefined)) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueSegmentationId'] = this.idSelectedSegment;
+                        this.requestEntity(params);
+                    }
+            } else {}
+        }
+      
+
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();
@@ -601,7 +652,9 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
+        if (this.typePromo !== 'flexiCombo') {
+            this.initEntity();
+        }
     }
 
 }

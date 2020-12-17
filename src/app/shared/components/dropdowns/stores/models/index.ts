@@ -1,1 +1,1 @@
-export * from 'app/shared/models/supplier.model';
+export * from './supplier-store.model';
