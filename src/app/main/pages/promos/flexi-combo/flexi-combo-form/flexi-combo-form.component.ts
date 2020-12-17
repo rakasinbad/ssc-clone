@@ -217,6 +217,23 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         // Add 'implements AfterViewInit' to the class.
 
         this._initPage(LifecyclePlatform.AfterViewInit);
+
+        if (this.form.get('chosenStore').value == null) {
+            this.form.get('chosenStore').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+            this.form.get('chosenStore').updateValueAndValidity();
+        } else {
+            this.form.get('chosenStore').clearValidators();
+            this.form.get('chosenStore').updateValueAndValidity();
+        }
+
     }
 
     ngOnDestroy(): void {
