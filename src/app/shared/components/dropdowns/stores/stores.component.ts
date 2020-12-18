@@ -614,9 +614,12 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
+                this.availableEntities$.next([]);
+                this.rawAvailableEntities$.next([]);
+                this.entityForm.reset();
+                this.entityFormValue.setValue([]);
+                this.tempEntity = [];
                 if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
                     params['catalogueSegmentationId'] = this.idSelectedSegment;
                     this.requestEntity(params);
                 }

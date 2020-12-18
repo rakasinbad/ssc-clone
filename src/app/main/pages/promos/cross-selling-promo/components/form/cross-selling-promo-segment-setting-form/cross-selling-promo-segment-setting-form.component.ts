@@ -106,8 +106,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             this.selectFaktur = changes['fakturId'].currentValue;
         }
 
-        console.log('isi getgroup changes cross->', changes['getGroup'])
         if (changes['getGroup'].currentValue !== null) {
+            this._clearChosenStoreValidation();
             this.idSelectSegment = changes['getGroup'].currentValue;
             this.segmentBases = this.form.get('segmentationBase').value;
         }
