@@ -48,7 +48,7 @@ export class DetailPromoListComponent implements OnInit {
 
     search: FormControl = new FormControl();
 
-    displayedColumns = ['sellerId', 'name', 'start_date', 'end_date'];
+    displayedColumns = ['sellerId', 'storeName', 'start_date', 'end_date'];
 
     selection: SelectionModel<skpPromoList>;
 
@@ -68,12 +68,20 @@ export class DetailPromoListComponent implements OnInit {
     public dataSource = [];
     private subs$: Subject<void> = new Subject<void>();
     dataDummy = [
-        {id: '1', storeName: 'Tesno Ali Laundry', 
+        {id: 1, sellerId: 'D011', storeName: 'Tesno Ali Laundry', 
         name: 'Pak Ali',  
         start_date: '2020-11-30T06:46:00.000Z', 
         end_date: '2020-11-30T06:50:00.000Z', 
-    }, {id: '2', storeName: 'Tika Laundry', 
+    }, {id: 2, sellerId: 'D012', storeName: 'Tika Laundry', 
         name: 'Ibu Tika',  
+        start_date: '2020-11-30T06:46:00.000Z', 
+        end_date: '2020-11-30T06:50:00.000Z', 
+    }, {id: 3, sellerId: 'D013', storeName: 'Amin Laundry', 
+        name: 'Pak Amin',  
+        start_date: '2020-11-30T06:46:00.000Z', 
+        end_date: '2020-11-30T06:50:00.000Z', 
+    }, {id: 4, sellerId: 'D014', storeName: 'Ayu Market', 
+        name: 'Ibu Ayu',  
         start_date: '2020-11-30T06:46:00.000Z', 
         end_date: '2020-11-30T06:50:00.000Z', 
     },
@@ -111,11 +119,11 @@ export class DetailPromoListComponent implements OnInit {
             };
            
             this.SkpStore.dispatch(SkpActions.clearState());
-            this.SkpStore.dispatch(
-                SkpActions.fetchSkpListDetailPromoRequest({
-                    payload: data,
-                })
-            );
+            // this.SkpStore.dispatch(
+            //     SkpActions.fetchSkpListDetailPromoRequest({
+            //         payload: data,
+            //     })
+            // );
 
         }
     }

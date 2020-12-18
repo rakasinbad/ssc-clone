@@ -196,7 +196,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
 
                 const { id } = this.route.snapshot.params;
-                    console.log('isi route snapshot->', this.route.snapshot.params)
                 if (id === 'create') {
                     this.pageType = 'new';
                 } else {
@@ -252,7 +251,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
                     .subscribe((status) => {
-                        console.log('status form->', status)
                         this._setFormStatus(status);
                     });
 

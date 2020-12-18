@@ -32,7 +32,8 @@ export class DetailGeneralComponent implements OnInit {
     
     public typePromoAlloc: any;
     public subsFlexi: Subscription;
-
+    statusSkpType = this._$helperService.skpStatusType();
+    
     constructor(
         private matDialog: MatDialog,
         private store: Store<fromSkp.FeatureState>,
@@ -48,12 +49,11 @@ export class DetailGeneralComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.skpGeneral$ = this.store.select(SkpSelectors.getSelectedItem).pipe(
-            map((item) => {
-                    this.typePromoAlloc = item;
-                return item;
-            })
-        );
+        // this.skpGeneral$ = this.store.select(SkpSelectors.getSelectedItem).pipe(
+        //     map((item) => {
+        //         return item;
+        //     })
+        // );
 
         this.isLoading$ = this.store.select(SkpSelectors.getIsLoading);
 

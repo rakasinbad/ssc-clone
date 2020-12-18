@@ -56,18 +56,24 @@ export class SkpModel implements ITimestamp {
 
 export class skpPromoList {
     readonly id: NonNullable<string>;
+    sellerId: string;
+    storeName: string;
     name: string;
     start_date: string;
     end_date: string;
     constructor(dataPromo: skpPromoList) {
         const {
             id,
+            sellerId,
+            storeName,
             name,
             start_date,
             end_date,
         } = dataPromo
 
-        this.id = id;
+        this.id = id || null;
+        this.sellerId = sellerId;
+        this.storeName = storeName;
         this.name = name;
         this.start_date = start_date;
         this.end_date = end_date;

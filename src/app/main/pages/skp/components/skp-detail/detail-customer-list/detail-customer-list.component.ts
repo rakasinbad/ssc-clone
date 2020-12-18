@@ -119,11 +119,11 @@ export class DetailCustomerListComponent implements OnInit {
             };
 
             this.SkpStore.dispatch(SkpActions.clearState());
-            this.SkpStore.dispatch(
-                SkpActions.fetchSkpListDetailStoreRequest({
-                    payload: data,
-                })
-            );
+            // this.SkpStore.dispatch(
+            //     SkpActions.fetchSkpListDetailStoreRequest({
+            //         payload: data,
+            //     })
+            // );
 
         }
     }

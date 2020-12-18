@@ -111,8 +111,7 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
 
-
-                this.store.dispatch(SkpActions.fetchSkpRequest({ payload: { id, parameter } }));
+                // this.store.dispatch(SkpActions.fetchSkpRequest({ payload: { id, parameter } }));
                 // this.isLoading$ = this.store.select(SkpSelectors.getIsLoading);
                 break;
         }

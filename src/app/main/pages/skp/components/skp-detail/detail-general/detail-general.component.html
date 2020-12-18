@@ -1,20 +1,20 @@
-<!-- <div class="pb-16">
+<div class="pb-16">
     <span class="mat-headline"> General Information </span>
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-
     <div
         class="custom-field info-field"
         fxLayout="row"
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Seller ID</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">SKP Name</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (skpGeneral$ | async)?.externalId || '-' }}
+                SKP Danone
+                <!-- {{ (skpGeneral$ | async)?.name || '-' }} -->
             </ng-container>
 
             <ngx-skeleton-loader
@@ -30,11 +30,12 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Name</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">SKP Description</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (skpGeneral$ | async)?.name || '-' }}
+                Ini adalah contoh deskripsi SKP Danone
+                <!-- {{ (skpGeneral$ | async)?.description || '-' }} -->
             </ng-container>
 
             <ngx-skeleton-loader
@@ -50,11 +51,12 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Platform</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">Notes To Display</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ ((skpGeneral$ | async)?.platform | titlecase) || '-' }}
+                Ini adalah contoh Notes to Display
+                <!-- {{ (skpGeneral$ | async)?.notes || '-' }} -->
             </ng-container>
 
             <ngx-skeleton-loader
@@ -70,93 +72,12 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-                Max Redemption<br />per Buyer
-        </div>
-        
-        <div class="info" fxFlex="100">
-            <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (skpGeneral$ | async)?.maxRedemptionPerStore || '-' }}
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader>
-        </div>
-    </div>
-
-    <ng-container *ngIf="!(isLoading$ | async)">
-        <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="10"> Max Promo Redemption
-                    <br />(Rp)
-                </div>
-
-                <div class="info" fxFlex="100">
-                    <p thousandSeparator=".">
-                        Rp {{ ((skpGeneral$ | async)?.promoBudget | number) || '-' }}
-                    </p>
-
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                        *ngIf="isLoading$ | async"
-                    ></ngx-skeleton-loader>
-                </div>
-            </div>
-        </ng-container>
-    </ng-container>
-
-    <ng-container *ngIf="!(isLoading$ | async)">
-        <ng-container *ngIf="typePromoAlloc == 'promo_slot'">
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="10"> Max Promo Redemption<br />(transaction)</div>
-
-                <div class="info" fxFlex="100">
-                    <p>
-                        {{ ((skpGeneral$ | async)?.promoSlot | number) || '-' }}
-                    </p>
-
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                        *ngIf="isLoading$ | async"
-                    ></ngx-skeleton-loader>
-                </div>
-            </div>
-        </ng-container>
-    </ng-container>
-
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Active From</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">Header</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
-                    <span class="date">
-                        {{ ((skpGeneral$ | async)?.startDate | date: 'dd/MM/yyyy') || '-' }}
-                    </span>
-
-                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
-
-                    <span class="time">
-                        {{ ((skpGeneral$ | async)?.startDate | date: 'HH:mm') || '-' }}
-                    </span>
-                </span>
+                Selalu Untukmu!!
+                <!-- {{ (skpGeneral$ | async)?.header  || '-' }} -->
             </ng-container>
 
             <ngx-skeleton-loader
@@ -172,41 +93,12 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">To</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">SKP File</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
-                    <span class="date">
-                        {{ ((skpGeneral$ | async)?.endDate | date: 'dd/MM/yyyy') || '-' }}
-                    </span>
-
-                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
-
-                    <span class="time">
-                        {{ ((skpGeneral$ | async)?.endDate | date: 'HH:mm') || '-' }}
-                    </span>
-                </span>
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader>
-        </div>
-    </div>
-
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Short Description</div>
-
-        <div class="info" fxFlex="100">
-            <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (skpGeneral$ | async)?.shortDescription || '-' }}
+                SKP Danone
+                <!-- {{ (skpGeneral$ | async)?.file || '-' }} -->
             </ng-container>
 
             <ngx-skeleton-loader
@@ -252,29 +144,78 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">Available From</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <mat-checkbox [checked]="(flexiCombo$ | async)?.voucherCombine" [disabled]="true">
-                    Allow Combine with Voucher
-                </mat-checkbox>
+                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                    <span class="date">
+                        18/12/2020
+                        <!-- {{ ((skpGeneral$ | async)?.startDate | date: 'dd/MM/yyyy') || '-' }} -->
+                    </span>
 
-                <mat-checkbox [checked]="(flexiCombo$ | async)?.firstBuy" [disabled]="true">
-                    First Buy
-                </mat-checkbox>
+                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
+                </span>
             </ng-container>
 
-            <ng-container *ngIf="isLoading$ | async">
-                <ngx-skeleton-loader
-                    [theme]="{ width: '150px', 'margin-bottom': '-5px', 'margin-right': '16px' }"
-                ></ngx-skeleton-loader>
-
-                <ngx-skeleton-loader
-                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                ></ngx-skeleton-loader>
-            </ng-container>
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
-</div> -->
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">To</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                    <span class="date">
+                        18/12/2020
+                        <!-- {{ ((skpGeneral$ | async)?.endDate | date: 'dd/MM/yyyy') || '-' }} -->
+                    </span>
+
+                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
+                </span>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Status</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="statusSkpType; else noStatusSkpType">
+                    <!-- <mat-radio-group [value]="(skpGeneral$ | async)?.status"> -->
+                    <mat-radio-group [value]="'active'">
+                        <mat-radio-button
+                            *ngFor="let row of statusSkpType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noStatusSkpType> - </ng-template>
+            </div>
+    </div>
+</div>

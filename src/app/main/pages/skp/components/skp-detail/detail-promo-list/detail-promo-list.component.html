@@ -1,5 +1,5 @@
 <!-- <mat-table
-    class="skp-list-table sinbad-table"
+    class="detail-promo-list-table sinbad-table"
     [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
     [dataSource]="dataSource"
@@ -7,6 +7,10 @@
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
 > -->
+
+<div class="pb-16">
+    <span class="mat-headline"> Promo List </span>
+</div>
 
 <mat-table
     class="detail-promo-list-table sinbad-table"
@@ -16,22 +20,21 @@
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
 >
-    <!-- Seller ID Column-->
-    <ng-container matColumnDef="id">
-        <mat-header-cell *matHeaderCellDef> Seller Id </mat-header-cell>
+    <!-- seller Id Column -->
+    <ng-container matColumnDef="sellerId">
+        <mat-header-cell *matHeaderCellDef> Seller ID</mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.id || '-' }}</p>
-            <!-- <p style="word-break: break-word">D0001</p> -->
+            <p style="word-break: break-word">{{ row?.sellerId || '-' }}</p>
+            <!-- <p style="word-break: break-word">Promo Name 1</p> -->
         </mat-cell>
     </ng-container>
 
-    <!-- Promo Name Column -->
-    <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef> Promo Name </mat-header-cell>
+    <!-- Store Name Column-->
+    <ng-container matColumnDef="storeName">
+        <mat-header-cell *matHeaderCellDef> Store Name </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.name || '-' }}</p>
-            <!-- <p style="word-break: break-word">Promo Name 1</p> -->
-
+            <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
+            <!-- <p style="word-break: break-word">Laundry A</p> -->
         </mat-cell>
     </ng-container>
 
@@ -67,7 +70,6 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="sinbad-voucher-list-item"
-        [routerLink]="['view', row?.id]"
     ></mat-row>
 
     <!-- <mat-footer-row

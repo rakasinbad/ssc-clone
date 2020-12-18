@@ -1,5 +1,5 @@
 <!-- <mat-table
-    class="skp-list-table sinbad-table"
+    class="detail-customer-list-table sinbad-table"
     [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
     [dataSource]="dataSource"
@@ -7,6 +7,10 @@
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
 > -->
+
+<div class="pb-16">
+    <span class="mat-headline"> Customer List </span>
+</div>
 
 <mat-table
     class="detail-customer-list-table sinbad-table"
@@ -17,11 +21,10 @@
     fusePerfectScrollbar
 >
     <!-- Store Name Column -->
-    <ng-container matColumnDef="name">
+    <ng-container matColumnDef="storeName">
         <mat-header-cell *matHeaderCellDef> Store Name </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
-            <!-- <p style="word-break: break-word">Aliansyah Laundry</p> -->
         </mat-cell>
     </ng-container>
 
@@ -30,7 +33,6 @@
         <mat-header-cell *matHeaderCellDef> Store Owner Name </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">{{ row?.storeOwnerName || '-' }}</p>
-            <!-- <p style="word-break: break-word">Pak Ali</p> -->
         </mat-cell>
     </ng-container>
 
@@ -39,7 +41,6 @@
         <mat-header-cell *matHeaderCellDef> Adress </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">{{ row?.address || '-' }}</p>
-            <!-- <p style="word-break: break-word">Jl. Kemang Utara </p> -->
         </mat-cell>
     </ng-container>
 
@@ -48,7 +49,6 @@
         <mat-header-cell *matHeaderCellDef> Province </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">{{ row?.province || '-' }}</p>
-            <!-- <p style="word-break: break-word">Jakarta Selatan </p> -->
         </mat-cell>
     </ng-container>
 
@@ -57,7 +57,6 @@
         <mat-header-cell *matHeaderCellDef> SKP Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">{{ row?.skpStatus || '-' }}</p>
-            <!-- <p style="word-break: break-word">Agree</p> -->
         </mat-cell>
     </ng-container>
 
@@ -67,7 +66,6 @@
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ (row?.skpUpdateDate | date: 'dd/MM/yyyy') || '-' }}
-                <!-- 20/03/2020 -->
             </p>
         </mat-cell>
     </ng-container>
