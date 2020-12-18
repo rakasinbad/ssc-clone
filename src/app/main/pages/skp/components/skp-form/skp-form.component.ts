@@ -322,6 +322,14 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             //         })
             //     ],
             // ],
+            supplierId: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             name: [
                 null,
                 [
@@ -444,6 +452,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private _setEditForm(row: SkpModel): void {
         // console.log('ROW', row);
         const skpId = this.form.get('id');
+        const skpSupplierId = this.form.get('supplierId');
         const skpNameCtrl = this.form.get('name');
         const descriptionCtrl = this.form.get('description');
         const notesCtrl = this.form.get('notes');
@@ -456,6 +465,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // if (row.externalId) {
         //     promoSellerIdCtrl.setValue(row.externalId);
         // }
+
+        if (row.supplierId) {
+            skpSupplierId.setValue(row.supplierId);
+        }
 
         // Handle Name
         if (row.name) {
@@ -507,6 +520,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const body = this.form.getRawValue();
         const {
+            supplierId,
             name,
             description,
             notes,
@@ -529,6 +543,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.pageType === 'new') {
             const payload: CreateSkpDto = {
+                supplierId,
                 name,
                 description,
                 notes,
@@ -546,6 +561,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             const { id } = this.route.snapshot.params;
 
             const payload: UpdateSkpDto = {
+                supplierId,
                 name,
                 description,
                 notes,

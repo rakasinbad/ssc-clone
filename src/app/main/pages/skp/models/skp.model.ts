@@ -4,6 +4,7 @@ import { EStatus, TNullable } from 'app/shared/models/global.model';
 
 export class SkpModel implements ITimestamp {
     readonly id: NonNullable<string>;
+    supplierId: string;
     name: string;
     description: string;
     endDate: string;
@@ -20,6 +21,7 @@ export class SkpModel implements ITimestamp {
     constructor(data: SkpModel) {
         const {
             id,
+            supplierId,
             name,
             description,
             endDate,
@@ -35,6 +37,7 @@ export class SkpModel implements ITimestamp {
         } = data;
 
         this.id = id;
+        this.supplierId = supplierId || null;
         this.name = name ? String(name).trim() : null;
         this.description = description;
         this.endDate = endDate;
