@@ -43,7 +43,7 @@ export class SupplierStoresApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findSegmentPromo<T>(params: IQueryParams): Observable<T> {
+    findSegmentPromo<T>(params): Observable<T> {
         const newArgs = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {

@@ -43,7 +43,7 @@ export class WarehousesApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findSegmentPromo<T>(params: IQueryParams): Observable<T> {
+    findSegmentPromo<T>(params): Observable<T> {
         const newArgs = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {
@@ -78,6 +78,8 @@ export class WarehousesApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
+        delete params['$limit'];
+        delete params['$skip']
         this._url = this.helper$.handleApiRouter(this._endpointPromo);
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 

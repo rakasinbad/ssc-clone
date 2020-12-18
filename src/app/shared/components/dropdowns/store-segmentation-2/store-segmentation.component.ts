@@ -220,6 +220,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // Request berdasarkan segmentasinya
                 if (this.segmentBases == 'all') {
                     newQuery['segmentation'] = this.segmentationType;
+                    delete newQuery['$skip'];
+                    delete newQuery['limit'];
                     if (this.typePromo == 'flexiCombo') {
                         if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
                             newQuery['catalogueId'] = this.catalogueIdSelect;
@@ -257,6 +259,8 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
                         }
+                    } else {
+
                     }
                 } else {
                     if (this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
@@ -732,7 +736,9 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        // this.initEntity();
+        if (this.typePromo == '') {
+            this.initEntity();
+        }
     }
 
 }

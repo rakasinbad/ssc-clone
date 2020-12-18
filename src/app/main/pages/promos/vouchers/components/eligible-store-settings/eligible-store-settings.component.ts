@@ -633,28 +633,30 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         // }
         this.trigger$.next('');
         this.updateFormView();
-
-         if (this.selectedTrigger['base'] == 'sku') {
-            let idSku = [];
-            idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
-            this.catalogueIdSelected = idSku.toString();
-            this.catalogueIdSelected = undefined;     
-            this.fakturIdSelected = undefined;
-            this.triggerSelected = 'brand';
-        } else if (this.selectedTrigger['base'] == 'brand') {
-            let idBrand = [];
-            idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
-            this.brandIdSelected = idBrand.toString();
-            this.catalogueIdSelected = undefined;     
-            this.fakturIdSelected = undefined;
-            this.triggerSelected = 'brand';
-        } else if (this.selectedTrigger['base'] == 'faktur') {
-            let idFaktur = [];
-            idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
-            this.fakturIdSelected = idFaktur.toString();
-            this.catalogueIdSelected = undefined;        
-            this.brandIdSelected = undefined;
-            this.triggerSelected = 'faktur';
+        if (changes['selectedTrigger'].currentValue == null) {
+        } else {
+            if (this.selectedTrigger['base'] == 'sku') {
+                let idSku = [];
+                idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
+                this.catalogueIdSelected = idSku.toString();
+                this.brandIdSelected = undefined;     
+                this.fakturIdSelected = undefined;
+                this.triggerSelected = 'sku';
+            } else if (this.selectedTrigger['base'] == 'brand') {
+                let idBrand = [];
+                idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
+                this.brandIdSelected = idBrand.toString();
+                this.catalogueIdSelected = undefined;     
+                this.fakturIdSelected = undefined;
+                this.triggerSelected = 'brand';
+            } else if (this.selectedTrigger['base'] == 'faktur') {
+                let idFaktur = [];
+                idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
+                this.fakturIdSelected = idFaktur.toString();
+                this.catalogueIdSelected = undefined;        
+                this.brandIdSelected = undefined;
+                this.triggerSelected = 'faktur';
+            }
         }
     }
 
