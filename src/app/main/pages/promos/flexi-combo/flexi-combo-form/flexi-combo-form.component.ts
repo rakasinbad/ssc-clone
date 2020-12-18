@@ -968,7 +968,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Handle validation for Chosen Sku Field (Trigger Base - Sku) (FormControl = chosenSku)
         this._chosenSkuValidationByTriggerBase(triggerBaseVal);
-        console.log('isi ev value ->', ev.value)
         if (ev.value == 'sku' && this.form.get('segmentationBase').value == 'store') {
             this.form.get('chosenStore').reset();
            this.form.get('chosenSku').reset();
