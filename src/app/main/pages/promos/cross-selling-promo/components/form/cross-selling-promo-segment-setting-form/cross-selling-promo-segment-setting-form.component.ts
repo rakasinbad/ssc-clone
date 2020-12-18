@@ -107,9 +107,15 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
 
         if (changes['getGroup'].currentValue !== null) {
-            this._clearChosenStoreValidation();
-            this.idSelectSegment = changes['getGroup'].currentValue;
             this.segmentBases = this.form.get('segmentationBase').value;
+            if (this.segmentBases == 'store') {
+                this.form.get('chosenStore').setValue(null);
+                this._clearChosenStoreValidation();
+                this._setChosenStoreValidation();
+            }
+
+            this.idSelectSegment = changes['getGroup'].currentValue;
+            
         }
 
         if (changes['form']) {
