@@ -633,14 +633,13 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         // }
         this.trigger$.next('');
         this.updateFormView();
-
-         if (this.selectedTrigger['base'] == 'sku') {
+        if (this.selectedTrigger['base'] == 'sku') {
             let idSku = [];
             idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
             this.catalogueIdSelected = idSku.toString();
-            this.catalogueIdSelected = undefined;     
+            this.brandIdSelected = undefined;     
             this.fakturIdSelected = undefined;
-            this.triggerSelected = 'brand';
+            this.triggerSelected = 'sku';
         } else if (this.selectedTrigger['base'] == 'brand') {
             let idBrand = [];
             idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
