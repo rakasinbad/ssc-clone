@@ -240,17 +240,18 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
                     }
                         
-                } else if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'voucher') {
-                        if (this.idSelectedSegment !== undefined || this.idSelectedSegment !== null) {
-                            newQuery['segment'] = 'store';
-                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
-                            // Melakukan request data warehouse.
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
-                            );
-                        }
+                } else if (this.typePromo == 'crossSelling') {
+                    if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
+                        newQuery['segment'] = 'store';
+                        newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                        // Melakukan request data warehouse.
+                        return this.entityApi$
+                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                        .pipe(
+                            tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                        );
+                    }
+                        
                 }
 
             }),
@@ -612,16 +613,17 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 }
 
             } else if (this.typePromo == 'crossSelling') {
-                    const params = {};
-                    if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
-                        this.availableEntities$.next([]);
-                        this.rawAvailableEntities$.next([]);
-                        params['catalogueSegmentationId'] = this.idSelectedSegment;
-                        this.requestEntity(params);
-                    }
+                const params = {};
+                if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
+                    this.availableEntities$.next([]);
+                    this.rawAvailableEntities$.next([]);
+                    params['catalogueSegmentationId'] = this.idSelectedSegment;
+                    this.requestEntity(params);
+                }
             }
         }
-      
+
+        
 
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
@@ -671,7 +673,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        if (this.typePromo !== 'flexiCombo') {
+        if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'crossSelling') {
             this.initEntity();
         }
     }
