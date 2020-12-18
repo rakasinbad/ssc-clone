@@ -219,7 +219,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
                         
-                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== '' || this.brandIdSelect !== undefined)) {
+                    } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
                             newQuery['brandId'] = this.brandIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
