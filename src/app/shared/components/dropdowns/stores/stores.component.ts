@@ -344,12 +344,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -574,35 +572,54 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     // limit: this.limit,
                     // skip: 0,
                 };
-                if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== '')) {
+                if (this.typeTrigger == 'sku') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['catalogueId'] = this.catalogueIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== '')) {
+                    this.entityForm.reset();
+                    this.entityFormValue.setValue([]);
+                    this.tempEntity = [];
+                    this.multiple$.clearAllSelectedOptions();
+                    if ((this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== '')) {
+                        params['catalogueId'] = this.catalogueIdSelect;
+                        this.requestEntity(params);
+                    } else {
+                    }
+                } else if (this.typeTrigger == 'brand') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['brandId'] = this.brandIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== '')) {
+                    this.entityForm.reset();
+                    this.entityFormValue.setValue([]);
+                    this.tempEntity = [];
+                    if((this.brandIdSelect !== undefined && this.brandIdSelect !== '')) {
+                        params['brandId'] = this.brandIdSelect;
+                        this.requestEntity(params);
+                    } else {
+                    }
+                   
+                } else if (this.typeTrigger == 'faktur') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['fakturId'] = this.fakturIdSelect;
-                    this.requestEntity(params);
+                    this.entityForm.reset();
+                    this.entityFormValue.setValue([]);
+                    this.tempEntity = [];
+                    if ((this.fakturIdSelect !== undefined && this.fakturIdSelect !== '')) {
+                        params['fakturId'] = this.fakturIdSelect;
+                        this.requestEntity(params);
+                    } else {
+                    }
 
-                }
-                else {
+                } else {
                 }
 
             } else if (this.typePromo == 'crossSelling') {
                     const params = {};
-                    if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null || this.idSelectedSegment !== undefined)) {
+                    if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
                         this.availableEntities$.next([]);
                         this.rawAvailableEntities$.next([]);
                         params['catalogueSegmentationId'] = this.idSelectedSegment;
                         this.requestEntity(params);
                     }
-            } else {}
+            }
         }
       
 

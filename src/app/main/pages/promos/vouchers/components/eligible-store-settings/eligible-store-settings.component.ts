@@ -549,6 +549,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
 
         if (event.length === 0) {
             this.form.get('chosenStore').setValue('');
+            this.form.get('chosenStore').reset();
         } else {
             this.form.get('chosenStore').setValue(event);
         }
@@ -636,6 +637,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         if (changes['selectedTrigger'].currentValue == null) {
         } else {
             if (this.selectedTrigger['base'] == 'sku') {
+                this.form.get('chosenStore').reset();
                 let idSku = [];
                 idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
                 this.catalogueIdSelected = idSku.toString();
@@ -643,6 +645,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 this.fakturIdSelected = undefined;
                 this.triggerSelected = 'sku';
             } else if (this.selectedTrigger['base'] == 'brand') {
+                this.form.get('chosenStore').reset();
                 let idBrand = [];
                 idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
                 this.brandIdSelected = idBrand.toString();
@@ -650,6 +653,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 this.fakturIdSelected = undefined;
                 this.triggerSelected = 'brand';
             } else if (this.selectedTrigger['base'] == 'faktur') {
+                this.form.get('chosenStore').reset();
                 let idFaktur = [];
                 idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
                 this.fakturIdSelected = idFaktur.toString();

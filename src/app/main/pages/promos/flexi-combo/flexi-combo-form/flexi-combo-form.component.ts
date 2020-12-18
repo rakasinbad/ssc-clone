@@ -649,6 +649,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (!ev.length) {
             this.form.get('chosenBrand').setValue(null);
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'faktur';
+            this.form.get('chosenBrand').reset();
+            this.form.get('chosenStore').reset();
         } else {
             const newBrands: Selection[] = ev.map((item) => ({
                 id: item.id,
@@ -954,7 +960,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!triggerBaseVal) {
             return;
         }
-
         // Handle validation for Chosen Brand Field (Trigger Base - Brand) (FormControl = chosenBrand)
         this._chosenBrandValidationByTriggerBase(triggerBaseVal);
 
@@ -963,6 +968,30 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Handle validation for Chosen Sku Field (Trigger Base - Sku) (FormControl = chosenSku)
         this._chosenSkuValidationByTriggerBase(triggerBaseVal);
+        console.log('isi ev value ->', ev.value)
+        if (ev.value == 'sku' && this.form.get('segmentationBase').value == 'store') {
+            this.form.get('chosenStore').reset();
+           this.form.get('chosenSku').reset();
+           this.catalogueIdSelected = undefined;        
+           this.brandIdSelected = undefined;
+           this.fakturIdSelected = undefined;   
+           this.triggerSelected = 'sku';
+        } else if (ev.value == 'brand' && this.form.get('segmentationBase').value == 'store') {
+            this.form.get('chosenStore').reset();
+            this.form.get('chosenBrand').reset();
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'brand';
+        } else if (ev.value == 'invoice_group' && this.form.get('segmentationBase').value == 'store') {
+            this.form.get('chosenStore').reset();
+            this.form.get('chosenInvoice').reset();
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'faktur';
+        }
+
     }
 
     /**
@@ -1035,6 +1064,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (!ev.length) {
             this.form.get('chosenInvoice').setValue(null);
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'faktur';
+            this.form.get('chosenInvoice').reset();
+            this.form.get('chosenStore').reset();
         } else {
             const newFaktur: Selection[] = ev.map((item) => ({
                 id: item.id,
@@ -1043,6 +1078,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenInvoice').setValue(newFaktur);
+            this.form.get('chosenStore').reset();
             let idFaktur = [];
             idFaktur = ev.map((item) => (item.id));
             this.fakturIdSelected = idFaktur.toString();
@@ -1064,15 +1100,23 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (!ev.length) {
             this.form.get('chosenSku').setValue(null);
+            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = undefined;
+            this.fakturIdSelected = undefined;   
+            this.triggerSelected = 'sku';
+            this.form.get('chosenSku').reset();
+            this.form.get('chosenStore').reset();
         } else {
             const newSku: Selection[] = ev.map((item) => ({
                 id: item.id,
                 label: item.name,
                 group: 'catalogues',
             }));
+
             let idSku = [];
             idSku = ev.map((item) => (item.id));
             this.form.get('chosenSku').setValue(newSku);
+            this.form.get('chosenStore').reset();
             this.catalogueIdSelected = idSku.toString();        
             this.brandIdSelected = undefined;
             this.fakturIdSelected = undefined;   
@@ -1190,6 +1234,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 })
             ]);
             this.form.get('chosenStore').updateValueAndValidity();
+            this.form.get('chosenStore').reset();
         } else {
             this.form.get('chosenStore').clearValidators();
             this.form.get('chosenStore').updateValueAndValidity();
