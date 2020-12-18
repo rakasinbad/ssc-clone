@@ -736,7 +736,6 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        console.log('isi typromo ->', this.typePromo)
         if (this.typePromo == '') {
             this.initEntity();
         }
