@@ -211,8 +211,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse';
-                // if (this.segmentBases == 'all') {
+                if (this.segmentBases == 'all') {
                     if (this.typePromo === 'flexiCombo') {   
+                        delete newQuery['$skip'];
+                        delete newQuery['$limit'];
                         if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined
                                 && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
                                 newQuery['catalogueId'] = this.catalogueIdSelect;
@@ -243,7 +245,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         } else {
 
                         }
-                    }  else if (this.typePromo !== 'flexiPromo') {
+                    }  else if (this.typePromo !== 'flexiPromo' && this.typePromo == 'crossSelling') {
+                        delete newQuery['$skip'];
+                        delete newQuery['$limit'];
                         if (this.idSelectedSegment != null && this.catalogueIdSelect == undefined
                             && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
                             newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
@@ -255,16 +259,14 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                             );
                         }
                     }
+                 } else {
+                        return this.entityApi$
+                        .find<IPaginatedResponse<Entity>>(newQuery)
+                        .pipe(
+                            tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
+                        );
+                    }
 
-                    // if(this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
-                    // // Melakukan request data warehouse.
-                    // return this.entityApi$
-                    // .find<IPaginatedResponse<Entity>>(newQuery)
-                    // .pipe(
-                    //     tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
-                    // );
-                    // }
-                
             }),
             takeUntil(this.subs$),
             catchError(err => { throw err; }),
@@ -632,7 +634,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        // this.initEntity();
+        if (this.typePromo == '') {
+            this.initEntity();
+        }
     }
 
 }
