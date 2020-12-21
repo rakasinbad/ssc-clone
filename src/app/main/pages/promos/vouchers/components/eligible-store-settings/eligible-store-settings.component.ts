@@ -415,13 +415,14 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 ),
                 map(() => {
                     const rawValue = this.form.getRawValue();
-
                     if (rawValue.segmentationBase === 'direct-store') {
                         return {
                             id: rawValue.id,
                             segmentationBase: rawValue.segmentationBase,
                             chosenStore:
-                                rawValue.chosenStore.length === 0 ? [] : rawValue.chosenStore,
+                                rawValue.chosenStore == null || rawValue.chosenStore.length === 0 
+                                    ? [] 
+                                    : rawValue.chosenStore,
                         };
                     } else if (rawValue.segmentationBase === 'segmentation') {
                         return {

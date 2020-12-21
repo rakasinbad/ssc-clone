@@ -210,7 +210,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 newQuery['supplierId'] = supplierId;
                 if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {  
                     newQuery['segment'] = 'store';
-                    if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== '')) {
+                    if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
                             newQuery['catalogueId'] = this.catalogueIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
@@ -219,7 +219,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
                         
-                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== '')) {
+                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
                             newQuery['brandId'] = this.brandIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
@@ -228,7 +228,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
                         
-                    } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== '')) {
+                    } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
                         newQuery['fakturId'] = this.fakturIdSelect;
                          // Melakukan request data  Store Segment.
                          return this.entityApi$
@@ -580,6 +580,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
                     this.multiple$.clearAllSelectedOptions();
+                    console.log('isi ctalog ->', changes['catalogueIdSelect'])
+                    console.log('this catalogueIdSelect->', this.catalogueIdSelect)
                     if (changes['catalogueIdSelect']) {
                         if ((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined)) {
                             params['catalogueId'] = this.catalogueIdSelect;
