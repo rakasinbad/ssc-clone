@@ -76,7 +76,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     segmentBases: string;
     selectFaktur: string;
     public typePromo = 'crossSelling';
-    public idSelectSegment: string;
+    public idSelectSegment: string = null;
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
@@ -105,8 +105,19 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         if (changes['fakturId']) {
             this.selectFaktur = changes['fakturId'].currentValue;
         }
+
         if (changes['getGroup']) {
-            this.idSelectSegment = changes['getGroup'].currentValue;
+            if (this.getGroup !== null) {
+                this.segmentBases = this.form.get('segmentationBase').value;
+                if (this.segmentBases == 'store') {
+                    this.form.get('chosenStore').setValue(null);
+                    this._clearChosenStoreValidation();
+                    this._setChosenStoreValidation();
+                }
+    
+                this.idSelectSegment = changes['getGroup'].currentValue;
+            }
+            
         }
 
         if (changes['form']) {

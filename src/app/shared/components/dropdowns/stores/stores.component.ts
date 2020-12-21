@@ -83,20 +83,20 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Store';
 
-    @Input() typePromo: string = '';
-    @Input() catalogueIdSelect: string;
-    @Input() brandIdSelect: string = '';
-    @Input() fakturIdSelect: string = '';
-    @Input() typeTrigger: string = '';
-    @Input() segmentBases: string = '';
-    @Input() idSelectedSegment: string = undefined;
+    @Input() typePromo: string = null;
+    @Input() catalogueIdSelect: string = null;
+    @Input() brandIdSelect: string = null;
+    @Input() fakturIdSelect: string = null;
+    @Input() typeTrigger: string = null;
+    @Input() segmentBases: string = null;
+    @Input() idSelectedSegment: string = null;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
-    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
+    // @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
     constructor(
@@ -210,7 +210,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 newQuery['supplierId'] = supplierId;
                 if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {  
                     newQuery['segment'] = 'store';
-                    if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== '')) {
+                    if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
                             newQuery['catalogueId'] = this.catalogueIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
@@ -219,7 +219,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
                         
-                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== '')) {
+                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
                             newQuery['brandId'] = this.brandIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
@@ -228,7 +228,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
                         
-                    } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== '')) {
+                    } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
                         newQuery['fakturId'] = this.fakturIdSelect;
                          // Melakukan request data  Store Segment.
                          return this.entityApi$
@@ -240,17 +240,18 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
                     }
                         
-                } else if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'voucher') {
-                        if (this.idSelectedSegment !== undefined || this.idSelectedSegment !== null) {
-                            newQuery['segment'] = 'store';
-                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
-                            // Melakukan request data warehouse.
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
-                            );
-                        }
+                } else if (this.typePromo == 'crossSelling') {
+                    if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
+                        newQuery['segment'] = 'store';
+                        newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                        // Melakukan request data warehouse.
+                        return this.entityApi$
+                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                        .pipe(
+                            tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                        );
+                    }
+                        
                 }
 
             }),
@@ -344,12 +345,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -567,44 +566,73 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.segmentBases == undefined || this.segmentBases == 'store') {
+        if (this.segmentBases == null || this.segmentBases == 'store') {
             if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {
                 const params = {
                     // paginate: true,
                     // limit: this.limit,
                     // skip: 0,
                 };
-                if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== '')) {
+                if (this.typeTrigger == 'sku') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['catalogueId'] = this.catalogueIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== '')) {
+                    this.entityForm.reset();
+                    this.entityFormValue.setValue([]);
+                    this.tempEntity = [];
+                    this.multiple$.clearAllSelectedOptions();
+                    if (changes['catalogueIdSelect']) {
+                        if ((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined)) {
+                            params['catalogueId'] = this.catalogueIdSelect;
+                            this.requestEntity(params);
+                        } else {
+                        }
+                    }
+                   
+                } else if (this.typeTrigger == 'brand') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['brandId'] = this.brandIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== '')) {
+                    this.entityForm.reset();
+                    this.entityFormValue.setValue([]);
+                    this.tempEntity = [];
+                    if (changes['brandIdSelect']) {
+                        if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
+                            params['brandId'] = this.brandIdSelect;
+                            this.requestEntity(params);
+                        } else {
+                        }
+                    }
+                   
+                } else if (this.typeTrigger == 'faktur') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
-                    params['fakturId'] = this.fakturIdSelect;
-                    this.requestEntity(params);
-
-                }
-                else {
+                    this.entityForm.reset();
+                    this.entityFormValue.setValue([]);
+                    this.tempEntity = [];
+                    if (changes['fakturIdSelect']) {
+                        if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
+                            params['fakturId'] = this.fakturIdSelect;
+                            this.requestEntity(params);
+                        } else {
+                        }
+                    }
+                } else {
                 }
 
             } else if (this.typePromo == 'crossSelling') {
-                    const params = {};
-                    if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null || this.idSelectedSegment !== undefined)) {
-                        this.availableEntities$.next([]);
-                        this.rawAvailableEntities$.next([]);
-                        params['catalogueSegmentationId'] = this.idSelectedSegment;
-                        this.requestEntity(params);
-                    }
-            } else {}
+                const params = {};
+                this.availableEntities$.next([]);
+                this.rawAvailableEntities$.next([]);
+                this.entityForm.reset();
+                this.entityFormValue.setValue([]);
+                this.tempEntity = [];
+                if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
+                    params['catalogueSegmentationId'] = this.idSelectedSegment;
+                    this.requestEntity(params);
+                }
+            }
         }
-      
+
+        
 
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
@@ -654,7 +682,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        if (this.typePromo !== 'flexiCombo') {
+        if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'crossSelling' && this.typePromo !== 'voucher') {
             this.initEntity();
         }
     }

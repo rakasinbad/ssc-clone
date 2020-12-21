@@ -175,6 +175,7 @@ export interface ICrossSellingPromoBenefit extends ITimestamp {
     promoConditionCatalogues: PromoConditionCatalogue[];
     promoConditionInvoiceGroups: promoConditionInvoiceGroup[];
     promoId: string;
+    multiplication: boolean;
 }
 
 interface promoConditionBrand extends ITimestamp {

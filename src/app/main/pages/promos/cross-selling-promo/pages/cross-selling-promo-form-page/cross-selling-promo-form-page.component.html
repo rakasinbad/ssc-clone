@@ -27,6 +27,7 @@
             [fakturName]="fakturName"
             (formStatus)="onSetBenefitSettingFormStatus($event)"
             (formValue)="benefitFormDto = $event"
+            [getGeneral]= "form.get('generalInformation').value"
             [fakturId]="fakturId"
             [getGroup]= "segmentationSelectId"
         ></app-cross-selling-promo-benefit-form>

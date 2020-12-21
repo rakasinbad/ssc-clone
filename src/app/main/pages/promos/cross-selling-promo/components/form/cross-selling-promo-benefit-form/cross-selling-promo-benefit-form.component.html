@@ -62,37 +62,76 @@
                                 Benefit Type
                             </label>
 
-                            <div fxFlexAlign="center" fxFlex="50">
-                                <ng-container *ngIf="benefitType; else noBenefitType">
-                                    <mat-radio-group
-                                        [formControl]="form.get('benefitType')"
-                                        (change)="onChangeBenefitType($event)"
-                                    >
-                                        <mat-radio-button
-                                            *ngFor="let row of benefitType"
-                                            [value]="row.id"
+                            <!-- multi false -->
+                            <ng-container *ngIf="statusMulti == false">
+                                <div fxFlexAlign="center" fxFlex="50">
+                                    <ng-container *ngIf="benefitType; else noBenefitType">
+                                        <mat-radio-group
+                                            [formControl]="form.get('benefitType')"
+                                            (change)="onChangeBenefitType($event)"
                                         >
-                                            {{ row.label }}
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                </ng-container>
-
-                                <ng-template #noBenefitType> - </ng-template>
-
-                                <mat-hint
-                                    class="mat-error"
-                                    *ngIf="
-                                        form.get('benefitType').value ||
-                                            form.get('benefitType').touched
-                                            | hasErrorField: form.get('benefitType')
-                                    "
-                                >
-                                    {{
-                                        form.get('benefitType').value
-                                            | errorMessage: form:'benefitType'
-                                    }}
-                                </mat-hint>
-                            </div>
+                                            <mat-radio-button
+                                                *ngFor="let row of benefitType"
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </ng-container>
+    
+                                    <ng-template #noBenefitType> - </ng-template>
+    
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="
+                                            form.get('benefitType').value ||
+                                                form.get('benefitType').touched
+                                                | hasErrorField: form.get('benefitType')
+                                        "
+                                    >
+                                        {{
+                                            form.get('benefitType').value
+                                                | errorMessage: form:'benefitType'
+                                        }}
+                                    </mat-hint>
+                                </div>
+                            </ng-container>
+                            
+                            <!-- multi true -->
+                            <ng-container *ngIf="statusMulti == true">
+                                <div fxFlexAlign="center" fxFlex="50">
+                                    <ng-container *ngIf="benefitTypeMulti; else noBenefitTypeMulti">
+                                        <mat-radio-group
+                                            [formControl]="form.get('benefitType')"
+                                            (change)="onChangeBenefitTypeMulti($event)"
+                                        >
+                                            <mat-radio-button
+                                                *ngFor="let row of benefitTypeMulti"
+                                                [value]="row.id"
+                                            >
+                                                {{ row.label }}
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </ng-container>
+    
+                                    <ng-template #noBenefitTypeMulti> - </ng-template>
+    
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="
+                                            form.get('benefitType').value ||
+                                                form.get('benefitType').touched
+                                                | hasErrorField: form.get('benefitType')
+                                        "
+                                    >
+                                        {{
+                                            form.get('benefitType').value
+                                                | errorMessage: form:'benefitType'
+                                        }}
+                                    </mat-hint>
+                                </div>
+                            </ng-container>
+                            
                         </div>
                         <!-- / BENEFIT TYPE -->
 

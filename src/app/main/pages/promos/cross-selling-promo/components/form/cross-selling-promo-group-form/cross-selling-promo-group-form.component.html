@@ -47,12 +47,6 @@
             <label fxFlexAlign="center" fxFlex="12">
                 <span class="sinbad-red-fg">*</span>
                 Selected<br />Segmentation<br />
-                <ng-container *ngIf="errorCatalogueSegment == false; else otherCatalogueSeg">
-                    (1 Selected)
-                </ng-container>
-                <ng-template #otherCatalogueSeg>
-                    (0 Selected)
-                </ng-template>
             </label>
 
             <app-catalogue-segmentation
@@ -778,6 +772,85 @@
 </ng-template>
 
 <ng-template let-form="form" let-groupIdx="groupIdx" #conditionValue>
+    <ng-container *ngIf="statusMulti == true">
+        <ng-container *ngIf="groupIdx == 0">
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get(['groups', 0, 'conditionValue']).value ||
+                            form.get(['groups', 0, 'conditionValue']).touched
+                            | hasErrorField: form.get(['groups', 0, 'conditionValue']):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="16"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Order Value >=
+                </label>
+        
+                <mat-form-field appearance="outline" fxFlex="60">
+                    <input
+                        matInput
+                        [formControl]="form.get(['groups', 0, 'conditionValue'])"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                        placeholder="Rp"
+                        autocomplete="off"
+                        (ngModelChange)="condMultiValue($event)"
+                    />
+        
+                    <mat-error>
+                        {{
+                            form.get(['groups', 0, 'conditionValue']).value
+                                | errorMessage: form:'conditionValue':'groups':0
+                        }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="groupIdx == 1">
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                <label
+                    [class.sinbad-red-fg]="
+                        form.get(['groups', 1, 'conditionValue']).value ||
+                            form.get(['groups', 1, 'conditionValue']).touched
+                            | hasErrorField: form.get(['groups', 1, 'conditionValue']):false
+                    "
+                    fxFlexAlign="center"
+                    fxFlex="16"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Order Value >=
+                </label>
+        
+                <mat-form-field appearance="outline" fxFlex="60">
+                    <input
+                        matInput
+                        [formControl]="form.get(['groups', 1, 'conditionValue'])"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                        placeholder="Rp"
+                        autocomplete="off"
+                        readonly
+                    />
+        
+                    <mat-error>
+                        {{
+                            form.get(['groups', 1, 'conditionValue']).value
+                                | errorMessage: form:'conditionValue':'groups':1
+                        }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </ng-container>
+       
+    </ng-container>
+
+    <!-- false -->
+    <ng-container *ngIf="statusMulti == false">
+       
     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
         <label
             [class.sinbad-red-fg]="
@@ -811,6 +884,8 @@
             </mat-error>
         </mat-form-field>
     </div>
+    </ng-container>
+
 </ng-template>
 <!-- / TEMPLATE CONDITION BASE VALUE -->
 

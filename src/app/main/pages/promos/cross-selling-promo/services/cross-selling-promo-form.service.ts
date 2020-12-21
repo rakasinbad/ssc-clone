@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { LogicRelation, SpecifiedTarget } from 'app/shared/models';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
@@ -59,6 +59,10 @@ export class CrossSellingPromoFormService {
 
     get benefitType(): { id: BenefitType; label: string }[] {
         return this.helperService.benefitType();
+    }
+
+    get benefitTypeMulti(): { id: BenefitMultiType; label: string }[] {
+        return this.helperService.benefitMultiType();
     }
 
     get conditionBase(): { id: ConditionBase; label: string }[] {

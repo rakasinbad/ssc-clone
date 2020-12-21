@@ -26,6 +26,7 @@ export class CrossSellingDetailGnComponent implements OnInit {
     promoAllocationCross = this._$helperService.promoAllocationCross();
     ePromoAllocation = PromoAllocationCross;
     public typePromoAlloc: string;
+    public statusMulti: boolean = false;
 
     constructor(private matDialog: MatDialog, private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService,
@@ -38,10 +39,11 @@ export class CrossSellingDetailGnComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem).pipe(
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem)
+        .pipe(
             map((item) => {
-                    this.typePromoAlloc = item.promoAllocationType;
+                this.typePromoAlloc = item.promoAllocationType;
+                this.statusMulti = item.promoBenefit['multiplication'];
                 return item;
             })
         );
@@ -65,5 +67,4 @@ export class CrossSellingDetailGnComponent implements OnInit {
             disableClose: true,
         });
     }
-
 }

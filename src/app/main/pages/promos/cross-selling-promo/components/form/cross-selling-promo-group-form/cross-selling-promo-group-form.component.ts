@@ -144,8 +144,10 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['getGeneral'].currentValue) {
-            this.statusMulti = this.getGeneral['multiplication'];
+        if (changes['getGeneral']) {
+            if (this.getGeneral !== null && this.getGeneral !== undefined) {
+                this.statusMulti = this.getGeneral['multiplication'];
+            }
         }
 
         if (this.statusMulti === true) {
@@ -265,6 +267,16 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             } else {
                 conditionQtyGroup2.setValue(value);
             }
+    }
+
+    condMultiValue(value): void {
+        const conditionValueGroup2 = this.form.get(['groups', 1, 'conditionValue']);
+        // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
+        if (value == '' || value == undefined) {
+            conditionValueGroup2.setValue(null);
+        } else {
+            conditionValueGroup2.setValue(value);
+        }
     }
 
     onChangeInvoiceGroup(ev: MatSelectChange, idx: number): void {

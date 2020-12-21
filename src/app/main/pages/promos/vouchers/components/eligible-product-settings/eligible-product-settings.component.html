@@ -61,10 +61,12 @@
 
                 <select-catalogues
                     *ngIf="!isViewMode()"
+                    [typeCatalogue]="'voucherPromo'"
                     [initialSelection]="chosenSku$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onCatalogueSelected($event)"
+                    [fakturIdSelect]="null"
                 >
                     <div error>
                         {{ getFormError(form.get('chosenSku')) }}

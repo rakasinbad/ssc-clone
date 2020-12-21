@@ -177,10 +177,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public storeClusterSelectAll: string;
     public storeClusterLength: number;
     public typePromo = 'flexiCombo';
-    public catalogueIdSelected: string;
-    public brandIdSelected: string;
-    public fakturIdSelected: string;
-    public segmentBases: string;
+    public catalogueIdSelected: string = null;
+    public brandIdSelected: string  = null;
+    public fakturIdSelected: string  = null;
+    public segmentBases: string = 'store';
     public triggerSelected: string = 'sku';
     public lengthStoreSelected: number;
 
@@ -649,6 +649,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (!ev.length) {
             this.form.get('chosenBrand').setValue(null);
+            this.catalogueIdSelected = null;        
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;   
+            this.triggerSelected = 'faktur';
+            this.form.get('chosenBrand').reset();
+            this.form.get('chosenStore').reset();
         } else {
             const newBrands: Selection[] = ev.map((item) => ({
                 id: item.id,
@@ -660,8 +666,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             let idBrand = [];
             idBrand = ev.map((item) => (item.id));
             this.brandIdSelected = idBrand.toString();
-            this.catalogueIdSelected = undefined;     
-            this.fakturIdSelected = undefined;
+            this.catalogueIdSelected = null;     
+            this.fakturIdSelected = null;
             this.triggerSelected = 'brand';
         }
     }
@@ -862,22 +868,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             let fakturChoosen = this.form.get('chosenInvoice').value;
             idFaktur = fakturChoosen.map((item) => (item.id));
             this.fakturIdSelected = idFaktur.toString(); 
-            this.brandIdSelected = undefined;
-            this.catalogueIdSelected = undefined;        
+            this.brandIdSelected = null;
+            this.catalogueIdSelected = null;        
         } else if (this.form.get('chosenSku').value != null) {
             let idSku = [];
             let skuChoosen = this.form.get('chosenSku').value;
             idSku = skuChoosen.map((item) => (item.id));
             this.catalogueIdSelected = idSku.toString();  
-            this.brandIdSelected = undefined;
-            this.fakturIdSelected = undefined;
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;
         } else if (this.form.get('chosenBrand').value != null) {
             let idBrand = [];
             let brandChoosen = this.form.get('chosenBrand').value;
             idBrand = brandChoosen.map((item) => (item.id));
             this.brandIdSelected = idBrand.toString();  
-            this.catalogueIdSelected = undefined;        
-            this.fakturIdSelected = undefined;
+            this.catalogueIdSelected = null;        
+            this.fakturIdSelected = null;
         }
     }
 
@@ -954,7 +960,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (!triggerBaseVal) {
             return;
         }
-
         // Handle validation for Chosen Brand Field (Trigger Base - Brand) (FormControl = chosenBrand)
         this._chosenBrandValidationByTriggerBase(triggerBaseVal);
 
@@ -963,6 +968,29 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Handle validation for Chosen Sku Field (Trigger Base - Sku) (FormControl = chosenSku)
         this._chosenSkuValidationByTriggerBase(triggerBaseVal);
+        if (ev.value == 'sku' && this.form.get('segmentationBase').value == 'store') {
+            this.form.get('chosenStore').reset();
+           this.form.get('chosenSku').reset();
+           this.catalogueIdSelected = null;        
+           this.brandIdSelected = null;
+           this.fakturIdSelected = null;   
+           this.triggerSelected = 'sku';
+        } else if (ev.value == 'brand' && this.form.get('segmentationBase').value == 'store') {
+            this.form.get('chosenStore').reset();
+            this.form.get('chosenBrand').reset();
+            this.catalogueIdSelected = null;        
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;   
+            this.triggerSelected = 'brand';
+        } else if (ev.value == 'invoice_group' && this.form.get('segmentationBase').value == 'store') {
+            this.form.get('chosenStore').reset();
+            this.form.get('chosenInvoice').reset();
+            this.catalogueIdSelected = null;        
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;   
+            this.triggerSelected = 'faktur';
+        }
+
     }
 
     /**
@@ -1035,6 +1063,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (!ev.length) {
             this.form.get('chosenInvoice').setValue(null);
+            this.catalogueIdSelected = null;        
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;   
+            this.triggerSelected = 'faktur';
+            this.form.get('chosenInvoice').reset();
+            this.form.get('chosenStore').reset();
         } else {
             const newFaktur: Selection[] = ev.map((item) => ({
                 id: item.id,
@@ -1043,11 +1077,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             }));
 
             this.form.get('chosenInvoice').setValue(newFaktur);
+            this.form.get('chosenStore').reset();
             let idFaktur = [];
             idFaktur = ev.map((item) => (item.id));
             this.fakturIdSelected = idFaktur.toString();
-            this.catalogueIdSelected = undefined;        
-            this.brandIdSelected = undefined;
+            this.catalogueIdSelected = null;        
+            this.brandIdSelected = null;
             this.triggerSelected = 'faktur';
         }
     }
@@ -1064,18 +1099,26 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         if (!ev.length) {
             this.form.get('chosenSku').setValue(null);
+            this.catalogueIdSelected = null;        
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;   
+            this.triggerSelected = 'sku';
+            this.form.get('chosenSku').reset();
+            this.form.get('chosenStore').reset();
         } else {
             const newSku: Selection[] = ev.map((item) => ({
                 id: item.id,
                 label: item.name,
                 group: 'catalogues',
             }));
+
             let idSku = [];
             idSku = ev.map((item) => (item.id));
             this.form.get('chosenSku').setValue(newSku);
+            this.form.get('chosenStore').reset();
             this.catalogueIdSelected = idSku.toString();        
-            this.brandIdSelected = undefined;
-            this.fakturIdSelected = undefined;   
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;   
             this.triggerSelected = 'sku';
         }
     }
@@ -1190,6 +1233,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 })
             ]);
             this.form.get('chosenStore').updateValueAndValidity();
+            this.form.get('chosenStore').reset();
         } else {
             this.form.get('chosenStore').clearValidators();
             this.form.get('chosenStore').updateValueAndValidity();
