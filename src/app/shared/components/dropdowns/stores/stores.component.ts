@@ -580,8 +580,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
                     this.multiple$.clearAllSelectedOptions();
-                    console.log('isi ctalog ->', changes['catalogueIdSelect'])
-                    console.log('this catalogueIdSelect->', this.catalogueIdSelect)
                     if (changes['catalogueIdSelect']) {
                         if ((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined)) {
                             params['catalogueId'] = this.catalogueIdSelect;
