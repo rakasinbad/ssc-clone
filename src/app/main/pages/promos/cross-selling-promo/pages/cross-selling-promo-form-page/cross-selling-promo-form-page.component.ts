@@ -171,10 +171,10 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (payload['conditions'][0]['multiplication'] == true) {
             payload['conditions'][0]['conditionBase'] = this.groupFormDto.promoConditionCatalogues[0].conditionBase;
             if (payload['conditions'][0]['conditionBase'] == 'qty') {
-                payload['conditions'][0]['conditionValue'] = null;
+                delete payload['conditions'][0]['conditionValue']
                 payload['conditions'][0]['conditionQty'] = this.groupFormDto.promoConditionCatalogues[0].conditionQty.toString();
             } else if (payload['conditions'][0]['conditionBase'] == 'value') {
-                payload['conditions'][0]['conditionQty'] = null;
+                delete payload['conditions'][0]['conditionQty'];
                 payload['conditions'][0]['conditionValue'] = this.groupFormDto.promoConditionCatalogues[0].conditionValue;
             }
         } else {
