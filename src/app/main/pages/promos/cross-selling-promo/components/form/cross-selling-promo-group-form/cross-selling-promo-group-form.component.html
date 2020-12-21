@@ -47,12 +47,6 @@
             <label fxFlexAlign="center" fxFlex="12">
                 <span class="sinbad-red-fg">*</span>
                 Selected<br />Segmentation<br />
-                <ng-container *ngIf="errorCatalogueSegment == false; else otherCatalogueSeg">
-                    (1 Selected)
-                </ng-container>
-                <ng-template #otherCatalogueSeg>
-                    (0 Selected)
-                </ng-template>
             </label>
 
             <app-catalogue-segmentation
