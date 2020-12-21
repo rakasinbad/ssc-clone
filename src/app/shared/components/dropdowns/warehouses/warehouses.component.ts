@@ -81,11 +81,20 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Warehouse';
 
+    @Input() typePromo: string = null;
+    @Input() catalogueIdSelect: string = null;
+    @Input() brandIdSelect: string = null;
+    @Input() fakturIdSelect: string =  null;
+    @Input() segmentBases: string = 'store';
+    @Input() typeTrigger: string = '';
+    @Input() idSelectedSegment: string = null;
+
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
     // Untuk mengirim data apakah checkbox "Select All" dicentang atau tidak.
     @Output() selectAllChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 
+    @Output() valueSelectAll = new EventEmitter<any>();
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
     @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
@@ -104,12 +113,12 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         private ngZone: NgZone,
     ) {
         this.availableEntities$.pipe(
-            tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
+            tap(x => HelperService.debug('AVAILABLE ENTITIES warehouse promo ->', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
         this.selectedEntity$.pipe(
-            tap(x => HelperService.debug('SELECTED ENTITY', x)),
+            tap(x => HelperService.debug('SELECTED ENTITY warehouse promo->', x)),
             takeUntil(this.subs$)
         ).subscribe(value => this.selected.emit(value));
 
@@ -119,7 +128,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         ).subscribe();
 
         this.totalEntities$.pipe(
-            tap(x => HelperService.debug('TOTAL ENTITIES', x)),
+            tap(x => HelperService.debug('TOTAL ENTITIES warehouse promo ->', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
@@ -186,7 +195,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             withLatestFrom<any, UserSupplier>(
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE warehouse promo ->', x)),
             switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
                 // Jika user tidak ada data supplier.
                 if (!userSupplier) {
@@ -198,34 +207,94 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
+                
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
+                newQuery['segment'] = 'warehouse';
+                if (this.segmentBases == 'all') {
+                    if (this.typePromo === 'flexiCombo') {   
+                        delete newQuery['$skip'];
+                        delete newQuery['$limit'];
+                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined
+                                && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
+                                newQuery['catalogueId'] = this.catalogueIdSelect;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                .pipe(
+                                    tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                );
+                            
+                        } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
+                                newQuery['brandId'] = this.brandIdSelect;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                .pipe(
+                                    tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                );
+                            
+                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
+                            newQuery['fakturId'] = this.fakturIdSelect;
+                             // Melakukan request data warehouse.
+                             return this.entityApi$
+                             .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                             .pipe(
+                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                             );
+                        } else {
 
-                // Melakukan request data warehouse.
-                return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-                    );
+                        }
+                    }  else if (this.typePromo !== 'flexiPromo' && this.typePromo == 'crossSelling') {
+                        delete newQuery['$skip'];
+                        delete newQuery['$limit'];
+                        if (this.idSelectedSegment != null && this.catalogueIdSelect == undefined
+                            && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                            // Melakukan request data warehouse.
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
+                            );
+                        }
+                    }
+                 } else {
+                        return this.entityApi$
+                        .find<IPaginatedResponse<Entity>>(newQuery)
+                        .pipe(
+                            tap(response => HelperService.debug('FIND ENTITY other', { params: newQuery, response })),
+                        );
+                    }
+
             }),
-            take(1),
+            takeUntil(this.subs$),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
+                this.valueSelectAll.emit(response);
                 let addedAvailableEntities: Array<Selection> = [];
                 let addedRawAvailableEntities: Array<Entity> = [];
 
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    } else {
                     addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    }
 
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    } else {
+                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    }
 
                     for (const entity of (response.data as Array<Entity>)) {
                         this.upsertEntity(entity);
@@ -257,7 +326,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             },
             error: (err) => {
                 this.toggleLoading(false);
-                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+                HelperService.debug('ERROR FIND ENTITY warehouse', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
             complete: () => {
@@ -293,12 +362,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -449,45 +516,6 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         this.dialogRef$.next('clear-all');
     }
 
-    // processEntityAutoComplete(): void {
-    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
-    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
-    //             .pipe(
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
-    //                 // Kasih jeda ketika scrolling.
-    //                 debounceTime(500),
-    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
-    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
-    //                 ),
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
-    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-    //                 filter(({ isLoading, entities, totalEntities }) =>
-    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
-    //                 ),
-    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
-    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
-    //                 ))
-    //             ).subscribe(({ entities }) => {
-    //                 const params: IQueryParams = {
-    //                     paginate: true,
-    //                     limit: 10,
-    //                     skip: entities.length
-    //                 };
-
-    //                 // Memulai request data store entity.
-    //                 this.requestEntity(params);
-    //             });
-    //     }
-    // }
-
-    // listenEntityAutoComplete(): void {
-    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
-    //     setTimeout(() => this.processEntityAutoComplete());
-    // }
-
     private initForm(): void {
         // this.entityFormView = new FormControl('');
         // this.entityFormValue = new FormControl('');
@@ -520,48 +548,52 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngOnInit(): void {
         this.initForm();
-        
-        // Menangani Form Control-nya warehouse.
-        // (this.entityForm.valueChanges).pipe(
-        //     startWith(''),
-        //     debounceTime(200),
-        //     distinctUntilChanged(),
-        //     withLatestFrom(this.selectedEntity$),
-        //     filter(([formValue, selectedEntity]) => {
-        //         if (selectedEntity && formValue && !this.entityAutoComplete.isOpen) {
-        //             return false;
-        //         }
-                
-        //         if (selectedEntity || (!formValue && !this.entityAutoComplete.isOpen)) {
-        //             this.selectedEntity$.next(null);
-        //             return false;
-        //         }
-
-        //         if (!formValue && selectedEntity && !this.entityAutoComplete.isOpen) {
-        //             this.entityForm.patchValue(selectedEntity);
-        //             return false;
-        //         }
-
-        //         return true;
-        //     }),
-        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
-        //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
-        //     }),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([formValue]) => {
-        //     const queryParams: IQueryParams = {
-        //         paginate: true,
-        //         limit: 10,
-        //         skip: 0
-        //     };
-
-        //     queryParams['keyword'] = formValue;
-
-        //     this.requestEntity(queryParams);
-        // });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (this.segmentBases !== null || this.segmentBases == 'all') {
+            if (this.typePromo == 'flexiCombo') {
+                const params = {
+                    // paginate: true,
+                    // limit: this.limit,
+                    // skip: 0,
+                };
+                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect']) {
+                    if (this.catalogueIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueId'] = this.catalogueIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect']) {
+                    if (this.brandIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['brandId'] = this.brandIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect']) {
+                    if (this.fakturIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['fakturId'] = this.fakturIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                }
+            } else if (this.typePromo == 'crossSelling') {
+                const params = {};
+                if (changes['idSelectedSegment']) {
+                    if (this.idSelectedSegment !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueSegmentationId'] = this.idSelectedSegment;
+                        this.requestEntity(params);
+                    } else {}
+                }
+            } else {
+            }
+        }
+
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();
@@ -610,8 +642,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initEntity();
+        if (this.typePromo == null) {
+            this.initEntity();
+        }
     }
 
 }
-

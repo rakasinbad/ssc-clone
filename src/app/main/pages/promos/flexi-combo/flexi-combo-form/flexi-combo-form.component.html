@@ -53,18 +53,20 @@
                                 </mat-radio-group>
                             </ng-container>
                             <ng-container *ngIf="pageType === 'edit'">
-
                                 <ng-container *ngIf="promoAllocation; else noPromoAllocatione">
                                     <mat-radio-group formControlName="promoAllocationType">
-                                        <mat-radio-button *ngFor="let row of promoAllocation" [value]="row?.id" 
-                                        style="margin-left:10px;" [disabled]="true">
+                                        <mat-radio-button
+                                            *ngFor="let row of promoAllocation"
+                                            [value]="row?.id"
+                                            style="margin-left: 10px"
+                                            [disabled]="true"
+                                        >
                                             {{ row?.label }}
                                         </mat-radio-button>
                                     </mat-radio-group>
                                 </ng-container>
 
                                 <ng-template #noPromoAllocatione> - </ng-template>
-
                             </ng-container>
                         </div>
 
@@ -228,7 +230,7 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('promoBudget')"
                             >
-                                    Max Promo Redemption<br />(Rp)
+                                Max Promo Redemption<br />(Rp)
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -256,13 +258,15 @@
                             fxLayoutGap="16px"
                             [class.sinbad-red-fg]="hasError('promoSlot')"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"> 
-                                    Max Promo Redemption<br />(transaction)
+                            <label fxFlexAlign="center" fxFlex="10">
+                                Max Promo Redemption<br />(transaction)
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="promoSlot" 
-                                    formControlName="promoSlot" 
+                                <input
+                                    matInput
+                                    name="promoSlot"
+                                    formControlName="promoSlot"
                                     mask="0*"
                                 />
 
@@ -497,10 +501,11 @@
                                     </mat-icon> -->
                                 </mat-checkbox>
 
-                                <mat-checkbox 
-                                (change)="selectFirstBuy($event)"
-                                [checked]="firstBuyCheck"
-                                formControlName="firstBuy">
+                                <mat-checkbox
+                                    (change)="selectFirstBuy($event)"
+                                    [checked]="firstBuyCheck"
+                                    formControlName="firstBuy"
+                                >
                                     First Buy
 
                                     <!-- <mat-icon
@@ -526,11 +531,11 @@
 
                             <!-- form control for multiplication di hold formControlName="multiplication" -->
                             <div fxFlexAlign="center" fxFlex="60">
-                                <mat-checkbox 
-                                (change)="selectMultiplication($event)"
-                                [checked]="multiStat"
-                                [disabled]="disableMulti"
-                                 >
+                                <mat-checkbox
+                                    (change)="selectMultiplication($event)"
+                                    [checked]="multiStat"
+                                    [disabled]="disableMulti"
+                                >
                                     Multiplication
 
                                     <mat-icon
@@ -1101,8 +1106,6 @@
                                                     <ng-template #noRatioConditionBase>
                                                         -
                                                     </ng-template>
-
-                                                   
                                                 </div>
                                             </div>
                                             <!-- ./ FIELD TIER CONDITION BASE -->
@@ -1127,14 +1130,17 @@
                                                         fxLayoutAlign="start stretch"
                                                         fxLayoutGap="16px"
                                                     >
-                                                        <label fxFlexAlign="center" fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                            hasError([
-                                                                'conditions',
-                                                                conditionIdx,
-                                                                'ratioQty'
-                                                            ])
-                                                        ">
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError([
+                                                                    'conditions',
+                                                                    conditionIdx,
+                                                                    'ratioQty'
+                                                                ])
+                                                            "
+                                                        >
                                                             <span class="sinbad-red-fg">*</span>
                                                             Qty >=
                                                         </label>
@@ -1187,17 +1193,20 @@
                                                         fxLayoutAlign="start stretch"
                                                         fxLayoutGap="16px"
                                                     >
-                                                        <label fxFlexAlign="center" fxFlex="16"
-                                                        [class.sinbad-red-fg]="
-                                                                    hasError(
-                                                                        [
-                                                                            'conditions',
-                                                                            conditionIdx,
-                                                                            'ratioValue'
-                                                                        ],
-                                                                        true
-                                                                    )
-                                                                ">
+                                                        <label
+                                                            fxFlexAlign="center"
+                                                            fxFlex="16"
+                                                            [class.sinbad-red-fg]="
+                                                                hasError(
+                                                                    [
+                                                                        'conditions',
+                                                                        conditionIdx,
+                                                                        'ratioValue'
+                                                                    ],
+                                                                    true
+                                                                )
+                                                            "
+                                                        >
                                                             <span class="sinbad-red-fg">*</span>
                                                             Order Value >=
                                                         </label>
@@ -2003,7 +2012,6 @@
                                                     </div>
                                                     <!-- ./ FIELD TIER BENEFIT REBATE -->
                                                 </ng-container>
-
                                             </ng-container>
                                             <!-- ./ SWITCH CASE LAYOUT BENEFIT TYPE -->
                                         </ng-container>
@@ -2111,7 +2119,7 @@
                                 Segmentation Base
                             </label>
 
-                            <div fxFlexAlign="center" fxFlex="50" fxFill>
+                            <div fxFlexAlign="center" fxFlex="80" fxFill>
                                 <ng-container *ngIf="segmentBase; else noSegmentBase">
                                     <mat-radio-group
                                         formControlName="segmentationBase"
@@ -2151,6 +2159,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStore')"
                                 >
+                                    <span class="sinbad-red-fg">*</span>
                                     Store<br />({{ form.get('chosenStore').value?.length || 0 }}
                                     Selected)
                                 </label>
@@ -2161,6 +2170,12 @@
                                     placeholder="Choose Store"
                                     [required]="true"
                                     (selected)="onStoreSelected($event)"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     <div error>
@@ -2170,7 +2185,8 @@
                             </div>
                         </ng-container>
 
-                        <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
+                        <!-- Segmentation Only -->
+                        <!-- <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -2182,6 +2198,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenWarehouse')"
                                 >
+                                   <span class="sinbad-red-fg">*</span>
                                     Warehouse<br />({{
                                         form.get('chosenWarehouse').value?.length || 0
                                     }}
@@ -2193,6 +2210,11 @@
                                     [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onWarehouseSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2213,6 +2235,8 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreType')"
                                 >
+
+                                <span class="sinbad-red-fg">*</span>
                                     Store Type<br />({{
                                         form.get('chosenStoreType').value?.length || 0
                                     }}
@@ -2226,6 +2250,11 @@
                                     title="Select Store Type"
                                     segmentationType="type"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreTypeSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2246,6 +2275,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreGroup')"
                                 >
+                                  <span class="sinbad-red-fg">*</span>
                                     Store Group<br />({{
                                         form.get('chosenStoreGroup').value?.length || 0
                                     }}
@@ -2259,6 +2289,11 @@
                                     title="Select Store Group"
                                     segmentationType="group"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreGroupSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2279,6 +2314,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreChannel')"
                                 >
+                                  <span class="sinbad-red-fg">*</span>
                                     Store Channel<br />({{
                                         form.get('chosenStoreChannel').value?.length || 0
                                     }}
@@ -2292,6 +2328,11 @@
                                     title="Select Store Channel"
                                     segmentationType="channel"
                                     [required]="false"
+                                    [segmentBases]="segmentBases"
+                                    [typePromo]="typePromo"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreChannelSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2312,6 +2353,8 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreCluster')"
                                 >
+                                   <span class="sinbad-red-fg">*</span>
+
                                     Store Cluster<br />({{
                                         form.get('chosenStoreCluster').value?.length || 0
                                     }}
@@ -2325,6 +2368,11 @@
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
                                     [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreClusterSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2333,37 +2381,218 @@
                                     </div>
                                 </select-store-segmentation>
                             </div>
+                        </ng-container> -->
+
+                        <!-- All Segmentation -->
+                        <ng-container
+                            *ngIf="getSegmentationBase() === eSegmentBase.ALLSEGMENTATION"
+                        >
                             <div
                                 class="custom-field"
                                 fxLayout="row"
                                 fxLayoutAlign="start stretch"
                                 fxLayoutGap="16px"
                             >
-                                <label fxFlexAlign="center" fxFlex="10"> </label>
-
-                                <mat-checkbox
-                                    formControlName="isNewStore"
-                                    (change)="checkSegmentation($event, 'new_store')"
-                                    [disabled]="selectNewStore"
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
                                 >
-                                    New Store
-                                    <mat-icon
-                                        class="active-icon s-14 ml-8 cursor-pointer"
-                                        color="accent"
-                                        matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
-                                        matTooltipClass="tooltip-br"
-                                    >
-                                        help
-                                    </mat-icon>
-                                </mat-checkbox>
+                                    Warehouse<br />({{warehouseLength || 0 }} Selected)
+                                </label>
 
-                                <mat-checkbox
-                                    formControlName="isActiveStore"
-                                    (change)="checkSegmentation($event, 'active_outlet')"
-                                    [disabled]="selectActiveOutlet"
+                                <select-warehouses
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{warehouseSelectAll}}"
+                                    [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
+                                    (valueSelectAll)="dataValueWarehouse($event)"
+                                    fxFlex="50"
                                 >
-                                    Active Outlet Only
-                                </mat-checkbox>
+                                  
+                                </select-warehouses>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                >
+                                    Store Type<br />({{storeTypeLength || 0 }} Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeTypeSelectAll}}"
+                                    segmentationType="type"
+                                    [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    (selected)="onStoreTypeSelected($event)"
+                                    (valueSelectAllStore)="dataValueStore($event)"
+                                    [typeTrigger]="triggerSelected"
+                                    fxFlex="50"
+                                >
+                                </select-store-segmentation>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                >
+                                    Store Group<br />({{storeGroupLength|| 0}} Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeGroupSelectAll}}"
+                                    title="Select Store Group"
+                                    segmentationType="group"
+                                    [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    (selected)="onStoreGroupSelected($event)"
+                                    (valueSelectAllStore)="dataValueGroup($event)"
+                                    [typeTrigger]="triggerSelected"
+                                    fxFlex="50"
+                                >
+                                </select-store-segmentation>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                >
+                                    Store Channel<br />({{storeChannelLength|| 0}} Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeChannelSelectAll}}"
+                                    title="Select Store Channel"
+                                    segmentationType="channel"
+                                    [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    (selected)="onStoreChannelSelected($event)"
+                                    (valueSelectAllStore)="dataValueChannel($event)"
+                                    [typeTrigger]="triggerSelected"
+                                    fxFlex="50"
+                                >
+                                </select-store-segmentation>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                >
+                                    Store Cluster<br />({{storeClusterLength|| 0}} Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    [initialSelection]="[]"
+                                    [disabled]="true"
+                                    placeholder="{{storeClusterSelectAll}}"
+                                    title="Select Store Cluster"
+                                    segmentationType="cluster"
+                                    [required]="false"
+                                    [typePromo]="typePromo"
+                                    [segmentBases]="segmentBases"
+                                    [catalogueIdSelect]="catalogueIdSelected"
+                                    [brandIdSelect]="brandIdSelected"
+                                    [fakturIdSelect]="fakturIdSelected"
+                                    (selected)="onStoreClusterSelected($event)"
+                                    (valueSelectAllStore)="dataValueCluster($event)"
+                                    [typeTrigger]="triggerSelected"
+                                    fxFlex="50"
+                                >
+                                    
+                                </select-store-segmentation>
+                            </div>
+                        </ng-container>
+
+                        <ng-container
+                            *ngIf="
+                                getSegmentationBase() === eSegmentBase.ALLSEGMENTATION
+                            "
+                        >
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label fxFlexAlign="center" fxFlex="10">Specified Target</label>
+
+                                <div fxFlexAlign="center" fxFlex="50" fxFill>
+                                    <ng-container *ngIf="specifiedTargets; else noSpecifiedTargets">
+                                        <mat-radio-group
+                                            formControlName="specifiedTarget"
+                                            (change)="onChangeSpecifiedTargets($event)"
+                                        >
+                                            <mat-radio-button
+                                                *ngFor="let row of specifiedTargets"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.label }}
+
+                                                <mat-icon
+                                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                                    color="accent"
+                                                    matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                                    matTooltipClass="tooltip-br"
+                                                    *ngIf="row.id === eSpecifiedTargets.NEW_STORE"
+                                                >
+                                                    help
+                                                </mat-icon>
+                                            </mat-radio-button>
+                                        </mat-radio-group>
+                                    </ng-container>
+
+                                    <ng-template #noSpecifiedTargets>
+                                        <div fxFlexAlign="center" fxFlex="50">-</div>
+                                    </ng-template>
+                                </div>
                             </div>
                         </ng-container>
                     </div>
