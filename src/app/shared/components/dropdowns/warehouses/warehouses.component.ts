@@ -82,12 +82,12 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     @Input('placeholder') placeholder: string = 'Search Warehouse';
 
     @Input() typePromo: string = '';
-    @Input() catalogueIdSelect: string;
-    @Input() brandIdSelect: string = '';
-    @Input() fakturIdSelect: string = '';
-    @Input() segmentBases: string = '';
+    @Input() catalogueIdSelect: string = null;
+    @Input() brandIdSelect: string = null;
+    @Input() fakturIdSelect: string =  null;
+    @Input() segmentBases: string = 'store';
     @Input() typeTrigger: string = '';
-    @Input() idSelectedSegment: string = undefined;
+    @Input() idSelectedSegment: string = null;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -324,11 +324,11 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 this.cdRef.markForCheck();
             },
-            // error: (err) => {
-            //     this.toggleLoading(false);
-            //     HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-            //     this.helper$.showErrorNotification(new ErrorHandler(err));
-            // },
+            error: (err) => {
+                this.toggleLoading(false);
+                HelperService.debug('ERROR FIND ENTITY warehouse', { params, error: err }),
+                this.helper$.showErrorNotification(new ErrorHandler(err));
+            },
             complete: () => {
                 this.toggleLoading(false);
                 HelperService.debug('FIND ENTITY COMPLETED');
@@ -551,36 +551,44 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.segmentBases !== undefined || this.segmentBases == 'all') {
+        if (this.segmentBases !== null || this.segmentBases == 'all') {
             if (this.typePromo == 'flexiCombo') {
                 const params = {
                     // paginate: true,
                     // limit: this.limit,
                     // skip: 0,
                 };
-                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['catalogueId'] = this.catalogueIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['brandId'] = this.brandIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['fakturId'] = this.fakturIdSelect;
-                    this.requestEntity(params);
+                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect']) {
+                    if (this.catalogueIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueId'] = this.catalogueIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect']) {
+                    if (this.brandIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['brandId'] = this.brandIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect']) {
+                    if (this.fakturIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['fakturId'] = this.fakturIdSelect;
+                        this.requestEntity(params);
+                    } else {}
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                if (changes['idSelectedSegment'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['catalogueSegmentationId'] = this.idSelectedSegment;
-                    this.requestEntity(params);
+                if (changes['idSelectedSegment']) {
+                    if (this.idSelectedSegment !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueSegmentationId'] = this.idSelectedSegment;
+                        this.requestEntity(params);
+                    } else {}
                 }
             } else {
             }

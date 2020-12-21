@@ -89,7 +89,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     @Input() fakturIdSelect: string = '';
     @Input() segmentBases: string = '';
     @Input() typeTrigger: string = '';
-    @Input() idSelectedSegment: string = '';
+    @Input() idSelectedSegment: string = null;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -349,11 +349,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
                 this.cdRef.markForCheck();
             },
-            // error: (err) => {
-            //     this.toggleLoading(false);
-            //     HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-            //     this.helper$.showErrorNotification(new ErrorHandler(err));
-            // },
+            error: (err) => {
+                this.toggleLoading(false);
+                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+                this.helper$.showErrorNotification(new ErrorHandler(err));
+            },
             complete: () => {
                 this.toggleLoading(false);
                 HelperService.debug('FIND ENTITY COMPLETED');
@@ -659,29 +659,37 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     // limit: this.limit,
                     // skip: 0,
                 };
-                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['catalogueId'] = this.catalogueIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['brandId'] = this.brandIdSelect;
-                    this.requestEntity(params);
-                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['fakturId'] = this.fakturIdSelect;
-                    this.requestEntity(params);
+                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect']) {
+                    if (this.catalogueIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueId'] = this.catalogueIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect']) {
+                    if (this.brandIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['brandId'] = this.brandIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect']) {
+                    if (this.fakturIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['fakturId'] = this.fakturIdSelect;
+                        this.requestEntity(params);
+                    } else {}
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                if (changes['idSelectedSegment'].currentValue !== null) {
-                    this.availableEntities$.next([]);
-                    this.rawAvailableEntities$.next([]);
-                    params['catalogueSegmentationId'] = this.idSelectedSegment;
-                    this.requestEntity(params);
+                if (changes['idSelectedSegment']) { 
+                    if (this.idSelectedSegment !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueSegmentationId'] = this.idSelectedSegment;
+                        this.requestEntity(params);
+                    } else {}
                 }
             }
         } 

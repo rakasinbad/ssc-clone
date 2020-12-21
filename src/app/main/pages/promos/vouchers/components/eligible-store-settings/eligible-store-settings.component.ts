@@ -136,10 +136,10 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
 
     public typePromo = 'voucher';
-    public catalogueIdSelected: string;
-    public brandIdSelected: string;
-    public fakturIdSelected: string;
-    public segmentBases: string;
+    public catalogueIdSelected: string = null;
+    public brandIdSelected: string = null;
+    public fakturIdSelected: string = null;
+    public segmentBases: string = 'store';
     public triggerSelected: string = 'sku';
 
     constructor(

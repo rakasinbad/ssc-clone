@@ -84,12 +84,12 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     @Input('placeholder') placeholder: string = 'Search Store';
 
     @Input() typePromo: string = '';
-    @Input() catalogueIdSelect: string;
-    @Input() brandIdSelect: string = '';
-    @Input() fakturIdSelect: string = '';
+    @Input() catalogueIdSelect: string = null;
+    @Input() brandIdSelect: string = null;
+    @Input() fakturIdSelect: string = null;
     @Input() typeTrigger: string = '';
-    @Input() segmentBases: string = '';
-    @Input() idSelectedSegment: string = undefined;
+    @Input() segmentBases: string = null;
+    @Input() idSelectedSegment: string = null;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -566,7 +566,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.segmentBases == undefined || this.segmentBases == 'store') {
+        if (this.segmentBases == null || this.segmentBases == 'store') {
             if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {
                 const params = {
                     // paginate: true,
@@ -580,21 +580,26 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
                     this.multiple$.clearAllSelectedOptions();
-                    if ((this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== '')) {
-                        params['catalogueId'] = this.catalogueIdSelect;
-                        this.requestEntity(params);
-                    } else {
+                    if (changes['catalogueIdSelect']) {
+                        if ((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined)) {
+                            params['catalogueId'] = this.catalogueIdSelect;
+                            this.requestEntity(params);
+                        } else {
+                        }
                     }
+                   
                 } else if (this.typeTrigger == 'brand') {
                     this.availableEntities$.next([]);
                     this.rawAvailableEntities$.next([]);
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
-                    if((this.brandIdSelect !== undefined && this.brandIdSelect !== '')) {
-                        params['brandId'] = this.brandIdSelect;
-                        this.requestEntity(params);
-                    } else {
+                    if (changes['brandIdSelect']) {
+                        if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
+                            params['brandId'] = this.brandIdSelect;
+                            this.requestEntity(params);
+                        } else {
+                        }
                     }
                    
                 } else if (this.typeTrigger == 'faktur') {
@@ -603,12 +608,13 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
-                    if ((this.fakturIdSelect !== undefined && this.fakturIdSelect !== '')) {
-                        params['fakturId'] = this.fakturIdSelect;
-                        this.requestEntity(params);
-                    } else {
+                    if (changes['fakturIdSelect']) {
+                        if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
+                            params['fakturId'] = this.fakturIdSelect;
+                            this.requestEntity(params);
+                        } else {
+                        }
                     }
-
                 } else {
                 }
 
