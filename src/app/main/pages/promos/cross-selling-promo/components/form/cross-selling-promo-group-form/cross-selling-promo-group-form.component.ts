@@ -144,8 +144,10 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['getGeneral'].currentValue) {
-            this.statusMulti = this.getGeneral['multiplication'];
+        if (changes['getGeneral']) {
+            if (this.getGeneral !== null && this.getGeneral !== undefined) {
+                this.statusMulti = this.getGeneral['multiplication'];
+            }
         }
 
         if (this.statusMulti === true) {

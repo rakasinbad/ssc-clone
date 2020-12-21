@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { CrossSelling } from '../../../models';
 import * as fromCrossSellingPromos from '../../../store/reducers';
@@ -26,6 +26,10 @@ export class CrossSellingDetailGnComponent implements OnInit {
     promoAllocationCross = this._$helperService.promoAllocationCross();
     ePromoAllocation = PromoAllocationCross;
     public typePromoAlloc: string;
+    public statusMulti: boolean = false;
+    public conditionGroupSelling = [];
+    public subs: Subscription;
+    public benefits: any;
 
     constructor(private matDialog: MatDialog, private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService,
@@ -41,10 +45,15 @@ export class CrossSellingDetailGnComponent implements OnInit {
 
         this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem).pipe(
             map((item) => {
-                    this.typePromoAlloc = item.promoAllocationType;
                 return item;
             })
         );
+        this.subs = this.crossSellingPromo$.subscribe(val => {
+            this.conditionGroupSelling.push(val);
+            this.benefits = this.conditionGroupSelling[0];
+            console.log('this.benefits ->', this.benefits)
+            this.typePromoAlloc = this.benefits.promoAllocationType;
+        });
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
@@ -66,4 +75,7 @@ export class CrossSellingDetailGnComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void{
+        this.subs.unsubscribe();
+    }
 }

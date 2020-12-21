@@ -83,11 +83,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Store';
 
-    @Input() typePromo: string = '';
+    @Input() typePromo: string = null;
     @Input() catalogueIdSelect: string = null;
     @Input() brandIdSelect: string = null;
     @Input() fakturIdSelect: string = null;
-    @Input() typeTrigger: string = '';
+    @Input() typeTrigger: string = null;
     @Input() segmentBases: string = null;
     @Input() idSelectedSegment: string = null;
 
@@ -96,7 +96,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
-    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
+    // @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
     constructor(
@@ -682,7 +682,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'crossSelling') {
+        if (this.typePromo !== 'flexiCombo' && this.typePromo !== 'crossSelling' && this.typePromo !== 'voucher') {
             this.initEntity();
         }
     }

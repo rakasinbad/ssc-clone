@@ -289,7 +289,7 @@
             </ng-container>
 
             <ng-container *ngIf="!(isLoading$ | async)">
-                <mat-checkbox [checked]="(crossSellingPromo$ | async)?.multiplication" [disabled]="true" style="font-size: 14px;">
+                <mat-checkbox [checked]="false" [disabled]="true" style="font-size: 14px;">
                     Multiplication
                 </mat-checkbox>
             </ng-container>

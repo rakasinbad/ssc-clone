@@ -81,7 +81,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     // tslint:disable-next-line: no-inferrable-types no-input-rename
     @Input('placeholder') placeholder: string = 'Search Warehouse';
 
-    @Input() typePromo: string = '';
+    @Input() typePromo: string = null;
     @Input() catalogueIdSelect: string = null;
     @Input() brandIdSelect: string = null;
     @Input() fakturIdSelect: string =  null;
@@ -642,7 +642,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
     ngAfterViewInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        if (this.typePromo == '') {
+        if (this.typePromo == null) {
             this.initEntity();
         }
     }
