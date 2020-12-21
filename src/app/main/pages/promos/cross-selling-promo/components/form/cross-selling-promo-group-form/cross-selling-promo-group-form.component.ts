@@ -269,6 +269,16 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             }
     }
 
+    condMultiValue(value): void {
+        const conditionValueGroup2 = this.form.get(['groups', 1, 'conditionValue']);
+        // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
+        if (value == '' || value == undefined) {
+            conditionValueGroup2.setValue(null);
+        } else {
+            conditionValueGroup2.setValue(value);
+        }
+    }
+
     onChangeInvoiceGroup(ev: MatSelectChange, idx: number): void {
         if (!ev.value || !this.invoiceGroups || !this.invoiceGroups.length) {
             // Reset faktur select in Group 2
