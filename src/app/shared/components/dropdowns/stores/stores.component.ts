@@ -568,10 +568,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     ngOnChanges(changes: SimpleChanges): void {
         if (this.segmentBases == null || this.segmentBases == 'store') {
             if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher') {
-                const params = {
-                    // paginate: true,
-                    // limit: this.limit,
-                    // skip: 0,
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
                 };
                 if (this.typeTrigger == 'sku') {
                     this.availableEntities$.next([]);
@@ -619,7 +619,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 }
 
             } else if (this.typePromo == 'crossSelling') {
-                const params = {};
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
                 this.availableEntities$.next([]);
                 this.rawAvailableEntities$.next([]);
                 this.entityForm.reset();
