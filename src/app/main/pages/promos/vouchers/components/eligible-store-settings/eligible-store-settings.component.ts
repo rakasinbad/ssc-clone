@@ -102,7 +102,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     labelLength: number = 10;
     // tslint:disable-next-line: no-inferrable-types
     formFieldLength: number = 40;
-
+    @Input() selectedTrigger = [];
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<SupplierVoucher> = new EventEmitter<SupplierVoucher>();
 
@@ -134,6 +134,13 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     };
 
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
+
+    public typePromo = 'voucher';
+    public catalogueIdSelected: string = null;
+    public brandIdSelected: string = null;
+    public fakturIdSelected: string = null;
+    public segmentBases: string = 'store';
+    public triggerSelected: string = 'sku';
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -408,13 +415,14 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 ),
                 map(() => {
                     const rawValue = this.form.getRawValue();
-
                     if (rawValue.segmentationBase === 'direct-store') {
                         return {
                             id: rawValue.id,
                             segmentationBase: rawValue.segmentationBase,
                             chosenStore:
-                                rawValue.chosenStore.length === 0 ? [] : rawValue.chosenStore,
+                                rawValue.chosenStore == null || rawValue.chosenStore.length === 0 
+                                    ? [] 
+                                    : rawValue.chosenStore,
                         };
                     } else if (rawValue.segmentationBase === 'segmentation') {
                         return {
@@ -542,6 +550,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
 
         if (event.length === 0) {
             this.form.get('chosenStore').setValue('');
+            this.form.get('chosenStore').reset();
         } else {
             this.form.get('chosenStore').setValue(event);
         }
@@ -610,18 +619,49 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         this.initFormCheck();
     }
 
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void {
+     
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
-            this.trigger$.next('');
-
-            setTimeout(() => {
-                this.updateFormView();
-            });
-        } else if (changes['formMode'].currentValue) {
-            this.trigger$.next('');
-            setTimeout(() => this.updateFormView());
+        // if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
+        //     this.trigger$.next('');
+        //     setTimeout(() => {
+        //         this.updateFormView();
+        //     });
+        // } else if (changes['formMode'].currentValue) {
+        //     this.trigger$.next('');
+        //     setTimeout(() => this.updateFormView());
+        // }
+        this.trigger$.next('');
+        this.updateFormView();
+        if (changes['selectedTrigger'].currentValue == null) {
+        } else {
+            if (this.selectedTrigger['base'] == 'sku') {
+                this.form.get('chosenStore').reset();
+                let idSku = [];
+                idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
+                this.catalogueIdSelected = idSku.toString();
+                this.brandIdSelected = undefined;     
+                this.fakturIdSelected = undefined;
+                this.triggerSelected = 'sku';
+            } else if (this.selectedTrigger['base'] == 'brand') {
+                this.form.get('chosenStore').reset();
+                let idBrand = [];
+                idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
+                this.brandIdSelected = idBrand.toString();
+                this.catalogueIdSelected = undefined;     
+                this.fakturIdSelected = undefined;
+                this.triggerSelected = 'brand';
+            } else if (this.selectedTrigger['base'] == 'faktur') {
+                this.form.get('chosenStore').reset();
+                let idFaktur = [];
+                idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
+                this.fakturIdSelected = idFaktur.toString();
+                this.catalogueIdSelected = undefined;        
+                this.brandIdSelected = undefined;
+                this.triggerSelected = 'faktur';
+            }
         }
     }
 

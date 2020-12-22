@@ -120,7 +120,18 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             maxRedemptionCtrl.setValue(1);
             maxRedemptionCtrl.disable({ onlySelf: true });
         } else {
+
             maxRedemptionCtrl.enable({ onlySelf: true });
+        }
+    }
+
+    onChangeMultiplication(ev: MatCheckboxChange): void {
+        const multiplicationCtrl = this.form.get('multiplication');
+
+        if (ev.checked) {
+            multiplicationCtrl.setValue(true);
+        } else {
+            multiplicationCtrl.setValue(false);
         }
     }
 
@@ -191,7 +202,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
 
     private _handleFormValue(): void {
         const body = this.form.getRawValue();
-
         // Field EndDate
         const endDate = body['endDate'];
         const newEndDate =
@@ -221,6 +231,7 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             image: body['imgSuggestion'] || null,
             shortDescription: body['shortDescription'] || null,
             firstBuy: body['firstBuy'] || false,
+            multiplication: body['multiplication'] || false
         };
 
         this.formValue.emit(payload);

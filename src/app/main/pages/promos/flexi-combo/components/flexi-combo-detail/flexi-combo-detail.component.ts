@@ -20,6 +20,7 @@ import { FlexiComboActions } from '../../store/actions';
 import * as fromFlexiCombos from '../../store/reducers';
 import { FlexiComboSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-flexi-combo-detail',
@@ -51,8 +52,9 @@ export class FlexiComboDetailComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private store: Store<fromFlexiCombos.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -74,6 +76,10 @@ export class FlexiComboDetailComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this._initPage(LifecyclePlatform.OnDestroy);
+    }
+
+    onClickBack(): void {
+        this.router.navigateByUrl('/pages/promos/flexi-combo');
     }
 
     // -----------------------------------------------------------------------------------------------------

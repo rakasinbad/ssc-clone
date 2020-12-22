@@ -17,4 +17,5 @@ export interface GroupPromoConditionDto {
 export interface GroupFormDto {
     dataBase: GroupDatabaseDto;
     promoConditionCatalogues: GroupPromoConditionDto[];
+    catalogueSegmentationObjectId: string;
 }

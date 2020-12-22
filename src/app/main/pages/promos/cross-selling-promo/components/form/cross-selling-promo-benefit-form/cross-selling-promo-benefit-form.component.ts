@@ -3,10 +3,12 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
     ViewEncapsulation,
+    SimpleChanges
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
@@ -16,7 +18,7 @@ import { Catalogue } from 'app/main/pages/catalogues/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { FormMode, FormStatus } from 'app/shared/models';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { BenefitFormDto } from '../../../models';
@@ -30,11 +32,16 @@ import { CrossSellingPromoFormService } from '../../../services';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy {
+export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges, OnDestroy {
     private unSubs$: Subject<any> = new Subject();
 
     benefitType: { id: BenefitType; label: string }[];
     conditionBenefitType = BenefitType;
+
+    benefitTypeMulti: { id: BenefitMultiType; label: string }[];
+    conditionBenefitMultiType = BenefitMultiType;
+
+    @Input() getGeneral: FormGroup;
 
     @Input()
     fakturName: string;
@@ -45,11 +52,18 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy 
     @Input()
     formMode: FormMode;
 
+    @Input() fakturId: string;
+    @Input() getGroup: FormGroup;
+
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
 
     @Output()
     formValue: EventEmitter<BenefitFormDto> = new EventEmitter();
+
+    selectFaktur: string;
+    public idSelectSegment: string;
+    statusMulti: boolean = false;
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
@@ -59,7 +73,8 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy 
 
     ngOnInit(): void {
         this.benefitType = this.crossSellingPromoFormService.benefitType;
-
+        this.benefitTypeMulti = this.crossSellingPromoFormService.benefitTypeMulti;
+        
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
                 this._handleFormValue();
@@ -67,6 +82,29 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy 
 
             this.formStatus.emit(status);
         });
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['getGeneral']) {
+            if (this.getGeneral !== null || this.getGeneral !== undefined) {
+                this.statusMulti = this.getGeneral['multiplication'];
+            }
+            if (this.statusMulti == true) {
+                this.form.get('benefitType').setValue('qty');
+                // this.form.get('benefitCatalogueId').reset();
+                this.form.get('benefitBonusQty').reset();
+                this.form.get('benefitRebate').reset();
+                this.form.get('benefitMaxRebate').reset();
+                this.form.get('benefitDiscount').reset();
+            }
+        }
+
+        if (changes['fakturId']) {
+            this.selectFaktur = changes['fakturId'].currentValue;
+        }
+        if (changes['getGroup']) {
+            this.idSelectSegment = changes['getGroup'].currentValue;
+        }
     }
 
     ngOnDestroy(): void {
@@ -82,6 +120,25 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnDestroy 
 
             case BenefitType.PERCENT:
                 this._setRuleTypePercent();
+                return;
+
+            case BenefitType.QTY:
+                this._setRuleTypeQty();
+                return;
+
+            default:
+                this.noticeService.open('Sorry, unknown benefit type!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                });
+                return;
+        }
+    }
+
+    onChangeBenefitTypeMulti(ev: MatRadioChange): void {
+        switch (ev.value) {
+            case BenefitType.AMOUNT:
+                this._setRuleTypeAmount();
                 return;
 
             case BenefitType.QTY:
