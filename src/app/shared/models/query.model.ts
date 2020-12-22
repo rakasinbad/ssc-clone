@@ -29,6 +29,13 @@ export interface IQueryParamsVoucher {
 }
 
 export interface IQueryParamsPromoList {
+    limit?: number;
+    skip?: number;
+    sort?: TSort;
+    sortBy?: string;
+    paginate?: boolean;
+    search?: IQuerySearchParams[];
+    isWaitingForPayment?: boolean;
     promo_limit?: number;
     promo_skip?: number;
 }
