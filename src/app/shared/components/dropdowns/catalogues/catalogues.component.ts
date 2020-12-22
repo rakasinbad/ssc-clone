@@ -435,7 +435,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                     limit: this.limit,
                     skip: 0
                 };
-        
+                
                 this.search = value;
                 queryParams['keyword'] = value;
         
@@ -852,26 +852,26 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     ngAfterViewInit(): void {
-        // this.entityForm.valueChanges.pipe(
-        //     distinctUntilChanged(),
-        //     debounceTime(500),
-        //     tap(x => HelperService.debug('ENTITY FORM CHANGED', x)),
-        //     takeUntil(this.subs$)
-        // ).subscribe(value => {
-        //     if (typeof value === 'string') {
-        //         if (this.entityAutoComplete) {
-        //             if (this.entityAutoComplete.panel) {
-        //                 this.onEntitySearch(value);
-        //             }
-        //         }
-        //     }
-        //     // if (value) {
-        //     //     const rawEntities = this.rawAvailableEntities$.value;
-        //     //     this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
-        //     // } else {
-        //     //     this.selectedEntity$.next(null);
-        //     // }
-        // });
+        this.entityForm.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(500),
+            tap(x => HelperService.debug('ENTITY FORM CHANGED', x)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (typeof value === 'string') {
+                if (this.entityAutoComplete) {
+                    if (this.entityAutoComplete.panel) {
+                        this.onEntitySearch(value);
+                    }
+                }
+            }
+            // if (value) {
+            //     const rawEntities = this.rawAvailableEntities$.value;
+            //     this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+            // } else {
+            //     this.selectedEntity$.next(null);
+            // }
+        });
 
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
         if (this.typeCatalogue !== 'crossSelling') {

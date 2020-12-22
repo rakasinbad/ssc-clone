@@ -84,6 +84,10 @@ export class CatalogueApiService {
             newArgs.push({ key: 'segment', value: params['segment'] });
         }
 
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+        
         this._url = this.helper$.handleApiRouter(this._endpointPromo);
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 
