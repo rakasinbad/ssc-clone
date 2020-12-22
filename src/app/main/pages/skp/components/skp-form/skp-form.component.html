@@ -26,10 +26,10 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10" fxFill
+                            <label class="input-label" fxFlexAlign="center" fxFlex="12" fxFill
                             [class.sinbad-red-fg]="hasError('name')"
                             >
-                                <div>
+                                <div class="title-label">
                                     <span class="sinbad-red-fg">*</span>
                                     SKP Name
                                 </div>
@@ -64,11 +64,14 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
                              [class.sinbad-red-fg]="hasError('description')"
                              >
-                                <span class="sinbad-red-fg">*</span>
-                                SKP<br />Description
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    SKP<br />Description
+                                </div>
+
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
                                     color="accent"
@@ -100,10 +103,13 @@
                             fxLayoutGap="16px"
                             
                         >
-                            <label fxFlexAlign="center" fxFlex="10"
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
                             [class.sinbad-red-fg]="hasError('notes')">
-                                <span class="sinbad-red-fg">*</span>
-                                Notes To<br />Display
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Notes To<br />Display
+                                </div>
+
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
                                     color="accent"
@@ -134,10 +140,13 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
                             [class.sinbad-red-fg]="hasError('header')">
-                                <span class="sinbad-red-fg">*</span>
-                                Header
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Header
+                                </div>
+
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
                                     color="accent"
@@ -169,9 +178,11 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                <span class="sinbad-red-fg">*</span>
-                                SKP File
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12">
+                                <div class="title-label">
+                                    SKP File 
+                                </div>
+                                
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
                                     color="accent"
@@ -226,9 +237,11 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"  [class.sinbad-red-fg]="hasError('promo')">
-                                <span class="sinbad-red-fg">*</span>
-                                Selected<br />Promo
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"  [class.sinbad-red-fg]="hasError('promo')">
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Selected<br />Promo
+                                </div>
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
                                     color="accent"
@@ -259,10 +272,14 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
                             [class.sinbad-red-fg]="hasError('imageUrl')">
-                                <span class="sinbad-red-fg">*</span>
-                                Image<br />Suggestion
+                                
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Image<br />Suggestion
+                                </div>
+                                
 
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
@@ -343,9 +360,21 @@
                             fxLayoutGap="16px"
                             [class.mat-sinbad-field-error]="hasError('startDate')"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                <span class="sinbad-red-fg">*</span>
-                                Active From
+                            <label class="input-label" fxFlexAlign="center" fxFlex="12">
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Active From
+                                </div>
+                                
+
+                                <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="This is a tooltip to choose date when the form active"
+                                matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -384,9 +413,20 @@
                             fxLayoutGap="16px"
                             [class.mat-sinbad-field-error]="hasError('endDate')"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                <span class="sinbad-red-fg">*</span>
-                                To
+                            <label class="input-label" fxFlexAlign="center" fxFlex="12">
+                                <div class="title-label">
+                                   <span class="sinbad-red-fg">*</span>
+                                    To 
+                                </div>
+                                
+                                <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="This is a tooltip to choose end date."
+                                matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -424,7 +464,7 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"> Status </label>
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"> Status </label>
 
                             <mat-radio-group
                                 formControlName="status"
