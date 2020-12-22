@@ -177,7 +177,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
             }
         });
 
-        let params = {};
+        const params = {};
 
         if (
             this.benefitSetting[0].target == 'all' ||
