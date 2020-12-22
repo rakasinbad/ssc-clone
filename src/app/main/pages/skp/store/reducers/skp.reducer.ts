@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { SkpModel } from '../../models';
+import { SkpModel, skpPromoList, skpStoreList  } from '../../models';
 import { SkpActions } from '../actions';
 
 // Keyname for reducer
@@ -33,6 +33,8 @@ export const reducer = createReducer(
     on(
         SkpActions.fetchSkpRequest,
         SkpActions.fetchSkpListRequest,
+        SkpActions.fetchSkpListDetailPromoRequest,
+        SkpActions.fetchSkpListDetailStoreRequest,
         SkpActions.createSkpRequest,
         SkpActions.updateSkpRequest,
         SkpActions.changeStatusRequest,
@@ -45,6 +47,8 @@ export const reducer = createReducer(
     on(
         SkpActions.fetchSkpFailure,
         SkpActions.fetchSkpListFailure,
+        SkpActions.fetchSkpListDetailStoreFailure,
+        SkpActions.fetchSkpListDetailPromoFailure,
         SkpActions.createSkpFailure,
         SkpActions.updateSkpFailure,
         SkpActions.changeStatusFailure,
@@ -63,6 +67,12 @@ export const reducer = createReducer(
         adapter.addOne(payload, { ...state, isLoading: false })
     ),
     on(SkpActions.fetchSkpListSuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
+    on(SkpActions.fetchSkpListDetailPromoSuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
+    on(SkpActions.fetchSkpListDetailStoreSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
     on(SkpActions.changeStatusSuccess, (state, { payload }) =>

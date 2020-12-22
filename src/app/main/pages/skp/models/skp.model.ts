@@ -18,6 +18,16 @@ export class SkpModel implements ITimestamp {
     updatedAt: string;
     deletedAt: TNullable<string>;
 
+    sellerId: string;
+    storeName: string;
+    start_date: string;
+    end_date: string;
+    storeOwnerName: string;
+    address: string;
+    province: string;
+    skpStatus: string;
+    skpUpdateDate: string;
+
     constructor(data: SkpModel) {
         const {
             id,
@@ -34,6 +44,15 @@ export class SkpModel implements ITimestamp {
             createdAt,
             updatedAt,
             deletedAt,
+            sellerId,
+            storeName,
+            start_date,
+            end_date,
+            storeOwnerName,
+            address,
+            province,
+            skpStatus,
+            skpUpdateDate
         } = data;
 
         this.id = id;
@@ -47,10 +66,20 @@ export class SkpModel implements ITimestamp {
         this.imageUrl = imageUrl || null;
         this.file = file || null;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = createdAt  || null;
+        this.updatedAt = updatedAt  || null;
         this.deletedAt = deletedAt;
 
+        this.sellerId = sellerId || null;
+        this.storeName = storeName || null;
+        this.start_date = start_date || null;
+        this.end_date = end_date || null;
+        this.storeName = storeName || null;
+        this.storeOwnerName = storeOwnerName || null;
+        this.address = address || null;
+        this.province = province || null;
+        this.skpStatus = skpStatus || null;
+        this.skpUpdateDate = skpUpdateDate || null;
     }
 }
 
@@ -61,7 +90,7 @@ export class skpPromoList {
     name: string;
     start_date: string;
     end_date: string;
-    constructor(dataPromo: skpPromoList) {
+    constructor(data: skpPromoList) {
         const {
             id,
             sellerId,
@@ -69,7 +98,7 @@ export class skpPromoList {
             name,
             start_date,
             end_date,
-        } = dataPromo
+        } = data
 
         this.id = id || null;
         this.sellerId = sellerId;
@@ -91,7 +120,7 @@ export class skpStoreList{
     start_date: string;
     end_date: string;
 
-    constructor(dataStore: skpStoreList) {
+    constructor(data: skpStoreList) {
         const {
             id,
             storeName,
@@ -100,7 +129,7 @@ export class skpStoreList{
             province,
             skpStatus,
             skpUpdateDate
-        } = dataStore
+        } = data;
 
         this.id = id;
         this.storeName = storeName || null;

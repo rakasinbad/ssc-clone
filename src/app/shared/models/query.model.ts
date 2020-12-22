@@ -41,6 +41,13 @@ export interface IQueryParamsPromoList {
 }
 
 export interface IQueryParamsCustomerList {
+    limit?: number;
+    skip?: number;
+    sort?: TSort;
+    sortBy?: string;
+    paginate?: boolean;
+    search?: IQuerySearchParams[];
+    isWaitingForPayment?: boolean;
     store_limit?: number;
     store_skip?: number;
 }

@@ -59,7 +59,7 @@ export const fetchSkpListDetailStoreFailure = createAction(
 
 export const fetchSkpListDetailStoreSuccess = createAction(
     '[SKP] Fetch SKP List Detail Store Success',
-    props<{ payload: { data: skpStoreList[]; total: number } }>()
+    props<{ payload: { data: SkpModel[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ export const fetchSkpListDetailPromoFailure = createAction(
 
 export const fetchSkpListDetailPromoSuccess = createAction(
     '[SKP] Fetch SKP List Detail Promo Success',
-    props<{ payload: { data: skpPromoList[]; total: number } }>()
+    props<{ payload: { data: SkpModel[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
