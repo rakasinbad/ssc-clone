@@ -30,7 +30,6 @@ import {
     map,
     exhaustMap,
 } from 'rxjs/operators';
-import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
     selector: 'app-flexi-combo-detail-customer',
@@ -178,11 +177,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
             }
         });
 
-        const params: IQueryParams = {
-            paginate: true,
-            limit: 100,
-            skip: 0
-        };
+        const params = {};
 
         if (
             this.benefitSetting[0].target == 'all' ||

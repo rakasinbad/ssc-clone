@@ -28,7 +28,6 @@ import {
     switchMap,
     map,
 } from 'rxjs/operators';
-import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
   selector: 'app-cross-selling-detail-cs',
@@ -70,7 +69,7 @@ export class CrossSellingDetailCsComponent implements OnInit {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private requestSegment(params: IQueryParams, segment): void {
+    private requestSegment(params, segment): void {
         of(null)
             .pipe(
                 withLatestFrom<any, UserSupplier>(
@@ -185,11 +184,7 @@ export class CrossSellingDetailCsComponent implements OnInit {
             this.benefitSetting[0].target == 'all' ||
             this.benefitSetting[0].target == 'segmentation'
         ) {
-            const params: IQueryParams = {
-                paginate: true,
-                limit: 100,
-                skip: 0
-            };
+            
             params['catalogueSegmentationId'] = this.benefitSetting[0].catalogueSegmentationObjectId;
             params['supplierId'] = this.benefitSetting[0].supplierId;
             this.requestSegment(params, 'warehouse');
