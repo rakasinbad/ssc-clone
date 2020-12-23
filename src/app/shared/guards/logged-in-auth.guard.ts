@@ -57,7 +57,6 @@ export class LoggedInAuthGuard implements CanActivate, CanLoad {
                 const isLoggedIn = !!(user && user.token);
 
                 if (isLoggedIn) {
-                    console.log('[canLoad] LOGGED IN GUARD', isLoggedIn, user);
                     this.router.navigateByUrl('/pages', {replaceUrl: true});
                 }
 
