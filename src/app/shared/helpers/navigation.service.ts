@@ -87,6 +87,12 @@ export class NavigationService {
     //         case 'addProduct':
     //         case 'manageProduct':
     //             this._fuseNavigationService.updateNavigationItem(id, {
+    //                classes:
+    //                    (!this.ngxRoles.getRole('SUPER_SUPPLIER_ADMIN') &&
+    //                    !this.ngxRoles.getRole('HEAD_OF_SALES') &&
+    //                    !this.ngxRoles.getRole('BOS') &&
+    //                    !this.ngxRoles.getRole('COUNTRY_MANAGER') &&
+    //                    !this.ngxRoles.getRole('SUPPLIER_ADMIN')) ? 'navigation-display-hidden' : '',
     //                 hidden:
     //                     !this.ngxRoles.getRole('SUPER_SUPPLIER_ADMIN') &&
     //                     !this.ngxRoles.getRole('HEAD_OF_SALES') &&
@@ -131,7 +137,8 @@ export class NavigationService {
     //                     !this.ngxRoles.getRole('HEAD_OF_SALES') &&
     //                     !this.ngxRoles.getRole('BOS') &&
     //                     !this.ngxRoles.getRole('COUNTRY_MANAGER') &&
-    //                     !this.ngxRoles.getRole('SUPPLIER_ADMIN')
+    //                     !this.ngxRoles.getRole('SUPPLIER_ADMIN') && 
+    //                     !this.ngxRoles.getRole('SALES_ADMIN_CABANG')
     //             });
     //             break;
 
