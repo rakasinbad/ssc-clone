@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate, CanLoad {
             map((user) => {
                 const isLoggedIn = !!(user && user.token);
 
-                console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
+                // console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
 
                 if (!isLoggedIn) {
                     this.router.navigateByUrl('/auth/login', {replaceUrl: true});
@@ -81,7 +81,7 @@ export class AuthGuard implements CanActivate, CanLoad {
             exhaustMap((user) => {
                 const isLoggedIn = !!(user && user.token);
 
-                console.log('[canLoad] AUTH GUARD 1', route.path, isLoggedIn, user);
+                // console.log('[canLoad] AUTH GUARD 1', route.path, isLoggedIn, user);
 
                 return this.storage
                     .get('user')
