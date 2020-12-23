@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
+import { RoleGuard } from './main/pages/core/auth/role.guard';
 
 const routes: Routes = [
     {
@@ -152,6 +153,7 @@ const routes: Routes = [
                             'BOS',
                             'COUNTRY_MANAGER',
                             'SUPPLIER_ADMIN',
+                            'SALES_ADMIN_CABANG'
                         ],
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
@@ -354,8 +356,13 @@ const routes: Routes = [
                 },
             },
             {
+                path: 'landing',
+                canActivate: [AuthGuard, RoleGuard],
+                children: []
+            },
+            {
                 path: '',
-                redirectTo: 'account',
+                redirectTo: 'landing',
                 pathMatch: 'full',
             },
         ],

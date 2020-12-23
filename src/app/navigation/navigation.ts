@@ -7,7 +7,7 @@ export const navigation: FuseNavigation[] = [
         translate: 'NAV.DASHBOARD.TITLE',
         type: 'item',
         icon: 'custom-sinbad-dashboard-logo',
-        url: '/pages/dashboard',
+        url: '/pages/dashboard'
     },
     {
         id: 'account',

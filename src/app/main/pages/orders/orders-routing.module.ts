@@ -19,6 +19,7 @@ const routes: Routes = [
                     'BOS',
                     'COUNTRY_MANAGER',
                     'SUPPLIER_ADMIN',
+                    'SALES_ADMIN_CABANG'
                 ],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
@@ -43,6 +44,7 @@ const routes: Routes = [
                     'BOS',
                     'COUNTRY_MANAGER',
                     'SUPPLIER_ADMIN',
+                    'SALES_ADMIN_CABANG'
                 ],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],

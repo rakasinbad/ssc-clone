@@ -36,7 +36,7 @@ export class LoggedInAuthGuard implements CanActivate, CanLoad {
                 // console.log('[canActive] LOGGED IN GUARD', isLoggedIn, user);
 
                 if (isLoggedIn) {
-                    this.router.navigateByUrl(this._$auth.redirectUrl || '/auth/login');
+                    this.router.navigateByUrl('/pages', {replaceUrl: true});
                 }
 
                 return !isLoggedIn;
@@ -57,7 +57,8 @@ export class LoggedInAuthGuard implements CanActivate, CanLoad {
                 const isLoggedIn = !!(user && user.token);
 
                 if (isLoggedIn) {
-                    this.router.navigateByUrl(this._$auth.redirectUrl || '/auth/login');
+                    console.log('[canLoad] LOGGED IN GUARD', isLoggedIn, user);
+                    this.router.navigateByUrl('/pages', {replaceUrl: true});
                 }
 
                 // console.log('[canLoad] LOGGED IN GUARD', isLoggedIn, user);
