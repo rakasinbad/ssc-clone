@@ -15,7 +15,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -24,7 +24,6 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthFacadeService } from 'app/main/pages/core/auth/services';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { Selection } from 'app/shared/components/dropdowns/select-advanced/models';
-import { Warehouse } from 'app/shared/components/dropdowns/warehouses/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { FormStatus } from 'app/shared/models/global.model';
@@ -90,6 +89,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     totalCataloguePrice$: Observable<number>;
     // Untuk menyimpan kolom tabel yang ingin dimunculkan.
     displayedColumns: string[] = [
+        'segmentation-name',
         'warehouse-name',
         'store-type',
         'store-group',
@@ -155,6 +155,19 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
     @ViewChild('alertDelete', { static: false })
     alertDelete: TemplateRef<any>;
+
+    @ViewChild('dialogAdjustPrice', { static: false })
+    dialogAdjustPrice: TemplateRef<any>;
+
+    tmpProductName: string;
+    tmpSegmentationName: string;
+    tmpWarehouses: any[] = [];
+    tmpTypes: any[] = [];
+    tmpGroups: any[] = [];
+    tmpChannels: any[] = [];
+    tmpClusters: any[] = [];
+    tmpPrice: number;
+    adjustPriceCtrl: FormControl = new FormControl();
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -326,6 +339,70 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
     isViewMode(): boolean {
         return this.formMode === 'view';
+    }
+
+    onAdjustPrice(item: CataloguePrice, idx: number): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.selectedSegmentId = item.id || null;
+        this.tmpProductName = this.selectedCatalogue$.value.name;
+        this.tmpSegmentationName = item.name;
+        this.tmpWarehouses =
+            item.warehouses && item.warehouses.length
+                ? item.warehouses.map((i) => ({ id: i.id, label: i.name }))
+                : [];
+        this.tmpTypes =
+            item.types && item.types.length
+                ? item.types.map((i) => ({ id: i.id, label: i.name }))
+                : [];
+        this.tmpGroups =
+            item.groups && item.groups.length
+                ? item.groups.map((i) => ({ id: i.id, label: i.name }))
+                : [];
+        this.tmpChannels =
+            item.channels && item.channels.length
+                ? item.channels.map((i) => ({ id: i.id, label: i.name }))
+                : [];
+        this.tmpClusters =
+            item.clusters && item.clusters.length
+                ? item.clusters.map((i) => ({ id: i.id, label: i.name }))
+                : [];
+
+        this.adjustPriceCtrl.setValue(item.price);
+
+        const dialogRef = this.applyDialogFactoryService.open(
+            {
+                title: 'Adjust Price',
+                template: this.dialogAdjustPrice,
+                isApplyEnabled: true,
+                showApplyButton: true,
+                showCloseButton: true,
+                applyButtonLabel: 'Save',
+                closeButtonLabel: 'Cancel',
+            },
+            {
+                autoFocus: false,
+                restoreFocus: false,
+                disableClose: true,
+                width: '35vw',
+                minWidth: '30vw',
+                maxWidth: '50vw',
+                panelClass: 'dialog-container-no-padding',
+            }
+        );
+
+        dialogRef.closed$.subscribe((res) => {
+            console.log('DIALOG CLOSE', { res });
+
+            if (res === 'apply') {
+                // this.isDelete = true;
+            }
+
+            this.selectedSegmentId = null;
+            this.cdRef.markForCheck();
+        });
     }
 
     onDelete(item: CataloguePrice, idx: number): void {
@@ -689,6 +766,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         if (id) {
             if (urls.filter((url) => url.path === 'edit').length) {
                 this.displayedColumns = [
+                    'segmentation-name',
                     'warehouse-name',
                     'store-type',
                     'store-group',
@@ -701,6 +779,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 this._prepareEditCatalogue();
             } else if (urls.filter((url) => url.path === 'view')) {
                 this.displayedColumns = [
+                    'segmentation-name',
                     'warehouse-name',
                     'store-type',
                     'store-group',
@@ -826,6 +905,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
         if (this.isViewMode()) {
             this.displayedColumns = [
+                'segmentation-name',
                 'warehouse-name',
                 'store-type',
                 'store-group',
@@ -838,6 +918,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         } else {
             if (this.isEditMode()) {
                 this.displayedColumns = [
+                    'segmentation-name',
                     'warehouse-name',
                     'store-type',
                     'store-group',
@@ -847,6 +928,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'actions',
                 ];
             }
+
             this.form.get('advancePrice').enable();
         }
 
@@ -869,11 +951,11 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         };
 
         data['catalogueId'] = catalogueId;
-        data['warehouseIds'] = [];
-        data['typeIds'] = [];
-        data['groupIds'] = [];
-        data['channelIds'] = [];
-        data['clusterIds'] = [];
+        // data['warehouseIds'] = [];
+        // data['typeIds'] = [];
+        // data['groupIds'] = [];
+        // data['channelIds'] = [];
+        // data['clusterIds'] = [];
 
         this.dataSource.getWithQuery(data);
     }

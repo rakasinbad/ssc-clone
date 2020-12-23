@@ -167,14 +167,14 @@
         <!-- / APPLY PRICE FOR ALL FILTERED -->
 
         <!-- APPLICATION ADVANCE PRICE -->
-        <div
+        <!-- <div
             fxLayout="row"
             fxLayoutAlign="start center"
             fxLayoutGap="16px"
             *ngIf="(formMode | hasFormMode: 'edit') && form.get('advancePrice').value === true"
-        >
-            <!-- PRICE SEGMENTATION -->
-            <div
+        > -->
+        <!-- PRICE SEGMENTATION -->
+        <!-- <div
                 cdkDropList
                 class="dnd-catalogue-price-toolbar w-100-p"
                 cdkDropListOrientation="horizontal"
@@ -222,15 +222,15 @@
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                 </ng-container>
-            </div>
-            <!-- / PRICE SEGMENTATION -->
+            </div> -->
+        <!-- / PRICE SEGMENTATION -->
 
-            <!-- APPLY BUTTON -->
-            <button mat-flat-button class="sinbad-yellow w-84 h-32 mb-28" (click)="onApplyFilter()">
+        <!-- APPLY BUTTON -->
+        <!-- <button mat-flat-button class="sinbad-yellow w-84 h-32 mb-28" (click)="onApplyFilter()">
                 Apply
-            </button>
-            <!-- / APPLY BUTTON -->
-        </div>
+            </button> -->
+        <!-- / APPLY BUTTON -->
+        <!-- </div> -->
         <!-- / APPLICATION ADVANCE PRICE -->
 
         <!-- ADVANCE PRICE TABLE -->
@@ -253,11 +253,20 @@
                 maxScrollbarLength: 300
             }"
         >
+            <!-- Segmentation Name Column -->
+            <ng-container matColumnDef="segmentation-name">
+                <mat-header-cell *matHeaderCellDef>Segmentation Name</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.name || '-' }}</p>
+                </mat-cell>
+            </ng-container>
+            <!-- / Segmentation Name Column -->
+
             <!-- Warehouse Column -->
             <ng-container matColumnDef="warehouse-name">
                 <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.warehouse?.name || '-' }}</p>
+                    <p>{{ (row?.warehouses | warehousePriceSetting) || '-' }}</p>
                 </mat-cell>
             </ng-container>
             <!-- / Warehouse Column -->
@@ -266,7 +275,7 @@
             <ng-container matColumnDef="store-type">
                 <mat-header-cell *matHeaderCellDef>Store Type</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.type?.name || '-' }}</p>
+                    <p>{{ (row?.types | typePriceSetting) || '-' }}</p>
                 </mat-cell>
             </ng-container>
             <!-- / Store Type Column -->
@@ -275,7 +284,7 @@
             <ng-container matColumnDef="store-group">
                 <mat-header-cell *matHeaderCellDef>Store Group</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.group?.name || '-' }}</p>
+                    <p>{{ (row?.groups | groupPriceSetting) || '-' }}</p>
                 </mat-cell>
             </ng-container>
             <!-- / Store Group Column -->
@@ -284,7 +293,7 @@
             <ng-container matColumnDef="store-channel">
                 <mat-header-cell *matHeaderCellDef>Store Channel</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.channel?.name || '-' }}</p>
+                    <p>{{ (row?.channels | channelPriceSetting) || '-' }}</p>
                 </mat-cell>
             </ng-container>
             <!-- / Store Channel Column -->
@@ -293,7 +302,7 @@
             <ng-container matColumnDef="store-cluster">
                 <mat-header-cell *matHeaderCellDef>Store Cluster</mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p>{{ row?.cluster?.name || '-' }}</p>
+                    <p>{{ (row?.clusters | clusterPriceSetting) || '-' }}</p>
                 </mat-cell>
             </ng-container>
             <!-- / Store Cluster Column -->
@@ -354,6 +363,16 @@
                             type="button"
                             mat-menu-item
                             class="sinbad-mat-menu-item"
+                            aria-label="Adjust Price"
+                            (click)="onAdjustPrice(row, idx)"
+                        >
+                            <mat-icon>edit</mat-icon>
+                            <span>Adjust Price</span>
+                        </button>
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
                             aria-label="Delete"
                             (click)="onDelete(row, idx)"
                         >
@@ -406,4 +425,191 @@
     <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
         Are you sure want to delete segmentation from this catalogue?
     </p>
+</ng-template>
+
+<ng-template #dialogAdjustPrice>
+    <form
+        id="adjust-price-form"
+        class="px-16"
+        fxLayout="column"
+        fxLayoutAlign="start stretch"
+        fxLayoutGap="16px"
+    >
+        <div class="form-field" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+            <!-- PRODUCT NAME -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Product Name</div>
+                <div>
+                    LAKME
+                    <!-- <ng-container *ngIf="!isLoading">
+                        LAKME
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader> -->
+                </div>
+            </div>
+            <!-- / PRODUCT NAME -->
+
+            <!-- SEGMENTATION NAME -->
+            <div
+                class="field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <div class="label" fxFlex="120px">Segmentation Name</div>
+                <div>
+                    Segmentation 1
+                    <!-- <ng-container *ngIf="!isLoading">
+                        LAKME
+                    </ng-container>
+
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        *ngIf="isLoading"
+                    ></ngx-skeleton-loader> -->
+                </div>
+            </div>
+            <!-- / SEGMENTATION NAME -->
+        </div>
+
+        <div class="form-box" fxLayout="column" fxLayoutAlign="start stretch">
+            <!-- WAREHOUSE FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <label for="warehouse" fxFlexAlign="center" fxFlex="120px"> Warehouse </label>
+
+                <warehouse-select-search-multi
+                    fxFlex
+                    [externalSources]="tmpWarehouses"
+                ></warehouse-select-search-multi>
+                <!--  <warehouse-autocomplete-multi fxFlex></warehouse-autocomplete-multi> -->
+                <!-- <mat-form-field appearance="outline" fxFlex="50">
+                    <input matInput id="warehouse" autocapitalize="words" autocomplete="off" />
+
+                     <mat-error>
+                        {{
+                            form.get('segmentationName').value
+                                | errorMessage: form:'segmentationName'
+                        }}
+                    </mat-error>
+                </mat-form-field>-->
+            </div>
+            <!-- / WAREHOUSE FIELD -->
+
+            <!-- TYPE FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <label for="type" fxFlexAlign="center" fxFlex="120px"> Type </label>
+
+                <type-select-search-multi
+                    fxFlex
+                    [externalSources]="tmpTypes"
+                ></type-select-search-multi>
+            </div>
+            <!-- / TYPE FIELD -->
+
+            <!-- GROUP FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <label for="group" fxFlexAlign="center" fxFlex="120px"> Group </label>
+
+                <group-select-search-multi
+                    fxFlex
+                    [externalSources]="tmpGroups"
+                ></group-select-search-multi>
+            </div>
+            <!-- / GROUP FIELD -->
+
+            <!-- CHANNEL FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <label for="channel" fxFlexAlign="center" fxFlex="120px"> Channel </label>
+
+                <channel-select-search-multi
+                    fxFlex
+                    [externalSources]="tmpChannels"
+                ></channel-select-search-multi>
+            </div>
+            <!-- / CHANNEL FIELD -->
+
+            <!-- CLUSTER FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <label for="cluster" fxFlexAlign="center" fxFlex="120px"> Cluster </label>
+
+                <cluster-select-search-multi
+                    fxFlex
+                    [externalSources]="tmpClusters"
+                ></cluster-select-search-multi>
+            </div>
+            <!-- / CLUSTER FIELD -->
+
+            <!-- PRICE FIELD -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                fxFlex
+            >
+                <label for="price" fxFlexAlign="center" fxFlex="120px"> Price </label>
+
+                <mat-form-field appearance="outline" fxFlex>
+                    <input
+                        matInput
+                        id="price"
+                        [formControl]="adjustPriceCtrl"
+                        autocomplete="off"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                    />
+
+                    <!-- <mat-error>
+                        {{
+                            adjustPriceCtrl.value
+                                | errorMessage: form:'segmentationName'
+                        }}
+                    </mat-error> -->
+                </mat-form-field>
+            </div>
+            <!-- / PRICE FIELD -->
+        </div>
+    </form>
 </ng-template>

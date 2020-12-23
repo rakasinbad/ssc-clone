@@ -315,35 +315,35 @@ export class CataloguesService implements OnDestroy {
             newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
         }
 
-        if (!Array.isArray(params['warehouseIds'])) {
-            throw new Error('warehouseIds must be an array.');
-        } else {
-            newArgs.push({ key: 'warehouseIds', value: `[${params['warehouseIds']}]` });
-        }
+        // if (!Array.isArray(params['warehouseIds'])) {
+        //     throw new Error('warehouseIds must be an array.');
+        // } else {
+        //     newArgs.push({ key: 'warehouseIds', value: `[${params['warehouseIds']}]` });
+        // }
 
-        if (!Array.isArray(params['typeIds'])) {
-            throw new Error('typeIds must be an array.');
-        } else {
-            newArgs.push({ key: 'typeIds', value: `[${params['typeIds']}]` });
-        }
+        // if (!Array.isArray(params['typeIds'])) {
+        //     throw new Error('typeIds must be an array.');
+        // } else {
+        //     newArgs.push({ key: 'typeIds', value: `[${params['typeIds']}]` });
+        // }
 
-        if (!Array.isArray(params['groupIds'])) {
-            throw new Error('groupIds must be an array.');
-        } else {
-            newArgs.push({ key: 'groupIds', value: `[${params['groupIds']}]` });
-        }
+        // if (!Array.isArray(params['groupIds'])) {
+        //     throw new Error('groupIds must be an array.');
+        // } else {
+        //     newArgs.push({ key: 'groupIds', value: `[${params['groupIds']}]` });
+        // }
 
-        if (!Array.isArray(params['clusterIds'])) {
-            throw new Error('clusterIds must be an array.');
-        } else {
-            newArgs.push({ key: 'clusterIds', value: `[${params['clusterIds']}]` });
-        }
+        // if (!Array.isArray(params['clusterIds'])) {
+        //     throw new Error('clusterIds must be an array.');
+        // } else {
+        //     newArgs.push({ key: 'clusterIds', value: `[${params['clusterIds']}]` });
+        // }
 
-        if (!Array.isArray(params['channelIds'])) {
-            throw new Error('channelIds must be an array.');
-        } else {
-            newArgs.push({ key: 'channelIds', value: `[${params['channelIds']}]` });
-        }
+        // if (!Array.isArray(params['channelIds'])) {
+        //     throw new Error('channelIds must be an array.');
+        // } else {
+        //     newArgs.push({ key: 'channelIds', value: `[${params['channelIds']}]` });
+        // }
 
         this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
