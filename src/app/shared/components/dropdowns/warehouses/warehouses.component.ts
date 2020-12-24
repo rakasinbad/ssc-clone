@@ -211,9 +211,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse';
-                console.log('segmenbase req entity warehouse ->', this.segmentBases)
                 if (this.segmentBases == 'all') {
-                    console.log('msuk segment all')
                     if (this.typePromo === 'flexiCombo') { 
                         delete newQuery['$skip'];
                         delete newQuery['$limit'];  
@@ -558,11 +556,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('isi segment bases changes warehous0>', this.segmentBases )
         if (changes['segmentBases']) {
             if (this.segmentBases !== null || this.segmentBases == 'all') {
                 if (this.typePromo == 'flexiCombo') {
-                    console.log('masuk flexi sini')
                     const params = {
                         // paginate: true,
                         // limit: this.limit,
