@@ -647,9 +647,9 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         this.updateFormView();
         if (changes['selectedTrigger'].currentValue == null) {
         } else {
-            this.form.get('chosenStore').setValue('');
-            this.form.get('chosenStore').reset();
             if (this.selectedTrigger['base'] == 'sku') {
+                this.form.get('chosenStore').setValue('');
+                this.form.get('chosenStore').reset();
                 if (changes['selectedTrigger'].currentValue.chosenSku != null 
                     && changes['selectedTrigger'].currentValue.chosenSku.length > 0) {
                     let idSku = [];
@@ -660,9 +660,10 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                     this.triggerSelected = 'sku';
                 }
             } else if (this.selectedTrigger['base'] == 'brand') {
+                this.form.get('chosenStore').setValue('');
+                this.form.get('chosenStore').reset();
                 if (changes['selectedTrigger'].currentValue.chosenBrand != null 
                         && changes['selectedTrigger'].currentValue.chosenBrand.length > 0) {
-                    
                     let idBrand = [];
                     idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
                     this.brandIdSelected = idBrand.toString();
@@ -672,9 +673,10 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 }
                 
             } else if (this.selectedTrigger['base'] == 'faktur') {
+                this.form.get('chosenStore').setValue('');
+                this.form.get('chosenStore').reset();
                 if (changes['selectedTrigger'].currentValue.chosenFaktur != null 
                         && changes['selectedTrigger'].currentValue.chosenFaktur.length > 0) {
-                    
                     let idFaktur = [];
                     idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
                     this.fakturIdSelected = idFaktur.toString();
