@@ -556,8 +556,8 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['segmentBases']) {
-            if (this.segmentBases !== null || this.segmentBases == 'all') {
+        // if (changes['segmentBases']) {
+            if (this.segmentBases !== null && this.segmentBases == 'all') {
                 if (this.typePromo == 'flexiCombo') {
                     const params = {
                         // paginate: true,
@@ -609,7 +609,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 };
                 this.requestEntity(params);
             }
-        }
+        // }
        
 
         if (changes['required']) {

@@ -831,9 +831,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             return;
         }
 
-        this.segmentBases = this.form.get('segmentationBase').value;
 
         if (ev.value === SegmentationBasePromoFlexi.STORE) {
+            this.segmentBases = 'store';
             this.form.get('chosenStore').setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -850,6 +850,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('isNewStore').setValue(false);
             this.form.get('isActiveStore').setValue(false);
         } else if (ev.value === SegmentationBasePromoFlexi.SEGMENTATION ) {
+            this.segmentBases = 'segmentation';
             this.form.get('chosenWarehouse').setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -862,6 +863,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreChannel').clearValidators();
             this.form.get('chosenStoreCluster').clearValidators();
         } else if (ev.value === SegmentationBasePromoFlexi.ALLSEGMENTATION ) {
+            this.segmentBases = 'all';
             this.form.get('chosenStore').clearValidators();
             this.form.get('chosenWarehouse').clearValidators();
             this.form.get('chosenStoreType').clearValidators();
