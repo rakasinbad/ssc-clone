@@ -2,41 +2,63 @@ import { Injectable } from '@angular/core';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseNavigation } from '@fuse/types';
 import { NgxRolesObject, NgxRolesService } from 'ngx-permissions';
-
+import { NavigationRulesService } from 'app/shared/helpers';
 @Injectable({
     providedIn: 'root'
 })
 export class NavigationService {
     constructor(
         private ngxRoles: NgxRolesService,
-        private _fuseNavigationService: FuseNavigationService
-    ) {}
+        private _fuseNavigationService: FuseNavigationService,
+        private _navigationRules : NavigationRulesService,
+    ) {
+    }
 
     initNavigation(): void {
         const navs = this._fuseNavigationService.getCurrentNavigation() as Array<FuseNavigation>;
         const roles = this.ngxRoles.getRoles();
 
         // this._initNavigationCheck(navs, roles);
-        this._initNavigationCheck(roles);
+        this._initNavigationCheck(navs, roles);
     }
 
-    private _initNavigationCheck(roles: NgxRolesObject){
-        switch (Object.keys(roles)[0]) {
-            case "SALES_ADMIN_CABANG":
-                this._fuseNavigationService.removeNavigationItem('dashboard');
-                this._fuseNavigationService.removeNavigationItem('account');
-                this._fuseNavigationService.removeNavigationItem('catalogue');
-                this._fuseNavigationService.removeNavigationItem('attendance');
-                this._fuseNavigationService.removeNavigationItem('finance');
-                this._fuseNavigationService.removeNavigationItem('inventory');
-                this._fuseNavigationService.removeNavigationItem('sales-force');
-                this._fuseNavigationService.removeNavigationItem('warehouse');
-                this._fuseNavigationService.removeNavigationItem('promo');
-                this._fuseNavigationService.removeNavigationItem('survey');
-                break;
-            default:
-                break;
+    private _initNavigationCheck(nav: Array<FuseNavigation>, roles?: NgxRolesObject): void {
+        if (nav && nav.length > 0) {
+            for (const [idx, item] of nav.entries()) {
+                if (item.type === 'group') {
+                    // console.log('Group', item);
+                }
+
+                if (item.type === 'item') {
+                    this._navigationSetup(item.id);
+
+                    // console.log('Item', item);
+                }
+
+                if (item.type === 'collapsable') {
+                    if (item.children && item.children.length > 0) {
+                        this._initNavigationCheck(item.children, roles);
+                        this._navigationSetup(item.id);
+
+                        // console.log('Collapsable', totalChild, totalChildHidden, item);
+                    } else {
+                        this._navigationSetup(item.id);
+                    }
+                }
+            }
         }
+    }
+
+    private _navigationSetup(id: string): void {
+        if (!id) {
+            return;
+        }
+
+        this._fuseNavigationService.updateNavigationItem(id, {
+            classes: 
+                !this._navigationRules.ValidateNavigationOnRole(id) ? 'navigation-display-hidden' : ''
+        });
+
     }
 
     // private _initNavigationCheck(nav: Array<FuseNavigation>, roles?: NgxRolesObject): void {
@@ -87,12 +109,6 @@ export class NavigationService {
     //         case 'addProduct':
     //         case 'manageProduct':
     //             this._fuseNavigationService.updateNavigationItem(id, {
-    //                classes:
-    //                    (!this.ngxRoles.getRole('SUPER_SUPPLIER_ADMIN') &&
-    //                    !this.ngxRoles.getRole('HEAD_OF_SALES') &&
-    //                    !this.ngxRoles.getRole('BOS') &&
-    //                    !this.ngxRoles.getRole('COUNTRY_MANAGER') &&
-    //                    !this.ngxRoles.getRole('SUPPLIER_ADMIN')) ? 'navigation-display-hidden' : '',
     //                 hidden:
     //                     !this.ngxRoles.getRole('SUPER_SUPPLIER_ADMIN') &&
     //                     !this.ngxRoles.getRole('HEAD_OF_SALES') &&

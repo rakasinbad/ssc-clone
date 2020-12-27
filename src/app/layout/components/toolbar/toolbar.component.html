@@ -73,17 +73,17 @@
                     <span>Inbox</span>
                 </button> -->
 
-                <button *ngIf="!ngxRoles.getRole('SALES_ADMIN_CABANG')" type="button" mat-menu-item [routerLink]="['/profile']">
+                <button *ngIf="_navigationRulesService.ValidateToolbarOnRole('Informasi Supplier')" type="button" mat-menu-item [routerLink]="['/profile']">
                     <mat-icon>person</mat-icon>
                     <span>Informasi Supplier</span>
                 </button>
 
-                <button *ngIf="!ngxRoles.getRole('SALES_ADMIN_CABANG')" type="button" mat-menu-item [routerLink]="['/pages/settings/accounts']">
+                <button *ngIf="_navigationRulesService.ValidateToolbarOnRole('Pengaturan akun')" type="button" mat-menu-item [routerLink]="['/pages/settings/accounts']">
                     <mat-icon>settings</mat-icon>
                     <span>Pengaturan akun</span>
                 </button>
 
-                <button *ngIf="!ngxRoles.getRole('SALES_ADMIN_CABANG')" type="button" mat-menu-item [routerLink]="['/pages/account/internal']">
+                <button *ngIf="_navigationRulesService.ValidateToolbarOnRole('Internal')" type="button" mat-menu-item [routerLink]="['/pages/account/internal']">
                     <mat-icon>people</mat-icon>
                     <span>Internal</span>
                 </button>

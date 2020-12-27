@@ -1,6 +1,5 @@
 {
     "workbench.iconTheme": "material-icon-theme",
-    "material-icon-theme.activeIconPack": "angular_ngrx",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "files.exclude": {
         ".vscode": true,

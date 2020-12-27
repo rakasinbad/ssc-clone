@@ -19,7 +19,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
-import { NgxRolesService } from 'ngx-permissions';
+import { NavigationRulesService } from 'app/shared/helpers';
 
 /**
  *
@@ -121,10 +121,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
      * @memberof ToolbarComponent
      */
     constructor(
-        public ngxRoles: NgxRolesService,
         private store: Store<fromRoot.State>,
         private _fuseConfigService: FuseConfigService,
         private _fuseSidebarService: FuseSidebarService,
+        public _navigationRulesService : NavigationRulesService,
         public translate: TranslateService
     ) {
         // Set the defaults

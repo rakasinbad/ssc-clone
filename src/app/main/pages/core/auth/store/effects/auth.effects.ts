@@ -548,9 +548,7 @@ export class AuthEffects {
                             
                             // this.router.navigate(['/auth/login'], { replaceUrl: true });
 
-                            this.router.navigate(['/auth/login'], { replaceUrl: true }).then(() => {
-                                location.reload();
-                            });
+                            this.router.navigate(['/auth/login'], { replaceUrl: true });
                         },
                         error: (err) => {
                             this._$notice.open('Something wrong with sessions storage', 'error', {
