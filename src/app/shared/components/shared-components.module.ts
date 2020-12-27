@@ -29,6 +29,8 @@ import { StoreSegmentationTreeModule } from './selection-tree/store-segmentation
 import { SinbadFilterModule } from './sinbad-filter/sinbad-filter.module';
 import { SingleWarehouseDropdownModule } from './dropdowns/single-warehouse/single-warehouse.module';
 import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/single-sales-rep.module';
+import { SelectPromoComponent } from './dropdowns/select-promo/select-promo.component';
+import { SelectPromoModule } from './dropdowns/select-promo/select-promo.module';
 
 @NgModule({
     imports: [
@@ -60,6 +62,7 @@ import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/singl
         FakturDropdownModule,
         SingleWarehouseDropdownModule,
         SingleSalesRepDropdownModule,
+        SelectPromoModule,
 
         // Global filter sidebar
         SinbadFilterModule,
@@ -92,9 +95,11 @@ import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/singl
         FakturDropdownModule,
         SingleWarehouseDropdownModule,
         SingleSalesRepDropdownModule,
+        SelectPromoModule,
 
         // Global filter sidebar
         SinbadFilterModule,
     ],
+    declarations: [],
 })
 export class SharedComponentsModule {}
