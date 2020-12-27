@@ -252,7 +252,18 @@
                                 </mat-icon>
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
+                            <select-promo
+                                [initialSelection]="chosenPromo$ | async"
+                                [required]="true"
+                                [fxFlex]="formFieldLength"
+                                (selected)="onPromoSelected($event)"
+                            >
+                                <div error>
+                                    {{ getFormError(form.get('chosenSku')) }}
+                                </div>
+                            </select-promo>
+
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
                                 <input
                                     matInput
                                     name="promo"
@@ -263,7 +274,7 @@
                                 <mat-error *ngIf="hasError('promo', true)">
                                     {{ getErrorMessage('promo') }}
                                 </mat-error>
-                            </mat-form-field>
+                            </mat-form-field> -->
                         </div>
 
                         <div

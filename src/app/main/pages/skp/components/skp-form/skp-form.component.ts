@@ -38,7 +38,7 @@ import { FormSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
@@ -47,6 +47,7 @@ import { CreateSkpDto, SkpModel, UpdateSkpDto } from '../../models';
 import { SkpActions } from '../../store/actions';
 import * as fromSkp from '../../store/reducers';
 import { SkpSelectors } from '../../store/selectors';
+import { SelectPromo } from 'app/shared/components/dropdowns/select-promo/models';
 
 type TmpKey = 'imageUrl';
 type TmpFiles = 'file';
@@ -68,6 +69,13 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
     private _unSubs$: Subject<void> = new Subject<void>();
     skpCombo: SkpModel = null;
+
+    // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
+    chosenPromo$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+
+
+    // tslint:disable-next-line: no-inferrable-types
+    formFieldLength: number = 40;
 
     private strictISOString = false;
     minStartDate: Date = new Date();
@@ -128,7 +136,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseProgressBarService: FuseProgressBarService,
         private _$applyDialogFactory: ApplyDialogFactoryService<ElementRef<HTMLElement>>,
         private _$errorMessage: ErrorMessageService,
-        private _$helperService: HelperService,
+        private _$helperService: HelperService, 
+        private errorMessage$: ErrorMessageService,
         private _$notice: NoticeService
     ) {}
 
@@ -638,6 +647,21 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         return errors && ((touched && dirty) || touched);
     }
 
+    onPromoSelected(event: Array<SelectPromo>): void {
+        this.form.get('chosenPromo').markAsDirty();
+        this.form.get('chosenPromo').markAsTouched();
+
+        if (event.length === 0) {
+            this.form.get('chosenPromo').setValue('');
+        } else {
+            this.form.get('chosenPromo').setValue(event);
+        }
+    }
+
+    getFormError(form: any): string {
+        return this.errorMessage$.getFormError(form);
+    }
+
     /**
      *
      * Handle change event for Upload file
@@ -645,8 +669,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     fileChangeEvent(fileInput) {
         if (fileInput.target.files && fileInput.target.files[0]) {
+            console.log('FILE SIZE', fileInput.target.files[0].size)
+
             // Size Filter Bytes
-            const max_size = 2000000;
+            const max_size = 5000000;
             const allowed_types = ['files/doc', 'files/docx', 'files/pdf', 'files/xls', 'files/xlsx'];
             const max_height = 589;
             const max_width = 1441;
