@@ -446,7 +446,7 @@
             >
                 <div class="label" fxFlex="120px">Product Name</div>
                 <div>
-                    LAKME
+                    {{ tmpProductName || '-' }}
                     <!-- <ng-container *ngIf="!isLoading">
                         LAKME
                     </ng-container>
@@ -469,7 +469,7 @@
             >
                 <div class="label" fxFlex="120px">Segmentation Name</div>
                 <div>
-                    Segmentation 1
+                    {{ tmpSegmentationName || '-' }}
                     <!-- <ng-container *ngIf="!isLoading">
                         LAKME
                     </ng-container>
@@ -497,6 +497,7 @@
                 <warehouse-select-search-multi
                     fxFlex
                     [externalSources]="tmpWarehouses"
+                    (selectedValue)="adjustPriceForm.get('warehouses').setValue($event)"
                 ></warehouse-select-search-multi>
                 <!--  <warehouse-autocomplete-multi fxFlex></warehouse-autocomplete-multi> -->
                 <!-- <mat-form-field appearance="outline" fxFlex="50">
@@ -525,6 +526,7 @@
                 <type-select-search-multi
                     fxFlex
                     [externalSources]="tmpTypes"
+                    (selectedValue)="adjustPriceForm.get('types').setValue($event)"
                 ></type-select-search-multi>
             </div>
             <!-- / TYPE FIELD -->
@@ -542,6 +544,7 @@
                 <group-select-search-multi
                     fxFlex
                     [externalSources]="tmpGroups"
+                    (selectedValue)="adjustPriceForm.get('groups').setValue($event)"
                 ></group-select-search-multi>
             </div>
             <!-- / GROUP FIELD -->
@@ -559,6 +562,7 @@
                 <channel-select-search-multi
                     fxFlex
                     [externalSources]="tmpChannels"
+                    (selectedValue)="adjustPriceForm.get('channels').setValue($event)"
                 ></channel-select-search-multi>
             </div>
             <!-- / CHANNEL FIELD -->
@@ -576,6 +580,7 @@
                 <cluster-select-search-multi
                     fxFlex
                     [externalSources]="tmpClusters"
+                    (selectedValue)="adjustPriceForm.get('clusters').setValue($event)"
                 ></cluster-select-search-multi>
             </div>
             <!-- / CLUSTER FIELD -->
@@ -594,7 +599,7 @@
                     <input
                         matInput
                         id="price"
-                        [formControl]="adjustPriceCtrl"
+                        [formControl]="adjustPriceForm.get('price')"
                         autocomplete="off"
                         mask="separator.2"
                         thousandSeparator="."
