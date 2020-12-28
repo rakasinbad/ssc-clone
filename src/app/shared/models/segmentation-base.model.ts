@@ -8,4 +8,9 @@ export enum SegmentationBasePromo {
     // SEGMENTATION = 'segmentation',
     ALLSEGMENTATION = 'all'
 }
+export enum SegmentationBasePromoFlexi {
+    STORE = 'store',
+    SEGMENTATION = 'segmentation',
+    ALLSEGMENTATION = 'all'
+}
 

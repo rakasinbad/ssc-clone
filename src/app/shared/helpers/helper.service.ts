@@ -23,7 +23,7 @@ import {
 } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
-import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
+import { SegmentationBase, SegmentationBasePromo, SegmentationBasePromoFlexi } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
@@ -242,6 +242,21 @@ export class HelperService {
         // },
         {
             id: SegmentationBasePromo.ALLSEGMENTATION,
+            label: 'Apply to All Linked Segments',
+        },
+    ];
+
+    private static readonly _segmentationBasePromoFlexi: { id: SegmentationBasePromoFlexi; label: string }[] = [
+        {
+            id: SegmentationBasePromoFlexi.STORE,
+            label: 'Direct Store',
+        },
+        {
+            id: SegmentationBasePromoFlexi.SEGMENTATION,
+            label: 'Selected Segment Only',
+        },
+        {
+            id: SegmentationBasePromoFlexi.ALLSEGMENTATION,
             label: 'Apply to All Linked Segments',
         },
     ];
@@ -988,6 +1003,10 @@ export class HelperService {
 
     segmentationBasePromo(): { id: SegmentationBasePromo; label: string }[] {
         return HelperService._segmentationBasePromo;
+    }
+
+    segmentationBasePromoFlexi(): { id: SegmentationBasePromoFlexi; label: string }[] {
+        return HelperService._segmentationBasePromoFlexi;
     }
 
     promoAllocation(): { id: PromoAllocation; label: string }[] {

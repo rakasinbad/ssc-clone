@@ -8,10 +8,17 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromoFlexi } from 'app/shared/models/segmentation-base.model';
 import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { Observable, Subscription, Subject, BehaviorSubject, of, fromEvent } from 'rxjs';
-import { FlexiCombo, IPromoStore } from '../../../models';
+import { 
+    FlexiCombo,
+    IPromoChannel,
+    IPromoCluster,
+    IPromoGroup,
+    IPromoStore,
+    IPromoType,
+    IPromoWarehouse, } from '../../../models';
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
 import { FlexiComboApiService } from '../../../services';
@@ -42,8 +49,8 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     flexiCombo$: Observable<FlexiCombo>;
     isLoading$: Observable<boolean>;
 
-    segmentBase = this._$helperService.segmentationBasePromo();
-    eSegmentBase = SegmentationBasePromo;
+    segmentBase = this._$helperService.segmentationBasePromoFlexi();
+    eSegmentBase = SegmentationBasePromoFlexi;
     specifiedTargets = this._$helperService.specifiedTarget();
     eSpecifiedTargets = SpecifiedTarget;
 
@@ -179,43 +186,47 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
 
         const params = {};
 
-        if (
-            this.benefitSetting[0].target == 'all' ||
-            this.benefitSetting[0].target == 'segmentation'
-        ) {
+        if (this.benefitSetting[0].target == 'all') {
             if (this.benefitSetting[0].base == 'sku') {
-                let sku = this.benefitSetting[0].promoCatalogues;
-                let idSku = [];
-                idSku = sku.map((item) => item.catalogueId);
-                params['catalogueId'] = idSku.toString();
-                params['supplierId'] = this.benefitSetting[0].supplierId;
-                this.requestSegment(params, 'warehouse');
-                this.requestSegment(params, 'type');
-                this.requestSegment(params, 'group');
-                this.requestSegment(params, 'channel');
-                this.requestSegment(params, 'cluster');
+                if (this.benefitSetting[0].target == 'all') {
+                    let sku = this.benefitSetting[0].promoCatalogues;
+                    let idSku = [];
+                    idSku = sku.map((item) => item.catalogueId);
+                    params['catalogueId'] = idSku.toString();
+                    params['supplierId'] = this.benefitSetting[0].supplierId;
+                    this.requestSegment(params, 'warehouse');
+                    this.requestSegment(params, 'type');
+                    this.requestSegment(params, 'group');
+                    this.requestSegment(params, 'channel');
+                    this.requestSegment(params, 'cluster');
+                }
+                
             } else if (this.benefitSetting[0].base == 'brand') {
-                let brand = this.benefitSetting[0].promoBrands;
-                let idBrand = [];
-                idBrand = brand.map((item) => item.brandId);
-                params['brandId'] = idBrand.toString();
-                params['supplierId'] = this.benefitSetting[0].supplierId;
-                this.requestSegment(params, 'warehouse');
-                this.requestSegment(params, 'type');
-                this.requestSegment(params, 'group');
-                this.requestSegment(params, 'channel');
-                this.requestSegment(params, 'cluster');
+                if (this.benefitSetting[0].target == 'all') {
+                    let brand = this.benefitSetting[0].promoBrands;
+                    let idBrand = [];
+                    idBrand = brand.map((item) => item.brandId);
+                    params['brandId'] = idBrand.toString();
+                    params['supplierId'] = this.benefitSetting[0].supplierId;
+                    this.requestSegment(params, 'warehouse');
+                    this.requestSegment(params, 'type');
+                    this.requestSegment(params, 'group');
+                    this.requestSegment(params, 'channel');
+                    this.requestSegment(params, 'cluster');
+                } 
             } else if (this.benefitSetting[0].base == 'invoice_group') {
-                let ev = this.benefitSetting[0].promoInvoiceGroups;
-                let idFaktur = [];
-                idFaktur = ev.map((item) => item.invoiceGroupId);
-                params['fakturId'] = idFaktur.toString();
-                params['supplierId'] = this.benefitSetting[0].supplierId;
-                this.requestSegment(params, 'warehouse');
-                this.requestSegment(params, 'type');
-                this.requestSegment(params, 'group');
-                this.requestSegment(params, 'channel');
-                this.requestSegment(params, 'cluster');
+                if (this.benefitSetting[0].target == 'all') {
+                    let ev = this.benefitSetting[0].promoInvoiceGroups;
+                    let idFaktur = [];
+                    idFaktur = ev.map((item) => item.invoiceGroupId);
+                    params['fakturId'] = idFaktur.toString();
+                    params['supplierId'] = this.benefitSetting[0].supplierId;
+                    this.requestSegment(params, 'warehouse');
+                    this.requestSegment(params, 'type');
+                    this.requestSegment(params, 'group');
+                    this.requestSegment(params, 'channel');
+                    this.requestSegment(params, 'cluster');
+                }
             }
         }
 
@@ -238,11 +249,31 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
         return '-';
     }
 
+    getStoreChannelsSegmentOnly(value: IPromoChannel[]): string {
+        if (value && value.length > 0) {
+            const storeChannel = value.map((v) => v.channel.name);
+
+            return storeChannel.length > 0 ? storeChannel.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
     getStoreChannels(value: Entity[]): string {
         if (value && value.length > 0) {
             const storeChannel = value.map((v) => v.channelName);
 
             return storeChannel.length > 0 ? storeChannel.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getStoreClustersSegmentOnly(value: IPromoCluster[]): string {
+        if (value && value.length > 0) {
+            const storeCluster = value.map((v) => v.cluster.name);
+
+            return storeCluster.length > 0 ? storeCluster.join(', ') : '-';
         }
 
         return '-';
@@ -258,6 +289,16 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
         return '-';
     }
 
+    getStoreGroupsSegmentOnly(value: IPromoGroup[]): string {
+        if (value && value.length > 0) {
+            const storeGroup = value.map((v) => v.group.name);
+
+            return storeGroup.length > 0 ? storeGroup.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
     getStoreGroups(value: Entity[]): string {
         if (value && value.length > 0) {
             const storeGroup = value.map((v) => v.groupName);
@@ -268,11 +309,31 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
         return '-';
     }
 
+    getStoreTypesSegmentOnly(value: IPromoType[]): string {
+        if (value && value.length > 0) {
+            const storeType = value.map((v) => v.type.name);
+
+            return storeType.length > 0 ? storeType.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
     getStoreTypes(value: Entity[]): string {
         if (value && value.length > 0) {
             const storeType = value.map((v) => v.typeName);
 
             return storeType.length > 0 ? storeType.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getWarehousesSegmentOnly(value: IPromoWarehouse[]): string {
+        if (value && value.length > 0) {
+            const warehouse = value.map((v) => v.warehouse.name);
+
+            return warehouse.length > 0 ? warehouse.join(', ') : '-';
         }
 
         return '-';
