@@ -59,11 +59,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Warehouse<br />
-                    ({{custWarehouse.length}} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoWarehouses?.length) || '0' }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getWarehouses(custWarehouse) || '-' }}
+                    {{ getWarehousesSegmentOnly((flexiCombo$ | async)?.promoWarehouses) || '-' }}
                 </div>
             </div>
 
@@ -75,11 +75,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Type<br />
-                    ({{ custType.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoTypes?.length) || '0' }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreTypes(custType) || '-' }}
+                    {{ getStoreTypesSegmentOnly((flexiCombo$ | async)?.promoTypes) || '-' }}
                 </div>
             </div>
 
@@ -91,11 +91,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Group<br />
-                    ({{ custGroup.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoGroups?.length) || '0'  }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreGroups(custGroup) || '-' }}
+                    {{ getStoreGroupsSegmentOnly((flexiCombo$ | async)?.promoGroups) || '-' }}
                 </div>
             </div>
 
@@ -107,11 +107,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Channel<br />
-                    ({{ custChannel.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoChannels?.length) || '0'  }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreChannels(custChannel) || '-' }}
+                    {{ getStoreChannelsSegmentOnly((flexiCombo$ | async)?.promoChannels) || '-' }}
                 </div>
             </div>
 
@@ -123,11 +123,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Cluster<br />
-                    ({{ custCluster.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoClusters?.length) || '0' }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreClusters(custCluster) || '-' }}
+                    {{ getStoreClustersSegmentOnly((flexiCombo$ | async)?.promoClusters) || '-' }}
                 </div>
             </div>
         </ng-container>

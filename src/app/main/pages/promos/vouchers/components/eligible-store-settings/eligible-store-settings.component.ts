@@ -59,7 +59,8 @@ import {
 } from 'app/main/pages/catalogues/models';
 import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
-import { SupplierStore } from 'app/shared/models/supplier.model';
+import { SupplierStore } from 'app/shared/components/dropdowns/stores/models/supplier-store.model';
+
 import { Selection } from 'app/shared/components/multiple-selection/models';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
@@ -390,12 +391,12 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(300),
-                tap((value) =>
-                    HelperService.debug(
-                        'SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM STATUS CHANGED:',
-                        value
-                    )
-                ),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         'SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM STATUS CHANGED:',
+                //         value
+                //     )
+                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((status) => {
@@ -407,12 +408,12 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 distinctUntilChanged(),
                 debounceTime(200),
                 // tap(value => HelperService.debug('SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED', value)),
-                tap((value) =>
-                    HelperService.debug(
-                        '[BEFORE MAP] SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
-                        value
-                    )
-                ),
+                // tap((value) =>
+                    // HelperService.debug(
+                    //     '[BEFORE MAP] SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
+                    //     value
+                    // )
+                // ),
                 map(() => {
                     const rawValue = this.form.getRawValue();
                     if (rawValue.segmentationBase === 'direct-store') {
@@ -456,12 +457,12 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
 
                     return rawValue;
                 }),
-                tap((value) =>
-                    HelperService.debug(
-                        '[AFTER MAP] SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
-                        value
-                    )
-                ),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         '[AFTER MAP] SUPPLIER VOUCHER CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED',
+                //         value
+                //     )
+                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
@@ -473,12 +474,12 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
             .valueChanges.pipe(
                 distinctUntilChanged(),
                 debounceTime(100),
-                tap((value) =>
-                    HelperService.debug(
-                        'SUPPLIER VOUCHER SEGMENTATION SETTINGS SEGMENTATION BASE VALUE CHANGED:',
-                        value
-                    )
-                ),
+                // tap((value) =>
+                //     HelperService.debug(
+                //         'SUPPLIER VOUCHER SEGMENTATION SETTINGS SEGMENTATION BASE VALUE CHANGED:',
+                //         value
+                //     )
+                // ),
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
@@ -544,15 +545,24 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         return this.formMode === 'view';
     }
 
-    onStoreSelected(event: Array<SupplierStore>): void {
+    onStoreSelected(ev: SupplierStore[]): void {
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
 
-        if (event.length === 0) {
+        if (ev.length === 0) {
             this.form.get('chosenStore').setValue('');
             this.form.get('chosenStore').reset();
+            this.form.get('chosenStore').updateValueAndValidity();
+
         } else {
-            this.form.get('chosenStore').setValue(event);
+            this.form.get('chosenStore').clearValidators();
+            this.form.get('chosenStore').updateValueAndValidity();
+            const newStores: Selection[] = ev.map((item) => ({
+                id: item.storeId,
+                label: item.storeName,
+                group: 'supplier-stores',
+            }));
+            this.form.get('chosenStore').setValue(newStores);
         }
     }
 
@@ -638,29 +648,42 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         if (changes['selectedTrigger'].currentValue == null) {
         } else {
             if (this.selectedTrigger['base'] == 'sku') {
+                this.form.get('chosenStore').setValue('');
                 this.form.get('chosenStore').reset();
-                let idSku = [];
-                idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
-                this.catalogueIdSelected = idSku.toString();
-                this.brandIdSelected = undefined;     
-                this.fakturIdSelected = undefined;
-                this.triggerSelected = 'sku';
+                if (changes['selectedTrigger'].currentValue.chosenSku != null 
+                    && changes['selectedTrigger'].currentValue.chosenSku.length > 0) {
+                    let idSku = [];
+                    idSku = this.selectedTrigger['chosenSku'].map((item) => (item.id));
+                    this.catalogueIdSelected = idSku.toString();
+                    this.brandIdSelected = undefined;     
+                    this.fakturIdSelected = undefined;
+                    this.triggerSelected = 'sku';
+                }
             } else if (this.selectedTrigger['base'] == 'brand') {
+                this.form.get('chosenStore').setValue('');
                 this.form.get('chosenStore').reset();
-                let idBrand = [];
-                idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
-                this.brandIdSelected = idBrand.toString();
-                this.catalogueIdSelected = undefined;     
-                this.fakturIdSelected = undefined;
-                this.triggerSelected = 'brand';
+                if (changes['selectedTrigger'].currentValue.chosenBrand != null 
+                        && changes['selectedTrigger'].currentValue.chosenBrand.length > 0) {
+                    let idBrand = [];
+                    idBrand = this.selectedTrigger['chosenBrand'].map((item) => (item.id));
+                    this.brandIdSelected = idBrand.toString();
+                    this.catalogueIdSelected = undefined;     
+                    this.fakturIdSelected = undefined;
+                    this.triggerSelected = 'brand';
+                }
+                
             } else if (this.selectedTrigger['base'] == 'faktur') {
+                this.form.get('chosenStore').setValue('');
                 this.form.get('chosenStore').reset();
-                let idFaktur = [];
-                idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
-                this.fakturIdSelected = idFaktur.toString();
-                this.catalogueIdSelected = undefined;        
-                this.brandIdSelected = undefined;
-                this.triggerSelected = 'faktur';
+                if (changes['selectedTrigger'].currentValue.chosenFaktur != null 
+                        && changes['selectedTrigger'].currentValue.chosenFaktur.length > 0) {
+                    let idFaktur = [];
+                    idFaktur = this.selectedTrigger['chosenFaktur'].map((item) => (item.id));
+                    this.fakturIdSelected = idFaktur.toString();
+                    this.catalogueIdSelected = undefined;        
+                    this.brandIdSelected = undefined;
+                    this.triggerSelected = 'faktur';
+                }
             }
         }
     }

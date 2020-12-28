@@ -73,7 +73,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     public storeClusterSelectAll: string;
     public storeClusterLength: number;
     message:any;
-    segmentBases: string;
+    segmentBases: string = 'store';
     selectFaktur: string;
     public typePromo = 'crossSelling';
     public idSelectSegment: string = null;
@@ -89,7 +89,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         this.segmentationBasePromo = this.crossSellingPromoFormService.segmentationBasePromo;
         this.specifiedTarget = this.crossSellingPromoFormService.specifiedTarget;
 
-        this.segmentBases = 'all';
+        // this.segmentBases = 'all';
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe((status: FormStatus) => {
             if (status === 'VALID') {
                 this._handleFormValue();
@@ -114,7 +114,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
                     this._clearChosenStoreValidation();
                     this._setChosenStoreValidation();
                 }
-    
                 this.idSelectSegment = changes['getGroup'].currentValue;
             }
             
