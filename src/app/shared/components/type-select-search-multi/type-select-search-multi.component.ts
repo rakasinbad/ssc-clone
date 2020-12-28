@@ -58,7 +58,7 @@ export class TypeSelectSearchMultiComponent implements OnInit {
     ngOnInit(): void {}
 
     onSelected(value: SinbadSelectSearchSource[]): void {
-        console.log('TYPE SELECT', { value });
+        // console.log('TYPE SELECT', { value });
 
         this.selectedValue.emit(value);
     }

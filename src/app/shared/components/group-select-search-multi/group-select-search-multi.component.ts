@@ -58,7 +58,7 @@ export class GroupSelectSearchMultiComponent implements OnInit {
     ngOnInit(): void {}
 
     onSelected(value: SinbadSelectSearchSource[]): void {
-        console.log('Group SELECT', { value });
+        // console.log('Group SELECT', { value });
 
         this.selectedValue.emit(value);
     }

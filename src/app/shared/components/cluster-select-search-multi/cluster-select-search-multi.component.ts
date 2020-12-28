@@ -58,7 +58,7 @@ export class ClusterSelectSearchMultiComponent implements OnInit {
     ngOnInit(): void {}
 
     onSelected(value: SinbadSelectSearchSource[]): void {
-        console.log('CLUSTER SELECT', { value });
+        // console.log('CLUSTER SELECT', { value });
 
         this.selectedValue.emit(value);
     }

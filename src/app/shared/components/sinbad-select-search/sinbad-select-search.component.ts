@@ -83,7 +83,7 @@ export class SinbadSelectSearchComponent implements OnChanges, OnInit {
     ngOnInit(): void {}
 
     onDisplayAutocompleteFn(item: any): string {
-        console.log('DISPLAY', { item });
+        // console.log('DISPLAY', { item });
         return item && item.label;
     }
 
@@ -94,12 +94,12 @@ export class SinbadSelectSearchComponent implements OnChanges, OnInit {
     // onSelectAutocomplete(ev: MatAutocompleteSelectedEvent): void {}
 
     onSearch(value: string): void {
-        console.log('On Search', { value });
+        // console.log('On Search', { value });
         this.searchValue.emit(value);
     }
 
     onSelect(ev: MatSelectChange): void {
-        console.log('SELECTION CHANGE', { ev });
+        // console.log('SELECTION CHANGE', { ev });
 
         this.selectedValue.emit(ev.value);
     }

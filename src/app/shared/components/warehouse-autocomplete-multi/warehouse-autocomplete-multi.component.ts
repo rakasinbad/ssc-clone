@@ -141,7 +141,7 @@ export class WarehouseAutocompleteMultiComponent implements OnInit {
     }
 
     onDisplayAutocompleteFn(item: any): string {
-        console.log('DISPLAY', { item });
+        // console.log('DISPLAY', { item });
         return item && item.label;
     }
 
@@ -152,6 +152,6 @@ export class WarehouseAutocompleteMultiComponent implements OnInit {
     onSelectAutocomplete(ev: MatAutocompleteSelectedEvent): void {}
 
     onSearch(value: any): void {
-        console.log('On Search', { value });
+        // console.log('On Search', { value });
     }
 }
