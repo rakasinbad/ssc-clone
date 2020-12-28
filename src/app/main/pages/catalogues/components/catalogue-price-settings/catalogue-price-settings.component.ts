@@ -41,10 +41,10 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import { CataloguePriceSegmentationDataSource } from '../../datasources';
-import { Catalogue } from '../../models';
+import { AdjustCataloguePriceDto, Catalogue } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
 import { CatalogueFacadeService, CataloguesService } from '../../services';
-import { CatalogueActions } from '../../store/actions';
+import { CatalogueActions, CatalogueDetailPageActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
 
 type IFormMode = 'add' | 'view' | 'edit';
@@ -168,6 +168,14 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     tmpClusters: any[] = [];
     tmpPrice: number;
     adjustPriceCtrl: FormControl = new FormControl();
+    adjustPriceForm: FormGroup = this.fb.group({
+        warehouses: '',
+        types: '',
+        groups: '',
+        channels: '',
+        clusters: '',
+        price: '',
+    });
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -247,7 +255,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
         this.catalogueFacade.isRefresh$.pipe(takeUntil(this.unSubs$)).subscribe((isRefresh) => {
             if (isRefresh) {
-                this.onApplyFilter();
+                // this.onApplyFilter();
+                this._initTable(this.selectedCatalogue$.value.id);
             }
 
             this.catalogueFacade.setRefresh(false);
@@ -370,7 +379,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 ? item.clusters.map((i) => ({ id: i.id, label: i.name }))
                 : [];
 
-        this.adjustPriceCtrl.setValue(item.price);
+        this.adjustPriceForm.get('price').setValue(item.price);
+        // this.adjustPriceCtrl.setValue(item.price);
 
         const dialogRef = this.applyDialogFactoryService.open(
             {
@@ -394,10 +404,40 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         );
 
         dialogRef.closed$.subscribe((res) => {
-            console.log('DIALOG CLOSE', { res });
-
             if (res === 'apply') {
-                // this.isDelete = true;
+                const {
+                    channels,
+                    clusters,
+                    groups,
+                    types,
+                    warehouses,
+                    price,
+                } = this.adjustPriceForm.value;
+
+                const channelIds =
+                    channels && channels.length ? channels.map((item) => item.id) : [];
+                const clusterIds =
+                    clusters && clusters.length ? clusters.map((item) => item.id) : [];
+                const groupIds = groups && groups.length ? groups.map((item) => item.id) : [];
+                const typeIds = types && types.length ? types.map((item) => item.id) : [];
+                const warehouseIds =
+                    warehouses && warehouses.length ? warehouses.map((item) => item.id) : [];
+
+                const payload: AdjustCataloguePriceDto = {
+                    catalogueId: this.selectedCatalogue$.value.id,
+                    channelIds,
+                    clusterIds,
+                    groupIds,
+                    price,
+                    segmentationId: item.segmentationId,
+                    segmentedCatalogueId: item.id,
+                    typeIds,
+                    warehouseIds,
+                };
+
+                this.store.dispatch(
+                    CatalogueDetailPageActions.adjustPriceSettingRequest({ payload })
+                );
             }
 
             this.selectedSegmentId = null;
