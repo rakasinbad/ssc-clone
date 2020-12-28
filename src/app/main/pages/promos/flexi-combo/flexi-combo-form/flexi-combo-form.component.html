@@ -2186,7 +2186,7 @@
                         </ng-container>
 
                         <!-- Segmentation Only -->
-                        <!-- <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
+                        <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -2209,7 +2209,7 @@
                                     [initialSelection]="form.get('chosenWarehouse').value || []"
                                     [disabled]="form.get('chosenWarehouse').disabled"
                                     placeholder="Choose Warehouse"
-                                    [required]="false"
+                                    [required]="true"
                                     [segmentBases]="segmentBases"
                                     [typePromo]="typePromo"
                                     [catalogueIdSelect]="catalogueIdSelected"
@@ -2236,7 +2236,7 @@
                                     [class.sinbad-red-fg]="hasError('chosenStoreType')"
                                 >
 
-                                <span class="sinbad-red-fg">*</span>
+                                <!-- <span class="sinbad-red-fg">*</span> -->
                                     Store Type<br />({{
                                         form.get('chosenStoreType').value?.length || 0
                                     }}
@@ -2256,6 +2256,7 @@
                                     [brandIdSelect]="brandIdSelected"
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreTypeSelected($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     <div error>
@@ -2275,7 +2276,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreGroup')"
                                 >
-                                  <span class="sinbad-red-fg">*</span>
+                                  <!-- <span class="sinbad-red-fg">*</span> -->
                                     Store Group<br />({{
                                         form.get('chosenStoreGroup').value?.length || 0
                                     }}
@@ -2295,6 +2296,8 @@
                                     [brandIdSelect]="brandIdSelected"
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreGroupSelected($event)"
+                                    [typeTrigger]="triggerSelected"
+
                                     fxFlex="50"
                                 >
                                     <div error>
@@ -2314,7 +2317,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreChannel')"
                                 >
-                                  <span class="sinbad-red-fg">*</span>
+                                  <!-- <span class="sinbad-red-fg">*</span> -->
                                     Store Channel<br />({{
                                         form.get('chosenStoreChannel').value?.length || 0
                                     }}
@@ -2333,6 +2336,7 @@
                                     [catalogueIdSelect]="catalogueIdSelected"
                                     [brandIdSelect]="brandIdSelected"
                                     [fakturIdSelect]="fakturIdSelected"
+                                    [typeTrigger]="triggerSelected"
                                     (selected)="onStoreChannelSelected($event)"
                                     fxFlex="50"
                                 >
@@ -2353,7 +2357,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreCluster')"
                                 >
-                                   <span class="sinbad-red-fg">*</span>
+                                   <!-- <span class="sinbad-red-fg">*</span> -->
 
                                     Store Cluster<br />({{
                                         form.get('chosenStoreCluster').value?.length || 0
@@ -2374,6 +2378,7 @@
                                     [brandIdSelect]="brandIdSelected"
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreClusterSelected($event)"
+                                    [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
                                     <div error>
@@ -2381,7 +2386,7 @@
                                     </div>
                                 </select-store-segmentation>
                             </div>
-                        </ng-container> -->
+                        </ng-container>
 
                         <!-- All Segmentation -->
                         <ng-container

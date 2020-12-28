@@ -2,7 +2,7 @@ import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
 
 export interface IStoreSegmentationType extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     supplierId: string;
     parentId: TNullable<string>;
     externalId: string;
@@ -22,7 +22,7 @@ export interface IStoreSegmentationType extends ITimestamp {
 }
 
 export class StoreSegmentationType implements IStoreSegmentationType {
-    id: string;
+    readonly id: NonNullable<string>;
     supplierId: string;
     parentId: TNullable<string>;
     externalId: string;

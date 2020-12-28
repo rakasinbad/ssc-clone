@@ -262,6 +262,38 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     } else {
 
                     }
+                } else if (this.segmentBases == 'segmentation') {
+                    newQuery['segmentation'] = this.segmentationType;
+                    if (this.typePromo == 'flexiCombo') {
+                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
+                            newQuery['catalogueId'] = this.catalogueIdSelect;
+                            // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        } else if(this.typeTrigger == 'brand' && this.brandIdSelect != undefined) {
+                            newQuery['brandId'] = this.brandIdSelect;
+                             // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect != undefined) {
+                            newQuery['fakturId'] = this.fakturIdSelect;
+                             // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        } 
+                        
+                    } else {
+
+                    }
                 } else {
                     if (this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
                     newQuery['segmentation'] = this.segmentationType;
@@ -276,7 +308,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
                
             }),
-            // take(1),
+            takeUntil(this.subs$),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -287,7 +319,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    if (this.typePromo == 'flexiCombo') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                         if (this.segmentationType == 'type') {
                             addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
                         } else if (this.segmentationType == 'group') {
@@ -307,7 +339,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 } else {
                     addedRawAvailableEntities = response.data;
 
-                    if (this.typePromo == 'flexiCombo') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                         if (this.segmentationType == 'type') {
                             addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
                         } else if (this.segmentationType == 'group') {
@@ -338,7 +370,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     // Menyimpan nilai yang baru tadi ke dalam subject.
                     this.rawAvailableEntities$.next(newRawAvailableEntities);
                     this.availableEntities$.next(newAvailableEntities);
-    
+                    console.log('isi rawAvailableEntities nw->', this.rawAvailableEntities$)
                     // Menyimpan total entities yang baru.
                     if (Array.isArray(response)) {
                         this.totalEntities$.next((response as Array<Entity>).length);
@@ -415,7 +447,17 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         if (event) {
             const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            if (this.segmentationType == 'type') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
+            } else if (this.segmentationType == 'group') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
+            } else if (this.segmentationType == 'channel') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
+            } else if (this.segmentationType == 'cluster') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
+            } else {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            }
         }
     }
 
@@ -692,9 +734,39 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     } else {}
                 }
             }
-        } 
-
-       
+        } else if (this.segmentBases == 'segmentation') {
+            this.availableEntities$.next([]);
+            this.rawAvailableEntities$.next([]);
+            if (this.typePromo == 'flexiCombo') {
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
+                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect']) {
+                    if (this.catalogueIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueId'] = this.catalogueIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect']) {
+                    if (this.brandIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['brandId'] = this.brandIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect']) {
+                    if (this.fakturIdSelect !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['fakturId'] = this.fakturIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                }
+            }
+        }
 
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {

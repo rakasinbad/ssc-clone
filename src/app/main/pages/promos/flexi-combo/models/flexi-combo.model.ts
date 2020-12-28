@@ -2,7 +2,7 @@ import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus, TNullable } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
-import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromoFlexi } from 'app/shared/models/segmentation-base.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
@@ -271,7 +271,7 @@ export class FlexiCombo implements ITimestamp {
     startDate: string;
     status: EStatus;
     supplierId: string;
-    target: SegmentationBasePromo;
+    target: SegmentationBasePromoFlexi;
     type: string;
     voucherCombine: boolean;
     createdAt: string;
@@ -374,24 +374,24 @@ export class FlexiCombo implements ITimestamp {
         }
 
         /* Handle promoChannels */
-        // if (typeof promoChannels !== 'undefined') {
-        //     this.promoChannels =
-        //         promoChannels &&
-        //         promoChannels.length > 0 &&
-        //         target === SegmentationBasePromo.SEGMENTATION
-        //             ? promoChannels
-        //             : [];
-        // }
+        if (typeof promoChannels !== 'undefined') {
+            this.promoChannels =
+                promoChannels &&
+                promoChannels.length > 0 &&
+                target === SegmentationBasePromoFlexi.SEGMENTATION
+                    ? promoChannels
+                    : [];
+        }
 
         /* Handle promoClusters */
-        // if (typeof promoClusters !== 'undefined') {
-        //     this.promoClusters =
-        //         promoClusters &&
-        //         promoClusters.length > 0 &&
-        //         target === SegmentationBasePromo.SEGMENTATION
-        //             ? promoClusters
-        //             : [];
-        // }
+        if (typeof promoClusters !== 'undefined') {
+            this.promoClusters =
+                promoClusters &&
+                promoClusters.length > 0 &&
+                target === SegmentationBasePromoFlexi.SEGMENTATION
+                    ? promoClusters
+                    : [];
+        }
 
         /* Handle promoConditions */
         if (typeof promoConditions !== 'undefined') {
@@ -400,12 +400,12 @@ export class FlexiCombo implements ITimestamp {
         }
 
         /* Handle promoGroups */
-        // if (typeof promoGroups !== 'undefined') {
-        //     this.promoGroups =
-        //         promoGroups && promoGroups.length > 0 && target === SegmentationBasePromo.SEGMENTATION
-        //             ? promoGroups
-        //             : [];
-        // }
+        if (typeof promoGroups !== 'undefined') {
+            this.promoGroups =
+                promoGroups && promoGroups.length > 0 && target === SegmentationBasePromoFlexi.SEGMENTATION
+                    ? promoGroups
+                    : [];
+        }
 
         /* Handle promoInvoiceGroups */
         if (typeof promoInvoiceGroups !== 'undefined') {
@@ -418,25 +418,25 @@ export class FlexiCombo implements ITimestamp {
         /* Handle promoStores */
         if (typeof promoStores !== 'undefined') {
             this.promoStores =
-                promoStores && promoStores.length > 0 && target === SegmentationBasePromo.STORE
+                promoStores && promoStores.length > 0 && target === SegmentationBasePromoFlexi.STORE
                     ? promoStores
                     : [];
         }
 
         /* Handle promoTypes */
-        // if (typeof promoTypes !== 'undefined') {
-        //     this.promoTypes =
-        //         promoTypes && promoTypes.length > 0 && target === SegmentationBasePromo.SEGMENTATION
-        //             ? promoTypes
-        //             : [];
-        // }
+        if (typeof promoTypes !== 'undefined') {
+            this.promoTypes =
+                promoTypes && promoTypes.length > 0 && target === SegmentationBasePromoFlexi.SEGMENTATION
+                    ? promoTypes
+                    : [];
+        }
 
         /* Handle promoWarehouses */
         if (typeof promoWarehouses !== 'undefined') {
             this.promoWarehouses =
                 promoWarehouses &&
                 promoWarehouses.length > 0 &&
-                target === SegmentationBasePromo.ALLSEGMENTATION
+                target ===  (SegmentationBasePromoFlexi.SEGMENTATION || SegmentationBasePromoFlexi.ALLSEGMENTATION)
                     ? promoWarehouses
                     : [];
         }
