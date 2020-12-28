@@ -178,7 +178,8 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label  class="input-label" fxFlexAlign="center" fxFlex="12">
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
+                            [class.sinbad-red-fg]="hasError('file')">
                                 <div class="title-label">
                                     SKP File 
                                 </div>
@@ -199,6 +200,7 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="43.5"
+                                    [class.mat-sinbad-field-error]="hasError('file')"
                                 >
                                 
                                 <input
@@ -210,14 +212,17 @@
                                     (click)="fileUrlPicker.value = null"
                                     (change)="fileChangeEvent($event)"
                                     autocomplete="off"
-                                    [disabled]=true
                                 />
                                 <input
                                     matInput
                                     [value]="skpFileName || 'No file choose'"
                                     autocomplete="off"
                                     style="color:#a0a4a8"
+                                    disabled
                                 />
+                                <mat-hint class="mat-error" *ngIf="hasError('file', true)">
+                                    {{ getErrorMessage('file') }}
+                                </mat-hint>
                                 </mat-form-field>
                                 <button
                                     type="button"
@@ -257,6 +262,7 @@
                                 [required]="true"
                                 [fxFlex]="formFieldLength"
                                 (selected)="onPromoSelected($event)"
+
                             >
                                 <div error>
                                     {{ getFormError(form.get('chosenSku')) }}
@@ -381,7 +387,7 @@
                                 <mat-icon
                                 class="active-icon s-14 ml-8 cursor-pointer"
                                 color="accent"
-                                matTooltip="This is a tooltip to choose date when the form active"
+                                matTooltip="The starting date of the active period of the SKP"
                                 matTooltipClass="tooltip-br"
                                 >
                                     help
@@ -433,7 +439,7 @@
                                 <mat-icon
                                 class="active-icon s-14 ml-8 cursor-pointer"
                                 color="accent"
-                                matTooltip="This is a tooltip to choose end date."
+                                matTooltip="The ending date of the active period of the SKP"
                                 matTooltipClass="tooltip-br"
                                 >
                                     help

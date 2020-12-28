@@ -669,19 +669,18 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     fileChangeEvent(fileInput) {
         if (fileInput.target.files && fileInput.target.files[0]) {
-            console.log('FILE SIZE', fileInput.target.files[0].size)
 
             // Size Filter Bytes
-            const max_size = 5000000;
-            const allowed_types = ['files/doc', 'files/docx', 'files/pdf', 'files/xls', 'files/xlsx'];
-            const max_height = 589;
-            const max_width = 1441;
+            // const max_size = 5000000;
+            // const allowed_types = ['files/doc', 'files/docx', 'files/pdf', 'files/xls', 'files/xlsx'];
+            // const max_height = 589;
+            // const max_width = 1441;
 
-            if (fileInput.target.files[0].size > max_size) {
-                // this.statusImageErr = true;
-                let sizemax = max_size / 1000000;
-                // this.imageError = 'Maximum size allowed is ' + sizemax + 'Mb';
-            } else {
+            // if (fileInput.target.files[0].size > max_size) {
+            //     // this.statusImageErr = true;
+            //     let sizemax = max_size / 1000000;
+            //     // this.imageError = 'Maximum size allowed is ' + sizemax + 'Mb';
+            // } else {
                 // if (!_.includes(allowed_types, fileInput.target.files[0].type)) {
                 //     return false;
                 // }
@@ -690,7 +689,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.form.get('file').setValue(fileInput.target.files[0].name);
                 const reader = new FileReader();
                 reader.readAsDataURL(fileInput.target.files[0]);
-            }
+            // }
 
         } else {
                 this.form.get('file').reset();
@@ -710,6 +709,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (inputEl.files && inputEl.files.length > 0) {
             const file = inputEl.files[0];
+            // const size = file.size
+            // const maxSize = 1000000
 
             if (file) {
                 switch (type) {
