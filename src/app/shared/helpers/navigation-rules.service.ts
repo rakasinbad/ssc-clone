@@ -15,7 +15,7 @@ export class NavigationRulesService {
     this._navigationRules = Rules;
   }
 
-  public GetRoleByNavigation = (key: any) : string[] => {
+  public getRoleByNavigation(key: any) : string[] {
       return this._navigationRules.filter((value : Rule) => {
           return value.navbar.includes(key) || value.navbar.includes('*');
       }).map((value : Rule) => {
@@ -23,7 +23,7 @@ export class NavigationRulesService {
       });
   }
 
-  public GetRoleByToolbar = (key: any) : string[] => {
+  public getRoleByToolbar(key: any) : string[] {
       return this._navigationRules.filter((value : Rule) => {
           return value.toolbar.includes(key) || value.navbar.includes('*');
       }).map((value : Rule) => {
@@ -31,7 +31,7 @@ export class NavigationRulesService {
       });
   }
 
-  public GetNavigationByRole = () : string[] => {
+  public getNavigationByRole() : string[] {
       return this._navigationRules.filter((value : Rule) => {
           return this.ngxRoles.getRole(value.role);
       })[0].navbar;
@@ -43,26 +43,26 @@ export class NavigationRulesService {
 //       })[0].routing;
 //   }
 
-  public GetDirectByRole = () : string => {
+  public getDirectByRole() : string {
     return this._navigationRules.filter((value : Rule) => {
       return this.ngxRoles.getRole(value.role);
     })[0].redirectTo;
   }
 
-  public ValidateNavigationOnRole(key: string) : boolean{
-      return this.GetRoleByNavigation(key).some((value : string) => {
+  public validateNavigationOnRole(key: string) : boolean{
+      return this.getRoleByNavigation(key).some((value : string) => {
           return this.ngxRoles.getRole(value);
       })
   }
 
-  public ValidateToolbarOnRole(key: string) : boolean{
-      return this.GetRoleByToolbar(key).some((value : string) => {
+  public validateToolbarOnRole(key: string) : boolean{
+      return this.getRoleByToolbar(key).some((value : string) => {
           return this.ngxRoles.getRole(value);
       })
   }
 }
 
-export const getRoleByRouter = (route: string, child: string = '') : string[] => {
+export function getRoleByRouter(route: string, child: string = '') : string[] {
     return Rules.filter((value : Rule) => {
         if(!!value.routing[route]) {
             return value.routing[route].includes(child) || value.routing[route].includes('*');

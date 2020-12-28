@@ -15,6 +15,6 @@ export class RoleGuard implements CanActivate{
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      return this.router.navigateByUrl(this._navigationRules.GetDirectByRole(), {replaceUrl: true});
+      return this.router.navigateByUrl(this._navigationRules.getDirectByRole(), {replaceUrl: true});
   }
 }

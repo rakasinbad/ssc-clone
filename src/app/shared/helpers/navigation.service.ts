@@ -56,7 +56,7 @@ export class NavigationService {
 
         this._fuseNavigationService.updateNavigationItem(id, {
             classes: 
-                !this._navigationRules.ValidateNavigationOnRole(id) ? 'navigation-display-hidden' : ''
+                !this._navigationRules.validateNavigationOnRole(id) ? 'navigation-display-hidden' : ''
         });
 
     }
