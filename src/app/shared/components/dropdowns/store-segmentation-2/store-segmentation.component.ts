@@ -308,7 +308,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
                
             }),
-            take(1),
+            takeUntil(this.subs$),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
@@ -370,7 +370,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     // Menyimpan nilai yang baru tadi ke dalam subject.
                     this.rawAvailableEntities$.next(newRawAvailableEntities);
                     this.availableEntities$.next(newAvailableEntities);
-    
+                    console.log('isi rawAvailableEntities nw->', this.rawAvailableEntities$)
                     // Menyimpan total entities yang baru.
                     if (Array.isArray(response)) {
                         this.totalEntities$.next((response as Array<Entity>).length);
@@ -447,7 +447,17 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         if (event) {
             const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            if (this.segmentationType == 'type') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
+            } else if (this.segmentationType == 'group') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
+            } else if (this.segmentationType == 'channel') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
+            } else if (this.segmentationType == 'cluster') {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
+            } else {
+                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            }
         }
     }
 

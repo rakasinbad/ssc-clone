@@ -1145,7 +1145,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @param {StoreSegmentationChannel[]} ev
      * @memberof FlexiComboFormComponent
      */
-    onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
+    onStoreChannelSelected(ev: StoreSegmentationType[]): void {
         this.form.get('chosenStoreChannel').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreChannel').markAsTouched({ onlySelf: true });
 
@@ -1153,8 +1153,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreChannel').setValue(null);
         } else {
             const newStoreChannels: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.channelId,
+                label: item.channelName,
                 group: 'store-segmentation-channels',
             }));
 
@@ -1168,7 +1168,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @param {StoreSegmentationCluster[]} ev
      * @memberof FlexiComboFormComponent
      */
-    onStoreClusterSelected(ev: StoreSegmentationCluster[]): void {
+    onStoreClusterSelected(ev: StoreSegmentationType[]): void {
         this.form.get('chosenStoreCluster').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreCluster').markAsTouched({ onlySelf: true });
 
@@ -1176,8 +1176,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreCluster').setValue(null);
         } else {
             const newStoreClusters: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.clusterId,
+                label: item.clusterName,
                 group: 'store-segmentation-clusters',
             }));
 
@@ -1191,7 +1191,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
      * @param {StoreSegmentationGroup[]} ev
      * @memberof FlexiComboFormComponent
      */
-    onStoreGroupSelected(ev: StoreSegmentationGroup[]): void {
+    onStoreGroupSelected(ev: StoreSegmentationType[]): void {
         this.form.get('chosenStoreGroup').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreGroup').markAsTouched({ onlySelf: true });
 
@@ -1199,8 +1199,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreGroup').setValue(null);
         } else {
             const newStoreGroups: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.groupId,
+                label: item.groupName,
                 group: 'store-segmentation-groups',
             }));
 
@@ -1222,8 +1222,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreType').setValue(null);
         } else {
             const newStoreTypes: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.typeId,
+                label: item.typeName,
                 group: 'store-segmentation-types',
             }));
 
