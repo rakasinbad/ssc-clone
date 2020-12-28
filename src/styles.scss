@@ -707,3 +707,10 @@ mat-header-row {
         }
     }
 }
+
+.mat-datetimepicker-toggle {
+    /* Set color icon in datepicker */
+    .mat-icon {
+        color: sinbad-color('red', '50');
+    }
+}
