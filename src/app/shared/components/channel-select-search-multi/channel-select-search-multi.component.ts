@@ -58,7 +58,7 @@ export class ChannelSelectSearchMultiComponent implements OnInit {
     ngOnInit(): void {}
 
     onSelected(value: SinbadSelectSearchSource[]): void {
-        console.log('CHANNEL SELECT', { value });
+        // console.log('CHANNEL SELECT', { value });
 
         this.selectedValue.emit(value);
     }

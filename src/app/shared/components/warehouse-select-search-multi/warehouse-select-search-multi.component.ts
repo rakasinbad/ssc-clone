@@ -58,7 +58,7 @@ export class WarehouseSelectSearchMultiComponent implements OnInit {
     ngOnInit(): void {}
 
     onSelected(value: SinbadSelectSearchSource[]): void {
-        console.log('WH SELECT', { value });
+        // console.log('WH SELECT', { value });
 
         this.selectedValue.emit(value);
     }
