@@ -54,7 +54,7 @@
 
                 <select-supplier-stores
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$[0] | async"
+                    [initialSelection]="form.get('chosenStore').value || []"
                     placeholder="Choose Store"
                     [required]="false"
                     [fxFlex]="formFieldLength"

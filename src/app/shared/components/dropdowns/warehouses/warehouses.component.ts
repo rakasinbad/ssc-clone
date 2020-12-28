@@ -212,9 +212,9 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse';
                 if (this.segmentBases == 'all') {
-                    if (this.typePromo === 'flexiCombo') {   
+                    if (this.typePromo === 'flexiCombo') { 
                         delete newQuery['$skip'];
-                        delete newQuery['$limit'];
+                        delete newQuery['$limit'];  
                         if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined
                                 && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
                                 newQuery['catalogueId'] = this.catalogueIdSelect;
@@ -279,10 +279,13 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
-                    } else {
-                    addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
+                    if (this.segmentBases == 'all') {
+                        if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                            }
+                    }
+                    else {
+                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
                     }
 
                     for (const entity of (response as Array<Entity>)) {
@@ -290,8 +293,10 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                     }
                 } else {
                     addedRawAvailableEntities = response.data;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                    if (this.segmentBases == 'all') {
+                        if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.warehouseId, label: d.warehouseName, group: 'warehouses' }));
+                        }
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'warehouses' }));
                     }
@@ -551,48 +556,61 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (this.segmentBases !== null || this.segmentBases == 'all') {
-            if (this.typePromo == 'flexiCombo') {
-                const params = {
-                    // paginate: true,
-                    // limit: this.limit,
-                    // skip: 0,
-                };
-                if (this.typeTrigger == 'sku' && changes['catalogueIdSelect']) {
-                    if (this.catalogueIdSelect !== null) {
-                        this.availableEntities$.next([]);
-                        this.rawAvailableEntities$.next([]);
-                        params['catalogueId'] = this.catalogueIdSelect;
-                        this.requestEntity(params);
-                    } else {}
-                } else if (this.typeTrigger == 'brand' && changes['brandIdSelect']) {
-                    if (this.brandIdSelect !== null) {
-                        this.availableEntities$.next([]);
-                        this.rawAvailableEntities$.next([]);
-                        params['brandId'] = this.brandIdSelect;
-                        this.requestEntity(params);
-                    } else {}
-                } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect']) {
-                    if (this.fakturIdSelect !== null) {
-                        this.availableEntities$.next([]);
-                        this.rawAvailableEntities$.next([]);
-                        params['fakturId'] = this.fakturIdSelect;
-                        this.requestEntity(params);
-                    } else {}
+        // if (changes['segmentBases']) {
+            if (this.segmentBases !== null && this.segmentBases == 'all') {
+                if (this.typePromo == 'flexiCombo') {
+                    const params = {
+                        // paginate: true,
+                        // limit: this.limit,
+                        // skip: 0,
+                    };
+                    if (this.typeTrigger == 'sku' && changes['catalogueIdSelect']) {
+                        if (this.catalogueIdSelect !== null) {
+                            this.availableEntities$.next([]);
+                            this.rawAvailableEntities$.next([]);
+                            params['catalogueId'] = this.catalogueIdSelect;
+                            this.requestEntity(params);
+                        } else {}
+                    } else if (this.typeTrigger == 'brand' && changes['brandIdSelect']) {
+                        if (this.brandIdSelect !== null) {
+                            this.availableEntities$.next([]);
+                            this.rawAvailableEntities$.next([]);
+                            params['brandId'] = this.brandIdSelect;
+                            this.requestEntity(params);
+                        } else {}
+                    } else if (this.typeTrigger == 'faktur' && changes['fakturIdSelect']) {
+                        if (this.fakturIdSelect !== null) {
+                            this.availableEntities$.next([]);
+                            this.rawAvailableEntities$.next([]);
+                            params['fakturId'] = this.fakturIdSelect;
+                            this.requestEntity(params);
+                        } else {}
+                    }
+                } else if (this.typePromo == 'crossSelling') {
+                    const params = {};
+                    if (changes['idSelectedSegment']) {
+                        if (this.idSelectedSegment !== null) {
+                            this.availableEntities$.next([]);
+                            this.rawAvailableEntities$.next([]);
+                            params['catalogueSegmentationId'] = this.idSelectedSegment;
+                            this.requestEntity(params);
+                        } else {}
+                    }
+                } else {
                 }
-            } else if (this.typePromo == 'crossSelling') {
-                const params = {};
-                if (changes['idSelectedSegment']) {
-                    if (this.idSelectedSegment !== null) {
-                        this.availableEntities$.next([]);
-                        this.rawAvailableEntities$.next([]);
-                        params['catalogueSegmentationId'] = this.idSelectedSegment;
-                        this.requestEntity(params);
-                    } else {}
-                }
-            } else {
             }
-        }
+            if (this.segmentBases == 'segmentation') {
+                this.availableEntities$.next([]);
+                this.rawAvailableEntities$.next([]);
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
+                this.requestEntity(params);
+            }
+        // }
+       
 
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {

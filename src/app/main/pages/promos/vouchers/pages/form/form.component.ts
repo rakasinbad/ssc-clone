@@ -351,7 +351,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         if (payload.target === 'store') {
             payload.dataTarget = {
                 storeId: eligibleStoreValue.chosenStore.map(
-                    (supplierStore) => supplierStore.storeId
+                    (supplierStore) => supplierStore.id
                 ),
             };
         } else if (payload.target === 'segmentation') {
