@@ -343,6 +343,16 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxLength({
+                        value: 20,
+                        message: 'Max input is 20 characters'
+                    }),
+                    RxwebValidators.pattern({
+                        expression: {
+                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$/,
+                        },
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
                     RxwebValidators.alphaNumeric({
                         allowWhiteSpace: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
@@ -355,6 +365,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxLength({
+                        value: 200,
+                        message: 'Max input is 200 characters'
+                    })
                 ],
             ],
             notes: [
@@ -363,6 +377,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxLength({
+                        value: 100,
+                        message: 'Max input is 100 characters'
+                    }),
                 ],
             ],
             header: [
@@ -370,6 +388,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.maxLength({
+                        value: 20,
+                        message: 'Max input is 20 characters'
                     }),
                     RxwebValidators.alphaNumeric({
                         allowWhiteSpace: true,
