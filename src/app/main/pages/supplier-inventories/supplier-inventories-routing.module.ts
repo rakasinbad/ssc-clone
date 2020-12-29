@@ -6,6 +6,8 @@ import { AuthGuard } from '../core/auth/auth.guard';
 import { SupplierInventoriesComponent } from './supplier-inventories.component';
 import { SupplierInventoryFormComponent } from './supplier-inventory-form/supplier-inventory-form.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     {
         path: '',
@@ -13,13 +15,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ]
+                only: getRoleByRouter('supplier-inventories')
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

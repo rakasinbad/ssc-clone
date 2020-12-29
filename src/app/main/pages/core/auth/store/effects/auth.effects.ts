@@ -90,7 +90,8 @@ export class AuthEffects {
                     });
                 }
 
-                return AuthActions.authLogout();
+                return AuthActions.authAutoLoginFailure();
+                // return AuthActions.authLogout();
             })
             // switchMap(([isOnline, user]: [boolean, any]) => {
             //     if (isOnline && user) {
@@ -247,6 +248,31 @@ export class AuthEffects {
                     //         }
                     //     );
                     // }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    authAutoLoginFail$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(AuthActions.authAutoLoginFailure),
+                tap(() => {
+                    this.storage.clear().subscribe({
+                        next: () => {
+                            this.ngxPermissions.flushPermissions();
+
+                            this.ngxRoles.flushRoles();
+                            
+                            this.router.navigate(['/auth/login'], { replaceUrl: true });
+                        },
+                        error: (err) => {
+                            this._$notice.open('Something wrong with sessions storage', 'error', {
+                                verticalPosition: 'bottom',
+                                horizontalPosition: 'right',
+                            });
+                        },
+                    });
                 })
             ),
         { dispatch: false }
@@ -437,18 +463,23 @@ export class AuthEffects {
                                     });
                                 }
 
-                                if (
-                                    !this._$auth.redirectUrl ||
-                                    this._$auth.redirectUrl === '/auth/login'
-                                ) {
-                                    this.router.navigateByUrl('/pages/account/stores', {
-                                        replaceUrl: true,
-                                    });
-                                } else {
-                                    this.router.navigateByUrl(this._$auth.redirectUrl, {
-                                        replaceUrl: true,
-                                    });
-                                }
+                                this.router.navigateByUrl('/pages', {
+                                    replaceUrl: true,
+                                });
+
+                                // if (
+                                //     !this._$auth.redirectUrl ||
+                                //     this._$auth.redirectUrl === '/auth/login'
+                                // ) {
+                                //     this.router.navigateByUrl('/pages/account/stores', {
+                                //         replaceUrl: true,
+                                //     });
+                                // } else {
+                                //     this.router.navigateByUrl(this._$auth.redirectUrl, {
+                                //         replaceUrl: true,
+                                //     });
+                                // }
+
                                 // this.router.navigate(['/pages/account/stores'], {
                                 //     replaceUrl: true
                                 // });
@@ -514,6 +545,8 @@ export class AuthEffects {
                             this.ngxPermissions.flushPermissions();
 
                             this.ngxRoles.flushRoles();
+                            
+                            // this.router.navigate(['/auth/login'], { replaceUrl: true });
 
                             this.router.navigate(['/auth/login'], { replaceUrl: true });
                         },
