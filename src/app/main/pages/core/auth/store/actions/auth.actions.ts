@@ -10,6 +10,8 @@ export const authAutoLoginSuccess = createAction(
     props<{ payload: Auth }>()
 );
 
+export const authAutoLoginFailure = createAction('[Auth Page] Auto Login Failure');
+
 export const authLoginRequest = createAction(
     '[Auth API] Login Request',
     props<{ payload: { username: string; password: string } }>()

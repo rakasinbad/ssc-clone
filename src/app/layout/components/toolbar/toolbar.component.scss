@@ -1,5 +1,9 @@
 @import "src/@fuse/scss/fuse";
 
+button.mat-menu-item{
+    min-width: 180px;
+}
+
 toolbar {
     position: relative;
     display: flex;
