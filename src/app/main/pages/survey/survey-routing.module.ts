@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from '../core/auth/auth.guard';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     { path: '', redirectTo: 'manage', pathMatch: 'full' },
     {
@@ -12,13 +14,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('survey', 'response'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -35,13 +31,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('survey', 'manage'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

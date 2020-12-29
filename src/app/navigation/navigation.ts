@@ -7,7 +7,7 @@ export const navigation: FuseNavigation[] = [
         translate: 'NAV.DASHBOARD.TITLE',
         type: 'item',
         icon: 'custom-sinbad-dashboard-logo',
-        url: '/pages/dashboard',
+        url: '/pages/dashboard'
     },
     {
         id: 'account',
@@ -269,12 +269,12 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/survey/manage',
             },
-            {
-                id: 'survey-response',
-                title: 'Response',
-                type: 'item',
-                url: '/pages/survey/response',
-            },            
+            // {
+            //     id: 'survey-response',
+            //     title: 'Response',
+            //     type: 'item',
+            //     url: '/pages/survey/response',
+            // },            
         ],
     }
 ];

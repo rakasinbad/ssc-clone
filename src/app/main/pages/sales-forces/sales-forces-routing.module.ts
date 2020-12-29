@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from '../core/auth/auth.guard';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     { path: '', redirectTo: 'sales-rep', pathMatch: 'full' },
     {
@@ -11,13 +13,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('sales-force', 'sales-rep'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -35,13 +31,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('sales-force', 'portfolio'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -59,13 +49,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('sales-force', 'journey-plans'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -83,13 +67,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('sales-force', 'workday-setting'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -106,13 +84,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('sales-force', 'sr-target'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -130,13 +102,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('sales-force', 'associations'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
