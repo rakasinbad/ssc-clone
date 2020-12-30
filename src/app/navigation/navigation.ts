@@ -276,5 +276,13 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/survey/response',
             },            
         ],
+    },
+    {
+        id: 'skp',
+        title: 'SKP',
+        // translate: 'NAV.SKP.TITLE',
+        type: 'item',
+        icon: 'custom-sinbad-skp-logo',
+        url: '/pages/skp',
     }
 ];

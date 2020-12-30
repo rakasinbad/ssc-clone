@@ -354,6 +354,26 @@ const routes: Routes = [
                 },
             },
             {
+                path: 'skp',
+                loadChildren: () =>
+                    import('./main/pages/skp/skp.module').then(
+                        (m) => m.SkpModule
+                    ),
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true,
+                            },
+                        },
+                    },
+                },
+            },
+            {
                 path: '',
                 redirectTo: 'account',
                 pathMatch: 'full',
