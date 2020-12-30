@@ -35,12 +35,13 @@ import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validato
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as numeral from 'numeral';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 
 import { CreateSkpDto, SkpModel, UpdateSkpDto } from '../../models';
@@ -69,6 +70,9 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
     private _unSubs$: Subject<void> = new Subject<void>();
     skpCombo: SkpModel = null;
+
+    // Untuk keperluan unsubscribe.
+    private subs$: Subject<void> = new Subject<void>();
 
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
     chosenPromo$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
@@ -280,10 +284,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     .select(FormSelectors.getIsClickSaveButton)
                     .pipe(
                         filter((isClick) => !!isClick),
+                        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe((isClick) => {
-                        this._onSubmit();
+                    .subscribe(([isClick, userSupplier]) => {
+                        this._onSubmit(userSupplier.supplierId);
                     });
                 break;
         }
@@ -542,14 +547,13 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    private _onSubmit(): void {
+    private _onSubmit(supplierId: string): void {
         if (this.form.invalid) {
             return;
         }
 
         const body = this.form.getRawValue();
         const {
-            supplierId,
             name,
             description,
             notes,
