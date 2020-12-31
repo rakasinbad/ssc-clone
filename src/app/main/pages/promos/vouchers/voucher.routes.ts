@@ -16,6 +16,8 @@ import { VoucherFormComponent } from './pages/form/form.component';
 import { VoucherDetailComponent } from './pages/detail/detail.component';
 // import { SkuAssignmentDetailComponent } from './sku-assignment-detail';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 // Routes
 const routes: Routes = [
     {
@@ -24,7 +26,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN'],
+                only: getRoleByRouter('promos', 'voucher'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -41,13 +43,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('promos', 'voucher'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -68,13 +64,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('promos', 'voucher'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

@@ -7,6 +7,8 @@ import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-d
 import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form.component';
 import { PortfoliosComponent } from './portfolios.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     {
         path: '',
@@ -14,13 +16,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ],
+                only: getRoleByRouter('sales-force', 'portfolio'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -37,13 +33,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ],
+                only: getRoleByRouter('sales-force', 'portfolio'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -60,13 +50,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ],
+                only: getRoleByRouter('sales-force', 'portfolio'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -83,13 +67,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ],
+                only: getRoleByRouter('sales-force', 'portfolio'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

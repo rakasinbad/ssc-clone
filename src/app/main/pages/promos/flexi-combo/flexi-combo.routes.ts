@@ -8,6 +8,8 @@ import { FlexiComboDetailComponent } from './components/flexi-combo-detail';
 import { FlexiComboFormComponent } from './flexi-combo-form';
 import { FlexiComboComponent } from './flexi-combo.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     {
         path: '',
@@ -15,7 +17,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN'],
+                only: getRoleByRouter('promos', 'flexi-combo'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

@@ -7,6 +7,8 @@ import { CreditLimitBalanceComponent } from './credit-limit-balance.component';
 import { CreditLimitGroupComponent } from './credit-limit-group/credit-limit-group.component';
 import { CreditStoresComponent } from './credit-stores/credit-stores.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     {
         path: '',
@@ -32,13 +34,7 @@ const routes: Routes = [
         ],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'FINANCE',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER'
-                ],
+                only: getRoleByRouter('finances', 'credit-limit-balance'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
