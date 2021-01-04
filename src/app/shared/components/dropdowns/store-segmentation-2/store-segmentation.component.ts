@@ -447,7 +447,6 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         if (event) {
             const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            console.log('isi rawentites->', rawEntities)
             if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                 if (this.segmentationType == 'type') {
                     this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
