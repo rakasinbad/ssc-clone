@@ -47,9 +47,9 @@ export class CatalogueEffects {
                             return CatalogueActions.updateCataloguePriceSettingSuccess({
                                 payload: {
                                     data: {
-                                        id: cataloguePrice.id,
+                                        id: payload.priceSettingId,
                                         changes: {
-                                            price: cataloguePrice.price,
+                                            price: +payload.price,
                                         },
                                     },
                                     formIndex: payload.formIndex,
