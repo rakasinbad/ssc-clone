@@ -2,6 +2,7 @@ import { TNullable } from 'app/shared/models/global.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 import { StorePortfolio } from './journey-plan-store.model';
+import { JourneyPlanSaleLogs } from './journey-plan-sale-logs.model';
 
 export interface IJourneyPlanSales extends ITimestamp {
     readonly id: NonNullable<string>;
@@ -9,6 +10,8 @@ export interface IJourneyPlanSales extends ITimestamp {
     store: StorePortfolio;
     storeId: string;
     storeType: string;
+    journeyPlanSaleLogs: Array<JourneyPlanSaleLogs>;
+
 }
 
 export class JourneyPlanSales implements IJourneyPlanSales {
@@ -20,6 +23,7 @@ export class JourneyPlanSales implements IJourneyPlanSales {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    journeyPlanSaleLogs: Array<JourneyPlanSaleLogs>
 
     constructor(data: IJourneyPlanSales) {
         const {
@@ -28,9 +32,11 @@ export class JourneyPlanSales implements IJourneyPlanSales {
             storeId,
             storeType,
             store,
+            journeyPlanSaleLogs,
             createdAt,
             updatedAt,
             deletedAt
+
         } = data;
 
         this.id = id;
@@ -41,6 +47,7 @@ export class JourneyPlanSales implements IJourneyPlanSales {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.journeyPlanSaleLogs = journeyPlanSaleLogs;
     }
 
     set setStore(value: StorePortfolio) {
