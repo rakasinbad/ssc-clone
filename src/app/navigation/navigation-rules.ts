@@ -1,4 +1,4 @@
-export interface Routing {
+interface Routing {
   '*'? : boolean,
   'dashboard'? : ('')[],
   'account'? : ('' | 'stores' | 'store-setting' | 'internal' | 'store-segmentation' | '*')[],
@@ -17,48 +17,25 @@ export interface Routing {
   'survey'? : ('' | 'response' | 'manage' | '*')[]
 }
 
+type Navbar = (
+  '*' | 'dashboard' | 'account' | 'accountsStore' | 'storeSetting' | 
+  'storeSegmentation' | 'catalogue' | 'manageProduct' | 'segmentation' | 
+  'attendance' | 'finance' | 'creditLimitBalance' | 'paymentStatus' |
+  'orderManagement' | 'inventory' | 'instore' | 'sales-force' |
+  'sales-rep' | 'portfolio' | 'sr-target' | 'association' |
+  'journey-plan' | 'workday-setting' | 'warehouse' | 'wh-list' |
+  'wh-coverage' | 'wh-sku-assignment' | 'wh-stock-management' |
+  'promo' | 'flexi-combo'| 'cross-selling-promo' | 'period-target-promo' |
+  'voucher' | 'survey' | 'survey-manage' | 'survey-response'
+)[];
+
+type Toolbar = ('Informasi Supplier' | 'Pengaturan akun' | 'Internal' | '*')[]
+
 export interface Rule {
     role : string,
     routing : Routing,
-    navbar : (
-      'dashboard' |
-      'account' |
-      'accountsStore' | 
-      'storeSetting' | 
-      'storeSegmentation' |
-      'catalogue' | 
-      'manageProduct' |
-      'segmentation' | 
-      'attendance' |
-      'finance' | 
-      'creditLimitBalance' |
-      'paymentStatus' |
-      'orderManagement' |
-      'inventory' |
-      'instore' |
-      'sales-force' |
-      'sales-rep' |
-      'portfolio' |
-      'sr-target' |
-      'association' |
-      'journey-plan' |
-      'workday-setting' |
-      'warehouse' |
-      'wh-list' |
-      'wh-coverage' |
-      'wh-sku-assignment' |
-      'wh-stock-management' |
-      'promo' |
-      'flexi-combo'|
-      'cross-selling-promo' |
-      'period-target-promo' |
-      'voucher' |
-      'survey' |
-      'survey-manage' | 
-      'survey-response' |
-      '*'
-    )[],
-    toolbar : ('Informasi Supplier' | 'Pengaturan akun' | 'Internal' | '*')[],
+    navbar : Navbar,
+    toolbar : Toolbar,
     redirectTo : string
 }
 
@@ -83,14 +60,13 @@ export const Rules : Rule[] = [
         'warehouse',
         'wh-list',
         'wh-coverage',
-        'wh-sku-assignment',
         'wh-stock-management'
       ],
       routing: {
         'account' : ['', 'stores', 'store-segmentation'],
         'finances' : ['*'],
         'orders': ['*'],
-        'logistics': ['*']
+        'logistics': ['stock-managements', 'warehouse-coverages', 'warehouses']
       },
       toolbar: [],
       redirectTo: '/pages/account/stores'
@@ -120,7 +96,6 @@ export const Rules : Rule[] = [
         'warehouse',
         'wh-list',
         'wh-coverage',
-        'wh-sku-assignment',
         'wh-stock-management'
       ],
       routing: {
@@ -131,8 +106,8 @@ export const Rules : Rule[] = [
         'in-store-inventories': ['*'],
         'sales-force' : ['*'],
         'supplier-inventories' : ['*'],
-        'logistics' : ['*'],
-        'promos' : ['*']
+        'logistics': ['', 'stock-managements', 'warehouse-coverages', 'warehouses'],
+        'promos' : ['','voucher']
       },
       toolbar: [],
       redirectTo: '/pages/account/stores'
@@ -163,7 +138,6 @@ export const Rules : Rule[] = [
         'warehouse',
         'wh-list',
         'wh-coverage',
-        'wh-sku-assignment',
         'wh-stock-management'
       ],
       routing: {
@@ -175,8 +149,8 @@ export const Rules : Rule[] = [
         'in-store-inventories' : ['*'],
         'sales-force' : ['*'],
         'supplier-inventories' : ['*'],
-        'logistics' : ['*'],
-        'promos' : ['*']
+        'logistics': ['', 'stock-managements', 'warehouse-coverages', 'warehouses'],
+        'promos' : ['', 'voucher']
       },
       toolbar: [],
       redirectTo: '/pages/account/stores'
@@ -192,8 +166,8 @@ export const Rules : Rule[] = [
         'in-store-inventories' : ['*'],
         'sales-force' : ['*'],
         'supplier-inventories' : ['*'],
-        'logistics' : ['*'],
-        'promos' : ['*']
+        'logistics': ['', 'stock-managements', 'warehouse-coverages', 'warehouses'],
+        'promos' : ['','voucher']
       },
       toolbar: [],
       navbar: [
@@ -220,7 +194,6 @@ export const Rules : Rule[] = [
         'warehouse',
         'wh-list',
         'wh-coverage',
-        'wh-sku-assignment',
         'wh-stock-management'
       ],
       redirectTo: '/pages/account/stores'
@@ -233,11 +206,12 @@ export const Rules : Rule[] = [
         'orders' : ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
+        'finances' : ['*'],
         'sales-force' : ['*'],
         'supplier-inventories' : ['*'],
         'settings' : ['*'],
-        'logistics' : ['*'],
-        'promos' : ['*'],
+        'logistics': ['', 'stock-managements', 'warehouse-coverages', 'warehouses'],
+        'promos' : ['','voucher'],
         'catalogue-segmentations' : ['*'],
         'survey' : ['*']
       },
@@ -252,6 +226,9 @@ export const Rules : Rule[] = [
         'manageProduct',
         'segmentation',
         'attendance',
+        'finance',
+        'creditLimitBalance',
+        'paymentStatus',
         'orderManagement',
         'inventory',
         'instore',
@@ -265,12 +242,8 @@ export const Rules : Rule[] = [
         'warehouse',
         'wh-list',
         'wh-coverage',
-        'wh-sku-assignment',
         'wh-stock-management',
         'promo',
-        'flexi-combo',
-        'cross-selling-promo',
-        'period-target-promo',
         'voucher',
         'survey',
         'survey-manage',

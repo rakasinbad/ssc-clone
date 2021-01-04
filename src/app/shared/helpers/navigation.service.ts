@@ -38,7 +38,21 @@ export class NavigationService {
                 if (item.type === 'collapsable') {
                     if (item.children && item.children.length > 0) {
                         this._initNavigationCheck(item.children, roles);
-                        this._navigationSetup(item.id);
+                        // this._navigationSetup(item.id);
+
+                        const totalChild = item.children.length;
+                        const totalChildHidden = item.children.filter(i => i.classes === 'navigation-display-hidden')
+                            .length;
+
+                        if (totalChild === totalChildHidden) {
+                            this._fuseNavigationService.updateNavigationItem(item.id, {
+                                classes: 'navigation-display-hidden'
+                            });
+                        } else {
+                            this._fuseNavigationService.updateNavigationItem(item.id, {
+                                classes: ''
+                            });
+                        }
 
                         // console.log('Collapsable', totalChild, totalChildHidden, item);
                     } else {
@@ -58,7 +72,6 @@ export class NavigationService {
             classes: 
                 !this._navigationRules.validateNavigationOnRole(id) ? 'navigation-display-hidden' : ''
         });
-
     }
 
     // private _initNavigationCheck(nav: Array<FuseNavigation>, roles?: NgxRolesObject): void {
