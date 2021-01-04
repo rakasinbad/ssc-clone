@@ -334,14 +334,14 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             //         })
             //     ],
             // ],
-            supplierId: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
+            // supplierId: [
+            //     '',
+            //     [
+            //         RxwebValidators.required({
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+            //         }),
+            //     ],
+            // ],
             name: [
                 null,
                 [
@@ -458,7 +458,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         //for setting value coloumn promo (value must into array)
         if (this.form.get('promo')){
-            this.form.get('promo').setValue([217]);
+            this.form.get('promo').setValue([293]);
         }
 
         console.log('form init ->', this.form)
@@ -486,7 +486,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     private _setEditForm(row: SkpModel): void {
         // console.log('ROW', row);
         const skpId = this.form.get('id');
-        const skpSupplierId = this.form.get('supplierId');
+        // const skpSupplierId = this.form.get('supplierId');
         const skpNameCtrl = this.form.get('name');
         const descriptionCtrl = this.form.get('description');
         const notesCtrl = this.form.get('notes');
@@ -500,9 +500,9 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         //     promoSellerIdCtrl.setValue(row.externalId);
         // }
 
-        if (row.supplierId) {
-            skpSupplierId.setValue(row.supplierId);
-        }
+        // if (row.supplierId) {
+        //     skpSupplierId.setValue(row.supplierId);
+        // }
 
         // Handle Name
         if (row.name) {
