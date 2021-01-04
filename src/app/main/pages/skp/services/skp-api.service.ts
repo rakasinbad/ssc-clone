@@ -31,7 +31,7 @@ export class SkpApiService {
      * @private
      * @memberof SkpApiService
      */
-    private readonly _endpoint = '/skp';
+    private readonly _endpoint = '/SKP';
 
     /**
      * Creates an instance of SkpApiService.
