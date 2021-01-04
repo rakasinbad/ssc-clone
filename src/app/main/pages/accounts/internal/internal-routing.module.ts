@@ -6,6 +6,8 @@ import { AuthGuard } from '../../core/auth/auth.guard';
 import { InternalFormComponent } from './internal-form/internal-form.component';
 import { InternalComponent } from './internal.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     {
         path: '',
@@ -13,7 +15,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                only: getRoleByRouter('account', 'internal'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

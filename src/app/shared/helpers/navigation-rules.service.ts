@@ -25,7 +25,7 @@ export class NavigationRulesService {
 
   public getRoleByToolbar(key: any) : string[] {
       return this._navigationRules.filter((value : Rule) => {
-          return value.toolbar.includes(key) || value.navbar.includes('*');
+          return value.toolbar.includes(key) || value.toolbar.includes('*');
       }).map((value : Rule) => {
           return value.role;
       });
