@@ -409,7 +409,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
+                    })
                 ],
             ],
             endDate: [
@@ -417,7 +417,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
+                    })
                 ],
             ],
             file: [
@@ -443,6 +443,9 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             imageUrl: [
                 null,
                 [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
                     RxwebValidators.fileSize({
                         maxSize: Math.floor(1 * 1000 * 1000),
                         message: this._$errorMessage.getErrorMessageNonState(
