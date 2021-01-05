@@ -447,14 +447,16 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         if (event) {
             const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            if (this.segmentationType == 'type') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
-            } else if (this.segmentationType == 'group') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
-            } else if (this.segmentationType == 'channel') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
-            } else if (this.segmentationType == 'cluster') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
+            if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                if (this.segmentationType == 'type') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
+                } else if (this.segmentationType == 'group') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
+                } else if (this.segmentationType == 'channel') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
+                } else if (this.segmentationType == 'cluster') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
+                }
             } else {
                 this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
             }

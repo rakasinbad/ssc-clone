@@ -3,8 +3,11 @@ import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 export interface IStorePortfolio extends ITimestamp {
     readonly id: NonNullable<string>;
+
     address: string;
+
     creatorId: string;
+
     externalId: string;
     imageUrl: string;
     largeArea: string;
