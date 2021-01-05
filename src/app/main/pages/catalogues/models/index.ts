@@ -7,6 +7,8 @@ export * from './catalogue-visibility.model';
 export * from './catalogue-wd.model';
 export * from './catalogue.model';
 
+export * from './interfaces/adjust-catalogue-price.interface';
+
 export { StoreSegmentationChannel } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-channels/models';
 export { StoreSegmentationCluster } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-clusters/models';
 export { StoreSegmentationGroup } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-groups/models';

@@ -1,0 +1,111 @@
+<ng-container *ngIf="type === 'single'">
+    <span>Single template not ready yet!</span>
+</ng-container>
+
+<ng-container *ngIf="type === 'multi'">
+    <div class="custom-field" fxLayout="row" cdkScrollable>
+        <mat-form-field appearance="outline" fxFlex>
+            <mat-select
+                class="select-search"
+                panelClass="select-search-panel"
+                [formControl]="control"
+                [placeholder]="placeholder ? placeholder : null"
+                (selectionChange)="onSelect($event)"
+                multiple
+            >
+                <mat-select-trigger>
+                    {{ control.value ? control.value[0]?.label : '' }}
+                    <span class="trigger-text" *ngIf="control.value?.length > 1">
+                        (+{{ control.value.length - 1 }}
+                        {{ control.value?.length === 2 ? 'other' : 'others' }})
+                    </span>
+                </mat-select-trigger>
+
+                <div class="box-search">
+                    <input
+                        matInput
+                        [formControl]="searchControl"
+                        placeholder="Search"
+                        (keydown)="$event.stopPropagation()"
+                        autocomplete="off"
+                    />
+                </div>
+
+                <cdk-virtual-scroll-viewport
+                    #cdkWarehouse
+                    itemSize="5"
+                    minBufferPx="200"
+                    maxBufferPx="400"
+                    class="viewport-select"
+                    autoSize
+                >
+                    <ng-container *ngIf="sources && sources.length > 0">
+                        <mat-option
+                            *cdkVirtualFor="
+                                let source of sources | selectSearchFilter: searchControl?.value
+                            "
+                            [value]="source"
+                        >
+                            <span
+                                [innerHTML]="source?.label | highlight: searchControl?.value"
+                            ></span>
+                        </mat-option>
+                    </ng-container>
+                </cdk-virtual-scroll-viewport>
+
+                <ng-container *ngIf="!sources || (sources && !sources.length)">
+                    <mat-option>None</mat-option>
+                </ng-container>
+            </mat-select>
+            <!-- <input
+            #autocompleteTrigger
+            matInput
+            [formControl]="form"
+            [matAutocomplete]="autoComplete"
+            [placeholder]="placeholder ? placeholder : null"
+        />
+
+        <mat-autocomplete
+            #autoComplete="matAutocomplete"
+            [displayWith]="onDisplayAutocompleteFn"
+            (closed)="onClosedAutocomplete()"
+            (opened)="onOpenedAutocomplete()"
+            (optionSelected)="onSelectAutocomplete($event)"
+        >
+            <ng-container *ngIf="sources && sources.length > 0">
+                <mat-option *ngFor="let source of sources" [value]="source">
+                    <span [innerHTML]="source?.label | highlight: form?.value"></span>
+                </mat-option>
+            </ng-container>
+
+            <ng-container *ngIf="!sources || (sources && !sources.length)">
+                <mat-option>None</mat-option>
+            </ng-container>
+        </mat-autocomplete> -->
+
+            <!-- <mat-hint [align]="hintAlign" *ngIf="hintValue">
+            {{ hintValue }}
+        </mat-hint> -->
+
+            <!-- SECTION SPINNER LOADING -->
+            <!--  [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide" -->
+            <!-- <button mat-icon-button matSuffix>
+                <mat-icon>refresh</mat-icon>
+            </button> -->
+            <mat-spinner
+                matSuffix
+                class="loading"
+                color="accent"
+                diameter="25"
+                fxFlexAlign="center"
+                *ngIf="loading"
+            ></mat-spinner>
+            <!-- !SECTION SPINNER LOADING -->
+
+            <!-- <mat-error>
+        <sinbad-form-error [control]="control"></sinbad-form-error>
+    </mat-error> -->
+        </mat-form-field>
+    </div>
+</ng-container>

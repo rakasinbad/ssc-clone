@@ -113,6 +113,18 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Reason Not Order Column -->
+                <ng-container matColumnDef="reason-no-order">
+                  <mat-header-cell *matHeaderCellDef>
+                    Reason Not Order
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <p style="word-break: break-word;">
+                      {{ getTotalNumberReasonNoOrder(row) }}
+                    </p>
+                  </mat-cell>
+                </ng-container>
+
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
@@ -239,6 +251,18 @@
                                 <mat-cell *matCellDef="let rowDet">
                                     <p style="word-break: break-word;">
                                         {{ rowDet?.store?.name || '-' }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Reason Not Order Column -->
+                            <ng-container matColumnDef="reason-no-order">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Reason Not Order
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet">
+                                  <p style="word-break: break-word;">
+                                    {{ getReasonNoOrder(rowDet) }}
                                     </p>
                                 </mat-cell>
                             </ng-container>
