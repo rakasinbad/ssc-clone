@@ -92,12 +92,12 @@ export class SkpApiService {
             });
         }
 
-        if (params['data']) {
-            newArg.push({
-                key: 'data',
-                value: params['data'],
-            });
-        }
+        // if (params['data']) {
+        //     newArg.push({
+        //         key: 'data',
+        //         value: params['data'],
+        //     });
+        // }
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
@@ -122,29 +122,39 @@ export class SkpApiService {
         //     });
         // }
 
-        if (params['data']) {
+        // if (params['data']) {
+        //     newArg.push({
+        //         key: 'data',
+        //         value: params['data'],
+        //     });
+        // }
+
+        if (params['type'] == 'promo'){
             newArg.push({
                 key: 'data',
-                value: params['data'],
+                value: 'promo',
             });
+            // if (params['promo_limit']) {
+            //     newArg.push({
+            //         key: 'promo_limit',
+            //         value: params['promo_limit'],
+            //     });
+            // }
+            // if (params['promo_skip']) {
+            //     newArg.push({
+            //         key: 'promo_skip',
+            //         value: params['promo_skip'],
+            //     });
+            // }
+        } else if (params['type'] == 'store'){
+            newArg.push({
+                key: 'data',
+                value: 'store',
+            });
+        } else {
+        
         }
 
-        // if (type== 'promo'){
-            if (params['promo_limit']) {
-                newArg.push({
-                    key: 'promo_limit',
-                    value: params['promo_limit'],
-                });
-            }
-            if (params['promo_skip']) {
-                newArg.push({
-                    key: 'promo_skip',
-                    value: params['promo_skip'],
-                });
-            }
-        // } else {
-
-        // }
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 

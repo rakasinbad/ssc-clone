@@ -27,6 +27,9 @@ export class SkpModel implements ITimestamp {
     province: string;
     skpStatus: string;
     skpUpdateDate: string;
+    availableFrom: string;
+    availableTo: string;
+    image_url: string;
 
     constructor(data: SkpModel) {
         const {
@@ -52,7 +55,10 @@ export class SkpModel implements ITimestamp {
             address,
             province,
             skpStatus,
-            skpUpdateDate
+            skpUpdateDate,
+            availableFrom,
+            availableTo,
+            image_url
         } = data;
 
         this.id = id;
@@ -80,6 +86,10 @@ export class SkpModel implements ITimestamp {
         this.province = province || null;
         this.skpStatus = skpStatus || null;
         this.skpUpdateDate = skpUpdateDate || null;
+        
+        this.availableFrom = availableFrom || null;
+        this.availableTo = availableTo || null;
+        this.image_url = image_url || null;
     }
 }
 

@@ -49,16 +49,30 @@ export class DetailGeneralComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        // this.skpGeneral$ = this.store.select(SkpSelectors.getSelectedItem).pipe(
-        //     map((item) => {
-        //         return item;
-        //     })
-        // );
+        this.skpGeneral$ = this.store.select(SkpSelectors.getSelectedItem).pipe(
+            map((item) => {
+                return item;
+            })
+        );
 
         this.isLoading$ = this.store.select(SkpSelectors.getIsLoading);
 
         this.cdRef.detectChanges();
 
+    }
+
+    onShowImage(imageUrl: string, title: string): void {
+        if (!imageUrl || !title) {
+            return;
+        }
+
+        this.matDialog.open(ShowImageComponent, {
+            data: {
+                title: title || '',
+                url: imageUrl || '',
+            },
+            disableClose: true,
+        });
     }
 
 }

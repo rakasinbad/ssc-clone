@@ -13,8 +13,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                SKP Danone
-                <!-- {{ (skpGeneral$ | async)?.name || '-' }} -->
+                {{ (skpGeneral$ | async)?.name || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -34,8 +33,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Ini adalah contoh deskripsi SKP Danone
-                <!-- {{ (skpGeneral$ | async)?.description || '-' }} -->
+                {{ (skpGeneral$ | async)?.description || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -55,8 +53,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Ini adalah contoh Notes to Display
-                <!-- {{ (skpGeneral$ | async)?.notes || '-' }} -->
+                {{ (skpGeneral$ | async)?.notes || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -76,8 +73,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Selalu Untukmu!!
-                <!-- {{ (skpGeneral$ | async)?.header  || '-' }} -->
+                {{ (skpGeneral$ | async)?.header  || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -97,8 +93,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                SKP Danone
-                <!-- {{ (skpGeneral$ | async)?.file || '-' }} -->
+                {{ (skpGeneral$ | async)?.file || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -123,7 +118,8 @@
                     mat-button
                     color="accent"
                     class="btn-sinbad-link"
-                    *ngIf="(skpGeneral$ | async)?.imageUrl as imageUrl; else notFoundImg"
+                    (click)="onShowImage(imageUrl, 'Image Suggestion')"
+                    *ngIf="(skpGeneral$ | async)?.image_url as imageUrl; else notFoundImg"
                 >
                     View
                 </button>
@@ -150,8 +146,7 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                     <span class="date">
-                        18/12/2020
-                        <!-- {{ ((skpGeneral$ | async)?.startDate | date: 'dd/MM/yyyy') || '-' }} -->
+                        {{ ((skpGeneral$ | async)?.availableFrom | date: 'dd/MM/yyyy') || '-' }}
                     </span>
 
                     <mat-icon class="sinbad-red-10-fg">today</mat-icon>
@@ -177,8 +172,7 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                     <span class="date">
-                        18/12/2020
-                        <!-- {{ ((skpGeneral$ | async)?.endDate | date: 'dd/MM/yyyy') || '-' }} -->
+                        {{ ((skpGeneral$ | async)?.availableTo | date: 'dd/MM/yyyy') || '-' }}
                     </span>
 
                     <mat-icon class="sinbad-red-10-fg">today</mat-icon>
@@ -202,8 +196,7 @@
 
             <div class="info" fxFlexAlign="center" fxFlex="100">
                 <ng-container *ngIf="statusSkpType; else noStatusSkpType">
-                    <!-- <mat-radio-group [value]="(skpGeneral$ | async)?.status"> -->
-                    <mat-radio-group [value]="'active'">
+                    <mat-radio-group [value]="(skpGeneral$ | async)?.status">
                         <mat-radio-button
                             *ngFor="let row of statusSkpType"
                             [value]="row?.id"

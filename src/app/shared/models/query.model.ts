@@ -36,8 +36,6 @@ export interface IQueryParamsPromoList {
     paginate?: boolean;
     search?: IQuerySearchParams[];
     isWaitingForPayment?: boolean;
-    promo_limit?: number;
-    promo_skip?: number;
 }
 
 export interface IQueryParamsCustomerList {
@@ -48,6 +46,4 @@ export interface IQueryParamsCustomerList {
     paginate?: boolean;
     search?: IQuerySearchParams[];
     isWaitingForPayment?: boolean;
-    store_limit?: number;
-    store_skip?: number;
 }
