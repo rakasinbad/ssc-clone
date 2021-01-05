@@ -230,9 +230,9 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     const parameter: IQueryParams = {};
                     parameter['splitRequest'] = true;
 
-                    // this.store.dispatch(
-                    //     SkpActions.fetchSkpRequest({ payload: { id, parameter } })
-                    // );
+                    this.store.dispatch(
+                        SkpActions.fetchSkpRequest({ payload: { id, parameter } })
+                    );
 
                     this.isLoading$ = this.store.select(SkpSelectors.getIsLoading).pipe(
                         tap((isLoading) => {
@@ -477,7 +477,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .pipe(
                 filter((row) => !!row),
                 tap((row) => {
-                    this.skpCombo = row;
+                    this.skpCombo = row
                 }),
                 takeUntil(this._unSubs$)
             )
@@ -486,8 +486,18 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
 
-    private _setEditForm(row: SkpModel): void {
-        // console.log('ROW', row);
+    private _setEditForm(rawRowData: SkpModel): void {
+        console.log('ROW', rawRowData);
+
+        const row = {
+            ...rawRowData, 
+            ...{
+                startDate: rawRowData.availableFrom,
+                endDate: rawRowData.availableTo,
+                imageUrl: rawRowData.image_url
+            }
+        }
+
         const skpId = this.form.get('id');
         // const skpSupplierId = this.form.get('supplierId');
         const skpNameCtrl = this.form.get('name');
