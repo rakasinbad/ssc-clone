@@ -149,7 +149,7 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="sinbad-voucher-list-item"
-        [routerLink]="['view', row?.id]"
+        (click)="openDetailPage(row.id)"
     ></mat-row>
 
     <mat-footer-row
