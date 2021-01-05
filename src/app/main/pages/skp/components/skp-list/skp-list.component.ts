@@ -112,9 +112,10 @@ export class SkpListComponent implements OnInit, AfterViewInit {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['searchValue']) {
-            if (!changes['searchValue'].isFirstChange()) {
-                this.search.setValue(changes['searchValue'].currentValue);
+        if (changes['keyword']) {
+            if (!changes['keyword'].isFirstChange()) {
+                console.log('keyword', changes['keyword'].currentValue)
+                this.search.setValue(changes['keyword'].currentValue);
                 setTimeout(() => this._initTable());
             }
         }
@@ -173,10 +174,30 @@ export class SkpListComponent implements OnInit, AfterViewInit {
 
             data['paginate'] = true;
             const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.keyword);
-            data['keyword'] = query;
+            if (query) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query,
+                    },
+                ];
+            }
 
             if (this.selectedStatus !== 'all') {
-                data['status'] = this.selectedStatus;
+                // data['status'] = this.selectedStatus;
+                if (data['search'] && data['search'].length > 0) {
+                    data['search'].push({
+                        fieldName: 'status',
+                        keyword: this.selectedStatus,
+                    });
+                } else {
+                    data['search'] = [
+                        {
+                            fieldName: 'status',
+                            keyword: this.selectedStatus,
+                        },
+                    ];
+                }
             }
             this.SkpStore.dispatch(SkpActions.clearState());
             this.SkpStore.dispatch(
