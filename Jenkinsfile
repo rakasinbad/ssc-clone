@@ -40,6 +40,7 @@ pipeline {
         LOGROCKET = 'fbtbt4:sinbad-seller-center:jWEpJiG1FMFyOms5DyeP'
         AWS_CREDENTIAL = 'automation_aws'
         SINBAD_ENV = "${env.JOB_BASE_NAME}"
+        BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
     }
     stages {
