@@ -21,6 +21,8 @@ import * as fromSkp from '../../store/reducers';
 import { SkpSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { MatTabChangeEvent } from '@angular/material';
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
 
 // import { FlexiCombo } from '../../models';
 // import { FlexiComboActions } from '../../store/actions';
@@ -28,10 +30,10 @@ import { MatTabChangeEvent } from '@angular/material';
 // import { FlexiComboSelectors } from '../../store/selectors';
 
 @Component({
-  selector: 'app-skp-detail',
-  templateUrl: './skp-detail.component.html',
-  styleUrls: ['./skp-detail.component.scss'],
-  animations: fuseAnimations,
+    selector: 'app-skp-detail',
+    templateUrl: './skp-detail.component.html',
+    styleUrls: ['./skp-detail.component.scss'],
+    animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,6 +41,7 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
     SkpModel$: Observable<SkpModel>;
     isLoading$: Observable<boolean>;
     public tabActive: boolean = true;
+    public titleName: string = '';
     idDetail: Number;
     private _breadCrumbs: IBreadcrumbs[] = [
         {
@@ -70,7 +73,7 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
+      
         this._initPage();
     }
 
@@ -88,7 +91,6 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         const { id } = this.route.snapshot.params;
         this.idDetail = id;
-        console.log('isi id detail->', id)
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
                 // Reset breadcrumb state
@@ -99,35 +101,34 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
                 break;
 
             default:
+                const parameter: IQueryParams = {};
+                parameter['splitRequest'] = true;
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
                         payload: this._breadCrumbs,
                     })
                 );
-
+                
                 this.SkpModel$ = this.store.select(SkpSelectors.getSelectedItem);
-
-                const parameter: IQueryParams = {};
-                parameter['splitRequest'] = true;
-
+        
                 this.store.dispatch(SkpActions.fetchSkpRequest({ payload: { id, parameter } }));
                 this.isLoading$ = this.store.select(SkpSelectors.getIsLoading);
+
                 break;
         }
     }
 
     onEditSkp(): void {
-        this.router.navigateByUrl('/pages/skp/'+this.idDetail);
+        this.router.navigateByUrl('/pages/skp/' + this.idDetail);
     }
 
-    clickDetail(event: MatTabChangeEvent) {
+    clickDetail(event: MatTabChangeEvent): void {
         if (event.index == 1 || event.index == 2) {
             this.tabActive = false;
         } else {
             this.tabActive = true;
+            this._initPage();
         }
-        console.log('isi event detail->', event)
     }
 }
-
