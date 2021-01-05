@@ -741,7 +741,12 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                         const control = this.fb.group({
                             id: [cataloguePrice.id],
                             price: [
-                                cataloguePrice.price,
+                                typeof cataloguePrice.price === 'number'
+                                    ? ((String(cataloguePrice.price).replace(
+                                          '.',
+                                          ','
+                                      ) as unknown) as number)
+                                    : cataloguePrice.price,
                                 {
                                     validators: [
                                         RxwebValidators.required({
