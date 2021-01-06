@@ -2558,7 +2558,8 @@
 
                         <ng-container
                             *ngIf="
-                                getSegmentationBase() === eSegmentBase.ALLSEGMENTATION
+                                getSegmentationBase() === eSegmentBase.ALLSEGMENTATION || 
+                                getSegmentationBase() === eSegmentBase.SEGMENTATION 
                             "
                         >
                             <div

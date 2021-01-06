@@ -51,7 +51,7 @@ import {
 import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { SegmentationBasePromoFlexi } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/components/dropdowns/stores/models/supplier-store.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
@@ -96,8 +96,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     eBenefitType = BenefitType;
     benefitMultiType = this._$helperService.benefitMultiType();
     eBenefitMultiType = BenefitMultiType;
-    segmentBase = this._$helperService.segmentationBasePromoFlexi();
-    eSegmentBase = SegmentationBasePromoFlexi;
+    segmentBase = this._$helperService.segmentationBasePromo();
+    eSegmentBase = SegmentationBasePromo;
     promoAllocation = this._$helperService.promoAllocation();
     ePromoAllocation = PromoAllocation;
     specifiedTargets = this._$helperService.specifiedTarget();
@@ -832,7 +832,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
 
-        if (ev.value === SegmentationBasePromoFlexi.STORE) {
+        if (ev.value === SegmentationBasePromo.STORE) {
             this.segmentBases = 'store';
             this.form.get('chosenStore').setValidators([
                 RxwebValidators.required({
@@ -849,7 +849,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.selectActiveOutlet = false;
             this.form.get('isNewStore').setValue(false);
             this.form.get('isActiveStore').setValue(false);
-        } else if (ev.value === SegmentationBasePromoFlexi.SEGMENTATION ) {
+        } else if (ev.value === SegmentationBasePromo.SEGMENTATION ) {
             this.segmentBases = 'segmentation';
             this.form.get('chosenWarehouse').setValidators([
                 RxwebValidators.required({
@@ -862,7 +862,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreGroup').clearValidators();
             this.form.get('chosenStoreChannel').clearValidators();
             this.form.get('chosenStoreCluster').clearValidators();
-        } else if (ev.value === SegmentationBasePromoFlexi.ALLSEGMENTATION ) {
+        } else if (ev.value === SegmentationBasePromo.ALLSEGMENTATION ) {
             this.segmentBases = 'all';
             this.form.get('chosenStore').clearValidators();
             this.form.get('chosenWarehouse').clearValidators();
@@ -2829,8 +2829,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                SegmentationBasePromoFlexi.STORE || SegmentationBasePromoFlexi.SEGMENTATION
-                || SegmentationBasePromoFlexi.ALLSEGMENTATION,
+                SegmentationBasePromo.STORE || SegmentationBasePromo.SEGMENTATION
+                || SegmentationBasePromo.ALLSEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -3399,37 +3399,37 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ? chosenInvoice.map((invoice: Selection) => invoice.id)
                 : [];
         const newChosenStore =
-            chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBasePromoFlexi.STORE
+            chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBasePromo.STORE
                 ? chosenStore.map((store: Selection) => store.id)
                 : [];
         const newChosenWarehouse =
             chosenWarehouse &&
             chosenWarehouse.length > 0 &&
-            segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenWarehouse.map((warehouse: Selection) => warehouse.id)
                 : [];
         const newChosenStoreType =
             chosenStoreType &&
             chosenStoreType.length > 0 &&
-            segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreType.map((storeType: Selection) => storeType.id)
                 : [];
         const newChosenStoreGroup =
             chosenStoreGroup &&
             chosenStoreGroup.length > 0 &&
-            segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreGroup.map((storeGroup: Selection) => storeGroup.id)
                 : [];
         const newChosenStoreChannel =
             chosenStoreChannel &&
             chosenStoreChannel.length > 0 &&
-            segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreChannel.map((storeChannel: Selection) => storeChannel.id)
                 : [];
         const newChosenStoreCluster =
             chosenStoreCluster &&
             chosenStoreCluster.length > 0 &&
-            segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION
+            segmentationBase === SegmentationBasePromo.SEGMENTATION
                 ? chosenStoreCluster.map((storeCluster: Selection) => storeCluster.id)
                 : [];
 
@@ -3557,15 +3557,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataBase.invoiceGroupId = newChosenFaktur;
             }
 
-            if (segmentationBase === SegmentationBasePromoFlexi.STORE) {
+            if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION) {
+            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
                 payload.dataTarget.warehouseId = newChosenWarehouse;
                 payload.dataTarget.typeId = newChosenStoreType;
                 payload.dataTarget.groupId = newChosenStoreGroup;
                 payload.dataTarget.channelId = newChosenStoreChannel;
                 payload.dataTarget.clusterId = newChosenStoreCluster;
-            } else if (segmentationBase === SegmentationBasePromoFlexi.ALLSEGMENTATION) {
+            } else if (segmentationBase === SegmentationBasePromo.ALLSEGMENTATION) {
                     payload.dataTarget.warehouseId = [];
                     payload.dataTarget.typeId = [];
                     payload.dataTarget.groupId = [];
@@ -3615,9 +3615,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 payload.dataBase.invoiceGroupId = newChosenFaktur;
             }
 
-            if (segmentationBase === SegmentationBasePromoFlexi.STORE) {
+            if (segmentationBase === SegmentationBasePromo.STORE) {
                 payload.dataTarget.storeId = newChosenStore;
-            } else if (segmentationBase === SegmentationBasePromoFlexi.SEGMENTATION) {
+            } else if (segmentationBase === SegmentationBasePromo.SEGMENTATION) {
                 payload.dataTarget.warehouseId = newChosenWarehouse;
                 payload.dataTarget.typeId = newChosenStoreType;
                 payload.dataTarget.groupId = newChosenStoreGroup;

@@ -291,6 +291,16 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                             );
                         } 
                         
+                    } else if (this.typePromo == 'crossSelling') {
+                        if (this.idSelectedSegment != null) {
+                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                             // Melakukan request data
+                            return this.entityApi$
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                            );
+                        }
                     } else {
 
                     }
@@ -370,7 +380,6 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     // Menyimpan nilai yang baru tadi ke dalam subject.
                     this.rawAvailableEntities$.next(newRawAvailableEntities);
                     this.availableEntities$.next(newAvailableEntities);
-                    console.log('isi rawAvailableEntities nw->', this.rawAvailableEntities$)
                     // Menyimpan total entities yang baru.
                     if (Array.isArray(response)) {
                         this.totalEntities$.next((response as Array<Entity>).length);
@@ -419,12 +428,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -447,14 +454,16 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         if (event) {
             const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            if (this.segmentationType == 'type') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
-            } else if (this.segmentationType == 'group') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
-            } else if (this.segmentationType == 'channel') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
-            } else if (this.segmentationType == 'cluster') {
-                this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
+            if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                if (this.segmentationType == 'type') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
+                } else if (this.segmentationType == 'group') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
+                } else if (this.segmentationType == 'channel') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
+                } else if (this.segmentationType == 'cluster') {
+                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
+                }
             } else {
                 this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
             }
@@ -762,6 +771,20 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                         this.availableEntities$.next([]);
                         this.rawAvailableEntities$.next([]);
                         params['fakturId'] = this.fakturIdSelect;
+                        this.requestEntity(params);
+                    } else {}
+                }
+            } else if (this.typePromo == 'crossSelling') {
+                const params: IQueryParams = {
+                    paginate: true,
+                    limit: this.limit,
+                    skip: 0,
+                };
+                if (changes['idSelectedSegment']) { 
+                    if (this.idSelectedSegment !== null) {
+                        this.availableEntities$.next([]);
+                        this.rawAvailableEntities$.next([]);
+                        params['catalogueSegmentationId'] = this.idSelectedSegment;
                         this.requestEntity(params);
                     } else {}
                 }

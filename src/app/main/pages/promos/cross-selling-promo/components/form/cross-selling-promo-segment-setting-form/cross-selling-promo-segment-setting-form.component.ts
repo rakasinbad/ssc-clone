@@ -74,7 +74,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     public storeClusterLength: number;
     message:any;
     segmentBases: string = 'store';
-    selectFaktur: string;
     public typePromo = 'crossSelling';
     public idSelectSegment: string = null;
 
@@ -101,11 +100,6 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-       
-        if (changes['fakturId']) {
-            this.selectFaktur = changes['fakturId'].currentValue;
-        }
-
         if (changes['getGroup']) {
             if (this.getGroup !== null) {
                 this.segmentBases = this.form.get('segmentationBase').value;
@@ -143,15 +137,18 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
     onChangeSegmentBase(ev: MatRadioChange): void {
         switch (ev.value) {
-            // case SegmentationBasePromo.SEGMENTATION:
-            //     this._setSpecifiedTargetValidation();
-            //     this.segmentBases = this.form.get('specifiedTarget').value;
-            //     break;
+            case SegmentationBasePromo.SEGMENTATION:
+                this.segmentBases = 'segmentation';
+                this._clearChosenStoreValidation();
+                this._setChosenWarehouseSegmentValidation();
+                this._setSpecifiedTargetValidation();
+                break;
 
             case SegmentationBasePromo.ALLSEGMENTATION:
                 this._setSpecifiedTargetValidation();
                 this.segmentBases = 'all';
                 this._clearChosenStoreValidation();
+                this._clearChosenWarehouseSegmenValidation();
                 break;
 
             case SegmentationBasePromo.STORE:
@@ -295,7 +292,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
     }
 
-    onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
+    onStoreChannelSelected(ev: StoreSegmentationType[]): void {
         const chosenStoreChannelCtrl = this.form.get('chosenStoreChannel');
 
         chosenStoreChannelCtrl.markAsDirty();
@@ -305,8 +302,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreChannelCtrl.setValue(null);
         } else {
             const newStoreChannels: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.channelId,
+                label: item.channelName,
                 group: 'store-segmentation-channels',
             }));
 
@@ -314,7 +311,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
     }
 
-    onStoreClusterSelected(ev: StoreSegmentationCluster[]): void {
+    onStoreClusterSelected(ev: StoreSegmentationType[]): void {
         const chosenStoreClusterCtrl = this.form.get('chosenStoreCluster');
 
         chosenStoreClusterCtrl.markAsDirty();
@@ -324,8 +321,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreClusterCtrl.setValue(null);
         } else {
             const newStoreClusters: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.clusterId,
+                label: item.clusterName,
                 group: 'store-segmentation-clusters',
             }));
 
@@ -333,7 +330,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
         }
     }
 
-    onStoreGroupSelected(ev: StoreSegmentationGroup[]): void {
+    onStoreGroupSelected(ev: StoreSegmentationType[]): void {
         const chosenStoreGroupCtrl = this.form.get('chosenStoreGroup');
 
         chosenStoreGroupCtrl.markAsDirty();
@@ -343,8 +340,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreGroupCtrl.setValue(null);
         } else {
             const newStoreGroups: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.groupId,
+                label: item.groupName,
                 group: 'store-segmentation-groups',
             }));
 
@@ -362,8 +359,8 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreTypeCtrl.setValue(null);
         } else {
             const newStoreTypes: Selection[] = ev.map((item) => ({
-                id: item.id,
-                label: item.name,
+                id: item.typeId,
+                label: item.typeName,
                 group: 'store-segmentation-types',
             }));
 
@@ -411,14 +408,15 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
 
         switch (payload['target']) {
 
-            // case SegmentationBasePromo.SEGMENTATION:
-            //     payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
-            //         chosenStoreChannel,
-            //         chosenStoreCluster,
-            //         chosenStoreGroup,
-            //         chosenStoreType,
-            //     });
-            //     break;
+            case SegmentationBasePromo.SEGMENTATION:
+                payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
+                    chosenWarehouse,
+                    chosenStoreChannel,
+                    chosenStoreCluster,
+                    chosenStoreGroup,
+                    chosenStoreType,
+                });
+                break;
 
                 case SegmentationBasePromo.ALLSEGMENTATION:
                     payload['dataTarget'] = this._payloadTypeSegment(payload['dataTarget'], {
@@ -443,6 +441,7 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             //     });
             //     return;
         }
+        
         this.formValue.emit(payload);
     }
 
@@ -538,5 +537,19 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
     private _clearChosenStoreValidation(): void {
         this.form.get('chosenStore').clearValidators();
         this.form.get('chosenStore').updateValueAndValidity();
+    }
+
+    private _setChosenWarehouseSegmentValidation(): void {
+        this.form.get('chosenWarehouse').setValidators(
+            RxwebValidators.required({
+                message: this.errorMessageService.getErrorMessageNonState('default', 'required'),
+            })
+        );
+        this.form.get('chosenWarehouse').updateValueAndValidity();
+    }
+
+    private _clearChosenWarehouseSegmenValidation(): void {
+        this.form.get('chosenWarehouse').clearValidators();
+        this.form.get('chosenWarehouse').updateValueAndValidity();
     }
 }

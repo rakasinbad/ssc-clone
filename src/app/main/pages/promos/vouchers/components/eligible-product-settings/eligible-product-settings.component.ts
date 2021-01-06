@@ -430,7 +430,6 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
     }
 
     onChangeSegmentBase(ev: MatRadioChange) {
-        console.log('isi ev base->', ev.value)
         this.form.get('base').markAsDirty({ onlySelf: true });
         this.form.get('base').markAsTouched({ onlySelf: true });
         this.segmentBases = ev.value;
