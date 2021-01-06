@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { ElementRef, Inject, Injectable } from '@angular/core';
 import { MatSnackBarConfig } from '@angular/material';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -16,13 +16,17 @@ import { CalculationMechanism } from '../models/calculation-mechanism.model';
 import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
 import { PlatformSinbad, PlatformSupplierVoucer } from '../models/platform.model';
-import { PromoAllocation, PromoAllocationCross, VoucherAllocation } from '../models/promo-allocation.model';
+import {
+    PromoAllocation,
+    PromoAllocationCross,
+    VoucherAllocation,
+} from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
-import { SegmentationBase } from '../models/segmentation-base.model';
+import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
+import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
-import { SupplierVoucherType, SupplierVoucherCategory} from '../models/supplier-voucher.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -32,6 +36,26 @@ interface TTemplateFiles {
 
 @Injectable({ providedIn: 'root' })
 export class HelperService {
+    private readonly customParams = [
+        'brandId',
+        'channelId',
+        'clusterId',
+        'dueDay',
+        'groupId',
+        'hasChild',
+        'invoiceGroupId',
+        'keyword',
+        'priceGte',
+        'priceLte',
+        'search',
+        'status',
+        'statusPayment',
+        'supplierId',
+        'type',
+        'typeId',
+        'warehouseId',
+    ];
+
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
         {
             id: BenefitType.QTY,
@@ -178,7 +202,10 @@ export class HelperService {
         },
     ];
 
-    private static readonly _platformSupplierVoucher: { id: PlatformSupplierVoucer; label: string }[] = [
+    private static readonly _platformSupplierVoucher: {
+        id: PlatformSupplierVoucer;
+        label: string;
+    }[] = [
         // {
         //     id: PlatformSupplierVoucer.ALL,
         //     label: 'All',
@@ -201,6 +228,21 @@ export class HelperService {
         {
             id: SegmentationBase.SEGMENTATION,
             label: 'Segmentation',
+        },
+    ];
+
+    private static readonly _segmentationBasePromo: { id: SegmentationBasePromo; label: string }[] = [
+        {
+            id: SegmentationBasePromo.STORE,
+            label: 'Direct Store',
+        },
+        {
+            id: SegmentationBasePromo.SEGMENTATION,
+            label: 'Selected Segment Only',
+        },
+        {
+            id: SegmentationBasePromo.ALLSEGMENTATION,
+            label: 'Apply to All Linked Segments',
         },
     ];
 
@@ -248,7 +290,6 @@ export class HelperService {
         //     label: 'Max Promo Redemption (Rp)',
         // },
     ];
-    
 
     private static readonly _supplierVoucherType: { id: SupplierVoucherType; label: string }[] = [
         {
@@ -258,21 +299,22 @@ export class HelperService {
         {
             id: SupplierVoucherType.COLLECTIBLE,
             label: 'Collectible',
-        }
-       
-    ];  
+        },
+    ];
 
-    private static readonly _supplierVoucherCategory: { id: SupplierVoucherCategory; label: string }[] = [
+    private static readonly _supplierVoucherCategory: {
+        id: SupplierVoucherCategory;
+        label: string;
+    }[] = [
         {
             id: SupplierVoucherCategory.PRICE_CUT,
             label: 'Price Cut',
-        }
+        },
         // {
         //     id: SupplierVoucherCategory.BONUS,
         //     label: 'Bonus',
         // }
-       
-    ];  
+    ];
 
     private static _catalogueStatuses: Array<{ id: string; label: string }> = [
         {
@@ -283,17 +325,32 @@ export class HelperService {
             id: 'active',
             label: 'Live (Active)',
         },
-        {
+        /* {
             id: 'empty',
             label: 'Empty',
         },
         {
             id: 'banned',
             label: 'Banned',
-        },
+        }, */
         {
             id: 'inactive',
             label: 'Inactive',
+        },
+    ];
+
+    private static _catalogueTypes: Array<{ id: string; label: string }> = [
+        {
+            id: 'all',
+            label: 'All',
+        },
+        {
+            id: 'regular',
+            label: 'Regular',
+        },
+        {
+            id: 'bonus',
+            label: 'Bonus',
         },
     ];
 
@@ -463,6 +520,17 @@ export class HelperService {
         }
     }
 
+    static getTypesList(
+        page: 'stores' | 'catalogues' | 'payments' | 'orders' | 'sales-rep'
+    ): Array<{ id: string; label: string }> {
+        switch (page) {
+            case 'catalogues':
+                return HelperService._catalogueTypes;
+            default:
+                return [];
+        }
+    }
+
     static truncateText(value: string, maxLength: number, type: 'start' | 'end'): string {
         console.log(value.length, maxLength);
 
@@ -604,8 +672,11 @@ export class HelperService {
         let newParams = new HttpParams();
 
         if (params) {
-            if (params.isWaitingForPayment){
-                newParams = newParams.set('is_waiting_for_payment', params.isWaitingForPayment.toString());
+            if (params.isWaitingForPayment) {
+                newParams = newParams.set(
+                    'is_waiting_for_payment',
+                    params.isWaitingForPayment.toString()
+                );
             }
             if (params.paginate) {
                 if (!newParams.has('$limit')) {
@@ -646,13 +717,7 @@ export class HelperService {
             if (params.search) {
                 if (params.search.length) {
                     for (const search of params.search) {
-                        if (
-                            (search.fieldName && search.fieldName === 'keyword') ||
-                            search.fieldName === 'type' ||
-                            search.fieldName === 'statusPayment' ||
-                            search.fieldName === 'dueDay' ||
-                            search.fieldName === 'status'
-                        ) {
+                        if (search.fieldName && this.customParams.includes(search.fieldName)) {
                             if (search.fieldName === 'statusPayment') {
                                 if (newParams.has('dueDay')) {
                                     newParams.delete('dueDay');
@@ -719,6 +784,93 @@ export class HelperService {
         return newUrl.join(''); */
     }
 
+    handleParamsCatalogue(url: string, params: IQueryParams, ...args): HttpParams {
+        let newParams = new HttpParams();
+
+        // if (params) {
+        //     if (params.paginate) {
+        //         if (!newParams.has('$limit')) {
+        //             newParams = !params.limit
+        //                 ? newParams.set('$limit', '5')
+        //                 : newParams.set('$limit', params.limit.toString());
+        //         }
+
+        //         // newParams = !params.limit
+        //         //     ? newParams.set('$limit', '5')
+        //         //     : newParams.set('$limit', params.limit.toString());
+
+        //         if (!newParams.has('$skip')) {
+        //             newParams = !params.skip
+        //                 ? newParams.set('$skip', '0')
+        //                 : newParams.set('$skip', params.skip.toString());
+        //         }
+
+        //         // newParams = !params.skip
+        //         //     ? newParams.set('$skip', '0')
+        //         //     : newParams.set('$skip', params.skip.toString());
+        //     } else {
+        //         newParams = !params.paginate
+        //             ? newParams.set('paginate', 'false')
+        //             : newParams.set('paginate', 'true');
+        //     }
+
+        //     if (!newParams.has('sort') && !newParams.has('sortby')) {
+        //         if (params.sort && params.sortBy) {
+        //             newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+        //         }
+        //     }
+
+        //     if (params.sort && params.sortBy) {
+        //         newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+        //     }
+
+        //     if (params.search) {
+        //         if (params.search.length) {
+        //             for (const search of params.search) {
+        //                 if (
+        //                     (search.fieldName && search.fieldName === 'keyword') ||
+        //                     search.fieldName === 'type' ||
+        //                     search.fieldName === 'statusPayment' ||
+        //                     search.fieldName === 'dueDay' ||
+        //                     search.fieldName === 'status'
+        //                 ) {
+        //                     if (search.fieldName === 'statusPayment') {
+        //                         if (newParams.has('dueDay')) {
+        //                             newParams.delete('dueDay');
+        //                         }
+        //                     }
+
+        //                     if (search.fieldName === 'dueDay') {
+        //                         if (newParams.has('statusPayment')) {
+        //                             newParams.delete('statusPayment');
+        //                         }
+        //                     }
+
+        //                     newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+        //                 } else if (search.fieldName && search.fieldName !== 'id') {
+        //                     newParams = newParams.append(
+        //                         `search[${search.fieldName}]`,
+        //                         `${search.keyword}`
+        //                     );
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        if (args && args.length > 0) {
+            args.forEach((arg) => {
+                if (arg.key && arg.key !== 'headers' && arg.value) {
+                    newParams = newParams.append(arg.key, arg.value);
+                } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
+                    newParams = newParams.append(arg.key, '');
+                }
+            });
+        }
+
+        return newParams;
+    }
+
     isReachable(): Observable<boolean> {
         return this.http
             .head<boolean>('https://id.yahoo.com', {
@@ -735,7 +887,7 @@ export class HelperService {
 
     getQuantityChoices(): Array<{ id: string; label: string }> {
         return [
-            { id: 'pcs', label: 'per Piece' },
+            { id: 'pcs', label: 'per-Item' },
             { id: 'master_box', label: 'Master Box' },
             { id: 'custom', label: 'Custom' },
         ];
@@ -813,6 +965,10 @@ export class HelperService {
         return HelperService._catalogueStatuses;
     }
 
+    catalogueType(): { id: string; label: string }[] {
+        return HelperService._catalogueTypes;
+    }
+
     conditionBase(): { id: ConditionBase; label: string }[] {
         return HelperService._conditionBase;
     }
@@ -837,11 +993,16 @@ export class HelperService {
         return HelperService._platformSinbad;
     }
 
-    platformSupplierVoucher(): {id: PlatformSupplierVoucer; label: string }[] {
+    platformSupplierVoucher(): { id: PlatformSupplierVoucer; label: string }[] {
         return HelperService._platformSupplierVoucher;
     }
+
     segmentationBase(): { id: SegmentationBase; label: string }[] {
         return HelperService._segmentationBase;
+    }
+
+    segmentationBasePromo(): { id: SegmentationBasePromo; label: string }[] {
+        return HelperService._segmentationBasePromo;
     }
 
     promoAllocation(): { id: PromoAllocation; label: string }[] {
@@ -862,9 +1023,7 @@ export class HelperService {
 
     supplierVoucherCategory(): { id: SupplierVoucherCategory; label: string }[] {
         return HelperService._supplierVoucherCategory;
-    }
-    
-
+    }  
     specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
         return HelperService._specifiedTarget;
     }

@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
-import { Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
+import { Observable, Subscription, of } from 'rxjs';
 import {
     CrossSelling,
     IPromoChannel,
@@ -15,7 +14,21 @@ import {
 } from '../../../models';
 import * as fromCrossSellingPromos from '../../../store/reducers';
 import { CrossSellingPromoSelectors } from '../../../store/selectors';
- 
+import { CrossSellingPromoApiService } from '../../../services/cross-selling-promo-api.service';
+import { WarehouseDetail as Entity } from '../../../models/cross-selling-detail.model';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import * as _ from 'lodash';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import {
+    tap,
+    withLatestFrom,
+    take,
+    catchError,
+    switchMap,
+    map,
+} from 'rxjs/operators';
+
 @Component({
   selector: 'app-cross-selling-detail-cs',
   templateUrl: './cross-selling-detail-cs.component.html',
@@ -27,8 +40,8 @@ export class CrossSellingDetailCsComponent implements OnInit {
     crossSellingPromo$: Observable<CrossSelling>;
     isLoading$: Observable<boolean>;
 
-    segmentBase = this._$helperService.segmentationBase();
-    eSegmentBase = SegmentationBase;
+    segmentBase = this._$helperService.segmentationBasePromo();
+    eSegmentBase = SegmentationBasePromo;
 
     public subs: Subscription;
     public specifiedTarget = [
@@ -39,11 +52,104 @@ export class CrossSellingDetailCsComponent implements OnInit {
     public statNewStore = false;
     public statActiveStore = false;
     public selectTargetId: number;
+    public custWarehouse = [];
+    public custType = [];
+    public custGroup = [];
+    public custCluster = [];
+    public custChannel = [];
 
     constructor(
         private store: Store<fromCrossSellingPromos.FeatureState>,
-        private _$helperService: HelperService
+        private _$helperService: HelperService,
+        private crossSellingPromoApiService: CrossSellingPromoApiService,
+        private cdRef: ChangeDetectorRef
     ) {}
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
+    private requestSegment(params, segment): void {
+        of(null)
+            .pipe(
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(
+                    ([_, userSupplier]) => {
+                        // Jika user tidak ada data supplier.
+                        if (!userSupplier) {
+                            throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                        }
+
+                        // Membentuk query baru.
+                        const newQuery = { ...params };
+                        params['segment'] = segment;
+
+                        // Melakukan request data warehouse.
+                        return this.crossSellingPromoApiService
+                        .findSegmentPromo<IPaginatedResponse<Entity>>(params, segment)
+                            .pipe(
+                                tap((response) =>
+                                    HelperService.debug('FIND ENTITY request segment', {
+                                        params: newQuery,
+                                        response,
+                                    })
+                                )
+                            );
+                    }
+                ),
+                take(1),
+                catchError((err) => {
+                    throw err;
+                })
+            )
+            .subscribe({
+                next: (response) => {
+                    let addedRawAvailableEntities: Array<Entity> = [];
+
+                    // Menetampan nilai available entities yang akan ditambahkan.
+                    if (Array.isArray(response)) {
+                        addedRawAvailableEntities = response;
+                        if (segment == 'warehouse') {
+                            this.custWarehouse = addedRawAvailableEntities;
+                        } else if (segment == 'type'){
+                            this.custType = addedRawAvailableEntities;
+                        } else if (segment == 'group') {
+                            this.custGroup = addedRawAvailableEntities;
+                        } else if (segment == 'channel'){
+                            this.custChannel = addedRawAvailableEntities;
+                        } else if (segment == 'cluster'){
+                            this.custCluster = addedRawAvailableEntities;
+                        }
+
+                    } else {
+                        addedRawAvailableEntities = response.data;
+                        if (segment == 'warehouse') {
+                            this.custWarehouse = addedRawAvailableEntities;
+                        } else if (segment == 'type'){
+                            this.custType = addedRawAvailableEntities;
+                        } else if (segment == 'group') {
+                            this.custGroup = addedRawAvailableEntities;
+                        } else if (segment == 'channel'){
+                            this.custChannel = addedRawAvailableEntities;
+                        } else if (segment == 'cluster'){
+                            this.custCluster = addedRawAvailableEntities;
+                        }
+                    }
+
+                    this.cdRef.markForCheck();
+                },
+                error: (err) => {
+                    HelperService.debug('ERROR Detail Segment', { params, error: err });
+                    // this.helper$.showErrorNotification(new ErrorHandler(err));
+                },
+                complete: () => {
+                    HelperService.debug('Detail Segment COMPLETED');
+                },
+            });
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -59,6 +165,7 @@ export class CrossSellingDetailCsComponent implements OnInit {
                 return item;
             })
         );
+
         this.subs = this.crossSellingPromo$.subscribe(val => {
             this.benefitSetting.push(val);
             this.statNewStore = this.benefitSetting[0].isNewStore;
@@ -71,6 +178,25 @@ export class CrossSellingDetailCsComponent implements OnInit {
                 this.selectTargetId = 3;
             }
         });
+
+        let params = {};
+
+        if (
+            this.benefitSetting[0].target == 'all'
+        ) {
+            
+            params['catalogueSegmentationId'] = this.benefitSetting[0].catalogueSegmentationObjectId;
+            params['supplierId'] = this.benefitSetting[0].supplierId;
+            this.requestSegment(params, 'warehouse');
+            this.requestSegment(params, 'type');
+            this.requestSegment(params, 'group');
+            this.requestSegment(params, 'channel');
+            this.requestSegment(params, 'cluster');
+            
+        }
+
+        this.cdRef.detectChanges();
+
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
@@ -88,7 +214,17 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
-    getStoreChannels(value: IPromoChannel[]): string {
+    getStoreChannels(value: Entity[]): string {
+        if (value && value.length > 0) {
+            const storeChannel = value.map((v) => v.channelName);
+
+            return storeChannel.length > 0 ? storeChannel.join(', ') : '-';
+        }
+
+        return '-';
+    }
+    
+    getStoreChannelsSegmentOnly(value: IPromoChannel[]): string {
         if (value && value.length > 0) {
             const storeChannel = value.map((v) => v.channel.name);
 
@@ -98,7 +234,17 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
-    getStoreClusters(value: IPromoCluster[]): string {
+    getStoreClusters(value: Entity[]): string {
+        if (value && value.length > 0) {
+            const storeCluster = value.map((v) => v.clusterName);
+
+            return storeCluster.length > 0 ? storeCluster.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getStoreClustersSegmentOnly(value: IPromoCluster[]): string {
         if (value && value.length > 0) {
             const storeCluster = value.map((v) => v.cluster.name);
 
@@ -108,7 +254,17 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
-    getStoreGroups(value: IPromoGroup[]): string {
+    getStoreGroups(value: Entity[]): string {
+        if (value && value.length > 0) {
+            const storeGroup = value.map((v) => v.groupName);
+
+            return storeGroup.length > 0 ? storeGroup.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getStoreGroupsSegmentOnly(value: IPromoGroup[]): string {
         if (value && value.length > 0) {
             const storeGroup = value.map((v) => v.group.name);
 
@@ -118,7 +274,17 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
-    getStoreTypes(value: IPromoType[]): string {
+    getStoreTypes(value: Entity[]): string {
+        if (value && value.length > 0) {
+            const storeType = value.map((v) => v.typeName);
+
+            return storeType.length > 0 ? storeType.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getStoreTypesSegmentOnly(value: IPromoType[]): string {
         if (value && value.length > 0) {
             const storeType = value.map((v) => v.type.name);
 
@@ -128,7 +294,17 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
-    getWarehouses(value: IPromoWarehouse[]): string {
+    getWarehouses(value: Entity[]): string {
+        if (value && value.length > 0) {
+            const warehouse = value.map((v) => v.warehouseName);
+
+            return warehouse.length > 0 ? warehouse.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getWarehousesSegmentOnly(value: IPromoWarehouse[]): string {
         if (value && value.length > 0) {
             const warehouse = value.map((v) => v.warehouse.name);
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, IQueryParamsPromoList } from 'app/shared/models/query.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
 import { SkpModel, CreateSkpDto, UpdateSkpDto } from '../models';

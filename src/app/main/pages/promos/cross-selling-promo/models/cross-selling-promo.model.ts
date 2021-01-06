@@ -175,6 +175,7 @@ export interface ICrossSellingPromoBenefit extends ITimestamp {
     promoConditionCatalogues: PromoConditionCatalogue[];
     promoConditionInvoiceGroups: promoConditionInvoiceGroup[];
     promoId: string;
+    multiplication: boolean;
 }
 
 interface promoConditionBrand extends ITimestamp {
@@ -315,6 +316,8 @@ export class CrossSelling implements ITimestamp {
     deletedAt: TNullable<string>;
     isNewStore: boolean;
     isActiveStore: boolean;
+    multiplication: boolean;
+    catalogueSegmentationObjectId: string;
 
     constructor(data: CrossSelling) {
         const {
@@ -359,6 +362,8 @@ export class CrossSelling implements ITimestamp {
             deletedAt,
             isNewStore,
             isActiveStore,
+            multiplication,
+            catalogueSegmentationObjectId
         } = data;
 
         this.id = id;
@@ -392,6 +397,8 @@ export class CrossSelling implements ITimestamp {
         this.deletedAt = deletedAt || null;
         this.isActiveStore = isActiveStore;
         this.isNewStore = isNewStore;
+        this.multiplication = multiplication || false;
+        this.catalogueSegmentationObjectId = catalogueSegmentationObjectId || null;
 
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {

@@ -53,19 +53,25 @@ export const navigation: FuseNavigation[] = [
         type: 'collapsable',
         icon: 'custom-sinbad-catalogue-logo',
         children: [
-            {
+            /* {
                 id: 'addProduct',
                 title: 'Add Product',
                 translate: 'NAV.ADD_PRODUCT.TITLE',
                 type: 'item',
                 url: '/pages/catalogues/add',
-            },
+            }, */
             {
                 id: 'manageProduct',
                 title: 'Manage Product',
                 translate: 'NAV.MANAGE_PRODUCT.TITLE',
                 type: 'item',
                 url: '/pages/catalogues/list',
+            },
+            {
+                id: 'segmentation',
+                title: 'Catalogue Segmentation',
+                type: 'item',
+                url: '/pages/catalogue-segmentations',
             },
         ],
     },
@@ -249,7 +255,27 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/promos/voucher',
             },
-            
+        ],
+    },
+    {
+        id: 'survey',
+        title: 'Sinbad Survey',
+        type: 'collapsable',
+        icon: 'custom-sinbad-survey-logo',
+        children: [
+            {
+                id: 'survey-manage',
+                title: 'Manage',
+                type: 'item',
+                url: '/pages/survey/manage',
+            },
+            // TODO: temporary disable
+            // {
+            //     id: 'survey-response',
+            //     title: 'Response',
+            //     type: 'item',
+            //     url: '/pages/survey/response',
+            // },
         ],
     },
     {

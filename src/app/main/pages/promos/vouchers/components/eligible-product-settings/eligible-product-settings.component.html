@@ -33,6 +33,7 @@
                     fxLayout="row"
                     fxLayoutAlign="start center"
                     fxLayoutGap="16px"
+                    (change)="onChangeSegmentBase($event)"
                 >
                     <mat-radio-button value="sku"> SKU </mat-radio-button>
                     <mat-radio-button value="brand"> Brand </mat-radio-button>
@@ -61,10 +62,12 @@
 
                 <select-catalogues
                     *ngIf="!isViewMode()"
+                    [typeCatalogue]="'voucherPromo'"
                     [initialSelection]="chosenSku$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onCatalogueSelected($event)"
+                    [fakturIdSelect]="null"
                 >
                     <div error>
                         {{ getFormError(form.get('chosenSku')) }}

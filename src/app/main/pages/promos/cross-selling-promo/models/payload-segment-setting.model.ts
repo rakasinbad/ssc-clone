@@ -1,4 +1,4 @@
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 
 export interface SettingTargetDto {
     channelId?: number[];
@@ -13,5 +13,5 @@ export interface SegmentSettingFormDto {
     dataTarget: SettingTargetDto;
     isActiveStore: boolean;
     isNewStore: boolean;
-    target: SegmentationBase;
+    target: SegmentationBasePromo;
 }

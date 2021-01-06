@@ -69,7 +69,7 @@ export class Warehouse implements IWarehouse {
             warehouseValueId,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
         } = data;
 
         this.id = id;
@@ -94,6 +94,7 @@ export class Warehouse implements IWarehouse {
 
         this.setUrban = urban;
         this.setWarehouseInvoiceGroups = warehouseInvoiceGroups;
+
     }
 
     set setUrban(value: Urban) {

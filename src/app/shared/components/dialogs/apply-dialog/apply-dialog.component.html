@@ -12,7 +12,16 @@
         <ng-container [ngTemplateOutlet]="data.template"></ng-container>
     </div>
 
-    <div class="m-16" fxLayout="row" fxLayoutAlign="end center" *ngIf="data.showApplyButton">
-        <button mat-flat-button color="accent" (click)="onApply()" [disabled]=!(!!data?.isApplyEnabled)> Apply </button>
+    <div class="m-16" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="16px" *ngIf="data.showApplyButton || data.showCloseButton">
+        <!-- CLOSE BUTTON -->
+        <button mat-stroked-button class="primary-100-border" (click)="onClose()" [disabled]=!(!!data?.isApplyEnabled) *ngIf="data.showCloseButton">
+            {{ data?.closeButtonLabel || 'Close' }}
+        </button>
+        <!-- / CLOSE BUTTON -->
+        <!-- APPLY BUTTON -->
+        <button mat-flat-button color="accent" (click)="onApply()" [disabled]=!(!!data?.isApplyEnabled) *ngIf="data.showApplyButton">
+            {{ data?.applyButtonLabel || 'Apply' }}
+        </button>
+        <!-- / APPLY BUTTON -->
     </div>
 </div>

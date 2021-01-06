@@ -1,42 +1,14 @@
-def getSshKeyFromEnv(env) {
+def getBucketS3(env) {
     if (env == 'production') {
-        return 'private_key_prod'
+        return 'web-sellercenter-production'
     } else if (env == 'demo') {
-        return 'private_key_demo'
+        return 'web-sellercenter-demo'
     } else if(env == 'sandbox') {
-        return 'private_key_sandbox'
+        return 'web-sellercenter-sandbox'
     } else if(env == 'staging') {
-        return 'private_key_stg'
+        return 'web-sellercenter-staging'
     } else {
-        return 'private_key_dev'
-    }
-}
-
-def getIpFromEnv(env) {
-    if (env == 'production') {
-        return '10.0.10.20'
-    } else if (env == 'demo') {
-        return '10.0.30.27'
-    } else if(env == 'sandbox') {
-        return '10.0.10.163'
-    } else if(env == 'staging') {
-        return '10.0.30.30'
-    } else {
-        return '10.0.50.30'
-    }
-}
-
-def getDirFromEnv(env) {
-    if (env == 'production') {
-        return 'seller.sinbad.web.id'
-    } else if (env == 'demo') {
-        return 'seller-demo.sinbad.web.id'
-    } else if(env == 'sandbox') {
-        return 'seller-sandbox.sinbad.web.id'
-    } else if(env == 'staging') {
-        return 'seller-stg.sinbad.web.id'
-    } else {
-        return 'seller-dev.sinbad.web.id'
+        return 'web-sellercenter-dev'
     }
 }
 
@@ -68,9 +40,7 @@ pipeline {
         LOGROCKET = 'fbtbt4:sinbad-seller-center:jWEpJiG1FMFyOms5DyeP'
         AWS_CREDENTIAL = 'automation_aws'
         SINBAD_ENV = "${env.JOB_BASE_NAME}"
-        SSH_KEY = getSshKeyFromEnv(SINBAD_ENV)
-        SSH_IP = getIpFromEnv(SINBAD_ENV)
-        SSH_DIR = getDirFromEnv(SINBAD_ENV)
+        BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
     }
     stages {
@@ -153,18 +123,49 @@ pipeline {
             steps {
                 script {
                     sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
-
-                    // if (SINBAD_ENV != 'development') {
-                    //     sh "logrocket release ${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
-                    //     sh "logrocket upload ${WOKRSPACE}/dist/supplier-center/ --release=${GIT_TAG}_${GIT_COMMIT_SHORT} --apikey=${LOGROCKET}"
-                    // }
-
-                    sh '''
-                        if [ -f $WOKRSPACE/dist/supplier-center/*.map ]; then rm $WOKRSPACE/dist/supplier-center/*.map; fi && \
-                        ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "find /var/www/seller-center-bak -type f -mmin +20 -delete" && \
-                        ssh -i ~/.ssh/$SSH_KEY deploy@$SSH_IP -o StrictHostKeyChecking=no -t "rsync -avz /var/www/$SSH_DIR/ /var/www/seller-center-bak" && \
-                        rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/$SSH_KEY -o StrictHostKeyChecking=no" $WOKRSPACE/dist/supplier-center/ deploy@$SSH_IP:/var/www/$SSH_DIR
-                    '''
+                    withAWS(credentials: "${AWS_CREDENTIAL}") {
+                        s3Upload(bucket:"${BUCKET_UPLOAD}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
+                    }
+                }
+            }
+        }
+        stage('Automation UI Test') {
+            agent {
+                docker { 
+                        image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
+                    }
+            }
+            steps {
+                script{
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+                        try{
+                            sh """
+                                #!/bin/bash
+                                cd sdet && \
+                                mv .envexample.${env.JOB_BASE_NAME} .env && \
+                                npm install --verbose && \
+                                npm run test
+                            """
+                        }catch (Exception e) {
+                            echo 'Exception occurred: ' + e.toString()
+                            sh "exit 1"
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    publishHTML (
+                        target : [
+                            allowMissing: false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll: true,
+                            reportDir: 'sdet/reports',
+                            reportFiles: 'report.html',
+                            reportName: 'Automation UI Test Report',
+                            reportTitles: "automation-ui-test-reports"
+                            ]
+                    )
                 }
             }
         }

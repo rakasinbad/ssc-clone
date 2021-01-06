@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
 
 const routes: Routes = [
@@ -12,7 +11,10 @@ const routes: Routes = [
     },
     {
         path: 'invoices',
-        loadChildren: () => import('./main/invoices/view-invoices/view-invoices.module').then((m) => m.ViewInvoicesModule)
+        loadChildren: () =>
+            import('./main/invoices/view-invoices/view-invoices.module').then(
+                (m) => m.ViewInvoicesModule
+            ),
     },
     {
         path: 'auth',
@@ -314,6 +316,44 @@ const routes: Routes = [
                 },
             },
             {
+                path: 'catalogue-segmentations',
+                loadChildren: () =>
+                    import(
+                        './main/pages/catalogue-segmentation/catalogue-segmentation.module'
+                    ).then((m) => m.CatalogueSegmentationModule),
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true,
+                        },
+                    },
+                },
+            },
+            {
+                path: 'survey',
+                loadChildren: () =>
+                    import('./main/pages/survey/survey.module').then((m) => m.SurveyModule),
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true,
+                        },
+                    },
+                },
+            },
+            {
                 path: 'skp',
                 loadChildren: () =>
                     import('./main/pages/skp/skp.module').then(
@@ -347,12 +387,6 @@ const routes: Routes = [
     },
 ];
 
-/**
- *
- *
- * @export
- * @class AppRoutingModule
- */
 @NgModule({
     imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
     exports: [RouterModule],

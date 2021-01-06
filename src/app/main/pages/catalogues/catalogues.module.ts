@@ -1,17 +1,22 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { PipeSharedModule } from 'app/shared';
+import { ChannelSelectSearchMultiModule } from 'app/shared/components/channel-select-search-multi';
+import { ClusterSelectSearchMultiModule } from 'app/shared/components/cluster-select-search-multi';
 import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { GroupSelectSearchMultiModule } from 'app/shared/components/group-select-search-multi';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
+import { TypeSelectSearchMultiModule } from 'app/shared/components/type-select-search-multi';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { environment } from 'environments/environment';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-
+import { WarehouseSelectSearchMultiModule } from './../../../shared/components/warehouse-select-search-multi/warehouse-select-search-multi.module';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
@@ -21,35 +26,53 @@ import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove
 import { CataloguesSelectCategoryComponent } from './catalogues-select-category/catalogues-select-category.component';
 import { CataloguesComponent } from './catalogues.component';
 import { CataloguesRoutingModule } from './catalogues.routes';
-import { CatalogueEffects } from './store/effects';
-import { BrandEffects } from './store/effects/brand.effects';
-import { fromBrand, fromCatalogue } from './store/reducers';
-import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
+import { CatalogueVisibilityComponent } from './components';
+import { CatalogueAmountSettingsComponent } from './components/catalogue-amount-settings/catalogue-amount-settings.component';
 import { CatalogueMediaSettingsComponent } from './components/catalogue-media-settings/catalogue-media-settings.component';
 import { CataloguePriceSettingsComponent } from './components/catalogue-price-settings/catalogue-price-settings.component';
+import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
 import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
-import { CatalogueAmountSettingsComponent } from './components/catalogue-amount-settings/catalogue-amount-settings.component';
-
-// import { style } from '@angular/animations';
+import {
+    ChannelPriceSettingPipe,
+    ClusterPriceSettingPipe,
+    GroupPriceSettingPipe,
+    TypePriceSettingPipe,
+    WarehousePriceSettingPipe,
+} from './pipes';
+import {
+    BrandFacadeService,
+    CatalogueFacadeService,
+    CataloguePriceSegmentationApiService,
+} from './services';
+import { CatalogueEffects, DeletePriceSegmentationEffects } from './store/effects';
+import { AdjustPriceSettingEffects } from './store/effects/adjust-price-setting.effects';
+import { BrandEffects } from './store/effects/brand.effects';
+import { fromBrand, fromCatalogue } from './store/reducers';
 
 @NgModule({
     declarations: [
-        CataloguesComponent,
-        CataloguesImportComponent,
-        CataloguesAddNewProductComponent,
-        CataloguesFormComponent,
-        CataloguesSelectCategoryComponent,
-        CataloguesEditPriceStockComponent,
-        CataloguesRemoveComponent,
         CataloguesActiveInactiveComponent,
+        CataloguesAddNewProductComponent,
+        CataloguesComponent,
+        CataloguesEditPriceStockComponent,
+        CataloguesFormComponent,
+        CataloguesImportComponent,
+        CataloguesRemoveComponent,
+        CataloguesSelectCategoryComponent,
+        CatalogueVisibilityComponent,
         // Catalogue's Card Component
+        CatalogueAmountSettingsComponent,
         CatalogueDetailComponent,
-        CatalogueSkuInformationComponent,
         CatalogueMediaSettingsComponent,
         CataloguePriceSettingsComponent,
+        CatalogueSkuInformationComponent,
         CatalogueWeightAndDimensionComponent,
-        CatalogueAmountSettingsComponent,
+        ChannelPriceSettingPipe,
+        ClusterPriceSettingPipe,
+        GroupPriceSettingPipe,
+        TypePriceSettingPipe,
+        WarehousePriceSettingPipe,
     ],
     imports: [
         CataloguesRoutingModule,
@@ -58,33 +81,45 @@ import { CatalogueAmountSettingsComponent } from './components/catalogue-amount-
         SharedComponentsModule,
         MaterialModule,
         DragDropModule,
+        PipeSharedModule,
+        WarehouseSelectSearchMultiModule,
+        TypeSelectSearchMultiModule,
+        GroupSelectSearchMultiModule,
+        ChannelSelectSearchMultiModule,
+        ClusterSelectSearchMultiModule,
 
         RxReactiveFormsModule,
-        // RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
         QuillModule.forRoot({
             modules: {
-                toolbar: [['bold'], [{ list: 'ordered' }, { list: 'bullet' }]]
+                toolbar: [['bold'], [{ list: 'ordered' }, { list: 'bullet' }]],
             },
             placeholder: '',
-            debug: environment.staging ? 'warn' : environment.production ? false : 'log'
+            debug: environment.staging ? 'warn' : environment.production ? false : 'log',
         }),
 
         StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
         StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
 
-        EffectsModule.forFeature([BrandEffects, CatalogueEffects, ExportsEffects])
+        EffectsModule.forFeature([
+            AdjustPriceSettingEffects,
+            BrandEffects,
+            CatalogueEffects,
+            DeletePriceSegmentationEffects,
+            ExportsEffects,
+        ]),
     ],
     entryComponents: [
-        CataloguesImportComponent,
+        CatalogueAmountSettingsComponent,
+        CataloguesActiveInactiveComponent,
         CataloguesAddNewProductComponent,
         CataloguesEditPriceStockComponent,
-        CataloguesSelectCategoryComponent,
+        CataloguesImportComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent,
+        CataloguesSelectCategoryComponent,
         CatalogueWeightAndDimensionComponent,
-        CatalogueAmountSettingsComponent
-    ]
+    ],
+    providers: [BrandFacadeService, CatalogueFacadeService, CataloguePriceSegmentationApiService],
 })
 export class CataloguesModule {}

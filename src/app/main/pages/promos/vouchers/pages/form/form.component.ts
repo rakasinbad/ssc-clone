@@ -339,15 +339,19 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         // Klasifikasi "benefit" untuk Benefit Settings.
         if (payload.benefitType === 'amount') {
             payload['benefitRebate'] = benefitValue.rupiah;
+            payload['benefitDiscount'] = null;
+            payload['benefitMaxRebate'] = null;
         } else if (payload.benefitType === 'percent') {
             payload['benefitDiscount'] = benefitValue.percent;
+            payload['benefitMaxRebate'] = benefitValue.benefitMaxRebate;
+            payload['benefitRebate'] = null;
         }
 
         // Klasifikasi "dataTarget" untuk Eligible Store Settings.
         if (payload.target === 'store') {
             payload.dataTarget = {
                 storeId: eligibleStoreValue.chosenStore.map(
-                    (supplierStore) => supplierStore.storeId
+                    (supplierStore) => supplierStore.id
                 ),
             };
         } else if (payload.target === 'segmentation') {

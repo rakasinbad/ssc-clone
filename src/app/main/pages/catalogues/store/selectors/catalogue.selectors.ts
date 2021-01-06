@@ -1,17 +1,16 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-
 import { fromCatalogue } from '../reducers';
 
 export const getCatalogueState = createFeatureSelector<fromCatalogue.State>(
     fromCatalogue.FEATURE_KEY
 );
 
-export const getAllTotalCatalogue = createSelector(getCatalogueState, state => ({
-    totalAllStatus: state.totalAllStatus,
-    totalEmptyStock: state.totalEmptyStock,
+export const getAllTotalCatalogue = createSelector(getCatalogueState, (state) => ({
     totalActive: state.totalActive,
+    totalAllStatus: state.totalAllStatus,
+    totalBonus: state.totalBonus,
     totalInactive: state.totalInactive,
-    totalBanned: state.totalBanned
+    totalRegular: state.totalRegular,
 }));
 
 export const getCataloguesEntity = createSelector(
@@ -21,7 +20,7 @@ export const getCataloguesEntity = createSelector(
 
 export const getSelectedCatalogueId = createSelector(
     getCatalogueState,
-    state => state.selectedCatalogueId
+    (state) => state.selectedCatalogueId
 );
 
 export const getSelectedCatalogueEntity = createSelector(
@@ -34,44 +33,47 @@ export const getSelectedCatalogueEntity = createSelector(
 
 export const getTotalCatalogueByStatusAll = createSelector(
     getCatalogueState,
-    state => state.totalAllStatus
+    (state) => state.totalAllStatus
 );
 
-export const getTotalCatalogueByStatusEmpty = createSelector(
+/* export const getTotalCatalogueByStatusEmpty = createSelector(
     getCatalogueState,
-    state => state.totalEmptyStock
-);
+    (state) => state.totalEmptyStock
+); */
 
 export const getTotalCatalogueByStatusActive = createSelector(
     getCatalogueState,
-    state => state.totalActive
+    (state) => state.totalActive
 );
 
 export const getTotalCatalogueByStatusInactive = createSelector(
     getCatalogueState,
-    state => state.totalInactive
+    (state) => state.totalInactive
 );
 
-export const getTotalCatalogueByStatusBanned = createSelector(
+/* export const getTotalCatalogueByStatusBanned = createSelector(
     getCatalogueState,
-    state => state.totalBanned
+    (state) => state.totalBanned
+); */
+
+export const getProductName = createSelector(getCatalogueState, (state) => state.productName);
+
+export const getCatalogueCategories = createSelector(
+    getCatalogueState,
+    (state) => state.categories
 );
 
-export const getProductName = createSelector(getCatalogueState, state => state.productName);
+export const getCategoryTree = createSelector(getCatalogueState, (state) => state.categoryTree);
 
-export const getCatalogueCategories = createSelector(getCatalogueState, state => state.categories);
+export const getRefreshStatus = createSelector(getCatalogueState, (state) => state.needRefresh);
 
-export const getCategoryTree = createSelector(getCatalogueState, state => state.categoryTree);
+export const getSelectedCatalogue = createSelector(getCatalogueState, (state) => state.catalogue);
 
-export const getRefreshStatus = createSelector(getCatalogueState, state => state.needRefresh);
-
-export const getSelectedCatalogue = createSelector(getCatalogueState, state => state.catalogue);
-
-export const getCatalogueUnits = createSelector(getCatalogueState, state => state.units);
+export const getCatalogueUnits = createSelector(getCatalogueState, (state) => state.units);
 
 export const getSelectedCategories = createSelector(
     getCatalogueState,
-    state => state.selectedCategories
+    (state) => state.selectedCategories
 );
 
 export const getAllCatalogues = createSelector(
@@ -79,27 +81,30 @@ export const getAllCatalogues = createSelector(
     fromCatalogue.selectAllCatalogues
 );
 
-export const getTotalCatalogue = createSelector(getCatalogueState, state => state.catalogues.total);
+export const getTotalCatalogue = createSelector(
+    getCatalogueState,
+    (state) => state.catalogues.total
+);
 
 export const getTotalCatalogueEntity = createSelector(
     getCatalogueState,
     fromCatalogue.selectCataloguesTotal
 );
 
-export const getInactiveCatalogues = createSelector(getAllCatalogues, catalogues =>
-    catalogues.filter(catalogue => catalogue.status === 'inactive')
+export const getInactiveCatalogues = createSelector(getAllCatalogues, (catalogues) =>
+    catalogues.filter((catalogue) => catalogue.status === 'inactive')
 );
 
-export const getBlockedCatalogues = createSelector(getAllCatalogues, catalogues =>
-    catalogues.filter(catalogue => catalogue.status === 'banned')
+export const getBlockedCatalogues = createSelector(getAllCatalogues, (catalogues) =>
+    catalogues.filter((catalogue) => catalogue.status === 'banned')
 );
 
-export const getEmptyStockCatalogues = createSelector(getAllCatalogues, catalogues =>
-    catalogues.filter(catalogue => !catalogue.stock || catalogue.stock <= 0)
+export const getEmptyStockCatalogues = createSelector(getAllCatalogues, (catalogues) =>
+    catalogues.filter((catalogue) => !catalogue.stock || catalogue.stock <= 0)
 );
 
-export const getLiveCatalogues = createSelector(getAllCatalogues, catalogues =>
-    catalogues.filter(catalogue => catalogue.stock)
+export const getLiveCatalogues = createSelector(getAllCatalogues, (catalogues) =>
+    catalogues.filter((catalogue) => catalogue.stock)
 );
 
 export const getCataloguePriceSettingsEntityTotal = createSelector(
@@ -124,9 +129,9 @@ export const getCataloguePriceSettingsEntity = createSelector(
 
 export const getTotalCataloguePriceSettings = createSelector(
     getCatalogueState,
-    state => state.cataloguePrices.total
+    (state) => state.cataloguePrices.total
 );
 
-export const getIsLoading = createSelector(getCatalogueState, state => state.isLoading);
+export const getIsLoading = createSelector(getCatalogueState, (state) => state.isLoading);
 
-export const getUpdatingActivity = createSelector(getCatalogueState, state => state.isUpdating);
+export const getUpdatingActivity = createSelector(getCatalogueState, (state) => state.isUpdating);

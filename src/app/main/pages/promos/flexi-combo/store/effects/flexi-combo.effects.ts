@@ -751,7 +751,8 @@ export class FlexiComboEffects {
 
                     if (dataTarget === 'store') {
                         promoStores = target as unknown as Array<IPromoStore>;
-                    } else if (dataTarget === 'segmentation') {
+                    } 
+                    else if (dataTarget === 'segmentation') {
                         promoWarehouses = target['promoWarehouses'] as unknown as Array<IPromoWarehouse>;
                         promoTypes = target['promoTypes'] as unknown as Array<IPromoType>;
                         promoGroups = target['promoGroups'] as unknown as Array<IPromoGroup>;

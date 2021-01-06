@@ -29,6 +29,7 @@ import { StoreSegmentationTreeModule } from './selection-tree/store-segmentation
 import { SinbadFilterModule } from './sinbad-filter/sinbad-filter.module';
 import { SingleWarehouseDropdownModule } from './dropdowns/single-warehouse/single-warehouse.module';
 import { SingleSalesRepDropdownModule } from './dropdowns/single-sales-rep/single-sales-rep.module';
+import { CatalogueSegmentationDropdownModule } from './dropdowns/catalogue-segmentation/catalogue-segmentation.module';
 import { SelectPromoComponent } from './dropdowns/select-promo/select-promo.component';
 import { SelectPromoModule } from './dropdowns/select-promo/select-promo.module';
 
@@ -62,6 +63,7 @@ import { SelectPromoModule } from './dropdowns/select-promo/select-promo.module'
         FakturDropdownModule,
         SingleWarehouseDropdownModule,
         SingleSalesRepDropdownModule,
+        CatalogueSegmentationDropdownModule,
         SelectPromoModule,
 
         // Global filter sidebar
@@ -95,6 +97,7 @@ import { SelectPromoModule } from './dropdowns/select-promo/select-promo.module'
         FakturDropdownModule,
         SingleWarehouseDropdownModule,
         SingleSalesRepDropdownModule,
+        CatalogueSegmentationDropdownModule,
         SelectPromoModule,
 
         // Global filter sidebar

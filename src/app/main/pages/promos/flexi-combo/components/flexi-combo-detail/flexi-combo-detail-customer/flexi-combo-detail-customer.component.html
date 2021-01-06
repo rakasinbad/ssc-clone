@@ -14,7 +14,11 @@
         <div class="info" fxFlexAlign="center" fxFlex="100">
             <ng-container *ngIf="segmentBase; else noSegmentBase">
                 <mat-radio-group [value]="(flexiCombo$ | async)?.target">
-                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id" [disabled]="true">
+                    <mat-radio-button
+                        *ngFor="let row of segmentBase"
+                        [value]="row?.id"
+                        [disabled]="true"
+                    >
                         {{ row?.label }}
                     </mat-radio-button>
                 </mat-radio-group>
@@ -46,7 +50,7 @@
         <!-- ./ Segmentation Base Direct Store -->
 
         <!-- Segmentation Base Segmentation -->
-        <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
+        <ng-container *ngSwitchCase="'segmentation'">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -55,11 +59,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Warehouse<br />
-                    ({{ (flexiCombo$ | async)?.promoWarehouses?.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoWarehouses?.length) || '0' }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getWarehouses((flexiCombo$ | async)?.promoWarehouses) || '-' }}
+                    {{ getWarehousesSegmentOnly((flexiCombo$ | async)?.promoWarehouses) || '-' }}
                 </div>
             </div>
 
@@ -71,11 +75,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Type<br />
-                    ({{ (flexiCombo$ | async)?.promoTypes?.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoTypes?.length) || '0' }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreTypes((flexiCombo$ | async)?.promoTypes) || '-' }}
+                    {{ getStoreTypesSegmentOnly((flexiCombo$ | async)?.promoTypes) || '-' }}
                 </div>
             </div>
 
@@ -87,11 +91,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Group<br />
-                    ({{ (flexiCombo$ | async)?.promoGroups?.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoGroups?.length) || '0'  }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreGroups((flexiCombo$ | async)?.promoGroups) || '-' }}
+                    {{ getStoreGroupsSegmentOnly((flexiCombo$ | async)?.promoGroups) || '-' }}
                 </div>
             </div>
 
@@ -103,11 +107,11 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Channel<br />
-                    ({{ (flexiCombo$ | async)?.promoChannels?.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoChannels?.length) || '0'  }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreChannels((flexiCombo$ | async)?.promoChannels) || '-' }}
+                    {{ getStoreChannelsSegmentOnly((flexiCombo$ | async)?.promoChannels) || '-' }}
                 </div>
             </div>
 
@@ -119,36 +123,50 @@
             >
                 <div class="label" fxFlexAlign="start" fxFlex="10">
                     Store Cluster<br />
-                    ({{ (flexiCombo$ | async)?.promoClusters?.length }} Selected)
+                    ({{ ((flexiCombo$ | async)?.promoClusters?.length) || '0' }} Selected)
                 </div>
 
                 <div class="info" fxFlex="90">
-                    {{ getStoreClusters((flexiCombo$ | async)?.promoClusters) || '-' }}
+                    {{ getStoreClustersSegmentOnly((flexiCombo$ | async)?.promoClusters) || '-' }}
                 </div>
             </div>
 
             <div
                 class="custom-field info-field"
                 fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
             >
-                <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+                <div class="label" fxFlexAlign="center" fxFlex="10">Specified Target</div>
 
-                <div class="info" fxFlex="100">
+                <div fxFlexAlign="center" fxFlex="50" fxFill>
                     <ng-container *ngIf="!(isLoading$ | async)">
-                        <mat-checkbox
-                            [checked]="(flexiCombo$ | async)?.isNewStore"
-                            [disabled]="true"
-                        >
-                            New Store
-                        </mat-checkbox>
+                        <ng-container *ngIf="specifiedTargetValue; else noSpecifiedTargets">
+                            <mat-radio-group [value]="specifiedTargetValue">
+                                <mat-radio-button
+                                    *ngFor="let row of specifiedTargets"
+                                    [value]="row?.id"
+                                    [disabled]="true"
+                                >
+                                    {{ row?.label }}
 
-                        <mat-checkbox [checked]="(flexiCombo$ | async)?.isActiveStore" [disabled]="true">
-                            Active Outlet Only
-                        </mat-checkbox>
+                                    <!-- <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                    matTooltipClass="tooltip-br"
+                                    *ngIf="row?.id == eSegmentBase.SEGMENTATION"
+                                >
+                                    help
+                                </mat-icon> -->
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </ng-container>
+
+                        <ng-template #noSpecifiedTargets>
+                            <div fxFlexAlign="center" fxFlex="50">-</div>
+                        </ng-template>
                     </ng-container>
-
                     <ng-container *ngIf="isLoading$ | async">
                         <ngx-skeleton-loader
                             [theme]="{
@@ -166,6 +184,142 @@
             </div>
         </ng-container>
         <!-- ./ Segmentation Base Segmentation -->
+
+        <!-- All Segmentation Base Segmentation -->
+        <ng-container *ngSwitchCase="'all'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Warehouse<br />
+                    ({{custWarehouse.length}} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getWarehouses(custWarehouse) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Type<br />
+                    ({{ custType.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreTypes(custType) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Group<br />
+                    ({{ custGroup.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreGroups(custGroup) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Channel<br />
+                    ({{ custChannel.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreChannels(custChannel) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Cluster<br />
+                    ({{ custCluster.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreClusters(custCluster) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Specified Target</div>
+
+                <div fxFlexAlign="center" fxFlex="50" fxFill>
+                    <ng-container *ngIf="!(isLoading$ | async)">
+                        <ng-container *ngIf="specifiedTargetValue; else noSpecifiedTargets">
+                            <mat-radio-group [value]="specifiedTargetValue">
+                                <mat-radio-button
+                                    *ngFor="let row of specifiedTargets"
+                                    [value]="row?.id"
+                                    [disabled]="true"
+                                >
+                                    {{ row?.label }}
+
+                                    <!-- <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="This function allows you to set this promo&#10; to be targeted for new opened stores in the selected segments only."
+                                    matTooltipClass="tooltip-br"
+                                    *ngIf="row?.id == eSegmentBase.SEGMENTATION"
+                                >
+                                    help
+                                </mat-icon> -->
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </ng-container>
+
+                        <ng-template #noSpecifiedTargets>
+                            <div fxFlexAlign="center" fxFlex="50">-</div>
+                        </ng-template>
+                    </ng-container>
+                    <ng-container *ngIf="isLoading$ | async">
+                        <ngx-skeleton-loader
+                            [theme]="{
+                                width: '150px',
+                                'margin-bottom': '-5px',
+                                'margin-right': '16px'
+                            }"
+                        ></ngx-skeleton-loader>
+
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        ></ngx-skeleton-loader>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ All Segmentation Base Segmentation -->
 
         <ng-container *ngSwitchDefault>-</ng-container>
     </ng-container>

@@ -556,6 +556,11 @@ export class CrossSellingPromoEffects {
                     retry(3),
                     catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                 ),
+                this._$crossSellingPromoApi.findById<CrossSelling>(id, ({ ...newParams, data: 'base' } as IQueryParams)).pipe(
+                    catchOffline(),
+                    retry(3),
+                    catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
+                ),
                 this._$crossSellingPromoApi.findById<CrossSelling>(id, ({ ...newParams, data: 'cross-selling-group' } as IQueryParams)).pipe(
                     catchOffline(),
                     retry(3),
@@ -567,7 +572,7 @@ export class CrossSellingPromoEffects {
                     catchError((err) => this._sendErrorToState$(err, 'fetchCrossSellingPromoDetailFailure'))
                 )
             ]).pipe(
-                switchMap(([general, benefit, target]: [CrossSelling, CrossSelling, CrossSelling]) => {
+                switchMap(([general, base, benefit, target]: [CrossSelling, CrossSelling, CrossSelling, CrossSelling]) => {
                     let promoCatalogues: Array<IPromoCatalogue> = [];
                     let promoBrands: Array<IPromoBrand> = [];
                     let promoInvoiceGroups: Array<IPromoInvoiceGroup> = [];
@@ -580,23 +585,24 @@ export class CrossSellingPromoEffects {
                     let promoBenefit: Array<ICrossSellingPromoBenefit> = [];
                    
                     const {
-                        // base: dataBase,
+                        base: dataBase,
                         target: dataTarget
                     } = general;
 
-                    // if (dataBase === 'sku') {
-                    //     promoCatalogues = base as unknown as Array<IPromoCatalogue>;
-                    // } else if (dataBase === 'brand') {
-                    //     promoBrands = base as unknown as Array<IPromoBrand>;
-                    // } else if (dataBase === 'invoice_group') {
-                    //     promoInvoiceGroups = base as unknown as Array<IPromoInvoiceGroup>;
-                    // }
+                    if (dataBase === 'sku') {
+                        promoCatalogues = base as unknown as Array<IPromoCatalogue>;
+                    } else if (dataBase === 'brand') {
+                        promoBrands = base as unknown as Array<IPromoBrand>;
+                    } else if (dataBase === 'invoice_group') {
+                        promoInvoiceGroups = base as unknown as Array<IPromoInvoiceGroup>;
+                    }
                     
                     promoBenefit = benefit as unknown as Array<ICrossSellingPromoBenefit>;
 
                     if (dataTarget === 'store') {
                         promoStores = target as unknown as Array<IPromoStore>;
-                    } else if (dataTarget === 'segmentation') {
+                    }
+                     else if (dataTarget === 'segmentation') {
                         promoWarehouses = target['promoWarehouses'] as unknown as Array<IPromoWarehouse>;
                         promoTypes = target['promoTypes'] as unknown as Array<IPromoType>;
                         promoGroups = target['promoGroups'] as unknown as Array<IPromoGroup>;

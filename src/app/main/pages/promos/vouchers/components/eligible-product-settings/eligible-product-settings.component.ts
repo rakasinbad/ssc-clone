@@ -46,7 +46,7 @@ import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatRadioChange } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
@@ -80,6 +80,22 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
     chosenFaktur$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
+    public warehouseSelectAll: string;
+    public warehouseLength: number;
+    public storeTypeSelectAll: string;
+    public storeTypeLength: number;
+    public storeGroupSelectAll: string;
+    public storeGroupLength: number;
+    public storeChannelSelectAll: string;
+    public storeChannelLength: number;
+    public storeClusterSelectAll: string;
+    public storeClusterLength: number;
+    public lengthStoreSelected: number;
+    public segmentBases: string = 'store';
+    public catalogueIdSelected: string = null;
+    public brandIdSelected: string  = null;
+    public fakturIdSelected: string  = null;
+
     // Untuk form.
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
@@ -309,15 +325,19 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
             .get('base')
             .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
             .subscribe((value) => {
+                this.segmentBases = value;
                 if (value === 'sku') {
+                    this.segmentBases = value;
                     this.form.get('chosenSku').enable({ onlySelf: true, emitEvent: true });
                     this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: true });
                 } else if (value === 'brand') {
+                    this.segmentBases = value;
                     this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('chosenBrand').enable({ onlySelf: true, emitEvent: true });
                     this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: true });
                 } else if (value === 'faktur') {
+                    this.segmentBases = value;
                     this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: true });
                     this.form.get('chosenFaktur').enable({ onlySelf: true, emitEvent: true });
@@ -409,14 +429,34 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
         return this.formMode === 'view';
     }
 
+    onChangeSegmentBase(ev: MatRadioChange) {
+        this.form.get('base').markAsDirty({ onlySelf: true });
+        this.form.get('base').markAsTouched({ onlySelf: true });
+        this.segmentBases = ev.value;
+
+        // this.catalogueIdSelected = null; 
+        // this.brandIdSelected = null;
+        // this.fakturIdSelected = null; 
+
+    }
+
     onCatalogueSelected(event: Array<Catalogue>): void {
         this.form.get('chosenSku').markAsDirty();
         this.form.get('chosenSku').markAsTouched();
 
         if (event.length === 0) {
             this.form.get('chosenSku').setValue('');
+            this.catalogueIdSelected = null; 
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;
         } else {
             this.form.get('chosenSku').setValue(event);
+            let idSku = [];
+            let skuChoosen = this.form.get('chosenSku').value;
+            idSku = skuChoosen.map((item) => (item.id));
+            this.catalogueIdSelected = idSku.toString(); 
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;     
         }
     }
 
@@ -426,8 +466,17 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
 
         if (event.length === 0) {
             this.form.get('chosenBrand').setValue('');
+            this.catalogueIdSelected = null; 
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;
         } else {
             this.form.get('chosenBrand').setValue(event);
+            let idBrand = [];
+            let brandChoosen = this.form.get('chosenBrand').value;
+            idBrand = brandChoosen.map((item) => (item.id));
+            this.brandIdSelected  = idBrand.toString(); 
+            this.catalogueIdSelected = null;
+            this.fakturIdSelected = null;
         }
     }
 
@@ -437,8 +486,17 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
 
         if (event.length === 0) {
             this.form.get('chosenFaktur').setValue('');
+            this.catalogueIdSelected = null; 
+            this.brandIdSelected = null;
+            this.fakturIdSelected = null;
         } else {
             this.form.get('chosenFaktur').setValue(event);
+            let idFaktur = [];
+            let fakturChoosen = this.form.get('chosenFaktur').value;
+            idFaktur = fakturChoosen.map((item) => (item.id));
+            this.fakturIdSelected = idFaktur.toString(); 
+            this.catalogueIdSelected = null;
+            this.brandIdSelected = null;
         }
     }
 
@@ -475,16 +533,5 @@ export class VoucherEligibleProductSettingsComponent implements OnInit, AfterVie
 
         this.trigger$.next('');
         this.trigger$.complete();
-
-        // this.catalogueCategories$.next([]);
-        // this.catalogueCategories$.complete();
-
-        // this.catalogueUnits$.next([]);
-        // this.catalogueUnits$.complete();
-
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
-        // this.store.dispatch(UiActions.hideFooterAction());
-        // this.store.dispatch(FormActions.resetCancelButtonAction());
-        // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
     }
 }

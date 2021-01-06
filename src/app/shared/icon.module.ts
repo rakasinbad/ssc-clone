@@ -167,6 +167,12 @@ export class IconModule {
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/store-logo.svg')
         );
 
+        // Survey logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-survey-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/survey-icon.svg')
+        );
+
         // SKP Logo - packed box
         this.matIconRegistry.addSvgIcon(
             'sinbad-skp-logo',

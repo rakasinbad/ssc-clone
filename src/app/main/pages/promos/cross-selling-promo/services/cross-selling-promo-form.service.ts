@@ -3,29 +3,66 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { LogicRelation, SpecifiedTarget } from 'app/shared/models';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
-import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import * as numeral from 'numeral';
 import { Observable } from 'rxjs';
 import { CrossSellingPromoModule } from '../cross-selling-promo.module';
 import { CrossSellingPromoFacadeService } from './cross-selling-promo-facade.service';
 
+import { HttpClient } from '@angular/common/http';
+import { IQueryParams } from 'app/shared/models/query.model';
+
 @Injectable({ providedIn: CrossSellingPromoModule })
 export class CrossSellingPromoFormService {
+
+    private readonly _endpointPromo = '/get-segmentation-promo';
+    private _url: string;
+
     constructor(
         private fb: FormBuilder,
         private crossSellingPromoFacade: CrossSellingPromoFacadeService,
         private errorMessageService: ErrorMessageService,
-        private helperService: HelperService
+        private helperService: HelperService,
+        private http: HttpClient
     ) {}
+
+    findSegmentPromo<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_WAREHOUSE_REQUIRES_SUPPLIERID');
+        }
+        
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+        
+        if (params['catalogueSegmentationId']) {
+            newArgs.push({ key: 'catalogueSegmentationId', value: params['catalogueSegmentationId'] });
+        }
+
+        if (params['segment']) {
+            newArgs.push({ key: 'segment', value: 'faktur' });
+        }
+
+        this._url = this.helperService.handleApiRouter(this._endpointPromo);
+        const newParams = this.helperService.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
+    }
 
     get benefitType(): { id: BenefitType; label: string }[] {
         return this.helperService.benefitType();
+    }
+
+    get benefitTypeMulti(): { id: BenefitMultiType; label: string }[] {
+        return this.helperService.benefitMultiType();
     }
 
     get conditionBase(): { id: ConditionBase; label: string }[] {
@@ -48,8 +85,8 @@ export class CrossSellingPromoFormService {
         return this.helperService.promoAllocation();
     }
 
-    get segmentationBase(): { id: SegmentationBase; label: string }[] {
-        return this.helperService.segmentationBase();
+    get segmentationBasePromo(): { id: SegmentationBasePromo; label: string }[] {
+        return this.helperService.segmentationBasePromo();
     }
 
     get specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
@@ -195,6 +232,7 @@ export class CrossSellingPromoFormService {
                 ],
                 shortDescription: null,
                 firstBuy: false,
+                multiplication: false
             }),
             groupSetting: this.fb.group({
                 groups: this.fb.array([this._createGroupForm(), this._createGroupForm()]),
@@ -284,7 +322,7 @@ export class CrossSellingPromoFormService {
             }),
             segmentSetting: this.fb.group({
                 segmentationBase: [
-                    SegmentationBase.SEGMENTATION,
+                    SegmentationBasePromo.STORE || SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageService.getErrorMessageNonState(
@@ -298,7 +336,27 @@ export class CrossSellingPromoFormService {
                 chosenStore: null,
                 // Segmentation Base = Segmentation
                 chosenWarehouse: null,
+                // chosenWarehouse: [null, 
+                //     [
+                //     RxwebValidators.required({
+                //         message: this.errorMessageService.getErrorMessageNonState(
+                //             'default',
+                //             'required'
+                //         ),
+                //     }),
+                //     ],
+                // ],
                 chosenStoreType: null,
+                // chosenStoreType: [null, 
+                //     [
+                //     RxwebValidators.required({
+                //         message: this.errorMessageService.getErrorMessageNonState(
+                //             'default',
+                //             'required'
+                //         ),
+                //     }),
+                //     ],
+                // ],
                 chosenStoreGroup: null,
                 chosenStoreChannel: null,
                 chosenStoreCluster: null,

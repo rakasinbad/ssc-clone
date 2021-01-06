@@ -143,6 +143,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         const disabledIds = this.disabledOptions.map(disabledOption => disabledOption.id);
 
         if (isSelected) {
+            this.allSelected = true;
+
             if (disabledIds.length === 0) {
                 this.availableSelection.selectAll();
 
@@ -174,9 +176,9 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             }
 
             HelperService.debug('SELECTED => this.availableOption from ViewChildren', this.availableOption);
-            this.allSelected = true;
             // this.selectionChanged.emit({ id: 'all', group: 'all', label: 'all' });
         } else {
+            this.allSelected = false;
             this.availableSelection.deselectAll();
 
             for (const option of this.selectedOption.toArray()) {
@@ -190,7 +192,6 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             }
 
             HelperService.debug('DESELECTED => this.selectedOption from ViewChildren', this.availableOption);
-            this.allSelected = false;
             // this.selectionChanged.emit({ id: null, group: null, label: null });
         }
     }
@@ -229,6 +230,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 added: this.selectedOptions,
                 removed: this.removedOptions,
                 merged: this.mergedSelectedOptions,
+                isAllSelected: this.allSelected || this.mergedSelectedOptions.length === this.totalAvailableOptions,
             });
 
             // Mendeteksi adanya perubahan.
@@ -393,7 +395,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                                             );
 
                 // Mengirim event selectionListChanged dengan membawa nilai option-option yang tambahan baru dan terhapus.
-                this.selectionListChanged.emit({ added, removed, merged: this.mergedSelectedOptions });
+                this.selectionListChanged.emit({ added, removed, merged: this.mergedSelectedOptions, isAllSelected: this.allSelected });
 
                 // Menetapkan jumlah selected options.
                 const addedLength = (this.selectedOptions.length);

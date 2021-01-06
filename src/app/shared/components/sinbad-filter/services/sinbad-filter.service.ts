@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
-import * as _ from 'lodash';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { uniq } from 'lodash';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { SinbadFilterActionType, SinbadFilterConfig } from '../models/sinbad-filter.model';
 
-import { SinbadFilterConfig } from '../models/sinbad-filter.model';
-
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class SinbadFilterService {
-    private _defaultConfig: Pick<SinbadFilterConfig, 'title' | 'actions'> = {
+    private defaultConfig: Pick<SinbadFilterConfig, 'title' | 'showFilter' | 'actions'> = {
         title: 'Filter',
         actions: [
             {
@@ -23,28 +20,48 @@ export class SinbadFilterService {
                 action: 'submit',
             },
         ],
+        showFilter: false,
     };
-    private _config$: BehaviorSubject<SinbadFilterConfig> = new BehaviorSubject(
-        this._defaultConfig
-    );
+    private config$: BehaviorSubject<SinbadFilterConfig> = new BehaviorSubject(this.defaultConfig);
+    private clickAction$: Subject<SinbadFilterActionType> = new Subject();
 
     constructor() {}
 
     setConfig(value: SinbadFilterConfig): void {
-        if (typeof value.actions === 'undefined' || (value.actions && !value.actions.length)) {
-            value.actions = _.uniq(this._defaultConfig.actions);
-        } else if (value.actions && value.actions.length > 0) {
-            value.actions = _.uniq(value.actions);
+        if (typeof value.title === 'undefined') {
+            value.title = this.defaultConfig.title;
         }
 
-        this._config$.next(value);
+        if (typeof value.actions === 'undefined' || (value.actions && !value.actions.length)) {
+            value.actions = uniq(this.defaultConfig.actions);
+        } else if (value.actions && value.actions.length > 0) {
+            value.actions = uniq(value.actions);
+        }
+
+        if (typeof value.showFilter === 'undefined') {
+            value.showFilter = this.defaultConfig.showFilter;
+        }
+
+        this.config$.next(value);
     }
 
     getConfig$(): Observable<SinbadFilterConfig> {
-        return this._config$.asObservable();
+        return this.config$.asObservable();
     }
 
     getConfig(): SinbadFilterConfig {
-        return this._config$.value;
+        return this.config$.value;
+    }
+
+    setClickAction(value: SinbadFilterActionType): void {
+        this.clickAction$.next(value);
+    }
+
+    getClickAction$(): Observable<SinbadFilterActionType> {
+        return this.clickAction$.asObservable();
+    }
+
+    resetConfig(): void {
+        this.config$.next(this.defaultConfig);
     }
 }
