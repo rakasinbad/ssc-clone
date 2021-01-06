@@ -164,6 +164,8 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             delete payload['catalogueSegmentationObjectId'];
         } else if (payload.target == 'all') {
             payload['catalogueSegmentationObjectId'] = this.groupFormDto['catalogueSegmentationObjectId'];
+        } else if (payload.target == 'segmentation') {
+            delete payload['catalogueSegmentationObjectId'];
         }
         delete payload['multiplication'];
         payload['conditions'][0]['multiplication'] = this.generalInfoFormDto.multiplication;
