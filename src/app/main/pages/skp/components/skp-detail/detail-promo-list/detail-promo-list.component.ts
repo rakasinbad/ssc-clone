@@ -39,7 +39,7 @@ import { SkpSelectors } from '../../../store/selectors';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class DetailPromoListComponent implements OnInit {
+export class DetailPromoListComponent implements OnInit, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -105,6 +105,21 @@ export class DetailPromoListComponent implements OnInit {
         );
         this._initTable();
 
+    }
+
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this.sort.sortChange
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
+
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => {
+                this._initTable();
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {

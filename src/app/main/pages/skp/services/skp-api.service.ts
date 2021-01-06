@@ -122,40 +122,13 @@ export class SkpApiService {
         //     });
         // }
 
-        // if (params['data']) {
-        //     newArg.push({
-        //         key: 'data',
-        //         value: params['data'],
-        //     });
-        // }
-        if (parameter['type'] == 'promo'){
-            newArg.push({
-                key: 'data',
-                value: 'promo',
-            });
-            // if (params['promo_limit']) {
-                newArg.push({
-                    key: '$limit',
-                    value: parameter['limit'],
-                });
-            // }
-            // if (params['promo_skip']) {
-                newArg.push({
-                    key: '$skip',
-                    value: parameter['skip'],
-                });
-            // }
-        } else if (parameter['type'] == 'store'){
-            newArg.push({
-                key: 'data',
-                value: 'store',
-            });
-        } else {
-        
-        }
+        newArg.push({
+            key: 'data',
+            value: parameter['type'],
+        });
 
 
-        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+        const newParams = this._$helper.handleParams(this._url, parameter, ...newArg);
 
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
