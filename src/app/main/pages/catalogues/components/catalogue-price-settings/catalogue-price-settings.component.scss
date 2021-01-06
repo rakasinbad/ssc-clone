@@ -37,7 +37,7 @@ catalogue-price-settings {
             background: white;
 
             // For horizontal scroll
-            min-width: fit-content;
+            min-width: 100vw;
             width: 100%;
         }
 
@@ -84,6 +84,11 @@ catalogue-price-settings {
             align-items: center;
         }
 
+        .mat-column-segmentation-name {
+            flex: 1 1 150px;
+            min-width: 150px;
+        }
+
         .mat-column-warehouse-name {
             flex: 1 1 150px;
             min-width: 150px;
@@ -110,8 +115,8 @@ catalogue-price-settings {
         }
 
         .mat-column-price {
-            flex: 1 1 150px;
-            min-width: 150px;
+            flex: 1 1 120px;
+            min-width: 120px;
         }
 
         .mat-column-actions {
@@ -142,6 +147,12 @@ catalogue-price-settings {
             right: 0;
         }
     }
+}
+
+#adjust-price-form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
 }
 
 .dnd-catalogue-price-toolbar {

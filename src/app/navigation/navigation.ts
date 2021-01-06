@@ -269,12 +269,13 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/survey/manage',
             },
+            // TODO: temporary disable
             // {
             //     id: 'survey-response',
             //     title: 'Response',
             //     type: 'item',
             //     url: '/pages/survey/response',
-            // },            
+            // },
         ],
     }
 ];
