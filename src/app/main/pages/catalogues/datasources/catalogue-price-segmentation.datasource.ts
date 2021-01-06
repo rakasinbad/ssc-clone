@@ -28,7 +28,10 @@ export class CataloguePriceSegmentationDataSource implements DataSource<Catalogu
                 return cataloguePrices.map((item) => {
                     const newItem: CataloguePrice = {
                         ...item,
-                        price: (String(item.price).replace('.', ',') as unknown) as number,
+                        price:
+                            typeof item.price === 'string'
+                                ? ((String(item.price).replace('.', ',') as unknown) as number)
+                                : item.price,
                     };
 
                     return new CataloguePrice(newItem);

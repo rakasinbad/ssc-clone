@@ -4,7 +4,11 @@ import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 import { Catalogue, CatalogueCategory, CatalogueUnit, SimpleCatalogueCategory } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
-import { CatalogueActions, CataloguePriceSegmentationActions } from '../actions';
+import {
+    CatalogueActions,
+    CatalogueDetailPageActions,
+    CataloguePriceSegmentationActions,
+} from '../actions';
 
 export const FEATURE_KEY = 'catalogues';
 
@@ -176,6 +180,11 @@ const catalogueReducer = createReducer(
         isLoading: true,
         isDeleting: true,
     })),
+    on(CatalogueDetailPageActions.adjustPriceSettingRequest, (state) => ({
+        ...state,
+        isLoading: true,
+        needRefresh: false,
+    })),
     /**
      *  ===================================================================
      *  FAILURES
@@ -220,6 +229,11 @@ const catalogueReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors),
         })
     ),
+    on(CatalogueDetailPageActions.adjustPriceSettingFailure, (state) => ({
+        ...state,
+        isLoading: false,
+        needRefresh: true,
+    })),
     /**
      *  ===================================================================
      *  SUCCESSES
@@ -347,6 +361,11 @@ const catalogueReducer = createReducer(
         totalBonus: isNaN(+payload.totalBonus) ? 0 : +payload.totalBonus,
         totalInactive: isNaN(+payload.totalInactive) ? 0 : +payload.totalInactive,
         totalRegular: isNaN(+payload.totalRegular) ? 0 : +payload.totalRegular,
+    })),
+    on(CatalogueDetailPageActions.adjustPriceSettingSuccess, (state) => ({
+        ...state,
+        isLoading: false,
+        needRefresh: true,
     })),
     /**
      *  ===================================================================

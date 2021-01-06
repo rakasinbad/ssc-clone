@@ -101,6 +101,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'sales-rep-name',
         'store-id',
         'store-name',
+        'reason-no-order',
         'actions',
     ];
     detailDisplayedColumns = [
@@ -111,6 +112,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'sales-rep-name',
         'store-id',
         'store-name',
+        'reason-no-order',
         'actions',
     ];
     importBtnConfig: IButtonImportConfig = {
@@ -212,6 +214,46 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         return '-';
+    }
+
+    getTotalNumberReasonNoOrder(item: JourneyPlan): string {
+        if (item.hasOwnProperty('journeyPlanSales')) {
+            let numReasonNotOrder = 0;
+
+            item.journeyPlanSales.forEach((journeyPlanSale) => {
+                journeyPlanSale.journeyPlanSaleLogs.forEach((journeyPlanSaleLog) => {
+                    if (journeyPlanSaleLog.activity === 'check_out') {
+                        if (journeyPlanSaleLog.noOrderReasons !== null) {
+
+                            numReasonNotOrder++;
+                        }
+                    }
+                });
+            })
+            return `#${numReasonNotOrder}`;
+        }
+
+        return '-';
+    }
+
+    getReasonNoOrder(item: JourneyPlanSales): string {
+        let reason = '-';
+
+        if (item.hasOwnProperty('journeyPlanSaleLogs')) {
+            let nFound = 0;
+            item.journeyPlanSaleLogs.every((journeyPlanSaleLog) => {
+                if (journeyPlanSaleLog.activity === 'check_out') {
+                    if (journeyPlanSaleLog.noOrderReasons !== null) {
+                        nFound++;
+                        reason = `${journeyPlanSaleLog.noOrderReasons.reason} | ${journeyPlanSaleLog.noOrderNotes}`;
+                    }
+                }
+
+                return nFound > 0;
+            });
+        }
+
+        return reason;
     }
 
     handleCheckbox(): void {
