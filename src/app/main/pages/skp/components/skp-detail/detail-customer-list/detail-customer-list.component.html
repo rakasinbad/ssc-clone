@@ -1,0 +1,118 @@
+<!-- <mat-table
+    class="detail-customer-list-table sinbad-table"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+    #table
+    [dataSource]="dataSource"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+> -->
+
+<div class="pb-16">
+    <span class="mat-headline"> Customer List </span>
+</div>
+
+<mat-table
+    class="detail-customer-list-table sinbad-table"
+    #table
+    [dataSource]="dataSource"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Store Name Column -->
+    <ng-container matColumnDef="storeName">
+        <mat-header-cell *matHeaderCellDef> Store Name </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+     <!-- Store Owner Name Column-->
+     <ng-container matColumnDef="storeOwnerName">
+        <mat-header-cell *matHeaderCellDef> Store Owner Name </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.storeOwnerName || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+     <!-- Address Column-->
+     <ng-container matColumnDef="address">
+        <mat-header-cell *matHeaderCellDef> Adress </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.address || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Province Column-->
+    <ng-container matColumnDef="province">
+        <mat-header-cell *matHeaderCellDef> Province </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.province || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- SKP Status Column-->
+    <ng-container matColumnDef="skpStatus">
+        <mat-header-cell *matHeaderCellDef> SKP Status </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.skpStatus || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- SKP Update Date Column -->
+    <ng-container matColumnDef="skpUpdateDate">
+        <mat-header-cell *matHeaderCellDef> SKP Update Date </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ (row?.skpUpdateDate | date: 'dd/MM/yyyy') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="sinbad-voucher-list-item"
+        [routerLink]="['view', row?.id]"
+    ></mat-row>
+
+    <!-- <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+    ></mat-footer-row> -->
+</mat-table>
+
+<!-- <div
+    class="loader-content"
+    *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+> -->
+
+<!-- <div
+    class="loader-content"
+    *ngIf="(isLoading$ | async)"
+>
+    <mat-spinner color="accent"></mat-spinner>
+</div> -->
+
+<mat-paginator
+    [fxHide]="(isLoading$ | async) || dataSource.length === 0"
+    [length]="dataSource.length"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+></mat-paginator>
+
+<!-- <mat-paginator
+    [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
+    [length]="totalDataSource$ | async"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+></mat-paginator> -->

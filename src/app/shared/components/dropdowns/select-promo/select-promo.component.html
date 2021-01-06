@@ -1,0 +1,29 @@
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex (click)="openEntitySelection()">
+        <input
+            matInput
+            autocomplete="new-password"
+            [placeholder]="placeholder"
+            [formControl]="entityFormView"
+            [value]="entityFormView.value"
+        />
+        <mat-error>
+            <ng-content select="[error]"></ng-content>
+        </mat-error>
+    </mat-form-field>
+</div>
+<ng-template #selectStoreType>
+    <sinbad-multiple-selection
+        [disableClearAll]="false"
+        [enableSelectAll]="true"
+        [availableOptions]="(availableEntities$ | async)"
+        [totalAvailableOptions]="(totalEntities$ | async)"
+        [initialSelectedOptions]="initialSelection"
+        [totalInitialSelectedOptions]="initialSelection.length"
+        [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+        (availableReachedBottom)="onEntityReachedBottom()"
+        (selectionListChanged)="onSelectionChanged($event)"
+        (clearAll)="onClearAll()"
+        (search)="onEntitySearch($event)"
+    ></sinbad-multiple-selection>
+</ng-template>

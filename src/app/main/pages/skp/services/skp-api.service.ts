@@ -31,7 +31,7 @@ export class SkpApiService {
      * @private
      * @memberof SkpApiService
      */
-    private readonly _endpoint = '/skp';
+    private readonly _endpoint = '/SKP';
 
     /**
      * Creates an instance of SkpApiService.
@@ -92,14 +92,43 @@ export class SkpApiService {
             });
         }
 
-        if (params['data']) {
-            newArg.push({
-                key: 'data',
-                value: params['data'],
-            });
-        }
+        // if (params['data']) {
+        //     newArg.push({
+        //         key: 'data',
+        //         value: params['data'],
+        //     });
+        // }
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
+    }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {IQueryParams} params
+     * @returns {Observable<T>}
+     * @memberof SkpApiService
+     */
+    findDetailList<T>(id: string, parameter?: IQueryParams): Observable<T> {
+        const newArg = [];
+
+        // if (params['supplierId']) {
+        //     newArg.push({
+        //         key: 'supplierId',
+        //         value: params['supplierId'],
+        //     });
+        // }
+
+        newArg.push({
+            key: 'data',
+            value: parameter['type'],
+        });
+
+
+        const newParams = this._$helper.handleParams(this._url, parameter, ...newArg);
 
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }

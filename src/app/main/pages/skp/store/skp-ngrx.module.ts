@@ -2,13 +2,13 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
-// import { FlexiComboEffects } from './effects';
-// import * as fromFlexiComboCore from './reducers';
+import { SkpEffects } from './effects';
+import * as fromSkpCore from './reducers';
 
 @NgModule({
     imports: [
-        // StoreModule.forFeature(fromFlexiComboCore.featureKey, fromFlexiComboCore.reducers),
-        // EffectsModule.forFeature([FlexiComboEffects]),
+        StoreModule.forFeature(fromSkpCore.featureKey, fromSkpCore.reducers),
+        EffectsModule.forFeature([SkpEffects]),
     ],
 })
 export class SkpNgrxModule {}

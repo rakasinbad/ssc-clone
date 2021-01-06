@@ -285,5 +285,5 @@ export const navigation: FuseNavigation[] = [
         type: 'item',
         icon: 'custom-sinbad-skp-logo',
         url: '/pages/skp',
-    }
+    },
 ];

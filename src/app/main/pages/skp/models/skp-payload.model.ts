@@ -6,6 +6,7 @@ interface SelectPromoList {
 }
 
 export class CreateSkpDto {
+    supplierId: string;
     name: string;
     description: string;
     notes: string;
@@ -19,6 +20,7 @@ export class CreateSkpDto {
 
     constructor(data: CreateSkpDto) {
         const {
+            supplierId,
             name,
             description,
             notes,
@@ -31,6 +33,7 @@ export class CreateSkpDto {
             status,
         } = data;
 
+        this.supplierId = supplierId;
         this.name = name ? String(name).trim() : null;
         this.description = description || null;
         this.notes = notes || null;
@@ -46,6 +49,7 @@ export class CreateSkpDto {
 }
 
 export class UpdateSkpDto {
+    supplierId?: string;
     name?: string;
     description?: string;
     notes?: string;
@@ -59,6 +63,7 @@ export class UpdateSkpDto {
 
     constructor(data: UpdateSkpDto) {
         const {
+            supplierId,
             name,
             description,
             notes,
@@ -70,6 +75,10 @@ export class UpdateSkpDto {
             endDate,
             status,
         } = data;
+
+        if (typeof supplierId !== 'undefined') {
+            this.supplierId = supplierId;
+        }
 
         if (typeof name !== 'undefined') {
             this.name = name;

@@ -1,6 +1,6 @@
 @import 'src/@fuse/scss/fuse';
 
-app-skp-list {
+app-detail-customer-list {
     display: flex !important;
     flex: 1 1 auto !important;
     flex-direction: column !important;
@@ -16,7 +16,7 @@ app-skp-list {
         border-bottom: none;
     }
 
-    .skp-list-table {
+    .detail-customer-list-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
@@ -44,7 +44,7 @@ app-skp-list {
             min-height: unset;
         }
 
-        .sinbad-skp-list-item {
+        .flexi-combo-list {
             position: relative;
             cursor: pointer;
             // height: 84px;
@@ -93,11 +93,6 @@ app-skp-list {
         }
 
         .mat-column-end-date {
-            flex: 0 1 120px;
-            min-width: 120px;
-        }
-
-        .mat-column-status {
             flex: 0 1 120px;
             min-width: 120px;
         }

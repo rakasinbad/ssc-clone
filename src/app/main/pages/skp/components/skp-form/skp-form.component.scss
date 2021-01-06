@@ -27,6 +27,13 @@ app-skp-create {
                         top: -0.6em;
                     }
                 }
+
+                .title-label {
+                    display: flex;
+                    justify-content: space-evenly;
+                    align-items: center;
+                    flex: 2;
+                }
             }
 
             .mat-radio-group {

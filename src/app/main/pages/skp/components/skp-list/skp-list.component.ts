@@ -39,7 +39,7 @@ import { SkpSelectors } from '../../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class SkpListComponent implements OnInit {
+export class SkpListComponent implements OnInit, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -100,64 +100,116 @@ export class SkpListComponent implements OnInit {
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<SkpModel>(true, []);
+        // this.dataSource = this.dataDummy;
 
-        // this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
-        this.dataSource = this.dataDummy;
-        // this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
-
-        // this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
-        //     takeUntil(this.subs$)
-        // );
+        this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
+        this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
+        this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
+            takeUntil(this.subs$)
+        );
 
         this._initTable();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // if (changes['searchValue']) {
-        //     if (!changes['searchValue'].isFirstChange()) {
-        //         this.search.setValue(changes['searchValue'].currentValue);
-        //         setTimeout(() => this._initTable());
-        //     }
-        // }
-        if (changes['selectedStatus']) {
-            switch(this.selectedStatus) {
-                case 'active':
-                    this.dataSource = this.dataDummy.filter(item => item.status === 'active');
-                break;
-                case 'inactive':
-                    this.dataSource = this.dataDummy.filter(item => item.status === 'inactive');
-                break;
-                case 'all':
-                    this.dataSource = this.dataDummy;
-                break;
+        if (changes['keyword']) {
+            if (!changes['keyword'].isFirstChange()) {
+                console.log('keyword', changes['keyword'].currentValue)
+                this.search.setValue(changes['keyword'].currentValue);
+                setTimeout(() => this._initTable());
             }
         }
+        if (changes['selectedStatus']) {
+            if (!changes['selectedStatus'].isFirstChange()) {
+                this.selectedStatus = changes['selectedStatus'].currentValue;
+                setTimeout(() => this._initTable());
+            }
+        }
+        // if (changes['selectedStatus']) {
+        //     switch(this.selectedStatus) {
+        //         case 'active':
+        //             this.dataSource = this.dataDummy.filter(item => item.status === 'active');
+        //         break;
+        //         case 'inactive':
+        //             this.dataSource = this.dataDummy.filter(item => item.status === 'inactive');
+        //         break;
+        //         case 'all':
+        //             this.dataSource = this.dataDummy;
+        //         break;
+        //     }
+
+        // }
+    }
+
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this.sort.sortChange
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
+
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => {
+                this._initTable();
+            });
+
+        // this.SkpStore.select(SkpSelectors.getRefreshStatus)
+        //     .pipe(takeUntil(this.subs$))
+        //     .subscribe((needRefresh) => {
+        //         if (needRefresh) {
+        //         }
+
+        //         // this.SkpStore.dispatch(SkpActions.setRefreshStatus({ payload: false }));
+        //     });
     }
 
     private _initTable(): void {
         if (this.paginator) {
-            const data = {
+            const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
             const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.keyword);
-            data['keyword'] = query;
+            if (query) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query,
+                    },
+                ];
+            }
 
             if (this.selectedStatus !== 'all') {
-                data['status'] = this.selectedStatus;
+                // data['status'] = this.selectedStatus;
+                if (data['search'] && data['search'].length > 0) {
+                    data['search'].push({
+                        fieldName: 'status',
+                        keyword: this.selectedStatus,
+                    });
+                } else {
+                    data['search'] = [
+                        {
+                            fieldName: 'status',
+                            keyword: this.selectedStatus,
+                        },
+                    ];
+                }
             }
-           
             this.SkpStore.dispatch(SkpActions.clearState());
             this.SkpStore.dispatch(
                 SkpActions.fetchSkpListRequest({
                     payload: data,
                 })
             );
+
         }
     }
 
+   
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
 
@@ -175,8 +227,8 @@ export class SkpListComponent implements OnInit {
         this.router.navigateByUrl('/pages/skp/detail/'+ id);
     }
 
-    onEditSkp(value): void {
-        this.router.navigateByUrl('/pages/skp/create');
+    onEditSkp(id): void {
+        this.router.navigateByUrl('/pages/skp/'+id);
     }
 
     ngOnDestroy(): void {

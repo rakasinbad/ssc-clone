@@ -46,11 +46,8 @@ export class SkpComponent implements OnInit, OnDestroy {
 
     private breadCrumbs: IBreadcrumbs[] = [
         {
-            title: 'Beranda',
+            title: 'Home',
         },
-        // {
-        //     title: 'Promo',
-        // },
         {
             title: 'Surat Kerjasama Promosi',
             active: true,

@@ -418,6 +418,17 @@ export class HelperService {
         },
     ];
 
+    private static _skpStatus: Array<{ id: string; label: string }> = [
+        {
+            id: 'active',
+            label: 'Active',
+        },
+        {
+            id: 'inactive',
+            label: 'Inactive',
+        },
+    ];
+
     private static _host = environment.host;
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -940,6 +951,10 @@ export class HelperService {
 
     benefitMultiType(): { id: BenefitMultiType; label: string }[] {
         return HelperService._benefitMultiType;
+    }
+
+    skpStatusType(): { id: string; label: string}[] {
+        return HelperService._skpStatus;
     }
 
     calculationMechanism(): { id: CalculationMechanism; label: string }[] {
