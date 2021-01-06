@@ -1,12 +1,3 @@
-<!-- <mat-table
-    class="detail-promo-list-table sinbad-table"
-    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
-    #table
-    [dataSource]="dataSource"
-    matSort
-    [@animateStagger]="{ value: '50' }"
-    fusePerfectScrollbar
-> -->
 
 <div class="pb-16">
     <span class="mat-headline"> Promo List </span>
@@ -14,27 +5,27 @@
 
 <mat-table
     class="detail-promo-list-table sinbad-table"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
-    [dataSource]="dataSource"
+    [dataSource]="dataSource$ | async"
     matSort
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
 >
+
     <!-- seller Id Column -->
     <ng-container matColumnDef="sellerId">
         <mat-header-cell *matHeaderCellDef> Seller ID</mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.sellerId || '-' }}</p>
-            <!-- <p style="word-break: break-word">Promo Name 1</p> -->
+            <p style="word-break: break-word">{{ row?.external_id || '-' }}</p>
         </mat-cell>
     </ng-container>
 
-    <!-- Store Name Column-->
+    <!-- Promo Name Column-->
     <ng-container matColumnDef="storeName">
-        <mat-header-cell *matHeaderCellDef> Store Name </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Promo Name </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
-            <!-- <p style="word-break: break-word">Laundry A</p> -->
+            <p style="word-break: break-word">{{ row?.name || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -43,8 +34,7 @@
         <mat-header-cell *matHeaderCellDef> Start Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.start_date | date: 'dd/MM/yyyy') || '-' }}
-                <!-- 20/03/2020 -->
+                {{ (row?.startDate | date: 'dd/MM/yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -54,8 +44,7 @@
         <mat-header-cell *matHeaderCellDef> End Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.end_date | date: 'dd/MM/yyyy') || '-' }}
-                <!-- 24/03/2020 -->
+                {{ (row?.endDate | date: 'dd/MM/yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -72,36 +61,23 @@
         class="sinbad-voucher-list-item"
     ></mat-row>
 
-    <!-- <mat-footer-row
+    <mat-footer-row
         *matFooterRowDef="['no-record']"
         [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
-    ></mat-footer-row> -->
+    ></mat-footer-row>
 </mat-table>
 
-<!-- <div
+<div
     class="loader-content"
     *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
-> -->
-
-<!-- <div
-    class="loader-content"
-    *ngIf="(isLoading$ | async)"
 >
     <mat-spinner color="accent"></mat-spinner>
-</div> -->
+</div>
 
 <mat-paginator
-    [fxHide]="(isLoading$ | async) || dataSource.length === 0"
-    [length]="dataSource.length"
-    [pageSize]="defaultPageSize"
-    [pageSizeOptions]="defaultPageOpts"
-    showFirstLastButtons
-></mat-paginator>
-
-<!-- <mat-paginator
     [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
     [length]="totalDataSource$ | async"
     [pageSize]="defaultPageSize"
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons
-></mat-paginator> -->
+></mat-paginator>

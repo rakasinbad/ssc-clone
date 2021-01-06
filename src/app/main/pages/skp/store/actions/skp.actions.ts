@@ -68,7 +68,7 @@ export const fetchSkpListDetailStoreSuccess = createAction(
 
 export const fetchSkpListDetailPromoRequest = createAction(
     '[SKP] Fetch SKP List Detail Promo Request',
-    props<{ payload: IQueryParamsPromoList }>()
+    props<{ payload: { id: string, parameter?: IQueryParams } }>()
 );
 
 export const fetchSkpListDetailPromoFailure = createAction(

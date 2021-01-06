@@ -30,6 +30,7 @@ export class SkpModel implements ITimestamp {
     availableFrom: string;
     availableTo: string;
     image_url: string;
+    external_id: string;
 
     constructor(data: SkpModel) {
         const {
@@ -58,7 +59,8 @@ export class SkpModel implements ITimestamp {
             skpUpdateDate,
             availableFrom,
             availableTo,
-            image_url
+            image_url,
+            external_id
         } = data;
 
         this.id = id;
@@ -90,6 +92,7 @@ export class SkpModel implements ITimestamp {
         this.availableFrom = availableFrom || null;
         this.availableTo = availableTo || null;
         this.image_url = image_url || null;
+        this.external_id = external_id || null;
     }
 }
 

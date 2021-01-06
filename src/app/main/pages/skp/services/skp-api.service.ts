@@ -112,7 +112,7 @@ export class SkpApiService {
      * @returns {Observable<T>}
      * @memberof SkpApiService
      */
-    findDetailList<T>(params?: IQueryParamsPromoList): Observable<T> {
+    findDetailList<T>(id: string, parameter?: IQueryParams): Observable<T> {
         const newArg = [];
 
         // if (params['supplierId']) {
@@ -128,25 +128,24 @@ export class SkpApiService {
         //         value: params['data'],
         //     });
         // }
-
-        if (params['type'] == 'promo'){
+        if (parameter['type'] == 'promo'){
             newArg.push({
                 key: 'data',
                 value: 'promo',
             });
             // if (params['promo_limit']) {
-            //     newArg.push({
-            //         key: 'promo_limit',
-            //         value: params['promo_limit'],
-            //     });
+                newArg.push({
+                    key: '$limit',
+                    value: parameter['limit'],
+                });
             // }
             // if (params['promo_skip']) {
-            //     newArg.push({
-            //         key: 'promo_skip',
-            //         value: params['promo_skip'],
-            //     });
+                newArg.push({
+                    key: '$skip',
+                    value: parameter['skip'],
+                });
             // }
-        } else if (params['type'] == 'store'){
+        } else if (parameter['type'] == 'store'){
             newArg.push({
                 key: 'data',
                 value: 'store',
@@ -158,7 +157,7 @@ export class SkpApiService {
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<T>(`${this._url}/${1}`, { params: newParams });
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
     create<T>(body: T): Observable<CreateSkpDto> {

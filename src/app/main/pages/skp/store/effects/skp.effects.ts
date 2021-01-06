@@ -468,13 +468,13 @@ export class SkpEffects {
             ofType(SkpActions.fetchSkpListDetailPromoRequest),
             map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-            switchMap(([params, authState]: [IQueryParamsPromoList, TNullable<Auth>]) => {
+            switchMap(([{ id, parameter }, authState]: [{ id: string, parameter?: IQueryParams }, TNullable<Auth>]) => {
                 if (!authState) {
                     return this._$helper.decodeUserToken().pipe(
                         map(this._checkUserSupplier),
                         retry(3),
-                        switchMap((userData) => of([userData, params])),
-                        switchMap<[User, IQueryParamsPromoList], Observable<AnyAction>>(
+                        switchMap((userData) => of({ userData, id, parameter })),
+                        switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
                             this._fetchSkpPromoListRequest$
                         ),
                         catchError((err) => this._sendErrorToState$(err, 'fetchSkpListDetailPromoFailure'))
@@ -483,8 +483,8 @@ export class SkpEffects {
                     return of(authState.user).pipe(
                         map(this._checkUserSupplier),
                         retry(3),
-                        switchMap((userData) => of([userData, params])),
-                        switchMap<[User, IQueryParamsPromoList], Observable<AnyAction>>(
+                        switchMap((userData) => of({ userData, id, parameter })),
+                        switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
                             this._fetchSkpPromoListRequest$
                         ),
                         catchError((err) => this._sendErrorToState$(err, 'fetchSkpListDetailPromoFailure'))
@@ -812,11 +812,12 @@ export class SkpEffects {
     };
 
     //detail promo list
-    _fetchSkpPromoListRequest$ = ([userData, params]: [User, IQueryParamsPromoList]): Observable<
+    _fetchSkpPromoListRequest$ = ({ userData, id, parameter = {} }: { userData: User, id: string, parameter: IQueryParams }): Observable<
     AnyAction
     > => {
-        const newParams = {
-            ...params,
+
+        const newParams: IQueryParams = {
+            ...parameter,
         };
         const { supplierId } = userData.userSupplier;
 
@@ -824,7 +825,7 @@ export class SkpEffects {
             newParams['supplierId'] = supplierId;
         }
 
-        return this._$skpComboApi.findDetailList<PaginateResponse<SkpModel>>(newParams).pipe(
+        return this._$skpComboApi.findDetailList<PaginateResponse<SkpModel>>(id, newParams).pipe(
             catchOffline(),
             map((resp) => {
                 const newResp = {
@@ -856,7 +857,7 @@ export class SkpEffects {
             newParams['supplierId'] = supplierId;
         }
 
-        return this._$skpComboApi.findDetailList<PaginateResponse<SkpModel>>(newParams).pipe(
+        return this._$skpComboApi.findDetailList<PaginateResponse<SkpModel>>('6', newParams).pipe(
             catchOffline(),
             map((resp) => {
                 const newResp = {

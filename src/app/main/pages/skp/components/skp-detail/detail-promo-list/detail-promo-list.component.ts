@@ -45,7 +45,7 @@ export class DetailPromoListComponent implements OnInit {
 
     @Input() selectedStatus: string = '';
     @Input() searchValue: string = '';
-
+    
     search: FormControl = new FormControl();
 
     displayedColumns = ['sellerId', 'storeName', 'start_date', 'end_date'];
@@ -88,6 +88,7 @@ export class DetailPromoListComponent implements OnInit {
     ];
     constructor(
         private domSanitizer: DomSanitizer,
+        private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
         private SkpStore: NgRxStore<SkpCoreState>
@@ -96,15 +97,14 @@ export class DetailPromoListComponent implements OnInit {
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<skpPromoList>(true, []);
-        this.dataSource = this.dataDummy;
 
-        // this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
-        // this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
-        // this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
-        //     takeUntil(this.subs$)
-        // );
-
+        this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
+        this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
+        this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
+            takeUntil(this.subs$)
+        );
         this._initTable();
+
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -112,19 +112,17 @@ export class DetailPromoListComponent implements OnInit {
     }
 
     private _initTable(): void {
+        const { id } = this.route.snapshot.params;
         if (this.paginator) {
-            const data = {
-                promo_limit: this.paginator.pageSize || this.defaultPageSize,
-                promo_skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            const parameter: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
-           
-            this.SkpStore.dispatch(SkpActions.clearState());
-            // this.SkpStore.dispatch(
-            //     SkpActions.fetchSkpListDetailPromoRequest({
-            //         payload: data,
-            //     })
-            // );
 
+            parameter['paginate'] = true;
+            parameter['type'] = 'promo';
+            this.SkpStore.dispatch(SkpActions.clearState());
+            this.SkpStore.dispatch(SkpActions.fetchSkpListDetailPromoRequest({ payload: { id, parameter } }));
         }
     }
 
@@ -132,9 +130,9 @@ export class DetailPromoListComponent implements OnInit {
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
 
-        const data = {
-            promo_limit: this.paginator.pageSize,
-            promo_skip: this.paginator.pageSize * this.paginator.pageIndex,
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
 
         if (this.sort.direction) {
