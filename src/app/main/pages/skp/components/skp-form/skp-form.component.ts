@@ -24,6 +24,7 @@ import {
     IFooterActionConfig,
     LifecyclePlatform,
 } from 'app/shared/models/global.model';
+import { Location } from '@angular/common';
 import { MatCheckboxChange, MatDialog, MatRadioChange } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -49,6 +50,7 @@ import { SkpActions } from '../../store/actions';
 import * as fromSkp from '../../store/reducers';
 import { SkpSelectors } from '../../store/selectors';
 import { SelectPromo } from 'app/shared/components/dropdowns/select-promo/models';
+import { skpPromoList } from '../../models';
 
 type TmpKey = 'imageUrl';
 type TmpFiles = 'file';
@@ -77,7 +79,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
     chosenPromo$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
 
-
+    promos: Array<skpPromoList>;
     // tslint:disable-next-line: no-inferrable-types
     formFieldLength: number = 40;
 
@@ -133,6 +135,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private formBuilder: FormBuilder,
+        private location: Location,
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
@@ -275,6 +278,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         takeUntil(this._unSubs$)
                     )
                     .subscribe((isClick) => {
+                        this.location.back()
+
                         this.store.dispatch(FormActions.resetClickCancelButton());
                         this.store.dispatch(FormActions.resetCancelButtonAction());
                     });
@@ -476,27 +481,53 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .select(SkpSelectors.getSelectedItem)
             .pipe(
                 filter((row) => !!row),
-                tap((row) => {
-                    this.skpCombo = row
-                }),
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
+                row = {
+                    ...row, 
+                    ...{
+                        startDate: row.availableFrom,
+                        endDate: row.availableTo,
+                        imageUrl: row.image_url,
+                        skpStatus: row.status
+                    }
+                }
+
+                this.skpCombo = row
+                
                 this._setEditForm(row);
             });
     }
 
-    private _setEditForm(rawRowData: SkpModel): void {
-        console.log('ROW', rawRowData);
+    private _getPromoList(data: SkpModel) {
+        const parameter: IQueryParams = {}
+        parameter['type'] = 'promo';
 
-        const row = {
-            ...rawRowData, 
-            ...{
-                startDate: rawRowData.availableFrom,
-                endDate: rawRowData.availableTo,
-                imageUrl: rawRowData.image_url
-            }
-        }
+        this.store
+            .dispatch(
+                SkpActions.fetchSkpListDetailPromoRequest({ 
+                    payload: { 
+                        id: data.id, 
+                        parameter 
+                    } 
+                }
+            ));
+
+        this.store
+            .select(SkpSelectors.selectAll)
+            .pipe(
+                takeUntil(this.subs$)
+            )
+            .subscribe((promoList) => {
+                this.promos = promoList
+            });
+    }
+
+    private _setEditForm(row: SkpModel): void {
+        console.log('ROW', row)
+
+        this._getPromoList(row)
 
         const skpId = this.form.get('id');
         // const skpSupplierId = this.form.get('supplierId');
@@ -508,6 +539,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const endDateCtrl = this.form.get('endDate');
         const statusCtrl = this.form.get('status');
         const promoCtrl = this.form.get('promo');
+        const imageCtrl = this.form.get('imageUrl');
+        const fileCtrl = this.form.get('form');
         // // Handle Promo Seller ID
         // if (row.externalId) {
         //     promoSellerIdCtrl.setValue(row.externalId);
@@ -537,6 +570,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             headerCtrl.setValue(row.header);
         }
 
+        // Handle Image
+        if (row.imageUrl) {
+            imageCtrl.setValue(row.imageUrl);
+        }
+
         // Handle Start Date
         if (row.startDate) {
             startDateCtrl.setValue(moment(row.startDate));
@@ -549,9 +587,22 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         //  Handle status
         if (row.status) {
-           statusCtrl.setValue(row.status);
+            statusCtrl.setValue(row.status);
             this.selectStatus = row.status;
         }
+
+        // Handle File
+        if (row.file) {
+            // fileCtrl.setValue(row.file);
+            this.skpFileName = row.file
+        }
+
+        // Handle Promo
+        if (this.promos.length > 0) {
+            promoCtrl.setValue(this.promos);
+        }
+
+
 
         setTimeout(() => {
             if (this.form.invalid) {
