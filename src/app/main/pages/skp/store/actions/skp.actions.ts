@@ -49,7 +49,7 @@ export const fetchSkpSuccess = createAction(
 
 export const fetchSkpListDetailStoreRequest = createAction(
     '[SKP] Fetch SKP List Detail Store Request',
-    props<{ payload: IQueryParamsCustomerList }>()
+    props<{ payload: { id: string, parameter?: IQueryParams } }>()
 );
 
 export const fetchSkpListDetailStoreFailure = createAction(

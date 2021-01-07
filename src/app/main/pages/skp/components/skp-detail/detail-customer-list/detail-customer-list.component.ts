@@ -39,7 +39,8 @@ import { SkpSelectors } from '../../../store/selectors';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class DetailCustomerListComponent implements OnInit {
+   
+    export class DetailCustomerListComponent implements OnInit, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -88,6 +89,7 @@ export class DetailCustomerListComponent implements OnInit {
     ];
     constructor(
         private domSanitizer: DomSanitizer,
+        private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
         private SkpStore: NgRxStore<SkpCoreState>
@@ -96,15 +98,29 @@ export class DetailCustomerListComponent implements OnInit {
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<skpStoreList>(true, []);
-        this.dataSource = this.dataDummy;
 
-        // this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
-        // this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
-        // this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
-        //     takeUntil(this.subs$)
-        // );
-
+        this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
+        this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
+        this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
+            takeUntil(this.subs$)
+        );
         this._initTable();
+
+    }
+
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this.sort.sortChange
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
+
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => {
+                this._initTable();
+            });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -112,19 +128,18 @@ export class DetailCustomerListComponent implements OnInit {
     }
 
     private _initTable(): void {
+        const { id } = this.route.snapshot.params;
         if (this.paginator) {
-            const data = {
-                store_limit: this.paginator.pageSize || this.defaultPageSize,
-                store_skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            const parameter: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
+            parameter['paginate'] = true;
+            parameter['type'] = 'store';
             this.SkpStore.dispatch(SkpActions.clearState());
-            // this.SkpStore.dispatch(
-            //     SkpActions.fetchSkpListDetailStoreRequest({
-            //         payload: data,
-            //     })
-            // );
-
+            console.log('parameter->', parameter)
+            this.SkpStore.dispatch(SkpActions.fetchSkpListDetailStoreRequest({ payload: { id, parameter } }));
         }
     }
 
@@ -132,11 +147,14 @@ export class DetailCustomerListComponent implements OnInit {
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
 
-        const data = {
-            store_limit: this.paginator.pageSize,
-            store_skip: this.paginator.pageSize * this.paginator.pageIndex,
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
 
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+        }
     }
 
     ngOnDestroy(): void {
