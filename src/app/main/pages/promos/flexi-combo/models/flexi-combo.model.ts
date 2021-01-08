@@ -281,6 +281,9 @@ export class FlexiCombo implements ITimestamp {
     isActiveStore: boolean;
     promoAllocationType: PromoAllocation;
     promoSlot: number;
+    planSlot: string;
+    planBudget: string;
+
 
     constructor(data: FlexiCombo) {
         const {
@@ -323,7 +326,9 @@ export class FlexiCombo implements ITimestamp {
             isNewStore,
             isActiveStore,
             promoAllocationType,
-            promoSlot
+            promoSlot,
+            planSlot,
+            planBudget
         } = data;
 
         this.id = id;
@@ -356,6 +361,8 @@ export class FlexiCombo implements ITimestamp {
         this.isNewStore = isNewStore;
         this.promoAllocationType = promoAllocationType;
         this.promoSlot = promoSlot;
+        this.planSlot = planSlot;
+        this.planBudget = planBudget;
         
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {
