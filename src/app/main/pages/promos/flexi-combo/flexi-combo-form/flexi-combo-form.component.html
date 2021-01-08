@@ -373,6 +373,38 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="10"
+                                [class.sinbad-red-fg]="hasError('skpId')"
+                            >
+                                <span class="sinbad-red-fg">*</span>
+                                Linked SKP
+                            </label>
+                
+                                <app-select-linked-skp
+                                    #selectSegmentation
+                                    [required]="true"
+                                    (selected)="onSelectedSkpLinked($event)"
+                                    fxFlexAlign="center"
+                                    fxFlex="50"
+                                    [disabled]="dateStatus"
+                                    [promoDateEnd]="promoEnd"
+                                >
+                                    <ng-container *ngIf="errorSkpLinkedList == true">
+                                        <mat-hint class="mat-error">
+                                            This field is required.
+                                        </mat-hint>
+                                    </ng-container>
+                                </app-select-linked-skp>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('shortDescription')"
                             >
                                 Short Description
