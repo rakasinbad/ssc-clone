@@ -115,20 +115,6 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
 
     private requestEntity(params: IQueryParams): void {
         this.toggleLoading(true);
-
-        // if (this.disabled == false) {
-        //     this.singleSelectLinkedSkpService.getSelectedSkpLinkedList().pipe(
-        //         tap(value => HelperService.debug('SINGLE catalogueSegment GET SELECTED catalogueSegment', value)),
-        //         takeUntil(this.subs$)
-        //     ).subscribe(catalogueSegment => {
-        //         if (catalogueSegment) {
-        //             this.entityForm.setValue(catalogueSegment);
-        //             this.selectedEntity$.next(catalogueSegment);
-        //             this.triggerEntity.closePanel();
-        //             this.cdRef.detectChanges();
-        //         }
-        //     });
-        // }
         of(null).pipe(
             // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
@@ -365,6 +351,7 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
             // }
         }
         console.log('isi disabledchanges->', this.disabled)
+        console.log('entity->', this.entityForm)
         if (this.disabled == false) {
             const params: IQueryParams = {
                 paginate: true,
@@ -372,6 +359,13 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
                 skip: 0
             };
             params['promoEndDate'] = this.promoDateEnd;
+
+            //reset
+            // this.entityForm.clearValidators();
+            // this.entityForm.disable();
+            this.selectedEntity$.next(null);
+            this.entities.clear();
+
             this.requestEntity(params);
         }
         console.log('changes->', changes)

@@ -942,16 +942,17 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (endDate.isBefore(startDate)) {
                 this.form.get('startDate').reset();
                 this.dateStatus = true;
-            } else {
-                this.dateStatus = false;
             }
         }
+
+        this.dateStatus = false;
 
         this.maxStartDate = endDate.subtract(1, 'minute').toDate();
 
         this.promoEnd = endDate.toISOString(this.strictISOString);
-        console.log('endate form->', this.form.get('endDate').value)
-        console.log('dateStatus->', this.dateStatus)
+        
+        this.form.get('skpId').reset();
+        this.form.get('skpId').setValue(null);
     }
 
     /**
@@ -971,7 +972,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         this.minEndDate = startDate.add(1, 'minute').toDate();
-        this.dateStatus = true;
     }
 
     /**
@@ -1527,6 +1527,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (value == null) {
             this.errorSkpLinkedList = true;
             this.form.get('skpId').setValue(null);
+            this.form.get('skpId').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                })
+            ]);
         } else {
             this.errorSkpLinkedList = false;
             let skpSelect = value;

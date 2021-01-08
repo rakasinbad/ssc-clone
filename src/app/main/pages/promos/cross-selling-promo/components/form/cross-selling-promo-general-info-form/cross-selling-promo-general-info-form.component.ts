@@ -23,6 +23,7 @@ import { Subject } from 'rxjs';
 import { first, map, takeUntil } from 'rxjs/operators';
 import { GeneralInfoFormDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
+import { SkpLinkedList } from 'app/shared/components/dropdowns/select-linked-skp/models/select-linked-skp.model';
 
 type TmpKey = 'imgSuggestion';
 @Component({
@@ -49,6 +50,9 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
     maxStartDate: Date = null;
     minEndDate: Date = new Date();
     maxEndDate: Date = null;
+    errorSkpLinkedList: boolean = true;
+    public dateStatus: boolean = true;
+    public promoEnd: string;
 
     @Input()
     form: FormGroup;
@@ -143,10 +147,16 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
         if (startDate) {
             if (endDate.isBefore(startDate)) {
                 startDateCtrl.reset();
+                this.dateStatus = true;
             }
         }
 
+        this.dateStatus = false;
         this.maxStartDate = endDate.subtract(1, 'minute').toDate();
+        this.promoEnd = endDate.toISOString(this.strictISOString);
+        this.form.get('skpId').reset();
+        this.form.get('skpId').setValue(null);
+        this.form.get('skpId').updateValueAndValidity();
     }
 
     onChangeStartDate(ev: MatDatetimepickerInputEvent<any>): void {
@@ -161,6 +171,31 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
         }
 
         this.minEndDate = startDate.add(1, 'minute').toDate();
+    }
+
+    /**
+     *
+     * Handle change event for Select Linked SKP
+     * @output bring value select skp
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    onSelectedSkpLinked(value: SkpLinkedList[]): void {
+        console.log('isi value->', value)
+        if (value == null) {
+            this.errorSkpLinkedList = true;
+            this.form.get('skpId').setValue(null);
+            this.form.get('skpId').setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessageService.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+        } else {
+            this.errorSkpLinkedList = false;
+            let skpSelect = value;
+            this.form.get('skpId').setValue(value['id']);
+        }
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -231,7 +266,8 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             image: body['imgSuggestion'] || null,
             shortDescription: body['shortDescription'] || null,
             firstBuy: body['firstBuy'] || false,
-            multiplication: body['multiplication'] || false
+            multiplication: body['multiplication'] || false,
+            skpId: body['skpId']
         };
 
         this.formValue.emit(payload);
