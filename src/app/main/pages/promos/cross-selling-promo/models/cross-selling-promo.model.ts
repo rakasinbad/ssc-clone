@@ -318,6 +318,7 @@ export class CrossSelling implements ITimestamp {
     isActiveStore: boolean;
     multiplication: boolean;
     catalogueSegmentationObjectId: string;
+    skpId: string;
 
     constructor(data: CrossSelling) {
         const {
@@ -363,7 +364,8 @@ export class CrossSelling implements ITimestamp {
             isNewStore,
             isActiveStore,
             multiplication,
-            catalogueSegmentationObjectId
+            catalogueSegmentationObjectId,
+            skpId
         } = data;
 
         this.id = id;
@@ -399,7 +401,8 @@ export class CrossSelling implements ITimestamp {
         this.isNewStore = isNewStore;
         this.multiplication = multiplication || false;
         this.catalogueSegmentationObjectId = catalogueSegmentationObjectId || null;
-
+        this.skpId = skpId;
+        
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {
             this.promoBrands =

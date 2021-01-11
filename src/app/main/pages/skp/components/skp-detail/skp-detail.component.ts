@@ -21,7 +21,7 @@ import * as fromSkp from '../../store/reducers';
 import { SkpSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { MatTabChangeEvent } from '@angular/material';
-import { map } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import * as _ from 'lodash';
 
 // import { FlexiCombo } from '../../models';
@@ -126,9 +126,10 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
     clickDetail(event: MatTabChangeEvent): void {
         if (event.index == 1 || event.index == 2) {
             this.tabActive = false;
+
         } else {
             this.tabActive = true;
-            this._initPage();
+
         }
     }
 }

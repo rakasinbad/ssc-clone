@@ -520,13 +520,13 @@ export class SkpEffects {
             ofType(SkpActions.fetchSkpListDetailStoreRequest),
             map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-            switchMap(([params, authState]: [IQueryParamsCustomerList, TNullable<Auth>]) => {
+            switchMap(([{ id, parameter }, authState]: [{ id: string, parameter?: IQueryParams }, TNullable<Auth>]) => {
                 if (!authState) {
                     return this._$helper.decodeUserToken().pipe(
                         map(this._checkUserSupplier),
                         retry(3),
-                        switchMap((userData) => of([userData, params])),
-                        switchMap<[User, IQueryParamsCustomerList], Observable<AnyAction>>(
+                        switchMap((userData) => of({ userData, id, parameter })),
+                        switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
                             this._fetchSkpStoreListRequest$
                         ),
                         catchError((err) => this._sendErrorToState$(err, 'fetchSkpListDetailStoreFailure'))
@@ -535,8 +535,8 @@ export class SkpEffects {
                     return of(authState.user).pipe(
                         map(this._checkUserSupplier),
                         retry(3),
-                        switchMap((userData) => of([userData, params])),
-                        switchMap<[User, IQueryParamsCustomerList], Observable<AnyAction>>(
+                        switchMap((userData) => of({ userData, id, parameter })),
+                        switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
                             this._fetchSkpStoreListRequest$
                         ),
                         catchError((err) => this._sendErrorToState$(err, 'fetchSkpListDetailStoreFailure'))
@@ -675,11 +675,6 @@ export class SkpEffects {
         if (supplierId) {
             // newPayload.supplierId = supplierId;
         }
-
-        // console.log(`[REQ ${id}] Update 1`, body);
-        // console.log(`[REQ ${id}] Update 2`, newPayload);
-
-        // return of({ type: 'SUCCESS_UPDATE' });
 
         return this._$skpComboApi.patch<UpdateSkpDto>(newPayload, id).pipe(
             map((resp) => {
@@ -845,11 +840,11 @@ export class SkpEffects {
     };
 
     //detail store list
-    _fetchSkpStoreListRequest$ = ([userData, params]: [User, IQueryParamsCustomerList]): Observable<
+    _fetchSkpStoreListRequest$ = ({ userData, id, parameter = {} }: { userData: User, id: string, parameter: IQueryParams }): Observable<
     AnyAction
     > => {
-        const newParams = {
-            ...params,
+        const newParams: IQueryParams = {
+            ...parameter,
         };
         const { supplierId } = userData.userSupplier;
 
@@ -857,7 +852,7 @@ export class SkpEffects {
             newParams['supplierId'] = supplierId;
         }
 
-        return this._$skpComboApi.findDetailList<PaginateResponse<SkpModel>>('6', newParams).pipe(
+        return this._$skpComboApi.findDetailList<PaginateResponse<SkpModel>>(id, newParams).pipe(
             catchOffline(),
             map((resp) => {
                 const newResp = {

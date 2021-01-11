@@ -67,6 +67,7 @@ import { ConditionDto, CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } fro
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 import { FlexiComboSelectors } from '../store/selectors';
+import { SkpLinkedList } from 'app/shared/components/dropdowns/select-linked-skp/models/select-linked-skp.model';
 
 type TmpKey = 'imgSuggestion';
 
@@ -183,6 +184,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     public segmentBases: string = 'store';
     public triggerSelected: string = 'sku';
     public lengthStoreSelected: number;
+    errorSkpLinkedList: boolean = true;
+    public dateStatus: boolean = true;
+    public promoEnd: string;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -937,10 +941,19 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (startDate) {
             if (endDate.isBefore(startDate)) {
                 this.form.get('startDate').reset();
+                this.dateStatus = true;
             }
         }
 
+        this.dateStatus = false;
+
         this.maxStartDate = endDate.subtract(1, 'minute').toDate();
+
+        this.promoEnd = endDate.toISOString(this.strictISOString);
+        
+        this.form.get('skpId').reset();
+        this.form.get('skpId').setValue(null);
+        this.form.get('skpId').updateValueAndValidity();
     }
 
     /**
@@ -1500,6 +1513,30 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         } else {
             this.storeClusterLength = 0;
             this.storeClusterSelectAll = '';
+        }
+    }
+
+    /**
+     *
+     * Handle change event for Select Linked SKP
+     * @output bring value select skp
+     * @param {event} 
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
+    onSelectedSkpLinked(value: SkpLinkedList[]): void {
+        if (value == null) {
+            this.errorSkpLinkedList = true;
+            this.form.get('skpId').setValue(null);
+            this.form.get('skpId').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                })
+            ]);
+        } else {
+            this.errorSkpLinkedList = false;
+            let skpSelect = value;
+            this.form.get('skpId').setValue(value['id']);
         }
     }
 
@@ -2852,7 +2889,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 ],
             ],
             isNewStore: false,
-            isActiveStore: false
+            isActiveStore: false,
+            skpId: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
@@ -3383,7 +3428,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             promoAllocationType,
             promoSlot,
             isNewStore,
-            isActiveStore
+            isActiveStore,
+            skpId
         } = body;
 
         const newChosenSku =
@@ -3546,7 +3592,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 promoAllocationType,
                 promoSlot,
                 isNewStore,
-                isActiveStore
+                isActiveStore,
+                skpId
             };
 
             if (base === TriggerBase.SKU) {

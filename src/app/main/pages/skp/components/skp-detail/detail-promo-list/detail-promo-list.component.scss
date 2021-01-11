@@ -5,12 +5,6 @@ app-detail-promo-list {
     flex: 1 1 auto !important;
     flex-direction: column !important;
     overflow: auto !important;
-    /* display: flex;
-    flex: 1 1 auto;
-    overflow: auto;
-    flex-direction: column;
-    border: 1px solid;
-    border-radius: 4px !important; */
 
     .mat-tab-header {
         border-bottom: none;
@@ -20,14 +14,16 @@ app-detail-promo-list {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
-        min-height: 40px;
+        min-height: 300px;
+        max-height: 300px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
         &.sinbad-table-no-record {
             background: #ffffff !important;
-
+            min-height: 50px;
+            max-height: 300px;
             .mat-header-row {
                 pointer-events: none;
             }
@@ -46,7 +42,7 @@ app-detail-promo-list {
 
         .sinbad-skp-promo-list-item {
             position: relative;
-            cursor: pointer;
+            cursor: auto;
             // height: 84px;
         }
 
@@ -105,7 +101,7 @@ app-detail-promo-list {
 
         .mat-column-no-record {
             position: relative;
-            top: 15em;
+            top: 10em;
             justify-content: center;
         }
 

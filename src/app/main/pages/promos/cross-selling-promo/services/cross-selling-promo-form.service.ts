@@ -217,6 +217,17 @@ export class CrossSellingPromoFormService {
                         }),
                     ],
                 ],
+                skpId: [
+                    null,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageService.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
                 imgSuggestion: [
                     null,
                     [
