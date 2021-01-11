@@ -5,6 +5,8 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from '../../../core/auth/auth.guard';
 import { MerchantSettingComponent } from './merchant-setting.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 // import { MerchantSettingComponent } from './merchant-setting/merchant-setting.component';
 
 const routes: Routes = [
@@ -14,7 +16,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                only: getRoleByRouter('account', 'store-setting'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

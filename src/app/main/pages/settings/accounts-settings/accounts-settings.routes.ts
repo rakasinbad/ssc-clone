@@ -7,6 +7,8 @@ import { AccountsSettingsComponent } from './accounts-settings.component';
 import { PasswordComponent } from './components/password/password.component';
 import { SelfInformationComponent } from './components/self-information/self-information.component';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     {
         path: '',
@@ -26,7 +28,7 @@ const routes: Routes = [
         ],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN']
+                only: getRoleByRouter('settings', 'accounts')
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
