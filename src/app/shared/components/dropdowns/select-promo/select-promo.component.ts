@@ -18,7 +18,7 @@ import { SelectionList } from '../../multiple-selection/models';
 import { MultipleSelectionComponent } from '../../multiple-selection/multiple-selection.component';
 import { MultipleSelectionService } from '../../multiple-selection/services/multiple-selection.service';
 import { Selection } from '../select-advanced/models';
-import { UserSupplier } from '../stores/models';
+import { UserSupplier } from 'app/shared/models/supplier.model';
 import { SelectPromo as Entity } from "./models"
 import { SelectPromoService } from './services/select-promo.service';
 
@@ -72,6 +72,10 @@ export class SelectPromoComponent implements OnInit {
   // tslint:disable-next-line: no-inferrable-types
   @Input() disabled: boolean = false;
 
+  @Input() page: string
+
+  @Input() id: string
+
   @Input('placeholder') placeholder: string = "Search Promo"
 
   @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -117,25 +121,25 @@ export class SelectPromoComponent implements OnInit {
     private multiple$: MultipleSelectionService,
     private ngZone: NgZone,
   ) { 
-      // this.availableEntities$.pipe(
-      //   tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
-      //   takeUntil(this.subs$)
-      // ).subscribe();
+      this.availableEntities$.pipe(
+        tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
+        takeUntil(this.subs$)
+      ).subscribe();
 
-      // this.selectedEntity$.pipe(
-      //     tap(x => HelperService.debug('SELECTED ENTITY', x)),
-      //     takeUntil(this.subs$)
-      // ).subscribe(value => this.selected.emit(value));
+      this.selectedEntity$.pipe(
+          tap(x => HelperService.debug('SELECTED ENTITY', x)),
+          takeUntil(this.subs$)
+      ).subscribe(value => this.selected.emit(value));
 
-      // this.isEntityLoading$.pipe(
-      //     tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
-      //     takeUntil(this.subs$)
-      // ).subscribe();
+      this.isEntityLoading$.pipe(
+          tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
+          takeUntil(this.subs$)
+      ).subscribe();
 
-      // this.totalEntities$.pipe(
-      //     tap(x => HelperService.debug('TOTAL ENTITIES', x)),
-      //     takeUntil(this.subs$)
-      // ).subscribe();  
+      this.totalEntities$.pipe(
+          tap(x => HelperService.debug('TOTAL ENTITIES', x)),
+          takeUntil(this.subs$)
+      ).subscribe();  
 
       // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
       this.dialogRef$.pipe(
@@ -194,39 +198,53 @@ export class SelectPromoComponent implements OnInit {
   private requestEntity(params: IQueryParams): void {
     this.toggleLoading(true);
 
-    // of(null).pipe(
-    //     // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-    //     // delay(1000),
-    //     withLatestFrom<any, UserSupplier>(
-    //         this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-    //     ),
-    //     tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-    //     switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
-    //         // Jika user tidak ada data supplier.
-    //         if (!userSupplier) {
-    //             throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-    //         }
+    of(null).pipe(
+        // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+        // delay(1000),
+        withLatestFrom<any, UserSupplier>(
+            this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+        ),
+        tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+        switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
+            // Jika user tidak ada data supplier.
+            if (!userSupplier) {
+                throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+            }
 
-    //         // Mengambil ID supplier-nya.
-    //         const { supplierId } = userSupplier;
+            // Mengambil ID supplier-nya.
+            const { supplierId } = userSupplier;
 
-    //         // Membentuk query baru.
-    //         const newQuery: IQueryParams = { ... params };
-    //         // Memasukkan ID supplier ke dalam params baru.
-    //         newQuery['supplierId'] = supplierId;
+            // Membentuk query baru.
+            // // Memasukkan ID supplier ke dalam params baru.
+            let newQuery: IQueryParams = { 
+                ...params, 
+                ...{
+                    supplierId,
+                } 
+            };
 
-    //         // Melakukan request data warehouse.
-    //         return this.entityApi$
-    //             .find<IPaginatedResponse<Entity>>(newQuery)
-    //             .pipe(
-    //                 tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-    //             );
-    //     }),
-    //     take(1),
-    //     catchError(err => { throw err; }),
-    // ).subscribe({
-        // next: (response) => {
-          let response = this.res
+
+            // // Insert SKP ID as param
+            if (this.id) {
+                newQuery = { 
+                    ...newQuery, 
+                    ...{
+                        skpId: this.id
+                    }}
+            }
+
+            // Melakukan request data warehouse.
+            return this.entityApi$
+                .find<IPaginatedResponse<Entity>>(newQuery)
+                .pipe(
+                    tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
+                );
+        }),
+        take(1),
+        catchError(err => { throw err; }),
+    ).subscribe({
+        next: (response) => {
+        //   let response = this.res
             let addedAvailableEntities: Array<Selection> = [];
             let addedRawAvailableEntities: Array<Entity> = [];
 
@@ -269,17 +287,17 @@ export class SelectPromoComponent implements OnInit {
             });
 
             this.cdRef.markForCheck();
-        // }
-        // error: (err) => {
-        //     this.toggleLoading(false);
-        //     HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-        //     this.helper$.showErrorNotification(new ErrorHandler(err));
-        // },
-        // complete: () => {
-        //     this.toggleLoading(false);
-        //     HelperService.debug('FIND ENTITY COMPLETED');
-        // }
-    // });
+        },
+        error: (err) => {
+            this.toggleLoading(false);
+            HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+            this.helper$.showErrorNotification(new ErrorHandler(err));
+        },
+        complete: () => {
+            this.toggleLoading(false);
+            HelperService.debug('FIND ENTITY COMPLETED');
+        }
+    });
     this.toggleLoading(false)
   }
 
@@ -336,8 +354,10 @@ export class SelectPromoComponent implements OnInit {
       // Mengirim nilai tersebut melalui subject.
       if (event) {
           const eventIds = event.map(e => e.id);
-          // const rawEntities = this.rawAvailableEntities$.value;
-          this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
+          const rawEntities = this.rawAvailableEntities$.value;
+          this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+
+        //   this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
       }
   }
 
@@ -354,12 +374,7 @@ export class SelectPromoComponent implements OnInit {
               };
       
               this.search = value;
-              queryParams['search'] = [
-                  {
-                      fieldName: 'name',
-                      keyword: value
-                  }
-              ];
+              queryParams['keyword'] = value
       
               this.requestEntity(queryParams);
           });
@@ -406,7 +421,7 @@ export class SelectPromoComponent implements OnInit {
         this.initialSelection = selected;
         
         this.dialog = this.applyDialogFactory$.open({
-            title: 'Select Warehouse',
+            title: 'Select Promo',
             template: this.selectStoreType,
             isApplyEnabled: true,
         }, {
@@ -466,7 +481,7 @@ export class SelectPromoComponent implements OnInit {
         if (formValue.length === 0) {
             this.entityFormView.setValue('');
         } else {
-            const firstselection = formValue[0].label;
+            const firstselection = formValue[0].label || formValue[0]['name'];
             const remainLength = formValue.length - 1;
             const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
     
@@ -517,6 +532,7 @@ export class SelectPromoComponent implements OnInit {
     }
 
     if (changes['initialSelection']) {
+        console.log('INITIAL SELECTION', changes['initialSelection'].currentValue)
         this.entityFormValue.setValue(changes['initialSelection'].currentValue);
         this.updateFormView();
     }

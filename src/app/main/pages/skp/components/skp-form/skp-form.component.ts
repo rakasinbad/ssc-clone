@@ -24,6 +24,7 @@ import {
     IFooterActionConfig,
     LifecyclePlatform,
 } from 'app/shared/models/global.model';
+import { Location } from '@angular/common';
 import { MatCheckboxChange, MatDialog, MatRadioChange } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,7 +42,7 @@ import * as moment from 'moment';
 import * as numeral from 'numeral';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 
 import { CreateSkpDto, SkpModel, UpdateSkpDto } from '../../models';
@@ -49,6 +50,8 @@ import { SkpActions } from '../../store/actions';
 import * as fromSkp from '../../store/reducers';
 import { SkpSelectors } from '../../store/selectors';
 import { SelectPromo } from 'app/shared/components/dropdowns/select-promo/models';
+import { skpPromoList } from '../../models';
+import { SkpApiService } from '../../services/skp-api.service';
 
 type TmpKey = 'imageUrl';
 type TmpFiles = 'file';
@@ -77,7 +80,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
     chosenPromo$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
 
-
+    promos: Array<skpPromoList>;
     // tslint:disable-next-line: no-inferrable-types
     formFieldLength: number = 40;
 
@@ -88,6 +91,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     maxEndDate: Date = null;
     selectStatus: string = 'active';
     skpFileName: string;
+    skpId: string
 
     private _breadCrumbs: IBreadcrumbs[] = [
         {
@@ -133,10 +137,12 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private cdRef: ChangeDetectorRef,
         private domSanitizer: DomSanitizer,
         private formBuilder: FormBuilder,
+        private location: Location,
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromSkp.FeatureState>,
+        private skpService: SkpApiService,
         private _fuseProgressBarService: FuseProgressBarService,
         private _$applyDialogFactory: ApplyDialogFactoryService<ElementRef<HTMLElement>>,
         private _$errorMessage: ErrorMessageService,
@@ -176,7 +182,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.pageType === 'new') {
                 // Display footer action
                     this.store.dispatch(UiActions.showFooterAction());
-                }
+                } 
                 break;
 
             case LifecyclePlatform.OnDestroy:
@@ -213,6 +219,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.pageType = 'new';
                 } else {
                     this.pageType = 'edit';
+                    this.skpId = id
 
                     this._breadCrumbs = [
                         {
@@ -262,7 +269,19 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
-                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .pipe(
+                        // distinctUntilChanged(), 
+                        // debounceTime(1000), 
+                        map((status) => {
+                            const { startDate, endDate } = this.form.getRawValue();
+        
+                            if (status === 'VALID' && (!startDate || !endDate)) {
+                                return 'INVALID';
+                            }
+        
+                            return status;
+                        }),
+                        takeUntil(this._unSubs$))
                     .subscribe((status) => {
                         this._setFormStatus(status);
                     });
@@ -275,6 +294,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         takeUntil(this._unSubs$)
                     )
                     .subscribe((isClick) => {
+                        this.location.back()
+
                         this.store.dispatch(FormActions.resetClickCancelButton());
                         this.store.dispatch(FormActions.resetCancelButtonAction());
                     });
@@ -433,7 +454,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                 ],
             ],
-            promo : ['',
+            promo : [
+                null,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -459,11 +481,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             status: ['active']
         });
 
-        //for setting value coloumn promo (value must into array)
-        if (this.form.get('promo')){
-            this.form.get('promo').setValue([293]);
-        }
-
         console.log('form init ->', this.form)
 
         if (this.pageType === 'edit') {
@@ -476,27 +493,52 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             .select(SkpSelectors.getSelectedItem)
             .pipe(
                 filter((row) => !!row),
-                tap((row) => {
-                    this.skpCombo = row
-                }),
                 takeUntil(this._unSubs$)
             )
             .subscribe((row) => {
+                row = {
+                    ...row, 
+                    ...{
+                        startDate: row.availableFrom,
+                        endDate: row.availableTo,
+                        imageUrl: row.image_url,
+                        skpStatus: row.status
+                    }
+                }
+
+                this.skpCombo = row
+                
                 this._setEditForm(row);
             });
     }
 
-    private _setEditForm(rawRowData: SkpModel): void {
-        console.log('ROW', rawRowData);
+    private _getPromoList() {
+        const { id } = this.route.snapshot.params
 
-        const row = {
-            ...rawRowData, 
-            ...{
-                startDate: rawRowData.availableFrom,
-                endDate: rawRowData.availableTo,
-                imageUrl: rawRowData.image_url
-            }
-        }
+        const promoCtrl = this.form.get('promo');
+
+        const parameter: IQueryParams = {}
+        parameter['type'] = 'promo';
+
+        this.skpService.findDetailList(id, parameter).subscribe(res => {
+            this.promos = res['data'] 
+            const newPromos = _.orderBy(
+                this.promos.map(item => ({
+                    id: item['promoId'],
+                    label: item['name'],
+                    group: 'promo'
+                })),
+                ['label'],
+                ['asc']
+            )
+
+            promoCtrl.setValue(newPromos); 
+            this.cdRef.markForCheck()
+        })
+    }
+
+    private _setEditForm(row: SkpModel): void {
+        // console.log('ROW', row)
 
         const skpId = this.form.get('id');
         // const skpSupplierId = this.form.get('supplierId');
@@ -507,7 +549,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const startDateCtrl = this.form.get('startDate');
         const endDateCtrl = this.form.get('endDate');
         const statusCtrl = this.form.get('status');
-        const promoCtrl = this.form.get('promo');
+        const imageCtrl = this.form.get('imageUrl');
+        const fileCtrl = this.form.get('form');
         // // Handle Promo Seller ID
         // if (row.externalId) {
         //     promoSellerIdCtrl.setValue(row.externalId);
@@ -537,6 +580,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             headerCtrl.setValue(row.header);
         }
 
+        // Handle Image
+        if (row.imageUrl) {
+            imageCtrl.setValue(row.imageUrl);
+        }
+
         // Handle Start Date
         if (row.startDate) {
             startDateCtrl.setValue(moment(row.startDate));
@@ -549,9 +597,19 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         //  Handle status
         if (row.status) {
-           statusCtrl.setValue(row.status);
+            statusCtrl.setValue(row.status);
             this.selectStatus = row.status;
         }
+
+        // Handle File
+        if (row.file) {
+            // fileCtrl.setValue(row.file);
+            this.skpFileName = row.file
+        }
+
+        this._getPromoList()
+
+
 
         setTimeout(() => {
             if (this.form.invalid) {
@@ -587,6 +645,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const newEndDate =
             endDate && moment.isMoment(endDate) ? endDate.toISOString(this.strictISOString) : null;
 
+        const newPromoList =
+            promo && promo.length > 0 
+                ? promo.map((promoValue) => parseInt(promoValue.id))
+                : [];
+
         if (this.pageType === 'new') {
             const payload: CreateSkpDto = {
                 supplierId,
@@ -595,13 +658,12 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 notes,
                 header,
                 file,
-                promo,
+                promo: newPromoList,
                 imageUrl,
                 startDate: newStartDate,
                 endDate: newEndDate, 
                 status: EStatus.ACTIVE,
             };
-
             this.store.dispatch(SkpActions.createSkpRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
@@ -687,13 +749,21 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onPromoSelected(event: Array<SelectPromo>): void {
-        this.form.get('chosenPromo').markAsDirty();
-        this.form.get('chosenPromo').markAsTouched();
+        this.form.get('promo').markAsDirty();
+        this.form.get('promo').markAsTouched();
 
-        if (event.length === 0) {
-            this.form.get('chosenPromo').setValue('');
+        // console.log('SELECTED', event)
+
+        if (!event.length) {
+            this.form.get('promo').setValue(null);
         } else {
-            this.form.get('chosenPromo').setValue(event);
+            let promoSelect = [];
+            promoSelect = event.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'promo',
+            }));
+            this.form.get('promo').setValue(promoSelect);
         }
     }
 
