@@ -11,6 +11,7 @@ import {
     Input,
     SimpleChanges,
     OnChanges,
+    ChangeDetectorRef
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -18,7 +19,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { environment } from 'environments/environment';
 import { FormControl } from '@angular/forms';
-import { Observable, Subject, merge } from 'rxjs';
+import { Observable, Subject, merge, Subscription } from 'rxjs';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -30,6 +31,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FeatureState as SkpCoreState } from '../../../store/reducers';
 import { SkpActions } from '../../../store/actions';
 import { SkpSelectors } from '../../../store/selectors';
+import { SkpApiService } from '../../../services/skp-api.service';
 
 @Component({
   selector: 'app-detail-customer-list',
@@ -53,9 +55,14 @@ import { SkpSelectors } from '../../../store/selectors';
 
     selection: SelectionModel<skpStoreList>;
 
-    dataSource$: Observable<Array<skpStoreList>>;
-    totalDataSource$: Observable<number>;
-    isLoading$: Observable<boolean>;
+    // dataSource$: Observable<Array<skpStoreList>>;
+    // totalDataSource$: Observable<number>;
+    // isLoading$: Observable<boolean>;
+    detailCustomerSubs: Subscription;
+    dataSource$ = [];
+    totalDataSource$: number = 0
+    isLoading$: boolean = true;
+
     @Input() keyword: string;
 
     @ViewChild('table', { read: ElementRef, static: true })
@@ -92,19 +99,24 @@ import { SkpSelectors } from '../../../store/selectors';
         private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        private SkpStore: NgRxStore<SkpCoreState>
+        private SkpStore: NgRxStore<SkpCoreState>,
+        private skpApiService: SkpApiService,
+        private cdRef: ChangeDetectorRef,
+
     ) {}
 
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<skpStoreList>(true, []);
+        this.isLoading$ = true;
 
-        this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
-        this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
-        this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
-            takeUntil(this.subs$)
-        );
+        // this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
+        // this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
+        // this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
+        //     takeUntil(this.subs$)
+        // );
         this._initTable();
+        // this.cdRef.detectChanges();
 
     }
 
@@ -119,11 +131,17 @@ import { SkpSelectors } from '../../../store/selectors';
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this.subs$))
             .subscribe(() => {
+            this.isLoading$ = true;
+            this.dataSource$ = [];
+            this.totalDataSource$ = 0;
                 this._initTable();
             });
+
+            // this.cdRef.detectChanges();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        // this.cdRef.detectChanges();
         
     }
 
@@ -135,12 +153,20 @@ import { SkpSelectors } from '../../../store/selectors';
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
-            parameter['paginate'] = true;
-            parameter['type'] = 'store';
-            this.SkpStore.dispatch(SkpActions.clearState());
-            console.log('parameter->', parameter)
-            this.SkpStore.dispatch(SkpActions.fetchSkpListDetailStoreRequest({ payload: { id, parameter } }));
+        parameter['paginate'] = true;
+        parameter['type'] = 'store';
+        
+        this.detailCustomerSubs = this.skpApiService.findDetailList(id, parameter).subscribe(res => {
+            this.isLoading$ = false;
+            this.dataSource$ = res['data'];
+            this.totalDataSource$ = res['total'];
+            this.cdRef.markForCheck();
+
+        });
+            // this.SkpStore.dispatch(SkpActions.clearState());
+            // this.SkpStore.dispatch(SkpActions.fetchSkpListDetailStoreRequest({ payload: { id, parameter } }));
         }
+
     }
 
    
@@ -155,10 +181,12 @@ import { SkpSelectors } from '../../../store/selectors';
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
         }
+        this.cdRef.detectChanges();
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+        this.detailCustomerSubs.unsubscribe();
     }
 }

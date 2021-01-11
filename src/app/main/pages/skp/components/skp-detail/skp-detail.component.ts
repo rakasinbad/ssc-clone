@@ -126,11 +126,9 @@ export class SkpDetailComponent implements OnInit, OnDestroy {
     clickDetail(event: MatTabChangeEvent): void {
         if (event.index == 1 || event.index == 2) {
             this.tabActive = false;
-            // this._initPage();
 
         } else {
             this.tabActive = true;
-            this._initPage();
 
         }
     }

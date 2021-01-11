@@ -11,6 +11,7 @@ import {
     Input,
     SimpleChanges,
     OnChanges,
+    ChangeDetectorRef
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -18,7 +19,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { environment } from 'environments/environment';
 import { FormControl } from '@angular/forms';
-import { Observable, Subject, merge } from 'rxjs';
+import { Observable, Subject, merge, Subscription } from 'rxjs';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -30,6 +31,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FeatureState as SkpCoreState } from '../../../store/reducers';
 import { SkpActions } from '../../../store/actions';
 import { SkpSelectors } from '../../../store/selectors';
+import { SkpApiService } from '../../../services/skp-api.service';
 
 @Component({
   selector: 'app-detail-promo-list',
@@ -42,6 +44,7 @@ import { SkpSelectors } from '../../../store/selectors';
 export class DetailPromoListComponent implements OnInit, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+    detailPromoSubs: Subscription;
 
     @Input() selectedStatus: string = '';
     @Input() searchValue: string = '';
@@ -52,9 +55,9 @@ export class DetailPromoListComponent implements OnInit, AfterViewInit {
 
     selection: SelectionModel<skpPromoList>;
 
-    dataSource$: Observable<Array<skpPromoList>>;
-    totalDataSource$: Observable<number>;
-    isLoading$: Observable<boolean>;
+    dataSource$ = [];
+    totalDataSource$: number = 0
+    isLoading$: boolean = true;
     @Input() keyword: string;
 
     @ViewChild('table', { read: ElementRef, static: true })
@@ -67,6 +70,7 @@ export class DetailPromoListComponent implements OnInit, AfterViewInit {
     sort: MatSort;
     public dataSource = [];
     private subs$: Subject<void> = new Subject<void>();
+    
     dataDummy = [
         {id: 1, sellerId: 'D011', storeName: 'Tesno Ali Laundry', 
         name: 'Pak Ali',  
@@ -91,19 +95,28 @@ export class DetailPromoListComponent implements OnInit, AfterViewInit {
         private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        private SkpStore: NgRxStore<SkpCoreState>
+        private SkpStore: NgRxStore<SkpCoreState>,
+        private skpApiService: SkpApiService,
+        private cdRef: ChangeDetectorRef,
+
     ) {}
 
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<skpPromoList>(true, []);
+        this.isLoading$ = true;
+        // this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
+        // this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
+        // this.totalDataSource$ = 0;
 
-        this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
-        this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
-        this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
-            takeUntil(this.subs$)
-        );
+        // this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
+        //     takeUntil(this.subs$)
+        // );
+        
+        
         this._initTable();
+
+
 
     }
 
@@ -118,11 +131,20 @@ export class DetailPromoListComponent implements OnInit, AfterViewInit {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this.subs$))
             .subscribe(() => {
+                this.dataSource$ = [];
+                this.totalDataSource$ = 0;
+                this.isLoading$ = true;
                 this._initTable();
             });
+
+            // this.cdRef.detectChanges();
+            // this.cdRef.markForCheck();
+
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        this.cdRef.detectChanges();
+        this.cdRef.markForCheck();
         
     }
 
@@ -134,11 +156,21 @@ export class DetailPromoListComponent implements OnInit, AfterViewInit {
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
-            parameter['paginate'] = true;
-            parameter['type'] = 'promo';
-            this.SkpStore.dispatch(SkpActions.clearState());
-            this.SkpStore.dispatch(SkpActions.fetchSkpListDetailPromoRequest({ payload: { id, parameter } }));
+        parameter['paginate'] = true;
+        parameter['type'] = 'promo';
+        this.detailPromoSubs = this.skpApiService.findDetailList(id, parameter).subscribe(res => {
+            this.isLoading$ = false;
+            this.dataSource$ = res['data'];
+            this.totalDataSource$ = res['total'];
+            this.cdRef.markForCheck();
+        });
+
+            // this.SkpStore.dispatch(SkpActions.clearState());
+            // this.SkpStore.dispatch(SkpActions.fetchSkpListDetailPromoRequest({ payload: { id, parameter } }));
         }
+        
+
+
     }
 
    
@@ -153,10 +185,13 @@ export class DetailPromoListComponent implements OnInit, AfterViewInit {
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
         }
+        this.cdRef.detectChanges();
+        // this.cdRef.markForCheck();
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+        this.detailPromoSubs.unsubscribe();
     }
 }
