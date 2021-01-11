@@ -374,12 +374,7 @@ export class SelectPromoComponent implements OnInit {
               };
       
               this.search = value;
-              queryParams['search'] = [
-                  {
-                      fieldName: 'name',
-                      keyword: value
-                  }
-              ];
+              queryParams['keyword'] = value
       
               this.requestEntity(queryParams);
           });
