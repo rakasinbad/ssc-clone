@@ -258,14 +258,14 @@
                             </label>
 
                             <select-promo
-                                [initialSelection]="chosenPromo$ | async"
+                                [initialSelection]="form.get('promo').value || []"
                                 [required]="true"
                                 fxFlex="50"
                                 (selected)="onPromoSelected($event)"
-
+                                [id]="skpId"
                             >
                                 <div error>
-                                    {{ getFormError(form.get('chosenSku')) }}
+                                    {{ getFormError(form.get('promo')) }}
                                 </div>
                             </select-promo>
 

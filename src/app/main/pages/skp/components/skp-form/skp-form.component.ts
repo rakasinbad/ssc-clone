@@ -51,6 +51,7 @@ import * as fromSkp from '../../store/reducers';
 import { SkpSelectors } from '../../store/selectors';
 import { SelectPromo } from 'app/shared/components/dropdowns/select-promo/models';
 import { skpPromoList } from '../../models';
+import { SkpApiService } from '../../services/skp-api.service';
 
 type TmpKey = 'imageUrl';
 type TmpFiles = 'file';
@@ -90,6 +91,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     maxEndDate: Date = null;
     selectStatus: string = 'active';
     skpFileName: string;
+    skpId: string
 
     private _breadCrumbs: IBreadcrumbs[] = [
         {
@@ -140,6 +142,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromSkp.FeatureState>,
+        private skpService: SkpApiService,
         private _fuseProgressBarService: FuseProgressBarService,
         private _$applyDialogFactory: ApplyDialogFactoryService<ElementRef<HTMLElement>>,
         private _$errorMessage: ErrorMessageService,
@@ -179,7 +182,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (this.pageType === 'new') {
                 // Display footer action
                     this.store.dispatch(UiActions.showFooterAction());
-                }
+                } 
                 break;
 
             case LifecyclePlatform.OnDestroy:
@@ -216,6 +219,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.pageType = 'new';
                 } else {
                     this.pageType = 'edit';
+                    this.skpId = id
 
                     this._breadCrumbs = [
                         {
@@ -464,11 +468,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             status: ['active']
         });
 
-        //for setting value coloumn promo (value must into array)
-        if (this.form.get('promo')){
-            this.form.get('promo').setValue([293]);
-        }
-
         console.log('form init ->', this.form)
 
         if (this.pageType === 'edit') {
@@ -501,33 +500,57 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _getPromoList(data: SkpModel) {
+        const { id } = this.route.snapshot.params
+
+        const promoCtrl = this.form.get('promo');
+
         const parameter: IQueryParams = {}
         parameter['type'] = 'promo';
 
-        this.store
-            .dispatch(
-                SkpActions.fetchSkpListDetailPromoRequest({ 
-                    payload: { 
-                        id: data.id, 
-                        parameter 
-                    } 
-                }
-            ));
-
-        this.store
-            .select(SkpSelectors.selectAll)
-            .pipe(
-                takeUntil(this.subs$)
+        this.skpService.findDetailList(id, parameter).subscribe(res => {
+            this.promos = res['data'] 
+            console.log('RES PROMOS', this.promos)
+            const newPromos = _.orderBy(
+                this.promos.map(item => ({
+                    id: item['promoId'],
+                    label: item['name'],
+                    group: 'promo'
+                })),
+                ['label'],
+                ['asc']
             )
-            .subscribe((promoList) => {
-                this.promos = promoList
-            });
+
+            console.log('NEW PROMOS', newPromos)
+            promoCtrl.setValue(newPromos); 
+            console.log('PROMO FORM VALUE', promoCtrl.value)
+            this.cdRef.markForCheck()
+        })
+        // this.store.dispatch(SkpActions.clearState());
+        // this.store
+        //     .dispatch(
+        //         SkpActions.fetchSkpListDetailPromoRequest({ 
+        //             payload: { 
+        //                 id: data.id, 
+        //                 parameter 
+        //             } 
+        //         }
+        //     ));
+
+        // this.store
+        //     .select(SkpSelectors.selectAll)
+        //     .pipe(
+        //         takeUntil(this.subs$)
+        //     )
+        //     .subscribe((promoList) => {
+        //         console.log('PROMO LIST', promoList)
+        //         this.promos = promoList
+        //     });
     }
 
     private _setEditForm(row: SkpModel): void {
-        console.log('ROW', row)
+        // console.log('ROW', row)
 
-        this._getPromoList(row)
+        // this._getPromoList(row)
 
         const skpId = this.form.get('id');
         // const skpSupplierId = this.form.get('supplierId');
@@ -538,7 +561,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const startDateCtrl = this.form.get('startDate');
         const endDateCtrl = this.form.get('endDate');
         const statusCtrl = this.form.get('status');
-        const promoCtrl = this.form.get('promo');
         const imageCtrl = this.form.get('imageUrl');
         const fileCtrl = this.form.get('form');
         // // Handle Promo Seller ID
@@ -598,9 +620,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         // Handle Promo
-        if (this.promos.length > 0) {
-            promoCtrl.setValue(this.promos);
-        }
+        // if (this.promos.length > 0) {
+            this._getPromoList(row)
+
+        // }
 
 
 
@@ -738,13 +761,15 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onPromoSelected(event: Array<SelectPromo>): void {
-        this.form.get('chosenPromo').markAsDirty();
-        this.form.get('chosenPromo').markAsTouched();
+        this.form.get('promo').markAsDirty();
+        this.form.get('promo').markAsTouched();
+
+        console.log('SELECTED', event)
 
         if (event.length === 0) {
-            this.form.get('chosenPromo').setValue('');
+            this.form.get('promo').setValue('');
         } else {
-            this.form.get('chosenPromo').setValue(event);
+            this.form.get('promo').setValue(event);
         }
     }
 
