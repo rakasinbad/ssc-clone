@@ -75,7 +75,7 @@
 </div>
 
 <mat-paginator
-    [fxHide]="isLoading$ == true || totalDataSource$ === 0"
+    [disabled]="(isLoading$ && !totalDataSource$) || (!isLoading$ && totalDataSource$ === 0)"
     [length]="totalDataSource$"
     [pageSize]="defaultPageSize"
     [pageSizeOptions]="defaultPageOpts"

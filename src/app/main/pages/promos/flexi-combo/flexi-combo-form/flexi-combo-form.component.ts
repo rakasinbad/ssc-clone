@@ -953,6 +953,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         
         this.form.get('skpId').reset();
         this.form.get('skpId').setValue(null);
+        this.form.get('skpId').updateValueAndValidity();
     }
 
     /**

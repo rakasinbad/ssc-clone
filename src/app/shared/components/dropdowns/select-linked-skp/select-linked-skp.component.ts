@@ -345,9 +345,7 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
             //     }
             // }
         }
-        // console.log('isi disabledchanges->', this.disabled)
-        // console.log('entity->', this.entityForm)
-        // console.log('this.selected->', this.selected)
+        
         if (this.disabled == false) {
             const params: IQueryParams = {
                 paginate: true,
@@ -357,21 +355,14 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
             params['promoEndDate'] = this.promoDateEnd;
 
             //reset
-            // this.entityForm.clearValidators();
-            // this.entityForm.disable();
+            this.entityForm.reset();
             this.selectedEntity$.next(null);
+            this.selected.emit(null);
             this.entities.clear();
 
             this.requestEntity(params);
         }
-        console.log('changes->', changes)
-        // if (this.disabled == 'true') {
-        //     if (changes['disabled'].currentValue === true) {
-        //         this.entityForm.disable();
-        //     } else {
-        //         this.entityForm.enable();
-        //     }
-        // }
+        
     }
 
     ngOnDestroy(): void {
