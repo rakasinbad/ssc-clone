@@ -354,8 +354,10 @@ export class SelectPromoComponent implements OnInit {
       // Mengirim nilai tersebut melalui subject.
       if (event) {
           const eventIds = event.map(e => e.id);
-          // const rawEntities = this.rawAvailableEntities$.value;
-          this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
+          const rawEntities = this.rawAvailableEntities$.value;
+          this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+
+        //   this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
       }
   }
 

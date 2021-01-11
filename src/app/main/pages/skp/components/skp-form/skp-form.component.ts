@@ -442,7 +442,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                 ],
             ],
-            promo : ['',
+            promo : [null,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -509,7 +509,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.skpService.findDetailList(id, parameter).subscribe(res => {
             this.promos = res['data'] 
-            console.log('RES PROMOS', this.promos)
             const newPromos = _.orderBy(
                 this.promos.map(item => ({
                     id: item['promoId'],
@@ -520,9 +519,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 ['asc']
             )
 
-            console.log('NEW PROMOS', newPromos)
             promoCtrl.setValue(newPromos); 
-            console.log('PROMO FORM VALUE', promoCtrl.value)
             this.cdRef.markForCheck()
         })
         // this.store.dispatch(SkpActions.clearState());
@@ -661,6 +658,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const newEndDate =
             endDate && moment.isMoment(endDate) ? endDate.toISOString(this.strictISOString) : null;
 
+        const newPromoList =
+            promo && promo.length > 0 
+                ? promo.map((promoValue) => parseInt(promoValue.id))
+                : [];
+
         if (this.pageType === 'new') {
             const payload: CreateSkpDto = {
                 supplierId,
@@ -669,13 +671,12 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 notes,
                 header,
                 file,
-                promo,
+                promo: newPromoList,
                 imageUrl,
                 startDate: newStartDate,
                 endDate: newEndDate, 
                 status: EStatus.ACTIVE,
             };
-
             this.store.dispatch(SkpActions.createSkpRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
@@ -764,12 +765,18 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.form.get('promo').markAsDirty();
         this.form.get('promo').markAsTouched();
 
-        console.log('SELECTED', event)
+        // console.log('SELECTED', event)
 
-        if (event.length === 0) {
-            this.form.get('promo').setValue('');
+        if (!event.length) {
+            this.form.get('promo').setValue(null);
         } else {
-            this.form.get('promo').setValue(event);
+            let promoSelect = [];
+            promoSelect = event.map((item) => ({
+                id: item.id,
+                label: item.name,
+                group: 'select-promo',
+            }));
+            this.form.get('promo').setValue(promoSelect);
         }
     }
 
