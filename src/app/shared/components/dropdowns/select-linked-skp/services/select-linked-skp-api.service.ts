@@ -25,7 +25,6 @@ export class SelectLinkedSkpApiService {
 
     find<T>(params: IQueryParams, headers: IHeaderRequest = {}): Observable<T> {
         const newArgs = [];
-        console.log('isi params find->', params)
         if (params['keyword']) {
             newArgs.push({
                 key: 'keyword',
@@ -45,7 +44,6 @@ export class SelectLinkedSkpApiService {
         this._url = this.helper$.handleApiRouter(this._endpoint);
 
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
-        console.log('newParams api->', newParams)
         const newHeaders = this.helper$.handleHeaders(headers);
 
         return this.http.get<T>(this._url, { params: newParams, headers: newHeaders });
