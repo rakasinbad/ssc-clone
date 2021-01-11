@@ -218,7 +218,7 @@ export class CrossSellingPromoFormService {
                     ],
                 ],
                 skpId: [
-                    { value: null, disabled: true },
+                    null,
                     [
                         RxwebValidators.required({
                             message: this.errorMessageService.getErrorMessageNonState(
