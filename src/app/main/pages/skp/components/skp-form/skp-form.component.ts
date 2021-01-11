@@ -42,7 +42,7 @@ import * as moment from 'moment';
 import * as numeral from 'numeral';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 
 import { CreateSkpDto, SkpModel, UpdateSkpDto } from '../../models';
@@ -269,7 +269,19 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
-                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .pipe(
+                        // distinctUntilChanged(), 
+                        // debounceTime(1000), 
+                        map((status) => {
+                            const { startDate, endDate } = this.form.getRawValue();
+        
+                            if (status === 'VALID' && (!startDate || !endDate)) {
+                                return 'INVALID';
+                            }
+        
+                            return status;
+                        }),
+                        takeUntil(this._unSubs$))
                     .subscribe((status) => {
                         this._setFormStatus(status);
                     });
@@ -442,7 +454,8 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                 ],
             ],
-            promo : [null,
+            promo : [
+                null,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -499,7 +512,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
 
-    private _getPromoList(data: SkpModel) {
+    private _getPromoList() {
         const { id } = this.route.snapshot.params
 
         const promoCtrl = this.form.get('promo');
@@ -522,32 +535,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             promoCtrl.setValue(newPromos); 
             this.cdRef.markForCheck()
         })
-        // this.store.dispatch(SkpActions.clearState());
-        // this.store
-        //     .dispatch(
-        //         SkpActions.fetchSkpListDetailPromoRequest({ 
-        //             payload: { 
-        //                 id: data.id, 
-        //                 parameter 
-        //             } 
-        //         }
-        //     ));
-
-        // this.store
-        //     .select(SkpSelectors.selectAll)
-        //     .pipe(
-        //         takeUntil(this.subs$)
-        //     )
-        //     .subscribe((promoList) => {
-        //         console.log('PROMO LIST', promoList)
-        //         this.promos = promoList
-        //     });
     }
 
     private _setEditForm(row: SkpModel): void {
         // console.log('ROW', row)
-
-        // this._getPromoList(row)
 
         const skpId = this.form.get('id');
         // const skpSupplierId = this.form.get('supplierId');
@@ -616,11 +607,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             this.skpFileName = row.file
         }
 
-        // Handle Promo
-        // if (this.promos.length > 0) {
-            this._getPromoList(row)
-
-        // }
+        this._getPromoList()
 
 
 
@@ -774,7 +761,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             promoSelect = event.map((item) => ({
                 id: item.id,
                 label: item.name,
-                group: 'select-promo',
+                group: 'promo',
             }));
             this.form.get('promo').setValue(promoSelect);
         }
