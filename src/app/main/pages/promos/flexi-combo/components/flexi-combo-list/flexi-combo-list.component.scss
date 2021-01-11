@@ -5,12 +5,6 @@ app-flexi-combo-list {
     flex: 1 1 auto !important;
     flex-direction: column !important;
     overflow: auto !important;
-    /* display: flex;
-    flex: 1 1 auto;
-    overflow: auto;
-    flex-direction: column;
-    border: 1px solid;
-    border-radius: 4px !important; */
 
     .mat-tab-header {
         border-bottom: none;
@@ -20,8 +14,9 @@ app-flexi-combo-list {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
-        min-height: 40px;
         overflow: auto;
+        min-height: 40px;
+        max-height: 350px;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
@@ -94,6 +89,20 @@ app-flexi-combo-list {
 
         .mat-column-base {
             flex: 0 1 100px;
+        }
+
+        .mat-column-promo-type {
+            flex: 0 1 100px;
+        }
+        
+        .mat-column-promo-allocation {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-allocation-value {
+            flex: 0 1 150px;
+            min-width: 150px;
         }
 
         .mat-column-start-date {

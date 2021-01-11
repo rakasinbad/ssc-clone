@@ -182,7 +182,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
      * @memberof FlexiComboFormComponent
      */
     onSelectedSkpLinked(value: SkpLinkedList[]): void {
-        console.log('isi value->', value)
         if (value == null) {
             this.errorSkpLinkedList = true;
             this.form.get('skpId').setValue(null);

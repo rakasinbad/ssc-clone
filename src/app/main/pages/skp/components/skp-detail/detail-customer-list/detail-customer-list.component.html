@@ -2,9 +2,12 @@
     <span class="mat-headline"> Customer List </span>
 </div>
 
+<div class="content-card">
+
+
 <mat-table
     class="detail-customer-list-table sinbad-table"
-    [class.sinbad-table-no-record]="!(isLoading$) && (totalDataSource$) === 0"
+    [class.sinbad-table-no-record]="!(isLoading$) && (totalDataSource$ === 0)"
     #table
     [dataSource]="dataSource$"
     matSort
@@ -82,15 +85,19 @@
 
 <div
     class="loader-content"
-    *ngIf="(isLoading$) && (!(totalDataSource$) || (totalDataSource$))"
+    *ngIf="
+        (isLoading$) &&
+        (!(totalDataSource$)|| (totalDataSource$))
+    "
 >
     <mat-spinner color="accent"></mat-spinner>
 </div>
 
 <mat-paginator
-    [fxHide]="(isLoading$) || (totalDataSource$) === 0"
+    [fxHide]="(isLoading$ == true) || (totalDataSource$) === 0"
     [length]="totalDataSource$"
     [pageSize]="defaultPageSize"
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons
 ></mat-paginator>
+</div>

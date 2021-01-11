@@ -676,11 +676,6 @@ export class SkpEffects {
             // newPayload.supplierId = supplierId;
         }
 
-        // console.log(`[REQ ${id}] Update 1`, body);
-        // console.log(`[REQ ${id}] Update 2`, newPayload);
-
-        // return of({ type: 'SUCCESS_UPDATE' });
-
         return this._$skpComboApi.patch<UpdateSkpDto>(newPayload, id).pipe(
             map((resp) => {
                 return SkpActions.updateSkpSuccess();

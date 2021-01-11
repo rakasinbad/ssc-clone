@@ -114,7 +114,6 @@ export class SkpListComponent implements OnInit, AfterViewInit {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['keyword']) {
             if (!changes['keyword'].isFirstChange()) {
-                console.log('keyword', changes['keyword'].currentValue)
                 this.search.setValue(changes['keyword'].currentValue);
                 setTimeout(() => this._initTable());
             }
