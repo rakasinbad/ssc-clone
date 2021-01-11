@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 })
 export class SelectPromoService {
     private _url: string;
-    private readonly _endpoint = '/promo';
+    private readonly _endpoint = '/SKP-promo';
 
     constructor(
         private http: HttpClient,
@@ -26,15 +26,25 @@ export class SelectPromoService {
         const newArgs = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {
-            throw new Error('ERR_WAREHOUSE_REQUIRES_SUPPLIERID');
+            throw new Error('ERR_SELECT_PROMO_REQUIRES_SUPPLIERID');
         }
-        
-        if (params['supplierId'] && !params['noSupplierId']) {
-            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+
+        if (params['supplierId']) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId'],
+            });
         }
 
         if (params['keyword']) {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if(params['skpId']) {
+            newArgs.push({
+                key: 'skpId',
+                value: params['skpId']
+            })
         }
 
         this._url = this.helper$.handleApiRouter(this._endpoint);
