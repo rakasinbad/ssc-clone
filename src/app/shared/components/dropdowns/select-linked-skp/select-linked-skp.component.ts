@@ -135,8 +135,6 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
-                console.log('this.disable req entity->', this.disabled)
-                console.log('newQuery->', newQuery)
                 if (this.disabled == false) {
                     // Melakukan request data skp.
                     return this.entityApi$
@@ -196,12 +194,10 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
     }
 
     getFormError(form: any): string {
-        // console.log('get error');
         return this.errorMessage$.getFormError(form);
     }
 
     hasError(form: any, args: any = {}): boolean {
-        // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
@@ -337,7 +333,6 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
 
     ngOnInit(): void {
         this.initForm();
-        console.log('isi disabled oninit->', this.disabled)
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -350,8 +345,9 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
             //     }
             // }
         }
-        console.log('isi disabledchanges->', this.disabled)
-        console.log('entity->', this.entityForm)
+        // console.log('isi disabledchanges->', this.disabled)
+        // console.log('entity->', this.entityForm)
+        // console.log('this.selected->', this.selected)
         if (this.disabled == false) {
             const params: IQueryParams = {
                 paginate: true,
