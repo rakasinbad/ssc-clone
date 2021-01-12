@@ -46,7 +46,8 @@
                 [routerLink]="['../']"
                 *ngIf="!(isLoading$ | async)"
             > -->
-            <button *ngIf="tabActive == true"
+            <button
+                *ngIf="tabActive == true"
                 mat-raised-button
                 type="button"
                 class="accent-fg"
@@ -66,7 +67,12 @@
         <div class="content-card">
             <!-- CONTENT -->
             <div class="content">
-                <mat-tab-group color="accent" fxLayout="column" fxFlex (selectedTabChange)="clickDetail($event)">
+                <mat-tab-group
+                    color="accent"
+                    fxLayout="column"
+                    fxFlex
+                    (selectedTabChange)="clickDetail($event)"
+                >
                     <mat-tab label="General Information" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
@@ -76,7 +82,11 @@
                     </mat-tab>
                     <mat-tab label="Promo List" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
+                            <div
+                                class="tab-content p-16 pb-0"
+                                fxLayout="column"
+                                fusePerfectScrollbar
+                            >
                                 <app-detail-promo-list></app-detail-promo-list>
                             </div>
                         </ng-template>
@@ -84,13 +94,15 @@
 
                     <mat-tab label="Customer List" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
+                            <div
+                                class="tab-content p-16 pb-0"
+                                fxLayout="column"
+                                fusePerfectScrollbar
+                            >
                                 <app-detail-customer-list></app-detail-customer-list>
                             </div>
                         </ng-template>
                     </mat-tab>
-
-                     
                 </mat-tab-group>
             </div>
             <!-- / CONTENT -->

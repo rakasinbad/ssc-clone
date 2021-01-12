@@ -4,7 +4,7 @@
 
 <mat-table
     class="detail-promo-list-table sinbad-table"
-    [class.sinbad-table-no-record]="isLoading$ == false && totalDataSource$ === 0"
+    [class.sinbad-table-no-record]="!(isLoading$) && (totalDataSource$) === 0"
     #table
     [dataSource]="dataSource$"
     matSort
@@ -61,7 +61,7 @@
 
     <mat-footer-row
         *matFooterRowDef="['no-record']"
-        [fxShow]="isLoading$ == true && totalDataSource$ === 0"
+        [fxShow]="!(isLoading$) && (totalDataSource$) === 0"
     ></mat-footer-row>
 </mat-table>
 
