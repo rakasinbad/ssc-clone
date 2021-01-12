@@ -954,6 +954,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         this.form.get('skpId').reset();
         this.form.get('skpId').setValue(null);
         this.form.get('skpId').updateValueAndValidity();
+
     }
 
     /**
@@ -1528,15 +1529,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         if (value == null) {
             this.errorSkpLinkedList = true;
             this.form.get('skpId').setValue(null);
-            this.form.get('skpId').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                })
-            ]);
         } else {
             this.errorSkpLinkedList = false;
             let skpSelect = value;
-            this.form.get('skpId').setValue(value['id']);
+            this.form.get('skpId').setValue(parseInt(value['id']));
         }
     }
 
@@ -2890,14 +2886,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             ],
             isNewStore: false,
             isActiveStore: false,
-            skpId: [
-                null,
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
+            skpId: null,
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
@@ -3595,6 +3584,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 isActiveStore,
                 skpId
             };
+
+            if (payload.skpId == null) {
+                delete payload.skpId;
+            }
 
             if (base === TriggerBase.SKU) {
                 payload.dataBase.catalogueId = newChosenSku;

@@ -160,6 +160,11 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             ...this.groupFormDto,
             ...this.segmentFormDto,
         };
+
+        if (payload.skpId == null) {
+            delete payload.skpId;
+        }
+
         if (payload.target == 'store') {
             delete payload['catalogueSegmentationObjectId'];
         } else if (payload.target == 'all') {
