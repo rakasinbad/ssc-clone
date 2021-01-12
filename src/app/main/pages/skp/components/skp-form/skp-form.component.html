@@ -259,6 +259,7 @@
 
                             <select-promo
                                 [initialSelection]="form.get('promo').value || []"
+                                [disabled]="form.get('promo').disabled"
                                 [required]="true"
                                 fxFlex="50"
                                 (selected)="onPromoSelected($event)"
