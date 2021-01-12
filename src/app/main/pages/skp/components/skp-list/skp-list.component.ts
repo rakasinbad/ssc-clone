@@ -67,29 +67,6 @@ export class SkpListComponent implements OnInit, AfterViewInit {
     sort: MatSort;
     public dataSource = [];
     private subs$: Subject<void> = new Subject<void>();
-    dataDummy = [
-        {id: '1', name: 'SKP Danone', 
-        description: 'Example SKP Danone',  
-        startDate: '2020-11-30T06:46:00.000Z', 
-        endDate: '2020-11-30T06:50:00.000Z', 
-        notes: 'test', 
-        header: 'SKP Danone', 
-        status: 'active',
-        createdAt: '',
-        updatedAt: '',
-        deletedAt: null
-     },
-        {id: '2', name: 'SKP Unilever', 
-        description: 'Example SKP Unilever',  
-        startDate: '2020-11-30T06:46:00.000Z', 
-        endDate: '2020-11-30T06:50:00.000Z', 
-        status: 'inactive',
-        notes: 'test', 
-        header: 'SKP Unilever', 
-        createdAt: '',
-        updatedAt: '',
-        deletedAt: null },
-    ];
     constructor(
         private domSanitizer: DomSanitizer,
         private router: Router,
@@ -100,7 +77,6 @@ export class SkpListComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<SkpModel>(true, []);
-        // this.dataSource = this.dataDummy;
 
         this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
         this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);

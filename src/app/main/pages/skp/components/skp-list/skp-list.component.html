@@ -8,14 +8,6 @@
     fusePerfectScrollbar
 >
 
-<!-- <mat-table
-    class="skp-list-table sinbad-table"
-    #table
-    [dataSource]="dataSource"
-    matSort
-    [@animateStagger]="{ value: '50' }"
-    fusePerfectScrollbar
-> -->
     <!-- SKP Name Column-->
     <ng-container matColumnDef="skp-name">
         <mat-header-cell *matHeaderCellDef> SKP Name </mat-header-cell>
@@ -166,7 +158,10 @@
 </div>
 
 <mat-paginator
-    [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
+    [disabled]="
+    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+    "
     [length]="totalDataSource$ | async"
     [pageSize]="defaultPageSize"
     [pageSizeOptions]="defaultPageOpts"
