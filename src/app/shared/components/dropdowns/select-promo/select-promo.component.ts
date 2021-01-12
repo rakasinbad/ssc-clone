@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ChangeDetectorRef, NgZone, TemplateRef, ViewChild, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, AfterViewInit, OnDestroy, Output, ViewEncapsulation, ChangeDetectionStrategy, EventEmitter, ChangeDetectorRef, NgZone, TemplateRef, ViewChild, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocomplete, MatAutocompleteTrigger, MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
@@ -21,13 +21,17 @@ import { Selection } from '../select-advanced/models';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { SelectPromo as Entity } from "./models"
 import { SelectPromoService } from './services/select-promo.service';
+import { fuseAnimations } from '@fuse/animations';
 
 @Component({
   selector: 'select-promo',
   templateUrl: './select-promo.component.html',
-  styleUrls: ['./select-promo.component.scss']
+  styleUrls: ['./select-promo.component.scss'],
+  animations: fuseAnimations,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Default
 })
-export class SelectPromoComponent implements OnInit {
+export class SelectPromoComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
   // Untuk keperluan form field.
   // tslint:disable-next-line: no-inferrable-types
@@ -43,7 +47,8 @@ export class SelectPromoComponent implements OnInit {
   subs$: Subject<void> = new Subject<void>();
   // Untuk keperluan mat dialog ref.
   dialogRef$: Subject<string> = new Subject<string>();
-
+  // Untuk menyimpan entities yang terpilih dan akan dikirim melalui event apply.
+  selectedEntities: Array<Entity> = [];
   // Untuk menyimpan Entity yang belum ditransformasi untuk keperluan select advanced.
   rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
   // Untuk menyimpan Entity yang tersedia.
@@ -64,6 +69,7 @@ export class SelectPromoComponent implements OnInit {
   search: string = '';
   // Untuk menampung nilai-nilai yang sudah muncul di available selection.
   cachedEntities: HashTable<Entity> = {};
+  @Input() handleEventManually: boolean = false;
 
   // Untuk menandai apakah pilihannya required atau tidak.
   // tslint:disable-next-line: no-inferrable-types
@@ -78,7 +84,12 @@ export class SelectPromoComponent implements OnInit {
 
   @Input('placeholder') placeholder: string = "Search Promo"
 
+// Untuk mengirim data berupa promo yang telah terpilih.
   @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
+  // Untuk mengirim data berupa catalogue yang telah terpilih melalui tombol Apply. (hanya terkirim jika handleEventManually = true)
+  @Output() applied: EventEmitter<Array<Entity>> = new EventEmitter<Array<Entity>>();
+  // Untuk event ketika menekan close pada dialog. (Dialog tidak tertutup otomatis jika handleEventManually = true)
+  @Output() closed: EventEmitter<void> = new EventEmitter<void>();
 
   // Untuk keperluan AutoComplete-nya warehouse
   @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
@@ -353,12 +364,20 @@ export class SelectPromoComponent implements OnInit {
   onSelectedEntity(event: Array<Selection>): void {
       // Mengirim nilai tersebut melalui subject.
       if (event) {
-          const eventIds = event.map(e => e.id);
-          const rawEntities = this.rawAvailableEntities$.value;
-          this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+        let value: string | Array<string> = null;
+        const rawEntities = this.rawAvailableEntities$.value;
 
-        //   this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
-      }
+        if (event['option'] && event['source']) {
+            if (event['option']['value']) {
+                value = event['option']['value']['id'];
+            }
+
+            this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+        } else {
+            const eventIds = event.map(e => e.id);
+            this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
+        }
+    }
   }
 
   onEntitySearch(value: string): void {
@@ -400,11 +419,12 @@ export class SelectPromoComponent implements OnInit {
   }
 
   onSelectionChanged($event: SelectionList): void {
-      const { removed, merged = this.entityFormValue.value } = $event;
+      const { added, removed, merged = this.entityFormValue.value } = $event;
       this.tempEntity = merged;
       this.removing = removed.length > 0;
       HelperService.debug('SELECTION CHANGED', $event);
 
+      this.selectedEntities = added as unknown as Array<Entity>;
       this.cdRef.markForCheck();
   }
 
@@ -424,6 +444,7 @@ export class SelectPromoComponent implements OnInit {
             title: 'Select Promo',
             template: this.selectStoreType,
             isApplyEnabled: true,
+            handleEventManually: this.handleEventManually
         }, {
             disableClose: true,
             width: '80vw',
@@ -431,12 +452,38 @@ export class SelectPromoComponent implements OnInit {
             maxWidth: '80vw',
         });
 
+        if (this.handleEventManually) {
+            this.dialog.onApply().pipe(
+                takeUntil(this.dialog.closed$)
+            ).subscribe(() => {
+                const selectedValues = this.selectedEntities;
+
+                if (this.entityFormValue.value) {
+                    selectedValues.push(...this.entityFormValue.value);
+                }
+
+                this.applied.emit(selectedValues);
+            });
+
+            this.dialog.onClose().pipe(
+                takeUntil(this.dialog.closed$)
+            ).subscribe(() => {
+                this.closed.emit();
+            });
+        }
+
+        this.dialog.opened$.subscribe({
+            next: () => {
+                this.initEntity();
+            }
+        });
+
         this.dialog.closed$.subscribe({
             next: (value: TNullable<string>) => {
                 HelperService.debug('DIALOG SELECTION CLOSED', value);
 
                 let selection;
-                if (value === 'apply') {
+                if (!!value) {
                     if (!this.removing) {
                         if (Array.isArray(this.tempEntity)) {
                             if (this.tempEntity.length > 0) {
@@ -469,6 +516,10 @@ export class SelectPromoComponent implements OnInit {
 
                 this.onSelectedEntity(this.entityFormValue.value);
                 this.cdRef.markForCheck();
+            },
+            complete: () => {
+                this.availableEntities$.next([]);
+                this.rawAvailableEntities$.next([]);
             }
         });
     }
@@ -532,7 +583,7 @@ export class SelectPromoComponent implements OnInit {
     }
 
     if (changes['initialSelection']) {
-        console.log('INITIAL SELECTION', changes['initialSelection'].currentValue)
+        // console.log('INITIAL SELECTION', changes['initialSelection'].currentValue)
         this.entityFormValue.setValue(changes['initialSelection'].currentValue);
         this.updateFormView();
     }
