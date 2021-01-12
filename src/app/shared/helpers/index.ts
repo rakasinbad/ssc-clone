@@ -5,6 +5,7 @@ export * from './generator.service';
 export * from './helper.service';
 export * from './log.service';
 export * from './navigation.service';
+export * from './navigation-rules.service';
 export * from './notice.service';
 export * from './window.service';
 

@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
+import { RoleGuard } from './main/pages/core/auth/role.guard';
+import { getRoleByRouter } from 'app/shared/helpers';
 
 const routes: Routes = [
     {
@@ -27,7 +29,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                only: getRoleByRouter('profile'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -61,14 +63,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'FINANCE',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                            'SUPPLIER_ADMIN',
-                        ],
+                        only: getRoleByRouter('account'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
@@ -88,7 +83,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
+                        only: getRoleByRouter('attendances'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
@@ -121,13 +116,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'FINANCE',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                        ],
+                        only: getRoleByRouter('finances'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
@@ -145,14 +134,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'FINANCE',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                            'SUPPLIER_ADMIN',
-                        ],
+                        only: getRoleByRouter('orders'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
@@ -172,13 +154,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                            'SUPPLIER_ADMIN',
-                        ],
+                        only: getRoleByRouter('catalogues'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
@@ -198,13 +174,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                            'SUPPLIER_ADMIN',
-                        ],
+                        only: getRoleByRouter('in-store-inventories'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
@@ -224,13 +194,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                            'SUPPLIER_ADMIN',
-                        ],
+                        only: getRoleByRouter('sales-force'),
                     },
                     redirectTo: {
                         navigationCommands: ['/pages/errors/403'],
@@ -250,13 +214,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: [
-                            'SUPER_SUPPLIER_ADMIN',
-                            'HEAD_OF_SALES',
-                            'BOS',
-                            'COUNTRY_MANAGER',
-                            'SUPPLIER_ADMIN',
-                        ],
+                        only: getRoleByRouter('supplier-inventories'),
                     },
                     redirectTo: {
                         navigationCommands: ['/pages/errors/403'],
@@ -274,7 +232,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                        only: getRoleByRouter('settings'),
                     },
                     redirectTo: {
                         navigationCommands: ['/pages/errors/403'],
@@ -304,7 +262,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                        only: getRoleByRouter('promos'),
                     },
                     redirectTo: {
                         navigationCommands: ['/pages/errors/403'],
@@ -324,7 +282,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                        only: getRoleByRouter('catalogue-segmentations'),
                     },
                     redirectTo: {
                         navigationCommands: ['/pages/errors/403'],
@@ -342,7 +300,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                        only: getRoleByRouter('survey'),
                     },
                     redirectTo: {
                         navigationCommands: ['/pages/errors/403'],
@@ -371,11 +329,16 @@ const routes: Routes = [
                             },
                         },
                     },
-                },
+                }
+            },
+            {
+                path: 'landing',
+                canActivate: [AuthGuard, RoleGuard],
+                children: []
             },
             {
                 path: '',
-                redirectTo: 'account',
+                redirectTo: 'landing',
                 pathMatch: 'full',
             },
         ],
