@@ -55,7 +55,7 @@ export class CreateFlexiComboDto {
     promoSlot: number;
     isNewStore: boolean;
     isActiveStore: boolean;
-    skpId: string;
+    skpId: number;
 
     constructor(data: CreateFlexiComboDto) {
         const {

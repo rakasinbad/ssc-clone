@@ -156,11 +156,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
         this.promoEnd = endDate.toISOString(this.strictISOString);
         this.form.get('skpId').reset();
         this.form.get('skpId').setValue(null);
-        this.form.get('skpId').setValidators([
-            RxwebValidators.required({
-                message: this.errorMessageService.getErrorMessageNonState('default', 'required'),
-            }),
-        ]);
         this.form.get('skpId').updateValueAndValidity();
     }
 
@@ -190,15 +185,10 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
         if (value == null) {
             this.errorSkpLinkedList = true;
             this.form.get('skpId').setValue(null);
-            this.form.get('skpId').setValidators([
-                RxwebValidators.required({
-                    message: this.errorMessageService.getErrorMessageNonState('default', 'required'),
-                }),
-            ]);
         } else {
             this.errorSkpLinkedList = false;
             let skpSelect = value;
-            this.form.get('skpId').setValue(value['id']);
+            this.form.get('skpId').setValue(parseInt(value['id']));
         }
     }
 

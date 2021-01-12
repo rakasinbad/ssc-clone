@@ -354,29 +354,24 @@
                 <label
                     fxFlexAlign="center"
                     fxFlex="12"
-                    [class.sinbad-red-fg]="
-                    form.get('skpId').value || form.get('skpId').touched
-                        | hasErrorField: form.get('skpId'):false
-                    "
                 >
-                    <span class="sinbad-red-fg">*</span>
                     Linked SKP
                 </label>
 
                 <app-select-linked-skp
                     #selectSkpLinked
-                    [required]="true"
+                    [required]="false"
                     (selected)="onSelectedSkpLinked($event)"
                     fxFlexAlign="center"
                     fxFlex="50"
                     [disabled]="dateStatus"
                     [promoDateEnd]="promoEnd"
                 >
-                    <ng-container *ngIf="errorSkpLinkedList == true">
+                    <!-- <ng-container *ngIf="errorSkpLinkedList == true">
                         <mat-error>
                             {{ form.get('skpId').value | errorMessage: form:'skpId' }}
                         </mat-error>
-                    </ng-container>
+                    </ng-container> -->
                 </app-select-linked-skp>
             </div>
             <!-- / Linked List -->
