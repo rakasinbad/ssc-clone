@@ -17,4 +17,5 @@ export interface GeneralInfoFormDto {
     promoSlot: number;
     shortDescription: string;
     startDate: string;
+    skpId: number;
 }

@@ -1,0 +1,214 @@
+<div class="pb-16">
+    <span class="mat-headline"> General Information </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">SKP Name</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (skpGeneral$ | async)?.name || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">SKP Description</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (skpGeneral$ | async)?.description || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Notes To Display</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (skpGeneral$ | async)?.notes || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Header</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (skpGeneral$ | async)?.header  || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">SKP File</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (skpGeneral$ | async)?.file || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Image Suggestion</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <button
+                    type="button"
+                    mat-button
+                    color="accent"
+                    class="btn-sinbad-link"
+                    (click)="onShowImage(imageUrl, 'Image Suggestion')"
+                    *ngIf="(skpGeneral$ | async)?.image_url as imageUrl; else notFoundImg"
+                >
+                    View
+                </button>
+
+                <ng-template #notFoundImg> - </ng-template>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Available From</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                    <span class="date">
+                        {{ ((skpGeneral$ | async)?.availableFrom | date: 'dd/MM/yyyy') || '-' }}
+                    </span>
+
+                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
+                </span>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">To</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+                    <span class="date">
+                        {{ ((skpGeneral$ | async)?.availableTo | date: 'dd/MM/yyyy') || '-' }}
+                    </span>
+
+                    <mat-icon class="sinbad-red-10-fg">today</mat-icon>
+                </span>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Status</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="statusSkpType; else noStatusSkpType">
+                    <mat-radio-group [value]="(skpGeneral$ | async)?.status">
+                        <mat-radio-button
+                            *ngFor="let row of statusSkpType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noStatusSkpType> - </ng-template>
+            </div>
+    </div>
+</div>

@@ -27,3 +27,23 @@ export interface IQueryParamsVoucher {
     search?: IQuerySearchParams[];
     isWaitingForPayment?: boolean;
 }
+
+export interface IQueryParamsPromoList {
+    limit?: number;
+    skip?: number;
+    sort?: TSort;
+    sortBy?: string;
+    paginate?: boolean;
+    search?: IQuerySearchParams[];
+    isWaitingForPayment?: boolean;
+}
+
+export interface IQueryParamsCustomerList {
+    limit?: number;
+    skip?: number;
+    sort?: TSort;
+    sortBy?: string;
+    paginate?: boolean;
+    search?: IQuerySearchParams[];
+    isWaitingForPayment?: boolean;
+}

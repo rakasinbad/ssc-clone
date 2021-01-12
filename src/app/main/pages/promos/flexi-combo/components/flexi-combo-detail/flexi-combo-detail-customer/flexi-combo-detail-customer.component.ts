@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { SegmentationBasePromoFlexi } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { SpecifiedTarget } from 'app/shared/models/specified-target.model';
 import { Observable, Subscription, Subject, BehaviorSubject, of, fromEvent } from 'rxjs';
 import { 
@@ -49,8 +49,8 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
     flexiCombo$: Observable<FlexiCombo>;
     isLoading$: Observable<boolean>;
 
-    segmentBase = this._$helperService.segmentationBasePromoFlexi();
-    eSegmentBase = SegmentationBasePromoFlexi;
+    segmentBase = this._$helperService.segmentationBasePromo();
+    eSegmentBase = SegmentationBasePromo;
     specifiedTargets = this._$helperService.specifiedTarget();
     eSpecifiedTargets = SpecifiedTarget;
 
