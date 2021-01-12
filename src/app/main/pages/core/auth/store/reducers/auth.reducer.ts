@@ -55,6 +55,11 @@ const authReducer = createReducer(
         ...state,
         isLoading: false,
         user: payload
+    })),
+    on(AuthActions.authAutoLoginFailure, state => ({
+        ...state,
+        user: undefined,
+        errors: adapterError.removeAll(state.errors)
     }))
 );
 

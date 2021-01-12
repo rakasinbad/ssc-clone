@@ -4,6 +4,8 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     { path: '', redirectTo: 'flexi-combo', pathMatch: 'full' },
     {
@@ -13,13 +15,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('promos', 'flexi-combo'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -62,13 +58,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('promos', 'voucher'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -86,13 +76,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN',
-                ],
+                only: getRoleByRouter('promos', 'cross-selling-promo'),
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
