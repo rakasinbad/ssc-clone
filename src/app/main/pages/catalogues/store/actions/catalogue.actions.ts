@@ -330,6 +330,7 @@ export const fetchTotalCatalogueStatusSuccess = createAction(
             totalBonus: string;
             totalInactive: string;
             totalRegular: string;
+            totalExclusive: string;
         };
     }>()
 );
