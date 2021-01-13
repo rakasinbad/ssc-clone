@@ -248,11 +248,12 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             }
             case 'visibility': {
-                const { status, isBonus } = $event as Catalogue;
+                const { status, isBonus, isExclusive } = $event as Catalogue;
 
                 this.formValue = {
                     status,
                     isBonus,
+                    isExclusive,
                 };
 
                 break;
