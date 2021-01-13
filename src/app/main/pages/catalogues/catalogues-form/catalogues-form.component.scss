@@ -91,5 +91,10 @@ app-catalogues-form {
                 object-fit: cover; /*magic*/
             }
         }
+
+        .text-helper {
+            opacity: 0.5;
+            margin-top: -10px;
+        }
     }
 }
