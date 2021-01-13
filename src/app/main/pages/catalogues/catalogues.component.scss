@@ -179,7 +179,8 @@ app-catalogues {
         .mat-column-blockType,
         .mat-column-blockReason,
         .mat-column-blockSuggest,
-        .mat-column-type {
+        .mat-column-type,
+        .mat-column-exclusive {
             flex: 0 1 12.5%;
         }
 
