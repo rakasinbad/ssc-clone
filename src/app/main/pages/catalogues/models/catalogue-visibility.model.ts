@@ -17,6 +17,6 @@ export class CatalogueVisibility implements ICatalogueVisibility {
         this.catalogueId = catalogueId;
         this.status = status;
         this.isBonus = isBonus;
-        this.isBonus = isExclusive;
+        this.isExclusive = isExclusive;
     }
 }
