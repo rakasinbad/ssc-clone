@@ -100,6 +100,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
     updatedAt: string;
     deletedAt: TNullable<string>;
     catalogueSegmentationObjectId: string;
+    skpId: string;
 
     constructor(data: CrossSellingPromoDetail) {
         const {
@@ -131,7 +132,9 @@ export class CrossSellingPromoDetail implements ITimestamp {
             createdAt,
             updatedAt,
             deletedAt,
-            catalogueSegmentationObjectId
+            catalogueSegmentationObjectId,
+            skpId
+
         } = data;
 
         this.id = id;
@@ -163,6 +166,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
         this.catalogueSegmentationObjectId = catalogueSegmentationObjectId || null;
+        this.skpId = skpId;
     }
 }
 

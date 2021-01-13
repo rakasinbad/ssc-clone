@@ -116,7 +116,7 @@
     </div>
 
     <ng-container *ngIf="!(isLoading$ | async)">
-        <ng-container *ngIf="typePromoAlloc == 'promo_budget'">
+        <ng-container *ngIf="(crossSellingPromo$ | async)?.promoAllocationType == 'promo_budget'">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -139,7 +139,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="!(isLoading$ | async)">
-        <ng-container *ngIf="typePromoAlloc == 'promo_slot'">
+        <ng-container *ngIf="(crossSellingPromo$ | async)?.promoAllocationType == 'promo_slot'">
             <div
                 class="custom-field info-field"
                 fxLayout="row"
@@ -211,6 +211,26 @@
                         {{ ((crossSellingPromo$ | async)?.endDate | date: 'HH:mm') || '-' }}
                     </span>
                 </span>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Linked SKP</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ skpName || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader

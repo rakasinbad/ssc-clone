@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { CrossSelling } from '../../../models';
 import * as fromCrossSellingPromos from '../../../store/reducers';
@@ -11,6 +11,8 @@ import { CrossSellingPromoSelectors } from '../../../store/selectors';
 import { HelperService } from 'app/shared/helpers';
 import { PromoAllocationCross } from 'app/shared/models/promo-allocation.model';
 import { map } from 'rxjs/operators';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { CrossSellingPromoApiService } from '../../../services/cross-selling-promo-api.service';
 
 @Component({
   selector: 'app-cross-selling-detail-gn',
@@ -19,7 +21,7 @@ import { map } from 'rxjs/operators';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CrossSellingDetailGnComponent implements OnInit {
+export class CrossSellingDetailGnComponent implements OnInit, OnDestroy {
     crossSellingPromo$: Observable<CrossSelling>;
     isLoading$: Observable<boolean>;
 
@@ -27,9 +29,18 @@ export class CrossSellingDetailGnComponent implements OnInit {
     ePromoAllocation = PromoAllocationCross;
     public typePromoAlloc: string;
     public statusMulti: boolean = false;
+    public subs: Subscription;
+    public detailSkpSubs: Subscription;
+
+    skpId: string;
+    promoDetail = [];
+    skpName: string;
 
     constructor(private matDialog: MatDialog, private store: Store<fromCrossSellingPromos.FeatureState>,
-        private _$helperService: HelperService,
+        private _$helperService: HelperService, 
+        private cdRef: ChangeDetectorRef,
+        private crossSellingPromoApiService: CrossSellingPromoApiService
+
         ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -39,14 +50,22 @@ export class CrossSellingDetailGnComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem)
-        .pipe(
-            map((item) => {
-                this.typePromoAlloc = item.promoAllocationType;
-                this.statusMulti = item.promoBenefit['multiplication'];
-                return item;
-            })
-        );
+        this.crossSellingPromo$ = this.store.select(CrossSellingPromoSelectors.getSelectedItem);
+        this.subs = this.crossSellingPromo$.subscribe((val) => {
+            if (val != undefined) {
+                this.promoDetail.push(val);
+                this.skpId = this.promoDetail[0].skpId;
+                this.statusMulti = this.promoDetail[0]['promoBenefit']['multiplication'];
+
+                const params: IQueryParams = {};
+                this.detailSkpSubs = this.crossSellingPromoApiService.findByIdSkp(this.skpId, params).subscribe(res => {
+                    this.skpName = res['name'];
+                    this.cdRef.markForCheck();
+                });
+            }
+            
+        });
+
         this.isLoading$ = this.store.select(CrossSellingPromoSelectors.getIsLoading);
     }
 
@@ -66,5 +85,10 @@ export class CrossSellingDetailGnComponent implements OnInit {
             },
             disableClose: true,
         });
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
+        this.detailSkpSubs.unsubscribe;
     }
 }

@@ -2,6 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
+    OnDestroy,
     ChangeDetectorRef,
     ViewEncapsulation,
 } from '@angular/core';
@@ -19,6 +20,8 @@ import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { HelperService } from 'app/shared/helpers';
 import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { FlexiComboApiService } from '../../../services/flexi-combo-api.service';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
     selector: 'app-flexi-combo-detail-general',
@@ -27,7 +30,7 @@ import * as _ from 'lodash';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FlexiComboDetailGeneralComponent implements OnInit {
+export class FlexiComboDetailGeneralComponent implements OnInit, OnDestroy {
     flexiCombo$: Observable<FlexiCombo>;
     isLoading$: Observable<boolean>;
 
@@ -36,12 +39,19 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
     
     public typePromoAlloc: string;
     public subsFlexi: Subscription;
+    public detailSkpSubs: Subscription;
+    public subs: Subscription;
+
+    skpId: string;
+    promoDetail = [];
+    skpName: string;
 
     constructor(
         private matDialog: MatDialog,
         private store: Store<fromFlexiCombos.FeatureState>,
         private _$helperService: HelperService,
-        private cdRef: ChangeDetectorRef
+        private cdRef: ChangeDetectorRef,
+        private flexiComboApiService: FlexiComboApiService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -52,14 +62,21 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        // this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
-        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem).pipe(
-            map((item) => {
-                    this.typePromoAlloc = item.promoAllocationType;
-                return item;
-            })
-        );
+        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
+        this.subs = this.flexiCombo$.subscribe((val) => {
+            if (val != undefined) {
+                this.promoDetail.push(val);
+                this.skpId = this.promoDetail[0].skpId;
+                const params: IQueryParams = {};
+                this.detailSkpSubs = this.flexiComboApiService.findByIdSkp(this.skpId, params).subscribe(res => {
+                    this.skpName = res['name'];
+                    this.cdRef.markForCheck();
+                });
+            }
+            
+        });
 
+        
         this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
 
         this.cdRef.detectChanges();
@@ -82,6 +99,11 @@ export class FlexiComboDetailGeneralComponent implements OnInit {
             },
             disableClose: true,
         });
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
+        this.detailSkpSubs.unsubscribe;
     }
 
 }

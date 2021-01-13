@@ -343,6 +343,39 @@
             </div>
             <!-- / END DATE -->
 
+            <!-- Linked List -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="12"
+                >
+                    Linked SKP
+                </label>
+
+                <app-select-linked-skp
+                    #selectSkpLinked
+                    [required]="false"
+                    (selected)="onSelectedSkpLinked($event)"
+                    fxFlexAlign="center"
+                    fxFlex="50"
+                    [disabled]="dateStatus"
+                    [promoDateEnd]="promoEnd"
+                >
+                    <!-- <ng-container *ngIf="errorSkpLinkedList == true">
+                        <mat-error>
+                            {{ form.get('skpId').value | errorMessage: form:'skpId' }}
+                        </mat-error>
+                    </ng-container> -->
+                </app-select-linked-skp>
+            </div>
+            <!-- / Linked List -->
+
             <!-- IMAGE SUGGESTION -->
             <div
                 class="custom-field"

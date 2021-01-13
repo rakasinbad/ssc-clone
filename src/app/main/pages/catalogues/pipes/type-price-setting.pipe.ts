@@ -13,7 +13,9 @@ export class TypePriceSettingPipe implements PipeTransform {
                     ? `${value[0].name} (+${value.length - 1}${
                           value.length === 2 ? ' other' : ' others'
                       })`
-                    : value[0].name) || null
+                    : value && value.length === 1
+                    ? value[0].name
+                    : null) || null
             );
         }
 
