@@ -142,6 +142,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'stock',
         // 'sales',
         'type',
+        'exclusive',
         'status',
         'actions',
     ];

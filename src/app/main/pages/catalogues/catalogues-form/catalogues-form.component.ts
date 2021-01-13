@@ -318,6 +318,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             // VISIBILITY SETTING
             status: formValues['productVisibility']['status'],
             isBonus: formValues['productVisibility']['isBonus'],
+            isExclusive: formValues['productVisibility']['isExclusive'],
 
             // SEGMENTATION SETTING
             segmentationWarehouseIds: newWarehouse,
@@ -1675,6 +1676,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             productVisibility: this.fb.group({
                 status: 'active',
                 isBonus: false,
+                isExclusive: false,
             }),
 
             // SEGMENTATION SETTING
