@@ -12,6 +12,7 @@ import { SkpComponent } from './skp.component';
 import { SkpFormComponent } from './components/skp-form/skp-form.component';
 import { SkpDetailComponent } from './components/skp-detail/skp-detail.component';
 import { SkpModule } from './skp.module';
+import { getRoleByRouter } from 'app/shared/helpers';
 
 const routes: Routes = [
     { path: '', redirectTo: 'list', pathMatch: 'full' },
@@ -21,7 +22,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
+                only: getRoleByRouter('skp', 'list'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -33,40 +34,6 @@ const routes: Routes = [
         }
     },
     { path: ':id', component: SkpFormComponent },
-    // {
-    //     path: 'create',
-    //     component: SkpFormComponent,
-    //     canActivate: [AuthGuard, NgxPermissionsGuard],
-    //     data: {
-    //         permissions: {
-    //             only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
-    //             redirectTo: {
-    //                 navigationCommands: ['/pages/errors/403'],
-    //                 navigationExtras: {
-    //                     replaceUrl: true,
-    //                     skipLocationChange: true
-    //                 }
-    //             }
-    //         }
-    //     }
-    // },
-    // {
-    //     path: 'edit',
-    //     component: SkpFormComponent,
-    //     canActivate: [AuthGuard, NgxPermissionsGuard],
-    //     data: {
-    //         permissions: {
-    //             only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
-    //             redirectTo: {
-    //                 navigationCommands: ['/pages/errors/403'],
-    //                 navigationExtras: {
-    //                     replaceUrl: true,
-    //                     skipLocationChange: true
-    //                 }
-    //             }
-    //         }
-    //     }
-    // },
     {
         
         path: 'detail/:id',
@@ -74,7 +41,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
+                only: getRoleByRouter('skp','detail'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
