@@ -43,7 +43,7 @@ import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 
-type TFindCatalogueMode = 'all' | 'live' | 'bonus' | 'regular' | 'inactive';
+type TFindCatalogueMode = 'all' | 'live' | 'bonus' | 'regular' | 'inactive' | 'exclusive';
 
 @Component({
     selector: 'app-catalogues',
@@ -369,6 +369,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     totalBonus,
                     totalRegular,
                     totalInactive,
+                    totalExclusive,
                 } = payload;
 
                 this.store.dispatch(
@@ -420,22 +421,44 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         },
                     })
                 );
+
+                this.store.dispatch(
+                    UiActions.updateItemNavigation({
+                        payload: {
+                            id: 'exclusive',
+                            properties: { title: `Exclusive (${totalExclusive})` },
+                            key: 'customNavigation',
+                        },
+                    })
+                );
             });
 
         this.store
             .select(UiSelectors.getCustomToolbarActive)
             .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe((index) => {
-                if (index === 'all-type') {
-                    this.findCatalogueMode = 'all';
-                } else if (index === 'live') {
-                    this.findCatalogueMode = 'live';
-                } else if (index === 'bonus') {
-                    this.findCatalogueMode = 'bonus';
-                } else if (index === 'regular') {
-                    this.findCatalogueMode = 'regular';
-                } else if (index === 'inactive') {
-                    this.findCatalogueMode = 'inactive';
+                // if (index === 'all-type') {
+                //     this.findCatalogueMode = 'all';
+                // } else if (index === 'live') {
+                //     this.findCatalogueMode = 'live';
+                // } else if (index === 'bonus') {
+                //     this.findCatalogueMode = 'bonus';
+                // } else if (index === 'regular') {
+                //     this.findCatalogueMode = 'regular';
+                // } else if (index === 'inactive') {
+                //     this.findCatalogueMode = 'inactive';
+                // } else if (index === 'exclusive') {
+                //     this.findCatalogueMode = 'exclusive';
+                // }
+
+                switch (index) {
+                    case 'all-type':
+                        this.findCatalogueMode = 'all';
+                        break;
+
+                    default:
+                        this.findCatalogueMode = index as TFindCatalogueMode;
+                        break;
                 }
 
                 this.updatePrivileges();
