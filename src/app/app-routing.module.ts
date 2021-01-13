@@ -320,7 +320,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard, NgxPermissionsGuard],
                 data: {
                     permissions: {
-                        only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
+                        only: getRoleByRouter('skp'),
                         redirectTo: {
                             navigationCommands: ['/pages/errors/403'],
                             navigationExtras: {
