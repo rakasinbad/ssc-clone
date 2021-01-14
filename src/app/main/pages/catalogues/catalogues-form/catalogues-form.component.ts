@@ -5,7 +5,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation,
+    ViewEncapsulation
 } from '@angular/core';
 import {
     AbstractControl,
@@ -14,7 +14,7 @@ import {
     FormBuilder,
     FormGroup,
     ValidationErrors,
-    ValidatorFn,
+    ValidatorFn
 } from '@angular/forms';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -48,7 +48,7 @@ import {
     take,
     takeUntil,
     tap,
-    withLatestFrom,
+    withLatestFrom
 } from 'rxjs/operators';
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 import { locale as english } from '../i18n/en';
@@ -58,7 +58,7 @@ import {
     CatalogueUnit,
     StoreSegmentationChannel,
     StoreSegmentationCluster,
-    StoreSegmentationGroup,
+    StoreSegmentationGroup
 } from '../models';
 import { BrandFacadeService, CatalogueFacadeService, CataloguesService } from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
@@ -361,7 +361,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         // }
 
         if (this.formMode !== 'edit') {
-            // console.log('ADD SUBMIT', { payload: catalogueData });
+            HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
+                payload: catalogueData,
+            });
+
             this.store.dispatch(
                 CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
             );
