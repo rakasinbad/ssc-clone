@@ -236,7 +236,17 @@ app-merchants {
             min-width: 100px;
         }
 
-        .mat-column-joining-date {
+        // .mat-column-joining-date {
+        //     flex: 0 1 100px;
+        //     min-width: 100px;
+        // }
+
+        .mat-column-created-date {
+            flex: 0 1 100px;
+            min-width: 100px;
+        }
+
+        .mat-column-updated-date {
             flex: 0 1 100px;
             min-width: 100px;
         }
