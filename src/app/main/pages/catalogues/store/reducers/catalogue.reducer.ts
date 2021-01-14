@@ -47,6 +47,7 @@ export interface State {
     totalBonus: number;
     totalInactive: number;
     totalRegular: number;
+    totalExclusive: number;
     errors: ErrorState;
 }
 
@@ -100,6 +101,7 @@ const initialState: State = {
     totalActive: 0,
     totalInactive: 0,
     totalRegular: 0,
+    totalExclusive: 0,
     errors: initialErrorState,
 };
 
@@ -361,6 +363,7 @@ const catalogueReducer = createReducer(
         totalBonus: isNaN(+payload.totalBonus) ? 0 : +payload.totalBonus,
         totalInactive: isNaN(+payload.totalInactive) ? 0 : +payload.totalInactive,
         totalRegular: isNaN(+payload.totalRegular) ? 0 : +payload.totalRegular,
+        totalExclusive: isNaN(+payload.totalExclusive) ? 0 : +payload.totalExclusive,
     })),
     on(CatalogueDetailPageActions.adjustPriceSettingSuccess, (state) => ({
         ...state,

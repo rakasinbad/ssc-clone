@@ -181,6 +181,7 @@ export interface ICatalogue extends ITimestamp {
     isSelected?: boolean;
     isBonus?: boolean;
     isBundle?: boolean;
+    isExclusive?: boolean;
     isPromo?: boolean;
 }
 
@@ -612,6 +613,7 @@ export class Catalogue implements ICatalogue {
     isSelected?: boolean;
     isBonus?: boolean;
     isBundle?: boolean;
+    isExclusive?: boolean;
     isPromo?: boolean;
 
     constructor(data: ICatalogue) {
@@ -667,6 +669,7 @@ export class Catalogue implements ICatalogue {
             isSelected,
             isBonus,
             isBundle,
+            isExclusive,
             isPromo,
         } = data;
 
@@ -716,6 +719,7 @@ export class Catalogue implements ICatalogue {
         this.isSelected = isSelected;
         this.isBonus = isBonus;
         this.isBundle = isBundle;
+        this.isExclusive = isExclusive;
         this.isPromo = isPromo;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8

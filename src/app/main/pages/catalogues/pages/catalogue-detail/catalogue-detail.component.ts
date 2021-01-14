@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
+import { HelperService } from 'app/shared/helpers';
 import { FormStatus, IBreadcrumbs } from 'app/shared/models/global.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
@@ -248,11 +249,12 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             }
             case 'visibility': {
-                const { status, isBonus } = $event as Catalogue;
+                const { status, isBonus, isExclusive } = $event as Catalogue;
 
                 this.formValue = {
                     status,
                     isBonus,
+                    isExclusive,
                 };
 
                 break;
@@ -359,6 +361,11 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             .pipe(withLatestFrom(this.selectedCatalogue$), takeUntil(this.subs$))
             .subscribe(([isClick, catalogue]) => {
                 if (isClick) {
+                    HelperService.debug('[CatalogueDetailComponent] getIsClickSaveButton', {
+                        payload: this.formValue,
+                        section: this.section,
+                    });
+
                     switch (this.section) {
                         case 'sku-information': {
                             this.store.dispatch(UiActions.hideFooterAction());
@@ -375,6 +382,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                             break;
                         }
+
                         case 'media-settings': {
                             const formPhotos = this.formValue as CatalogueMediaForm;
                             const oldPhotos = formPhotos.oldPhotos;
@@ -423,6 +431,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                             break;
                         }
+
                         case 'weight-and-dimension': {
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(
@@ -438,6 +447,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                             break;
                         }
+
                         case 'price-settings': {
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(
@@ -453,6 +463,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                             break;
                         }
+
                         case 'amount-settings': {
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(
@@ -468,6 +479,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                             break;
                         }
+
                         case 'visibility': {
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(
