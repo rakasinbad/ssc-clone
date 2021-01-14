@@ -215,7 +215,9 @@
                                 />
                                 <input
                                     matInput
-                                    [value]="skpFileName || 'No file choose'"
+                                    [value]="tmpFiles.file.value && tmpFiles.file.value.name ? 
+                                                tmpFiles.file.value.name : null"
+                                    placeholder="No file choose"
                                     autocomplete="off"
                                     style="color:#a0a4a8"
                                     disabled
@@ -329,6 +331,7 @@
                                         (change)="onFileBrowse($event, 'imageUrl')"
                                         autocomplete="off"
                                     />
+
                                     <input
                                         matInput
                                         [formControl]="tmp.imageUrl"
@@ -356,7 +359,7 @@
                                     Upload Your File
                                 </button>
 
-                                <ng-container
+                                <!-- <ng-container
                                     *ngIf="pageType === 'edit' && skpCombo && skpCombo?.imageUrl"
                                 >
                                     <a
@@ -367,7 +370,7 @@
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
-                                </ng-container>
+                                </ng-container> -->
                             </div>
                         </div>
 

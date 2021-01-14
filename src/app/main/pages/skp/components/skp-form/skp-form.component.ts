@@ -91,6 +91,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     maxEndDate: Date = null;
     selectStatus: string = 'active';
     skpFileName: string;
+    skpImgName: string;
     skpId: string
 
     private _breadCrumbs: IBreadcrumbs[] = [
@@ -333,6 +334,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _initForm(): void {
         this.tmp['imageUrl'] = new FormControl({ value: '', disabled: true });
+        this.tmpFiles['file'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.formBuilder.group({
             // promoId: [
@@ -583,6 +585,12 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Handle Image
         if (row.imageUrl) {
             imageCtrl.setValue(row.imageUrl);
+            this.tmp['imageUrl'].setValue({
+                value: {
+                    name: row.imageUrl,
+                    url: row.imageUrl
+                }
+            })
         }
 
         // Handle Start Date
@@ -603,8 +611,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Handle File
         if (row.file) {
-            // fileCtrl.setValue(row.file);
-            this.skpFileName = row.file
+            this.tmpFiles['file'].setValue({
+                value: {
+                    name: row.file
+                }
+            })
         }
 
         this._getPromoList()
@@ -675,7 +686,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 notes,
                 header,
                 file,
-                promo,
+                promo: newPromoList,
                 imageUrl,
                 startDate: newStartDate,
                 endDate: newEndDate, 
