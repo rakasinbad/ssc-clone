@@ -91,6 +91,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     maxEndDate: Date = null;
     selectStatus: string = 'active';
     skpFileName: string;
+    skpImgName: string;
     skpId: string
 
     private _breadCrumbs: IBreadcrumbs[] = [
@@ -333,6 +334,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _initForm(): void {
         this.tmp['imageUrl'] = new FormControl({ value: '', disabled: true });
+        this.tmpFiles['file'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.formBuilder.group({
             // promoId: [
@@ -550,7 +552,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const endDateCtrl = this.form.get('endDate');
         const statusCtrl = this.form.get('status');
         const imageCtrl = this.form.get('imageUrl');
-        const fileCtrl = this.form.get('form');
+        const fileCtrl = this.form.get('file');
         // // Handle Promo Seller ID
         // if (row.externalId) {
         //     promoSellerIdCtrl.setValue(row.externalId);
@@ -583,6 +585,11 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Handle Image
         if (row.imageUrl) {
             imageCtrl.setValue(row.imageUrl);
+            const url = row.imageUrl
+            this.tmp['imageUrl'].setValue({
+                name: url.substr(url.lastIndexOf('/') + 1),
+                url: url
+            })
         }
 
         // Handle Start Date
@@ -603,8 +610,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Handle File
         if (row.file) {
-            // fileCtrl.setValue(row.file);
-            this.skpFileName = row.file
+            fileCtrl.setValue(row.file);
+            this.tmpFiles['file'].setValue({
+                name: row.file
+            })
         }
 
         this._getPromoList()
@@ -675,7 +684,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 notes,
                 header,
                 file,
-                promo,
+                promo: newPromoList,
                 imageUrl,
                 startDate: newStartDate,
                 endDate: newEndDate, 
