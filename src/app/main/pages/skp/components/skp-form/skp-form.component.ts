@@ -552,7 +552,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const endDateCtrl = this.form.get('endDate');
         const statusCtrl = this.form.get('status');
         const imageCtrl = this.form.get('imageUrl');
-        const fileCtrl = this.form.get('form');
+        const fileCtrl = this.form.get('file');
         // // Handle Promo Seller ID
         // if (row.externalId) {
         //     promoSellerIdCtrl.setValue(row.externalId);
@@ -585,11 +585,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Handle Image
         if (row.imageUrl) {
             imageCtrl.setValue(row.imageUrl);
+            const url = row.imageUrl
             this.tmp['imageUrl'].setValue({
-                value: {
-                    name: row.imageUrl,
-                    url: row.imageUrl
-                }
+                name: url.substr(url.lastIndexOf('/') + 1),
+                url: url
             })
         }
 
@@ -611,10 +610,9 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Handle File
         if (row.file) {
+            fileCtrl.setValue(row.file);
             this.tmpFiles['file'].setValue({
-                value: {
-                    name: row.file
-                }
+                name: row.file
             })
         }
 
