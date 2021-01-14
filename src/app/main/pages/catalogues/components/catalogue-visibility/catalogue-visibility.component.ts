@@ -189,7 +189,7 @@ export class CatalogueVisibilityComponent implements OnInit, OnChanges, OnDestro
                 const isExclusiveCtrl = this.form.get('isExclusive');
                 statusCtrl.setValue(item.status);
                 isBonusCtrl.setValue(item.isBonus);
-                isExclusiveCtrl.setValue(false);
+                isExclusiveCtrl.setValue(item.isExclusive);
 
                 if (this.formMode === 'view') {
                     statusCtrl.disable({ onlySelf: true });
