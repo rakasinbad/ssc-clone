@@ -22,6 +22,11 @@ import {
     VoucherAllocation,
 } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
+import {
+    SegmentationBase,
+    SegmentationBasePromo,
+    SegmentationBasePromoFlexi,
+} from '../models/segmentation-base.model';
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
 import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
@@ -45,6 +50,7 @@ export class HelperService {
         'hasChild',
         'invoiceGroupId',
         'keyword',
+        'onlyExclusive',
         'priceGte',
         'priceLte',
         'search',
@@ -70,6 +76,7 @@ export class HelperService {
             label: '%',
         },
     ];
+
     private static readonly _benefitMultiType: { id: BenefitMultiType; label: string }[] = [
         {
             id: BenefitMultiType.QTY,
@@ -231,7 +238,10 @@ export class HelperService {
         },
     ];
 
-    private static readonly _segmentationBasePromo: { id: SegmentationBasePromo; label: string }[] = [
+    private static readonly _segmentationBasePromo: {
+        id: SegmentationBasePromo;
+        label: string;
+    }[] = [
         {
             id: SegmentationBasePromo.STORE,
             label: 'Direct Store',
@@ -1023,7 +1033,7 @@ export class HelperService {
 
     supplierVoucherCategory(): { id: SupplierVoucherCategory; label: string }[] {
         return HelperService._supplierVoucherCategory;
-    }  
+    }
     specifiedTarget(): { id: SpecifiedTarget; label: string }[] {
         return HelperService._specifiedTarget;
     }
