@@ -67,11 +67,14 @@ export class FlexiComboDetailGeneralComponent implements OnInit, OnDestroy {
             if (val != undefined) {
                 this.promoDetail.push(val);
                 this.skpId = this.promoDetail[0].skpId;
-                const params: IQueryParams = {};
-                this.detailSkpSubs = this.flexiComboApiService.findByIdSkp(this.skpId, params).subscribe(res => {
-                    this.skpName = res['name'];
-                    this.cdRef.markForCheck();
-                });
+                if (this.skpId != null) {
+                    const params: IQueryParams = {};
+                    this.detailSkpSubs = this.flexiComboApiService.findByIdSkp(this.skpId, params).subscribe(res => {
+                        this.skpName = res['name'];
+                        this.cdRef.markForCheck();
+                    });
+                }
+               
             }
             
         });
@@ -103,7 +106,9 @@ export class FlexiComboDetailGeneralComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subs.unsubscribe();
-        this.detailSkpSubs.unsubscribe;
+        if (this.skpId != null) {
+            this.detailSkpSubs.unsubscribe();
+        }
     }
 
 }
