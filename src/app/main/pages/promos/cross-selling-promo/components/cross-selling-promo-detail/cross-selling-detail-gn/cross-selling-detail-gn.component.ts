@@ -56,12 +56,13 @@ export class CrossSellingDetailGnComponent implements OnInit, OnDestroy {
                 this.promoDetail.push(val);
                 this.skpId = this.promoDetail[0].skpId;
                 this.statusMulti = this.promoDetail[0]['promoBenefit']['multiplication'];
-
-                const params: IQueryParams = {};
-                this.detailSkpSubs = this.crossSellingPromoApiService.findByIdSkp(this.skpId, params).subscribe(res => {
-                    this.skpName = res['name'];
-                    this.cdRef.markForCheck();
-                });
+                if (this.skpId != null) {
+                    const params: IQueryParams = {};
+                    this.detailSkpSubs = this.crossSellingPromoApiService.findByIdSkp(this.skpId, params).subscribe(res => {
+                        this.skpName = res['name'];
+                        this.cdRef.markForCheck();
+                    });
+                }
             }
             
         });
@@ -89,6 +90,8 @@ export class CrossSellingDetailGnComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subs.unsubscribe();
-        this.detailSkpSubs.unsubscribe;
+        if (this.skpId != null) {
+            this.detailSkpSubs.unsubscribe();
+        }
     }
 }
