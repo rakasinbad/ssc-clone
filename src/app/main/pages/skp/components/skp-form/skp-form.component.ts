@@ -821,7 +821,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     return false;
                 // }
                 // const fileUrlField = this.form.get('file');
-                this.skpFileName = fileInput.target.files[0].name;
+                this.tmpFiles['file'].setValue({
+                    name: fileInput.target.files[0].name
+                })
+                
                 this.form.get('file').setValue(fileInput.target.files[0].name);
                 const reader = new FileReader();
                 reader.readAsDataURL(fileInput.target.files[0]);
