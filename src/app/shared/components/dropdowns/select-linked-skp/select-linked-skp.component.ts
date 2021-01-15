@@ -251,6 +251,7 @@ export class SelectLinkedSkpComponent implements OnInit, OnChanges, AfterViewIni
                 queryParams['promoEndDate'] = this.promoDateEnd;
 
                 this.entities.clear();
+                this.selectedEntity$.next(null);
                 this.requestEntity(queryParams);
             });
         }
