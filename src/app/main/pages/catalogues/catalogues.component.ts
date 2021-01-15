@@ -692,6 +692,13 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 case 'inactive':
                     data['status'] = 'inactive';
                     break;
+
+                case 'exclusive':
+                    data['search'] = [
+                        ...(data['search'] && data['search'].length ? data['search'] : []),
+                        { fieldName: 'onlyExclusive', keyword: 'true' },
+                    ];
+                    break;
             }
 
             if (this.search) {
