@@ -377,14 +377,14 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                     RxwebValidators.pattern({
                         expression: {
-                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9]*[a-zA-Z0-9]$/,
+                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$/,
                         },
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.alphaNumeric({
-                        allowWhiteSpace: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
+                    // RxwebValidators.alphaNumeric({
+                    //     allowWhiteSpace: true,
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    // }),
                 ],
             ],
             description: [
@@ -821,7 +821,10 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     return false;
                 // }
                 // const fileUrlField = this.form.get('file');
-                this.skpFileName = fileInput.target.files[0].name;
+                this.tmpFiles['file'].setValue({
+                    name: fileInput.target.files[0].name
+                })
+                
                 this.form.get('file').setValue(fileInput.target.files[0].name);
                 const reader = new FileReader();
                 reader.readAsDataURL(fileInput.target.files[0]);
