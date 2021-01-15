@@ -377,14 +377,14 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     }),
                     RxwebValidators.pattern({
                         expression: {
-                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9]*[a-zA-Z0-9]$/,
+                            alphaNumHyphenUnderscore: /^[a-zA-Z]+[a-zA-Z0-9-_ ]*[a-zA-Z0-9]$/,
                         },
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
-                    RxwebValidators.alphaNumeric({
-                        allowWhiteSpace: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
+                    // RxwebValidators.alphaNumeric({
+                    //     allowWhiteSpace: true,
+                    //     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    // }),
                 ],
             ],
             description: [
