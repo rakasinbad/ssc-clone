@@ -4,6 +4,8 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 const routes: Routes = [
     { path: '', redirectTo: 'accounts', pathMatch: 'full' },
     {
@@ -15,7 +17,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN']
+                only: getRoleByRouter('settings', 'accounts')
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

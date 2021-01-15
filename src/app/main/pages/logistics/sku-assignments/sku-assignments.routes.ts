@@ -15,6 +15,8 @@ import { SkuAssignmentsComponent } from './sku-assignments.component';
 import { SkuAssignmentFormComponent } from './sku-assignment-form';
 import { SkuAssignmentDetailComponent } from './sku-assignment-detail';
 
+import { getRoleByRouter } from 'app/shared/helpers';
+
 // Routes
 const routes: Routes = [
     {
@@ -23,7 +25,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN'],
+                only: getRoleByRouter('logistics', 'sku-assignments'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

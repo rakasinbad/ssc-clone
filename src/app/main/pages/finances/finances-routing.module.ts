@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
+import { getRoleByRouter } from 'app/shared/helpers';
 
 const routes: Routes = [
     { path: '', redirectTo: 'credit-limit-balance', pathMatch: 'full' },
@@ -15,13 +16,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'FINANCE',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER'
-                ],
+                only: getRoleByRouter('finances', 'credit-limit-balance'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -44,13 +39,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'FINANCE',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER'
-                ],
+                only: getRoleByRouter('finances', 'payment-status'),
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
