@@ -25,10 +25,8 @@ import { IQueryParams } from '../models/query.model';
 import {
     SegmentationBase,
     SegmentationBasePromo,
-    SegmentationBasePromoFlexi,
 } from '../models/segmentation-base.model';
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
-import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
