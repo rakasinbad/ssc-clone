@@ -689,7 +689,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 imageUrl,
                 startDate: newStartDate,
                 endDate: newEndDate, 
-                status: EStatus.ACTIVE,
+                status: status,
             };
             this.store.dispatch(SkpActions.createSkpRequest({ payload }));
         } else if (this.pageType === 'edit') {
@@ -706,7 +706,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 imageUrl,
                 startDate: newStartDate,
                 endDate: newEndDate, 
-                status: EStatus.ACTIVE,
+                status: status,
                 
             };
 
