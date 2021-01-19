@@ -37,12 +37,6 @@ export class NavigationRulesService {
       })[0].navbar;
   } 
 
-//   public GetRoutingByRole = () : string[] => {
-//       return this._navigationRules.filter((value : Rule) => {
-//           return this.ngxRoles.getRole(value.role);
-//       })[0].routing;
-//   }
-
   public getDirectByRole() : string {
     return this._navigationRules.filter((value : Rule) => {
       return this.ngxRoles.getRole(value.role);

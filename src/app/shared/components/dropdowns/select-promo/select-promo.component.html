@@ -1,0 +1,46 @@
+<ng-template #errorMessage>
+    <ng-content select="[error]"></ng-content>
+</ng-template>
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex (click)="openEntitySelection()">
+        <input
+            matInput
+            autocomplete="new-password"
+            [placeholder]="placeholder"
+            [formControl]="entityFormView"
+            [value]="entityFormView.value"
+            readonly
+        />
+        <!-- <mat-error>
+            <ng-content select="[error]"></ng-content>
+        </mat-error> -->
+        <!-- LOADER -->
+        <div class="pt-4 loader" style="justify-content: flex-end;" *ngIf="isEntityLoading$ | async">
+            <mat-spinner [diameter]="25" color="accent"></mat-spinner>
+        </div>
+        <!-- / LOADER -->
+        <mat-error *ngIf="entityFormView?.errors?.required; else hasCustomError">
+            {{ entityFormView?.errors?.required?.message }}
+        </mat-error>
+        <ng-template #hasCustomError>
+            <mat-error>
+                {{ entityFormView?.errors?.custom?.message }}
+            </mat-error>
+        </ng-template>
+    </mat-form-field>
+</div>
+<ng-template #selectStoreType>
+    <sinbad-multiple-selection
+        [disableClearAll]="false"
+        [enableSelectAll]="true"
+        [availableOptions]="(availableEntities$ | async)"
+        [totalAvailableOptions]="(totalEntities$ | async)"
+        [initialSelectedOptions]="initialSelection"
+        [totalInitialSelectedOptions]="initialSelection.length"
+        [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+        (availableReachedBottom)="onEntityReachedBottom()"
+        (selectionListChanged)="onSelectionChanged($event)"
+        (clearAll)="onClearAll()"
+        (search)="onEntitySearch($event)"
+    ></sinbad-multiple-selection>
+</ng-template>

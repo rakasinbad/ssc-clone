@@ -89,14 +89,14 @@
                 <!-- for promo type budget -->
                 <ng-container *ngIf="row.promoAllocationType === 'promo_budget'">
                     <p class="text-word-break-break-word" thousandSeparator=".">
-                        Rp {{ (row?.promoBudget | number) || '-' }}
+                        Rp {{ (row?.promoBudget | number) || '-' }} / Rp {{ (row?.planBudget | number) || '-' }}
                     </p>
                 </ng-container>
 
                 <!-- for promo type slot -->
                 <ng-container *ngIf="row.promoAllocationType === 'promo_slot'">
                     <p class="text-word-break-break-word">
-                        {{ row?.promoSlot || '-' }}
+                        {{ row?.promoSlot || '-' }} / {{ row?.planSlot || '-' }}
                     </p>
                 </ng-container>
             </mat-cell>
