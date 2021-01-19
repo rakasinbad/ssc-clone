@@ -109,8 +109,51 @@
             </ng-container>
 
             <!-- segmented only -->
-            <!-- <ng-container *ngIf="form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION">
+            <ng-container *ngIf="form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION">
 
+                <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label 
+                    [class.sinbad-red-fg]="
+                            form.get('chosenWarehouse').value || form.get('chosenWarehouse').touched
+                                | hasErrorField: form.get('chosenWarehouse'):false
+                        "
+                    fxFlexAlign="center" fxFlex="12"
+                >
+                    <span class="sinbad-red-fg">*</span>
+                    Warehouse<br />({{
+                        form.get('chosenWarehouse').value?.length || 0
+                    }}
+                    Selected)
+                </label>
+
+                    <select-warehouses
+                    [initialSelection]="form.get('chosenWarehouse').value || []"
+                    [disabled]="false"
+                    placeholder="Choose Warehouse"
+                    [required]="false"
+                    [typePromo]="'crossSelling'"
+                    [segmentBases]="segmentBases"
+                    [catalogueIdSelect]="undefined"
+                    [brandIdSelect]="undefined"
+                    [fakturIdSelect]="undefined"
+                    [typeTrigger]="'selectSegment'"
+                    [idSelectedSegment]="idSelectSegment"
+                    (selected)="onWarehouseSelected($event)"
+                    fxFlex="50"
+                >
+                    
+                    <div error>
+                        {{ form.get('chosenWarehouse').value | errorMessage: form:'chosenWarehouse' }}
+                    </div>
+                </select-warehouses>
+            </div>
+            
                 <div
                     class="custom-field"
                     fxLayout="row"
@@ -119,14 +162,9 @@
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
                     <label
-                        [class.sinbad-red-fg]="
-                            form.get('chosenStoreType').value || form.get('chosenStoreType').touched
-                                | hasErrorField: form.get('chosenStoreType'):false
-                        "
                         fxFlexAlign="center"
                         fxFlex="12"
                     >
-                        <span class="sinbad-red-fg">*</span>
                         Store Type<br />
                         ({{ form.get('chosenStoreType').value?.length || 0 }} Selected)
                     </label>
@@ -138,10 +176,14 @@
                         title="Select Store Type"
                         segmentationType="type"
                         [required]="false"
-                        [segmentBases]="segmentBases"
-                        [typePromo]="typePromo"
-                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreTypeSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                         <div error>
@@ -161,15 +203,9 @@
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
                     <label
-                        [class.sinbad-red-fg]="
-                            form.get('chosenStoreGroup').value ||
-                                form.get('chosenStoreGroup').touched
-                                | hasErrorField: form.get('chosenStoreGroup'):false
-                        "
                         fxFlexAlign="center"
                         fxFlex="12"
                     >
-                        <span class="sinbad-red-fg">*</span>
                         Store Group<br />
                         ({{ form.get('chosenStoreGroup').value?.length || 0 }} Selected)
                     </label>
@@ -181,10 +217,14 @@
                         title="Select Store Group"
                         segmentationType="group"
                         [required]="false"
-                        [segmentBases]="segmentBases"
-                        [typePromo]="typePromo"
-                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreGroupSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                         <div error>
@@ -204,15 +244,9 @@
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
                     <label
-                        [class.sinbad-red-fg]="
-                            form.get('chosenStoreChannel').value ||
-                                form.get('chosenStoreChannel').touched
-                                | hasErrorField: form.get('chosenStoreChannel'):false
-                        "
                         fxFlexAlign="center"
                         fxFlex="12"
                     >
-                        <span class="sinbad-red-fg">*</span>
                         Store Channel<br />
                         ({{ form.get('chosenStoreChannel').value?.length || 0 }} Selected)
                     </label>
@@ -224,10 +258,14 @@
                         title="Select Store Channel"
                         segmentationType="channel"
                         [required]="false"
-                        [segmentBases]="segmentBases"
-                        [typePromo]="typePromo"
-                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreChannelSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                         <div error>
@@ -247,15 +285,9 @@
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
                     <label
-                        [class.sinbad-red-fg]="
-                            form.get('chosenStoreCluster').value ||
-                                form.get('chosenStoreCluster').touched
-                                | hasErrorField: form.get('chosenStoreCluster'):false
-                        "
                         fxFlexAlign="center"
                         fxFlex="12"
                     >
-                        <span class="sinbad-red-fg">*</span>
                         Store Cluster<br />
                         ({{ form.get('chosenStoreCluster').value?.length || 0 }} Selected)
                     </label>
@@ -267,10 +299,14 @@
                         title="Select Store Cluster"
                         segmentationType="cluster"
                         [required]="false"
-                        [segmentBases]="segmentBases"
-                        [typePromo]="typePromo"
-                        [fakturIdSelect]="selectFaktur"
                         (selected)="onStoreClusterSelected($event)"
+                        [typePromo]="'crossSelling'"
+                        [segmentBases]="segmentBases"
+                        [catalogueIdSelect]="undefined"
+                        [brandIdSelect]="undefined"
+                        [fakturIdSelect]="undefined"
+                        [typeTrigger]="'selectSegment'"
+                        [idSelectedSegment]="idSelectSegment"
                         fxFlex="50"
                     >
                         <div error>
@@ -281,7 +317,7 @@
                         </div>
                     </select-store-segmentation>
                 </div>
-            </ng-container> -->
+            </ng-container>
 
             <!-- all segmented -->
             <ng-container
@@ -295,7 +331,6 @@
                     [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
                 >
                     <label fxFlexAlign="center" fxFlex="12">
-                        <span class="sinbad-red-fg">*</span>
                         Warehouse<br />
                         ({{storeWarehouseLength}} Selected)
                     </label>
@@ -450,7 +485,8 @@
 
             <!-- specified target -->
             <ng-container
-                *ngIf="form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION"
+                *ngIf="form.get('segmentationBase').value === segmentBasePromo.ALLSEGMENTATION ||
+                form.get('segmentationBase').value === segmentBasePromo.SEGMENTATION "
             >
                 <div
                     class="custom-field mb-8"

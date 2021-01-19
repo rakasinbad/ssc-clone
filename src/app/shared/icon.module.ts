@@ -172,5 +172,11 @@ export class IconModule {
             'sinbad-survey-logo',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/survey-icon.svg')
         );
+
+        // SKP Logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-skp-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/skp-logo.svg')
+        );
     }
 }

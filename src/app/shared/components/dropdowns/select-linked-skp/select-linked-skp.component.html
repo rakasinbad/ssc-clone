@@ -1,0 +1,46 @@
+<!-- ENTITY (SINGLE Select Linked SKP) -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerEntity
+            matInput
+            autocomplete="new-password"
+            [placeholder]="placeholder"
+            [formControl]="entityForm"
+            [matAutocomplete]="entityAutoComplete"
+        />
+        <mat-autocomplete
+            #entityAutoComplete
+            [displayWith]="displayEntity"
+            (opened)="listenEntityAutoComplete()"
+            (optionSelected)="onSelectedEntity($event)"
+        >
+            <!-- NONE OPTION -->
+            <mat-option *ngIf="!(isEntityLoading$ | async)">(None)</mat-option>
+            <!-- / NONE OPTION -->
+
+            <!-- ENTITY (SINGLE Select Linked SKP) OPTIONS -->
+            <mat-option
+                *ngFor="let entity of entities.toArray()"
+                [value]="entity"
+            >
+               {{ (entity?.name || '-') }}
+            </mat-option>
+            <!-- / ENTITY (SINGLE Select Linked SKP) OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalEntities$ | async) && ((totalEntities$ | async) > entities.length)"
+            >
+                Loading ...
+            </mat-option>
+            <!-- / LOADING OPTION -->
+        </mat-autocomplete>
+        <mat-error *ngIf="hasError(entityForm)">
+            {{ getFormError(entityForm) }}
+        </mat-error>
+    </mat-form-field>
+</div>
+<!-- / ENTITY (SINGLE Select Linked SKP) -->

@@ -28,6 +28,7 @@ export class CrossSellingPromoApiService {
      */
     private readonly _endpoint = '/cross-selling-promo';
     private readonly _endpointPromo = '/get-segmentation-promo';
+    private readonly _endpointSkp = '/SKP';
 
     /**
      * Creates an instance of CrossSellingPromoApiService.
@@ -124,6 +125,32 @@ export class CrossSellingPromoApiService {
         const newParams = this._$helper.handleParams(this._urlSegment, params, ...newArgs);
 
         return this.http.get<T>(this._urlSegment, { params: newParams });
+    }
+
+     /**
+     *
+     *
+     * @template T
+     * @param {string} id
+     * @param {IQueryParams} [params]
+     * @returns {Observable<T>}
+     * @memberof FlexiComboApiService
+     */
+    findByIdSkp<T>(id: string, params?: IQueryParams): Observable<T> {
+        const newArg = [];
+
+        if (params['supplierId']) {
+            newArg.push({
+                key: 'supplierId',
+                value: params['supplierId'],
+            });
+        }
+
+        const _urlSkp = this._$helper.handleApiRouter(this._endpointSkp);
+
+        const newParams = this._$helper.handleParams(_urlSkp, null, ...newArg);
+
+        return this.http.get<T>(`${_urlSkp}/${id}`, { params: newParams });
     }
 
     create<T>(body: T): Observable<CrossSelling> {

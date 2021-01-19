@@ -543,9 +543,6 @@ export class FlexiComboEffects {
             newPayload.supplierId = supplierId;
         }
 
-        // console.log('[REQ] Create 1', payload);
-        // console.log('[REQ] Create 2', newPayload);
-
         // return of({ type: 'SUCCESS' });
 
         return this._$flexiComboApi.create<CreateFlexiComboDto>(newPayload).pipe(
@@ -573,9 +570,6 @@ export class FlexiComboEffects {
         if (supplierId) {
             newPayload.supplierId = supplierId;
         }
-
-        // console.log(`[REQ ${id}] Update 1`, body);
-        // console.log(`[REQ ${id}] Update 2`, newPayload);
 
         // return of({ type: 'SUCCESS_UPDATE' });
 

@@ -1,0 +1,504 @@
+<div id="skp" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center p-8">
+        <form
+            id="skp-form"
+            name="skpForm"
+            class="flex-combo w-100-p"
+            [formGroup]="form"
+            autocomplete="off"
+            fxLayout="column"
+            [class.event-none]="pageType === 'edit' && (isLoading$ | async)"
+            fxFlex
+            novalidate
+        >
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline"> General Information </span>
+                    <div class="form-box">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label class="input-label" fxFlexAlign="center" fxFlex="12" fxFill
+                            [class.sinbad-red-fg]="hasError('name')"
+                            >
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    SKP Name
+                                </div>
+                                
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Define the name of the SKP configuration"
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="name"
+                                    formControlName="name"
+                                    autocapitalize="characters"
+                                    autocomplete="off"
+                                />
+                                <mat-error *ngIf="hasError('name', true)">
+                                    {{ getErrorMessage('name') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
+                             [class.sinbad-red-fg]="hasError('description')"
+                             >
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    SKP<br />Description
+                                </div>
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Set the information related to&#10; the SKP. This information will&#10;not be displayed on&#10;Sinbad Red."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea
+                                    matInput
+                                    rows="5"
+                                    name="description"
+                                    formControlName="description"
+                                ></textarea>
+
+                                <mat-error *ngIf="hasError('description', true)">
+                                    {{ getErrorMessage('description') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                            
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
+                            [class.sinbad-red-fg]="hasError('notes')">
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Notes To<br />Display
+                                </div>
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Define the descriptive text&#10;that will be shown on Sinbad Red&#10;related to SKP."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea
+                                    matInput
+                                    rows="5"
+                                    name="notes"
+                                    formControlName="notes"
+                                ></textarea>
+
+                                <mat-error *ngIf="hasError('notes', true)">
+                                    {{ getErrorMessage('notes') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
+                            [class.sinbad-red-fg]="hasError('header')">
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Header
+                                </div>
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Define the header text&#10;that will be shown on Sinbad Red."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="header"
+                                    formControlName="header"
+                                    autocapitalize="characters"
+                                    autocomplete="off"
+                                />
+
+                                <mat-error *ngIf="hasError('header', true)">
+                                    {{ getErrorMessage('header') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div 
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
+                            [class.sinbad-red-fg]="hasError('file')">
+                                <div class="title-label">
+                                    SKP File 
+                                </div>
+                                
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="
+                                    The allowed maximum document size is 5mb.&#10;The allowed file type is .doc,&#10;.docx, .xls, .xlsx or .pdf."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="43.5"
+                                    [class.mat-sinbad-field-error]="hasError('file')"
+                                >
+                                
+                                <input
+                                    #fileUrlPicker
+                                    type="file"
+                                    class="custom-file"
+                                    accept=".pdf, .docx, .doc, .xls, .xlsx"
+                                    formControlName="file"
+                                    (click)="fileUrlPicker.value = null"
+                                    (change)="fileChangeEvent($event)"
+                                    autocomplete="off"
+                                />
+                                <input
+                                    matInput
+                                    [formControl]="tmpFiles.file"
+                                    [value]="tmpFiles.file.value && tmpFiles.file.value.name ? 
+                                                tmpFiles.file.value.name : 'No file choose'"
+                                    autocomplete="off"
+                                    style="color:#a0a4a8"
+                                    disabled
+                                />
+                                <mat-hint class="mat-error" *ngIf="hasError('file', true)">
+                                    {{ getErrorMessage('file') }}
+                                </mat-hint>
+                                </mat-form-field>
+                                <button
+                                    type="button"
+                                    mat-flat-button
+                                    color="accent"
+                                    (click)="fileUrlPicker.click()"
+                                    fxFlexAlign="center"
+                                >
+                                    Upload Your File
+                                </button>
+                            </div>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"  [class.sinbad-red-fg]="hasError('promo')">
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Selected<br />Promo
+                                </div>
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="Select promos that are linked to the SKP."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <select-promo
+                                [initialSelection]="form.get('promo').value || []"
+                                [disabled]="form.get('promo').disabled"
+                                [required]="true"
+                                fxFlex="50"
+                                (selected)="onPromoSelected($event)"
+                                [id]="skpId"
+                            >
+                                <div error>
+                                    {{ getFormError(form.get('promo')) }}
+                                </div>
+                            </select-promo>
+
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="promo"
+                                    formControlName="promo"
+                                    autocomplete="off"
+                                />
+
+                                <mat-error *ngIf="hasError('promo', true)">
+                                    {{ getErrorMessage('promo') }}
+                                </mat-error>
+                            </mat-form-field> -->
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"
+                            [class.sinbad-red-fg]="hasError('imageUrl')">
+                                
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Image<br />Suggestion
+                                </div>
+                                
+
+                                <mat-icon
+                                    class="active-icon s-14 ml-8 cursor-pointer"
+                                    color="accent"
+                                    matTooltip="The allowed maximum document size is 1mb.&#10;
+                                    The allowed file types are .jpg, jpeg, and .png.
+                                    The minimum width and height of the image is 500 x 500 px, 
+                                    meanwhile the maximum width and height of the image is 2000 x 2000 px."
+                                    matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="43.5"
+                                    [class.mat-sinbad-field-error]="hasError('imageUrl')"
+                                >
+                                    <input
+                                        #imageUrlPicker
+                                        type="file"
+                                        class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="imageUrl"
+                                        (click)="imageUrlPicker.value = null"
+                                        (change)="onFileBrowse($event, 'imageUrl')"
+                                        autocomplete="off"
+                                    />
+
+                                    <input
+                                        matInput
+                                        [formControl]="tmp.imageUrl"
+                                        [value]="
+                                            tmp.imageUrl.value && tmp.imageUrl.value.name
+                                                ? tmp.imageUrl.value.name
+                                                : null
+                                        "
+                                        autocomplete="off"
+                                    />
+
+                                    <mat-hint class="mat-error" *ngIf="hasError('imageUrl', true)">
+                                        {{ getErrorMessage('imageUrl') }}
+                                    </mat-hint>
+                                </mat-form-field>
+
+                                <button
+                                    type="button"
+                                    mat-flat-button
+                                    color="accent"
+                                    (click)="imageUrlPicker.click()"
+                                    fxFlexAlign="center"
+                                >
+                                    Upload Your File
+                                </button>
+
+                                <!-- <ng-container
+                                    *ngIf="pageType === 'edit' && skpCombo && skpCombo?.imageUrl"
+                                >
+                                    <a
+                                        [href]="skpCombo?.imageUrl"
+                                        target="_blank"
+                                        *ngIf="skpCombo?.imageUrl"
+                                        style="position: relative; top: -0.78em"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container> -->
+                            </div>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                            [class.mat-sinbad-field-error]="hasError('startDate')"
+                        >
+                            <label class="input-label" fxFlexAlign="center" fxFlex="12">
+                                <div class="title-label">
+                                    <span class="sinbad-red-fg">*</span>
+                                    Active From
+                                </div>
+                                
+
+                                <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="The starting date of the active period of the SKP"
+                                matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    [matDatetimepicker]="startDatePicker"
+                                    [max]="maxStartDate"
+                                    [min]="minStartDate"
+                                    (dateChange)="onChangeStartDate($event)"
+                                    autocomplete="off"
+                                    name="startDate"
+                                    formControlName="startDate"
+                                />
+                                <mat-datetimepicker-toggle
+                                    matSuffix
+                                    [for]="startDatePicker"
+                                ></mat-datetimepicker-toggle>
+                                <mat-datetimepicker
+                                    touchUi
+                                    #startDatePicker
+                                    [disabled]="false"
+                                    type="date"
+                                >
+                                </mat-datetimepicker>
+
+                                <mat-error *ngIf="hasError('startDate', true)">
+                                    {{ getErrorMessage('startDate') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                            [class.mat-sinbad-field-error]="hasError('endDate')"
+                        >
+                            <label class="input-label" fxFlexAlign="center" fxFlex="12">
+                                <div class="title-label">
+                                   <span class="sinbad-red-fg">*</span>
+                                    To 
+                                </div>
+                                
+                                <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="The ending date of the active period of the SKP"
+                                matTooltipClass="tooltip-br"
+                                >
+                                    help
+                                </mat-icon>
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    [matDatetimepicker]="endDatePicker"
+                                    [max]="maxEndDate"
+                                    [min]="minEndDate"
+                                    (dateChange)="onChangeEndDate($event)"
+                                    autocomplete="off"
+                                    name="endDate"
+                                    formControlName="endDate"
+                                />
+                                <mat-datetimepicker-toggle
+                                    matSuffix
+                                    [for]="endDatePicker"
+                                ></mat-datetimepicker-toggle>
+                                <mat-datetimepicker
+                                    touchUi
+                                    #endDatePicker
+                                    [disabled]="false"
+                                    type="date"
+                                >
+                                </mat-datetimepicker>
+
+                                <mat-error *ngIf="hasError('endDate', true)">
+                                    {{ getErrorMessage('endDate') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label  class="input-label" fxFlexAlign="center" fxFlex="12"> Status </label>
+
+                            <mat-radio-group
+                                formControlName="status"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="16px"
+                            >
+                                <mat-radio-button value="active"> Active </mat-radio-button>
+                                <mat-radio-button value="inactive"> Inactive </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </form>
+    </div>
+</div>

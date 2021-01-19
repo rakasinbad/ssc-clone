@@ -363,6 +363,12 @@ body.theme-sinbad-light {
             top: -0.78em;
         }
 
+        .input-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .mat-form-field-prefix {
             top: -0.2em;
         }
@@ -708,5 +714,12 @@ mat-header-row {
         .mat-icon-button {
             color: sinbad-color('red', '50');
         }
+    }
+}
+
+.mat-datetimepicker-toggle {
+    /* Set color icon in datepicker */
+    .mat-icon {
+        color: sinbad-color('red', '50');
     }
 }

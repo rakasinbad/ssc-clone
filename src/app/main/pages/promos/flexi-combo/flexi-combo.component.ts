@@ -21,8 +21,8 @@ import * as fromFlexiCombo from './store/reducers';
     templateUrl: './flexi-combo.component.html',
     styleUrls: ['./flexi-combo.component.scss'],
     animations: fuseAnimations,
-    encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    // encapsulation: ViewEncapsulation.None,
+    // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlexiComboComponent implements OnInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
