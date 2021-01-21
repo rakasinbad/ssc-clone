@@ -41,7 +41,7 @@ export class SrTargetComponent implements OnInit {
 
         this.storage.get('user').subscribe((data: any) => {
             const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-                `${environment.microSiteHost}/salesreptarget?token=${data.token}`
+                `${environment.microSiteHost}/salesmanagement/portfolio?token=${data.token}`
             );
             
             this.url$.next(safeUrl);
