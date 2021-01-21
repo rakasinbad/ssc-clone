@@ -153,6 +153,13 @@ export const navigation: FuseNavigation[] = [
         icon: 'custom-sinbad-sales-force-logo',
         children: [
             {
+                id: 'sales-team',
+                title: 'Sales Team',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/sales-team',
+            },
+            {
                 id: 'sales-rep',
                 title: 'Sales Rep',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
