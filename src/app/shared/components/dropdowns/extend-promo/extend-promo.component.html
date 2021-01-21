@@ -1,0 +1,161 @@
+<mat-toolbar class="m-0 px-16 pt-8 pb-16" style="background: none;">
+    <mat-toolbar-row class="p-0"  fxLayoutAlign="space-between center">
+        <span mat-dialog-title class="m-0">Extend Promo Date</span>
+        <span class="spacer"></span>
+        <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-dialog-content class="mat-typography m-0 p-0 px-16"  style="width: 50vw;">
+    <form
+        id="app-extend-promo"
+        [formGroup]="form"
+        class="w-100-p"
+        fxLayout="column"
+        fxLayoutGap="6px"
+        (ngSubmit)="onSubmit()"
+        fxFlex
+        style="margin-top: 3vh;"
+    >
+        <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+            <label fxFlexAlign="center" fxFlex="30">
+                Current active from date
+            </label>
+
+            <label fxLayoutAlign="start center" fxFlex="70">
+                {{ currentStartDate | date:'dd/MM/yyyy' }}
+            </label>
+        </div>
+
+        <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+            <label fxFlexAlign="center" fxFlex="30">
+                Current active to date
+            </label>
+
+            <label fxLayoutAlign="start center" fxFlex="70">
+                {{ currentEndDate | date:'dd/MM/yyyy' }}
+            </label>
+        </div>
+
+        <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+            <label fxFlexAlign="center" fxFlex="30">
+                Status
+            </label>
+
+            <label fxLayoutAlign="start center" fxFlex="70">
+                {{ currentStatus }}
+            </label>
+        </div>
+
+        <div
+            class="custom-field"
+            fxLayout="row"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="10px"
+            [class.mat-sinbad-field-error]="hasError('newStartDate')"
+            fxLayoutAlign="space-between center"
+        >
+            <label class="input-label" fxFlex="30">
+                <div class="title-label">
+                    <span class="sinbad-red-fg">*</span>
+                    Active From
+                </div>
+            </label>
+
+            <mat-form-field appearance="outline" fxFlex="70">
+                <input
+                    matInput
+                    [matDatetimepicker]="startDatePicker"
+                    [max]="maxStartDate"
+                    [min]="minStartDate"
+                    (dateChange)="onChangeStartDate($event)"
+                    autocomplete="off"
+                    name="newStartDate"
+                    formControlName="newStartDate"
+                />
+                <mat-datetimepicker-toggle
+                    matSuffix
+                    [for]="startDatePicker"
+                ></mat-datetimepicker-toggle>
+                <mat-datetimepicker
+                    touchUi
+                    #startDatePicker
+                    [disabled]="false"
+                    type="date"
+                >
+                </mat-datetimepicker>
+
+                <mat-error *ngIf="hasError('newStartDate', true)">
+                    {{ getErrorMessage('newStartDate') }}
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div
+            class="custom-field"
+            fxLayout="row"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="10px"
+            [class.mat-sinbad-field-error]="hasError('newEndDate')"
+            fxLayoutAlign="space-between center"
+        >
+            <label class="input-label" fxFlex="30">
+                <div class="title-label">
+                    <span class="sinbad-red-fg">*</span>
+                    To
+                </div>
+            </label>
+
+            <mat-form-field appearance="outline" fxFlex="70">
+                <input
+                    matInput
+                    [matDatetimepicker]="endDatePicker"
+                    [max]="maxEndDate"
+                    [min]="minEndDate"
+                    (dateChange)="onChangeEndDate($event)"
+                    autocomplete="off"
+                    name="newEndDate"
+                    formControlName="newEndDate"
+                />
+                <mat-datetimepicker-toggle
+                    matSuffix
+                    [for]="endDatePicker"
+                ></mat-datetimepicker-toggle>
+                <mat-datetimepicker
+                    touchUi
+                    #endDatePicker
+                    [disabled]="false"
+                    type="date"
+                >
+                </mat-datetimepicker>
+
+                <mat-error *ngIf="hasError('newEndDate', true)">
+                    {{ getErrorMessage('newEndDate') }}
+                </mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="m-0 p-0 px-16" align="end">
+    <button
+        type="cancel"
+        mat-flat-button
+        color="light"
+        class="w-128"
+        mat-dialog-close
+    >
+        Cancel
+    </button>
+    <button
+        type="submit"
+        mat-flat-button
+        color="accent"
+        class="w-128"
+        [disabled]="btnDisabled"
+        form="app-extend-promo"
+    >
+        Save
+    </button>
+</mat-dialog-actions>
