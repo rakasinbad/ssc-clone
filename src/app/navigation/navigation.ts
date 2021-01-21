@@ -167,6 +167,12 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/sales-rep',
             },
             {
+                id: 'sales-repsv2',
+                title: 'Sales Rep V2',
+                type: 'item',
+                url: '/pages/sales-force/sales-repsv2',
+            },
+            {
                 id: 'portfolio',
                 title: 'Portfolio of Store',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
