@@ -113,6 +113,23 @@ const routes: Routes = [
         },
     },
     {
+        path: 'portfoliosv2',
+        loadChildren: () => import('./portfoliosv2/portfoliosv2.module').then((m) => m.SrTargetModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'portfoliosv2'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
         path: 'associations',
         loadChildren: () =>
             import('./associations/associations.module').then((m) => m.AssociationsModule),

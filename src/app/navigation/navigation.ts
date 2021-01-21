@@ -174,6 +174,13 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/portfolio',
             },
             {
+                id: 'portfoliov2',
+                title: 'Portfolio of Store V2',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/portfoliosv2',
+            },
+            {
                 id: 'sr-target',
                 title: 'SR Target',
                 type: 'item',
