@@ -13,7 +13,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -33,6 +33,7 @@ import { CrossSelling } from '../../models';
 import { CrossSellingPromoActions } from '../../store/actions';
 import * as crossSellingPromo from '../../store/reducers';
 import { CrossSellingPromoSelectors } from '../../store/selectors';
+import { ExtendPromoComponent } from 'app/shared/components/dropdowns/extend-promo/extend-promo.component';
 
 export interface PeriodicElement {
     id: number;
@@ -109,6 +110,7 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
     sort: MatSort;
 
     private type = 0;
+    today: Date = new Date()
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
@@ -116,6 +118,7 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
         private domSanitizer: DomSanitizer,
         private route: ActivatedRoute,
         private router: Router,
+        private matDialog: MatDialog,
         private ngxPermissionsService: NgxPermissionsService,
         private store: Store<crossSellingPromo.FeatureState>,
         private _$notice: NoticeService
@@ -172,6 +175,33 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
         this.store.dispatch(CrossSellingPromoActions.confirmChangeStatus({ payload: item }));
+    }
+
+    isDisabled(status: string, date: string): boolean {
+        const rowEndDate: Date = new Date(date)
+        
+        if (status === "inactive" && rowEndDate < this.today) {
+            return false
+        }
+
+        return true
+    }
+
+    onExtend(row?: CrossSelling): void {
+
+        const dialogRef = this.matDialog.open(ExtendPromoComponent, {
+            data: {
+                start_date: row.startDate,
+                end_date: row.endDate,
+                status: row.status
+            },
+            panelClass: 'extend-promo-dialog',
+            disableClose: true
+        });
+
+        dialogRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
     }
 
     onDelete(item): void {

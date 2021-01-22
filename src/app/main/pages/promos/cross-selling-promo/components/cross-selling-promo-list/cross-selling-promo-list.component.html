@@ -176,6 +176,17 @@
                     <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
 
                         <button
+                            type="button"
+                            [disabled]="isDisabled(row.status, row.endDate)"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Extend"
+                            (click)="onExtend(row)"
+                        >
+                            <mat-icon>edit</mat-icon>
+                            <span>Extend</span>
+                        </button>
+                        <button
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
