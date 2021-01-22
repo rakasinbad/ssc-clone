@@ -11,6 +11,7 @@ export const getAllTotalCatalogue = createSelector(getCatalogueState, (state) =>
     totalBonus: state.totalBonus,
     totalInactive: state.totalInactive,
     totalRegular: state.totalRegular,
+    totalExclusive: state.totalExclusive,
 }));
 
 export const getCataloguesEntity = createSelector(
