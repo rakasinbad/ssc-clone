@@ -1,6 +1,6 @@
 <mat-toolbar class="m-0 px-16 pt-8 pb-16" style="background: none;">
     <mat-toolbar-row class="p-0"  fxLayoutAlign="space-between center">
-        <span mat-dialog-title class="m-0">Extend Promo Date</span>
+        <span mat-dialog-title class="m-0" style="font-weight: 700;">Extend Promo Date</span>
         <span class="spacer"></span>
         <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
             <mat-icon>close</mat-icon>
@@ -19,35 +19,41 @@
         fxFlex
         style="margin-top: 3vh;"
     >
-        <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
-            <label fxFlexAlign="center" fxFlex="30">
-                Current active from date
-            </label>
+        <div
+            fxLayout="column"
+            fxLayoutGap="10px"
+        >
+            <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+                <label fxFlexAlign="center" fxFlex="30">
+                    Current active from date
+                </label>
 
-            <label fxLayoutAlign="start center" fxFlex="70">
-                {{ currentStartDate | date:'dd/MM/yyyy' }}
-            </label>
+                <label fxLayoutAlign="start center" fxFlex="70">
+                    {{ currentStartDate | date:'dd/MM/yyyy' }}
+                </label>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+                <label fxFlexAlign="center" fxFlex="30">
+                    Current active to date
+                </label>
+
+                <label fxLayoutAlign="start center" fxFlex="70">
+                    {{ currentEndDate | date:'dd/MM/yyyy' }}
+                </label>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+                <label fxFlexAlign="center" fxFlex="30">
+                    Status
+                </label>
+
+                <label fxLayoutAlign="start center" fxFlex="70">
+                    {{ currentStatus }}
+                </label>
+            </div>            
         </div>
 
-        <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
-            <label fxFlexAlign="center" fxFlex="30">
-                Current active to date
-            </label>
-
-            <label fxLayoutAlign="start center" fxFlex="70">
-                {{ currentEndDate | date:'dd/MM/yyyy' }}
-            </label>
-        </div>
-
-        <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
-            <label fxFlexAlign="center" fxFlex="30">
-                Status
-            </label>
-
-            <label fxLayoutAlign="start center" fxFlex="70">
-                {{ currentStatus }}
-            </label>
-        </div>
 
         <div
             class="custom-field"
