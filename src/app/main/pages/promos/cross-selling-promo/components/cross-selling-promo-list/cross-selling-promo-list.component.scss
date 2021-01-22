@@ -96,6 +96,16 @@ app-cross-selling-promo-list {
             flex: 0 1 100px;
         }
 
+        .mat-column-promo-allocation {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-allocation-value {
+            flex: 0 1 200px;
+            min-width: 200px;
+        }
+
         .mat-column-start-date {
             flex: 0 1 100px;
             min-width: 100px;

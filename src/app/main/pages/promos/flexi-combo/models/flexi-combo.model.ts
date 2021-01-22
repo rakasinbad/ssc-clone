@@ -2,7 +2,7 @@ import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { EStatus, TNullable } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
-import { SegmentationBasePromoFlexi } from 'app/shared/models/segmentation-base.model';
+import { SegmentationBasePromo } from 'app/shared/models/segmentation-base.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
@@ -271,7 +271,7 @@ export class FlexiCombo implements ITimestamp {
     startDate: string;
     status: EStatus;
     supplierId: string;
-    target: SegmentationBasePromoFlexi;
+    target: SegmentationBasePromo;
     type: string;
     voucherCombine: boolean;
     createdAt: string;
@@ -281,6 +281,9 @@ export class FlexiCombo implements ITimestamp {
     isActiveStore: boolean;
     promoAllocationType: PromoAllocation;
     promoSlot: number;
+    planSlot: string;
+    planBudget: string;
+    skpId: string;
 
     constructor(data: FlexiCombo) {
         const {
@@ -323,7 +326,10 @@ export class FlexiCombo implements ITimestamp {
             isNewStore,
             isActiveStore,
             promoAllocationType,
-            promoSlot
+            promoSlot,
+            planSlot,
+            planBudget,
+            skpId
         } = data;
 
         this.id = id;
@@ -356,6 +362,9 @@ export class FlexiCombo implements ITimestamp {
         this.isNewStore = isNewStore;
         this.promoAllocationType = promoAllocationType;
         this.promoSlot = promoSlot;
+        this.planSlot = planSlot;
+        this.planBudget = planBudget;
+        this.skpId = skpId;
         
         /* Handle promoBrands */
         if (typeof promoBrands !== 'undefined') {
@@ -378,7 +387,7 @@ export class FlexiCombo implements ITimestamp {
             this.promoChannels =
                 promoChannels &&
                 promoChannels.length > 0 &&
-                target === SegmentationBasePromoFlexi.SEGMENTATION
+                target === SegmentationBasePromo.SEGMENTATION
                     ? promoChannels
                     : [];
         }
@@ -388,7 +397,7 @@ export class FlexiCombo implements ITimestamp {
             this.promoClusters =
                 promoClusters &&
                 promoClusters.length > 0 &&
-                target === SegmentationBasePromoFlexi.SEGMENTATION
+                target === SegmentationBasePromo.SEGMENTATION
                     ? promoClusters
                     : [];
         }
@@ -402,7 +411,7 @@ export class FlexiCombo implements ITimestamp {
         /* Handle promoGroups */
         if (typeof promoGroups !== 'undefined') {
             this.promoGroups =
-                promoGroups && promoGroups.length > 0 && target === SegmentationBasePromoFlexi.SEGMENTATION
+                promoGroups && promoGroups.length > 0 && target === SegmentationBasePromo.SEGMENTATION
                     ? promoGroups
                     : [];
         }
@@ -418,7 +427,7 @@ export class FlexiCombo implements ITimestamp {
         /* Handle promoStores */
         if (typeof promoStores !== 'undefined') {
             this.promoStores =
-                promoStores && promoStores.length > 0 && target === SegmentationBasePromoFlexi.STORE
+                promoStores && promoStores.length > 0 && target === SegmentationBasePromo.STORE
                     ? promoStores
                     : [];
         }
@@ -426,7 +435,7 @@ export class FlexiCombo implements ITimestamp {
         /* Handle promoTypes */
         if (typeof promoTypes !== 'undefined') {
             this.promoTypes =
-                promoTypes && promoTypes.length > 0 && target === SegmentationBasePromoFlexi.SEGMENTATION
+                promoTypes && promoTypes.length > 0 && target === SegmentationBasePromo.SEGMENTATION
                     ? promoTypes
                     : [];
         }
@@ -436,7 +445,7 @@ export class FlexiCombo implements ITimestamp {
             this.promoWarehouses =
                 promoWarehouses &&
                 promoWarehouses.length > 0 &&
-                target ===  (SegmentationBasePromoFlexi.SEGMENTATION || SegmentationBasePromoFlexi.ALLSEGMENTATION)
+                target ===  (SegmentationBasePromo.SEGMENTATION || SegmentationBasePromo.ALLSEGMENTATION)
                     ? promoWarehouses
                     : [];
         }

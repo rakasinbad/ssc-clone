@@ -14,7 +14,9 @@ interface Routing {
   'logistics'? : ('' | 'warehouses' | 'warehouse-coverages' | 'sku-assignments' | 'stock-managements' | '*')[],
   'promos'? : ('' | 'flexi-combo' | 'voucher' | 'cross-selling-promo' | '*')[],
   'catalogue-segmentations'? : ('' | 'add' | 'edit' | 'detail' | '*')[],
-  'survey'? : ('' | 'response' | 'manage' | '*')[]
+  'survey'? : ('' | 'response' | 'manage' | '*')[],
+  'skp'? : ('' | 'list' | 'detail' | '*')[]
+
 }
 
 type Navbar = (
@@ -26,7 +28,7 @@ type Navbar = (
   'journey-plan' | 'workday-setting' | 'warehouse' | 'wh-list' |
   'wh-coverage' | 'wh-sku-assignment' | 'wh-stock-management' |
   'promo' | 'flexi-combo'| 'cross-selling-promo' | 'period-target-promo' |
-  'voucher' | 'survey' | 'survey-manage' | 'survey-response'
+  'voucher' | 'survey' | 'survey-manage' | 'survey-response' | 'skp'
 )[];
 
 type Toolbar = ('Informasi Supplier' | 'Pengaturan akun' | 'Internal' | '*')[]
@@ -213,7 +215,8 @@ export const Rules : Rule[] = [
         'logistics': ['', 'stock-managements', 'warehouse-coverages', 'warehouses'],
         'promos' : ['','voucher'],
         'catalogue-segmentations' : ['*'],
-        'survey' : ['*']
+        'survey' : ['*'],
+        'skp': ['*']
       },
       toolbar: ['*'],
       navbar: [
@@ -247,7 +250,8 @@ export const Rules : Rule[] = [
         'voucher',
         'survey',
         'survey-manage',
-        'survey-response'
+        'survey-response',
+        'skp'
       ],
       redirectTo: '/pages/account/stores'
     },

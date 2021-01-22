@@ -28,6 +28,7 @@ import {
     SegmentationBasePromoFlexi,
 } from '../models/segmentation-base.model';
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
+import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
@@ -245,30 +246,12 @@ export class HelperService {
             id: SegmentationBasePromo.STORE,
             label: 'Direct Store',
         },
-        // {
-        //     id: SegmentationBasePromo.SEGMENTATION,
-        //     label: 'Selected Segment Only',
-        // },
         {
-            id: SegmentationBasePromo.ALLSEGMENTATION,
-            label: 'Apply to All Linked Segments',
-        },
-    ];
-
-    private static readonly _segmentationBasePromoFlexi: {
-        id: SegmentationBasePromoFlexi;
-        label: string;
-    }[] = [
-        {
-            id: SegmentationBasePromoFlexi.STORE,
-            label: 'Direct Store',
-        },
-        {
-            id: SegmentationBasePromoFlexi.SEGMENTATION,
+            id: SegmentationBasePromo.SEGMENTATION,
             label: 'Selected Segment Only',
         },
         {
-            id: SegmentationBasePromoFlexi.ALLSEGMENTATION,
+            id: SegmentationBasePromo.ALLSEGMENTATION,
             label: 'Apply to All Linked Segments',
         },
     ];
@@ -435,6 +418,17 @@ export class HelperService {
             id: 'all',
             label: 'All',
         },
+        {
+            id: 'active',
+            label: 'Active',
+        },
+        {
+            id: 'inactive',
+            label: 'Inactive',
+        },
+    ];
+
+    private static _skpStatus: Array<{ id: string; label: string }> = [
         {
             id: 'active',
             label: 'Active',
@@ -969,6 +963,10 @@ export class HelperService {
         return HelperService._benefitMultiType;
     }
 
+    skpStatusType(): { id: string; label: string}[] {
+        return HelperService._skpStatus;
+    }
+
     calculationMechanism(): { id: CalculationMechanism; label: string }[] {
         return HelperService._calculationMechanism;
     }
@@ -1015,10 +1013,6 @@ export class HelperService {
 
     segmentationBasePromo(): { id: SegmentationBasePromo; label: string }[] {
         return HelperService._segmentationBasePromo;
-    }
-
-    segmentationBasePromoFlexi(): { id: SegmentationBasePromoFlexi; label: string }[] {
-        return HelperService._segmentationBasePromoFlexi;
     }
 
     promoAllocation(): { id: PromoAllocation; label: string }[] {

@@ -165,6 +165,7 @@ export class CrossSellingDetailCsComponent implements OnInit {
                 return item;
             })
         );
+
         this.subs = this.crossSellingPromo$.subscribe(val => {
             this.benefitSetting.push(val);
             this.statNewStore = this.benefitSetting[0].isNewStore;
@@ -181,8 +182,7 @@ export class CrossSellingDetailCsComponent implements OnInit {
         let params = {};
 
         if (
-            this.benefitSetting[0].target == 'all' ||
-            this.benefitSetting[0].target == 'segmentation'
+            this.benefitSetting[0].target == 'all'
         ) {
             
             params['catalogueSegmentationId'] = this.benefitSetting[0].catalogueSegmentationObjectId;
@@ -223,10 +223,30 @@ export class CrossSellingDetailCsComponent implements OnInit {
 
         return '-';
     }
+    
+    getStoreChannelsSegmentOnly(value: IPromoChannel[]): string {
+        if (value && value.length > 0) {
+            const storeChannel = value.map((v) => v.channel.name);
+
+            return storeChannel.length > 0 ? storeChannel.join(', ') : '-';
+        }
+
+        return '-';
+    }
 
     getStoreClusters(value: Entity[]): string {
         if (value && value.length > 0) {
             const storeCluster = value.map((v) => v.clusterName);
+
+            return storeCluster.length > 0 ? storeCluster.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getStoreClustersSegmentOnly(value: IPromoCluster[]): string {
+        if (value && value.length > 0) {
+            const storeCluster = value.map((v) => v.cluster.name);
 
             return storeCluster.length > 0 ? storeCluster.join(', ') : '-';
         }
@@ -244,6 +264,16 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
+    getStoreGroupsSegmentOnly(value: IPromoGroup[]): string {
+        if (value && value.length > 0) {
+            const storeGroup = value.map((v) => v.group.name);
+
+            return storeGroup.length > 0 ? storeGroup.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
     getStoreTypes(value: Entity[]): string {
         if (value && value.length > 0) {
             const storeType = value.map((v) => v.typeName);
@@ -254,9 +284,29 @@ export class CrossSellingDetailCsComponent implements OnInit {
         return '-';
     }
 
+    getStoreTypesSegmentOnly(value: IPromoType[]): string {
+        if (value && value.length > 0) {
+            const storeType = value.map((v) => v.type.name);
+
+            return storeType.length > 0 ? storeType.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
     getWarehouses(value: Entity[]): string {
         if (value && value.length > 0) {
             const warehouse = value.map((v) => v.warehouseName);
+
+            return warehouse.length > 0 ? warehouse.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getWarehousesSegmentOnly(value: IPromoWarehouse[]): string {
+        if (value && value.length > 0) {
+            const warehouse = value.map((v) => v.warehouse.name);
 
             return warehouse.length > 0 ? warehouse.join(', ') : '-';
         }
