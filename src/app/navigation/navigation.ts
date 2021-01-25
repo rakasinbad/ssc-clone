@@ -153,6 +153,13 @@ export const navigation: FuseNavigation[] = [
         icon: 'custom-sinbad-sales-force-logo',
         children: [
             {
+                id: 'sales-team',
+                title: 'Sales Team',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/sales-team',
+            },
+            {
                 id: 'sales-rep',
                 title: 'Sales Rep',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
@@ -160,11 +167,24 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/sales-rep',
             },
             {
+                id: 'sales-repsv2',
+                title: 'Sales Rep V2',
+                type: 'item',
+                url: '/pages/sales-force/sales-repsv2',
+            },
+            {
                 id: 'portfolio',
                 title: 'Portfolio of Store',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/sales-force/portfolio',
+            },
+            {
+                id: 'portfoliov2',
+                title: 'Portfolio of Store V2',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/portfoliosv2',
             },
             {
                 id: 'sr-target',
