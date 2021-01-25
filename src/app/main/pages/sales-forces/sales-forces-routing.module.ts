@@ -96,6 +96,57 @@ const routes: Routes = [
         },
     },
     {
+        path: 'sales-team',
+        loadChildren: () => import('./sales-team/sales-team.module').then((m) => m.SrTargetModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'sales-team'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
+        path: 'portfoliosv2',
+        loadChildren: () => import('./portfoliosv2/portfoliosv2.module').then((m) => m.SrTargetModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'portfoliosv2'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
+        path: 'sales-repsv2',
+        loadChildren: () => import('./sales-repsv2/sales-repsv2.module').then((m) => m.SrTargetModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'sales-repsv2'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
         path: 'associations',
         loadChildren: () =>
             import('./associations/associations.module').then((m) => m.AssociationsModule),
