@@ -6,6 +6,9 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
+import * as fromFlexiCombos from '../../../../main/pages/promos/flexi-combo/store/reducers';
+import { Store } from '@ngrx/store';
+import { FlexiComboActions } from 'app/main/pages/promos/flexi-combo/store/actions';
 
 @Component({
   selector: 'app-extend-promo',
@@ -17,6 +20,7 @@ export class ExtendPromoComponent implements OnInit {
   form: FormGroup
   btnDisabled: boolean = true
   private _unSubs$: Subject<void> = new Subject<void>();
+  promoId: string
   currentStartDate: string
   currentEndDate: string
   currentStatus: string
@@ -30,9 +34,10 @@ export class ExtendPromoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) private data: any,
     private formBuilder: FormBuilder,
     private matDialog: MatDialogRef<ExtendPromoComponent>,
-    // private store: Store<.FeatureState>,
+    private store: Store<fromFlexiCombos.FeatureState>,
     private _$errorMessage: ErrorMessageService
   ) {
+    this.promoId = this.data.id
     this.currentStartDate = this.data.start_date
     this.currentEndDate = this.data.end_date
     this.currentStatus = this.data.status === "active" ? "Active" : "Inactive"
@@ -190,11 +195,16 @@ export class ExtendPromoComponent implements OnInit {
         }
     }
 
-  onDismiss() {
-    this.matDialog.close()
+  onClose() {
+    
   }
 
   onSubmit() {
-    console.log('SUBMIT')
+    const { newStartDate, newEndDate } = this.form.getRawValue();
+
+    this.matDialog.close({
+        newStartDate,
+        newEndDate
+    })
   }
 }
