@@ -119,6 +119,22 @@ export class CreateFlexiComboDto {
     }
 }
 
+export class ExtendFlexiComboDto {
+    startDate: string
+    endDate: string
+
+    constructor(data: ExtendFlexiComboDto) {
+        const {
+            startDate,
+            endDate
+        } = data
+
+        if (startDate) this.startDate = startDate
+        if (endDate) this.endDate = endDate
+    }
+
+}
+
 export class PatchFlexiComboDto {
     base?: string;
     conditions?: IFlexiComboCondition[];

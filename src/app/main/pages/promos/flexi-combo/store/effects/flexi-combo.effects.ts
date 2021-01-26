@@ -26,11 +26,12 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto, IPromoCatalogue, IPromoBrand, IPromoInvoiceGroup, IPromoStore, IPromoWarehouse, IPromoType, IPromoGroup, IPromoChannel, IPromoCluster, IPromoCondition } from '../../models';
+import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto, IPromoCatalogue, IPromoBrand, IPromoInvoiceGroup, IPromoStore, IPromoWarehouse, IPromoType, IPromoGroup, IPromoChannel, IPromoCluster, IPromoCondition, ExtendFlexiComboDto } from '../../models';
 import { FlexiComboApiService } from '../../services/flexi-combo-api.service';
 import { FlexiComboActions, FlexiComboFailureActions } from '../actions';
 import * as fromFlexiCombos from '../reducers';
 import { FormActions } from 'app/shared/store/actions';
+import { ExtendPromoComponent } from 'app/shared/components/dropdowns/extend-promo/extend-promo.component';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 @Injectable()
@@ -404,6 +405,76 @@ export class FlexiComboEffects {
         { dispatch: false }
     );
 
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CHANGE STATUS - FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
+    extendPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.extendPromoRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [{ body: ExtendFlexiComboDto; id: string }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: ExtendFlexiComboDto; id: string }], Observable<AnyAction>>(
+                            this._extendPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: ExtendFlexiComboDto; id: string }], Observable<AnyAction>>(
+                            this._extendPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    extendPromoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.extendPromoFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to extend promo';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    extendPromoSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.extendPromoSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully extending flexi promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [FLEXI COMBOS]
     // -----------------------------------------------------------------------------------------------------
@@ -624,6 +695,36 @@ export class FlexiComboEffects {
                 });
             }),
             catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+        );
+    };
+
+
+    _extendPromoRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: ExtendFlexiComboDto; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload',
+            });
+        }
+
+        return this._$flexiComboApi.put<{ data: ExtendFlexiComboDto }>({ data: body }, id).pipe(
+            map((resp) => {
+                return FlexiComboActions.changeStatusSuccess({
+                    payload: {
+                        id,
+                        changes: {
+                            ...resp,
+                            startDate: body.startDate,
+                            endDate: body.endDate,
+                            updatedAt: resp.updatedAt,
+                        },
+                    },
+                });
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
         );
     };
 

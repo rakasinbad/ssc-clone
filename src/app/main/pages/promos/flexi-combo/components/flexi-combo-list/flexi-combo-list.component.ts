@@ -27,7 +27,7 @@ import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { FlexiCombo } from '../../models';
 import { FlexiComboActions } from '../../store/actions';
@@ -173,6 +173,7 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
 
         const dialogRef = this.matDialog.open(ExtendPromoComponent, {
             data: {
+                id: row.id,
                 start_date: row.startDate,
                 end_date: row.endDate,
                 status: row.status
@@ -184,6 +185,18 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
         dialogRef
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
+            // .subscribe(fromDialog => {
+            //     const { newStartDate, newEndDate } = fromDialog
+            //     this.store.dispatch(FlexiComboActions.extendPromoRequest({
+            //         payload: {
+            //             body: {
+            //                 startDate: newStartDate,
+            //                 endDate: newEndDate
+            //             },
+            //             id: row.id
+            //         }
+            //     }))
+            // })
     }
 
     isDisabled(status: string, date: string): boolean {
