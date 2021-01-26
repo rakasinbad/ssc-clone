@@ -302,9 +302,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreChannelCtrl.setValue(null);
         } else {
             const newStoreChannels: Selection[] = ev.map((item) => ({
-                id: item.channelId,
-                label: item.channelName,
-                group: 'store-segmentation-channels',
+                id: item.id,
+                label: item.label,
+                group: 'channel',
             }));
 
             chosenStoreChannelCtrl.setValue(newStoreChannels);
@@ -321,9 +321,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreClusterCtrl.setValue(null);
         } else {
             const newStoreClusters: Selection[] = ev.map((item) => ({
-                id: item.clusterId,
-                label: item.clusterName,
-                group: 'store-segmentation-clusters',
+                id: item.id,
+                label: item.label,
+                group: 'cluster',
             }));
 
             chosenStoreClusterCtrl.setValue(newStoreClusters);
@@ -340,9 +340,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreGroupCtrl.setValue(null);
         } else {
             const newStoreGroups: Selection[] = ev.map((item) => ({
-                id: item.groupId,
-                label: item.groupName,
-                group: 'store-segmentation-groups',
+                id: item.id,
+                label: item.label,
+                group: 'group',
             }));
 
             chosenStoreGroupCtrl.setValue(newStoreGroups);
@@ -359,9 +359,9 @@ export class CrossSellingPromoSegmentSettingFormComponent implements OnInit, OnC
             chosenStoreTypeCtrl.setValue(null);
         } else {
             const newStoreTypes: Selection[] = ev.map((item) => ({
-                id: item.typeId,
-                label: item.typeName,
-                group: 'store-segmentation-types',
+                id: item.id,
+                label: item.label,
+                group: 'type',
             }));
 
             chosenStoreTypeCtrl.setValue(newStoreTypes);
