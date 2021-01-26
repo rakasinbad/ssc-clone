@@ -33,7 +33,7 @@ import { HashTable } from 'app/shared/models/hashtable.model';
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-
+    
     // Form
     entityForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
@@ -118,67 +118,67 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         // HelperService.setDebugPrefix('[STORE SEGMENTATION #2]');
 
         this.availableEntities$.pipe(
-            tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
+                tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
+                takeUntil(this.subs$)
+            ).subscribe();
 
         this.selectedEntity$.pipe(
-            tap(x => HelperService.debug('SELECTED ENTITY', x)),
-            takeUntil(this.subs$)
-        ).subscribe(value => this.selected.emit(value));
+                tap(x => HelperService.debug('SELECTED ENTITY', x)),
+                takeUntil(this.subs$)
+            ).subscribe(value => this.selected.emit(value));
 
         this.isEntityLoading$.pipe(
-            tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
+                tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
+                takeUntil(this.subs$)
+            ).subscribe();
 
         this.totalEntities$.pipe(
-            tap(x => HelperService.debug('TOTAL ENTITIES', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
+                tap(x => HelperService.debug('TOTAL ENTITIES', x)),
+                takeUntil(this.subs$)
+            ).subscribe();
 
         // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
         this.dialogRef$.pipe(
-            exhaustMap(subjectValue => {
-                // tslint:disable-next-line: no-inferrable-types
-                let dialogTitle: string = '';
-                // tslint:disable-next-line: no-inferrable-types
-                let dialogMessage: string = '';
+                exhaustMap(subjectValue => {
+                    // tslint:disable-next-line: no-inferrable-types
+                    let dialogTitle: string = '';
+                    // tslint:disable-next-line: no-inferrable-types
+                    let dialogMessage: string = '';
 
-                if (subjectValue === 'clear-all') {
-                    dialogTitle = 'Clear Selected Options';
-                    dialogMessage = 'It will clear all your selected options. Are you sure?';
-                }
+                    if (subjectValue === 'clear-all') {
+                        dialogTitle = 'Clear Selected Options';
+                        dialogMessage = 'It will clear all your selected options. Are you sure?';
+                    }
 
-                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
-                    data: {
-                        title: dialogTitle,
-                        message: dialogMessage,
-                        id: subjectValue
-                    }, disableClose: true
-                });
-        
-                return dialogRef.afterClosed().pipe(
-                    tap(value => {
-                        if (value === 'clear-all') {
-                            this.tempEntity = [];
-                            this.entityFormValue.setValue([]);
+                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                        data: {
+                            title: dialogTitle,
+                            message: dialogMessage,
+                            id: subjectValue
+                        }, disableClose: true
+                    });
 
-                            this.multiple$.clearAllSelectedOptions();
+                    return dialogRef.afterClosed().pipe(
+                        tap(value => {
+                            if (value === 'clear-all') {
+                                this.tempEntity = [];
+                                this.entityFormValue.setValue([]);
 
-                            this.notice$.open('Your selected options has been cleared.', 'success', {
-                                horizontalPosition: 'right',
-                                verticalPosition: 'bottom',
-                                duration: 5000
-                            });
+                                this.multiple$.clearAllSelectedOptions();
 
-                            this.cdRef.markForCheck();
-                        }
-                    })
-                );
-            }),
-            takeUntil(this.subs$)
-        ).subscribe();
+                                this.notice$.open('Your selected options has been cleared.', 'success', {
+                                        horizontalPosition: 'right',
+                                        verticalPosition: 'bottom',
+                                        duration: 5000
+                                    });
+
+                                this.cdRef.markForCheck();
+                            }
+                        })
+                    );
+                }),
+                takeUntil(this.subs$)
+            ).subscribe();
     }
 
     private toggleLoading(loading: boolean): void {
@@ -195,213 +195,347 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.toggleLoading(true);
 
         of(null).pipe(
-            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-            // delay(1000),
-            withLatestFrom<any, UserSupplier>(
-                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-            ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
-                // Jika user tidak ada data supplier.
-                if (!userSupplier) {
-                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                }
-
-                // Mengambil ID supplier-nya.
-                const { supplierId } = userSupplier;
-
-                // Membentuk query baru.
-                const newQuery: IQueryParams = { ... params };
-                // Memasukkan ID supplier ke dalam params baru.
-                newQuery['supplierId'] = supplierId;
-                // Hanya mengambil yang tidak punya child.
-                // newQuery['hasChild'] = false;
-
-                // Request berdasarkan segmentasinya
-                if (this.segmentBases == 'all') {
-                    newQuery['segmentation'] = this.segmentationType;
-                    delete newQuery['$skip'];
-                    delete newQuery['limit'];
-                    if (this.typePromo == 'flexiCombo') {
-                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
-                            newQuery['catalogueId'] = this.catalogueIdSelect;
-                            // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                        } else if(this.typeTrigger == 'brand' && this.brandIdSelect != undefined) {
-                            newQuery['brandId'] = this.brandIdSelect;
-                             // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect != undefined) {
-                            newQuery['fakturId'] = this.fakturIdSelect;
-                             // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                        } 
-                        
-                    } else if (this.typePromo == 'crossSelling') {
-                        if (this.idSelectedSegment != null) {
-                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
-                             // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
+                // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+                // delay(1000),
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
+                        // Jika user tidak ada data supplier.
+                        if (!userSupplier) {
+                            throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
                         }
-                    } else {
 
-                    }
-                } else if (this.segmentBases == 'segmentation') {
-                    newQuery['segmentation'] = this.segmentationType;
-                    if (this.typePromo == 'flexiCombo') {
-                        if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
-                            newQuery['catalogueId'] = this.catalogueIdSelect;
-                            // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                        } else if(this.typeTrigger == 'brand' && this.brandIdSelect != undefined) {
-                            newQuery['brandId'] = this.brandIdSelect;
-                             // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                        } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect != undefined) {
-                            newQuery['fakturId'] = this.fakturIdSelect;
-                             // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
-                        } 
-                        
-                    } else if (this.typePromo == 'crossSelling') {
-                        if (this.idSelectedSegment != null) {
-                            newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
-                             // Melakukan request data
-                            return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
-                            );
+                        // Mengambil ID supplier-nya.
+                        const { supplierId } = userSupplier;
+
+                        // Membentuk query baru.
+                        const newQuery: IQueryParams = { ...params };
+                        // Memasukkan ID supplier ke dalam params baru.
+                        newQuery['supplierId'] = supplierId;
+                        // Hanya mengambil yang tidak punya child.
+                        // newQuery['hasChild'] = false;
+
+                        // Request berdasarkan segmentasinya
+                        if (this.segmentBases == 'all') {
+                            newQuery['segmentation'] = this.segmentationType;
+                            delete newQuery['$skip'];
+                            delete newQuery['limit'];
+                            if (this.typePromo == 'flexiCombo') {
+                                if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
+                                    newQuery['catalogueId'] = this.catalogueIdSelect;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                } else if(this.typeTrigger == 'brand' && this.brandIdSelect != undefined) {
+                                    newQuery['brandId'] = this.brandIdSelect;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                    } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect != undefined) {
+                                    newQuery['fakturId'] = this.fakturIdSelect;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                }
+
+                            } else if (this.typePromo == 'crossSelling') {
+                                if (this.idSelectedSegment != null) {
+                                    newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                }
+                            } else {
+                            }
+                        } else if (this.segmentBases == 'segmentation') {
+                            newQuery['segmentation'] = this.segmentationType;
+                            if (this.typePromo == 'flexiCombo') {
+                                if (this.typeTrigger == 'sku' && this.catalogueIdSelect != undefined) {
+                                    newQuery['catalogueId'] = this.catalogueIdSelect;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                    } else if(this.typeTrigger == 'brand' && this.brandIdSelect != undefined) {
+                                    newQuery['brandId'] = this.brandIdSelect;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                    } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect != undefined) {
+                                    newQuery['fakturId'] = this.fakturIdSelect;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                }
+                            } else if (this.typePromo == 'crossSelling') {
+                                if (this.idSelectedSegment != null) {
+                                    newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                                    // Melakukan request data
+                                    return this.entityApi$
+                                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                                        .pipe(
+                                            tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
+                                        );
+                                }
+                            } else {
+                            }
+                        } else {
+                            if (this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
+                                newQuery['segmentation'] = this.segmentationType;
+                                // Melakukan request data warehouse.
+                                return this.entityApi$
+                                    .find<IPaginatedResponse<Entity>>(newQuery)
+                                    .pipe(
+                                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
+                                    );
+                            }
                         }
-                    } else {
-
                     }
-                } else {
-                    if (this.typePromo != 'flexiCombo' && this.typePromo != 'crossSelling') {
-                    newQuery['segmentation'] = this.segmentationType;
-                    // Melakukan request data warehouse.
-                    return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
-                    );
-                    }
-                }
+                ),
+                takeUntil(this.subs$),
+                catchError(err => { throw err; }),
+            ).subscribe({
+                next: (response) => {
+                    this.valueSelectAllStore.emit(response);
+                    let addedAvailableEntities: Array<Selection> = [];
+                    let addedRawAvailableEntities: Array<Entity> = [];
 
-               
-            }),
-            takeUntil(this.subs$),
-            catchError(err => { throw err; }),
-        ).subscribe({
-            next: (response) => {
-                this.valueSelectAllStore.emit(response);
-                let addedAvailableEntities: Array<Selection> = [];
-                let addedRawAvailableEntities: Array<Entity> = [];
-
-                // Menetampan nilai available entities yang akan ditambahkan.
-                if (Array.isArray(response)) {
-                    addedRawAvailableEntities = response;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                        if (this.segmentationType == 'type') {
-                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
-                        } else if (this.segmentationType == 'group') {
-                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
-                        } else if (this.segmentationType == 'channel') {
-                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
-                        } else if (this.segmentationType == 'cluster') {
-                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
-                        } 
-                    } else {
-                        addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
-                    }
-
-                    for (const entity of (response as Array<Entity>)) {
-                        this.upsertEntity(entity);
-                    }
-                } else {
-                    addedRawAvailableEntities = response.data;
-
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                        if (this.segmentationType == 'type') {
-                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
-                        } else if (this.segmentationType == 'group') {
-                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
-                        } else if (this.segmentationType == 'channel') {
-                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
-                        } else if (this.segmentationType == 'cluster') {
-                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
-                        }
-                    } else {
-                        addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
-                    }
-
-                    for (const entity of (response.data as Array<Entity>)) {
-                        this.upsertEntity(entity);
-                    }
-                }
-
-                // Mengambil nilai dari subject sebelumnya.
-                const oldAvailableEntities = this.availableEntities$.value || [];
-                const oldRawAvailableEntities = this.rawAvailableEntities$.value || [];
-
-                // Menyimpan nilai subject yang baru, gabungan antara nilai yang lama dengan nilai yang baru.
-                const newRawAvailableEntities = oldRawAvailableEntities.concat(addedRawAvailableEntities);
-                const newAvailableEntities = oldAvailableEntities.concat(addedAvailableEntities);
-
-                this.ngZone.run(() => {
-                    // Menyimpan nilai yang baru tadi ke dalam subject.
-                    this.rawAvailableEntities$.next(newRawAvailableEntities);
-                    this.availableEntities$.next(newAvailableEntities);
-                    // Menyimpan total entities yang baru.
+                    // Menetampan nilai available entities yang akan ditambahkan.
                     if (Array.isArray(response)) {
-                        this.totalEntities$.next((response as Array<Entity>).length);
-                    } else {
-                        this.totalEntities$.next(response.total);
-                    }
-                });
+                        addedRawAvailableEntities = response;
+                        if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                            if (this.segmentationType == 'type') {
+                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                                let typeValue = (response as Array<Entity>).map((d) => ({
+                                    id: d.typeId,
+                                    label: d.typeName,
+                                    group: this.segmentationType,
+                                    supplierId: null,
+                                    parentId: null,
+                                    externalId: null,
+                                    name: null,
+                                    sequence: null,
+                                    hasChild: null,
+                                    description: null,
+                                    status: null,
+                                }));
 
-                this.cdRef.markForCheck();
-            },
-            error: (err) => {
-                this.toggleLoading(false);
-                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
-            },
-            complete: () => {
-                this.toggleLoading(false);
-                HelperService.debug('FIND ENTITY COMPLETED');
-            }
-        });
+                                for (const entity of (typeValue as Array<Entity>)) {
+                                    this.upsertEntity(entity);
+                                }
+                            } else if (this.segmentationType == 'group') {
+                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                                let groupValue = (response as Array<Entity>).map((d) => ({
+                                    id: d.groupId,
+                                    label: d.groupName,
+                                    group: this.segmentationType,
+                                    supplierId: null,
+                                    parentId: null,
+                                    externalId: null,
+                                    name: null,
+                                    sequence: null,
+                                    hasChild: null,
+                                    description: null,
+                                    status: null,
+                                }));
+
+                                for (const entity of (groupValue as Array<Entity>)) {
+                                    this.upsertEntity(entity);
+                                }
+                            } else if (this.segmentationType == 'channel') {
+                                addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                                let channelValue = (response as Array<Entity>).map((d) => ({
+                                    id: d.channelId,
+                                    label: d.channelName,
+                                    group: this.segmentationType,
+                                    supplierId: null,
+                                    parentId: null,
+                                    externalId: null,
+                                    name: null,
+                                    sequence: null,
+                                    hasChild: null,
+                                    description: null,
+                                    status: null,
+                                }));
+
+                                for (const entity of (channelValue as Array<Entity>)) {
+                                    this.upsertEntity(entity);
+                                }
+                            } else if (this.segmentationType == 'cluster') {
+                                addedAvailableEntities = (response as Array<Entity>).map((d) => ({
+                                    id: d.clusterId,
+                                    label: d.clusterName,
+                                    group: this.segmentationType,
+                                }));
+                                let clusterValue = (response as Array<Entity>).map((d) => ({
+                                    id: d.clusterId,
+                                    label: d.clusterName,
+                                    group: this.segmentationType,
+                                    supplierId: null,
+                                    parentId: null,
+                                    externalId: null,
+                                    name: null,
+                                    sequence: null,
+                                    hasChild: null,
+                                    description: null,
+                                    status: null,
+                                }));
+
+                                for (const entity of (clusterValue as Array<Entity>)) {
+                                    this.upsertEntity(entity);
+                                }
+                            }
+                        } else {
+                            addedAvailableEntities = (response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+                            for (const entity of response as Array<Entity>) {
+                                this.upsertEntity(entity);
+                            }
+                        }
+                    } else {
+                        addedRawAvailableEntities = response.data;
+
+                        if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                            if (this.segmentationType == 'type') {
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.typeId, label: d.typeName, group: this.segmentationType }));
+                                let typeValue = (response.data as Array<Entity>).map((d) => ({
+                                    id: d.typeId,
+                                    label: d.typeName,
+                                    group: this.segmentationType,
+                                    supplierId: null,
+                                    parentId: null,
+                                    externalId: null,
+                                    name: null,
+                                    sequence: null,
+                                    hasChild: null,
+                                    description: null,
+                                    status: null,
+                                }));
+
+                                for (const entity of typeValue as Array<Entity>) {
+                                    this.upsertEntity(entity);
+                                }
+                            } else if (this.segmentationType == 'group') {
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.groupId, label: d.groupName, group: this.segmentationType }));
+                                    let groupValue = (response.data as Array<Entity>).map((d) => ({
+                                        id: d.groupId,
+                                        label: d.groupName,
+                                        group: this.segmentationType,
+                                        supplierId: null,
+                                        parentId: null,
+                                        externalId: null,
+                                        name: null,
+                                        sequence: null,
+                                        hasChild: null,
+                                        description: null,
+                                        status: null,
+                                    }));
+    
+                                    for (const entity of (groupValue as Array<Entity>)) {
+                                        this.upsertEntity(entity);
+                                    }
+                            } else if (this.segmentationType == 'channel') {
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.channelId, label: d.channelName, group: this.segmentationType }));
+                                    let channelValue = (response.data as Array<Entity>).map((d) => ({
+                                        id: d.channelId,
+                                        label: d.channelName,
+                                        group: this.segmentationType,
+                                        supplierId: null,
+                                        parentId: null,
+                                        externalId: null,
+                                        name: null,
+                                        sequence: null,
+                                        hasChild: null,
+                                        description: null,
+                                        status: null,
+                                    }));
+    
+                                    for (const entity of (channelValue as Array<Entity>)) {
+                                        this.upsertEntity(entity);
+                                    }
+                            } else if (this.segmentationType == 'cluster') {
+                                addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.clusterId, label: d.clusterName, group: this.segmentationType }));
+                                let clusterValue = (response.data as Array<Entity>).map((d) => ({
+                                    id: d.clusterId,
+                                    label: d.clusterName,
+                                    group: this.segmentationType,
+                                    supplierId: null,
+                                    parentId: null,
+                                    externalId: null,
+                                    name: null,
+                                    sequence: null,
+                                    hasChild: null,
+                                    description: null,
+                                    status: null,
+                                }));
+
+                                for (const entity of (clusterValue as Array<Entity>)) {
+                                    this.upsertEntity(entity);
+                                }
+                            }
+                        } else {
+                            addedAvailableEntities = (response.data as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: this.segmentationType }));
+
+                            for (const entity of response.data as Array<Entity>) {
+                                this.upsertEntity(entity);
+                            }
+                        }
+                    }
+
+                    // Mengambil nilai dari subject sebelumnya.
+                    const oldAvailableEntities = this.availableEntities$.value || [];
+                    const oldRawAvailableEntities = this.rawAvailableEntities$.value || [];
+
+                    // Menyimpan nilai subject yang baru, gabungan antara nilai yang lama dengan nilai yang baru.
+                    const newRawAvailableEntities = oldRawAvailableEntities.concat(addedRawAvailableEntities);
+                    const newAvailableEntities = oldAvailableEntities.concat(addedAvailableEntities);
+
+                    this.ngZone.run(() => {
+                        // Menyimpan nilai yang baru tadi ke dalam subject.
+                        this.rawAvailableEntities$.next(newRawAvailableEntities);
+                        this.availableEntities$.next(newAvailableEntities);
+                        // Menyimpan total entities yang baru.
+                        if (Array.isArray(response)) {
+                            this.totalEntities$.next((response as Array<Entity>).length);
+                        } else {
+                            this.totalEntities$.next(response.total);
+                        }
+                    });
+                    this.cdRef.markForCheck();
+                },
+                error: (err) => {
+                    this.toggleLoading(false);
+                    HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
+                        this.helper$.showErrorNotification(new ErrorHandler(err));
+                },
+                complete: () => {
+                    this.toggleLoading(false);
+                    HelperService.debug('FIND ENTITY COMPLETED');
+                }
+            });
     }
-// 
+    //
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -452,18 +586,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
         if (event) {
-            const eventIds = event.map(e => e.id);
+            const eventIds = event.map((e) => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
             if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
-                if (this.segmentationType == 'type') {
-                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.typeId)));
-                } else if (this.segmentationType == 'group') {
-                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.groupId)));
-                } else if (this.segmentationType == 'channel') {
-                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.channelId)));
-                } else if (this.segmentationType == 'cluster') {
-                    this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.clusterId)));
-                }
+                this.selectedEntity$.next(eventIds.map((eventId) => this.cachedEntities[String(eventId)]));
             } else {
                 this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
             }
@@ -481,10 +607,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     limit: this.limit,
                     skip: 0
                 };
-        
+
                 this.search = value;
                 queryParams['keyword'] = value;
-        
+
                 this.requestEntity(queryParams);
             });
         }
@@ -530,17 +656,17 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
             this.tempEntity = selected;
             this.initialSelection = selected;
-            
+
             this.dialog = this.applyDialogFactory$.open({
-                title: this.title,
-                template: this.selectStoreType,
-                isApplyEnabled: true,
-            }, {
-                disableClose: true,
-                width: '80vw',
-                minWidth: '80vw',
-                maxWidth: '80vw',
-            });
+                    title: this.title,
+                    template: this.selectStoreType,
+                    isApplyEnabled: true,
+                }, {
+                    disableClose: true,
+                    width: '80vw',
+                    minWidth: '80vw',
+                    maxWidth: '80vw',
+                });
 
             this.dialog.closed$.subscribe({
                 next: (value: TNullable<string>) => {
@@ -580,7 +706,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
                     this.onSelectedEntity(this.entityFormValue.value);
                     this.cdRef.markForCheck();
-                }
+                },
             });
         }
     }
@@ -589,53 +715,14 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.dialogRef$.next('clear-all');
     }
 
-    // processEntityAutoComplete(): void {
-    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
-    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
-    //             .pipe(
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
-    //                 // Kasih jeda ketika scrolling.
-    //                 debounceTime(500),
-    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
-    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
-    //                 ),
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
-    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-    //                 filter(({ isLoading, entities, totalEntities }) =>
-    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
-    //                 ),
-    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
-    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
-    //                 ))
-    //             ).subscribe(({ entities }) => {
-    //                 const params: IQueryParams = {
-    //                     paginate: true,
-    //                     limit: 10,
-    //                     skip: entities.length
-    //                 };
-
-    //                 // Memulai request data store entity.
-    //                 this.requestEntity(params);
-    //             });
-    //     }
-    // }
-
-    // listenEntityAutoComplete(): void {
-    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
-    //     setTimeout(() => this.processEntityAutoComplete());
-    // }
-
     private initForm(): void {
         // this.entityFormView = new FormControl('');
         // this.entityFormValue = new FormControl('');
         this.entityFormValue.valueChanges.pipe(
-            tap(value => HelperService.debug('entityFormValue value changed', value)),
-            takeUntil(this.subs$)
-        ).subscribe();
-        
+                tap(value => HelperService.debug('entityFormValue value changed', value)),
+                takeUntil(this.subs$)
+            ).subscribe();
+
         if (this.required) {
             this.entityFormView.setValidators(Validators.required);
         }
@@ -644,14 +731,14 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     private updateFormView(): void {
         setTimeout(() => {
             const formValue: Array<Selection> = this.entityFormValue.value;
-            
+
             if (formValue.length === 0) {
                 this.entityFormView.setValue('');
             } else {
                 const firstselection = formValue[0].label;
                 const remainLength = formValue.length - 1;
                 const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
-        
+
                 this.entityFormView.setValue(viewValue);
             }
         });
@@ -659,51 +746,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
 
     ngOnInit(): void {
         this.initForm();
-        
-        // Menangani Form Control-nya warehouse.
-        // (this.entityForm.valueChanges).pipe(
-        //     startWith(''),
-        //     debounceTime(200),
-        //     distinctUntilChanged(),
-        //     withLatestFrom(this.selectedEntity$),
-        //     filter(([formValue, selectedEntity]) => {
-        //         if (selectedEntity && formValue && !this.entityAutoComplete.isOpen) {
-        //             return false;
-        //         }
-                
-        //         if (selectedEntity || (!formValue && !this.entityAutoComplete.isOpen)) {
-        //             this.selectedEntity$.next(null);
-        //             return false;
-        //         }
-
-        //         if (!formValue && selectedEntity && !this.entityAutoComplete.isOpen) {
-        //             this.entityForm.patchValue(selectedEntity);
-        //             return false;
-        //         }
-
-        //         return true;
-        //     }),
-        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
-        //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
-        //     }),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([formValue]) => {
-        //     const queryParams: IQueryParams = {
-        //         paginate: true,
-        //         limit: 10,
-        //         skip: 0
-        //     };
-
-        //     queryParams['keyword'] = formValue;
-
-        //     this.requestEntity(queryParams);
-        // });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.segmentBases == 'all') {
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {
                 const params: IQueryParams = {
                     // paginate: true,
@@ -734,7 +780,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 }
             } else if (this.typePromo == 'crossSelling') {
                 const params = {};
-                if (changes['idSelectedSegment']) { 
+                if (changes['idSelectedSegment']) {
                     if (this.idSelectedSegment !== null) {
                         this.availableEntities$.next([]);
                         this.rawAvailableEntities$.next([]);
@@ -744,8 +790,6 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                 }
             }
         } else if (this.segmentBases == 'segmentation') {
-            this.availableEntities$.next([]);
-            this.rawAvailableEntities$.next([]);
             if (this.typePromo == 'flexiCombo') {
                 const params: IQueryParams = {
                     paginate: true,
@@ -780,7 +824,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     limit: this.limit,
                     skip: 0,
                 };
-                if (changes['idSelectedSegment']) { 
+                if (changes['idSelectedSegment']) {
                     if (this.idSelectedSegment !== null) {
                         this.availableEntities$.next([]);
                         this.rawAvailableEntities$.next([]);
@@ -794,7 +838,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();
-    
+
                 if (changes['required'].currentValue === true) {
                     this.entityFormView.setValidators(Validators.required);
                 }
@@ -845,4 +889,3 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
 }
-
