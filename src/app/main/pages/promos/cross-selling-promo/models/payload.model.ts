@@ -121,6 +121,22 @@ export class CreateCrossSellingDto {
     }
 }
 
+export class ExtendCrossSellingDto {
+    startDate: string
+    endDate: string
+
+    constructor(data: ExtendCrossSellingDto) {
+        const {
+            startDate,
+            endDate
+        } = data
+
+        if (startDate) this.startDate = startDate
+        if (endDate) this.endDate = endDate
+    }
+
+}
+
 export class PatchCrossSellingDto {
     base?: string;
     dataBase?: ICrossSellingBase;

@@ -29,7 +29,7 @@ import {
 import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, CrossSellingPromoDetail,
     IPromoCatalogue, IPromoBrand, IPromoInvoiceGroup, IPromoStore, 
     IPromoWarehouse, IPromoType, IPromoGroup, IPromoChannel, 
-    IPromoCluster, ICrossSellingPromoBenefit } from '../../models';
+    IPromoCluster, ICrossSellingPromoBenefit, ExtendCrossSellingDto } from '../../models';
 import { CrossSellingPromoApiService } from '../../services/cross-selling-promo-api.service';
 import { CrossSellingPromoActions, CrossSellingPromoFailureActions } from '../actions';
 import * as crossSellingPromo from '../reducers';
@@ -428,6 +428,75 @@ export class CrossSellingPromoEffects {
         { dispatch: false }
     );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [EXTEND PROMO - Cross Selling Promo]
+    // -----------------------------------------------------------------------------------------------------
+
+    extendPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.extendPromoRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [{ body: ExtendCrossSellingDto; id: string }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: ExtendCrossSellingDto; id: string }], Observable<AnyAction>>(
+                            this._extendPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: ExtendCrossSellingDto; id: string }], Observable<AnyAction>>(
+                            this._extendPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    extendPromoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.extendPromoFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to extend promo';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    extendPromoSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.extendPromoSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully extending cross selling promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
@@ -512,6 +581,35 @@ export class CrossSellingPromoEffects {
                 });
             }),
             catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+        );
+    };
+
+    _extendPromoRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: ExtendCrossSellingDto; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload',
+            });
+        }
+
+        return this._$crossSellingPromoApi.put<{ data: ExtendCrossSellingDto }>({ data: body }, id).pipe(
+            map((resp) => {
+                return CrossSellingPromoActions.changeStatusSuccess({
+                    payload: {
+                        id,
+                        changes: {
+                            ...resp,
+                            startDate: body.startDate,
+                            endDate: body.endDate,
+                            updatedAt: resp.updatedAt,
+                        },
+                    },
+                });
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
         );
     };
 

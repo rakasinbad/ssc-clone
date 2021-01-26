@@ -3,7 +3,7 @@ import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Update } from '@ngrx/entity';
 
-import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto } from '../../models';
+import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, ExtendCrossSellingDto } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Cross Selling Promos
@@ -109,6 +109,25 @@ export const changeStatusSuccess = createAction(
     props<{ payload: Update<CrossSelling> }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - EXTEND PROMO] Cross Selling
+// -----------------------------------------------------------------------------------------------------
+
+export const extendPromoRequest = createAction(
+    '[Cross Selling] Extend Promo Request',
+    props<{ payload: { body: ExtendCrossSellingDto; id: string } }>()
+);
+
+export const extendPromoFailure = createAction(
+    '[Cross Selling] Extend Promo Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const extendPromoSuccess = createAction(
+    '[Cross Selling] Extend Promo Success',
+    props<{ payload: Update<CrossSelling> }>()
+);
+
 export const clearState = createAction('[Cross Selling] Reset Cross Selling Promo Core State');
 
 export type FailureActions =
@@ -117,4 +136,5 @@ export type FailureActions =
     | 'createCrossSellingPromoFailure'
     // | 'updateCrossSellingPromoFailure'
     | 'deleteCrossSellingPromoFailure'
-    | 'changeStatusFailure';
+    | 'changeStatusFailure'
+    | 'extendPromoFailure';

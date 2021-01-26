@@ -202,6 +202,18 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
         dialogRef
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
+            // .subscribe(fromDialog => {
+            //     const { newStartDate, newEndDate } = fromDialog
+            //     this.store.dispatch(CrossSellingPromoActions.extendPromoRequest({
+            //         payload: {
+            //             body: {
+            //                 startDate: newStartDate,
+            //                 endDate: newEndDate
+            //             },
+            //             id: row.id
+            //         }
+            //     }))
+            // })
     }
 
     onDelete(item): void {
