@@ -90,6 +90,7 @@ export class CataloguesService implements OnDestroy {
         totalBonus: string;
         totalInactive: string;
         totalRegular: string;
+        totalExclusive: string;
     }> {
         const newArgs = [];
 
@@ -110,6 +111,7 @@ export class CataloguesService implements OnDestroy {
             totalBonus: string;
             totalInactive: string;
             totalRegular: string;
+            totalExclusive: string;
         }>(this._url, { params: newParams });
     }
 

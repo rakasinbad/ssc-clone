@@ -485,6 +485,7 @@ export class CatalogueEffects {
                             totalActive,
                             totalInactive,
                             totalRegular,
+                            totalExclusive,
                         }) => {
                             return CatalogueActions.fetchTotalCatalogueStatusSuccess({
                                 payload: {
@@ -493,6 +494,7 @@ export class CatalogueEffects {
                                     totalActive,
                                     totalInactive,
                                     totalRegular,
+                                    totalExclusive,
                                 },
                             });
                         }
