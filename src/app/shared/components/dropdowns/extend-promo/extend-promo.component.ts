@@ -9,6 +9,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as fromFlexiCombos from '../../../../main/pages/promos/flexi-combo/store/reducers';
 import { Store } from '@ngrx/store';
 import { FlexiComboActions } from 'app/main/pages/promos/flexi-combo/store/actions';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-extend-promo',
@@ -200,7 +201,14 @@ export class ExtendPromoComponent implements OnInit {
   }
 
   onSubmit() {
-    const { newStartDate, newEndDate } = this.form.getRawValue();
+    let { newStartDate, newEndDate } = this.form.getRawValue();
+
+    newStartDate =
+        newStartDate && moment.isMoment(newStartDate)
+            ? newStartDate.toISOString(false)
+            : null;
+    newEndDate =
+        newEndDate && moment.isMoment(newEndDate) ? newEndDate.toISOString(false) : null;
 
     this.matDialog.close({
         newStartDate,
