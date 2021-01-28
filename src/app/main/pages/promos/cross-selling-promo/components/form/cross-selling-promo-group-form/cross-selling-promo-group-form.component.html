@@ -626,8 +626,6 @@
                         </div>
                         </ng-container>
 
-                       
-
                         <ng-container
                             [ngSwitch]="form.get(['groups', groupIdx, 'conditionBase']).value"
                         >
@@ -659,7 +657,7 @@
 <!-- TEMPLATE CONDITION BASE VALUE -->
 <ng-template let-form="form" let-groupIdx="groupIdx" #conditionQty>
     <!-- when multi true -->
-    <ng-container *ngIf="statusMulti == true">
+    <!-- <ng-container *ngIf="statusMulti == true">
         <ng-container *ngIf="groupIdx == 0">
             <div
                 class="custom-field"
@@ -735,10 +733,10 @@
                 </mat-form-field>
             </div>
         </ng-container>
-    </ng-container>
+    </ng-container> -->
 
     <!-- when multi false -->
-    <ng-container *ngIf="statusMulti == false">
+    <!-- <ng-container *ngIf="statusMulti == false"> -->
         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
             <label
                 [class.sinbad-red-fg]="
@@ -768,11 +766,11 @@
                 </mat-error>
             </mat-form-field>
         </div>
-    </ng-container>
+    <!-- </ng-container> -->
 </ng-template>
 
 <ng-template let-form="form" let-groupIdx="groupIdx" #conditionValue>
-    <ng-container *ngIf="statusMulti == true">
+    <!-- <ng-container *ngIf="statusMulti == true">
         <ng-container *ngIf="groupIdx == 0">
             <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                 <label
@@ -846,10 +844,10 @@
             </div>
         </ng-container>
        
-    </ng-container>
+    </ng-container> -->
 
     <!-- false -->
-    <ng-container *ngIf="statusMulti == false">
+    <!-- <ng-container *ngIf="statusMulti == false"> -->
        
     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
         <label
@@ -884,7 +882,7 @@
             </mat-error>
         </mat-form-field>
     </div>
-    </ng-container>
+    <!-- </ng-container> -->
 
 </ng-template>
 <!-- / TEMPLATE CONDITION BASE VALUE -->

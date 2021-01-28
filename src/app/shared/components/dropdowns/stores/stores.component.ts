@@ -107,6 +107,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     statusMassUpload: boolean = false;
     paramsMassUpload = {};
+    linkTemplate: string;
 
     constructor(
         private helper$: HelperService,
@@ -121,6 +122,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         private ngZone: NgZone,
         private domSanitizer: DomSanitizer,
     ) {
+        this.linkTemplate = "https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/import-csv/mass-upload-stores/Template-Mass-Upload-Stores.csv_2021012885044.csv";
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
             takeUntil(this.subs$)
