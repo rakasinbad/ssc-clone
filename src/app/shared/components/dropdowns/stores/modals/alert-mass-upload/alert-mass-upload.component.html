@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Alert</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Favorite Animal</mat-label>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end" style="margin-bottom:0px">
+    <button mat-button mat-dialog-close 
+    style=" border-radius: 4px; border: solid 1px #cacccf;">Cancel</button>
+  <button mat-button [mat-dialog-close]="'update'" cdkFocusInitial style="float: right; color: white; background-color: #f0444c; font-size: 14px;">Update</button>
+</div>

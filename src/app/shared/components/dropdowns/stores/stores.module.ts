@@ -9,12 +9,14 @@ import { StoresDropdownComponent } from './stores.component';
 import { MultipleSelectionModule } from 'app/shared/components/multiple-selection/multiple-selection.module';
 import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/apply-dialog.module';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-
+import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
+import { MaterialModule } from 'app/shared/material.module';
 
 
 @NgModule({
     declarations: [
         StoresDropdownComponent,
+        AlertMassUploadComponent
     ],
     imports: [
         CommonModule,
@@ -29,6 +31,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
         MatInputModule,
         MatSelectModule,
         RxReactiveFormsModule,
+        MaterialModule,
 
         ApplyDialogModule,
         MultipleSelectionModule,
@@ -38,9 +41,11 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
     ],
     exports: [
         StoresDropdownComponent,
+        AlertMassUploadComponent
     ],
     entryComponents: [
         StoresDropdownComponent,
+        AlertMassUploadComponent
     ],
 })
 export class StoresDropdownModule { }

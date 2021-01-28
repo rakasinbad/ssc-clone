@@ -153,3 +153,23 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
 }
 
 export type SupplierStoreOptions = Partial<SupplierStore>;
+
+export interface massUploadModels {
+    file: NonNullable<File>;
+    type: string;
+    // endpoint: NonNullable<string>;
+}
+
+export class massUploadModel implements massUploadModels {
+    file: NonNullable<File>;
+    type: string;
+    constructor(data: massUploadModels) {
+        const {
+            file,
+            type
+        } = data;
+
+        this.file = file;
+        this.type = type;
+    }
+}

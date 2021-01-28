@@ -24,6 +24,8 @@ import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
+import { DomSanitizer } from '@angular/platform-browser';
+import { massUploadModel } from './models/supplier-store.model';
 
 @Component({
     selector: 'select-supplier-stores',
@@ -50,6 +52,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     selectedEntity$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>(null);
     // Menyimpan state loading-nya Entity.
     isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    // Menyimpan state loading-nya Selected Entity.
+    isEntitySelectedLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     // Untuk keperluan handle dialog.
@@ -101,6 +105,9 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
+    statusMassUpload: boolean = false;
+    paramsMassUpload = {};
+
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
@@ -112,6 +119,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
         private ngZone: NgZone,
+        private domSanitizer: DomSanitizer,
     ) {
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
@@ -181,6 +189,16 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         if (this.ngZone) {
             this.ngZone.run(() => {
                 this.isEntityLoading$.next(loading);
+            });
+        }
+
+        this.cdRef.markForCheck();
+    }
+
+    private toggleSelectedLoading(loading: boolean): void {
+        if (this.ngZone) {
+            this.ngZone.run(() => {
+                this.isEntitySelectedLoading$.next(loading);
             });
         }
 
@@ -323,7 +341,98 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
             }
         });
     }
-// 
+
+    private requestMassUpload(params: massUploadModel): void {
+        this.toggleLoading(true);
+
+        of(null).pipe(
+            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+            // delay(1000),
+            withLatestFrom<any, UserSupplier>(
+                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            ),
+            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
+                // Jika user tidak ada data supplier.
+                if (!userSupplier) {
+                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                }
+
+                // Mengambil ID supplier-nya.
+                const { supplierId } = userSupplier;
+
+                // Membentuk query baru.
+                const newQuery: massUploadModel = { ... params };
+                // Memasukkan ID supplier ke dalam params baru.
+                newQuery['supplierId'] = supplierId;
+                if (this.typePromo == 'flexiCombo') {  
+                    newQuery['segment'] = 'store';
+                    if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
+                            newQuery['catalogueId'] = this.catalogueIdSelect;
+                            // Melakukan request data  Store Segment.
+                            return this.entityApi$
+                            .uploadMassStore(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('Mass Upload flexi', { params: newQuery, response })),
+                            );
+                        
+                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
+                            newQuery['brandId'] = this.brandIdSelect;
+                            // Melakukan request data  Store Segment.
+                            return this.entityApi$
+                            .uploadMassStore(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('Mass Upload flexi', { params: newQuery, response })),
+                            );
+                        
+                    } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
+                        newQuery['fakturId'] = this.fakturIdSelect;
+                         // Melakukan request data  Store Segment.
+                         return this.entityApi$
+                         .uploadMassStore(newQuery)
+                         .pipe(
+                             tap(response => HelperService.debug('Mass Upload flexi', { params: newQuery, response })),
+                         );
+                    } else {
+
+                    }
+                        
+                } else if (this.typePromo == 'crossSelling') {
+                    if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
+                        newQuery['segment'] = 'store';
+                        newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                        // Melakukan request data warehouse.
+                        return this.entityApi$
+                        .uploadMassStore(newQuery)
+                        .pipe(
+                            tap(response => HelperService.debug('Mass Upload Cross Selling', { params: newQuery, response })),
+                        );
+                    }
+                        
+                }
+
+            }),
+            take(1),
+            catchError(err => { throw err; }),
+        ).subscribe({
+            next: (response) => {
+                console.log('response mass upload->', response)
+                this.cdRef.markForCheck();
+            },
+            error: (err) => {
+                this.toggleLoading(false);
+                this.toggleSelectedLoading(false);
+                HelperService.debug('ERROR Mass Upload', { params, error: err }),
+                this.helper$.showErrorNotification(new ErrorHandler(err));
+            },
+            complete: () => {
+                this.toggleLoading(false);
+                this.toggleSelectedLoading(false);
+                HelperService.debug('Mass upload COMPLETED');
+            }
+        });
+    }
+    
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -490,6 +599,70 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         }
     }
 
+    massUploadFile(ev: Event) {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+            this.toggleLoading(true);
+            this.toggleSelectedLoading(true);
+            
+            let paramsMassUpload: massUploadModel = {
+                file: null,
+                type: "massUpload"
+            };
+            // this.paramsMassUpload: paramsMassUpload = {};
+            if (file) {
+                paramsMassUpload['file'] = file;
+                // const reader = new FileReader();
+                // reader.onload = () => {
+                //     paramsUrl['name'] = file.name;
+                //     paramsUrl['url'] = this.domSanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(file));
+                // };
+                // reader.readAsDataURL(file);
+            }
+
+            console.log('paramsMassUpload->', paramsMassUpload)
+
+            this.requestMassUpload(paramsMassUpload);
+         
+
+            //action buat nembak ke be
+
+            //if data success
+            // this.toggleLoading(false);
+            // this.toggleSelectedLoading(false);
+
+            //display pop up when found error
+            // const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
+            //     data: {
+            //         title: dialogTitle,
+            //         message: dialogMessage,
+            //         id: subjectValue
+            //     }, disableClose: true
+            // });
+    
+            // return dialogRef.afterClosed().pipe(
+            //     tap(value => {
+            //         if (value === 'clear-all') {
+            //             this.tempEntity = [];
+            //             this.entityFormValue.setValue([]);
+
+            //             this.multiple$.clearAllSelectedOptions();
+
+            //             this.notice$.open('Your selected options has been cleared.', 'success', {
+            //                 horizontalPosition: 'right',
+            //                 verticalPosition: 'bottom',
+            //                 duration: 5000
+            //             });
+
+            //             this.cdRef.markForCheck();
+            //         }
+            //     })
+            // );
+        }
+    }
+
     onClearAll(): void {
         this.dialogRef$.next('clear-all');
     }
@@ -586,6 +759,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
                             params['catalogueId'] = this.catalogueIdSelect;
                             this.requestEntity(params);
+                            this.statusMassUpload = true;
                         }
                     } else {
                         //if changes['catalogueIdSelect'] undefined
@@ -605,6 +779,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
                             params['brandId'] = this.brandIdSelect;
                             this.requestEntity(params);
+                            this.statusMassUpload = true;
                         } 
                     } else {
                         //if changes['brandIdSelect'] undefined
@@ -624,6 +799,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
                             params['fakturId'] = this.fakturIdSelect;
                             this.requestEntity(params);
+                            this.statusMassUpload = true;
                         } 
                     } else {
                         // if (changes['fakturIdSelect']) undefined
@@ -649,6 +825,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
                     params['catalogueSegmentationId'] = this.idSelectedSegment;
                     this.requestEntity(params);
+                    this.statusMassUpload = true;
                 }
             }
         }
@@ -697,6 +874,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
         this.availableEntities$.next(null);
         this.availableEntities$.complete();
+
+        if (this.statusMassUpload = true){
+            this.isEntitySelectedLoading$.next(null);
+            this.isEntitySelectedLoading$.complete();
+        }
     }
 
     ngAfterViewInit(): void {

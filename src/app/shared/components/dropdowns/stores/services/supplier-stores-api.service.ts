@@ -17,6 +17,7 @@ export class SupplierStoresApiService {
     private _url: string;
     private readonly _endpoint = '/supplier-stores';
     private readonly _endpointPromo = '/get-segmentation-promo';
+    private readonly _endpointMass = '/mass-upload';
 
     constructor(
         private http: HttpClient,
@@ -82,5 +83,10 @@ export class SupplierStoresApiService {
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    uploadMassStore(payload): Observable<any> {
+        console.log('isi payload upmass->', payload)
+        return this.http.post(this._endpointMass, payload );
     }
 }
