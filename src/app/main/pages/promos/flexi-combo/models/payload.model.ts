@@ -120,17 +120,38 @@ export class CreateFlexiComboDto {
 }
 
 export class ExtendFlexiComboDto {
-    startDate: string
-    endDate: string
+    // userId: string
+    promoId: string
+    startDateBeforeExtended: string
+    endDateBeforeExtended: string
+    startDateAfterExtended: string
+    endDateAfterExtended: string
 
     constructor(data: ExtendFlexiComboDto) {
         const {
-            startDate,
-            endDate
+            // userId,
+            promoId,
+            startDateBeforeExtended,
+            endDateBeforeExtended,
+            startDateAfterExtended,
+            endDateAfterExtended
         } = data
 
-        if (startDate) this.startDate = startDate
-        if (endDate) this.endDate = endDate
+        // this.userId = userId
+        this.promoId = promoId
+
+        if (startDateBeforeExtended) {
+            this.startDateBeforeExtended = startDateBeforeExtended
+        }
+        if (endDateBeforeExtended) {
+            this.endDateBeforeExtended = endDateBeforeExtended
+        }
+        if (startDateAfterExtended) {
+            this.startDateAfterExtended = startDateAfterExtended
+        }
+        if (endDateAfterExtended) {
+            this.endDateAfterExtended = endDateAfterExtended
+        }
     }
 
 }

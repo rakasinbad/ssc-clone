@@ -410,18 +410,58 @@ export class FlexiComboEffects {
     // @ CRUD methods [CHANGE STATUS - FLEXI COMBO]
     // -----------------------------------------------------------------------------------------------------
 
+    extendPromoShow$ = createEffect(() =>
+    this.actions$.pipe(
+        ofType(FlexiComboActions.extendPromoShow),
+        map((action) => action.payload),
+        exhaustMap((params) => {
+            const dialogRef = this.matDialog.open(ExtendPromoComponent, {
+                data: {
+                    id: params.id,
+                    start_date: params.startDate,
+                    end_date: params.endDate,
+                    status: params.status
+                },
+                panelClass: 'extend-promo-dialog',
+                disableClose: true
+            });
+    
+
+            return dialogRef.afterClosed();
+        }),
+        map((data) => {
+            if (data) {
+                const { promoId, startDate, endDate, newStartDate, newEndDate } = data
+                return FlexiComboActions.extendPromoRequest({
+                    payload: {
+                        body: {
+                            promoId: promoId,
+                            startDateBeforeExtended: startDate,
+                            endDateBeforeExtended: endDate,
+                            startDateAfterExtended: newStartDate,
+                            endDateAfterExtended: newEndDate
+                        }
+                    }
+                })
+            } else {
+                return UiActions.resetHighlightRow();
+            }
+        })
+    )
+);
+
     extendPromoRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(FlexiComboActions.extendPromoRequest),
             map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-            switchMap(([payload, authState]: [{ body: ExtendFlexiComboDto; id: string }, TNullable<Auth>]) => {
+            switchMap(([payload, authState]: [{ body: ExtendFlexiComboDto }, TNullable<Auth>]) => {
                 if (!authState) {
                     return this._$helper.decodeUserToken().pipe(
                         map(this._checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, payload])),
-                        switchMap<[User, { body: ExtendFlexiComboDto; id: string }], Observable<AnyAction>>(
+                        switchMap<[User, { body: ExtendFlexiComboDto }], Observable<AnyAction>>(
                             this._extendPromoRequest$
                         ),
                         catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
@@ -431,7 +471,7 @@ export class FlexiComboEffects {
                         map(this._checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, payload])),
-                        switchMap<[User, { body: ExtendFlexiComboDto; id: string }], Observable<AnyAction>>(
+                        switchMap<[User, { body: ExtendFlexiComboDto }], Observable<AnyAction>>(
                             this._extendPromoRequest$
                         ),
                         catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
@@ -699,26 +739,27 @@ export class FlexiComboEffects {
     };
 
 
-    _extendPromoRequest$ = ([userData, { body, id }]: [
+    _extendPromoRequest$ = ([userData, { body }]: [
         User,
-        { body: ExtendFlexiComboDto; id: string }
+        { body: ExtendFlexiComboDto }
     ]): Observable<AnyAction> => {
-        if (!id || !Object.keys(body).length) {
+        if (!Object.keys(body).length) {
             throw new ErrorHandler({
                 id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
-                errors: 'Check id or payload',
+                errors: 'Check payload',
             });
         }
 
-        return this._$flexiComboApi.put<{ data: ExtendFlexiComboDto }>({ data: body }, id).pipe(
+        const newBody: ExtendFlexiComboDto = { ...body, ...{userId: userData.id}}
+
+        return this._$flexiComboApi.extend<ExtendFlexiComboDto>(newBody).pipe(
             map((resp) => {
-                return FlexiComboActions.changeStatusSuccess({
+                return FlexiComboActions.extendPromoSuccess({
                     payload: {
-                        id,
+                        id: body.promoId,
                         changes: {
-                            ...resp,
-                            startDate: body.startDate,
-                            endDate: body.endDate,
+                            startDate: body.startDateAfterExtended,
+                            endDate: body.endDateAfterExtended,
                             updatedAt: resp.updatedAt,
                         },
                     },

@@ -128,9 +128,14 @@ export const changeStatusSuccess = createAction(
 // [CRUD - EXTEND PROMO] Flexi Combo
 // -----------------------------------------------------------------------------------------------------
 
+export const extendPromoShow = createAction(
+    '[Flexi Combo] Extend Promo Show Dialog',
+    props<{ payload: FlexiCombo }>()
+)
+
 export const extendPromoRequest = createAction(
     '[Flexi Combo] Extend Promo Request',
-    props<{ payload: { body: ExtendFlexiComboDto; id: string } }>()
+    props<{ payload: { body: ExtendFlexiComboDto } }>()
 );
 
 export const extendPromoFailure = createAction(
