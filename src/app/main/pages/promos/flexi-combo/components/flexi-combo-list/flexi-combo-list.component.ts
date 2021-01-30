@@ -170,33 +170,7 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     onExtend(row?: FlexiCombo): void {
-
-        const dialogRef = this.matDialog.open(ExtendPromoComponent, {
-            data: {
-                id: row.id,
-                start_date: row.startDate,
-                end_date: row.endDate,
-                status: row.status
-            },
-            panelClass: 'extend-promo-dialog',
-            disableClose: true
-        });
-
-        dialogRef
-            .afterClosed()
-            .pipe(takeUntil(this._unSubs$))
-            // .subscribe(fromDialog => {
-            //     const { newStartDate, newEndDate } = fromDialog
-            //     this.store.dispatch(FlexiComboActions.extendPromoRequest({
-            //         payload: {
-            //             body: {
-            //                 startDate: newStartDate,
-            //                 endDate: newEndDate
-            //             },
-            //             id: row.id
-            //         }
-            //     }))
-            // })
+        this.store.dispatch(FlexiComboActions.extendPromoShow({payload: row}))
     }
 
     isDisabled(status: string, date: string): boolean {
