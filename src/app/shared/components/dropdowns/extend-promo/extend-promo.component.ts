@@ -196,21 +196,27 @@ export class ExtendPromoComponent implements OnInit {
         }
     }
 
-  onClose() {
-    
+  normalizeDate(date: Date) {
+    if (date || moment.isMoment(date)) {
+        const splitted = date.toISOString().split('T')
+        const formatted = `${splitted[0]}T00:00:00+07:00`
+        return formatted
+    } 
+    return null
   }
 
   onSubmit() {
     let { newStartDate, newEndDate } = this.form.getRawValue();
 
-    newStartDate =
-        newStartDate && moment.isMoment(newStartDate)
-            ? newStartDate.toISOString(false)
-            : null;
-    newEndDate =
-        newEndDate && moment.isMoment(newEndDate) ? newEndDate.toISOString(false) : null;
+    const startDate = this.normalizeDate(new Date(this.currentStartDate))
+    const endDate = this.normalizeDate(new Date(this.currentEndDate))
+    newStartDate = this.normalizeDate(newStartDate)
+    newEndDate = this.normalizeDate(newEndDate)
 
     this.matDialog.close({
+        promoId: this.promoId,
+        startDate,
+        endDate,
         newStartDate,
         newEndDate
     })
