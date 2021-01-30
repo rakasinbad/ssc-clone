@@ -8,6 +8,7 @@ import { TypedAction } from '@ngrx/store/src/models';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { ExtendPromoComponent } from 'app/shared/components/dropdowns/extend-promo/extend-promo.component';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
 import { ErrorHandler, EStatus, PaginateResponse, TNullable } from 'app/shared/models/global.model';
@@ -432,6 +433,46 @@ export class CrossSellingPromoEffects {
     // @ CRUD methods [EXTEND PROMO - Cross Selling Promo]
     // -----------------------------------------------------------------------------------------------------
 
+    extendPromoShow$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.extendPromoShow),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                const dialogRef = this.matDialog.open(ExtendPromoComponent, {
+                    data: {
+                        id: params.id,
+                        start_date: params.startDate,
+                        end_date: params.endDate,
+                        status: params.status
+                    },
+                    panelClass: 'extend-promo-dialog',
+                    disableClose: true
+                });
+        
+
+                return dialogRef.afterClosed();
+            }),
+            map((data) => {
+                if (data) {
+                    const { promoId, startDate, endDate, newStartDate, newEndDate } = data
+                    return CrossSellingPromoActions.extendPromoRequest({
+                        payload: {
+                            body: {
+                                promoId: promoId,
+                                startDateBeforeExtended: startDate,
+                                endDateBeforeExtended: endDate,
+                                startDateAfterExtended: newStartDate,
+                                endDateAfterExtended: newEndDate
+                            }
+                        }
+                    })
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
     extendPromoRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CrossSellingPromoActions.extendPromoRequest),
@@ -584,26 +625,27 @@ export class CrossSellingPromoEffects {
         );
     };
 
-    _extendPromoRequest$ = ([userData, { body, id }]: [
+    _extendPromoRequest$ = ([userData, { body }]: [
         User,
-        { body: ExtendCrossSellingDto; id: string }
+        { body: ExtendCrossSellingDto }
     ]): Observable<AnyAction> => {
-        if (!id || !Object.keys(body).length) {
+        if (!Object.keys(body).length) {
             throw new ErrorHandler({
                 id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
-                errors: 'Check id or payload',
+                errors: 'Check payload',
             });
         }
 
-        return this._$crossSellingPromoApi.put<{ data: ExtendCrossSellingDto }>({ data: body }, id).pipe(
+        const newBody: ExtendCrossSellingDto = { ...body, ...{userId: userData.id}}
+
+        return this._$crossSellingPromoApi.extend<ExtendCrossSellingDto>(newBody).pipe(
             map((resp) => {
-                return CrossSellingPromoActions.changeStatusSuccess({
+                return CrossSellingPromoActions.extendPromoSuccess({
                     payload: {
-                        id,
+                        id: body.promoId,
                         changes: {
-                            ...resp,
-                            startDate: body.startDate,
-                            endDate: body.endDate,
+                            startDate: body.startDateAfterExtended,
+                            endDate: body.endDateAfterExtended,
                             updatedAt: resp.updatedAt,
                         },
                     },

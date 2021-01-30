@@ -113,9 +113,14 @@ export const changeStatusSuccess = createAction(
 // [CRUD - EXTEND PROMO] Cross Selling
 // -----------------------------------------------------------------------------------------------------
 
+export const extendPromoShow = createAction(
+    '[Cross Selling] Extend Promo Show Dialog',
+    props<{ payload: CrossSelling }>()
+)
+
 export const extendPromoRequest = createAction(
     '[Cross Selling] Extend Promo Request',
-    props<{ payload: { body: ExtendCrossSellingDto; id: string } }>()
+    props<{ payload: { body: ExtendCrossSellingDto} }>()
 );
 
 export const extendPromoFailure = createAction(

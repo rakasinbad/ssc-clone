@@ -122,17 +122,35 @@ export class CreateCrossSellingDto {
 }
 
 export class ExtendCrossSellingDto {
-    startDate: string
-    endDate: string
+    promoId: string
+    startDateBeforeExtended: string
+    endDateBeforeExtended: string
+    startDateAfterExtended: string
+    endDateAfterExtended: string
 
     constructor(data: ExtendCrossSellingDto) {
         const {
-            startDate,
-            endDate
+            promoId,
+            startDateBeforeExtended,
+            endDateBeforeExtended,
+            startDateAfterExtended,
+            endDateAfterExtended
         } = data
 
-        if (startDate) this.startDate = startDate
-        if (endDate) this.endDate = endDate
+        this.promoId = promoId
+
+        if (startDateBeforeExtended) {
+            this.startDateBeforeExtended = startDateBeforeExtended
+        }
+        if (endDateBeforeExtended) {
+            this.endDateBeforeExtended = endDateBeforeExtended
+        }
+        if (startDateAfterExtended) {
+            this.startDateAfterExtended = startDateAfterExtended
+        }
+        if (endDateAfterExtended) {
+            this.endDateAfterExtended = endDateAfterExtended
+        }
     }
 
 }
