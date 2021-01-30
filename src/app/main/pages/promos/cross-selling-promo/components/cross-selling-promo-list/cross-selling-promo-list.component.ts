@@ -188,32 +188,7 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
     }
 
     onExtend(row?: CrossSelling): void {
-
-        const dialogRef = this.matDialog.open(ExtendPromoComponent, {
-            data: {
-                start_date: row.startDate,
-                end_date: row.endDate,
-                status: row.status
-            },
-            panelClass: 'extend-promo-dialog',
-            disableClose: true
-        });
-
-        dialogRef
-            .afterClosed()
-            .pipe(takeUntil(this._unSubs$))
-            // .subscribe(fromDialog => {
-            //     const { newStartDate, newEndDate } = fromDialog
-            //     this.store.dispatch(CrossSellingPromoActions.extendPromoRequest({
-            //         payload: {
-            //             body: {
-            //                 startDate: newStartDate,
-            //                 endDate: newEndDate
-            //             },
-            //             id: row.id
-            //         }
-            //     }))
-            // })
+        this.store.dispatch(CrossSellingPromoActions.extendPromoShow({payload: row}))
     }
 
     onDelete(item): void {
