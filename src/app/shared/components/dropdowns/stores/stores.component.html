@@ -60,7 +60,7 @@
 <ng-template #selectStoreType>
 
     <div class="custom-field" fxLayout="row" style="justify-content: space-between">
-        <!-- <ng-container *ngIf="(this.typePromo == 'flexiCombo' && statusMassUpload == true) || (this.typePromo == 'crossSelling' && statusMassUpload == true)"> -->
+        <ng-container *ngIf="(this.typePromo == 'flexiCombo' && statusMassUpload == true) || (this.typePromo == 'crossSelling' && statusMassUpload == true)">
             <button
                 mat-flat-button
                 class="single-file-btn ml-16 mb-16"
@@ -82,7 +82,7 @@
             />
 
             <a class="mr-16 mb-10" href="{{linkTemplate}}">Download Mass Upload Template Here</a>
-        <!-- </ng-container> -->
+        </ng-container>
     </div>
 
     <sinbad-multiple-selection

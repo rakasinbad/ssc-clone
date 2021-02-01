@@ -25,7 +25,9 @@ import { MultipleSelectionService } from 'app/shared/components/multiple-selecti
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
 import { DomSanitizer } from '@angular/platform-browser';
-import { massUploadModel } from './models/supplier-store.model';
+import { IMassUpload } from './models/supplier-store.model';
+import { ImportMassUpload } from './store/actions';
+import { ImportMassUploadSelectors } from './store/selectors';
 
 @Component({
     selector: 'select-supplier-stores',
@@ -108,6 +110,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     statusMassUpload: boolean = false;
     paramsMassUpload = {};
     linkTemplate: string;
+    dataSource$: Observable<any>;
 
     constructor(
         private helper$: HelperService,
@@ -343,98 +346,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
             }
         });
     }
-
-    private requestMassUpload(params: massUploadModel): void {
-        this.toggleLoading(true);
-
-        of(null).pipe(
-            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-            // delay(1000),
-            withLatestFrom<any, UserSupplier>(
-                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-            ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
-                // Jika user tidak ada data supplier.
-                if (!userSupplier) {
-                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                }
-
-                // Mengambil ID supplier-nya.
-                const { supplierId } = userSupplier;
-
-                // Membentuk query baru.
-                const newQuery: massUploadModel = { ... params };
-                // Memasukkan ID supplier ke dalam params baru.
-                newQuery['supplierId'] = supplierId;
-                if (this.typePromo == 'flexiCombo') {  
-                    newQuery['segment'] = 'store';
-                    if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
-                            newQuery['catalogueId'] = this.catalogueIdSelect;
-                            // Melakukan request data  Store Segment.
-                            return this.entityApi$
-                            .uploadMassStore(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('Mass Upload flexi', { params: newQuery, response })),
-                            );
-                        
-                    } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
-                            newQuery['brandId'] = this.brandIdSelect;
-                            // Melakukan request data  Store Segment.
-                            return this.entityApi$
-                            .uploadMassStore(newQuery)
-                            .pipe(
-                                tap(response => HelperService.debug('Mass Upload flexi', { params: newQuery, response })),
-                            );
-                        
-                    } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
-                        newQuery['fakturId'] = this.fakturIdSelect;
-                         // Melakukan request data  Store Segment.
-                         return this.entityApi$
-                         .uploadMassStore(newQuery)
-                         .pipe(
-                             tap(response => HelperService.debug('Mass Upload flexi', { params: newQuery, response })),
-                         );
-                    } else {
-
-                    }
-                        
-                } else if (this.typePromo == 'crossSelling') {
-                    if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
-                        newQuery['segment'] = 'store';
-                        newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
-                        // Melakukan request data warehouse.
-                        return this.entityApi$
-                        .uploadMassStore(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('Mass Upload Cross Selling', { params: newQuery, response })),
-                        );
-                    }
-                        
-                }
-
-            }),
-            take(1),
-            catchError(err => { throw err; }),
-        ).subscribe({
-            next: (response) => {
-                console.log('response mass upload->', response)
-                this.cdRef.markForCheck();
-            },
-            error: (err) => {
-                this.toggleLoading(false);
-                this.toggleSelectedLoading(false);
-                HelperService.debug('ERROR Mass Upload', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
-            },
-            complete: () => {
-                this.toggleLoading(false);
-                this.toggleSelectedLoading(false);
-                HelperService.debug('Mass upload COMPLETED');
-            }
-        });
-    }
-    
+   
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -609,13 +521,17 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
             this.toggleLoading(true);
             this.toggleSelectedLoading(true);
             
-            let paramsMassUpload: massUploadModel = {
-                file: null,
-                type: "massUpload"
-            };
-            // this.paramsMassUpload: paramsMassUpload = {};
+            let paramsMassUpload = {};
+            
+            const formData = new FormData();
+
+                // formData.append('supplierId', supplierId);
             if (file) {
                 paramsMassUpload['file'] = file;
+                formData.append('file', file);
+                // formData.append('file', file);
+                // formData.append('type', paramsMassUpload.type);
+
                 // const reader = new FileReader();
                 // reader.onload = () => {
                 //     paramsUrl['name'] = file.name;
@@ -623,10 +539,74 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // };
                 // reader.readAsDataURL(file);
             }
+        if (this.typePromo == 'flexiCombo') {  
+                // newQuery['segment'] = 'store';
+                if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
+                        this.store.dispatch(
+                            ImportMassUpload.importMassConfirmRequest({
+                                payload: {
+                                    file,
+                                    type: 'massUpload',
+                                    catalogueId: this.catalogueIdSelect,
+                                    brandId: null,
+                                    fakturId: null
+                                }
+                            })
+                        );
+                    
+                } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
+                        this.store.dispatch(
+                            ImportMassUpload.importMassConfirmRequest({
+                                payload: {
+                                    file,
+                                    type: 'massUpload',
+                                    catalogueId: null,
+                                    brandId: this.brandIdSelect,
+                                    fakturId: null
+                                }
+                            })
+                        );
+                    
+                } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
+                    this.store.dispatch(
+                        ImportMassUpload.importMassConfirmRequest({
+                            payload: {
+                                file,
+                                type: 'massUpload',
+                                catalogueId: null,
+                                brandId: null,
+                                fakturId: this.fakturIdSelect
+                            }
+                        })
+                    );
+                } else {
+    
+                }
+                    
+            } else if (this.typePromo == 'crossSelling') {
+                if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
+                    // newQuery['segment'] = 'store';
+                    // newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
+                    this.store.dispatch(
+                        ImportMassUpload.importMassConfirmRequest({
+                            payload: {
+                                file,
+                                type: 'massUpload',
+                                catalogueId: this.idSelectedSegment,
+                                brandId: null,
+                                fakturId: null
+                            }
+                        })
+                    );
+                }
+                    
+            }
+        
 
-            console.log('paramsMassUpload->', paramsMassUpload)
-
-            this.requestMassUpload(paramsMassUpload);
+            console.log('paramsMassUpload->', formData)
+           
+            new Response(formData).text().then(console.log)
+            // this.requestMassUpload(paramsMassUpload);
          
 
             //action buat nembak ke be

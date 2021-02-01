@@ -12,6 +12,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
 import { MaterialModule } from 'app/shared/material.module';
 
+import { MassUploadStoreModule} from './store/mass-upload-store.module';
 
 @NgModule({
     declarations: [
@@ -19,7 +20,7 @@ import { MaterialModule } from 'app/shared/material.module';
         AlertMassUploadComponent
     ],
     imports: [
-        CommonModule,
+        CommonModule, 
 
         // Fuse
         FuseSharedModule,
@@ -35,6 +36,7 @@ import { MaterialModule } from 'app/shared/material.module';
 
         ApplyDialogModule,
         MultipleSelectionModule,
+        MassUploadStoreModule,
         // Third Party (RxWeb: https://www.rxweb.io)
         // RxReactiveFormsModule,
         // RxReactiveDynamicFormsModule,

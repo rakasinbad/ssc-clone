@@ -85,8 +85,39 @@ export class SupplierStoresApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    uploadMassStore(payload): Observable<any> {
-        console.log('isi payload upmass->', payload)
-        return this.http.post(this._endpointMass, payload );
+    uploadMassStore(payload, files: File): Observable<any> {
+        console.log('isi payload upmass1->', payload)
+        // payload.file = payload.file.name;
+        let formData = new FormData();
+        formData.append('file', files, files.name);
+        formData.append('type', payload.type);
+        formData.append('supplierId', payload.supplierId);
+        formData.append('catalogueId', payload.catalogueId);
+        // let headers = new Headers();
+
+        // for(var pair of formData.entries()) {
+        //     console.log(pair[0]+', '+pair[1]);
+        //   }
+      
+        // console.log('formData upmass->', formData.entries())
+        // /** In Angular 5, including the header Content-Type can invalidate your request */
+        // headers.append('Content-Type', 'multipart/form-data');
+        // headers.append('Accept', 'application/json');
+        // let options = new RequestOptions({ headers: headers });
+        // return this.http.post(url, formData, options)
+
+        return this.http.post(this._endpointMass, formData, {
+            reportProgress: true
+        });
     }
+
+    uploadFormData(formData: FormData): Observable<any> {
+        // const headers = new HttpHeaders().append('Content-Type', undefined);
+        // const headers = new HttpHeaders().append('Content-Type', 'multipart/form-data');
+        this._url = this.helper$.handleApiRouter(this._endpointMass);
+        return this.http.post(`${this._url}`, formData, {
+            reportProgress: true
+        });
+    }
+
 }

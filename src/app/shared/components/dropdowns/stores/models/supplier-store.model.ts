@@ -160,16 +160,110 @@ export interface massUploadModels {
     // endpoint: NonNullable<string>;
 }
 
-export class massUploadModel implements massUploadModels {
+
+// export class massUploadModel implements massUploadModels {
+//     file: NonNullable<File>;
+//     type: string;
+//     constructor(data: massUploadModels) {
+//         const {
+//             file,
+//             type
+//         } = data;
+
+//         this.file = file;
+//         this.type = type;
+//     }
+// }
+
+export interface IMassUpload {
     file: NonNullable<File>;
-    type: string;
-    constructor(data: massUploadModels) {
+    type: NonNullable<string>;
+    // supplierId: number;
+    catalogueId: NonNullable<string>;
+    fakturId: NonNullable<string>;
+    brandId: NonNullable<string>;
+}
+
+export interface IImportLog extends ITimestamp {
+    readonly id: NonNullable<string>;
+    action: string;
+    fileName: string;
+    page: string;
+    processedRow: number;
+    status: string;
+    totalRow: number;
+    url: string;
+    user: User;
+    userId: string;
+}
+
+export class ImportLog implements IImportLog {
+    readonly id: NonNullable<string>;
+    action: string;
+    fileName: string;
+    page: string;
+    processedRow: number;
+    status: string;
+    totalRow: number;
+    url: string;
+    user: User;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+
+    constructor(data: IImportLog) {
         const {
-            file,
-            type
+            id,
+            action,
+            fileName,
+            page,
+            processedRow,
+            status,
+            totalRow,
+            url,
+            user,
+            userId,
+            createdAt,
+            updatedAt,
+            deletedAt
         } = data;
 
-        this.file = file;
-        this.type = type;
+        this.id = id || undefined;
+        this.action = String(action).trim() || null;
+        this.fileName = String(fileName).trim() || null;
+        this.page = String(page).trim() || null;
+        this.processedRow = processedRow;
+        this.status = String(status).trim() || null;
+        this.totalRow = totalRow;
+        this.url = String(url).trim() || null;
+        this.userId = userId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+
+        this.setUser = user;
+    }
+
+    set setUser(value: User) {
+        this.user = value ? new User(value) : null;
+    }
+}
+
+export class MassUploadResponse {
+    readonly id: NonNullable<string>;
+    storeId: number;
+    storeName: string;
+
+    constructor(data: MassUploadResponse) {
+        const {
+            id,
+            storeId,
+            storeName
+        } = data;
+
+        this.id = id;
+        this.storeId = storeId;
+        this.storeName = storeName;
     }
 }
