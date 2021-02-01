@@ -273,16 +273,17 @@
                             <span>Detail</span>
                         </button> -->
 
-                        <!-- <button
+                        <button
                             type="button"
+                            [disabled]="isDisabled(row.status, row.endDate)"
                             mat-menu-item
                             class="sinbad-mat-menu-item"
-                            aria-label="Edit"
-                            [routerLink]="[row?.id]"
+                            aria-label="Extend"
+                            (click)="onExtend(row)"
                         >
-                            <mat-icon>edit</mat-icon>
-                            <span>Edit</span>
-                        </button> -->
+                            <mat-icon>calendar_today</mat-icon>
+                            <span>Extend</span>
+                        </button>
 
                         <button
                             mat-menu-item

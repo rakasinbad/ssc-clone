@@ -119,6 +119,43 @@ export class CreateFlexiComboDto {
     }
 }
 
+export class ExtendFlexiComboDto {
+    // userId: string
+    promoId: string
+    startDateBeforeExtended: string
+    endDateBeforeExtended: string
+    startDateAfterExtended: string
+    endDateAfterExtended: string
+
+    constructor(data: ExtendFlexiComboDto) {
+        const {
+            // userId,
+            promoId,
+            startDateBeforeExtended,
+            endDateBeforeExtended,
+            startDateAfterExtended,
+            endDateAfterExtended
+        } = data
+
+        // this.userId = userId
+        this.promoId = promoId
+
+        if (startDateBeforeExtended) {
+            this.startDateBeforeExtended = startDateBeforeExtended
+        }
+        if (endDateBeforeExtended) {
+            this.endDateBeforeExtended = endDateBeforeExtended
+        }
+        if (startDateAfterExtended) {
+            this.startDateAfterExtended = startDateAfterExtended
+        }
+        if (endDateAfterExtended) {
+            this.endDateAfterExtended = endDateAfterExtended
+        }
+    }
+
+}
+
 export class PatchFlexiComboDto {
     base?: string;
     conditions?: IFlexiComboCondition[];
