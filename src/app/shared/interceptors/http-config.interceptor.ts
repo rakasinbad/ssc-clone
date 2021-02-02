@@ -40,7 +40,8 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 !req.url.endsWith('import-supplier-stores') &&
                 !req.url.endsWith('import-journey-plans') &&
                 !req.url.endsWith('import-sales') &&
-                !req.url.endsWith('import-portfolios')
+                !req.url.endsWith('import-portfolios') &&
+                !req.url.endsWith('mass-upload')
             ) {
                 req = req.clone({
                     headers: req.headers.set('Content-Type', 'application/json')
