@@ -1,43 +1,35 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import * as fromImportMassUpload from '../reducers';
+import * as fromMassUploads from '../reducers/store.reducer';
 
-import { fromImportMassUpload } from '../reducers';
+export const getMassUploadCoreState = createFeatureSelector<
+fromImportMassUpload.FeatureState,
+fromImportMassUpload.State
+>(fromImportMassUpload.featureKey);
 
-
-export const getImportAdvancedState = createFeatureSelector<fromImportMassUpload.State>(
-    fromImportMassUpload.featureKey
+export const getMassUploadEntitiesState = createSelector(
+    getMassUploadCoreState,
+    (state) => state.massUpload
 );
 
-export const getImportLogsState = createSelector(getImportAdvancedState, state => state.importLogs);
-
 export const {
-    selectAll: selectAllImportLogs,
-    selectEntities: selectEntitiesImportLogs,
-    selectIds: selectIdsImportLogs,
-    selectTotal: selectTotalImportLogs
-} = fromImportMassUpload.adapterImportLogs.getSelectors(getImportLogsState);
+    selectAll,
+    selectEntities,
+    selectIds,
+    selectTotal,
+} = fromMassUploads.adapter.getSelectors(getMassUploadEntitiesState);
 
-// export const getTemplateLogsState = createSelector(
-//     getImportAdvancedState,
-//     state => state.templateLogs
-// );
+export const getTotalItem = createSelector(getMassUploadEntitiesState, (state) => state.total);
 
-// export const {
-//     selectAll: selectAllTemplateLogs,
-//     selectEntities: selectEntitiesTemplateLogs,
-//     selectIds: selectIdsTemplateLogs,
-//     selectTotal: selectTotalTemplateLogs
-// } = fromImportAdvanced.adapterTemplateLogs.getSelectors(getTemplateLogsState);
+export const getSelectedId = createSelector(
+    getMassUploadEntitiesState,
+    (state) => state.selectedId
+);
 
-export const getConfig = createSelector(getImportAdvancedState, state => state.config);
+export const getSelectedItem = createSelector(
+    selectEntities,
+    getSelectedId,
+    (entities, id) => entities[id]
+);
 
-// export const getMode = createSelector(getConfig, state => state && state.mode);
-
-// export const getTemplate = createSelector(getConfig, state => state && state.template);
-
-export const getTotalImportLogs = createSelector(getImportLogsState, state => state.total);
-
-// export const getTotalTemplateLogs = createSelector(getTemplateLogsState, state => state.total);
-
-export const getIsLoading = createSelector(getImportAdvancedState, state => state.isLoading);
-
-// export const getIsDownload = createSelector(getImportAdvancedState, state => state.isDownload);
+export const getIsLoading = createSelector(getMassUploadEntitiesState, (state) => state.isLoading);

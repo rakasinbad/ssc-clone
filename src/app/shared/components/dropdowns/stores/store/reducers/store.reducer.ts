@@ -4,12 +4,12 @@ import { ErrorHandler } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 // import { ExportLog, IConfigImportAdvanced, ImportLog } from '../../models';
-import { IMassUpload, ImportLog } from '../../models';
+import { IMassUpload, ImportLog, MassUploadResponse } from '../../models';
 
 import { ImportMassUpload } from '../actions';
 
 // Keyname for reducer
-export const featureKey = 'importAdvanced';
+export const featureKey = 'massUpload';
 
 interface ImportLogState extends EntityState<ImportLog> {
     isRefresh: boolean;
@@ -17,50 +17,29 @@ interface ImportLogState extends EntityState<ImportLog> {
     total: number;
 }
 
-// interface TemplateLogState extends EntityState<ExportLog> {
-//     isRefresh: boolean;
-//     selectedId: string;
-//     total: number;
-// }
-
 /**
  *
  *
  * @export
  * @interface State
  */
-export interface State {
-    isDownload: boolean;
+// export interface State extends EntityState<FlexiCombo> {
+//     isLoading: boolean;
+//     isRefresh: boolean;
+//     selectedId: string;
+//     total: number;
+// }
+
+export interface State extends EntityState<MassUploadResponse> {
     isLoading: boolean;
-    errors: ErrorHandler;
-    config: IMassUpload;
-    importLogs: ImportLogState;
+    isRefresh: boolean;
+    selectedId: string;
+    total: number;
     // templateLogs: TemplateLogState;
 }
 
 // Adapter for importLogs state
-export const adapterImportLogs = createEntityAdapter<ImportLog>({ selectId: row => row.id });
-
-// Initialize state
-const initialImportLogs = adapterImportLogs.getInitialState<
-    Omit<ImportLogState, 'ids' | 'entities'>
->({
-    isRefresh: undefined,
-    selectedId: null,
-    total: 0
-});
-
-// Adapter for templateLogs state
-// export const adapterTemplateLogs = createEntityAdapter<ExportLog>({ selectId: row => row.id });
-
-// // Initialize state
-// const initialExportLogs = adapterTemplateLogs.getInitialState<
-//     Omit<TemplateLogState, 'ids' | 'entities'>
-// >({
-//     isRefresh: undefined,
-//     selectedId: null,
-//     total: 0
-// });
+export const adapter = createEntityAdapter<MassUploadResponse>({ selectId: row => row.id });
 
 /**
  *
@@ -74,17 +53,15 @@ export interface FeatureState extends fromRoot.State {
 }
 
 // Initialize state
-export const initialState: State = {
-    isDownload: undefined,
+export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
-    errors: undefined,
-    config: undefined,
-    importLogs: initialImportLogs,
-    // templateLogs: initialExportLogs
-};
+    isRefresh: undefined,
+    selectedId: null,
+    total: 0,
+});
 
 // Reducer manage the action
-const importAdvancedReducer = createReducer(
+export const importAdvancedReducer = createReducer(
     initialState,
     on(
         ImportMassUpload.importMassRequest,
@@ -101,11 +78,16 @@ const importAdvancedReducer = createReducer(
             errors: payload
         })
     ),
-    on(ImportMassUpload.importMassSuccess, state => ({
-        ...state,
-        isLoading: false,
-        errors: initialState.errors
-    })),
+    // on(ImportMassUpload.importMassSuccess, (state, { payload }) => 
+    // adapter.addAll(payload.data,{
+    //     ...state,
+    //     isLoading: false,
+    //     total: payload.total    
+    // })),
+    on(ImportMassUpload.importMassSuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
+    on(ImportMassUpload.clearState, () => initialState)
 );
 
 /**

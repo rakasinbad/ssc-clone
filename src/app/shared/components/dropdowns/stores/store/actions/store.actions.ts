@@ -37,3 +37,5 @@ export const importConfigFailure = createAction(
     '[Import] Import Config Mass Upload Failure',
     props<{ payload: ErrorHandler }>()
 );
+
+export const clearState = createAction('[Import] Mass Upload Core State');

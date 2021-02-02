@@ -19,7 +19,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { IMassUpload } from '../../models';
 import { ImportMassUpload } from '../actions';
-import { fromImportMassUpload } from '../reducers';
+import * as fromImportMassUpload from '../reducers';
 
 @Injectable()
 export class ImportMassUploadEffects {
@@ -97,7 +97,10 @@ export class ImportMassUploadEffects {
                     
                     return this._$massUploadServiceApi.uploadFormData(formData1).pipe(
                         map(resp => {
-                            return ImportMassUpload.importMassSuccess(resp);
+                            console.log('isi resp->', resp)
+                            if (resp.total > 0) {
+                                return ImportMassUpload.importMassSuccess(resp);
+                            }
                         }),
                         catchError(err => this.sendErrorToState(err, 'importFailure'))
                     );
