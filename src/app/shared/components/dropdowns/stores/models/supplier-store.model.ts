@@ -184,6 +184,12 @@ export interface IMassUpload {
     catalogueSegmentationId: NonNullable<string>;
 }
 
+export interface IDataMassUpload {
+    readonly id: NonNullable<string>;
+    storeId: number;
+    storeName: string;
+}
+
 export interface IImportLog extends ITimestamp {
     readonly id: NonNullable<string>;
     action: string;
@@ -262,8 +268,29 @@ export class MassUploadResponse {
             storeName
         } = data;
 
-        this.id = id;
+        this.id = id || null;
         this.storeId = storeId;
         this.storeName = storeName;
+    }
+}
+
+export class IMassUploadData {
+    readonly id: NonNullable<string>;
+    linkExclude: string;
+    totalExclude: number;
+    massData?: IDataMassUpload[]
+
+    constructor(data: IMassUploadData) {
+        const {
+            id,
+            massData,
+            linkExclude,
+            totalExclude
+        } = data;
+
+        this.id = id;
+        this.linkExclude = linkExclude || null;
+        this.totalExclude = totalExclude || null;
+        this.massData = massData;
     }
 }

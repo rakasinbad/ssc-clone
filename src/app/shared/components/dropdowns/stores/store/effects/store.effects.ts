@@ -17,7 +17,7 @@ import { AnyAction } from 'app/shared/models/actions.model';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { Observable, of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { IMassUpload, MassUploadResponse } from '../../models';
+import { IMassUpload, MassUploadResponse, IMassUploadData, IDataMassUpload } from '../../models';
 import { ImportMassUpload } from '../actions';
 import * as fromImportMassUpload from '../reducers';
 
@@ -98,7 +98,8 @@ export class ImportMassUploadEffects {
                     return this._$massUploadServiceApi.uploadFormData(formData1).pipe(
                         map(resp => {
                             const newResp = {
-                                data:
+                                id: null,
+                                massData:
                                     (resp && resp.data.length > 0
                                         ? resp.data.map((v) => new MassUploadResponse(v))
                                         : []) || [],
@@ -106,7 +107,6 @@ export class ImportMassUploadEffects {
                                 linkExclude: resp.linkExclude,
                                 totalExclude: resp.totalExclude
                             };
-            
                             return ImportMassUpload.importMassSuccess({
                                 payload: newResp,
                             });

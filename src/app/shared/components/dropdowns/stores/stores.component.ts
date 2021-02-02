@@ -6,7 +6,7 @@ import { environment } from 'environments/environment';
 import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
-import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
+import { fromEvent, Observable, Subject, BehaviorSubject, of, Subscription } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { SupplierStore as Entity } from './models';
 import { SupplierStoresApiService as EntitiesApiService } from './services';
@@ -25,10 +25,11 @@ import { MultipleSelectionService } from 'app/shared/components/multiple-selecti
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IMassUpload } from './models/supplier-store.model';
+import { IMassUpload, MassUploadResponse, IMassUploadData } from './models/supplier-store.model';
 import { ImportMassUpload } from './store/actions';
 import { ImportMassUploadSelectors } from './store/selectors';
 import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
+
 @Component({
     selector: 'select-supplier-stores',
     templateUrl: './stores.component.html',
@@ -110,8 +111,9 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     statusMassUpload: boolean = false;
     paramsMassUpload = {};
     linkTemplate: string;
-    dataSource$: Observable<any>;
+    dataSource$: Observable<IMassUploadData>;
     importSub$: Subject<{ $event: Event; type: string }> = new Subject();
+    public subStore: Subscription;
 
     constructor(
         private helper$: HelperService,
@@ -522,13 +524,20 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // this.toggleSelectedLoading(true);
                 if (file) {
                     this._handlePage(file);
-                    // reader.readAsDataURL(file);
-                }
-    
-                //if data success
-                this.toggleLoading(false);
-                // this.toggleSelectedLoading(false);
-    
+
+                this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem).pipe(
+                    map((item) => {
+                        console.log('si item->', item)
+                        return item;
+                    })
+                );
+
+                this.subStore = this.dataSource$.subscribe((val) => {
+                    this.toggleLoading(false);
+                    // this.toggleSelectedLoading(false);
+
+                    console.log('isi val stores->', val)
+                    // if (val.length == 0) {
                 //display pop up when found error
                 // const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
                 //     data: {
@@ -557,6 +566,15 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // }
                 //     })
                 // );
+                    // } else {
+
+                    // }
+                });
+                    // reader.readAsDataURL(file);
+                }
+    
+    
+               
             }
     }
 

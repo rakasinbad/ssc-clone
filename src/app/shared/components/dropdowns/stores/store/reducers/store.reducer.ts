@@ -4,7 +4,7 @@ import { ErrorHandler } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 // import { ExportLog, IConfigImportAdvanced, ImportLog } from '../../models';
-import { IMassUpload, ImportLog, MassUploadResponse } from '../../models';
+import { IMassUpload, ImportLog, MassUploadResponse, IMassUploadData } from '../../models';
 
 import { ImportMassUpload } from '../actions';
 
@@ -30,7 +30,7 @@ interface ImportLogState extends EntityState<ImportLog> {
 //     total: number;
 // }
 
-export interface State extends EntityState<MassUploadResponse> {
+export interface State extends EntityState<IMassUploadData> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
@@ -39,7 +39,7 @@ export interface State extends EntityState<MassUploadResponse> {
 }
 
 // Adapter for importLogs state
-export const adapter = createEntityAdapter<MassUploadResponse>({ selectId: row => row.id });
+export const adapter = createEntityAdapter<IMassUploadData>({ selectId: row => row.id });
 
 /**
  *
@@ -67,7 +67,7 @@ export const importAdvancedReducer = createReducer(
         ImportMassUpload.importMassRequest,
         state => ({
             ...state,
-            isLoading: true
+            isLoading: true  
         })
     ),
     on(
@@ -79,9 +79,8 @@ export const importAdvancedReducer = createReducer(
         })
     ),
     on(ImportMassUpload.importMassSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total, 
-            linkExclude: payload.linkExclude, totalExclude: payload.totalExclude })
-    ),
+    adapter.addOne(payload, { ...state, isLoading: false })
+),
     on(ImportMassUpload.clearState, () => initialState)
 );
 

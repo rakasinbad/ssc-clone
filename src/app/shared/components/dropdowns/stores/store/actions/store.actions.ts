@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 
-import { IMassUpload, MassUploadResponse } from '../../models';
+import { IMassUpload, MassUploadResponse, IMassUploadData } from '../../models';
 
 export const importMassConfirmRequest = createAction(
     '[Import] Mass Upload Confirm Request',
@@ -20,7 +20,7 @@ export const importMassFailure = createAction(
 
 export const importMassSuccess = createAction(
     '[Import] Mass Upload Success',
-        props<{ payload: { data: MassUploadResponse[]; total: number; linkExclude: string; totalExclude: number } }>()
+        props<{ payload: IMassUploadData }>()
     );
 
 export const importConfigRequest = createAction(
