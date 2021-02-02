@@ -396,8 +396,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
+        console.log('selections->', event)
         if (event) {
             const eventIds = event.map(e => e.id);
+            console.log('isi eventsIds->', eventIds)
             // const rawEntities = this.rawAvailableEntities$.value;
             this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
         }
@@ -442,11 +444,14 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     onSelectionChanged($event: SelectionList): void {
+        console.log('event selecction changed->', $event);
+        console.log('entityFormValue->', this.entityFormValue)
         const { removed, merged = this.entityFormValue.value } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
-
+        console.log('entityFormValue2->', this.entityFormValue)
+        console.log('tempEntity->', this.tempEntity)
         this.cdRef.markForCheck();
     }
 
@@ -525,47 +530,54 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (file) {
                     this._handlePage(file);
 
-                this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem).pipe(
-                    map((item) => {
-                        console.log('si item->', item)
-                        return item;
-                    })
-                );
+                this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem);
 
                 this.subStore = this.dataSource$.subscribe((val) => {
                     this.toggleLoading(false);
                     // this.toggleSelectedLoading(false);
+                    if(val != undefined) {
+                        //checking if data length == 0
+                        if (val.totalExclude > 0) {
+                            //display pop up when found error
+                                const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
+                                    data: {
+                                        // title: dialogTitle,
+                                        // message: dialogMessage,
+                                        // id: subjectValue,
+                                        totalExclude: val.totalExclude,
+                                        linkExclude: val.linkExclude,
+                                    }, disableClose: true
+                                });
+                        
+                                return dialogRef.afterClosed().pipe(
+                                    tap(value => {
+                                        console.log('value->', value)
+                                        if (value === 'yes') {
+                                            // val.
+                                            console.log('isi val yes->', val.massData)
+                                            // this.tempEntity.push()
+                                            // this.tempEntity = [];
+                                            // this.entityFormValue.setValue([]);
+                    
+                                            // this.multiple$.clearAllSelectedOptions();
+                    
+                                            this.cdRef.markForCheck();
+                                        } else {
+                                            // if choosing No
+                                            // this.tempEntity = [];
+                                            // this.entityFormValue.setValue([]);
+                                            // this.multiple$.clearAllSelectedOptions();
+                                }
+                                    })
+                                );
+                        } else {
 
+                        }
+                    }
+                   
                     console.log('isi val stores->', val)
                     // if (val.length == 0) {
-                //display pop up when found error
-                // const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
-                //     data: {
-                //         // title: dialogTitle,
-                //         // message: dialogMessage,
-                //         // id: subjectValue,
-                //         totalExclude: 2,
-                //         linkExclude: 'http://localhost:4200/pages/promos/flexi-combo',
-                //     }, disableClose: true
-                // });
-        
-                // return dialogRef.afterClosed().pipe(
-                //     tap(value => {
-                //         if (value === 'yes') {
-                //             this.tempEntity = [];
-                //             this.entityFormValue.setValue([]);
-    
-                //             this.multiple$.clearAllSelectedOptions();
-    
-                //             this.cdRef.markForCheck();
-                //         } else {
-                //     // if choosing No
-                //     this.tempEntity = [];
-                //                 this.entityFormValue.setValue([]);
-                //                 this.multiple$.clearAllSelectedOptions();
-                // }
-                //     })
-                // );
+                
                     // } else {
 
                     // }
@@ -647,45 +659,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     onClearAll(): void {
         this.dialogRef$.next('clear-all');
     }
-
-    // processEntityAutoComplete(): void {
-    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
-    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
-    //             .pipe(
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
-    //                 // Kasih jeda ketika scrolling.
-    //                 debounceTime(500),
-    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
-    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
-    //                 ),
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
-    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-    //                 filter(({ isLoading, entities, totalEntities }) =>
-    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
-    //                 ),
-    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
-    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
-    //                 ))
-    //             ).subscribe(({ entities }) => {
-    //                 const params: IQueryParams = {
-    //                     paginate: true,
-    //                     limit: 10,
-    //                     skip: entities.length
-    //                 };
-
-    //                 // Memulai request data store entity.
-    //                 this.requestEntity(params);
-    //             });
-    //     }
-    // }
-
-    // listenEntityAutoComplete(): void {
-    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
-    //     setTimeout(() => this.processEntityAutoComplete());
-    // }
 
     private initForm(): void {
         // this.entityFormView = new FormControl('');
