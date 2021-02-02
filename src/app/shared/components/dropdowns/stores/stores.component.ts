@@ -541,52 +541,30 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             //display pop up when found error
                                 const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
                                     data: {
-                                        // title: dialogTitle,
-                                        // message: dialogMessage,
-                                        // id: subjectValue,
                                         totalExclude: val.totalExclude,
                                         linkExclude: val.linkExclude,
                                     }, disableClose: true
                                 });
                         
-                                return dialogRef.afterClosed().pipe(
-                                    tap(value => {
-                                        console.log('value->', value)
-                                        if (value === 'yes') {
-                                            // val.
-                                            console.log('isi val yes->', val.massData)
-                                            // this.tempEntity.push()
-                                            // this.tempEntity = [];
-                                            // this.entityFormValue.setValue([]);
-                    
-                                            // this.multiple$.clearAllSelectedOptions();
-                    
-                                            this.cdRef.markForCheck();
-                                        } else {
-                                            // if choosing No
-                                            // this.tempEntity = [];
-                                            // this.entityFormValue.setValue([]);
-                                            // this.multiple$.clearAllSelectedOptions();
-                                }
-                                    })
-                                );
+                                dialogRef.afterClosed().subscribe(result => {
+                                    console.log(`Dialog result: ${result}`);
+                                    if (result == 'yes') {
+                                        let fileEntities = [];
+                                        fileEntities = val.massData.filter(d => !!d)
+                                        .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                                        for (let i= 0; i < fileEntities.length; i++) {
+                                            this.tempEntity.push(fileEntities[i]);
+                                        }
+                                    }
+                                  });
                         } else {
 
                         }
                     }
-                   
                     console.log('isi val stores->', val)
-                    // if (val.length == 0) {
-                
-                    // } else {
-
-                    // }
                 });
-                    // reader.readAsDataURL(file);
                 }
     
-    
-               
             }
     }
 
