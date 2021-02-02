@@ -103,11 +103,7 @@ export class SupplierStoresApiService {
     }
        
     uploadFormData(formData: FormData): Observable<any> {
-        const headers = new HttpHeaders().append("Content-type","multipart/form-data; boundary=" + Math.random().toString().substr(2));
-        console.log('formdata typenya->', typeof formData)
-        // let headers = setRequestHeader("Content-type","multipart/form-data; charset=utf-8; boundary=" + Math.random().toString().substr(2));
         return this.http.post(`${this._url2}`, formData, {
-            // headers: headers,
             reportProgress: true
         });
     }

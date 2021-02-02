@@ -656,89 +656,8 @@
 
 <!-- TEMPLATE CONDITION BASE VALUE -->
 <ng-template let-form="form" let-groupIdx="groupIdx" #conditionQty>
-    <!-- when multi true -->
-    <!-- <ng-container *ngIf="statusMulti == true">
-        <ng-container *ngIf="groupIdx == 0">
-            <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-                fxLayoutGap="16px"
-            >
-                <label
-                    [class.sinbad-red-fg]="
-                        form.get(['groups', 0, 'conditionQty']).value ||
-                            form.get(['groups', 0, 'conditionQty']).touched
-                            | hasErrorField: form.get(['groups', 0, 'conditionQty']):false
-                    "
-                    fxFlexAlign="center"
-                    fxFlex="16"
-                >
-                    <span class="sinbad-red-fg">*</span>
-                    Qty >=
-                </label>
-                <mat-form-field appearance="outline" fxFlex="60">
-                    <input
-                        matInput
-                        [formControl]="form.get(['groups', 0, 'conditionQty'])"
-                        (ngModelChange)="condMultiQty($event)"
-                        mask="09999"
-                        autocomplete="off"
-                    />
-
-                    <mat-error>
-                        {{
-                            form.get(['groups', 0, 'conditionQty']).value
-                                | errorMessage: form:'conditionQty':'groups':0
-                        }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="groupIdx == 1">
-            <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-                fxLayoutGap="16px"
-            >
-                <label
-                    [class.sinbad-red-fg]="
-                        form.get(['groups', 1, 'conditionQty']).value ||
-                            form.get(['groups', 1, 'conditionQty']).touched
-                            | hasErrorField: form.get(['groups', 1, 'conditionQty']):false
-                    "
-                    fxFlexAlign="center"
-                    fxFlex="16"
-                >
-                    <span class="sinbad-red-fg">*</span>
-                    Qty >=
-                </label>
-                <mat-form-field appearance="outline" fxFlex="60">
-                    <input
-                        matInput
-                        [formControl]="form.get(['groups', 1, 'conditionQty'])"
-                        mask="09999"
-                        autocomplete="off"
-                        readonly
-                        style="color:lightgray;"
-                    />
-
-                    <mat-error>
-                        {{
-                            form.get(['groups', 1, 'conditionQty']).value
-                                | errorMessage: form:'conditionQty':'groups':1
-                        }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-        </ng-container>
-    </ng-container> -->
-
-    <!-- when multi false -->
-    <!-- <ng-container *ngIf="statusMulti == false"> -->
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
-            <label
+    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <label
                 [class.sinbad-red-fg]="
                     form.get(['groups', groupIdx, 'conditionQty']).value ||
                         form.get(['groups', groupIdx, 'conditionQty']).touched
@@ -746,109 +665,29 @@
                 "
                 fxFlexAlign="center"
                 fxFlex="16"
-            >
-                <span class="sinbad-red-fg">*</span>
+        >
+        <span class="sinbad-red-fg">*</span>
                 Qty >=
-            </label>
-            <mat-form-field appearance="outline" fxFlex="60">
-                <input
+        </label>
+        <mat-form-field appearance="outline" fxFlex="60">
+            <input
                     matInput
                     [formControl]="form.get(['groups', groupIdx, 'conditionQty'])"
                     mask="09999"
                     autocomplete="off"
-                />
+            />
 
-                <mat-error>
+        <mat-error>
                     {{
                         form.get(['groups', groupIdx, 'conditionQty']).value
                             | errorMessage: form:'conditionQty':'groups':groupIdx
                     }}
-                </mat-error>
-            </mat-form-field>
+        </mat-error>
+        </mat-form-field>
         </div>
-    <!-- </ng-container> -->
 </ng-template>
 
-<ng-template let-form="form" let-groupIdx="groupIdx" #conditionValue>
-    <!-- <ng-container *ngIf="statusMulti == true">
-        <ng-container *ngIf="groupIdx == 0">
-            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
-                <label
-                    [class.sinbad-red-fg]="
-                        form.get(['groups', 0, 'conditionValue']).value ||
-                            form.get(['groups', 0, 'conditionValue']).touched
-                            | hasErrorField: form.get(['groups', 0, 'conditionValue']):false
-                    "
-                    fxFlexAlign="center"
-                    fxFlex="16"
-                >
-                    <span class="sinbad-red-fg">*</span>
-                    Order Value >=
-                </label>
-        
-                <mat-form-field appearance="outline" fxFlex="60">
-                    <input
-                        matInput
-                        [formControl]="form.get(['groups', 0, 'conditionValue'])"
-                        mask="separator.2"
-                        thousandSeparator="."
-                        prefix="Rp"
-                        placeholder="Rp"
-                        autocomplete="off"
-                        (ngModelChange)="condMultiValue($event)"
-                    />
-        
-                    <mat-error>
-                        {{
-                            form.get(['groups', 0, 'conditionValue']).value
-                                | errorMessage: form:'conditionValue':'groups':0
-                        }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="groupIdx == 1">
-            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
-                <label
-                    [class.sinbad-red-fg]="
-                        form.get(['groups', 1, 'conditionValue']).value ||
-                            form.get(['groups', 1, 'conditionValue']).touched
-                            | hasErrorField: form.get(['groups', 1, 'conditionValue']):false
-                    "
-                    fxFlexAlign="center"
-                    fxFlex="16"
-                >
-                    <span class="sinbad-red-fg">*</span>
-                    Order Value >=
-                </label>
-        
-                <mat-form-field appearance="outline" fxFlex="60">
-                    <input
-                        matInput
-                        [formControl]="form.get(['groups', 1, 'conditionValue'])"
-                        mask="separator.2"
-                        thousandSeparator="."
-                        prefix="Rp"
-                        placeholder="Rp"
-                        autocomplete="off"
-                        readonly
-                    />
-        
-                    <mat-error>
-                        {{
-                            form.get(['groups', 1, 'conditionValue']).value
-                                | errorMessage: form:'conditionValue':'groups':1
-                        }}
-                    </mat-error>
-                </mat-form-field>
-            </div>
-        </ng-container>
-       
-    </ng-container> -->
-
-    <!-- false -->
-    <!-- <ng-container *ngIf="statusMulti == false"> -->
-       
+<ng-template let-form="form" let-groupIdx="groupIdx" #conditionValue>     
     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
         <label
             [class.sinbad-red-fg]="
@@ -882,8 +721,6 @@
             </mat-error>
         </mat-form-field>
     </div>
-    <!-- </ng-container> -->
-
 </ng-template>
 <!-- / TEMPLATE CONDITION BASE VALUE -->
 

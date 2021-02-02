@@ -178,10 +178,10 @@ export interface massUploadModels {
 export interface IMassUpload {
     file: NonNullable<File>;
     type: NonNullable<string>;
-    // supplierId: number;
     catalogueId: NonNullable<string>;
     fakturId: NonNullable<string>;
     brandId: NonNullable<string>;
+    catalogueSegmentationId: NonNullable<string>;
 }
 
 export interface IImportLog extends ITimestamp {

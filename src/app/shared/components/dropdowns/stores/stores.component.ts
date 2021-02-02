@@ -28,7 +28,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { IMassUpload } from './models/supplier-store.model';
 import { ImportMassUpload } from './store/actions';
 import { ImportMassUploadSelectors } from './store/selectors';
-
+import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
 @Component({
     selector: 'select-supplier-stores',
     templateUrl: './stores.component.html',
@@ -111,6 +111,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     paramsMassUpload = {};
     linkTemplate: string;
     dataSource$: Observable<any>;
+    importSub$: Subject<{ $event: Event; type: string }> = new Subject();
 
     constructor(
         private helper$: HelperService,
@@ -123,7 +124,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
         private ngZone: NgZone,
-        private domSanitizer: DomSanitizer,
+        private domSanitizer: DomSanitizer
     ) {
         this.linkTemplate = "https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/import-csv/mass-upload-stores/Template-Mass-Upload-Stores.csv_2021012885044.csv";
         this.availableEntities$.pipe(
@@ -514,134 +515,114 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     massUploadFile(ev: Event) {
-        const inputEl = ev.target as HTMLInputElement;
-
-        if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0] as File;
-            this.toggleLoading(true);
-            this.toggleSelectedLoading(true);
-            
-            let paramsMassUpload = {};
-            
-            const formData = new FormData();
-
-                // formData.append('supplierId', supplierId);
-            if (file) {
-                paramsMassUpload['file'] = file;
-                formData.append('file', file);
-                // formData.append('file', file);
-                // formData.append('type', paramsMassUpload.type);
-
-                // const reader = new FileReader();
-                // reader.onload = () => {
-                //     paramsUrl['name'] = file.name;
-                //     paramsUrl['url'] = this.domSanitizer.bypassSecurityTrustUrl(window.URL.createObjectURL(file));
-                // };
-                // reader.readAsDataURL(file);
+            const inputEl = ev.target as HTMLInputElement;
+            if (inputEl.files && inputEl.files.length > 0) {
+                const file = inputEl.files[0];
+                this.toggleLoading(true);
+                // this.toggleSelectedLoading(true);
+                if (file) {
+                    this._handlePage(file);
+                    // reader.readAsDataURL(file);
+                }
+    
+                //if data success
+                this.toggleLoading(false);
+                // this.toggleSelectedLoading(false);
+    
+                //display pop up when found error
+                // const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
+                //     data: {
+                //         // title: dialogTitle,
+                //         // message: dialogMessage,
+                //         // id: subjectValue,
+                //         totalExclude: 2,
+                //         linkExclude: 'http://localhost:4200/pages/promos/flexi-combo',
+                //     }, disableClose: true
+                // });
+        
+                // return dialogRef.afterClosed().pipe(
+                //     tap(value => {
+                //         if (value === 'yes') {
+                //             this.tempEntity = [];
+                //             this.entityFormValue.setValue([]);
+    
+                //             this.multiple$.clearAllSelectedOptions();
+    
+                //             this.cdRef.markForCheck();
+                //         } else {
+                //     // if choosing No
+                //     this.tempEntity = [];
+                //                 this.entityFormValue.setValue([]);
+                //                 this.multiple$.clearAllSelectedOptions();
+                // }
+                //     })
+                // );
             }
+    }
+
+    private _handlePage(file: File): void {
         if (this.typePromo == 'flexiCombo') {  
-                // newQuery['segment'] = 'store';
-                if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
-                        this.store.dispatch(
-                            ImportMassUpload.importMassConfirmRequest({
-                                payload: {
-                                    file,
-                                    type: 'massUpload',
-                                    catalogueId: this.catalogueIdSelect,
-                                    brandId: null,
-                                    fakturId: null
-                                }
-                            })
-                        );
-                    
-                } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
-                        this.store.dispatch(
-                            ImportMassUpload.importMassConfirmRequest({
-                                payload: {
-                                    file,
-                                    type: 'massUpload',
-                                    catalogueId: null,
-                                    brandId: this.brandIdSelect,
-                                    fakturId: null
-                                }
-                            })
-                        );
-                    
-                } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
+            if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
+                    this.store.dispatch(
+                        ImportMassUpload.importMassConfirmRequest({
+                            payload: {
+                                file,
+                                type: 'massUpload',
+                                catalogueId: this.catalogueIdSelect,
+                                brandId: null,
+                                fakturId: null,
+                                catalogueSegmentationId: null
+                            }
+                        })
+                    );
+                
+            } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
                     this.store.dispatch(
                         ImportMassUpload.importMassConfirmRequest({
                             payload: {
                                 file,
                                 type: 'massUpload',
                                 catalogueId: null,
-                                brandId: null,
-                                fakturId: this.fakturIdSelect
+                                brandId: this.brandIdSelect,
+                                fakturId: null,
+                                catalogueSegmentationId: null
                             }
                         })
                     );
-                } else {
-    
-                }
-                    
-            } else if (this.typePromo == 'crossSelling') {
-                if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
-                    // newQuery['segment'] = 'store';
-                    // newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
-                    this.store.dispatch(
-                        ImportMassUpload.importMassConfirmRequest({
-                            payload: {
-                                file,
-                                type: 'massUpload',
-                                catalogueId: this.idSelectedSegment,
-                                brandId: null,
-                                fakturId: null
-                            }
-                        })
-                    );
-                }
-                    
+                
+            } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
+                this.store.dispatch(
+                    ImportMassUpload.importMassConfirmRequest({
+                        payload: {
+                            file,
+                            type: 'massUpload',
+                            catalogueId: null,
+                            brandId: null,
+                            fakturId: this.fakturIdSelect,
+                            catalogueSegmentationId: null
+                        }
+                    })
+                );
+            } else {
+
             }
-        
-
-            console.log('paramsMassUpload->', formData)
-           
-            new Response(formData).text().then(console.log)
-            // this.requestMassUpload(paramsMassUpload);
-         
-
-            //action buat nembak ke be
-
-            //if data success
-            this.toggleLoading(false);
-            // this.toggleSelectedLoading(false);
-
-            //display pop up when found error
-            // const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
-            //     data: {
-            //         title: dialogTitle,
-            //         message: dialogMessage,
-            //         id: subjectValue
-            //     }, disableClose: true
-            // });
-    
-            // return dialogRef.afterClosed().pipe(
-            //     tap(value => {
-            //         if (value === 'clear-all') {
-            //             this.tempEntity = [];
-            //             this.entityFormValue.setValue([]);
-
-            //             this.multiple$.clearAllSelectedOptions();
-
-            //             this.notice$.open('Your selected options has been cleared.', 'success', {
-            //                 horizontalPosition: 'right',
-            //                 verticalPosition: 'bottom',
-            //                 duration: 5000
-            //             });
-
-            //             this.cdRef.markForCheck();
-            //         }
-            //     })
-            // );
+                
+        } else if (this.typePromo == 'crossSelling') {
+            if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
+                this.store.dispatch(
+                    ImportMassUpload.importMassConfirmRequest({
+                        payload: {
+                            file,
+                            type: 'massUpload',
+                            catalogueId: null,
+                            brandId: null,
+                            fakturId: null,
+                            catalogueSegmentationId: this.idSelectedSegment
+                        }
+                    })
+                );
+            }
+                
         }
     }
 

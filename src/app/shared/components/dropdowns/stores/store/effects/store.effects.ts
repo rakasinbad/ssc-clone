@@ -13,12 +13,10 @@ import {
     UploadApiService
 } from 'app/shared/helpers';
 import { SupplierStoresApiService } from '../../services';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { AnyAction } from 'app/shared/models/actions.model';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { Observable, of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-
 import { IMassUpload } from '../../models';
 import { ImportMassUpload } from '../actions';
 import { fromImportMassUpload } from '../reducers';
@@ -28,10 +26,9 @@ export class ImportMassUploadEffects {
     importMassConfirmRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ImportMassUpload.importMassConfirmRequest),
-            map(action => action.payload),
-            map(params => {
+            map(action => {
+                let params = action.payload;
                 if (params) {
-                    // console.log('isi changes->', change)
                     return ImportMassUpload.importMassRequest({
                         payload: params
                     });
@@ -59,7 +56,7 @@ export class ImportMassUploadEffects {
                 return of([params, supplierId]);
             }),
             switchMap(
-                ([{ file, type, catalogueId, fakturId, brandId }, data]: [IMassUpload, string | Auth]) => {
+                ([{ file, type, catalogueId, fakturId, brandId, catalogueSegmentationId }, data]: [IMassUpload, string | Auth]) => {
                     if (!file) {
                         return of(
                             ImportMassUpload.importMassFailure({
@@ -85,7 +82,7 @@ export class ImportMassUploadEffects {
                     }
 
                     let formData1 = new FormData();
-                    // formData1.append('file', file);
+                    formData1.append('file', file, file.name);
                     formData1.append('supplierId', supplierId);
                     formData1.append('type', type);
                     if (catalogueId !== null) {
@@ -94,10 +91,10 @@ export class ImportMassUploadEffects {
                         formData1.append('brandId', brandId);
                     } else if (fakturId !== null) {
                         formData1.append('fakturId', fakturId);
+                    } else if (catalogueSegmentationId !== null) {
+                        formData1.append('catalogueSegmentationId', catalogueSegmentationId);
                     }
                     
-                    // console.log('formdataentried->', formData1.getAll('file'))
-                   
                     return this._$massUploadServiceApi.uploadFormData(formData1).pipe(
                         map(resp => {
                             return ImportMassUpload.importMassSuccess(resp);
