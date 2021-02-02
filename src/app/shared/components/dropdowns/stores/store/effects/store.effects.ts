@@ -20,73 +20,24 @@ import { Observable, of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { IMassUpload } from '../../models';
-
-// import { IImportAdvanced } from '../../models';
 import { ImportMassUpload } from '../actions';
 import { fromImportMassUpload } from '../reducers';
 
 @Injectable()
 export class ImportMassUploadEffects {
-    // importConfigRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(ImportMassUpload.importMassConfirmRequest),
-    //         map(action => action.payload),
-    //         switchMap(params => {
-    //             if (!params) {
-    //                 this._$notice.open('Please set page type first!', 'error', {
-    //                     verticalPosition: 'bottom',
-    //                     horizontalPosition: 'right'
-    //                 });
-
-    //                 throw new ErrorHandler({
-    //                     id: 'importConfigFailure',
-    //                     errors: 'Not set page type'
-    //                 });
-    //             }
-
-    //             return this._$massUploadServiceApi.getConfig(params).pipe(
-    //                 map(resp => {
-    //                     return ImportMassUpload.importMassRequest({
-    //                         payload: resp
-    //                     });
-    //                 }),
-    //                 catchError(err => this.sendErrorToState(err, 'importConfigFailure'))
-    //             );
-    //         })
-    //     )
-    // );
-
     importMassConfirmRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(ImportMassUpload.importMassConfirmRequest),
             map(action => action.payload),
-            exhaustMap(params => {
-                const { file } = params;
-                const dialogRef = this.matDialog.open<
-                    ChangeConfirmationComponent,
-                    any,
-                    { id: string; change: IMassUpload }
-                >(ChangeConfirmationComponent, {
-                    data: {
-                        title: 'Import',
-                        message: `Are you sure want to import <strong>${file.name}</strong> ?`,
-                        id: 'import',
-                        change: params
-                    },
-                    disableClose: true
-                });
-
-                return dialogRef.afterClosed();
-            }),
-            map(({ id, change }) => {
-                if (id && change) {
+            map(params => {
+                if (params) {
+                    // console.log('isi changes->', change)
                     return ImportMassUpload.importMassRequest({
-                        payload: change
+                        payload: params
                     });
                 }
-
                 return { type: 'NO_ACTION' };
-            })
+            }),
         )
     );
 
@@ -109,7 +60,7 @@ export class ImportMassUploadEffects {
             }),
             switchMap(
                 ([{ file, type, catalogueId, fakturId, brandId }, data]: [IMassUpload, string | Auth]) => {
-                    if (!data || !file || !type ) {
+                    if (!file) {
                         return of(
                             ImportMassUpload.importMassFailure({
                                 payload: { id: 'importFailure', errors: 'Not Found!' }
@@ -133,24 +84,27 @@ export class ImportMassUploadEffects {
                         );
                     }
 
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    formData.append('supplierId', supplierId);
-                    formData.append('type', type);
+                    let formData1 = new FormData();
+                    // formData1.append('file', file);
+                    formData1.append('supplierId', supplierId);
+                    formData1.append('type', type);
                     if (catalogueId !== null) {
-                        formData.append('catalogueId', catalogueId);
+                        formData1.append('catalogueId', catalogueId);
                     } else if (brandId !== null) {
-                        formData.append('brandId', brandId);
+                        formData1.append('brandId', brandId);
                     } else if (fakturId !== null) {
-                        formData.append('fakturId', fakturId);
+                        formData1.append('fakturId', fakturId);
                     }
-                    console.log('isi formDta eff->',formData)
-                    return this._$massUploadServiceApi.uploadFormData(formData).pipe(
+                    
+                    // console.log('formdataentried->', formData1.getAll('file'))
+                   
+                    return this._$massUploadServiceApi.uploadFormData(formData1).pipe(
                         map(resp => {
                             return ImportMassUpload.importMassSuccess(resp);
                         }),
                         catchError(err => this.sendErrorToState(err, 'importFailure'))
                     );
+
                 }
             )
         )

@@ -1,11 +1,17 @@
 <h1 mat-dialog-title>Alert</h1>
 <div mat-dialog-content>
   <mat-form-field>
-    <mat-label>Favorite Animal</mat-label>
+    <mat-label>20 stores couldn't be found on the database.&#10;
+        If you wish to continue, these stores won't be included&#10;
+        in the list of stores that will be mapped to the promo.&#10;
+        Do you wish to continue?
+    <br/>
+        <a href="">Download excluded store list here</a>
+    </mat-label>
   </mat-form-field>
 </div>
 <div mat-dialog-actions align="end" style="margin-bottom:0px">
     <button mat-button mat-dialog-close 
-    style=" border-radius: 4px; border: solid 1px #cacccf;">Cancel</button>
-  <button mat-button [mat-dialog-close]="'update'" cdkFocusInitial style="float: right; color: white; background-color: #f0444c; font-size: 14px;">Update</button>
+    style=" border-radius: 4px; border: solid 1px #cacccf;">No</button>
+  <button mat-button [mat-dialog-close]="'update'" cdkFocusInitial style="float: right; color: white; background-color: #f0444c; font-size: 14px;">Yes</button>
 </div>

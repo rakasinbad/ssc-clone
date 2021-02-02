@@ -517,7 +517,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         const inputEl = ev.target as HTMLInputElement;
 
         if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0];
+            const file = inputEl.files[0] as File;
             this.toggleLoading(true);
             this.toggleSelectedLoading(true);
             
@@ -612,7 +612,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
             //action buat nembak ke be
 
             //if data success
-            // this.toggleLoading(false);
+            this.toggleLoading(false);
             // this.toggleSelectedLoading(false);
 
             //display pop up when found error
