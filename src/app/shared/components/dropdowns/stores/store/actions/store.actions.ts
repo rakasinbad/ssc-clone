@@ -20,13 +20,8 @@ export const importMassFailure = createAction(
 
 export const importMassSuccess = createAction(
     '[Import] Mass Upload Success',
-        props<{ payload: { data: MassUploadResponse[]; total: number } }>()
+        props<{ payload: { data: MassUploadResponse[]; total: number; linkExclude: string; totalExclude: number } }>()
     );
-
-// export const fetchSkpListSuccess = createAction(
-//     '[SKP] Fetch SKP List Success',
-//     props<{ payload: { data: SkpModel[]; total: number } }>()
-// );
 
 export const importConfigRequest = createAction(
     '[Import] Import Config Mass Upload Request',

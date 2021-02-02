@@ -78,14 +78,9 @@ export const importAdvancedReducer = createReducer(
             errors: payload
         })
     ),
-    // on(ImportMassUpload.importMassSuccess, (state, { payload }) => 
-    // adapter.addAll(payload.data,{
-    //     ...state,
-    //     isLoading: false,
-    //     total: payload.total    
-    // })),
     on(ImportMassUpload.importMassSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total, 
+            linkExclude: payload.linkExclude, totalExclude: payload.totalExclude })
     ),
     on(ImportMassUpload.clearState, () => initialState)
 );
