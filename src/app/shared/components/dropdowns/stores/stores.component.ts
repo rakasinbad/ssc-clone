@@ -109,7 +109,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
     statusMassUpload: boolean = false;
-    paramsMassUpload = {};
     linkTemplate: string;
     dataSource$: Observable<IMassUploadData>;
     importSub$: Subject<{ $event: Event; type: string }> = new Subject();
@@ -396,10 +395,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
-        // console.log('selections->', event)
         if (event) {
             const eventIds = event.map(e => e.id);
-            // console.log('isi eventsIds->', eventIds)
             // const rawEntities = this.rawAvailableEntities$.value;
             this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
         }
@@ -444,7 +441,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     onSelectionChanged($event: SelectionList): void {
-        // console.log('event selecction changed->', $event);
         const { removed, merged = this.entityFormValue.value } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
@@ -554,6 +550,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                             this.tempEntity.push(fileEntities[i]);
                                             this.initialSelection.push(fileEntities[i]);
                                         }
+                                        this.updateFormView();
+
                                         this.cdRef.markForCheck();
                                     }
                                   });
@@ -566,6 +564,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 }
     
             }
+        this.cdRef.detectChanges();
     }
 
     private _handlePage(file: File): void {
