@@ -396,10 +396,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
-        console.log('selections->', event)
+        // console.log('selections->', event)
         if (event) {
             const eventIds = event.map(e => e.id);
-            console.log('isi eventsIds->', eventIds)
+            // console.log('isi eventsIds->', eventIds)
             // const rawEntities = this.rawAvailableEntities$.value;
             this.selectedEntity$.next(eventIds.map(eventId => this.cachedEntities[String(eventId)]));
         }
@@ -444,14 +444,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     onSelectionChanged($event: SelectionList): void {
-        console.log('event selecction changed->', $event);
-        console.log('entityFormValue->', this.entityFormValue)
+        // console.log('event selecction changed->', $event);
         const { removed, merged = this.entityFormValue.value } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
-        console.log('entityFormValue2->', this.entityFormValue)
-        console.log('tempEntity->', this.tempEntity)
         this.cdRef.markForCheck();
     }
 
@@ -522,22 +519,24 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     massUploadFile(ev: Event) {
+        this.toggleLoading(true);
+        this.toggleSelectedLoading(true);
             const inputEl = ev.target as HTMLInputElement;
             if (inputEl.files && inputEl.files.length > 0) {
                 const file = inputEl.files[0];
-                this.toggleLoading(true);
-                // this.toggleSelectedLoading(true);
+                
                 if (file) {
                     this._handlePage(file);
 
                 this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem);
 
                 this.subStore = this.dataSource$.subscribe((val) => {
-                    this.toggleLoading(false);
-                    // this.toggleSelectedLoading(false);
+                   
                     if(val != undefined) {
                         //checking if data length == 0
                         if (val.totalExclude > 0) {
+                            this.toggleLoading(false);
+                            this.toggleSelectedLoading(false);
                             //display pop up when found error
                                 const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
                                     data: {
@@ -547,21 +546,22 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 });
                         
                                 dialogRef.afterClosed().subscribe(result => {
-                                    console.log(`Dialog result: ${result}`);
                                     if (result == 'yes') {
                                         let fileEntities = [];
                                         fileEntities = val.massData.filter(d => !!d)
                                         .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
                                         for (let i= 0; i < fileEntities.length; i++) {
                                             this.tempEntity.push(fileEntities[i]);
+                                            this.initialSelection.push(fileEntities[i]);
                                         }
+                                        this.cdRef.markForCheck();
                                     }
                                   });
                         } else {
-
+                            this.toggleLoading(false);
+                            this.toggleSelectedLoading(false);
                         }
                     }
-                    console.log('isi val stores->', val)
                 });
                 }
     

@@ -93,6 +93,7 @@
         [initialSelectedOptions]="initialSelection"
         [totalInitialSelectedOptions]="initialSelection.length"
         [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+        [isSelectedOptionsLoading]="(isEntitySelectedLoading$ | async)"
         (availableReachedBottom)="onEntityReachedBottom()"
         (selectionListChanged)="onSelectionChanged($event)"
         (clearAll)="onClearAll()"
