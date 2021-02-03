@@ -173,7 +173,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     tap(value => {
                         if (value === 'clear-all') {
                             this.tempEntity = [];
-                            this.initialSelection = [];
                             this.entityFormValue.setValue([]);
 
                             this.multiple$.clearAllSelectedOptions();
@@ -396,7 +395,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
-        console.log('isi event onSelectedEntity->', event)
         if (event) {
             const eventIds = event.map(e => e.id);
             // const rawEntities = this.rawAvailableEntities$.value;
@@ -508,7 +506,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         this.updateFormView();
                         // this.entityFormView.setValue(viewValue);
                     }
-                    console.log('entityFormValue->', this.entityFormValue)
                     this.onSelectedEntity(this.entityFormValue.value);
                     this.cdRef.markForCheck();
                 }
@@ -552,7 +549,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                             this.initialSelection.push(fileEntities[i]);
                                         }
                                         this.entityFormValue.setValue(this.tempEntity);
-                                        
+                                        console
                                         //apabila data file yg di upload tidak terdapat 
                                         //di dlm list yg telah di request pertama
                                         
@@ -662,7 +659,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     private updateFormView(): void {
         setTimeout(() => {
             const formValue: Array<Selection> = this.entityFormValue.value;
-            console.log('formvalue private->', formValue)
             if (formValue.length === 0) {
                 this.entityFormView.setValue('');
             } else {
@@ -693,32 +689,24 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
-                    this.multiple$.clearAllSelectedOptions();
+                    // this.initialSelection = [];
+                    // this.multiple$.clearAllSelectedOptions();
                     if (changes['catalogueIdSelect']) {
-                        console.log('masuk a')
                         if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
-                            console.log('masuk sini a1')
                             params['catalogueId'] = this.catalogueIdSelect;
                             this.requestEntity(params);
                             this.statusMassUpload = true;
                         } else {
-                            console.log('masuk sini a2')
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     } else {
-                        console.log('masuk b')
                         //if changes['catalogueIdSelect'] undefined
                         if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
-                            console.log('masuk b1')
                             params['catalogueId'] = this.catalogueIdSelect;
                             this.requestEntity(params);
                             this.statusMassUpload = true;
                         } else {
-                            console.log('masuk b2')
-                            console.log('masuk sini a2')
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     }
                    
@@ -728,6 +716,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
+
                     if (changes['brandIdSelect']) {
                         if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
                             params['brandId'] = this.brandIdSelect;
@@ -735,7 +724,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.statusMassUpload = true;
                         } else {
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     } else {
                         //if changes['brandIdSelect'] undefined
@@ -751,6 +739,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
+                    // this.initialSelection = [];
                     if (changes['fakturIdSelect']) {
                         if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
                             params['fakturId'] = this.fakturIdSelect;
@@ -758,7 +747,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.statusMassUpload = true;
                         } else {
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     } else {
                         // if (changes['fakturIdSelect']) undefined
@@ -787,7 +775,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.statusMassUpload = true;
                 } else {
                     this.statusMassUpload = false;
-                    this.initialSelection = [];
                 }
             }
         }
