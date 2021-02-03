@@ -173,6 +173,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     tap(value => {
                         if (value === 'clear-all') {
                             this.tempEntity = [];
+                            this.initialSelection = [];
                             this.entityFormValue.setValue([]);
 
                             this.multiple$.clearAllSelectedOptions();
@@ -527,8 +528,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem);
 
                 this.subStore = this.dataSource$.subscribe((val) => {
-                   
-                    if(val != undefined) {
+                    if (val != undefined) {
                         //checking if data length == 0
                         if (val.totalExclude > 0) {
                             this.toggleLoading(false);
