@@ -760,7 +760,6 @@ export class FlexiComboEffects {
                         changes: {
                             startDate: body.startDateAfterExtended,
                             endDate: body.endDateAfterExtended,
-                            status: EStatus.ACTIVE,
                             updatedAt: resp.updatedAt,
                         },
                     },
