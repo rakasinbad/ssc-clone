@@ -440,7 +440,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     onSelectionChanged($event: SelectionList): void {
-        console.log('isi event onSelectionChanged->', $event)
         const { removed, merged = this.entityFormValue.value } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
@@ -555,11 +554,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                         }
                                         
                                         this.entityFormValue.setValue(this.tempEntity);
-                                        // if (this.entityFormValue.value.length != 0) {
-                                        //     console.log('entityFormValue if lenght tidak kosong-> ', this.entityFormValue.value)
-                                        // }
-                                        this.onSelectedEntity(this.entityFormValue.value);
+                                        if (this.entityFormValue.value.length != 0) {
+                                            this.onSelectedEntity(this.entityFormValue.value);
+                                        }
                                         this.updateFormView();
+                                        
                                     }
                                   });
                         } else {
