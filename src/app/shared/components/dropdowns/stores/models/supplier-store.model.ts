@@ -153,3 +153,144 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
 }
 
 export type SupplierStoreOptions = Partial<SupplierStore>;
+
+export interface massUploadModels {
+    file: NonNullable<File>;
+    type: string;
+    // endpoint: NonNullable<string>;
+}
+
+
+// export class massUploadModel implements massUploadModels {
+//     file: NonNullable<File>;
+//     type: string;
+//     constructor(data: massUploadModels) {
+//         const {
+//             file,
+//             type
+//         } = data;
+
+//         this.file = file;
+//         this.type = type;
+//     }
+// }
+
+export interface IMassUpload {
+    file: NonNullable<File>;
+    type: NonNullable<string>;
+    catalogueId: NonNullable<string>;
+    fakturId: NonNullable<string>;
+    brandId: NonNullable<string>;
+    catalogueSegmentationId: NonNullable<string>;
+}
+
+export interface IDataMassUpload {
+    readonly id: NonNullable<string>;
+    storeId: number;
+    storeName: string;
+}
+
+export interface IImportLog extends ITimestamp {
+    readonly id: NonNullable<string>;
+    action: string;
+    fileName: string;
+    page: string;
+    processedRow: number;
+    status: string;
+    totalRow: number;
+    url: string;
+    user: User;
+    userId: string;
+}
+
+export class ImportLog implements IImportLog {
+    readonly id: NonNullable<string>;
+    action: string;
+    fileName: string;
+    page: string;
+    processedRow: number;
+    status: string;
+    totalRow: number;
+    url: string;
+    user: User;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+
+    constructor(data: IImportLog) {
+        const {
+            id,
+            action,
+            fileName,
+            page,
+            processedRow,
+            status,
+            totalRow,
+            url,
+            user,
+            userId,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
+
+        this.id = id || undefined;
+        this.action = String(action).trim() || null;
+        this.fileName = String(fileName).trim() || null;
+        this.page = String(page).trim() || null;
+        this.processedRow = processedRow;
+        this.status = String(status).trim() || null;
+        this.totalRow = totalRow;
+        this.url = String(url).trim() || null;
+        this.userId = userId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+
+        this.setUser = user;
+    }
+
+    set setUser(value: User) {
+        this.user = value ? new User(value) : null;
+    }
+}
+
+export class MassUploadResponse {
+    readonly id: NonNullable<string>;
+    storeId: number;
+    storeName: string;
+
+    constructor(data: MassUploadResponse) {
+        const {
+            id,
+            storeId,
+            storeName
+        } = data;
+
+        this.id = id || null;
+        this.storeId = storeId;
+        this.storeName = storeName;
+    }
+}
+
+export class IMassUploadData {
+    readonly id: NonNullable<string>;
+    linkExclude: string;
+    totalExclude: number;
+    massData?: IDataMassUpload[]
+
+    constructor(data: IMassUploadData) {
+        const {
+            id,
+            massData,
+            linkExclude,
+            totalExclude
+        } = data;
+
+        this.id = id;
+        this.linkExclude = linkExclude || null;
+        this.totalExclude = totalExclude || null;
+        this.massData = massData;
+    }
+}

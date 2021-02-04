@@ -6,7 +6,7 @@ import { environment } from 'environments/environment';
 import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
-import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
+import { fromEvent, Observable, Subject, BehaviorSubject, of, Subscription } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { SupplierStore as Entity } from './models';
 import { SupplierStoresApiService as EntitiesApiService } from './services';
@@ -24,6 +24,11 @@ import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
+import { DomSanitizer } from '@angular/platform-browser';
+import { IMassUpload, MassUploadResponse, IMassUploadData } from './models/supplier-store.model';
+import { ImportMassUpload } from './store/actions';
+import { ImportMassUploadSelectors } from './store/selectors';
+import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
 
 @Component({
     selector: 'select-supplier-stores',
@@ -50,6 +55,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     selectedEntity$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>(null);
     // Menyimpan state loading-nya Entity.
     isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    // Menyimpan state loading-nya Selected Entity.
+    isEntitySelectedLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     // Untuk keperluan handle dialog.
@@ -101,6 +108,12 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     // @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
     @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
+    statusMassUpload: boolean = false;
+    linkTemplate: string;
+    dataSource$: Observable<IMassUploadData>;
+    importSub$: Subject<{ $event: Event; type: string }> = new Subject();
+    public subStore: Subscription;
+
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
@@ -112,7 +125,9 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
         private ngZone: NgZone,
+        private domSanitizer: DomSanitizer
     ) {
+        this.linkTemplate = "https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/import-csv/mass-upload-stores/Template-Mass-Upload-Stores.csv_2021012885044.csv";
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
             takeUntil(this.subs$)
@@ -158,6 +173,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     tap(value => {
                         if (value === 'clear-all') {
                             this.tempEntity = [];
+                            this.initialSelection = [];
                             this.entityFormValue.setValue([]);
 
                             this.multiple$.clearAllSelectedOptions();
@@ -181,6 +197,16 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         if (this.ngZone) {
             this.ngZone.run(() => {
                 this.isEntityLoading$.next(loading);
+            });
+        }
+
+        this.cdRef.markForCheck();
+    }
+
+    private toggleSelectedLoading(loading: boolean): void {
+        if (this.ngZone) {
+            this.ngZone.run(() => {
+                this.isEntitySelectedLoading$.next(loading);
             });
         }
 
@@ -323,7 +349,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
             }
         });
     }
-// 
+   
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -420,7 +446,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         this.tempEntity = merged;
         this.removing = removed.length > 0;
         HelperService.debug('SELECTION CHANGED', $event);
-
         this.cdRef.markForCheck();
     }
 
@@ -490,48 +515,126 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         }
     }
 
+    massUploadFile(ev: Event) {
+        this.toggleLoading(true);
+        this.toggleSelectedLoading(true);
+            const inputEl = ev.target as HTMLInputElement;
+            if (inputEl.files && inputEl.files.length > 0) {
+                const file = inputEl.files[0];
+                
+                if (file) {
+                    this._handlePage(file);
+
+                this.dataSource$ = this.store.select(ImportMassUploadSelectors.getSelectedItem);
+
+                this.subStore = this.dataSource$.subscribe((val) => {
+                    if (val != undefined) {
+                        //checking if data length == 0
+                        if (val.totalExclude > 0) {
+                            this.toggleLoading(false);
+                            this.toggleSelectedLoading(false);
+                            //display pop up when found error
+                                const dialogRef = this.matDialog.open(AlertMassUploadComponent, {
+                                    data: {
+                                        totalExclude: val.totalExclude,
+                                        linkExclude: val.linkExclude,
+                                    }, disableClose: true
+                                });
+                        
+                                dialogRef.afterClosed().subscribe(result => {
+                                    if (result == 'yes') {
+                                        let fileEntities = [];
+                                        fileEntities = val.massData.filter(d => !!d)
+                                        .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                                        for (let i= 0; i < fileEntities.length; i++) {
+                                            this.tempEntity.push(fileEntities[i]);
+                                            this.initialSelection.push(fileEntities[i]);
+                                        }
+                                        this.updateFormView();
+                                        this.cdRef.markForCheck();
+                                    }
+                                  });
+                        } else {
+                            this.toggleLoading(false);
+                            this.toggleSelectedLoading(false);
+                        }
+                    }
+                });
+                }
+    
+            }
+            this.cdRef.detectChanges();
+    }
+
+    private _handlePage(file: File): void {
+        if (this.typePromo == 'flexiCombo') {  
+            if (this.typeTrigger == 'sku' && (this.catalogueIdSelect !== undefined && this.catalogueIdSelect !== null)) {
+                    this.store.dispatch(
+                        ImportMassUpload.importMassConfirmRequest({
+                            payload: {
+                                file,
+                                type: 'massUpload',
+                                catalogueId: this.catalogueIdSelect,
+                                brandId: null,
+                                fakturId: null,
+                                catalogueSegmentationId: null
+                            }
+                        })
+                    );
+                
+            } else if (this.typeTrigger == 'brand' && (this.brandIdSelect !== undefined && this.brandIdSelect !== null)) {
+                    this.store.dispatch(
+                        ImportMassUpload.importMassConfirmRequest({
+                            payload: {
+                                file,
+                                type: 'massUpload',
+                                catalogueId: null,
+                                brandId: this.brandIdSelect,
+                                fakturId: null,
+                                catalogueSegmentationId: null
+                            }
+                        })
+                    );
+                
+            } else if (this.typeTrigger == 'faktur' && (this.fakturIdSelect !== undefined && this.fakturIdSelect !== null)) {
+                this.store.dispatch(
+                    ImportMassUpload.importMassConfirmRequest({
+                        payload: {
+                            file,
+                            type: 'massUpload',
+                            catalogueId: null,
+                            brandId: null,
+                            fakturId: this.fakturIdSelect,
+                            catalogueSegmentationId: null
+                        }
+                    })
+                );
+            } else {
+
+            }
+                
+        } else if (this.typePromo == 'crossSelling') {
+            if (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined) {
+                this.store.dispatch(
+                    ImportMassUpload.importMassConfirmRequest({
+                        payload: {
+                            file,
+                            type: 'massUpload',
+                            catalogueId: null,
+                            brandId: null,
+                            fakturId: null,
+                            catalogueSegmentationId: this.idSelectedSegment
+                        }
+                    })
+                );
+            }
+                
+        }
+    }
+
     onClearAll(): void {
         this.dialogRef$.next('clear-all');
     }
-
-    // processEntityAutoComplete(): void {
-    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
-    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
-    //             .pipe(
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
-    //                 // Kasih jeda ketika scrolling.
-    //                 debounceTime(500),
-    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
-    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
-    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
-    //                 ),
-    //                 // Debugging.
-    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
-    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-    //                 filter(({ isLoading, entities, totalEntities }) =>
-    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
-    //                 ),
-    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
-    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
-    //                 ))
-    //             ).subscribe(({ entities }) => {
-    //                 const params: IQueryParams = {
-    //                     paginate: true,
-    //                     limit: 10,
-    //                     skip: entities.length
-    //                 };
-
-    //                 // Memulai request data store entity.
-    //                 this.requestEntity(params);
-    //             });
-    //     }
-    // }
-
-    // listenEntityAutoComplete(): void {
-    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
-    //     setTimeout(() => this.processEntityAutoComplete());
-    // }
 
     private initForm(): void {
         // this.entityFormView = new FormControl('');
@@ -586,6 +689,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
                             params['catalogueId'] = this.catalogueIdSelect;
                             this.requestEntity(params);
+                            this.statusMassUpload = true;
+                        } else {
+                            this.statusMassUpload = false;
+                            this.initialSelection = [];
                         }
                     } else {
                         //if changes['catalogueIdSelect'] undefined
@@ -605,7 +712,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
                             params['brandId'] = this.brandIdSelect;
                             this.requestEntity(params);
-                        } 
+                            this.statusMassUpload = true;
+                        } else {
+                            this.statusMassUpload = false;
+                            this.initialSelection = [];
+                        }
                     } else {
                         //if changes['brandIdSelect'] undefined
                         if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
@@ -624,7 +735,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
                             params['fakturId'] = this.fakturIdSelect;
                             this.requestEntity(params);
-                        } 
+                            this.statusMassUpload = true;
+                        } else {
+                            this.statusMassUpload = false;
+                            this.initialSelection = [];
+                        }
                     } else {
                         // if (changes['fakturIdSelect']) undefined
                         if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
@@ -649,6 +764,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (this.typeTrigger == 'selectSegment' && (this.idSelectedSegment !== null && this.idSelectedSegment !== undefined)) {
                     params['catalogueSegmentationId'] = this.idSelectedSegment;
                     this.requestEntity(params);
+                    this.statusMassUpload = true;
+                } else {
+                    this.statusMassUpload = false;
+                    this.initialSelection = [];
                 }
             }
         }
@@ -697,6 +816,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
         this.availableEntities$.next(null);
         this.availableEntities$.complete();
+
+        if (this.statusMassUpload = true){
+            this.isEntitySelectedLoading$.next(null);
+            this.isEntitySelectedLoading$.complete();
+        }
     }
 
     ngAfterViewInit(): void {
