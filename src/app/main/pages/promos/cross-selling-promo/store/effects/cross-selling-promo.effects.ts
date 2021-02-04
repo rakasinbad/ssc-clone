@@ -646,6 +646,7 @@ export class CrossSellingPromoEffects {
                         changes: {
                             startDate: body.startDateAfterExtended,
                             endDate: body.endDateAfterExtended,
+                            status: EStatus.ACTIVE,
                             updatedAt: resp.updatedAt,
                         },
                     },
