@@ -174,7 +174,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if (value === 'clear-all') {
                             this.tempEntity = [];
                             this.entityFormValue.setValue([]);
-
                             this.multiple$.clearAllSelectedOptions();
 
                             this.notice$.open('Your selected options has been cleared.', 'success', {
@@ -441,6 +440,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     onSelectionChanged($event: SelectionList): void {
+        console.log('isi event onSelectionChanged->', $event)
         const { removed, merged = this.entityFormValue.value } = $event;
         this.tempEntity = merged;
         this.removing = removed.length > 0;
@@ -544,18 +544,20 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                         let fileEntities = [];
                                         fileEntities = val.massData.filter(d => !!d)
                                         .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+
+                                        for (const entity of (fileEntities as Array<Entity>)) {
+                                            this.upsertEntity(entity);
+                                        }
+
                                         for (let i= 0; i < fileEntities.length; i++) {
                                             this.tempEntity.push(fileEntities[i]);
                                             this.initialSelection.push(fileEntities[i]);
                                         }
-                                        this.entityFormValue.setValue(this.tempEntity);
-                                        console
-                                        //apabila data file yg di upload tidak terdapat 
-                                        //di dlm list yg telah di request pertama
                                         
-                                        for (const entity of (fileEntities as Array<Entity>)) {
-                                            this.upsertEntity(entity);
-                                        }
+                                        this.entityFormValue.setValue(this.tempEntity);
+                                        // if (this.entityFormValue.value.length != 0) {
+                                        //     console.log('entityFormValue if lenght tidak kosong-> ', this.entityFormValue.value)
+                                        // }
                                         this.onSelectedEntity(this.entityFormValue.value);
                                         this.updateFormView();
                                     }
