@@ -1167,9 +1167,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreChannel').setValue(null);
         } else {
             const newStoreChannels: Selection[] = ev.map((item) => ({
-                id: item.channelId,
-                label: item.channelName,
-                group: 'store-segmentation-channels',
+                id: item.id,
+                label: item.label,
+                group: 'channel',
             }));
 
             this.form.get('chosenStoreChannel').setValue(newStoreChannels);
@@ -1190,9 +1190,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreCluster').setValue(null);
         } else {
             const newStoreClusters: Selection[] = ev.map((item) => ({
-                id: item.clusterId,
-                label: item.clusterName,
-                group: 'store-segmentation-clusters',
+                id: item.id,
+                label: item.label,
+                group: 'cluster',
             }));
 
             this.form.get('chosenStoreCluster').setValue(newStoreClusters);
@@ -1213,9 +1213,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreGroup').setValue(null);
         } else {
             const newStoreGroups: Selection[] = ev.map((item) => ({
-                id: item.groupId,
-                label: item.groupName,
-                group: 'store-segmentation-groups',
+                id: item.id,
+                label: item.label,
+                group: 'group',
             }));
 
             this.form.get('chosenStoreGroup').setValue(newStoreGroups);
@@ -1236,9 +1236,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             this.form.get('chosenStoreType').setValue(null);
         } else {
             const newStoreTypes: Selection[] = ev.map((item) => ({
-                id: item.typeId,
-                label: item.typeName,
-                group: 'store-segmentation-types',
+                id: item.id,
+                label: item.label,
+                group: 'type',
             }));
 
             this.form.get('chosenStoreType').setValue(newStoreTypes);

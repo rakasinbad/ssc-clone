@@ -93,6 +93,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
+    // Untuk mengirim data apakah checkbox "Select All" dicentang atau tidak.
+    // @Output() selectAllChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
@@ -581,10 +583,15 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.tempEntity = [];
                     this.multiple$.clearAllSelectedOptions();
                     if (changes['catalogueIdSelect']) {
-                        if ((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined)) {
+                        if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
                             params['catalogueId'] = this.catalogueIdSelect;
                             this.requestEntity(params);
-                        } else {
+                        }
+                    } else {
+                        //if changes['catalogueIdSelect'] undefined
+                        if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
+                            params['catalogueId'] = this.catalogueIdSelect;
+                            this.requestEntity(params);
                         }
                     }
                    
@@ -598,7 +605,12 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
                             params['brandId'] = this.brandIdSelect;
                             this.requestEntity(params);
-                        } else {
+                        } 
+                    } else {
+                        //if changes['brandIdSelect'] undefined
+                        if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
+                            params['brandId'] = this.brandIdSelect;
+                            this.requestEntity(params);
                         }
                     }
                    
@@ -612,8 +624,13 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
                             params['fakturId'] = this.fakturIdSelect;
                             this.requestEntity(params);
-                        } else {
-                        }
+                        } 
+                    } else {
+                        // if (changes['fakturIdSelect']) undefined
+                        if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
+                            params['fakturId'] = this.fakturIdSelect;
+                            this.requestEntity(params);
+                        } 
                     }
                 } else {
                 }
@@ -635,8 +652,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 }
             }
         }
-
-        
 
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
@@ -692,4 +707,3 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     }
 
 }
-
