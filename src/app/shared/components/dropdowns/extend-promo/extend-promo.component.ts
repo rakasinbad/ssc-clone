@@ -211,8 +211,8 @@ export class ExtendPromoComponent implements OnInit {
         promoId: this.promoId,
         startDate: this.currentStartDate,
         endDate: this.currentEndDate,
-        newStartDate: newStartDate,
-        newEndDate: newEndDate
+        newStartDate,
+        newEndDate
     })
   }
 }
