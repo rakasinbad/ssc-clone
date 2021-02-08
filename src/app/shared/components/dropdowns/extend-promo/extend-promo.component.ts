@@ -12,11 +12,6 @@ import { FlexiComboActions } from 'app/main/pages/promos/flexi-combo/store/actio
 import * as moment from 'moment';
 import * as tz from 'moment-timezone';
 
-enum DateType {
-    start = "start",
-    end = "end"
-}
-
 @Component({
   selector: 'app-extend-promo',
   templateUrl: './extend-promo.component.html',
