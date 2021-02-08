@@ -10,6 +10,7 @@ import * as fromFlexiCombos from '../../../../main/pages/promos/flexi-combo/stor
 import { Store } from '@ngrx/store';
 import { FlexiComboActions } from 'app/main/pages/promos/flexi-combo/store/actions';
 import * as moment from 'moment';
+import * as tz from 'moment-timezone';
 
 @Component({
   selector: 'app-extend-promo',
@@ -196,27 +197,16 @@ export class ExtendPromoComponent implements OnInit {
         }
     }
 
-  normalizeDate(date: Date) {
-    if (date || moment.isMoment(date)) {
-        const splitted = date.toISOString().split('T')
-        const formatted = `${splitted[0]}T00:00:00+07:00`
-        return formatted
-    } 
-    return null
-  }
-
   onSubmit() {
     let { newStartDate, newEndDate } = this.form.getRawValue();
 
-    const startDate = this.normalizeDate(new Date(this.currentStartDate))
-    const endDate = this.normalizeDate(new Date(this.currentEndDate))
-    newStartDate = this.normalizeDate(newStartDate)
-    newEndDate = this.normalizeDate(newEndDate)
+    newStartDate = tz(newStartDate, "Asia/Jakarta").format()
+    newEndDate = tz(newEndDate, "Asia/Jakarta").format()
 
     this.matDialog.close({
         promoId: this.promoId,
-        startDate,
-        endDate,
+        startDate: this.currentStartDate,
+        endDate: this.currentEndDate,
         newStartDate,
         newEndDate
     })
