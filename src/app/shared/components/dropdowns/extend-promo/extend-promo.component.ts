@@ -8,9 +8,7 @@ import { Subject } from 'rxjs';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as fromFlexiCombos from '../../../../main/pages/promos/flexi-combo/store/reducers';
 import { Store } from '@ngrx/store';
-import { FlexiComboActions } from 'app/main/pages/promos/flexi-combo/store/actions';
 import * as moment from 'moment';
-import * as tz from 'moment-timezone';
 
 @Component({
   selector: 'app-extend-promo',
@@ -200,8 +198,14 @@ export class ExtendPromoComponent implements OnInit {
   onSubmit() {
     let { newStartDate, newEndDate } = this.form.getRawValue();
 
-    newStartDate = tz(newStartDate, "Asia/Jakarta").format()
-    newEndDate = tz(newEndDate, "Asia/Jakarta").format()
+    newStartDate =
+        newStartDate && moment.isMoment(newStartDate)
+            ? newStartDate.add(7, 'hour').toISOString()
+            : null;
+    newEndDate =
+        newEndDate && moment.isMoment(newEndDate) 
+            ? newEndDate.add(7, 'hour').toISOString() 
+            : null;
 
     this.matDialog.close({
         promoId: this.promoId,
