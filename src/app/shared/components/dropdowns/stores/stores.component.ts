@@ -173,9 +173,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     tap(value => {
                         if (value === 'clear-all') {
                             this.tempEntity = [];
-                            this.initialSelection = [];
                             this.entityFormValue.setValue([]);
-
                             this.multiple$.clearAllSelectedOptions();
 
                             this.notice$.open('Your selected options has been cleared.', 'success', {
@@ -507,7 +505,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         this.updateFormView();
                         // this.entityFormView.setValue(viewValue);
                     }
-
                     this.onSelectedEntity(this.entityFormValue.value);
                     this.cdRef.markForCheck();
                 }
@@ -545,13 +542,23 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                     if (result == 'yes') {
                                         let fileEntities = [];
                                         fileEntities = val.massData.filter(d => !!d)
-                                        .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                                        .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+
+                                        for (const entity of (fileEntities as Array<Entity>)) {
+                                            this.upsertEntity(entity);
+                                        }
+
                                         for (let i= 0; i < fileEntities.length; i++) {
                                             this.tempEntity.push(fileEntities[i]);
                                             this.initialSelection.push(fileEntities[i]);
                                         }
+                                        
+                                        this.entityFormValue.setValue(this.tempEntity);
+                                        if (this.entityFormValue.value.length != 0) {
+                                            this.onSelectedEntity(this.entityFormValue.value);
+                                        }
                                         this.updateFormView();
-                                        this.cdRef.markForCheck();
+                                        
                                     }
                                   });
                         } else {
@@ -563,7 +570,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 }
     
             }
-            this.cdRef.detectChanges();
+            this.cdRef.markForCheck();
     }
 
     private _handlePage(file: File): void {
@@ -653,7 +660,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
     private updateFormView(): void {
         setTimeout(() => {
             const formValue: Array<Selection> = this.entityFormValue.value;
-            
             if (formValue.length === 0) {
                 this.entityFormView.setValue('');
             } else {
@@ -684,7 +690,8 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
-                    this.multiple$.clearAllSelectedOptions();
+                    // this.initialSelection = [];
+                    // this.multiple$.clearAllSelectedOptions();
                     if (changes['catalogueIdSelect']) {
                         if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
                             params['catalogueId'] = this.catalogueIdSelect;
@@ -692,13 +699,15 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.statusMassUpload = true;
                         } else {
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     } else {
                         //if changes['catalogueIdSelect'] undefined
                         if (((this.catalogueIdSelect !== null && this.catalogueIdSelect !== undefined ))) {
                             params['catalogueId'] = this.catalogueIdSelect;
                             this.requestEntity(params);
+                            this.statusMassUpload = true;
+                        } else {
+                            this.statusMassUpload = false;
                         }
                     }
                    
@@ -708,6 +717,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
+
                     if (changes['brandIdSelect']) {
                         if((this.brandIdSelect !== null && this.brandIdSelect !== undefined)) {
                             params['brandId'] = this.brandIdSelect;
@@ -715,7 +725,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.statusMassUpload = true;
                         } else {
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     } else {
                         //if changes['brandIdSelect'] undefined
@@ -731,6 +740,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.entityForm.reset();
                     this.entityFormValue.setValue([]);
                     this.tempEntity = [];
+                    // this.initialSelection = [];
                     if (changes['fakturIdSelect']) {
                         if ((this.fakturIdSelect !== null && this.fakturIdSelect !== undefined)) {
                             params['fakturId'] = this.fakturIdSelect;
@@ -738,7 +748,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.statusMassUpload = true;
                         } else {
                             this.statusMassUpload = false;
-                            this.initialSelection = [];
                         }
                     } else {
                         // if (changes['fakturIdSelect']) undefined
@@ -767,7 +776,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     this.statusMassUpload = true;
                 } else {
                     this.statusMassUpload = false;
-                    this.initialSelection = [];
                 }
             }
         }
