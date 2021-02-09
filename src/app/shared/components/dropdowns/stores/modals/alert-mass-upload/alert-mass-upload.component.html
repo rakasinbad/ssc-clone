@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Alert</h1>
+
+<mat-dialog-content class="mat-typography">
+    <p> {{data.totalExclude}} stores couldn't be found on the database.<br/>
+        If you wish to continue, these stores won't be included<br/>
+        in the list of stores that will be mapped to the promo.<br/>
+        Do you wish to continue?
+    </p>
+    <br/>
+    <a href="{{data.linkExclude}}">Download excluded store list here</a>
+
+</mat-dialog-content>
+
+<div mat-dialog-actions align="end" style="margin-bottom:0px">
+    <button mat-button mat-dialog-close 
+    style=" border-radius: 4px; border: solid 1px #cacccf;">No</button>
+  <button mat-button [mat-dialog-close]="'yes'" cdkFocusInitial style="float: right; color: white; background-color: #f0444c; font-size: 14px;">Yes</button>
+</div>

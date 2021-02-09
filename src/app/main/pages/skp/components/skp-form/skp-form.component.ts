@@ -317,7 +317,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _setFormStatus(status: string): void {
-        // console.log(`Test Form ${status}`, this.form, this.form.getRawValue());
 
         if (!status) {
             return;
@@ -497,8 +496,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
             status: ['active']
         });
 
-        console.log('form init ->', this.form)
-
         if (this.pageType === 'edit') {
             this._initEditForm();
         }
@@ -554,8 +551,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _setEditForm(row: SkpModel): void {
-        // console.log('ROW', row)
-
         const skpId = this.form.get('id');
         // const skpSupplierId = this.form.get('supplierId');
         const skpNameCtrl = this.form.get('name');
@@ -774,8 +769,6 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
     onPromoSelected(event: Array<SelectPromo>): void {
         this.form.get('promo').markAsDirty();
         this.form.get('promo').markAsTouched();
-
-        // console.log('SELECTED', event)
 
         if (!event.length) {
             this.form.get('promo').setValue(null);

@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../../models';
+import { CreateFlexiComboDto, ExtendFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../../models';
 import { Update } from '@ngrx/entity';
 
 // -----------------------------------------------------------------------------------------------------
@@ -123,6 +123,31 @@ export const changeStatusSuccess = createAction(
     props<{ payload: Update<FlexiCombo> }>()
 );
 
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - EXTEND PROMO] Flexi Combo
+// -----------------------------------------------------------------------------------------------------
+
+export const extendPromoShow = createAction(
+    '[Flexi Combo] Extend Promo Show Dialog',
+    props<{ payload: FlexiCombo }>()
+)
+
+export const extendPromoRequest = createAction(
+    '[Flexi Combo] Extend Promo Request',
+    props<{ payload: { body: ExtendFlexiComboDto } }>()
+);
+
+export const extendPromoFailure = createAction(
+    '[Flexi Combo] Extend Promo Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const extendPromoSuccess = createAction(
+    '[Flexi Combo] Extend Promo Success',
+    props<{ payload: Update<FlexiCombo> }>()
+);
+
 export const clearState = createAction('[Flexi Combo] Reset Flexi Combo Core State');
 
 export type FailureActions =
@@ -131,4 +156,5 @@ export type FailureActions =
     | 'createFlexiComboFailure'
     | 'updateFlexiComboFailure'
     | 'deleteFlexiComboFailure'
-    | 'changeStatusFailure';
+    | 'changeStatusFailure'
+    | 'extendPromoFailure';

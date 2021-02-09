@@ -8,6 +8,7 @@ import { TypedAction } from '@ngrx/store/src/models';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { ExtendPromoComponent } from 'app/shared/components/dropdowns/extend-promo/extend-promo.component';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
 import { ErrorHandler, EStatus, PaginateResponse, TNullable } from 'app/shared/models/global.model';
@@ -29,7 +30,7 @@ import {
 import { CreateFormDto, CreateCrossSellingDto, CrossSelling, PatchCrossSellingDto, CrossSellingPromoDetail,
     IPromoCatalogue, IPromoBrand, IPromoInvoiceGroup, IPromoStore, 
     IPromoWarehouse, IPromoType, IPromoGroup, IPromoChannel, 
-    IPromoCluster, ICrossSellingPromoBenefit } from '../../models';
+    IPromoCluster, ICrossSellingPromoBenefit, ExtendCrossSellingDto } from '../../models';
 import { CrossSellingPromoApiService } from '../../services/cross-selling-promo-api.service';
 import { CrossSellingPromoActions, CrossSellingPromoFailureActions } from '../actions';
 import * as crossSellingPromo from '../reducers';
@@ -428,6 +429,115 @@ export class CrossSellingPromoEffects {
         { dispatch: false }
     );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [EXTEND PROMO - Cross Selling Promo]
+    // -----------------------------------------------------------------------------------------------------
+
+    extendPromoShow$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.extendPromoShow),
+            map((action) => action.payload),
+            exhaustMap((params) => {
+                const dialogRef = this.matDialog.open(ExtendPromoComponent, {
+                    data: {
+                        id: params.id,
+                        start_date: params.startDate,
+                        end_date: params.endDate,
+                        status: params.status
+                    },
+                    panelClass: 'extend-promo-dialog',
+                    disableClose: true
+                });
+        
+
+                return dialogRef.afterClosed();
+            }),
+            map((data) => {
+                if (data) {
+                    const { promoId, startDate, endDate, newStartDate, newEndDate } = data
+                    return CrossSellingPromoActions.extendPromoRequest({
+                        payload: {
+                            body: {
+                                promoId: promoId,
+                                startDateBeforeExtended: startDate,
+                                endDateBeforeExtended: endDate,
+                                startDateAfterExtended: newStartDate,
+                                endDateAfterExtended: newEndDate
+                            }
+                        }
+                    })
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    extendPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CrossSellingPromoActions.extendPromoRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [{ body: ExtendCrossSellingDto; id: string }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: ExtendCrossSellingDto; id: string }], Observable<AnyAction>>(
+                            this._extendPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, payload])),
+                        switchMap<[User, { body: ExtendCrossSellingDto; id: string }], Observable<AnyAction>>(
+                            this._extendPromoRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
+                    );
+                }
+            }),
+            finalize(() => {
+                this.store.dispatch(UiActions.resetHighlightRow());
+            })
+        )
+    );
+
+    extendPromoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.extendPromoFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp) || 'Failed to extend promo';
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    extendPromoSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CrossSellingPromoActions.extendPromoSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully extending cross selling promo', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
@@ -512,6 +622,36 @@ export class CrossSellingPromoEffects {
                 });
             }),
             catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+        );
+    };
+
+    _extendPromoRequest$ = ([userData, { body }]: [
+        User,
+        { body: ExtendCrossSellingDto }
+    ]): Observable<AnyAction> => {
+        if (!Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check payload',
+            });
+        }
+
+        const newBody: ExtendCrossSellingDto = { ...body, ...{userId: userData.id}}
+
+        return this._$crossSellingPromoApi.extend<ExtendCrossSellingDto>(newBody).pipe(
+            map((resp) => {
+                return CrossSellingPromoActions.extendPromoSuccess({
+                    payload: {
+                        id: body.promoId,
+                        changes: {
+                            startDate: body.startDateAfterExtended,
+                            endDate: body.endDateAfterExtended,
+                            updatedAt: resp.updatedAt,
+                        },
+                    },
+                });
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'extendPromoFailure'))
         );
     };
 
