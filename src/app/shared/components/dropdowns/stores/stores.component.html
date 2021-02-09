@@ -58,6 +58,33 @@
     </mat-form-field>
 </div>
 <ng-template #selectStoreType>
+
+    <div class="custom-field" fxLayout="row" style="justify-content: space-between">
+        <ng-container *ngIf="(this.typePromo == 'flexiCombo' && statusMassUpload == true) || (this.typePromo == 'crossSelling' && statusMassUpload == true)">
+            <button
+                mat-flat-button
+                class="single-file-btn ml-16 mb-16"
+                type="button"
+                fxFlexAlign="center"
+                (click)="filePicker.click()"
+                style="background-color: #52575c;color: white;"
+            >
+                Mass Upload
+            </button>
+
+            <input
+                type="file"
+                #filePicker
+                class="custom-file"
+                accept=".xls, .xlsx, .csv"
+                (click)="filePicker.value = null"
+                (change)="massUploadFile($event)"
+            />
+
+            <a class="mr-16 mb-10" href="{{linkTemplate}}">Download Mass Upload Template Here</a>
+        </ng-container>
+    </div>
+
     <sinbad-multiple-selection
         [disableClearAll]="false"
         [enableSelectAll]="true"
@@ -66,6 +93,7 @@
         [initialSelectedOptions]="initialSelection"
         [totalInitialSelectedOptions]="initialSelection.length"
         [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+        [isSelectedOptionsLoading]="(isEntitySelectedLoading$ | async)"
         (availableReachedBottom)="onEntityReachedBottom()"
         (selectionListChanged)="onSelectionChanged($event)"
         (clearAll)="onClearAll()"
