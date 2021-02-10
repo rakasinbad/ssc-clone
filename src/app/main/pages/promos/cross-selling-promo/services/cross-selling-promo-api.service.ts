@@ -29,6 +29,7 @@ export class CrossSellingPromoApiService {
     private readonly _endpoint = '/cross-selling-promo';
     private readonly _endpointPromo = '/get-segmentation-promo';
     private readonly _endpointSkp = '/SKP';
+    private readonly _endpointExtend = '/extend-promo'
 
     /**
      * Creates an instance of CrossSellingPromoApiService.
@@ -151,6 +152,11 @@ export class CrossSellingPromoApiService {
         const newParams = this._$helper.handleParams(_urlSkp, null, ...newArg);
 
         return this.http.get<T>(`${_urlSkp}/${id}`, { params: newParams });
+    }
+
+    extend<T>(body: T): Observable<CrossSelling> {
+        const _urlExtend = this._$helper.handleApiRouter(this._endpointExtend);
+        return this.http.post<CrossSelling>(_urlExtend, body);
     }
 
     create<T>(body: T): Observable<CrossSelling> {

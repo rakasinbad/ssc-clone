@@ -33,6 +33,7 @@ import { CatalogueSegmentationDropdownModule } from './dropdowns/catalogue-segme
 import { SelectPromoComponent } from './dropdowns/select-promo/select-promo.component';
 import { SelectPromoModule } from './dropdowns/select-promo/select-promo.module';
 import { SelectLinkedSkpModule } from './dropdowns/select-linked-skp/select-linked-skp.module';
+import { ExtendPromoModule } from './dropdowns/extend-promo/extend-promo.module';
 
 @NgModule({
     imports: [
@@ -67,6 +68,7 @@ import { SelectLinkedSkpModule } from './dropdowns/select-linked-skp/select-link
         CatalogueSegmentationDropdownModule,
         SelectPromoModule,
         SelectLinkedSkpModule,
+        ExtendPromoModule,
 
         // Global filter sidebar
         SinbadFilterModule,
@@ -102,6 +104,7 @@ import { SelectLinkedSkpModule } from './dropdowns/select-linked-skp/select-link
         CatalogueSegmentationDropdownModule,
         SelectPromoModule,
         SelectLinkedSkpModule,
+        ExtendPromoModule,
 
         // Global filter sidebar
         SinbadFilterModule,

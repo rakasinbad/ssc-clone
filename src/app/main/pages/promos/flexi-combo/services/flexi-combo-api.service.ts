@@ -35,6 +35,7 @@ export class FlexiComboApiService {
     private readonly _endpoint = '/flexi-promo';
     private readonly _endpointPromo = '/get-segmentation-promo';
     private readonly _endpointSkp = '/SKP';
+    private readonly _endpointExtend = '/extend-promo';
 
     /**
      * Creates an instance of FlexiComboApiService.
@@ -169,6 +170,11 @@ export class FlexiComboApiService {
         const newParams = this._$helper.handleParams(_urlSkp, null, ...newArg);
 
         return this.http.get<T>(`${_urlSkp}/${id}`, { params: newParams });
+    }
+
+    extend<T>(body: T): Observable<FlexiCombo> {
+        const _urlExtend = this._$helper.handleApiRouter(this._endpointExtend);
+        return this.http.post<FlexiCombo>(_urlExtend, body);
     }
     
     create<T>(body: T): Observable<FlexiCombo> {

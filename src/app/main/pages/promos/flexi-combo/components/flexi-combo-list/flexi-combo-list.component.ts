@@ -13,11 +13,12 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
+import { ExtendPromoComponent } from 'app/shared/components/dropdowns/extend-promo/extend-promo.component';
 import { NoticeService } from 'app/shared/helpers';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -26,7 +27,7 @@ import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { FlexiCombo } from '../../models';
 import { FlexiComboActions } from '../../store/actions';
@@ -83,6 +84,8 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    today: Date = new Date()
+
     private type = 0;
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -91,6 +94,7 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
         private domSanitizer: DomSanitizer,
         private route: ActivatedRoute,
         private router: Router,
+        private matDialog: MatDialog,
         private ngxPermissionsService: NgxPermissionsService,
         private store: Store<fromFlexiCombos.FeatureState>,
         private _$notice: NoticeService
@@ -163,6 +167,20 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
         //         });
         //     }
         // });
+    }
+
+    onExtend(row?: FlexiCombo): void {
+        this.store.dispatch(FlexiComboActions.extendPromoShow({payload: row}))
+    }
+
+    isDisabled(status: string, date: string): boolean {
+        const rowEndDate: Date = new Date(date)
+        
+        if (status === "inactive" && rowEndDate < this.today) {
+            return false
+        }
+
+        return true
     }
 
     onDelete(item: FlexiCombo): void {
