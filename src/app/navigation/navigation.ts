@@ -193,6 +193,12 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/sr-target',
             },
             {
+                id: 'pjp',
+                title: 'Permanent Journey Plan',
+                type: 'item',
+                url: '/pages/sales-force/pjp',
+            },
+            {
                 id: 'association',
                 title: 'SR Assignment',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',

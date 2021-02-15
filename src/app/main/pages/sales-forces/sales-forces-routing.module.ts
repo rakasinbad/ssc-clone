@@ -147,6 +147,23 @@ const routes: Routes = [
         },
     },
     {
+        path: 'pjp',
+        loadChildren: () => import('./pjp/pjp.module').then((m) => m.SrTargetModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'pjp'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
         path: 'associations',
         loadChildren: () =>
             import('./associations/associations.module').then((m) => m.AssociationsModule),
