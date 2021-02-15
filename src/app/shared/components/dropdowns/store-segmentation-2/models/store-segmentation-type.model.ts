@@ -19,6 +19,9 @@ export interface IStoreSegmentationType extends ITimestamp {
     clusterName: string;
     channelId: string;
     channelName: string;
+    label: string;
+    group: string;
+
 }
 
 export class StoreSegmentationType implements IStoreSegmentationType {
@@ -42,6 +45,8 @@ export class StoreSegmentationType implements IStoreSegmentationType {
     clusterName: string;
     channelId: string;
     channelName: string;
+    label: string;
+    group: string;
 
     constructor(data: IStoreSegmentationType) {
         const {
@@ -64,7 +69,9 @@ export class StoreSegmentationType implements IStoreSegmentationType {
             clusterId,
             clusterName,
             channelId,
-            channelName
+            channelName,
+            label,
+            group
         } = data;
 
         this.id = id;
@@ -87,5 +94,7 @@ export class StoreSegmentationType implements IStoreSegmentationType {
         this.clusterName = clusterName || null;
         this.channelId = channelId || null;
         this.channelName = channelName || null;
+        this.label = label || null;
+        this.group = group || null;
     }
 }

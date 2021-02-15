@@ -121,6 +121,40 @@ export class CreateCrossSellingDto {
     }
 }
 
+export class ExtendCrossSellingDto {
+    promoId: string
+    startDateBeforeExtended: string
+    endDateBeforeExtended: string
+    startDateAfterExtended: string
+    endDateAfterExtended: string
+
+    constructor(data: ExtendCrossSellingDto) {
+        const {
+            promoId,
+            startDateBeforeExtended,
+            endDateBeforeExtended,
+            startDateAfterExtended,
+            endDateAfterExtended
+        } = data
+
+        this.promoId = promoId
+
+        if (startDateBeforeExtended) {
+            this.startDateBeforeExtended = startDateBeforeExtended
+        }
+        if (endDateBeforeExtended) {
+            this.endDateBeforeExtended = endDateBeforeExtended
+        }
+        if (startDateAfterExtended) {
+            this.startDateAfterExtended = startDateAfterExtended
+        }
+        if (endDateAfterExtended) {
+            this.endDateAfterExtended = endDateAfterExtended
+        }
+    }
+
+}
+
 export class PatchCrossSellingDto {
     base?: string;
     dataBase?: ICrossSellingBase;

@@ -129,9 +129,9 @@
 
                 <!-- External ID's Product Column -->
                 <ng-container matColumnDef="externalId">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header
-                        >SKU Supplier</mat-header-cell
-                    >
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        SKU Supplier
+                    </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="word-wrap">{{ row?.externalId }}</p>
                     </mat-cell>
@@ -255,6 +255,17 @@
                     </mat-cell>
                 </ng-container>
                 <!-- / Type Column -->
+
+                <!-- Exclusive Column -->
+                <ng-container matColumnDef="exclusive">
+                    <mat-header-cell *matHeaderCellDef>Exclusive</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.isExclusive ? 'Yes' : 'No' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+                <!-- / Exclusive Column -->
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">

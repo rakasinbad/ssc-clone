@@ -49,6 +49,15 @@ export const statusCatalogue: FuseNavigation[] = [
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'regular' }));
         },
     },
+    {
+        id: 'exclusive',
+        title: 'Exclusive',
+        // translate: 'STATUS.CATALOGUE.INACTIVE.TITLE',
+        type: 'item',
+        function: (store) => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'exclusive' }));
+        },
+    },
     /* {
         id: 'empty',
         title: 'Empty',

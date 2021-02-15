@@ -259,25 +259,25 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
         }
     }
 
-    condMultiQty(value): void {
-        const conditionQtyGroup2 = this.form.get(['groups', 1, 'conditionQty']);
-            // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
-            if (value == '' || value == undefined) {
-            conditionQtyGroup2.setValue(null);
-            } else {
-                conditionQtyGroup2.setValue(value);
-            }
-    }
+    // condMultiQty(value): void {
+    //     const conditionQtyGroup2 = this.form.get(['groups', 1, 'conditionQty']);
+    //         // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
+    //         if (value == '' || value == undefined) {
+    //         conditionQtyGroup2.setValue(null);
+    //         } else {
+    //             conditionQtyGroup2.setValue(value);
+    //         }
+    // }
 
-    condMultiValue(value): void {
-        const conditionValueGroup2 = this.form.get(['groups', 1, 'conditionValue']);
-        // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
-        if (value == '' || value == undefined) {
-            conditionValueGroup2.setValue(null);
-        } else {
-            conditionValueGroup2.setValue(value);
-        }
-    }
+    // condMultiValue(value): void {
+    //     const conditionValueGroup2 = this.form.get(['groups', 1, 'conditionValue']);
+    //     // let qtyGroup1 = this.form.get(['groups', 0, 'conditionQty']);
+    //     if (value == '' || value == undefined) {
+    //         conditionValueGroup2.setValue(null);
+    //     } else {
+    //         conditionValueGroup2.setValue(value);
+    //     }
+    // }
 
     onChangeInvoiceGroup(ev: MatSelectChange, idx: number): void {
         if (!ev.value || !this.invoiceGroups || !this.invoiceGroups.length) {
