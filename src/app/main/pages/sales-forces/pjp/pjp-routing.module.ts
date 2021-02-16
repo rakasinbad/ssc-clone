@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../../core/auth/auth.guard';
-import { SrTargetComponent } from './pjp.component';
+import { PjpComponent } from './pjp.component';
 
-const routes: Routes = [{ path: '', component: SrTargetComponent, canActivate: [AuthGuard] }];
+const routes: Routes = [{ path: '', component: PjpComponent, canActivate: [AuthGuard] }];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class SrTargetRoutingModule {}
+export class PjpRoutingModule {}

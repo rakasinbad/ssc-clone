@@ -148,7 +148,7 @@ const routes: Routes = [
     },
     {
         path: 'pjp',
-        loadChildren: () => import('./pjp/pjp.module').then((m) => m.SrTargetModule),
+        loadChildren: () => import('./pjp/pjp.module').then((m) => m.PjpModule),
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {

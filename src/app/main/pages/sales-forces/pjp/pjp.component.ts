@@ -13,7 +13,7 @@ import { BehaviorSubject } from 'rxjs';
     templateUrl: './pjp.component.html',
     styleUrls: ['./pjp.component.scss'],
 })
-export class SrTargetComponent implements OnInit {
+export class PjpComponent implements OnInit {
     url$: BehaviorSubject<SafeResourceUrl> = new BehaviorSubject<SafeResourceUrl>('');
     isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
@@ -41,7 +41,7 @@ export class SrTargetComponent implements OnInit {
 
         this.storage.get('user').subscribe((data: any) => {
             const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-                `${environment.microSiteHost}/salesmanagement/pjp?token=${data.token}`
+                `${environment.microSiteHost}/salesmanagement/permanentjourneyplan?token=${data.token}`
             );
             
             this.url$.next(safeUrl);

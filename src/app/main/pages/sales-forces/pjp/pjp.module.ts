@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { MaterialModule, SharedModule } from 'app/shared';
-import { SrTargetRoutingModule } from './pjp-routing.module';
-import { SrTargetComponent } from './pjp.component';
+import { PjpRoutingModule } from './pjp-routing.module';
+import { PjpComponent } from './pjp.component';
 
 @NgModule({
-    declarations: [SrTargetComponent],
-    imports: [SrTargetRoutingModule, SharedModule, MaterialModule],
+    declarations: [PjpComponent],
+    imports: [PjpRoutingModule, SharedModule, MaterialModule],
 })
-export class SrTargetModule {}
+export class PjpModule {}
