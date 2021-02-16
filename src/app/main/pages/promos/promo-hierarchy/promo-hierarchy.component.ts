@@ -27,7 +27,8 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
 
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
-    //
+    selectedViewBy: string = 'all-hierarchy';
+
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -86,10 +87,6 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
         );
     }
 
-    // onClickAdd(): void {
-    //     this.router.navigateByUrl('/pages/promos/voucher/new');
-    // }
-
     clickTabViewBy(action: string): void {
         if (!action) {
             return;
@@ -97,28 +94,28 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
 
         switch (action) {
             case 'all-hierarchy':
-                // this.selectedViewBy = action;
+                this.selectedViewBy = action;
 
                 // this.SkuAssignmentsStore.dispatch(
                 //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-warehouse' })
                 // );
                 break;
             case 'flexi-hierarchy':
-                // this.selectedViewBy = action;
+                this.selectedViewBy = action;
 
                 // this.SkuAssignmentsStore.dispatch(
                 //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                 // );
                 break;
             case 'cross-hierarchy':
-                    // this.selectedViewBy = action;
+                    this.selectedViewBy = action;
     
                     // this.SkuAssignmentsStore.dispatch(
                     //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                     // );
                 break;
             case 'voucher-hierarchy':
-                    // this.selectedViewBy = action;
+                    this.selectedViewBy = action;
     
                     // this.SkuAssignmentsStore.dispatch(
                     //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })

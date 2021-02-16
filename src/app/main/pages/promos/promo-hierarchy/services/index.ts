@@ -1,3 +1,3 @@
-import { VoucherApiService } from './voucher-api.service';
+import { PromoHierarchyApiService } from './promo-hierarchy-api.service';
 
-export { VoucherApiService };
+export { PromoHierarchyApiService };

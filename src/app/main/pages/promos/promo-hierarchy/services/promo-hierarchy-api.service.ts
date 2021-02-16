@@ -14,18 +14,18 @@ import { PromoHierarchyPayload } from '../models/promo-hierarchy.model';
  *
  *
  * @export
- * @class VoucherApiService
+ * @class PromoHierarchyApiService
  */
 @Injectable({
     providedIn: 'root',
 })
-export class VoucherApiService {
+export class PromoHierarchyApiService {
     /**
      *
      *
      * @private
      * @type {string}
-     * @memberof VoucherApiService
+     * @memberof PromoHierarchyApiService
      */
     private _url: string;
 
@@ -33,23 +33,23 @@ export class VoucherApiService {
      *
      *
      * @private
-     * @memberof VoucherApiService
+     * @memberof PromoHierarchyApiService
      */
-    private readonly _VoucherEndpoint = '/voucher';
+    private readonly _PromoHierarchyEndpoint = '/promohierarchy';
 
     /**
-     * Creates an instance of VoucherApiService.
+     * Creates an instance of PromoHierarchyApiService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
-     * @memberof VoucherApiService
+     * @memberof PromoHierarchyApiService
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
-        this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
     }
 
     find<T>(params: IQueryParamsVoucher): Observable<T> {
         if (params['id']) {
-            this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+            this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
             return this.http.get<T>(`${this._url}/${params['id']}`);
         }
 
@@ -83,14 +83,22 @@ export class VoucherApiService {
             newArgs.push({ key: 'status', value: params['status'] });
         }
 
-        this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+        if (params['typeView']) {
+            newArgs.push({ key: 'typeView', value: params['typeView'] });
+        }
+
+        if (params['typeLayer']) {
+            newArgs.push({ key: 'typeLayer', value: params['typeLayer'] });
+        }
+
+        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<T>(this._url, { params: newParams });
     }
 
     addPromoHierarchy<T, R>(payload: T): Observable<R> {
-        this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
         return this.http.post<R>(this._url, payload);
     }
 
@@ -99,7 +107,7 @@ export class VoucherApiService {
             throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_ENTITY_PAYLOAD');
         }
 
-        this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
 
         if (payload['data']['status']) {
             return this.http.put<R>(`${this._url}/${payload['id']}`, payload['data']);
@@ -113,7 +121,7 @@ export class VoucherApiService {
             throw new Error('ERR_DELETE_PROMO_HIERARCHY_REQUIRED_ID');
         }
 
-        this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
         return this.http.delete<R>(`${this._url}/${payload}`);
     }
 }
