@@ -9,22 +9,28 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+
+// Component
 import { PromoHierarchyComponent } from './promo-hierarchy.component';
 import { DetailPromoHierarchyComponent } from './components/detail-promo-hierarchy/detail-promo-hierarchy.component';
 import { ListPromoHierarchyComponent } from './components/list-promo-hierarchy/list-promo-hierarchy.component';
-
-// Component
+import { PromoInfomationComponent } from './components/detail-promo-hierarchy/promo-infomation/promo-infomation.component';
+import { LayerInfomationComponent } from './components/detail-promo-hierarchy/layer-infomation/layer-infomation.component';
+import { SetPromoHierarchyComponent } from './pages/set-promo-hierarchy/set-promo-hierarchy.component';
 
 @NgModule({
     declarations: [
         PromoHierarchyComponent,
         DetailPromoHierarchyComponent,
-        ListPromoHierarchyComponent
+        ListPromoHierarchyComponent,
+        PromoInfomationComponent,
+        LayerInfomationComponent,
+        SetPromoHierarchyComponent
     ],
     imports: [
         CommonModule,
         PromoHierarchyRoutingModule,
-// PromoHierarchyNgRxStoreModule,
+        // PromoHierarchyNgRxStoreModule,
 
         SharedModule,
         MaterialModule,

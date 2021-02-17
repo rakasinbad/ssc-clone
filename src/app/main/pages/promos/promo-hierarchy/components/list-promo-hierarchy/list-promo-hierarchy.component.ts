@@ -210,7 +210,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         // );
 
         this._initTable();
-        
+
         this.cdRef.detectChanges();
 
     }
@@ -229,9 +229,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                 setTimeout(() => this._initTable());
             }
         }
-        console.log('isi searchValue->', this.searchValue)
-        console.log('isi selectedStatus->', this.selectedStatus)
-        console.log('isi viewByPromo->', this.viewByPromo)
+   
         if (changes['viewByPromo']) {
             if (!changes['viewByPromo'].isFirstChange()) {
                 this.viewByPromo = changes['viewByPromo'].currentValue;
@@ -580,8 +578,8 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                 };
             }
             
+        this.cdRef.detectChanges();
 
-            // if (this.selectedStatus == 'layer0')
             // if (this.selectedStatus !== 'all') {
             //     data['status'] = this.selectedStatus;
             // }

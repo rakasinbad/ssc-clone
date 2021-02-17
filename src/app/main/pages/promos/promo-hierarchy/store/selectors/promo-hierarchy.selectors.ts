@@ -30,7 +30,7 @@ export const getPromoHierarchyIds = createSelector(getPromoHierarchyState, selec
 
 export const getTotalItem = createSelector(getPromoHierarchyState, (state) => state.total);
 
-export const getSelectedVoucher = createSelector(
+export const getSelectedPromoHierarchy = createSelector(
     getPromoHierarchyState,
     getPromoHierarchyEntity,
     (state, Voucher) => Voucher[state.selectedId]
