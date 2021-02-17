@@ -1,0 +1,84 @@
+<div #detail class="page-layout carded fullwidth inner-scroll line-height-1.75">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg h-188 accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center px-16">
+        <!-- CONTENT HEADER -->
+        <div class="h-120 accent mb-0 mt-20" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/promos/promo-hierarchy']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutGap="12px"
+                    fxLayoutAlign="space-between start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        <!-- <ng-container *ngIf="!(selectedPromo$ | async); else isPromoLoading">
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                            ></ngx-skeleton-loader>
+                        </ng-container>
+                        <ng-template #isPromoLoading>
+                            <strong>{{ (selectedPromo$ | async)?.name | uppercase }}</strong>
+                        </ng-template> -->
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span class="fuse-white-fg">Promo Hierarchy Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+            <!-- EDIT BUTTON -->
+            <!-- <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
+                <span class="red-500-fg">Edit</span>
+            </button> -->
+            <!-- / EDIT BUTTON -->
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <!-- TAB GROUP -->
+        <mat-tab-group
+            color="accent"
+            style="border-radius: 4px;"
+            class="sinbad-white sinbad-mat-tab-group has-border mat-tab-header-px-12"
+            animationDuration="0ms"
+            dynamicHeight="true"
+            (selectedIndexChange)="onSelectedTab($event)"
+            fusePerfectScrollbar
+        >
+            <!-- Promo INFORMATION -->
+            <mat-tab label="Promo Information" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-promo-infomation></app-promo-infomation>
+                </ng-template>
+            </mat-tab>
+            <!-- / Promo INFORMATION  -->
+            <!-- Layer INFORMATION  -->
+            <mat-tab label="Layer Information" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-layer-infomation></app-layer-infomation>
+                </ng-template>
+            </mat-tab>
+            <!-- / Layer INFORMATION  -->
+        </mat-tab-group>
+        <!-- / TAB GROUP -->
+    </div>
+    <!-- / CENTER -->
+</div>
+<!-- Spinner Loader -->
+<!-- <div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div> -->
+<!-- Spinner Loader -->
