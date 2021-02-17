@@ -28,6 +28,7 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
     selectedViewBy: string = 'all-hierarchy';
+    labelInfo: string = '';
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -134,15 +135,19 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
                 break;
             case 1:
                 this.section = 'layer1';
+                this.labelInfo = "Layer 01: This layer is recommended for promo that flagged as “Principal promo”";
                 break;
             case 2:
                 this.section = 'layer2';
+                this.labelInfo = "Layer 02: This layer is recommended for promo that flagged as “Distributor promo”";
                 break;
             case 3:
                 this.section = 'layer3';
+                this.labelInfo = "Layer 03: This layer is recommended for promo that flagged as “Sinbad promo”";
                 break;
             case 4:
                 this.section = 'layer4';
+                this.labelInfo = "Layer 04: This layer is recommended for promo that flagged as “Payment method promo”";
                 break;
         }
     }

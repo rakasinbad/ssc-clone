@@ -1,4 +1,4 @@
-<div id="voucher" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div id="promo-hierarchy" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CENTER -->
     <div class="center p-8">
         <!-- CONTENT CARD -->
@@ -6,6 +6,14 @@
             <sinbad-card-header
                 [config]="cardHeaderConfig"
             ></sinbad-card-header>
+
+            <ng-container *ngIf="section != 'layer0'">
+                <div class="label-info">
+                    <mat-icon class="label-info__icon">info</mat-icon>
+                    <p class="label-info__text">{{labelInfo}}</p>
+                </div>
+            </ng-container>
+           
 
             <mat-tab-group
                 color="accent"
