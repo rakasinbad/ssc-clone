@@ -10,6 +10,7 @@ import {
     Input,
     SimpleChanges,
     OnChanges,
+    ChangeDetectorRef
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -20,7 +21,7 @@ import { PromoHierarchyActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { Observable, Subject, merge } from 'rxjs';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { takeUntil, flatMap } from 'rxjs/operators';
+import { takeUntil, flatMap, filter } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
 import { IQueryParamsVoucher } from 'app/shared/models/query.model';
@@ -190,6 +191,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     constructor(
         // private route: ActivatedRoute,
         // private readonly sanitizer: DomSanitizer,
+        private cdRef: ChangeDetectorRef,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
         private PromoHierarchyStore: NgRxStore<PromoHierarchyCoreState>
@@ -198,11 +200,9 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     ngOnInit(): void {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);
-        this.dataSource = listHierarchy;
         // this.dataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getAllPromoHierarchy).pipe(
         //     takeUntil(this.subs$)
         // );
-        this.totalDataSource = listHierarchy.length;
         // this.totalDataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getTotalItem);
 
         // this.isLoading$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getLoadingState).pipe(
@@ -210,7 +210,9 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         // );
 
         this._initTable();
-        this.updatePrivileges();
+        
+        this.cdRef.detectChanges();
+
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -232,10 +234,12 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         console.log('isi viewByPromo->', this.viewByPromo)
         if (changes['viewByPromo']) {
             if (!changes['viewByPromo'].isFirstChange()) {
-                this.selectedStatus = changes['viewByPromo'].currentValue;
+                this.viewByPromo = changes['viewByPromo'].currentValue;
                 setTimeout(() => this._initTable());
             }
         }
+
+        this.cdRef.detectChanges();
     }
 
     ngAfterViewInit(): void {
@@ -320,6 +324,264 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
             data['paginate'] = true;
             data['keyword'] = this.search.value;
 
+            if (this.searchValue !== '') {
+                switch(this.viewByPromo) {
+                    case 'all':
+                        switch(this.selectedStatus) {
+                            case 'layer0':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 0 && d.name == this.searchValue);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer1':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 1 && d.name == this.searchValue);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer2':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 2 && d.name == this.searchValue);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer3':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 3 && d.name == this.searchValue);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer4':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 4 && d.name == this.searchValue);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                        }
+                    break;
+                case 'flexi':
+                        let dataFlexi = listHierarchy.filter(d => d.promoType == 'flexi' && d.name == this.searchValue);
+                        switch(this.selectedStatus) {
+                            case 'layer0':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 0);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer1':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 1);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer2':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 2);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer3':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 3);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer4':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 4);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                        };
+                    break;
+                case 'crossSelling':
+                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'crossSelling' && d.name == this.searchValue);
+                    switch(this.selectedStatus) {
+                        case 'layer0':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 0);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer1':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 1);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer2':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 2);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer3':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 3);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer4':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 4);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                    };
+                    break;
+                case 'voucher':
+                    let dataVoucher = listHierarchy.filter(d => d.promoType == 'voucher' && d.name == this.searchValue);
+                    switch(this.selectedStatus) {
+                        case 'layer0':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 0);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer1':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 1);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer2':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 2);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer3':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 3);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer4':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 4);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                    };
+                    break;
+        
+                default:
+                    switch(this.selectedStatus) {
+                        case 'layer0':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 0 && d.name == this.searchValue);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer1':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 1 && d.name == this.searchValue);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer2':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 2 && d.name == this.searchValue);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer3':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 3 && d.name == this.searchValue);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer4':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 4 && d.name == this.searchValue);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                    }
+                    return;
+                };
+            } else {
+                switch(this.viewByPromo) {
+                    case 'all':
+                        switch(this.selectedStatus) {
+                            case 'layer0':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 0);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer1':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 1);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer2':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 2);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer3':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 3);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer4':
+                                this.dataSource = listHierarchy.filter(d => d.layer == 4);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                        }
+                    break;
+                case 'flexi':
+                        let dataFlexi = listHierarchy.filter(d => d.promoType == 'flexi');
+                        switch(this.selectedStatus) {
+                            case 'layer0':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 0);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer1':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 1);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer2':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 2);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer3':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 3);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                            case 'layer4':
+                                this.dataSource = dataFlexi.filter(d => d.layer == 4);
+                                this.totalDataSource = this.dataSource.length;
+                            break;
+                        };
+                    break;
+                case 'crossSelling':
+                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'crossSelling');
+                    switch(this.selectedStatus) {
+                        case 'layer0':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 0);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer1':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 1);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer2':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 2);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer3':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 3);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer4':
+                            this.dataSource = dataCrossSelling.filter(d => d.layer == 4);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                    };
+                    break;
+                case 'voucher':
+                    let dataVoucher = listHierarchy.filter(d => d.promoType == 'voucher');
+                    switch(this.selectedStatus) {
+                        case 'layer0':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 0);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer1':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 1);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer2':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 2);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer3':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 3);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer4':
+                            this.dataSource = dataVoucher.filter(d => d.layer == 4);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                    };
+                    break;
+        
+                default:
+                    switch(this.selectedStatus) {
+                        case 'layer0':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 0);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer1':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 1);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer2':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 2);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer3':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 3);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                        case 'layer4':
+                            this.dataSource = listHierarchy.filter(d => d.layer == 4);
+                            this.totalDataSource = this.dataSource.length;
+                        break;
+                    }
+                    return;
+                };
+            }
+            
+
+            // if (this.selectedStatus == 'layer0')
             // if (this.selectedStatus !== 'all') {
             //     data['status'] = this.selectedStatus;
             // }
@@ -333,35 +595,5 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         }
     }
 
-    private updatePrivileges(): void {
-        this.ngxPermissionsService
-            .hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE'])
-            .then((result) => {
-                // Jika ada permission-nya.
-                if (result) {
-                    this.displayedColumns = [
-                        'promo-seller-id',
-                        'promo-name',
-                        'promo-allocation',
-                        'allocation-value',
-                        'promo-type',
-                        'promo-group',
-                        'status',
-                        'actions',
-                    ];
-                } else {
-                    this.displayedColumns = [
-                        'promo-seller-id',
-                        'promo-name',
-                        'promo-allocation',
-                        'allocation-value',
-                        'promo-type',
-                        'promo-group',
-                        'status',
-                        'actions',
-                    ];
-                }
-            });
-    }
 }
 

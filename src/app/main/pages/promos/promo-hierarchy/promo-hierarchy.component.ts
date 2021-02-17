@@ -43,10 +43,10 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
         },
         viewBy: {
             list: [
-                { id: 'all-hierarchy', label: 'All' },
-                { id: 'flexi-hierarchy', label: 'Flexi Combo' },
-                { id: 'cross-hierarchy', label: 'Cross Selling Promo' },
-                { id: 'voucher-hierarchy', label: 'SupplierVoucher' }
+                { id: 'all', label: 'All' },
+                { id: 'flexi', label: 'Flexi Combo' },
+                { id: 'crossSelling', label: 'Cross Selling Promo' },
+                { id: 'voucher', label: 'SupplierVoucher' }
             ],
             onChanged: (value: { id: string; label: string }) => this.clickTabViewBy(value.id)
         },
@@ -94,28 +94,28 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
         }
 
         switch (action) {
-            case 'all-hierarchy':
+            case 'all':
                 this.selectedViewBy = action;
 
                 // this.SkuAssignmentsStore.dispatch(
                 //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-warehouse' })
                 // );
                 break;
-            case 'flexi-hierarchy':
+            case 'flexi':
                 this.selectedViewBy = action;
 
                 // this.SkuAssignmentsStore.dispatch(
                 //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                 // );
                 break;
-            case 'cross-hierarchy':
+            case 'crossSelling':
                     this.selectedViewBy = action;
     
                     // this.SkuAssignmentsStore.dispatch(
                     //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                     // );
                 break;
-            case 'voucher-hierarchy':
+            case 'voucher':
                     this.selectedViewBy = action;
     
                     // this.SkuAssignmentsStore.dispatch(
