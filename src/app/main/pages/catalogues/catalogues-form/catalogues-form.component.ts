@@ -18,6 +18,7 @@ import {
 } from '@angular/forms';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -1262,6 +1263,14 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
             'fuse-white': this.isAddMode() || this.isEditMode(),
         };
+    }
+
+    onChangeBrand(ev: MatSelectChange): void {
+        HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
+            ev,
+        });
+
+        this.form.get('productInfo.subBrand').enable({ onlySelf: true });
     }
 
     onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {

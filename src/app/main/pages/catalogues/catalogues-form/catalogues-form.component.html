@@ -368,7 +368,11 @@
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <mat-select name="brandId" formControlName="brandId">
+                            <mat-select
+                                name="brandId"
+                                formControlName="brandId"
+                                (selectionChange)="onChangeBrand($event)"
+                            >
                                 <ng-container *ngIf="brands$ | async as brands; else noBrands">
                                     <mat-option *ngFor="let brand of brands" [value]="brand.id">
                                         {{ brand.name }}
