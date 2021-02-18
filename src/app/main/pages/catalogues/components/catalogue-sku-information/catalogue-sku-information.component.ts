@@ -1,21 +1,55 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    ChangeDetectionStrategy,
+    OnDestroy,
+    ChangeDetectorRef,
+    AfterViewInit,
+    Input,
+    OnChanges,
+    SimpleChanges,
+    EventEmitter,
+    Output,
+} from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
 
 import { fromCatalogue } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
+import {
+    FormGroup,
+    FormBuilder,
+    AsyncValidatorFn,
+    AbstractControl,
+    ValidationErrors,
+    FormArray,
+} from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    debounceTime,
+    withLatestFrom,
+    take,
+    switchMap,
+    map,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CatalogueSelectors, BrandSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { CataloguesService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CatalogueUnit, CatalogueCategory, SimpleCatalogueCategory, CatalogueInformation } from '../../models';
+import {
+    CatalogueUnit,
+    CatalogueCategory,
+    SimpleCatalogueCategory,
+    CatalogueInformation,
+} from '../../models';
 import { CatalogueActions, BrandActions } from '../../store/actions';
-import { MatDialog, MatChipInputEvent } from '@angular/material';
+import { MatDialog, MatChipInputEvent, MatSelectChange } from '@angular/material';
 import { CataloguesSelectCategoryComponent } from '../../catalogues-select-category/catalogues-select-category.component';
 import { Brand } from 'app/shared/models/brand.model';
 import { SafeHtml } from '@angular/platform-browser';
@@ -35,10 +69,10 @@ type IFormMode = 'add' | 'view' | 'edit';
     styleUrls: ['./catalogue-sku-information.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.Default
+    changeDetection: ChangeDetectionStrategy.Default,
 })
-export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-
+export class CatalogueSkuInformationComponent
+    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
@@ -46,9 +80,13 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     // Untuk menyimpan daftar brand dari suatu supplier.
     brands$: Observable<Array<Brand>>;
     // Untuk menyimpan daftar katalog yang tersedia.
-    catalogueCategories$: BehaviorSubject<Array<CatalogueCategory>> = new BehaviorSubject<Array<CatalogueCategory>>([]);
+    catalogueCategories$: BehaviorSubject<Array<CatalogueCategory>> = new BehaviorSubject<
+        Array<CatalogueCategory>
+    >([]);
     // Untuk menyimpan satuan unit katalog.
-    catalogueUnits$: BehaviorSubject<Array<CatalogueUnit>> = new BehaviorSubject<Array<CatalogueUnit>>([]);
+    catalogueUnits$: BehaviorSubject<Array<CatalogueUnit>> = new BehaviorSubject<
+        Array<CatalogueUnit>
+    >([]);
     // Untuk menyimpan string kategori produk untuk ditampilkan di web.
     productCategory$: SafeHtml;
     // Untuk form.
@@ -61,7 +99,8 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
-    @Output() formValueChange: EventEmitter<CatalogueInformation> = new EventEmitter<CatalogueInformation>();
+    @Output()
+    formValueChange: EventEmitter<CatalogueInformation> = new EventEmitter<CatalogueInformation>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -99,14 +138,14 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         private dialog: MatDialog,
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
-        private errorMessage$: ErrorMessageService,
-    ) { }
+        private errorMessage$: ErrorMessageService
+    ) {}
 
     private updateFormView(): void {
         // Penetapan class pada form field berdasarkan mode form-nya.
         this.formClass = {
             'custom-field-right': !this.isViewMode(),
-            'view-field-right': this.isViewMode()
+            'view-field-right': this.isViewMode(),
         };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
@@ -114,12 +153,12 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
-            'fuse-white': this.isAddMode() || this.isEditMode()
+            'fuse-white': this.isAddMode() || this.isEditMode(),
         };
 
         this.cdRef.markForCheck();
     }
-// 
+    //
     private updateSelectedCategories(categories: Array<SimpleCatalogueCategory>): void {
         // Mengambil kategori terakhir yang terpilih.
         const lastCategory = categories.length > 0 ? categories[categories.length - 1] : undefined;
@@ -135,14 +174,14 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     }
 
     private checkRoute(): void {
-        this.route.url.pipe(take(1)).subscribe(urls => {
-            if (urls.filter(url => url.path === 'edit').length > 0) {
+        this.route.url.pipe(take(1)).subscribe((urls) => {
+            if (urls.filter((url) => url.path === 'edit').length > 0) {
                 this.formMode = 'edit';
                 this.prepareEditCatalogue();
-            } else if (urls.filter(url => url.path === 'view').length > 0) {
+            } else if (urls.filter((url) => url.path === 'view').length > 0) {
                 this.formMode = 'view';
                 this.prepareEditCatalogue();
-            } else if (urls.filter(url => url.path === 'add').length > 0) {
+            } else if (urls.filter((url) => url.path === 'add').length > 0) {
                 this.formMode = 'add';
             }
 
@@ -151,18 +190,19 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     }
 
     private checkSelectedCatalogueCategory(): void {
-        this.store.select(
-            CatalogueSelectors.getSelectedCategories
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(categories => {
-            // Kategori produk yang ingin ditampilkan di front-end.
-            this.productCategory$ = categories.map(category => category['name']).join(`<span class="mx-12">></span>`);
-            // Meng-update form catalogue untuk bagian kategori.
-            this.updateSelectedCategories(categories);
-            // Memicu ChangeDetector untuk memberitahu adanya perubahan view.
-            this.cdRef.markForCheck();
-        });
+        this.store
+            .select(CatalogueSelectors.getSelectedCategories)
+            .pipe(takeUntil(this.subs$))
+            .subscribe((categories) => {
+                // Kategori produk yang ingin ditampilkan di front-end.
+                this.productCategory$ = categories
+                    .map((category) => category['name'])
+                    .join(`<span class="mx-12">></span>`);
+                // Meng-update form catalogue untuk bagian kategori.
+                this.updateSelectedCategories(categories);
+                // Memicu ChangeDetector untuk memberitahu adanya perubahan view.
+                this.cdRef.markForCheck();
+            });
     }
 
     private prepareEditCatalogue(): void {
@@ -171,139 +211,161 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
             this.catalogueCategories$,
             this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
             this.catalogueUnits$,
-        ]).pipe(
-            withLatestFrom(
-                this.store.select(AuthSelectors.getUserSupplier),
-                ([_, categories, catalogue, catalogueUnits], userSupplier) => ({ catalogue, categories, userSupplier, catalogueUnits })
-            ),
-            takeUntil(this.subs$)
-        ).subscribe(({ catalogue, categories, userSupplier, catalogueUnits }) => {
-            // Butuh mengambil data katalog jika belum ada di state.
-            if (!catalogue) {
-                // Mengambil ID dari parameter URL.
-                const { id } = this.route.snapshot.params;
-
-                this.store.dispatch(
-                    CatalogueActions.fetchCatalogueRequest({
-                        payload: id
+        ])
+            .pipe(
+                withLatestFrom(
+                    this.store.select(AuthSelectors.getUserSupplier),
+                    ([_, categories, catalogue, catalogueUnits], userSupplier) => ({
+                        catalogue,
+                        categories,
+                        userSupplier,
+                        catalogueUnits,
                     })
-                );
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe(({ catalogue, categories, userSupplier, catalogueUnits }) => {
+                // Butuh mengambil data katalog jika belum ada di state.
+                if (!catalogue) {
+                    // Mengambil ID dari parameter URL.
+                    const { id } = this.route.snapshot.params;
 
-                this.store.dispatch(
-                    CatalogueActions.setSelectedCatalogue({
-                        payload: id
-                    })
-                );
-
-                return;
-            } else {
-                // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
-                if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
                     this.store.dispatch(
-                        CatalogueActions.spliceCatalogue({
-                            payload: catalogue.id
+                        CatalogueActions.fetchCatalogueRequest({
+                            payload: id,
                         })
                     );
 
-                    this.notice$.open('Produk tidak ditemukan.', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
-
-                    setTimeout(() => this.router.navigate(['pages', 'catalogues', 'list']), 1000);
+                    this.store.dispatch(
+                        CatalogueActions.setSelectedCatalogue({
+                            payload: id,
+                        })
+                    );
 
                     return;
-                }
-            }
-
-            /** Proses pencarian kategori katalog dari daftar katalog yang ada di server. */
-            const searchCategory = (
-                catalogueId,
-                selectedCategories: Array<CatalogueCategory>
-            ) => {
-                const selectedCategory = selectedCategories.filter(
-                    category => category.id === catalogueId
-                );
-
-                if (selectedCategory.length > 0) {
-                    return {
-                        id: selectedCategory[0].id,
-                        name: selectedCategory[0].category,
-                        parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
-                        children: selectedCategory[0].children
-                    };
-                }
-            };
-
-            /** Mengambil data keyword katalog. */
-            const keywords = catalogue.catalogueKeywordCatalogues.map(
-                keyword => keyword.catalogueKeyword.tag
-            );
-            (this.form.get('productInfo.tags') as FormArray).clear();
-            for (const keyword of keywords) {
-                (this.form.get('productInfo.tags') as FormArray).push(this.fb.control(keyword));
-            }
-
-            /** Penetapan nilai pada form. */
-            setTimeout(() => {
-                this.form.patchValue({
-                    productInfo: {
-                        id: catalogue.id,
-                        externalId: catalogue.externalId,
-                        name: catalogue.name,
-                        description: catalogue.description || '-',
-                        // information: '...',
-                        brandId: catalogue.brandId,
-                        brandName: catalogue.brand.name,
-                        stock: catalogue.stock,
-                        uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                        uomName: catalogueUnits.filter(u => String(u.id) === String(catalogue.unitOfMeasureId)).map(u => u.unit),
-                    },
-                }, { onlySelf: false });
-
-                setTimeout(() => {
-                    this.form.get('productInfo.information').setValue(catalogue.detail);
-                }, 500);
-            }, 500);
-
-            if (isNaN(catalogue.lastCatalogueCategoryId) || !catalogue.lastCatalogueCategoryId) {
-                /** Kategori yang terpilih akan di-reset ulang jika katalog belum ditentukan kategorinya. */
-                this.store.dispatch(CatalogueActions.resetSelectedCategories());
-            } else if (categories.length > 0) {
-                /** Proses pengecekan urutan katalog dari paling dalam hingga terluar. */
-                const newCategories = [];
-                let isFirst = true;
-                do {
-                    if (isFirst) {
-                        newCategories.push(
-                            searchCategory(catalogue.lastCatalogueCategoryId, categories)
+                } else {
+                    // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
+                    if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
+                        this.store.dispatch(
+                            CatalogueActions.spliceCatalogue({
+                                payload: catalogue.id,
+                            })
                         );
-                        isFirst = false;
-                    } else {
-                        const lastCategory = newCategories[newCategories.length - 1];
-                        newCategories.push(searchCategory(lastCategory.parent, categories));
+
+                        this.notice$.open('Produk tidak ditemukan.', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+
+                        setTimeout(
+                            () => this.router.navigate(['pages', 'catalogues', 'list']),
+                            1000
+                        );
+
+                        return;
                     }
-                } while (newCategories[newCategories.length - 1].parent);
+                }
 
-                this.store.dispatch(
-                    CatalogueActions.setSelectedCategories({
-                        payload: [
-                            ...newCategories.reverse().map(newCat => ({
-                                id: newCat.id,
-                                name: newCat.name,
-                                parent: newCat.parent,
-                                hasChildren: newCat.children.length > 0
-                            }))
-                        ]
-                    })
+                /** Proses pencarian kategori katalog dari daftar katalog yang ada di server. */
+                const searchCategory = (
+                    catalogueId,
+                    selectedCategories: Array<CatalogueCategory>
+                ) => {
+                    const selectedCategory = selectedCategories.filter(
+                        (category) => category.id === catalogueId
+                    );
+
+                    if (selectedCategory.length > 0) {
+                        return {
+                            id: selectedCategory[0].id,
+                            name: selectedCategory[0].category,
+                            parent: selectedCategory[0].parentId
+                                ? selectedCategory[0].parentId
+                                : null,
+                            children: selectedCategory[0].children,
+                        };
+                    }
+                };
+
+                /** Mengambil data keyword katalog. */
+                const keywords = catalogue.catalogueKeywordCatalogues.map(
+                    (keyword) => keyword.catalogueKeyword.tag
                 );
-            }
+                (this.form.get('productInfo.tags') as FormArray).clear();
+                for (const keyword of keywords) {
+                    (this.form.get('productInfo.tags') as FormArray).push(this.fb.control(keyword));
+                }
 
-            /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.markAsDirty({ onlySelf: false });
-            this.form.markAllAsTouched();
-            this.form.markAsPristine();
-        });
+                /** Penetapan nilai pada form. */
+                setTimeout(() => {
+                    this.form.patchValue(
+                        {
+                            productInfo: {
+                                id: catalogue.id,
+                                externalId: catalogue.externalId,
+                                name: catalogue.name,
+                                description: catalogue.description || '-',
+                                // information: '...',
+                                brandId: catalogue.brandId,
+                                brandName: catalogue.brand.name,
+                                stock: catalogue.stock,
+                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                                uomName: catalogueUnits
+                                    .filter(
+                                        (u) => String(u.id) === String(catalogue.unitOfMeasureId)
+                                    )
+                                    .map((u) => u.unit),
+                            },
+                        },
+                        { onlySelf: false }
+                    );
+
+                    setTimeout(() => {
+                        this.form.get('productInfo.information').setValue(catalogue.detail);
+                    }, 500);
+                }, 500);
+
+                if (
+                    isNaN(catalogue.lastCatalogueCategoryId) ||
+                    !catalogue.lastCatalogueCategoryId
+                ) {
+                    /** Kategori yang terpilih akan di-reset ulang jika katalog belum ditentukan kategorinya. */
+                    this.store.dispatch(CatalogueActions.resetSelectedCategories());
+                } else if (categories.length > 0) {
+                    /** Proses pengecekan urutan katalog dari paling dalam hingga terluar. */
+                    const newCategories = [];
+                    let isFirst = true;
+                    do {
+                        if (isFirst) {
+                            newCategories.push(
+                                searchCategory(catalogue.lastCatalogueCategoryId, categories)
+                            );
+                            isFirst = false;
+                        } else {
+                            const lastCategory = newCategories[newCategories.length - 1];
+                            newCategories.push(searchCategory(lastCategory.parent, categories));
+                        }
+                    } while (newCategories[newCategories.length - 1].parent);
+
+                    this.store.dispatch(
+                        CatalogueActions.setSelectedCategories({
+                            payload: [
+                                ...newCategories.reverse().map((newCat) => ({
+                                    id: newCat.id,
+                                    name: newCat.name,
+                                    parent: newCat.parent,
+                                    hasChildren: newCat.children.length > 0,
+                                })),
+                            ],
+                        })
+                    );
+                }
+
+                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+                this.form.markAsDirty({ onlySelf: false });
+                this.form.markAllAsTouched();
+                this.form.markAsPristine();
+            });
     }
 
     // private onSubmit(): void {
@@ -311,7 +373,7 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     //     this.store.dispatch(UiActions.hideFooterAction());
     //     // Mendapatkan seluruh nilai dari form.
     //     const formValues = this.form.getRawValue();
-        
+
     //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
     //     const catalogueData: Partial<CatalogueInformation> = {
     //         /**
@@ -344,70 +406,66 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     // }
 
     private initCatalogueCategoryState(): void {
-        this.store.select(
-            CatalogueSelectors.getCatalogueCategories
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(categories => {
-            // Melakukan request ke back-end jika belum ada unit katalog di state.
-            if (categories.length === 0) {
-                this.store.dispatch(
-                    CatalogueActions.fetchCatalogueCategoriesRequest({
-                        payload: {
-                            paginate: false,
-                            sort: 'asc',
-                            sortBy: 'id'
-                        }
-                    })
-                );
-            }
+        this.store
+            .select(CatalogueSelectors.getCatalogueCategories)
+            .pipe(takeUntil(this.subs$))
+            .subscribe((categories) => {
+                // Melakukan request ke back-end jika belum ada unit katalog di state.
+                if (categories.length === 0) {
+                    this.store.dispatch(
+                        CatalogueActions.fetchCatalogueCategoriesRequest({
+                            payload: {
+                                paginate: false,
+                                sort: 'asc',
+                                sortBy: 'id',
+                            },
+                        })
+                    );
+                }
 
-            this.catalogueCategories$.next(categories);
-        });
+                this.catalogueCategories$.next(categories);
+            });
     }
 
     private initCatalogueUnitState(): void {
         // Mendapatkan unit katalog dari state.
-        this.store.select(
-            CatalogueSelectors.getCatalogueUnits
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(units => {
-            // Melakukan request ke back-end jika belum ada unit katalog di state.
-            if (units.length === 0) {
-                this.store.dispatch(
-                    CatalogueActions.fetchCatalogueUnitRequest({
-                        payload: {
-                            paginate: false,
-                            sort: 'asc',
-                            sortBy: 'id'
-                        }
-                    })
-                );
-            } else {
-                // // Mengambil nilai ID UOM dari form.
-                // const uom = this.form.get('productInfo.uom').value;
-                // // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-                // const selectedUnit = units.filter(unit => unit.id === uom);
-                // if (selectedUnit.length > 0) {
-                //     this.form.patchValue({
-                //         productInfo: {
-                //             uomName: selectedUnit[0].unit
-                //         }
-                //     });
-                // }
+        this.store
+            .select(CatalogueSelectors.getCatalogueUnits)
+            .pipe(takeUntil(this.subs$))
+            .subscribe((units) => {
+                // Melakukan request ke back-end jika belum ada unit katalog di state.
+                if (units.length === 0) {
+                    this.store.dispatch(
+                        CatalogueActions.fetchCatalogueUnitRequest({
+                            payload: {
+                                paginate: false,
+                                sort: 'asc',
+                                sortBy: 'id',
+                            },
+                        })
+                    );
+                } else {
+                    // // Mengambil nilai ID UOM dari form.
+                    // const uom = this.form.get('productInfo.uom').value;
+                    // // Mengambil data UOM berdasarkan ID UOM yang terpilih.
+                    // const selectedUnit = units.filter(unit => unit.id === uom);
+                    // if (selectedUnit.length > 0) {
+                    //     this.form.patchValue({
+                    //         productInfo: {
+                    //             uomName: selectedUnit[0].unit
+                    //         }
+                    //     });
+                    // }
 
-                this.cdRef.markForCheck();
-            }
+                    this.cdRef.markForCheck();
+                }
 
-            this.catalogueUnits$.next(units);
-        });
+                this.catalogueUnits$.next(units);
+            });
     }
 
     private initCatalogueBrand(): void {
-        this.brands$ = this.store.select(
-            BrandSelectors.getAllBrands
-        ).pipe(
+        this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             map(([brands, userSupplier]) => {
                 if (userSupplier && brands.length === 0) {
@@ -416,7 +474,7 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
 
                     this.store.dispatch(
                         BrandActions.fetchBrandsRequest({
-                            payload: query
+                            payload: query,
                         })
                     );
                 }
@@ -428,43 +486,62 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     }
 
     private initFormCheck(): void {
-        (this.form.statusChanges as Observable<FormStatus>).pipe(
-            distinctUntilChanged(),
-            debounceTime(300),
-            tap(value => HelperService.debug('CATALOGUE SKU INFORMATION FORM STATUS CHANGED:', value)),
-            takeUntil(this.subs$)
-        ).subscribe(status => {
-            this.formStatusChange.emit(status);
-        });
+        (this.form.statusChanges as Observable<FormStatus>)
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(300),
+                tap((value) =>
+                    HelperService.debug('CATALOGUE SKU INFORMATION FORM STATUS CHANGED:', value)
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe((status) => {
+                this.formStatusChange.emit(status);
+            });
 
-        this.form.valueChanges.pipe(
-            distinctUntilChanged(),
-            debounceTime(200),
-            tap(value => HelperService.debug('[BEFORE MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED', value)),
-            map(value => {
-                let formValue = {
-                    ...value.productInfo,
-                    detail: value.productInfo.information,
-                    unitOfMeasureId: value.productInfo.uom,
-                };
-    
-                if (formValue.category.length > 0) {
-                    formValue = {
-                        ...formValue,
-                        firstCatalogueCategoryId: value.productInfo.category[0].id,
-                        lastCatalogueCategoryId: value.productInfo.category.length === 1
-                                                ? value.productInfo.category[0].id
-                                                : value.productInfo.category[value.productInfo.category.length - 1].id,
+        this.form.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(200),
+                tap((value) =>
+                    HelperService.debug(
+                        '[BEFORE MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED',
+                        value
+                    )
+                ),
+                map((value) => {
+                    let formValue = {
+                        ...value.productInfo,
+                        detail: value.productInfo.information,
+                        unitOfMeasureId: value.productInfo.uom,
                     };
-                }
 
-                return formValue;
-            }),
-            tap(value => HelperService.debug('[AFTER MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED', value)),
-            takeUntil(this.subs$)
-        ).subscribe(value => {
-            this.formValueChange.emit(value);
-        });
+                    if (formValue.category.length > 0) {
+                        formValue = {
+                            ...formValue,
+                            firstCatalogueCategoryId: value.productInfo.category[0].id,
+                            lastCatalogueCategoryId:
+                                value.productInfo.category.length === 1
+                                    ? value.productInfo.category[0].id
+                                    : value.productInfo.category[
+                                          value.productInfo.category.length - 1
+                                      ].id,
+                        };
+                    }
+
+                    return formValue;
+                }),
+                tap((value) =>
+                    HelperService.debug(
+                        '[AFTER MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED',
+                        value
+                    )
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe((value) => {
+                this.formValueChange.emit(value);
+            });
     }
 
     onEditCategory(): void {
@@ -484,20 +561,20 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                 switchMap(([value, userSupplier, catalogue]) => {
                     if (!value) {
                         return of({
-                            required: true
+                            required: true,
                         });
                     }
 
                     const params: IQueryParams = {
                         limit: 1,
-                        paginate: true
+                        paginate: true,
                     };
 
                     params['externalId'] = value;
                     params['supplierId'] = userSupplier.supplierId;
 
                     return this.catalogue$.findAll(params).pipe(
-                        map(response => {
+                        map((response) => {
                             if (response.total > 0) {
                                 if (!this.isAddMode()) {
                                     if (response.data[0].id === catalogue.id) {
@@ -506,7 +583,7 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                                 }
 
                                 return {
-                                    skuSupplierExist: true
+                                    skuSupplierExist: true,
                                 };
                             }
 
@@ -570,6 +647,15 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         this.productTagsControls.removeAt(index);
     }
 
+    onChangeBrand(ev: MatSelectChange): void {
+        HelperService.debug('[CatalogueSkuInformationComponent] onChangeBrand', {
+            ev,
+            formMode: this.formMode,
+        });
+
+        this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
+    }
+
     ngOnInit(): void {
         /** Menyiapkan form. */
         this.form = this.fb.group({
@@ -583,11 +669,11 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                                 message: this.errorMessage$.getErrorMessageNonState(
                                     'default',
                                     'required'
-                                )
-                            })
+                                ),
+                            }),
                         ],
-                        asyncValidators: [this.checkExternalId()]
-                    }
+                        asyncValidators: [this.checkExternalId()],
+                    },
                 ],
                 name: [
                     '',
@@ -596,15 +682,12 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                             message: this.errorMessage$.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 description: [''],
-                information: [
-                    '',
-                    []
-                ],
+                information: ['', []],
                 brandId: [
                     '',
                     [
@@ -612,9 +695,9 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                             message: this.errorMessage$.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 brandName: [
                     { value: '', disabled: false },
@@ -627,6 +710,8 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                     //     })
                     // ]
                 ],
+                subBrandId: [{ value: null, disabled: true }],
+                subBrandName: [{ value: null, disabled: true }],
                 category: [
                     '',
                     [
@@ -634,9 +719,9 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                             message: this.errorMessage$.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 uom: [
                     '',
@@ -645,9 +730,9 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                             message: this.errorMessage$.getErrorMessageNonState(
                                 'default',
                                 'required'
-                            )
-                        })
-                    ]
+                            ),
+                        }),
+                    ],
                 ],
                 uomName: [''],
                 tags: this.fb.array(
@@ -659,13 +744,13 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                         // })
                         RxwebValidators.choice({
                             minLength: 1,
-                            conditionalExpression: controls =>
+                            conditionalExpression: (controls) =>
                                 (controls.tags as Array<string>).length > 0 ? true : null,
                             message: this.errorMessage$.getErrorMessageNonState(
                                 'product_tag',
                                 'min_1_tag'
-                            )
-                        })
+                            ),
+                        }),
                     ]
                 ),
             }),
@@ -681,7 +766,7 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         this.checkSelectedCatalogueCategory();
     }
 
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
@@ -714,5 +799,4 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         // this.store.dispatch(FormActions.resetCancelButtonAction());
         // this.store.dispatch(CatalogueActions.resetCatalogueUnits());
     }
-
 }
