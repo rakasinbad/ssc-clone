@@ -332,6 +332,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             displayStock: newStock === 0 ? false : true,
             catalogueTaxId: 1,
             unlimitedStock: formValues.productInfo.unlimitedStock,
+
+            // SUB BRAND
+            subBrandId: formValues.productInfo.subBrandId,
         };
 
         // if (this.formMode === 'edit') {
@@ -366,9 +369,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 payload: catalogueData,
             });
 
-            this.store.dispatch(
-                CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
-            );
+            // this.store.dispatch(
+            //     CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
+            // );
         }
 
         // else {
