@@ -424,32 +424,37 @@
                             fxFlex="18"
                             class="pr-0"
                             [class.sinbad-red-fg]="
-                                form.get('productInfo.subBrand').value ||
-                                    form.get('productInfo.subBrand').touched
-                                    | hasErrorField: form.get('productInfo.subBrand'):false
+                                form.get('productInfo.subBrandId').value ||
+                                    form.get('productInfo.subBrandId').touched
+                                    | hasErrorField: form.get('productInfo.subBrandId'):false
                             "
                         >
                             Sub Brand
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <mat-select name="subBrand" formControlName="subBrand">
+                            <mat-select name="subBrandId" formControlName="subBrandId">
                                 <mat-option></mat-option>
-                                <!-- <ng-container *ngIf="brands$ | async as brands; else noBrands">
-                                    <mat-option *ngFor="let brand of brands" [value]="brand.id">
-                                        {{ brand.name }}
+                                <ng-container
+                                    *ngIf="subBrands$ | async as subBrands; else noSubBrands"
+                                >
+                                    <mat-option
+                                        *ngFor="let subBrand of subBrands"
+                                        [value]="subBrand.id"
+                                    >
+                                        {{ subBrand.code + ' - ' + subBrand.name }}
                                     </mat-option>
                                 </ng-container>
 
-                                <ng-template #noBrands>
+                                <ng-template #noSubBrands>
                                     <mat-option> None </mat-option>
-                                </ng-template> -->
+                                </ng-template>
                             </mat-select>
 
                             <mat-error>
                                 {{
-                                    form.get('productInfo.subBrand').value
-                                        | errorMessage: form:'productInfo.subBrand'
+                                    form.get('productInfo.subBrandId').value
+                                        | errorMessage: form:'productInfo.subBrandId'
                                 }}
                             </mat-error>
                         </mat-form-field>

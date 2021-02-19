@@ -32,14 +32,19 @@ import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-seg
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Brand } from 'app/shared/models/brand.model';
-import { IBreadcrumbs, IFooterActionConfig, TNullable } from 'app/shared/models/global.model';
+import {
+    IBreadcrumbs,
+    IFooterActionConfig,
+    PaginateResponse,
+    TNullable,
+} from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as numeral from 'numeral';
 import Quill from 'quill';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -60,11 +65,18 @@ import {
     StoreSegmentationChannel,
     StoreSegmentationCluster,
     StoreSegmentationGroup,
+    SubBrandProps,
 } from '../models';
-import { BrandFacadeService, CatalogueFacadeService, CataloguesService } from '../services';
+import {
+    BrandFacadeService,
+    CatalogueFacadeService,
+    CataloguesService,
+    SubBrandApiService,
+} from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
 import { fromBrand, fromCatalogue } from '../store/reducers';
 import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
+import { SubBrand } from './../models/sub-brand.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -144,6 +156,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     brands$: Observable<Brand[]>;
     brandUser$: { id: string; name: string } = { id: '0', name: '' };
     productCategory$: SafeHtml;
+    private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
+    subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
 
     catalogueUnits: CatalogueUnit[];
 
@@ -175,6 +189,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private $helper: HelperService,
         private errorMessageSvc: ErrorMessageService,
         private catalogueSvc: CataloguesService,
+        private readonly subBrandApiService: SubBrandApiService,
         private _$notice: NoticeService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
@@ -1273,7 +1288,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             ev,
         });
 
-        this.form.get('productInfo.subBrand').enable({ onlySelf: true });
+        if (ev.value) {
+            this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
+            this._getSubBrandByBrandId(ev.value);
+        }
     }
 
     onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
@@ -1442,7 +1460,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
-                subBrand: [{ value: null, disabled: true }],
+                subBrandId: [{ value: null, disabled: true }],
+                subBrandName: [{ value: null, disabled: true }],
                 category: [
                     null,
                     [
@@ -1717,4 +1736,23 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     private _initFormCheck(): void {}
+
+    private _getSubBrandByBrandId(brandId: string): void {
+        this.subBrandApiService
+            .getWithQuery<PaginateResponse<SubBrandProps>>({
+                search: [
+                    {
+                        fieldName: 'brandId',
+                        keyword: brandId,
+                    },
+                ],
+            })
+            .pipe(
+                map((resp) => (resp.total > 0 ? resp.data : [])),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((sources) => {
+                this.subBrandCollections$.next(sources);
+            });
+    }
 }
