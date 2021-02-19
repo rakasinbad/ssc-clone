@@ -368,17 +368,17 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                     switch (this.section) {
                         case 'sku-information': {
-                            this.store.dispatch(UiActions.hideFooterAction());
-                            this.store.dispatch(
-                                CatalogueActions.patchCatalogueRequest({
-                                    payload: {
-                                        id: catalogue.id,
-                                        data: this.formValue as CatalogueInformation,
-                                        source: 'form',
-                                        section: this.section,
-                                    },
-                                })
-                            );
+                            // this.store.dispatch(UiActions.hideFooterAction());
+                            // this.store.dispatch(
+                            //     CatalogueActions.patchCatalogueRequest({
+                            //         payload: {
+                            //             id: catalogue.id,
+                            //             data: this.formValue as CatalogueInformation,
+                            //             source: 'form',
+                            //             section: this.section,
+                            //         },
+                            //     })
+                            // );
 
                             break;
                         }

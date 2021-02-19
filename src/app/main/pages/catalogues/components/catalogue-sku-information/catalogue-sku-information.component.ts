@@ -298,6 +298,13 @@ export class CatalogueSkuInformationComponent
 
                 /** Penetapan nilai pada form. */
                 setTimeout(() => {
+                    HelperService.debug(
+                        '[CatalogueSkuInformationComponent - BEFORE] prepareEditCatalogue form.patchValue',
+                        {
+                            catalogue,
+                            form: this.form.getRawValue(),
+                        }
+                    );
                     this.form.patchValue(
                         {
                             productInfo: {
@@ -308,6 +315,8 @@ export class CatalogueSkuInformationComponent
                                 // information: '...',
                                 brandId: catalogue.brandId,
                                 brandName: catalogue.brand.name,
+                                subBrandId: catalogue.subBrandId,
+                                subBrandName: catalogue.subBrand && catalogue.subBrand.name,
                                 stock: catalogue.stock,
                                 uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
                                 uomName: catalogueUnits
@@ -318,6 +327,15 @@ export class CatalogueSkuInformationComponent
                             },
                         },
                         { onlySelf: false }
+                    );
+
+                    HelperService.debug(
+                        '[CatalogueSkuInformationComponent - AFTER] prepareEditCatalogue form.patchValue',
+                        {
+                            catalogue,
+                            formRaw: this.form.getRawValue(),
+                            form: this.form.value,
+                        }
                     );
 
                     setTimeout(() => {
