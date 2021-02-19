@@ -11,7 +11,7 @@
     >
         <div class="label" fxFlexAlign="center" fxFlex="10">Promo Seller ID</div>
 
-        <div class="info" fxFlex="100">B001</div>
+        <div class="info" fxFlex="100">{{dataDetail.promoSellerId}}</div>
         <!-- <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (promoHierarchy$ | async)?.promoSellerId || '-' }}
@@ -32,7 +32,7 @@
     >
         <div class="label" fxFlexAlign="center" fxFlex="10">Promo Name</div>
 
-        <div class="info" fxFlex="100">Test</div>
+        <div class="info" fxFlex="100">{{dataDetail.name}}</div>
         <!-- <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (promoHierarchy$ | async)?.name || '-' }}
@@ -53,15 +53,17 @@
     >
         <div class="label" fxFlexAlign="center" fxFlex="10">Allocation Type</div>
 
-        <div class="info" fxFlex="100">Max Promo Redemption (Transaction)</div>
-        <!-- {{ (flexiCombo$ | async)?.promoAllocation === 'promo_slot'
+        <div class="info" fxFlex="100">
+            {{ dataDetail.promoAllocation === 'promo_slot'
                 ? 'Max Promo Redemption (Transaction)'
-                : row?.promoAllocation === 'promo_budget'
+                : dataDetail.promoAllocation === 'promo_budget'
                 ? 'Max Promo Redemption (Rp)'
-                : row?.promoAllocation === 'none'
+                : dataDetail.promoAllocation === 'none'
                 ? 'None'
-                : (row?.promoAllocation | titlecase) || '-'
-        }} -->
+                : (dataDetail.promoAllocation | titlecase) || '-'
+            }}
+        </div>
+        
         <!-- 
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{ ((flexiCombo$ | async)?.platform | titlecase) || '-' }}
@@ -83,7 +85,15 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Allocation Value</div>
 
         <div class="info" fxFlex="100">
-            100/111
+            <ng-container *ngIf="dataDetail.promoAllocation === 'none'">
+                -
+            </ng-container>
+            <ng-container *ngIf="dataDetail.promoAllocation === 'promo_slot'">
+                {{(dataDetail.promoSlot | number) || '-'}} / {{(dataDetail.planSlot | number) || '-'}}
+            </ng-container>
+            <ng-container *ngIf="dataDetail.promoAllocation === 'promo_budget'">
+                Rp {{(dataDetail.promoBudget | number) || '-'}} / Rp {{(dataDetail.planBudget | number) || '-'}}
+            </ng-container>
             <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 Rp {{ ((flexiCombo$ | async)?.promoBudget | number) }} / Rp  {{ ((flexiCombo$ | async)?.planBudget | number) }} 
             </ng-container>
@@ -106,7 +116,14 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Promo Type</div>
 
         <div class="info" fxFlex="100">
-            Flexi Combo
+            {{ dataDetail.promoType === 'flexi'
+                ? 'Flexi Combo'
+                : dataDetail.promoType === 'cross_selling'
+                ? 'Cross Selling'
+                : dataDetail.promoType === 'voucher'
+                ? 'Supplier Voucher'
+                : (dataDetail.promoType | titlecase) || '-'
+            }}
             <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (flexiCombo$ | async)?.promoType || '-' }}
             </ng-container>
@@ -127,7 +144,8 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Promo Group</div>
 
         <div class="info" fxFlex="100">
-            Distributor
+            {{(dataDetail.promoGroup | titlecase) || '-'}}
+
             <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (flexiCombo$ | async)?.promoType || '-' }}
             </ng-container>
@@ -148,7 +166,8 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Status</div>
 
         <div class="info" fxFlex="100">
-            Active
+            {{dataDetail.status | titlecase}}
+        
             <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (flexiCombo$ | async)?.promoType || '-' }}
             </ng-container>
@@ -162,7 +181,12 @@
 </div>
 
 <div class="pb-16 pt-16">
-    <span class="mat-headline">Eligible Product</span>
+    <ng-container *ngIf="dataDetail.promoType == 'flexi'">
+        <span class="mat-headline">Trigger</span>
+    </ng-container>
+    <ng-container *ngIf="dataDetail.promoType == 'voucher'">
+        <span class="mat-headline">Eligible Product</span>
+    </ng-container>
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
@@ -177,7 +201,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            n
+            {{(dataDetail.triggerBase | titlecase) || '-'}}
             <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container *ngIf="triggerBase; else noTriggerBase">
                     <mat-radio-group [value]="(flexiCombo$ | async)?.base">
@@ -206,23 +230,26 @@
         fxLayoutGap="15px"
     >
         <div class="label" fxFlexAlign="start" fxFlex="10">
-            Choose SKU
-            <!-- <ng-container [ngSwitch]="(flexiCombo$ | async)?.base">
-                <ng-container *ngSwitchCase="eTriggerBase.SKU">
+            <ng-container [ngSwitch]="dataDetail.triggerBase">
+                <ng-container *ngSwitchCase="'sku'">
                     Choose SKU
                 </ng-container>
-                <ng-container *ngSwitchCase="eTriggerBase.BRAND">
+                <ng-container *ngSwitchCase="'brand'">
                     Choose Brand
                 </ng-container>
-                <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
+                <ng-container *ngSwitchCase="'faktur'">
                     Choose Faktur
                 </ng-container>
                 <ng-container *ngSwitchDefault>-</ng-container>
-            </ng-container> -->
+            </ng-container>
         </div>
 
         <div class="info" fxFlex="90">
-            Csss
+            <ng-container [ngSwitch]="dataDetail.triggerBase">
+                    <span>
+                        {{ getTriggerCatalogues(dataDetail.triggerCatalogues) }}
+                    </span>
+            </ng-container>
             <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 <ng-container [ngSwitch]="(flexiCombo$ | async)?.base">
                     <ng-container *ngSwitchCase="eTriggerBase.SKU">
@@ -252,15 +279,13 @@
         fxLayoutGap="16px"
     >    
         
-    <span class="box-title"> Condition & Benefit </span>
-
         <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label group-label" fxFlexAlign="center" fxFlex="10">Condition</div>
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10"><b>Condition</b></div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100"></div>
         </div>
@@ -329,7 +354,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label group-label" fxFlexAlign="center" fxFlex="10">Benefit</div>
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10"><b>Benefit</b></div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100"></div>
         </div>

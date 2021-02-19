@@ -78,7 +78,9 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
     }
 
     onClickBack(): void {
-        this.router.navigateByUrl('/pages/promos/flexi-combo');
+        this.router.navigateByUrl('/pages/promos/promo-hierarchy');
+        localStorage.clear();
+
     }
 
     // -----------------------------------------------------------------------------------------------------

@@ -32,109 +32,144 @@ import { HelperService } from 'app/shared/helpers';
 
 const listHierarchy = [
         {
-            "id": "332",
-            "name": "Promo 332",
-            "supplierId": "1",
-            "status": "inactive", 
-            "promoAllocation": "promo_slot",
-            "promoSlot": 3, 
-            "planSlot": 5, 
-            "promoBudget": null, 
+            "id": "442",
+            "name": "crossnew1",
+            "promoSellerId": "crossnew1",
+            "promoAllocation": "none",
+            "promoBudget": null,
+            "planSlot": null,
             "planBudget": null,
-            "promoSellerId": "A002",
-            "promoType": "flexi",
-            "promoGroup": "none",
-            "layer": 0
-        },
-        {
-            "id": "338",
-            "name": "Promo 338",
-            "supplierId": "1",
-            "status": "inactive", 
-            "promoAllocation": "promo_slot",
-            "promoSlot": 2, 
-            "planSlot": 2, 
-            "promoBudget": null, 
-            "planBudget": null,
-            "promoSellerId": "A008",
-            "promoType": "flexi",
-            "promoGroup": "distributor",
-            "layer": 3
-        },
-        {
-            "id": "333",
-            "name": "Promo 333",
-            "supplierId": "1",
-            "status": "active", 
-            "promoAllocation": "promo_budget",
-            "promoSlot": null, 
-            "planSlot": null, 
-            "promoBudget": 15000,
-            "planBudget": 1200000,
-            "promoSellerId": "A003",
-            "promoType": "crossSelling",
-            "promoGroup": "principle",
-            "layer": 0
-        },
-        {
-            "id": "333",
-            "name": "Promo 334",
-            "supplierId": "1",
-            "status": "active", 
-            "promoAllocation": "promo_budget",
-            "promoSlot": null, 
-            "planSlot": null, 
-            "promoBudget": 150000,
-            "planBudget": 1200000,
-            "promoSellerId": "A004",
-            "promoType": "crossSelling",
+            "promoSlot": null,
+            "promoType": "cross_selling",
+            "status": "active",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer": 3,
             "promoGroup": "sinbad_promo",
-            "layer": 3
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
+            "promoConditionCatalogues": [
+                {
+                    "crossSellingGroup": "Group 1",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Dino Land MIX Display 12x24x7 gr"
+                    ]
+                },
+                {
+                    "crossSellingGroup": "Group 2",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Rolleto Display 12x24x10gr"
+                    ]
+                }
+            ]
         },
         {
-            "id": "335",
-            "name": "Promo 335",
-            "supplierId": "1",
-            "status": "inactive",
+            "id": "443",
+            "name": "flexi1",
+            "promoSellerId": "flexi1",
             "promoAllocation": "none",
-            "promoSlot": null, 
-            "planSlot": null,
             "promoBudget": null,
+            "planSlot": null,
             "planBudget": null,
-            "promoSellerId": "A005",
-            "promoType": "voucher",
-            "promoGroup": "none",
-            "layer": 0
-        },
-        {
-            "id": "336",
-            "name": "Promo 336",
-            "supplierId": "1",
-            "status": "inactive", 
-            "promoAllocation": "none",
-            "promoSlot": null, 
-            "planSlot": null, 
-            "promoBudget": null, 
-            "planBudget": null,
-            "promoSellerId": "A006",
+            "promoSlot": null,
             "promoType": "flexi",
-            "promoGroup": "payment_promo",
-            "layer": 2
+            "status": "active",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer": 0,
+            "promoGroup": "none",
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
         },
         {
-            "id": "337",
-            "name": "Promo 337",
-            "supplierId": "1",
-            "status": "inactive",
+            "id": "444",
+            "name": "voucher1",
+            "promoSellerId": "voucher1",
             "promoAllocation": "none",
-            "promoSlot": null, 
-            "planSlot": null,
             "promoBudget": null,
+            "planSlot": null,
             "planBudget": null,
-            "promoSellerId": "A007",
+            "promoSlot": null,
             "promoType": "voucher",
-            "promoGroup": "none",
-            "layer": 2
+            "status": "inactive",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer":1,
+            "promoGroup": "principal",
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
+        },
+        {
+            "id": "445",
+            "name": "crossSelling2",
+            "promoSellerId": "crossSelling2",
+            "promoAllocation": "none",
+            "promoBudget": null,
+            "planSlot": null,
+            "planBudget": null,
+            "promoSlot": null,
+            "promoType": "cross_selling",
+            "status": "inactive",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer":2,
+            "promoGroup": "distributor",
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
         },
 ];
 
@@ -288,8 +323,12 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         console.log('isi value setting->', value)
     }
 
-    openDetailPage(promoId: string): void {
-        this.router.navigate([`/pages/promos/promo-hierarchy/view/${promoId}`]);
+    openDetailPage(id: string, row: any): void {
+        console.log('isi row->', row)
+        console.log('isi id->', id)
+        this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
+        localStorage.setItem('promo_hierarchy', JSON.stringify(row));
+
     }
 
     isAllSelected(): boolean {
