@@ -1,6 +1,7 @@
 import { Brand } from 'app/shared/models/brand.model';
 import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { SubBrand } from './sub-brand.model';
 
 /*
  ______              __                           ______
@@ -149,6 +150,8 @@ export interface ICatalogue extends ITimestamp {
     catalogueTaxId: number;
     // catalogueVariantId: number;
     brandId: number;
+    subBrandId: number;
+    subBrand: SubBrand;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     violationTypeId: TNullable<number>;
@@ -584,6 +587,8 @@ export class Catalogue implements ICatalogue {
     catalogueTaxId: number;
     // catalogueVariantId: number;
     brandId: number;
+    subBrandId: number;
+    subBrand: SubBrand;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     violationTypeId: TNullable<number>;
@@ -646,6 +651,8 @@ export class Catalogue implements ICatalogue {
             status,
             catalogueTaxId,
             brandId,
+            subBrandId,
+            subBrand,
             firstCatalogueCategoryId,
             lastCatalogueCategoryId,
             violationTypeId,
@@ -701,6 +708,8 @@ export class Catalogue implements ICatalogue {
         this.status = status;
         this.catalogueTaxId = catalogueTaxId;
         this.brandId = brandId;
+        this.subBrandId = subBrandId;
+        this.subBrand = subBrandId && subBrand ? new SubBrand(subBrand) : null;
         this.firstCatalogueCategoryId = firstCatalogueCategoryId;
         this.lastCatalogueCategoryId = lastCatalogueCategoryId;
         this.violationTypeId = violationTypeId ? violationTypeId : null;
