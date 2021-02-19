@@ -1,1 +1,83 @@
-<p>layer-infomation works!</p>
+<div class="p-16 pb-28">
+    <div class="font-weight-500 font-size-20 line-height-20 mt-10">Layer Information</div>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Layer Lever</div>
+
+        <div class="info" fxFlex="100">
+            0
+            <!-- <ng-container *ngIf="!(isLoading$ | async)"> -->
+            <!-- {{ (promoHierarchy$ | async)?.layer || '-' }} -->
+            <!-- </ng-container> -->
+
+            <!-- <ngx-skeleton-loader
+            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+            *ngIf="isLoading$ | async"
+        ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="info" fxFlex="100">
+            This promo running along with 100 other promos
+            <!-- <ng-container *ngIf="!(isLoading$ | async)"> -->
+            <!-- {{ (promoHierarchy$ | async)?.layer || '-' }} -->
+            <!-- </ng-container> -->
+
+            <!-- <ngx-skeleton-loader
+            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+            *ngIf="isLoading$ | async"
+        ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div class="p-16">
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Promo Sequence</div>
+    </div>
+
+    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+        <mat-list role="list">
+            <mat-list-item class="layer0" role="listitem">
+                <p matLine><b>Layer 00</b></p>
+                <p matLine>This promo will run first, along with other 101 promos.</p>
+                <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU.</p>
+            </mat-list-item>
+            <mat-list-item class="layer1" role="listitem">
+                <p matLine><b>Layer 01</b></p>
+                <p matLine>Will run after promo in layer 00. Currently there are 20 promos in this layer.</p>
+                    <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
+                    <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            </mat-list-item>
+            <mat-list-item role="listitem">
+                <p matLine><b>Layer 02</b></p>
+                <p matLine>Will run after promo in layer 01. Currently there are 0 promos in this layer.</p>
+                <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
+                <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            </mat-list-item>
+            <mat-list-item role="listitem">
+                <p matLine><b>Layer 03</b></p>
+                <p matLine>Will run after promo in layer 02. Currently there are 0 promos in this layer.</p>
+                <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
+                <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            </mat-list-item>
+            <mat-list-item role="listitem">
+                <p matLine><b>Layer 04</b></p>
+                <p matLine>Will run after promo in layer 03. Currently there are 0 promos in this layer.</p>
+                <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
+                <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>

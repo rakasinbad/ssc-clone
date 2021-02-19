@@ -62,24 +62,27 @@ export const confirmRemovePromoHierarchy = createAction(
     props<{ payload: PromoHierarchy | Array<PromoHierarchy> }>()
 );
 
-// /**
-//  * CREATE (ADD)
-//  */
-// export const addSupplierVoucherRequest = createAction(
-//     '[Promo/SupplierVoucher API] Add SupplierVoucher Request',
-//     props<{ payload: PromoHierarchyPayload }>()
-// );
 
-// export const addSupplierVoucherSuccess = createAction(
-//     '[Promo/SupplierVoucher API] Add SupplierVoucher Success',
-//     props<{ payload: TNullable<SupplierVoucher> }>()
-// );
+/**
+ * Fetch Detail Promo Hierarchy
+ */
 
-// export const addSupplierVoucherFailure = createAction(
-//     '[Promo/SupplierVoucher API] Add SupplierVoucher Failure',
-//     props<{ payload: IErrorHandler }>()
-// );
-// //
+export const fetchPromoHierarchyDetail = createAction(
+    '[Promo Hierarchy API] Fetch Promo Hierarchy Request',
+    props<{ payload: { id: string, parameter?: IQueryParamsVoucher } }>()
+);
+
+export const fetchPromoHierarchyDetailFailure = createAction(
+    '[Promo Hierarchy API] Fetch Promo Hierarchy Request Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchPromoHierarchyDetailSuccess = createAction(
+    '[Promo Hierarchy API] Fetch Promo Hierarchy Request Success',
+    props<{ payload: PromoHierarchy }>()
+);
+
+
 /**
  * UPDATE
  */

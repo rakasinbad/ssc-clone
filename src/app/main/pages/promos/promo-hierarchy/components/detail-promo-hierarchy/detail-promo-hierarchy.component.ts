@@ -1,31 +1,26 @@
 import {
+    ChangeDetectionStrategy,
     Component,
+    OnDestroy,
     OnInit,
     ViewEncapsulation,
-    ChangeDetectionStrategy,
-    OnDestroy,
-    ChangeDetectorRef,
-    AfterViewInit,
-    ViewChild,
-    ElementRef,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, combineLatest } from 'rxjs';
-import { PromoHierarchy } from '../../models';
-import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
-import { PromoHierarchySelectors } from '../../store/selectors';
-import { takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
-// import { Router } from '@angular/router';
-import { FormStatus, IBreadcrumbs } from 'app/shared/models/global.model';
-import { UiActions, FormActions } from 'app/shared/store/actions';
-import { FormSelectors } from 'app/shared/store/selectors';
-import { PromoHierarchyActions } from '../../store/actions';
-import { HelperService } from 'app/shared/helpers';
-import { PromoHierarchyPayload } from '../../models/promo-hierarchy.model';
-import * as moment from 'moment';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { Store } from '@ngrx/store';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { UiActions } from 'app/shared/store/actions';
+import { Observable } from 'rxjs';
 
-type IFormMode = 'add' | 'view' | 'edit';
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
+import { PromoHierarchy } from '../../models';
+import { PromoHierarchyActions } from '../../store/actions';
+import * as fromPromoHierarchy from '../../store/reducers';
+import { PromoHierarchySelectors } from '../../store/selectors';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-detail-promo-hierarchy',
@@ -35,177 +30,90 @@ type IFormMode = 'add' | 'view' | 'edit';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.Default,
 })
-export class DetailPromoHierarchyComponent implements OnInit, AfterViewInit, OnDestroy {
-    private subs$: Subject<void> = new Subject<void>();
-    navigationSub$: Subject<void> = new Subject<void>();
-
+export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
+    promoHierarchy$: Observable<PromoHierarchy>;
     isLoading$: Observable<boolean>;
 
-    // tslint:disable-next-line: no-inferrable-types
-    section: string = 'general-information';
-
-    formMode: IFormMode = 'view';
-    // tslint:disable-next-line
-    formValue: | Partial<PromoHierarchy>;
-
-    selectedPromo$: Observable<PromoHierarchy>;
-
-    @ViewChild('detail', { static: true, read: ElementRef }) promoDetailRef: ElementRef<
-        HTMLElement
-    >;
-
+    private _breadCrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home',
+        },
+        {
+            title: 'Promo',
+        },
+        {
+            title: 'Promo Hierarchy',
+        },
+        {
+            title: 'Promo Hierarchy Detail',
+            active: true,
+        },
+    ];
     constructor(
-        // private router: Router,
-        private cdRef: ChangeDetectorRef,
-        private PromoHierarchyStore: NgRxStore<PromoHierarchyCoreState>
+        private route: ActivatedRoute,
+        private router: Router,
+        private store: Store<fromPromoHierarchy.FeatureState>,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
-        const breadcrumbs: Array<IBreadcrumbs> = [
-            {
-                title: 'Home',
-            },
-            {
-                title: 'Promo',
-            },
-            {
-                title: 'Promo Hierarchy',
-            },
-            {
-                title: 'Promo Hierarchy Detail',
-                active: true,
-                keepCase: true,
-            },
-        ];
-
-        this.PromoHierarchyStore.dispatch(
-            UiActions.createBreadcrumb({
-                payload: breadcrumbs,
-            })
-        );
-
-        // this.isLoading$ = combineLatest([
-        //     this.PromoHierarchyStore.select(PromoHierarchySelectors.getLoadingState),
-        // ]).pipe(
-        //     map((loadingStates) => loadingStates.includes(true)),
-        //     takeUntil(this.subs$)
-        // );
-
-        this.PromoHierarchyStore.dispatch(FormActions.resetFormStatus());
-        this.PromoHierarchyStore.dispatch(FormActions.setFormStatusInvalid());
-        this.PromoHierarchyStore.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
+        // Load translate
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
-    isAddMode(): boolean {
-        return this.formMode === 'add';
-    }
-
-    isEditMode(): boolean {
-        return this.formMode === 'edit';
-    }
-
-    isViewMode(): boolean {
-        return this.formMode === 'view';
-    }
-
-    onFormValueChanged(
-        $event:
-            | PromoHierarchy
-    ): void {
-        switch (this.section) {
-            case 'promo-information': {
-                const {
-                    id,
-                    externalId,
-                    name,
-                    platform,
-                    maxCollectionPerStore,
-                    maxVoucherRedemption,
-                    // budget,
-                    startDate,
-                    endDate,
-                    description,
-                    shortDescription,
-                    // imageSuggestion,
-                    // isAllowCombineWithVoucher,
-                    // isFirstBuy,
-                } = $event as PromoHierarchy;
-
-                this.formValue = {
-                    id,
-                    externalId,
-                    name,
-                    platform,
-                    maxCollectionPerStore,
-                    maxVoucherRedemption,
-                    // budget,
-                    startDate,
-                    endDate,
-                    description,
-                    shortDescription,
-                    // imageSuggestion,
-                    // isAllowCombineWithVoucher,
-                    // isFirstBuy,
-                };
-
-                break;
-            }
-            case 'layout-information': {
-                const {
-                    id,
-                    layer,
-                } = $event as PromoHierarchy;
-
-                this.formValue = {
-                    id,
-                    layer,
-                };
-
-                break;
-            }
-            
-        }
-    }
-
-    onSelectedTab(index: number): void {
-        switch (index) {
-            case 0:
-                this.section = 'promo-information';
-                break;
-            case 1:
-                this.section = 'layer-information';
-                break;
-           
-        }
-    }
-
-    scrollTop(element: ElementRef<HTMLElement>): void {
-        element.nativeElement.scrollTop = 0;
-    }
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-        // this.selectedPromo$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getSelectedPromoHierarchy).pipe(
-        //     tap((value) =>
-        //         HelperService.debug(
-        //             '[Promo Hierarchy/DETAILS] GET SELECTED Promo Hierarchy',
-        //             value
-        //         )
-        //     ),
-        //     takeUntil(this.subs$)
-        // );
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
 
-    }
-
-    ngAfterViewInit(): void {
-        // Memeriksa status refresh untuk keperluan memuat ulang data yang telah di-edit.
-
+        this._initPage();
     }
 
     ngOnDestroy(): void {
-        this.subs$.next();
-        this.subs$.complete();
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
 
-        this.navigationSub$.next();
-        this.navigationSub$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
+    }
 
-        this.PromoHierarchyStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+    onClickBack(): void {
+        this.router.navigateByUrl('/pages/promos/flexi-combo');
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        const { id } = this.route.snapshot.params;
+
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
+
+                // Reset core state promohierarchy
+                this.store.dispatch(PromoHierarchyActions.resetPromoHierarchy());
+                break;
+
+            default:
+                // Set breadcrumbs
+                this.store.dispatch(
+                    UiActions.createBreadcrumb({
+                        payload: this._breadCrumbs,
+                    })
+                );
+
+                // this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedPromoHierarchy);
+
+                const parameter: IQueryParams = {};
+                parameter['splitRequest'] = true;
+
+                // this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetail({ payload: { id, parameter } }));
+
+                // this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
+                break;
+        }
     }
 }

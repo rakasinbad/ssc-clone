@@ -1,1 +1,528 @@
-<p>promo-infomation works!</p>
+<div class="pb-16">
+    <span class="mat-headline"> Promo Information </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Seller ID</div>
+
+        <div class="info" fxFlex="100">B001</div>
+        <!-- <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (promoHierarchy$ | async)?.promoSellerId || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div> -->
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Name</div>
+
+        <div class="info" fxFlex="100">Test</div>
+        <!-- <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (promoHierarchy$ | async)?.name || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div> -->
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Allocation Type</div>
+
+        <div class="info" fxFlex="100">Max Promo Redemption (Transaction)</div>
+        <!-- {{ (flexiCombo$ | async)?.promoAllocation === 'promo_slot'
+                ? 'Max Promo Redemption (Transaction)'
+                : row?.promoAllocation === 'promo_budget'
+                ? 'Max Promo Redemption (Rp)'
+                : row?.promoAllocation === 'none'
+                ? 'None'
+                : (row?.promoAllocation | titlecase) || '-'
+        }} -->
+        <!-- 
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ ((flexiCombo$ | async)?.platform | titlecase) || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div> -->
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Allocation Value</div>
+
+        <div class="info" fxFlex="100">
+            100/111
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                Rp {{ ((flexiCombo$ | async)?.promoBudget | number) }} / Rp  {{ ((flexiCombo$ | async)?.planBudget | number) }} 
+            </ng-container>
+
+            {{ ((flexiCombo$ | async)?.promoSlot | number) || '-' }}/ {{ ((flexiCombo$ | async)?.planSlot | number) || '-' }}
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Type</div>
+
+        <div class="info" fxFlex="100">
+            Flexi Combo
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.promoType || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Group</div>
+
+        <div class="info" fxFlex="100">
+            Distributor
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.promoType || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Status</div>
+
+        <div class="info" fxFlex="100">
+            Active
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (flexiCombo$ | async)?.promoType || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+</div>
+
+<div class="pb-16 pt-16">
+    <span class="mat-headline">Eligible Product</span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Base
+        </div>
+
+        <div class="info" fxFlex="100">
+            n
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container *ngIf="triggerBase; else noTriggerBase">
+                    <mat-radio-group [value]="(flexiCombo$ | async)?.base">
+                        <mat-radio-button *ngFor="let row of triggerBase" [value]="row?.id" [disabled]="true">
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noTriggerBase>
+                    -
+                </ng-template>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="start" fxFlex="10">
+            Choose SKU
+            <!-- <ng-container [ngSwitch]="(flexiCombo$ | async)?.base">
+                <ng-container *ngSwitchCase="eTriggerBase.SKU">
+                    Choose SKU
+                </ng-container>
+                <ng-container *ngSwitchCase="eTriggerBase.BRAND">
+                    Choose Brand
+                </ng-container>
+                <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
+                    Choose Faktur
+                </ng-container>
+                <ng-container *ngSwitchDefault>-</ng-container>
+            </ng-container> -->
+        </div>
+
+        <div class="info" fxFlex="90">
+            Csss
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container [ngSwitch]="(flexiCombo$ | async)?.base">
+                    <ng-container *ngSwitchCase="eTriggerBase.SKU">
+                        <span>
+                            {{ (flexiCombo$ | async)?.triggerCatalogues || '-' }}
+                        </span>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+</div>
+
+<div class="pb-16 pt-16">
+    <span class="mat-headline"> Condition & Benefit </span>
+</div>
+
+    <div
+        class="box-info horizontal"
+        fxLayout="column"
+        fxLayoutGap="16px"
+    >    
+        
+    <span class="box-title"> Condition & Benefit </span>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10">Condition</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100"></div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <!-- <ng-container *ngIf="conditionBase; else noConditionBase">
+                    <mat-radio-group [value]="condition?.conditionBase">
+                        <mat-radio-button
+                            *ngFor="let row of conditionBase"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container> -->
+
+                <ng-template #noConditionBase> - </ng-template>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">
+                <!-- <ng-container [ngSwitch]="condition?.conditionBase"> -->
+                    <!-- <ng-container *ngSwitchCase="eConditionBase.QTY"> Qty >= </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE"> -->
+                        Order Value >=
+                    <!-- </ng-container> -->
+                    <!-- <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container> -->
+            </div>
+
+            <div class="info" fxFlex="100">
+                <!-- <ng-container [ngSwitch]="condition?.conditionBase">
+                    <ng-container *ngSwitchCase="eConditionBase.QTY">
+                        <p thousandSeparator=".">
+                            {{ condition?.conditionQty | number }}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                        <p thousandSeparator=".">
+                            Rp {{ (condition?.conditionValue | number) }}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container> -->
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10">Benefit</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100"></div>
+        </div>
+
+            <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Benefit Type</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <!-- <ng-container *ngIf="benefitType; else noBenefitType">
+                    <mat-radio-group [value]="condition?.benefitType">
+                        <mat-radio-button
+                            *ngFor="let row of benefitType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container> -->
+
+                <ng-template #noBenefitType> - </ng-template>
+            </div>
+        </div>
+        <!-- <ng-container [ngSwitch]="condition?.benefitType"> -->
+            <!-- Benefit Type Qty -->
+            <!-- <ng-container *ngSwitchCase="eBenefitType.QTY"> -->
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
+
+                    <div class="info" fxFlex="100">
+                        <!-- {{ condition?.catalogue?.name || '-' }} -->
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
+
+                    <div class="info" fxFlex="100">
+                        <!-- {{ condition?.benefitBonusQty || '-' }} -->
+                    </div>
+                </div>
+            <!-- </ng-container> -->
+            <!-- ./ Benefit Type Qty -->
+
+            <!-- Benefit Type Amount -->
+            <!-- <ng-container *ngSwitchCase="eBenefitType.AMOUNT"> -->
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
+
+                    <div class="info" fxFlex="100">
+                        <p thousandSeparator=".">
+                            <!-- {{ (condition?.benefitRebate | number )|| '-' }} -->
+                        </p>
+                    </div>
+                </div>
+            <!-- </ng-container> -->
+            <!-- ./ Benefit Type Amount -->
+
+            <!-- Benefit Type Percent -->
+            <!-- <ng-container *ngSwitchCase="eBenefitType.PERCENT"> -->
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">% Discount</div>
+
+                    <div class="info" fxFlex="100">
+                        <!-- {{ condition?.benefitDiscount || '-' }} -->
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Max Rebate</div>
+
+                    <div class="info" fxFlex="100">
+                        <!-- {{ condition?.benefitMaxRebate || '-' }} -->
+                    </div>
+                </div>
+            <!-- </ng-container> -->
+            <!-- ./ Benefit Type Percent -->
+
+            <!-- <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container> -->
+
+            <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Benefit Type</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                cscsc
+                <!-- <ng-container *ngIf="benefitMultiType; else noBenefitTypeMulti"> -->
+                    <!-- <mat-radio-group [value]="condition?.benefitType">
+                        <mat-radio-button
+                            *ngFor="let row of benefitMultiType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group> -->
+                <!-- </ng-container> -->
+
+                <ng-template #noBenefitTypeMulti> - </ng-template>
+            </div>
+        </div>
+
+        
+        <!-- <ng-container [ngSwitch]="condition?.benefitType"> -->
+            <!-- Benefit Type Qty -->
+            <!-- <ng-container *ngSwitchCase="eBenefitMultiType.QTY"> -->
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
+
+                    <div class="info" fxFlex="100">
+                        sdsdss
+                        <!-- {{ condition?.catalogue?.name || '-' }} -->
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
+
+                    <div class="info" fxFlex="100">
+                        dsdsfsf
+                        <!-- {{ condition?.benefitBonusQty || '-' }} -->
+                    </div>
+                </div>
+
+            <!-- </ng-container> -->
+            <!-- ./ Benefit Type Qty -->
+
+            <!-- Benefit Type Amount -->
+            <!-- <ng-container *ngSwitchCase="eBenefitMultiType.AMOUNT"> -->
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
+
+                    <div class="info" fxFlex="100">
+                        <p thousandSeparator=".">
+                            111
+                            <!-- {{ (condition?.benefitRebate | number )|| '-' }} -->
+                        </p>
+                    </div>
+                </div>
+            <!-- </ng-container> -->
+            <!-- ./ Benefit Type Amount -->
+
+            <!-- <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container> -->
+    
+    </div>
