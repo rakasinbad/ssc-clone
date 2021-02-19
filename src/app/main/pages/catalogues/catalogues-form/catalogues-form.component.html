@@ -368,7 +368,11 @@
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <mat-select name="brandId" formControlName="brandId">
+                            <mat-select
+                                name="brandId"
+                                formControlName="brandId"
+                                (selectionChange)="onChangeBrand($event)"
+                            >
                                 <ng-container *ngIf="brands$ | async as brands; else noBrands">
                                     <mat-option *ngFor="let brand of brands" [value]="brand.id">
                                         {{ brand.name }}
@@ -407,6 +411,50 @@
                         </span> -->
                     </div>
                     <!-- / BRAND PRODUK -->
+
+                    <!-- SUB BRAND PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.sinbad-red-fg]="
+                                form.get('productInfo.subBrand').value ||
+                                    form.get('productInfo.subBrand').touched
+                                    | hasErrorField: form.get('productInfo.subBrand'):false
+                            "
+                        >
+                            Sub Brand
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <mat-select name="subBrand" formControlName="subBrand">
+                                <mat-option></mat-option>
+                                <!-- <ng-container *ngIf="brands$ | async as brands; else noBrands">
+                                    <mat-option *ngFor="let brand of brands" [value]="brand.id">
+                                        {{ brand.name }}
+                                    </mat-option>
+                                </ng-container>
+
+                                <ng-template #noBrands>
+                                    <mat-option> None </mat-option>
+                                </ng-template> -->
+                            </mat-select>
+
+                            <mat-error>
+                                {{
+                                    form.get('productInfo.subBrand').value
+                                        | errorMessage: form:'productInfo.subBrand'
+                                }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / SUB BRAND PRODUK -->
 
                     <!-- KATEGORI PRODUK -->
                     <div
@@ -2188,7 +2236,8 @@
                                 Yes
                             </mat-checkbox>
                             <span class="mat-caption text-helper">
-                                If the checkbox is checked the SKU change to be a exclusive and only can order by registered store
+                                If the checkbox is checked the SKU change to be a exclusive and only
+                                can order by registered store
                             </span>
                         </div>
                         <span
