@@ -599,8 +599,12 @@
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
     <ng-container *ngIf="dataDetail.promoType !== 'cross_selling'">
-        <div>
+        <div *ngIf="dataDetail.promoType !== 'cross_selling' && dataDetail.promoType !== 'voucher'"> 
             <span><b>Condition</b></span>
+        </div>
+
+        <div class="pt-16" *ngIf="dataDetail.promoType == 'voucher'">
+            <span class="mat-headline"> Condition </span>
         </div>
 
         <div
