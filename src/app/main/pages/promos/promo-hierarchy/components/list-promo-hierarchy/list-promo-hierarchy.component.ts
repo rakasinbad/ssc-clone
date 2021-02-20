@@ -59,6 +59,7 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
+            "selectedWarehouse": ["DC Cibinong"],
             "promoConditionCatalogues": [
                 {
                     "crossSellingGroup": "Group 1",
@@ -170,6 +171,31 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
+            "selectedWarehouse": ["DC Cibinong"],
+            "promoConditionCatalogues": [
+                {
+                    "crossSellingGroup": "Group 1",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Dino Land MIX Display 12x24x7 gr"
+                    ]
+                },
+                {
+                    "crossSellingGroup": "Group 2",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Rolleto Display 12x24x10gr"
+                    ]
+                }
+            ],
         },
 ];
 
@@ -412,8 +438,8 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                             break;
                         };
                     break;
-                case 'crossSelling':
-                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'crossSelling' && d.name == this.searchValue);
+                case 'cross_selling':
+                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'cross_selling' && d.name == this.searchValue);
                     switch(this.selectedStatus) {
                         case 'layer0':
                             this.dataSource = dataCrossSelling.filter(d => d.layer == 0);
@@ -539,8 +565,8 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                             break;
                         };
                     break;
-                case 'crossSelling':
-                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'crossSelling');
+                case 'cross_selling':
+                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'cross_selling');
                     switch(this.selectedStatus) {
                         case 'layer0':
                             this.dataSource = dataCrossSelling.filter(d => d.layer == 0);

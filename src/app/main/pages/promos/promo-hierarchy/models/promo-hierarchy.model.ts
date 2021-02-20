@@ -3,39 +3,9 @@ import { TNullable } from 'app/shared/models/global.model';
 
 type PromoHierarchyStatus = 'active' | 'inactive';
 
-// id: string;
-// name: string;
-// supplier_id: string;
-// status: string;
-// promoAllocation: string;
-// promoSlot: Number;
-// planSlot: Number;
-// promoBudget: Number;
-// planBudget: Number;
-// promoSellerId: string;
-// promoType: string;
-// layer: Number;
-
-interface IPromoHierarchy extends Timestamp {
+interface IPromoHierarchy {
     id: string;
-    supplierId: string;
-    externalId: string;
-    code: string;
     name: string;
-    platform: string;
-    maxCollectionPerStore: string;
-    maxVoucherRedemption: number;
-    startDate: string;
-    endDate: string;
-    description: string;
-    shortDescription: string;
-    category: string;
-    termsAndConditions?: Array<any>;
-    instructions?: Array<any>;
-    imageUrl: string;
-    expirationDays: number;
-    used: string;
-    collected: string;
     promoAllocation: string;
     promoBudget: number;
     planBudget: number;
@@ -44,36 +14,15 @@ interface IPromoHierarchy extends Timestamp {
     promoType: string;
     promoSellerId: string;
     promoGroup: string;
-
     layer: number;
     status: PromoHierarchyStatus;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: TNullable<string>;
     // TODO: Under development because need more in-depth structure.
 }
 
 export class PromoHierarchy implements IPromoHierarchy {
     // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
     id: string;
-    supplierId: string;
-    externalId: string;
-    code: string;
     name: string;
-    platform: string;
-    maxCollectionPerStore: string;
-    maxVoucherRedemption: number;
-    startDate: string;
-    endDate: string;
-    description: string;
-    shortDescription: string;
-    category: string;
-    termsAndConditions?: Array<any>;
-    instructions?: Array<any>;
-    imageUrl: string;
-    expirationDays: number;
-    used: string;
-    collected: string;
     promoAllocation: string;
     promoBudget: number;
     planBudget: number;
@@ -85,32 +34,13 @@ export class PromoHierarchy implements IPromoHierarchy {
 
     layer: number;
     status: PromoHierarchyStatus;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: TNullable<string>;
     // TODO: Under development because need more in-depth structure.
 
     constructor(data: IPromoHierarchy) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            supplierId,
-            externalId,
-            code,
             name,
-            platform,
-            maxCollectionPerStore,
-            maxVoucherRedemption,
-            startDate,
-            endDate,
-            description,
-            shortDescription,
-            category,
-            termsAndConditions,
-            instructions,
-            expirationDays,
-            used,
-            collected,
             promoAllocation,
             promoBudget,
             promoSlot,
@@ -121,30 +51,11 @@ export class PromoHierarchy implements IPromoHierarchy {
             promoGroup,
             layer,
             status,
-            createdAt,
-            updatedAt,
-            deletedAt,
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.supplierId = supplierId;
-        this.externalId = externalId || null;
-        this.code = code || null;
         this.name = name;
-        this.platform = platform || null;
-        this.maxCollectionPerStore = maxCollectionPerStore || null;
-        this.maxVoucherRedemption = maxVoucherRedemption || null;
-        this.description = description || null;
-        this.shortDescription = shortDescription || null;
-        this.category = category || null;
-        this.termsAndConditions = termsAndConditions || null;
-        this.instructions = instructions || null;
-        this.expirationDays = expirationDays || null;
-        this.startDate = startDate || null;
-        this.endDate = endDate || null;
-        this.used = used || null;
-        this.collected = collected || null;
         this.promoAllocation = promoAllocation || null;
         this.promoType = promoType || null;
         this.promoBudget = promoBudget || null;
@@ -155,9 +66,6 @@ export class PromoHierarchy implements IPromoHierarchy {
         this.promoGroup = promoGroup || null;
         this.layer = layer || 0;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
     }
 }
 
@@ -167,4 +75,100 @@ interface IPromoHierarchyPayload {
 
 export class PromoHierarchyPayload implements IPromoHierarchyPayload {
     [key: string]: any;
+}
+
+interface IPromoConditionCatalogues {
+    readonly id: NonNullable<string>;
+    crossSellingGroup: string;
+    conditionValue: number;
+    conditionBase: string;
+    fakturName: string;
+    crossSellingGroupRelation: string;
+    conditionQty: string;
+    choosenSku: Array<any>;
+}
+
+export class PromoHierarchyDetail {
+    // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
+    id: string;
+    name: string;
+    promoSellerId: string;
+    promoAllocation: string;
+    promoBudget: number;
+    planSlot: number;
+    planBudget: number;
+    promoSlot: number;
+    promoType: string;
+    status: PromoHierarchyStatus;
+    layer: number;
+    promoGroup: string;
+    triggerBase: string;
+    conditionBase: string;
+    conditionQty: string;
+    conditionValue: string;
+    benefitType: string;
+    benefitQty: number;
+    benefitDiscount: number;
+    benefitSku: Array<any>;
+    triggerCatalogues: Array<any>;
+    benefitRebate: number;
+    promoConditionCatalogues: IPromoConditionCatalogues[];
+    // TODO: Under development because need more in-depth structure.
+
+    constructor(data: PromoHierarchyDetail) {
+        // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
+        const {
+            id,
+            name,
+            promoAllocation,
+            promoBudget,
+            promoSlot,
+            planBudget,
+            planSlot,
+            promoType,
+            promoSellerId,
+            promoGroup,
+            layer,
+            status,
+            triggerBase,
+            conditionBase,
+            conditionQty,
+            conditionValue,
+            benefitType,
+            benefitQty,
+            benefitDiscount,
+            benefitSku,
+            triggerCatalogues,
+            benefitRebate,
+            promoConditionCatalogues
+        } = data;
+
+        // Memasukkan nilai ke dalam object dari parameter-nya constructor.
+        this.id = id;
+        this.name = name;
+        this.promoAllocation = promoAllocation || null;
+        this.promoType = promoType || null;
+        this.promoBudget = promoBudget || null;
+        this.promoSlot = promoSlot || null;
+        this.planBudget = planBudget || null;
+        this.planSlot = planSlot || null;
+        this.promoSellerId = promoSellerId;
+        this.promoGroup = promoGroup || null;
+        this.layer = layer || 0;
+        this.status = status;
+        this.triggerBase = triggerBase;
+        this.conditionBase = conditionBase;
+        this.conditionQty = conditionQty || null;
+        this.conditionValue = conditionValue || null;
+        this.benefitType = benefitType;
+        this.benefitQty = benefitQty || null;
+        this.benefitDiscount = benefitDiscount || null;
+        this.benefitSku = benefitSku || null;
+        this.triggerCatalogues = triggerCatalogues || [];
+        this.benefitRebate = benefitRebate || null;
+        
+        if (typeof promoConditionCatalogues !== 'undefined') {
+            this.promoConditionCatalogues = promoConditionCatalogues;
+        }
+    }
 }

@@ -31,9 +31,9 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
+    public dataDetail: any;
     promoHierarchy$: Observable<PromoHierarchy>;
     isLoading$: Observable<boolean>;
-
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -111,6 +111,8 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
+
+                this.dataDetail = JSON.parse(localStorage.getItem('promo_hierarchy'));
 
                 // this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetail({ payload: { id, parameter } }));
 

@@ -11,7 +11,7 @@ import * as moment from 'moment';
 import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 import { LogicRelation, SpecifiedTarget } from '../models';
-import { BenefitMultiType, BenefitType } from '../models/benefit-type.model';
+import { BenefitMultiType, BenefitType, BenefitVoucherType } from '../models/benefit-type.model';
 import { CalculationMechanism } from '../models/calculation-mechanism.model';
 import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
@@ -80,6 +80,17 @@ export class HelperService {
         {
             id: BenefitMultiType.AMOUNT,
             label: 'Rp',
+        },
+    ];
+
+    private static readonly _benefitVoucherType: { id: BenefitVoucherType; label: string }[] = [
+        {
+            id: BenefitVoucherType.QTY,
+            label: 'Qty',
+        },
+        {
+            id: BenefitVoucherType.PERCENT,
+            label: '%',
         },
     ];
 
@@ -956,6 +967,10 @@ export class HelperService {
 
     benefitMultiType(): { id: BenefitMultiType; label: string }[] {
         return HelperService._benefitMultiType;
+    }
+
+    benefitVoucherType(): { id: BenefitVoucherType; label: string }[] {
+        return HelperService._benefitVoucherType;
     }
 
     skpStatusType(): { id: string; label: string }[] {

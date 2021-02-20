@@ -9,11 +9,7 @@
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button
-                    mat-icon-button
-                    class="mr-0 mr-sm-16"
-                    (click)="onClickBack()"
-                >
+                <button mat-icon-button class="mr-0 mr-sm-16" (click)="onClickBack()">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
@@ -23,6 +19,7 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
+                        {{ dataDetail.name | titlecase }}
                         <!-- <ng-container *ngIf="!(isLoading$ | async)">
                             {{ (flexiCombo$ | async)?.name }}
                         </ng-container> -->
@@ -61,7 +58,6 @@
                             </div>
                         </ng-template>
                     </mat-tab>
-
                 </mat-tab-group>
             </div>
             <!-- / CONTENT -->
