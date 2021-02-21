@@ -287,21 +287,21 @@
 
 <ng-container *ngIf="dataDetail.promoType == 'cross_selling'">
     <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-
         <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Selected Warehouse
-            <br/> {{dataDetail.selectedWarehouse.length}} Selected)
-        </div>
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">
+                Selected Warehouse <br />
+                {{ dataDetail.selectedWarehouse.length }} Selected)
+            </div>
 
-        <div class="info" fxFlex="100">
-            {{ getSelectedWarehouse(dataDetail.selectedWarehouse) }}
+            <div class="info" fxFlex="100">
+                {{ getSelectedWarehouse(dataDetail.selectedWarehouse) }}
 
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                <!-- <ng-container *ngIf="!(isLoading$ | async)">
                 {{ (flexiCombo$ | async)?.promoType || '-' }}
             </ng-container>
 
@@ -309,8 +309,8 @@
                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                 *ngIf="isLoading$ | async"
             ></ngx-skeleton-loader> -->
+            </div>
         </div>
-    </div>
 
         <span class="box-title"><b>Group 1</b></span>
 
@@ -383,14 +383,15 @@
             fxLayoutGap="15px"
         >
             <div class="label" fxFlexAlign="start" fxFlex="10">
-                        Chosen SKU
-                        <br/> ({{dataGroup1[0].choosenSku.length}} Selected)
+                Chosen SKU
+                <br />
+                ({{ dataGroup1[0].choosenSku.length }} Selected)
             </div>
 
             <div class="info" fxFlex="90">
                 <ng-container *ngIf="!(isLoading$ | async)">
                     <span>
-                        {{getChoosenSku(dataGroup1[0].choosenSku)}}
+                        {{ getChoosenSku(dataGroup1[0].choosenSku) }}
                     </span>
                 </ng-container>
 
@@ -426,7 +427,9 @@
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
 
-                    <div class="info" fxFlex="100">{{(dataGroup1[0].conditionQty | number) || '-'}}</div>
+                    <div class="info" fxFlex="100">
+                        {{ (dataGroup1[0].conditionQty | number) || '-' }}
+                    </div>
                 </div>
             </ng-container>
             <!-- ./ Base Condition Type Qty -->
@@ -442,7 +445,9 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
 
                     <div class="info" fxFlex="100">
-                        <p thousandSeparator=".">{{(dataGroup1[0].conditionValue | number) || '-'}}</p>
+                        <p thousandSeparator=".">
+                            {{ (dataGroup1[0].conditionValue | number) || '-' }}
+                        </p>
                     </div>
                 </div>
             </ng-container>
@@ -526,15 +531,16 @@
             fxLayoutGap="15px"
         >
             <div class="label" fxFlexAlign="start" fxFlex="10">
-                        Chosen SKU 
-                        <br/> ({{dataGroup2[0].choosenSku.length}} Selected)
+                Chosen SKU
+                <br />
+                ({{ dataGroup2[0].choosenSku.length }} Selected)
             </div>
 
             <div class="info" fxFlex="90">
                 <!-- <ng-container *ngIf="!(isLoading$ | async)"> -->
-                        <span>
-                            {{getChoosenSku(dataGroup2[0].choosenSku)}}
-                        </span>
+                <span>
+                    {{ getChoosenSku(dataGroup2[0].choosenSku) }}
+                </span>
                 <!-- </ng-container> -->
 
                 <!-- <ngx-skeleton-loader
@@ -569,7 +575,7 @@
                 >
                     <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
 
-                    <div class="info" fxFlex="100">{{dataGroup2[0].conditionQty || '-'}}</div>
+                    <div class="info" fxFlex="100">{{ dataGroup2[0].conditionQty || '-' }}</div>
                 </div>
             </ng-container>
             <!-- ./ Base Condition Type Qty -->
@@ -585,7 +591,7 @@
                     <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
 
                     <div class="info" fxFlex="100">
-                        <p thousandSeparator=".">{{dataGroup2[0].conditionValue || '-'}}</p>
+                        <p thousandSeparator=".">{{ dataGroup2[0].conditionValue || '-' }}</p>
                     </div>
                 </div>
             </ng-container>
@@ -594,12 +600,12 @@
             <ng-container *ngSwitchDefault>-</ng-container>
         </ng-container>
     </div>
-    <br/>
+    <br />
 </ng-container>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
     <ng-container *ngIf="dataDetail.promoType !== 'cross_selling'">
-        <div *ngIf="dataDetail.promoType !== 'cross_selling' && dataDetail.promoType !== 'voucher'"> 
+        <div *ngIf="dataDetail.promoType !== 'cross_selling' && dataDetail.promoType !== 'voucher'">
             <span><b>Condition</b></span>
         </div>
 

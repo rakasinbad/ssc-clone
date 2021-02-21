@@ -41,9 +41,12 @@ export class PromoInfomationComponent implements OnInit {
 
     ngOnInit() {
         this.dataDetail = JSON.parse(localStorage.getItem('promo_hierarchy'));
-        this.dataGroup1 = this.dataDetail.promoConditionCatalogues.filter(d => d.crossSellingGroup == 'Group 1');
-        this.dataGroup2 = this.dataDetail.promoConditionCatalogues.filter(d => d.crossSellingGroup == 'Group 2');
-
+        if (this.dataDetail.promoConditionCatalogues == undefined) {
+        } else {
+            this.dataGroup1 = this.dataDetail.promoConditionCatalogues.filter(d => d.crossSellingGroup == 'Group 1');
+            this.dataGroup2 = this.dataDetail.promoConditionCatalogues.filter(d => d.crossSellingGroup == 'Group 2');
+        }
+       
     }
 
     getTriggerCatalogues(value: []): string {

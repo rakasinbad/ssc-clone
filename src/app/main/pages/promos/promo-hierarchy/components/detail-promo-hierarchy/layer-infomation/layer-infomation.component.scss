@@ -10,8 +10,13 @@ app-layer-infomation {
             margin-bottom: 0 !important;
         }
 
-        .layer0 {
-            background-color: #52575c;
+        .mat-list-item {
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .mat-list-item.active {
+            background-color: #e8e8e8;
         }
     
         .custom-field {

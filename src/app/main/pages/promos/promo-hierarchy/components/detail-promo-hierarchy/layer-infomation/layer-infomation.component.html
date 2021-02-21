@@ -12,7 +12,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Layer Lever</div>
 
         <div class="info" fxFlex="100">
-            0
+            {{ (dataDetail.layer | number) || '-' }}
             <!-- <ng-container *ngIf="!(isLoading$ | async)"> -->
             <!-- {{ (promoHierarchy$ | async)?.layer || '-' }} -->
             <!-- </ng-container> -->
@@ -31,7 +31,26 @@
         fxLayoutGap="15px"
     >
         <div class="info" fxFlex="100">
-            This promo running along with 100 other promos
+            <ng-container *ngIf="dataDetail.layer == 0">
+                This promo running along with {{ dataDetail.layerInformation[0].layer0 }} other
+                promos
+            </ng-container>
+            <ng-container *ngIf="dataDetail.layer == 1">
+                This promo running along with {{ dataDetail.layerInformation[0].layer1 }} other
+                promos
+            </ng-container>
+            <ng-container *ngIf="dataDetail.layer == 2">
+                This promo running along with {{ dataDetail.layerInformation[0].layer2 }} other
+                promos
+            </ng-container>
+            <ng-container *ngIf="dataDetail.layer == 3">
+                This promo running along with {{ dataDetail.layerInformation[0].layer3 }} other
+                promos
+            </ng-container>
+            <ng-container *ngIf="dataDetail.layer == 4">
+                This promo running along with {{ dataDetail.layerInformation[0].layer4 }} other
+                promos
+            </ng-container>
             <!-- <ng-container *ngIf="!(isLoading$ | async)"> -->
             <!-- {{ (promoHierarchy$ | async)?.layer || '-' }} -->
             <!-- </ng-container> -->
@@ -43,40 +62,66 @@
         </div>
     </div>
 
-    <div class="p-16">
-        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Promo Sequence</div>
+    <div class="mb-0">
+        <span class="mat-headline"> Promo Sequence </span>
     </div>
 
     <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
         <mat-list role="list">
-            <mat-list-item class="layer0" role="listitem">
-                <p matLine><b>Layer 00</b></p>
-                <p matLine>This promo will run first, along with other 101 promos.</p>
-                <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU.</p>
+            <mat-list-item class="layer0" [class.active]="dataDetail.layer == 0" role="listitem">
+                <p matLine><b>Layer 00:</b></p>
+                <p matLine>
+                    This promo will run first, along with other
+                    {{ dataDetail.layerInformation[0].layer0 }} promos.
+                </p>
+                <p matLine *ngIf="dataDetail.layer == 0">
+                    This promo will do the promo calculation mechanism based on the total amount
+                    price of the bought SKU.
+                </p>
             </mat-list-item>
-            <mat-list-item class="layer1" role="listitem">
-                <p matLine><b>Layer 01</b></p>
-                <p matLine>Will run after promo in layer 00. Currently there are 20 promos in this layer.</p>
-                    <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
-                    <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            <mat-list-item class="layer1" [class.active]="dataDetail.layer == 1" role="listitem">
+                <p matLine><b>Layer 01:</b></p>
+                <p matLine>
+                    Will run after promo in layer 00. Currently there are
+                    {{ dataDetail.layerInformation[0].layer1 }} promos in this layer.
+                </p>
+                <p matLine *ngIf="dataDetail.layer == 1">
+                    This promo will do the promo calculation mechanism based on the total amount
+                    price of the bought SKU.
+                </p>
             </mat-list-item>
-            <mat-list-item role="listitem">
-                <p matLine><b>Layer 02</b></p>
-                <p matLine>Will run after promo in layer 01. Currently there are 0 promos in this layer.</p>
-                <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
-                <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            <mat-list-item [class.active]="dataDetail.layer == 2" role="listitem">
+                <p matLine><b>Layer 02:</b></p>
+                <p matLine>
+                    Will run after promo in layer 01. Currently there are
+                    {{ dataDetail.layerInformation[0].layer2 }} promos in this layer.
+                </p>
+                <p matLine *ngIf="dataDetail.layer == 2">
+                    This promo will do the promo calculation mechanism based on the total amount
+                    price of the bought SKU.
+                </p>
             </mat-list-item>
-            <mat-list-item role="listitem">
-                <p matLine><b>Layer 03</b></p>
-                <p matLine>Will run after promo in layer 02. Currently there are 0 promos in this layer.</p>
-                <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
-                <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            <mat-list-item class="layer3" [class.active]="dataDetail.layer == 3" role="listitem">
+                <p matLine><b>Layer 03:</b></p>
+                <p matLine>
+                    Will run after promo in layer 02. Currently there are
+                    {{ dataDetail.layerInformation[0].layer3 }} promos in this layer.
+                </p>
+                <p matLine *ngIf="dataDetail.layer == 3">
+                    This promo will do the promo calculation mechanism based on the total amount
+                    price of the bought SKU.
+                </p>
             </mat-list-item>
-            <mat-list-item role="listitem">
-                <p matLine><b>Layer 04</b></p>
-                <p matLine>Will run after promo in layer 03. Currently there are 0 promos in this layer.</p>
-                <!-- <p matLine>This promo will run first, along with other 101 promos.</p> -->
-                <!-- <p matLine>This promo will do the promo calculation mechanism based on the total amount price of the bought SKU</p> -->
+            <mat-list-item [class.active]="dataDetail.layer == 4" role="listitem">
+                <p matLine><b>Layer 04:</b></p>
+                <p matLine>
+                    Will run after promo in layer 03. Currently there are
+                    {{ dataDetail.layerInformation[0].layer4 }} promos in this layer.
+                </p>
+                <p matLine *ngIf="dataDetail.layer == 4">
+                    This promo will do the promo calculation mechanism based on the total amount
+                    price of the bought SKU.
+                </p>
             </mat-list-item>
         </mat-list>
     </div>

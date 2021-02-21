@@ -1,21 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-layer-infomation',
   templateUrl: './layer-infomation.component.html',
-  styleUrls: ['./layer-infomation.component.scss']
+  styleUrls: ['./layer-infomation.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayerInfomationComponent implements OnInit {
-    catalogueContent: {
-        'content-card': boolean;
-        'mt-16': boolean;
-        'sinbad-content': boolean;
-        'mat-elevation-z1': boolean;
-        'fuse-white': boolean;
-    };
-  constructor() { }
+    public dataDetail: any;
+    constructor() { }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+        this.dataDetail = JSON.parse(localStorage.getItem('promo_hierarchy'));
+        
+    }
 
 }

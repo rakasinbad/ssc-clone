@@ -83,7 +83,14 @@ const listHierarchy = [
                         "Yupi Rolleto Display 12x24x10gr"
                     ]
                 }
-            ]
+            ],
+            "layerInformation": [{
+                "layer0": 10,
+                "layer1": 11,
+                "layer2": 0,
+                "layer3": 10,
+                "layer4": 0
+              }],
         },
         {
             "id": "443",
@@ -113,6 +120,13 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
+            "layerInformation": [{
+                "layer0": 11,
+                "layer1": 1,
+                "layer2": 0,
+                "layer3": 13,
+                "layer4": 0
+              }],
         },
         {
             "id": "444",
@@ -142,6 +156,13 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
+            "layerInformation": [{
+                "layer0": 11,
+                "layer1": 14,
+                "layer2": 0,
+                "layer3": 15,
+                "layer4": 0
+              }],
         },
         {
             "id": "445",
@@ -196,6 +217,13 @@ const listHierarchy = [
                     ]
                 }
             ],
+            "layerInformation": [{
+                "layer0": 12,
+                "layer1": 17,
+                "layer2": 10,
+                "layer3": 18,
+                "layer4": 4
+              }],
         },
 ];
 
@@ -350,8 +378,6 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     }
 
     openDetailPage(id: string, row: any): void {
-        console.log('isi row->', row)
-        console.log('isi id->', id)
         this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
         localStorage.setItem('promo_hierarchy', JSON.stringify(row));
 
