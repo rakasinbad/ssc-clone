@@ -22,6 +22,7 @@ import { FormControl } from '@angular/forms';
 import { Observable, Subject, merge } from 'rxjs';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap, filter } from 'rxjs/operators';
+import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
 import { IQueryParamsVoucher } from 'app/shared/models/query.model';
@@ -29,6 +30,7 @@ import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 import { PromoHierarchy } from '../../models';
 import { PromoHierarchySelectors } from '../../store/selectors';
 import { HelperService } from 'app/shared/helpers';
+import { SetPromoHierarchyComponent } from '../../pages/set-promo-hierarchy/set-promo-hierarchy.component';
 
 const listHierarchy = [
         {
@@ -280,6 +282,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     constructor(
         // private route: ActivatedRoute,
         // private readonly sanitizer: DomSanitizer,
+        private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
@@ -374,7 +377,24 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     }
 
     settingPromoHierarchy(value) {
-        console.log('isi value setting->', value)
+        // console.log('isi value setting->', value)
+        // const dialogRef = this.matDialog.open(SetPromoHierarchyComponent, {
+        //     data: {
+        //         id: value.promoSellerId,
+        //         name: value.name,
+        //         layer: value.layer,
+        //         group: value.group,
+        //         data: value
+        //     }, disableClose: true
+        // });
+
+        // dialogRef.afterClosed().subscribe(result => {
+        //         if (result === 'yes') {
+                    
+        //         } else {
+
+        //         }
+        //     });
     }
 
     openDetailPage(id: string, row: any): void {

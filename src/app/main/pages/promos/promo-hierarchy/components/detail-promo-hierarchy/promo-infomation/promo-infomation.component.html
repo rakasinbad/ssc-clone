@@ -320,7 +320,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Base</div>
 
             <div class="info" fxFlex="100">
                 <ng-container *ngIf="!(isLoading$ | async)">
@@ -352,7 +352,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Faktur</div>
 
             <div class="info" fxFlex="100">
                 {{ dataGroup1[0].fakturName || '-' }}
@@ -371,7 +371,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Trigger</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Trigger</div>
 
             <div class="info" fxFlex="100">SKU</div>
         </div>
@@ -382,8 +382,8 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="start" fxFlex="10">
-                Chosen SKU
+            <div class="label cross" fxFlexAlign="start" fxFlex="10">
+                *Chosen SKU
                 <br />
                 ({{ dataGroup1[0].choosenSku.length }} Selected)
             </div>
@@ -408,7 +408,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
 
             <div class="info" fxFlex="100">
                 {{ dataGroup1[0].crossSellingGroupRelation }}
@@ -425,7 +425,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
+                    <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
 
                     <div class="info" fxFlex="100">
                         {{ (dataGroup1[0].conditionQty | number) || '-' }}
@@ -442,7 +442,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
+                    <div class="label" fxFlexAlign="center cross" fxFlex="10">*Order Value >=</div>
 
                     <div class="info" fxFlex="100">
                         <p thousandSeparator=".">
@@ -468,7 +468,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Base</div>
 
             <div class="info" fxFlex="100">
                 <ng-container *ngIf="!(isLoading$ | async)">
@@ -500,7 +500,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Faktur</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Faktur</div>
 
             <div class="info" fxFlex="100">
                 {{ dataGroup2[0].fakturName || '-' }}
@@ -519,7 +519,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Trigger</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Trigger</div>
 
             <div class="info" fxFlex="100">SKU</div>
         </div>
@@ -530,8 +530,8 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="start" fxFlex="10">
-                Chosen SKU
+            <div class="label cross" fxFlexAlign="start" fxFlex="10">
+                *Chosen SKU
                 <br />
                 ({{ dataGroup2[0].choosenSku.length }} Selected)
             </div>
@@ -556,7 +556,7 @@
             fxLayoutAlign="start center"
             fxLayoutGap="15px"
         >
-            <div class="label" fxFlexAlign="center" fxFlex="10">Relation</div>
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
 
             <div class="info" fxFlex="100">
                 {{ dataGroup2[0].crossSellingGroupRelation }}
@@ -573,7 +573,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">Order Qty >=</div>
+                    <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
 
                     <div class="info" fxFlex="100">{{ dataGroup2[0].conditionQty || '-' }}</div>
                 </div>
@@ -588,7 +588,7 @@
                     fxLayoutAlign="start center"
                     fxLayoutGap="15px"
                 >
-                    <div class="label" fxFlexAlign="center" fxFlex="10">Order Value >=</div>
+                    <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Value >=</div>
 
                     <div class="info" fxFlex="100">
                         <p thousandSeparator=".">{{ dataGroup2[0].conditionValue || '-' }}</p>

@@ -1,1 +1,30 @@
-<p>set-promo-hierarchy works!</p>
+<h1 mat-dialog-title>Set Promo Layer</h1>
+
+<mat-dialog-content class="mat-typography">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Seller Id</div>
+
+        <div class="info" fxFlex="100">
+            {{ data.id }}
+        </div>
+    </div>
+</mat-dialog-content>
+
+<div mat-dialog-actions align="end" style="margin-bottom: 0px">
+    <button mat-button mat-dialog-close style="border-radius: 4px; border: solid 1px #cacccf">
+        No
+    </button>
+    <button
+        mat-button
+        [mat-dialog-close]="'yes'"
+        cdkFocusInitial
+        style="float: right; color: white; background-color: #f0444c; font-size: 14px"
+    >
+        Yes
+    </button>
+</div>
