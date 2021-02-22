@@ -1,60 +1,62 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
-    Component,
-    OnInit,
-    ViewEncapsulation,
-    ChangeDetectionStrategy,
-    OnDestroy,
-    ChangeDetectorRef,
     AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
     Input,
     OnChanges,
-    SimpleChanges,
-    EventEmitter,
+    OnDestroy,
+    OnInit,
     Output,
+    SimpleChanges,
+    ViewEncapsulation,
 } from '@angular/core';
+import {
+    AbstractControl,
+    AsyncValidatorFn,
+    FormArray,
+    FormBuilder,
+    FormGroup,
+    ValidationErrors,
+} from '@angular/forms';
+import { MatChipInputEvent, MatDialog, MatSelectChange } from '@angular/material';
+import { SafeHtml } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
-
-import { fromCatalogue } from '../../store/reducers';
-import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import {
-    FormGroup,
-    FormBuilder,
-    AsyncValidatorFn,
-    AbstractControl,
-    ValidationErrors,
-    FormArray,
-} from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { Brand } from 'app/shared/models/brand.model';
+import { FormStatus, PaginateResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
-    distinctUntilChanged,
     debounceTime,
-    withLatestFrom,
-    take,
-    switchMap,
+    distinctUntilChanged,
     map,
+    switchMap,
+    take,
     takeUntil,
     tap,
+    withLatestFrom,
 } from 'rxjs/operators';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { CatalogueSelectors, BrandSelectors } from '../../store/selectors';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { CataloguesService } from '../../services';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-    CatalogueUnit,
-    CatalogueCategory,
-    SimpleCatalogueCategory,
-    CatalogueInformation,
-} from '../../models';
-import { CatalogueActions, BrandActions } from '../../store/actions';
-import { MatDialog, MatChipInputEvent, MatSelectChange } from '@angular/material';
 import { CataloguesSelectCategoryComponent } from '../../catalogues-select-category/catalogues-select-category.component';
-import { Brand } from 'app/shared/models/brand.model';
-import { SafeHtml } from '@angular/platform-browser';
-import { FormStatus } from 'app/shared/models/global.model';
-import { ENTER, COMMA } from '@angular/cdk/keycodes';
+import {
+    CatalogueCategory,
+    CatalogueInformation,
+    CatalogueUnit,
+    SimpleCatalogueCategory,
+    SubBrand,
+    SubBrandProps,
+} from '../../models';
+import { CataloguesService, SubBrandApiService } from '../../services';
+import { BrandActions, CatalogueActions } from '../../store/actions';
+import { fromCatalogue } from '../../store/reducers';
+import { BrandSelectors, CatalogueSelectors } from '../../store/selectors';
+
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -115,6 +117,9 @@ export class CatalogueSkuInformationComponent
         this.formModeChange.emit(this.formModeValue);
     }
 
+    private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
+    subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
+
     // Untuk class yang digunakan di berbeda mode form.
     catalogueContent: {
         'content-card': boolean;
@@ -138,6 +143,7 @@ export class CatalogueSkuInformationComponent
         private dialog: MatDialog,
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
+        private readonly subBrandApiService: SubBrandApiService,
         private errorMessage$: ErrorMessageService
     ) {}
 
@@ -266,6 +272,12 @@ export class CatalogueSkuInformationComponent
                     }
                 }
 
+                // Get sub brand
+
+                if (catalogue.brandId) {
+                    this._getSubBrandByBrandId(catalogue.brandId);
+                }
+
                 /** Proses pencarian kategori katalog dari daftar katalog yang ada di server. */
                 const searchCategory = (
                     catalogueId,
@@ -291,7 +303,9 @@ export class CatalogueSkuInformationComponent
                 const keywords = catalogue.catalogueKeywordCatalogues.map(
                     (keyword) => keyword.catalogueKeyword.tag
                 );
+
                 (this.form.get('productInfo.tags') as FormArray).clear();
+
                 for (const keyword of keywords) {
                     (this.form.get('productInfo.tags') as FormArray).push(this.fb.control(keyword));
                 }
@@ -328,6 +342,10 @@ export class CatalogueSkuInformationComponent
                         },
                         { onlySelf: false }
                     );
+
+                    if (catalogue.subBrandId) {
+                        this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
+                    }
 
                     HelperService.debug(
                         '[CatalogueSkuInformationComponent - AFTER] prepareEditCatalogue form.patchValue',
@@ -547,6 +565,8 @@ export class CatalogueSkuInformationComponent
                         };
                     }
 
+                    // formValue.subBrandId = value.subBrandId || null;
+
                     return formValue;
                 }),
                 tap((value) =>
@@ -559,6 +579,25 @@ export class CatalogueSkuInformationComponent
             )
             .subscribe((value) => {
                 this.formValueChange.emit(value);
+            });
+    }
+
+    private _getSubBrandByBrandId(brandId: number): void {
+        this.subBrandApiService
+            .getWithQuery<PaginateResponse<SubBrandProps>>({
+                search: [
+                    {
+                        fieldName: 'brandId',
+                        keyword: brandId,
+                    },
+                ],
+            })
+            .pipe(
+                map((resp) => (resp.total > 0 ? resp.data : [])),
+                takeUntil(this.subs$)
+            )
+            .subscribe((sources) => {
+                this.subBrandCollections$.next(sources);
             });
     }
 
@@ -671,7 +710,10 @@ export class CatalogueSkuInformationComponent
             formMode: this.formMode,
         });
 
-        this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
+        if (ev.value) {
+            this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
+            this._getSubBrandByBrandId(ev.value);
+        }
     }
 
     ngOnInit(): void {
