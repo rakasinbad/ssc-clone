@@ -349,7 +349,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             unlimitedStock: formValues.productInfo.unlimitedStock,
 
             // SUB BRAND
-            subBrandId: formValues.productInfo.subBrandId,
+            subBrandId: formValues.productInfo.subBrandId || null,
         };
 
         // if (this.formMode === 'edit') {
@@ -384,9 +384,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 payload: catalogueData,
             });
 
-            // this.store.dispatch(
-            //     CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
-            // );
+            this.store.dispatch(
+                CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
+            );
         }
 
         // else {
@@ -1176,11 +1176,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     onAddVariantSelection(_: Event, $variant: number): void {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
-        console.log((this.productVariantControls[$variant] as FormArray).controls);
+        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+            ev: _,
+            varian: $variant,
+            variantControl: (this.productVariantControls[$variant] as FormArray).controls,
+        });
+
         this.productVariantSelectionData[$variant] = new MatTableDataSource(
             (this.productVariantControls[$variant] as FormArray).controls
         );
-        console.log(this.productVariantSelectionData[$variant]);
+
+        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+            variantSelection: this.productVariantSelectionData[$variant],
+        });
     }
 
     onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
