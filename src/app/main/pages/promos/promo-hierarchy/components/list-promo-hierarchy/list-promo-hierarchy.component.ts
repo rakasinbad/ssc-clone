@@ -61,7 +61,7 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
-            "selectedWarehouse": ["DC Cibinong"],
+            "benefitMaxRebate": null,
             "promoConditionCatalogues": [
                 {
                     "crossSellingGroup": "Group 1",
@@ -122,6 +122,7 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
+            "benefitMaxRebate": null,
             "layerInformation": [{
                 "layer0": 11,
                 "layer1": 1,
@@ -158,6 +159,7 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
+            "benefitMaxRebate": null,
             "layerInformation": [{
                 "layer0": 11,
                 "layer1": 14,
@@ -194,7 +196,7 @@ const listHierarchy = [
                 "Yupi Rolleto Display 12x24x10gr"
             ],
             "benefitRebate": null,
-            "selectedWarehouse": ["DC Cibinong"],
+            "benefitMaxRebate": null,
             "promoConditionCatalogues": [
                 {
                     "crossSellingGroup": "Group 1",
@@ -227,6 +229,44 @@ const listHierarchy = [
                 "layer4": 4
               }],
         },
+        {
+            "id": "55",
+            "name": "PROMO OVALTINE MEI 2020 EMPATPULUHSATU",
+            "promoSellerId": "PROMO OVALTINE 41",
+            "promoAllocation": "promo_budget",
+            "promoBudget": null,
+            "planSlot": null,
+            "planBudget": null,
+            "promoLayer": 0,
+            "promoGroup": "none",
+            "promoSlot": null,
+            "promoType": "flexi",
+            "status": "active",
+            "triggerBase": "sku",
+            "conditionBase": "value",
+            "conditionQty": null,
+            "conditionValue": 9818190,
+            "benefitType": "qty",
+            "benefitQty": 15,
+            "benefitDiscount": null,
+            "benefitSku": [
+                "OVALTINE COOKIES 3s"
+            ],
+            "triggerCatalogues": [
+                "Ovaltine Classic (PP) 22g(10sx3Link)x8"
+            ],
+            "benefitRebate": null,
+            "benefitMaxRebate": null,
+            "layerInformation": [
+                {
+                    "layer0": 220,
+                    "layer1": 1,
+                    "layer2": 0,
+                    "layer3": 0,
+                    "layer4": 0
+                }
+            ]
+        }
 ];
 
 type PromoHierarchyType = 'layer0' | 'layer1' | 'layer2' | 'layer3' | 'layer4';
@@ -377,24 +417,23 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     }
 
     settingPromoHierarchy(value) {
-        // console.log('isi value setting->', value)
-        // const dialogRef = this.matDialog.open(SetPromoHierarchyComponent, {
-        //     data: {
-        //         id: value.promoSellerId,
-        //         name: value.name,
-        //         layer: value.layer,
-        //         group: value.group,
-        //         data: value
-        //     }, disableClose: true
-        // });
+        const dialogRef = this.matDialog.open(SetPromoHierarchyComponent, {
+            data: {
+                id: value.promoSellerId,
+                name: value.name,
+                layer: value.layer,
+                group: value.promoGroup,
+                data: value
+            }, disableClose: true
+        });
 
-        // dialogRef.afterClosed().subscribe(result => {
-        //         if (result === 'yes') {
+        dialogRef.afterClosed().subscribe(result => {
+                if (result === 'yes') {
                     
-        //         } else {
+                } else {
 
-        //         }
-        //     });
+                }
+            });
     }
 
     openDetailPage(id: string, row: any): void {

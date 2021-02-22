@@ -88,6 +88,14 @@ interface IPromoConditionCatalogues {
     choosenSku: Array<any>;
 }
 
+interface IPromoLayerInformation {
+    layer0: number;
+    layer1: number;
+    layer2: number;
+    layer3: number;
+    layer4: number;
+}
+
 export class PromoHierarchyDetail {
     // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
     id: string;
@@ -112,7 +120,9 @@ export class PromoHierarchyDetail {
     benefitSku: Array<any>;
     triggerCatalogues: Array<any>;
     benefitRebate: number;
+    benefitMaxRebate: number;
     promoConditionCatalogues: IPromoConditionCatalogues[];
+    layerInformation: IPromoLayerInformation[];
     // TODO: Under development because need more in-depth structure.
 
     constructor(data: PromoHierarchyDetail) {
@@ -140,7 +150,9 @@ export class PromoHierarchyDetail {
             benefitSku,
             triggerCatalogues,
             benefitRebate,
-            promoConditionCatalogues
+            benefitMaxRebate,
+            promoConditionCatalogues,
+            layerInformation
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
@@ -166,9 +178,14 @@ export class PromoHierarchyDetail {
         this.benefitSku = benefitSku || null;
         this.triggerCatalogues = triggerCatalogues || [];
         this.benefitRebate = benefitRebate || null;
+        this.benefitMaxRebate = benefitMaxRebate || null;
         
         if (typeof promoConditionCatalogues !== 'undefined') {
             this.promoConditionCatalogues = promoConditionCatalogues;
+        }
+
+        if (typeof layerInformation !== 'undefined') {
+            this.layerInformation = layerInformation;
         }
     }
 }

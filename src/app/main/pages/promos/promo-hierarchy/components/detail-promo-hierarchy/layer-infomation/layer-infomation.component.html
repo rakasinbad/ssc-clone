@@ -74,7 +74,7 @@
                     This promo will run first, along with other
                     {{ dataDetail.layerInformation[0].layer0 }} promos.
                 </p>
-                <p matLine *ngIf="dataDetail.layer == 0">
+                <p matLine>
                     This promo will do the promo calculation mechanism based on the total amount
                     price of the bought SKU.
                 </p>
@@ -85,20 +85,12 @@
                     Will run after promo in layer 00. Currently there are
                     {{ dataDetail.layerInformation[0].layer1 }} promos in this layer.
                 </p>
-                <p matLine *ngIf="dataDetail.layer == 1">
-                    This promo will do the promo calculation mechanism based on the total amount
-                    price of the bought SKU.
-                </p>
             </mat-list-item>
             <mat-list-item [class.active]="dataDetail.layer == 2" role="listitem">
                 <p matLine><b>Layer 02:</b></p>
                 <p matLine>
                     Will run after promo in layer 01. Currently there are
                     {{ dataDetail.layerInformation[0].layer2 }} promos in this layer.
-                </p>
-                <p matLine *ngIf="dataDetail.layer == 2">
-                    This promo will do the promo calculation mechanism based on the total amount
-                    price of the bought SKU.
                 </p>
             </mat-list-item>
             <mat-list-item class="layer3" [class.active]="dataDetail.layer == 3" role="listitem">
@@ -107,20 +99,12 @@
                     Will run after promo in layer 02. Currently there are
                     {{ dataDetail.layerInformation[0].layer3 }} promos in this layer.
                 </p>
-                <p matLine *ngIf="dataDetail.layer == 3">
-                    This promo will do the promo calculation mechanism based on the total amount
-                    price of the bought SKU.
-                </p>
             </mat-list-item>
             <mat-list-item [class.active]="dataDetail.layer == 4" role="listitem">
                 <p matLine><b>Layer 04:</b></p>
                 <p matLine>
                     Will run after promo in layer 03. Currently there are
                     {{ dataDetail.layerInformation[0].layer4 }} promos in this layer.
-                </p>
-                <p matLine *ngIf="dataDetail.layer == 4">
-                    This promo will do the promo calculation mechanism based on the total amount
-                    price of the bought SKU.
                 </p>
             </mat-list-item>
         </mat-list>

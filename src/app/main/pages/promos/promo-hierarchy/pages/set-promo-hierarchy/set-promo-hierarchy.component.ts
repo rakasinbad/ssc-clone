@@ -11,7 +11,7 @@ export class SetPromoHierarchyComponent implements OnInit {
     constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
   
     ngOnInit(): void {
-        console.log('isi data set promo->', this.data)
+        // console.log('isi data set promo->', this.data)
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
         // this.item = this.data;

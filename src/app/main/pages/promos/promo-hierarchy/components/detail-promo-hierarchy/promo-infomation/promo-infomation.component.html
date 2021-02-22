@@ -287,31 +287,6 @@
 
 <ng-container *ngIf="dataDetail.promoType == 'cross_selling'">
     <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-        <div
-            class="custom-field info-field"
-            fxLayout="row"
-            fxLayoutAlign="start center"
-            fxLayoutGap="15px"
-        >
-            <div class="label" fxFlexAlign="center" fxFlex="10">
-                Selected Warehouse <br />
-                {{ dataDetail.selectedWarehouse.length }} Selected)
-            </div>
-
-            <div class="info" fxFlex="100">
-                {{ getSelectedWarehouse(dataDetail.selectedWarehouse) }}
-
-                <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (flexiCombo$ | async)?.promoType || '-' }}
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-            </div>
-        </div>
-
         <span class="box-title"><b>Group 1</b></span>
 
         <div
