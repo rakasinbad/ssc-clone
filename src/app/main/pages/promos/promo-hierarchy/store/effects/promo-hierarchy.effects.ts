@@ -394,12 +394,10 @@ export class PromoHierarchyEffects {
                 );
             }),
             catchError((err) => {
-                if (payload.source === 'detail-edit') {
                     this.PromoHierarchyStore.dispatch(UiActions.showFooterAction());
                     this.PromoHierarchyStore.dispatch(FormActions.enableSaveButton());
                     this.PromoHierarchyStore.dispatch(FormActions.resetClickSaveButton());
                     this.PromoHierarchyStore.dispatch(FormActions.resetClickCancelButton());
-                }
 
                 return this.sendErrorToState(err, 'updatePromoHierarchyFailure');
             })
