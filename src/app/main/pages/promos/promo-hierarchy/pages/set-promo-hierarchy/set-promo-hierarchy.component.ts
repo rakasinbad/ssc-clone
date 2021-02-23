@@ -34,8 +34,7 @@ export class SetPromoHierarchyComponent implements OnInit {
     ngOnInit(): void {
         console.log('isi this.data->', this.data)
         this.form = this.fb.group({
-            id: this.data.id,
-            supplierId: '',
+            id: this.data.data.id,
             name: this.data.name,
             layer:   
             [
@@ -50,7 +49,7 @@ export class SetPromoHierarchyComponent implements OnInit {
                     }),
                 ],
             ],
-            group: this.data.group
+            group: 'this.data.group'
         });
 
         console.log('isi form->', this.form)
@@ -66,9 +65,26 @@ export class SetPromoHierarchyComponent implements OnInit {
 
     onSubmit(): void {
         let { layer, group } = this.form.getRawValue();
+        
+        if (layer == 'nol') {
+            layer = 0;
+        } else if (layer == 'one') {
+            layer = 1;
+        } else if (layer == 'two') {
+            layer = 2;
+        }
+        let promoTypes;
+        if (this.data.data.promoType == 'cross_selling') {
+            promoTypes = 'cross';
+        } else {
+            promoTypes = this.data.data.promoType;
+        }
+        
         const data = {
             layer: layer,
-            group: group
+            group: group,
+            id: this.data.data.id,
+            promoType: promoTypes
         };
         console.log('data param set->', data)
         this.PromoHierarchyStore.dispatch(

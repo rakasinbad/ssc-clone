@@ -124,8 +124,15 @@ export class PromoHierarchyApiService {
     // }
 
     updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy> {
+        console.log('body PromoHierarchyPayload->', body)
+        const newArgs = {
+            layer: body['layer'],
+            group: body['group']
+        };
+        
+        
         const _url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
-        return this.http.put<PromoHierarchy>(`${_url}/${body['id']}`, body['data']);
+        return this.http.put<PromoHierarchy>(`${_url}/${body['id']}?type=${body['promoType']}`, newArgs);
 
         // return this.http.post<PromoHierarchy>(_urlExtend, body);
     }
