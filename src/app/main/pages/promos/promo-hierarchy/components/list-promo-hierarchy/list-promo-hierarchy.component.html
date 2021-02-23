@@ -1,8 +1,8 @@
 <mat-table
     class="promo-hierarchy-list-table sinbad-table"
-    [class.sinbad-table-no-record]="(totalDataSource) === 0"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
-    [dataSource]="dataSource"
+    [dataSource]="dataSource$ | async"
     matSort
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
@@ -185,20 +185,23 @@
 
     <mat-footer-row
         *matFooterRowDef="['no-record']"
-        [fxShow]="(totalDataSource) === 0"
+        [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     ></mat-footer-row>
 </mat-table>
 
-<!-- <div
+<div
     class="loader-content"
-    *ngIf="(!(totalDataSource) || (totalDataSource))"
+    *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
 >
     <mat-spinner color="accent"></mat-spinner>
-</div> -->
+</div>
 
 <mat-paginator
-    [fxHide]="(totalDataSource) === 0"
-    [length]="totalDataSource"
+    [disabled]="
+        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+    "
+    [length]="totalDataSource$ | async"
     [pageSize]="defaultPageSize"
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons

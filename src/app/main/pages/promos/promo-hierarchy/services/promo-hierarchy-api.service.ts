@@ -35,7 +35,7 @@ export class PromoHierarchyApiService {
      * @private
      * @memberof PromoHierarchyApiService
      */
-    private readonly _PromoHierarchyEndpoint = '/promohierarchy';
+    private readonly _PromoHierarchyEndpoint = '/promo-hierarchy';
 
     /**
      * Creates an instance of PromoHierarchyApiService.
@@ -48,6 +48,7 @@ export class PromoHierarchyApiService {
     }
 
     find<T>(params: IQueryParamsVoucher): Observable<T> {
+        console.log('isi params->', params)
         if (params['id']) {
             this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
             return this.http.get<T>(`${this._url}/${params['id']}`);
@@ -63,9 +64,9 @@ export class PromoHierarchyApiService {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
-        if (params['totalOrderValue']) {
-            newArgs.push({ key: 'totalOrderValue', value: params['totalOrderValue'] });
-        }
+        // if (params['totalOrderValue']) {
+        //     newArgs.push({ key: 'totalOrderValue', value: params['totalOrderValue'] });
+        // }
 
         if (params['collected']) {
             newArgs.push({ key: 'collected', value: params['collected'] });
@@ -79,17 +80,23 @@ export class PromoHierarchyApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['status']) {
-            newArgs.push({ key: 'status', value: params['status'] });
+        // if (params['status']) {
+        //     newArgs.push({ key: 'status', value: params['status'] });
+        // }
+
+        if (params['layer'] !== null) {
+            if (params['layer'] == 0) {
+                newArgs.push({ key: 'layer', value: '0' });
+            } else {
+                newArgs.push({ key: 'layer', value: params['layer'] });
+            }
         }
 
-        if (params['typeView']) {
-            newArgs.push({ key: 'typeView', value: params['typeView'] });
+        if (params['type']) {
+            newArgs.push({ key: 'type', value: params['type'] });
         }
 
-        if (params['typeLayer']) {
-            newArgs.push({ key: 'typeLayer', value: params['typeLayer'] });
-        }
+       
 
         this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);

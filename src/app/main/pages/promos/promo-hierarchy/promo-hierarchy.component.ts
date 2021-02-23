@@ -27,7 +27,7 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
 
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
-    selectedViewBy: string = 'all-hierarchy';
+    selectedViewBy: string = 'all';
     labelInfo: string = '';
 
     // Untuk menentukan konfigurasi card header.
@@ -45,7 +45,7 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
             list: [
                 { id: 'all', label: 'All' },
                 { id: 'flexi', label: 'Flexi Combo' },
-                { id: 'cross_selling', label: 'Cross Selling Promo' },
+                { id: 'cross', label: 'Cross Selling Promo' },
                 { id: 'voucher', label: 'Supplier Voucher' }
             ],
             onChanged: (value: { id: string; label: string }) => this.clickTabViewBy(value.id)
@@ -108,7 +108,7 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
                 //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                 // );
                 break;
-            case 'cross_selling':
+            case 'cross':
                     this.selectedViewBy = action;
     
                     // this.SkuAssignmentsStore.dispatch(

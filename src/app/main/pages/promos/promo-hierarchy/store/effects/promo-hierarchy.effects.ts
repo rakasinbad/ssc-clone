@@ -31,7 +31,7 @@ import { fromPromoHierarchy } from '../reducers';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher, IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 import { User } from 'app/shared/models/user.model';
 import { AnyAction } from 'app/shared/models/actions.model';
@@ -61,14 +61,14 @@ export class PromoHierarchyEffects {
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [IQueryParamsVoucher | string, TNullable<Auth>]) => {
+            switchMap(([queryParams, authState]: [IQueryParams | string, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, IQueryParamsVoucher | string], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
                             this.processPromoHierarchyRequest
                         ),
                         catchError((err) => this.sendErrorToState(err, 'fetchPromoHierarchyFailure'))
@@ -321,8 +321,8 @@ export class PromoHierarchyEffects {
         return userData;
     };
 
-    processPromoHierarchyRequest = ([userData, queryParams]: [User, IQueryParamsVoucher | string]): Observable<AnyAction> => {
-        let newQuery: IQueryParamsVoucher = {};
+    processPromoHierarchyRequest = ([userData, queryParams]: [User, IQueryParams | string]): Observable<AnyAction> => {
+        let newQuery: IQueryParams = {};
 
         if (typeof queryParams === 'string') {
             newQuery['id'] = queryParams;
