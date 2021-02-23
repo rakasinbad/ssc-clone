@@ -22,6 +22,7 @@ import { FormControl } from '@angular/forms';
 import { Observable, Subject, merge } from 'rxjs';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap, filter } from 'rxjs/operators';
+import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
 import { IQueryParamsVoucher } from 'app/shared/models/query.model';
@@ -29,113 +30,243 @@ import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 import { PromoHierarchy } from '../../models';
 import { PromoHierarchySelectors } from '../../store/selectors';
 import { HelperService } from 'app/shared/helpers';
+import { SetPromoHierarchyComponent } from '../../pages/set-promo-hierarchy/set-promo-hierarchy.component';
 
 const listHierarchy = [
         {
-            "id": "332",
-            "name": "Promo 332",
-            "supplierId": "1",
-            "status": "inactive", 
-            "promoAllocation": "promo_slot",
-            "promoSlot": 3, 
-            "planSlot": 5, 
-            "promoBudget": null, 
+            "id": "442",
+            "name": "crossnew1",
+            "promoSellerId": "crossnew1",
+            "promoAllocation": "none",
+            "promoBudget": null,
+            "planSlot": null,
             "planBudget": null,
-            "promoSellerId": "A002",
-            "promoType": "flexi",
-            "promoGroup": "none",
-            "layer": 0
-        },
-        {
-            "id": "338",
-            "name": "Promo 338",
-            "supplierId": "1",
-            "status": "inactive", 
-            "promoAllocation": "promo_slot",
-            "promoSlot": 2, 
-            "planSlot": 2, 
-            "promoBudget": null, 
-            "planBudget": null,
-            "promoSellerId": "A008",
-            "promoType": "flexi",
-            "promoGroup": "distributor",
-            "layer": 3
-        },
-        {
-            "id": "333",
-            "name": "Promo 333",
-            "supplierId": "1",
-            "status": "active", 
-            "promoAllocation": "promo_budget",
-            "promoSlot": null, 
-            "planSlot": null, 
-            "promoBudget": 15000,
-            "planBudget": 1200000,
-            "promoSellerId": "A003",
-            "promoType": "crossSelling",
-            "promoGroup": "principle",
-            "layer": 0
-        },
-        {
-            "id": "333",
-            "name": "Promo 334",
-            "supplierId": "1",
-            "status": "active", 
-            "promoAllocation": "promo_budget",
-            "promoSlot": null, 
-            "planSlot": null, 
-            "promoBudget": 150000,
-            "planBudget": 1200000,
-            "promoSellerId": "A004",
-            "promoType": "crossSelling",
+            "promoSlot": null,
+            "promoType": "cross_selling",
+            "status": "active",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer": 3,
             "promoGroup": "sinbad_promo",
-            "layer": 3
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
+            "benefitMaxRebate": null,
+            "promoConditionCatalogues": [
+                {
+                    "crossSellingGroup": "Group 1",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Dino Land MIX Display 12x24x7 gr"
+                    ]
+                },
+                {
+                    "crossSellingGroup": "Group 2",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Rolleto Display 12x24x10gr"
+                    ]
+                }
+            ],
+            "layerInformation": [{
+                "layer0": 10,
+                "layer1": 11,
+                "layer2": 0,
+                "layer3": 10,
+                "layer4": 0
+              }],
         },
         {
-            "id": "335",
-            "name": "Promo 335",
-            "supplierId": "1",
-            "status": "inactive",
+            "id": "443",
+            "name": "flexi1",
+            "promoSellerId": "flexi1",
             "promoAllocation": "none",
-            "promoSlot": null, 
-            "planSlot": null,
             "promoBudget": null,
+            "planSlot": null,
             "planBudget": null,
-            "promoSellerId": "A005",
-            "promoType": "voucher",
-            "promoGroup": "none",
-            "layer": 0
-        },
-        {
-            "id": "336",
-            "name": "Promo 336",
-            "supplierId": "1",
-            "status": "inactive", 
-            "promoAllocation": "none",
-            "promoSlot": null, 
-            "planSlot": null, 
-            "promoBudget": null, 
-            "planBudget": null,
-            "promoSellerId": "A006",
+            "promoSlot": null,
             "promoType": "flexi",
-            "promoGroup": "payment_promo",
-            "layer": 2
+            "status": "active",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer": 0,
+            "promoGroup": "none",
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
+            "benefitMaxRebate": null,
+            "layerInformation": [{
+                "layer0": 11,
+                "layer1": 1,
+                "layer2": 0,
+                "layer3": 13,
+                "layer4": 0
+              }],
         },
         {
-            "id": "337",
-            "name": "Promo 337",
-            "supplierId": "1",
-            "status": "inactive",
+            "id": "444",
+            "name": "voucher1",
+            "promoSellerId": "voucher1",
             "promoAllocation": "none",
-            "promoSlot": null, 
-            "planSlot": null,
             "promoBudget": null,
+            "planSlot": null,
             "planBudget": null,
-            "promoSellerId": "A007",
+            "promoSlot": null,
             "promoType": "voucher",
-            "promoGroup": "none",
-            "layer": 2
+            "status": "inactive",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer":1,
+            "promoGroup": "principal",
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
+            "benefitMaxRebate": null,
+            "layerInformation": [{
+                "layer0": 11,
+                "layer1": 14,
+                "layer2": 0,
+                "layer3": 15,
+                "layer4": 0
+              }],
         },
+        {
+            "id": "445",
+            "name": "crossSelling2",
+            "promoSellerId": "crossSelling2",
+            "promoAllocation": "none",
+            "promoBudget": null,
+            "planSlot": null,
+            "planBudget": null,
+            "promoSlot": null,
+            "promoType": "cross_selling",
+            "status": "inactive",
+            "triggerBase": "sku",
+            "conditionBase": "qty",
+            "conditionQty": "11",
+            "conditionValue": null,
+            "benefitType": "qty",
+            "benefitQty": 1,
+            "layer":2,
+            "promoGroup": "distributor",
+            "benefitDiscount": null,
+            "benefitSku": [
+                "Yupi Dino Land MIX Display 12x24x7 gr"
+            ],
+            "triggerCatalogues": [
+                "Yupi Dino Land MIX Display 12x24x7 gr",
+                "Yupi Rolleto Display 12x24x10gr"
+            ],
+            "benefitRebate": null,
+            "benefitMaxRebate": null,
+            "promoConditionCatalogues": [
+                {
+                    "crossSellingGroup": "Group 1",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Dino Land MIX Display 12x24x7 gr"
+                    ]
+                },
+                {
+                    "crossSellingGroup": "Group 2",
+                    "conditionValue": null,
+                    "conditionBase": "qty",
+                    "fakturName": "COMBINE",
+                    "crossSellingGroupRelation": "AND",
+                    "conditionQty": "20",
+                    "choosenSku": [
+                        "Yupi Rolleto Display 12x24x10gr"
+                    ]
+                }
+            ],
+            "layerInformation": [{
+                "layer0": 12,
+                "layer1": 17,
+                "layer2": 10,
+                "layer3": 18,
+                "layer4": 4
+              }],
+        },
+        {
+            "id": "55",
+            "name": "PROMO OVALTINE MEI 2020 EMPATPULUHSATU",
+            "promoSellerId": "PROMO OVALTINE 41",
+            "promoAllocation": "promo_budget",
+            "promoBudget": null,
+            "planSlot": null,
+            "planBudget": null,
+            "promoLayer": 0,
+            "promoGroup": "none",
+            "promoSlot": null,
+            "promoType": "flexi",
+            "status": "active",
+            "triggerBase": "sku",
+            "conditionBase": "value",
+            "conditionQty": null,
+            "conditionValue": 9818190,
+            "benefitType": "qty",
+            "benefitQty": 15,
+            "benefitDiscount": null,
+            "benefitSku": [
+                "OVALTINE COOKIES 3s"
+            ],
+            "triggerCatalogues": [
+                "Ovaltine Classic (PP) 22g(10sx3Link)x8"
+            ],
+            "benefitRebate": null,
+            "benefitMaxRebate": null,
+            "layerInformation": [
+                {
+                    "layer0": 220,
+                    "layer1": 1,
+                    "layer2": 0,
+                    "layer3": 0,
+                    "layer4": 0
+                }
+            ]
+        }
 ];
 
 type PromoHierarchyType = 'layer0' | 'layer1' | 'layer2' | 'layer3' | 'layer4';
@@ -191,6 +322,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     constructor(
         // private route: ActivatedRoute,
         // private readonly sanitizer: DomSanitizer,
+        private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
@@ -285,11 +417,29 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     }
 
     settingPromoHierarchy(value) {
-        console.log('isi value setting->', value)
+        const dialogRef = this.matDialog.open(SetPromoHierarchyComponent, {
+            data: {
+                id: value.promoSellerId,
+                name: value.name,
+                layer: value.layer,
+                group: value.promoGroup,
+                data: value
+            }, disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+                if (result === 'yes') {
+                    
+                } else {
+
+                }
+            });
     }
 
-    openDetailPage(promoId: string): void {
-        this.router.navigate([`/pages/promos/promo-hierarchy/view/${promoId}`]);
+    openDetailPage(id: string, row: any): void {
+        this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
+        localStorage.setItem('promo_hierarchy', JSON.stringify(row));
+
     }
 
     isAllSelected(): boolean {
@@ -373,8 +523,8 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                             break;
                         };
                     break;
-                case 'crossSelling':
-                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'crossSelling' && d.name == this.searchValue);
+                case 'cross_selling':
+                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'cross_selling' && d.name == this.searchValue);
                     switch(this.selectedStatus) {
                         case 'layer0':
                             this.dataSource = dataCrossSelling.filter(d => d.layer == 0);
@@ -500,8 +650,8 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                             break;
                         };
                     break;
-                case 'crossSelling':
-                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'crossSelling');
+                case 'cross_selling':
+                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'cross_selling');
                     switch(this.selectedStatus) {
                         case 'layer0':
                             this.dataSource = dataCrossSelling.filter(d => d.layer == 0);

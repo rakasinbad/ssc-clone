@@ -19,8 +19,7 @@
     <ng-container matColumnDef="promo-name">
         <mat-header-cell *matHeaderCellDef> Promo Name </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            Test
-            <!-- <p style="word-break: break-word">{{ row?.name || '-' }}</p> -->
+            <p style="word-break: break-word">{{ row?.name || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -149,7 +148,7 @@
                             mat-menu-item
                             class="sinbad-mat-menu-item"
                             aria-label="Settings"
-                            (click)="settingPromoHierarchy(row.id)"
+                            (click)="settingPromoHierarchy(row)"
                         >
                             <mat-icon>settings</mat-icon>
                             <span>Set</span>
@@ -159,7 +158,7 @@
                             mat-menu-item
                             class="sinbad-mat-menu-item"
                             aria-label="Detail"
-                            (click)="openDetailPage(row)"
+                            (click)="openDetailPage(row.id, row)"
                         >
                             <mat-icon>remove_red_eye</mat-icon>
                             <span>Detail</span>
@@ -181,7 +180,7 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="sinbad-promo-hierarchy-list-item"
-        [routerLink]="['view', row?.id]"
+        (click)="openDetailPage(row.id, row)"
     ></mat-row>
 
     <mat-footer-row

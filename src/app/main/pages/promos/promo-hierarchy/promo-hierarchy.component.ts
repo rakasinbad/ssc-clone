@@ -45,8 +45,8 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
             list: [
                 { id: 'all', label: 'All' },
                 { id: 'flexi', label: 'Flexi Combo' },
-                { id: 'crossSelling', label: 'Cross Selling Promo' },
-                { id: 'voucher', label: 'SupplierVoucher' }
+                { id: 'cross_selling', label: 'Cross Selling Promo' },
+                { id: 'voucher', label: 'Supplier Voucher' }
             ],
             onChanged: (value: { id: string; label: string }) => this.clickTabViewBy(value.id)
         },
@@ -108,7 +108,7 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
                 //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                 // );
                 break;
-            case 'crossSelling':
+            case 'cross_selling':
                     this.selectedViewBy = action;
     
                     // this.SkuAssignmentsStore.dispatch(

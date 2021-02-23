@@ -7,8 +7,10 @@ import { SharedModule } from 'app/shared/shared.module';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
+import { PromoHierarchyNgrxModule } from './store'
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/apply-dialog.module';
 
 // Component
 import { PromoHierarchyComponent } from './promo-hierarchy.component';
@@ -30,14 +32,21 @@ import { SetPromoHierarchyComponent } from './pages/set-promo-hierarchy/set-prom
     imports: [
         CommonModule,
         PromoHierarchyRoutingModule,
-        // PromoHierarchyNgRxStoreModule,
+        PromoHierarchyNgrxModule,
 
         SharedModule,
         MaterialModule,
         SharedComponentsModule,
 
         RxReactiveFormsModule,
+        ApplyDialogModule,
         NgxPermissionsModule.forChild(),
+    ],
+    exports: [
+        SetPromoHierarchyComponent
+    ],
+    entryComponents: [
+        SetPromoHierarchyComponent,
     ],
 })
 export class PromoHierarchyModule {}

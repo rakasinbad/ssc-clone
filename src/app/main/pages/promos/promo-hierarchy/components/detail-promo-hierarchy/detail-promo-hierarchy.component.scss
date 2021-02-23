@@ -1,43 +1,48 @@
-@import 'src/@sinbad/scss/helper';
+@import 'src/@fuse/scss/fuse';
 
-app-detail-promo-hierarchy {
-    .mat-tab-header-px-12 {
-        .mat-tab-header {
-            margin: 0 12px !important;
+#promo-hierarchy-detail {
+    .top-bg {
+        height: 144px;
+    }
+
+    .header {
+        height: 100px !important;
+        min-height: 100px !important;
+        max-height: 100px !important;
+
+        .subtitle {
+            margin: 6px 0 0 0;
         }
     }
 
-    .view-field-right {
-        label {
-            font-weight: 600;
-            position: relative;
-            // top: -0.78em;
-            // text-align: right;
-            padding-right: 2em;
-            // padding-right: 10px;
+    .content {
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content {
+            flex: 1 1 auto;
+            max-width: 100%;
         }
-    
-        .mat-form-field-prefix {
-            top: -0.2em;
-        }
-    
-        .mat-form-field-infix {
-            padding: 0.5em 0 !important;
-            top: -0.25em;
-        }
-    
-        &.sinbad-textarea {
-            label {
-                top: -3em;
+
+        .tab-content {
+            .mat-headline {
+                font-size: 18px;
+                font-weight: 600;
             }
         }
-    
-        &.sinbad-button {
-            label {
-                top: 0;
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+        .mat-tab-label {
+            height: 44px;
+            opacity: 1;
+
+            &.mat-tab-label-active {
+                > .mat-tab-label-content {
+                    color: #f0444c;
+                }
             }
         }
     }
-
-    .mat-tab-body-content { display: flex; flex:1; overflow-y: scroll !important; flex-direction: column }
 }
