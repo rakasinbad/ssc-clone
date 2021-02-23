@@ -459,6 +459,14 @@ export class HelperService {
             id: PromoHierarchyLayer.TWO,
             label: 'Layer 02',
         },
+        {
+            id: PromoHierarchyLayer.THREE,
+            label: 'Layer 03',
+        },
+        {
+            id: PromoHierarchyLayer.FOUR,
+            label: 'Layer 04',
+        },
     ];
 
     private static _host = environment.host;

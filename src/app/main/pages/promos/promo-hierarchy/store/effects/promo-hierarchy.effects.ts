@@ -340,29 +340,6 @@ export class PromoHierarchyEffects {
         User,
         { body: PromoHierarchyPayload }
     ]): 
-    // Observable<AnyAction> => {
-    //     if (!Object.keys(body).length) {
-    //         throw new ErrorHandler({
-    //             id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
-    //             errors: 'Check payload',
-    //         });
-    //     }
-
-    //     const newBody: PromoHierarchyPayload = { ...body, ...{userId: userData.id}}
-
-    //     return this.PromoHierarchyApi$.updatePromoHierarchy<PromoHierarchyPayload>(newBody).pipe(
-    //         map((resp) => {
-    //             return PromoHierarchyActions.updatePromoHierarchySuccess({
-    //                 payload: {
-    //                                             id: response.id,
-    //                                             data: response,
-    //                                         },
-    //             });
-    //         }),
-    //         catchError((err) => this._sendErrorToState$(err, 'updatePromoHierarchyFailure'))
-    //     );
-    
-    //     };
     Observable<AnyAction> => {
         const newBody: PromoHierarchyPayload = { ...body, ...{userId: userData.id}}
 

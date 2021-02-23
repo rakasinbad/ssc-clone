@@ -53,16 +53,6 @@
                 <div class="label" fxFlexAlign="center" fxFlex="20">Layer Level</div>
 
                 <mat-form-field appearance="outline" fxFlex="50">
-                    <!-- <mat-select formControlName="status"
-                    placeholder="Choose Store Status">
-                        <mat-option value="active">Active</mat-option>
-                        <mat-option value="inactive">Inactive</mat-option>
-                    </mat-select> -->
-                    <!-- <mat-select formControlName="layer" name="layer">
-                        <mat-option value="0">Layer 00</mat-option>
-                        <mat-option value="1">Layer 01</mat-option>
-                        <mat-option value="2">Layer 02</mat-option>
-                    </mat-select> -->
                     <ng-container *ngIf="layerBase">
                         <mat-select
                             formControlName="layer"
@@ -76,15 +66,6 @@
                             </mat-option> 
                         </mat-select>
                     </ng-container>
-                    <!-- <ng-template #noPlatformsSinbad>
-                        <mat-select placeholder="Layer not found" disabled>
-                            <mat-option>None</mat-option>
-                        </mat-select>
-                    </ng-template> -->
-
-                    <!-- <mat-error *ngIf="hasError('platform', true)">
-                        {{ getErrorMessage('platform') }}
-                    </mat-error> -->
                 </mat-form-field>
             </div>
 
@@ -111,9 +92,6 @@
 </mat-dialog-content>
 
 <div mat-dialog-actions align="end" style="margin-bottom: 0px">
-    <!-- <button mat-button mat-dialog-close style="border-radius: 4px; border: solid 1px #cacccf">
-        No
-    </button> -->
     <button
         mat-button
         [mat-dialog-close]="'yes'"

@@ -32,7 +32,6 @@ export class SetPromoHierarchyComponent implements OnInit {
         ) {}
   
     ngOnInit(): void {
-        console.log('isi this.data->', this.data)
         this.form = this.fb.group({
             id: this.data.data.id,
             name: this.data.name,
@@ -52,12 +51,6 @@ export class SetPromoHierarchyComponent implements OnInit {
             group: 'this.data.group'
         });
 
-        console.log('isi form->', this.form)
-        // if (this.data.layer == 0) {
-        //     this.form.setValue()
-        // }
-        this.selectLayer = this.data.layer;
-        // console.log('isi data set promo->', this.data)
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
         // this.item = this.data;
@@ -86,7 +79,6 @@ export class SetPromoHierarchyComponent implements OnInit {
             id: this.data.data.id,
             promoType: promoTypes
         };
-        console.log('data param set->', data)
         this.PromoHierarchyStore.dispatch(
             PromoHierarchyActions.updatePromoHierarchyRequest({
                 payload: {
@@ -95,12 +87,6 @@ export class SetPromoHierarchyComponent implements OnInit {
             })
         );
        
-        // this.matDialog.close({
-        //    id: null,
-        //    name: this.data[0].name,
-        //     layer,
-        //     group
-        // })
     }
 
 }
