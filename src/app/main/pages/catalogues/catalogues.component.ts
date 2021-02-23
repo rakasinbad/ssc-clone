@@ -24,20 +24,20 @@ import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models/sinbad-filter.model';
 import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services/sinbad-filter.service';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { IBreadcrumbs, PaginateResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, shareReplay, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { Catalogue, CatalogueFilterDto } from './models';
-import { CatalogueFacadeService, CataloguesService } from './services';
+import { Catalogue, CatalogueFilterDto, SubBrandProps } from './models';
+import { CatalogueFacadeService, CataloguesService, SubBrandApiService } from './services';
 import { statusCatalogue } from './status';
 import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
@@ -116,6 +116,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 title: 'Brand',
                 sources: [],
             },
+            subBrand: {
+                title: 'Sub Brand',
+                sources: [],
+            },
             faktur: {
                 title: 'Faktur',
                 sources: [],
@@ -183,6 +187,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private catalogueFacade: CatalogueFacadeService,
         private cataloguesService: CataloguesService,
+        private readonly subBrandApiService: SubBrandApiService,
         private matDialog: MatDialog,
         public translate: TranslateService,
         private _helper: HelperService,
@@ -264,6 +269,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.form = this.fb.group({
             basePrice: null,
             brand: null,
+            subBrand: null,
             faktur: null,
             maxAmount: null,
             minAmount: null,
@@ -271,6 +277,19 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             status: null,
             type: null,
         });
+
+        this.form
+            .get('brand')
+            .valueChanges.pipe(takeUntil(this.unSubs$))
+            .subscribe((value) => {
+                HelperService.debug('[CataloguesComponent] ngOnInit brand.valueChanges', {
+                    value,
+                });
+
+                if (!Array.isArray(value) && this.filterConfig.by.subBrand) {
+                    this._handleSubBrandByBrand(value.id);
+                }
+            });
 
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
 
@@ -794,5 +813,39 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.onRefreshTable();
+    }
+
+    private _handleSubBrandByBrand(brandId: string): void {
+        this.subBrandApiService
+            .getWithQuery<PaginateResponse<SubBrandProps>>({
+                search: [
+                    {
+                        fieldName: 'brandId',
+                        keyword: brandId,
+                    },
+                ],
+            })
+            .pipe(
+                map((resp) => (resp.total > 0 ? resp.data : [])),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((sources) => {
+                this.filterConfig = {
+                    ...this.filterConfig,
+                    by: {
+                        ...this.filterConfig.by,
+                        subBrand: {
+                            ...this.filterConfig.by.subBrand,
+                            sources,
+                        },
+                    },
+                };
+
+                this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+
+                HelperService.debug('[CataloguesComponent] _handleSubBrandByBrand subscribe', {
+                    filterConfig: this.filterConfig,
+                });
+            });
     }
 }
