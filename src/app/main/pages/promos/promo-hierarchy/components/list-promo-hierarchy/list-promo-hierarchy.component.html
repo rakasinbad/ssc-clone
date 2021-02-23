@@ -50,7 +50,8 @@
             </ng-container>
             <ng-container *ngIf="row?.promoAllocation == 'promo_budget'">
                 <p style="word-break: break-word">
-                    Rp {{ (row?.promoBudget | number) || '-' }}/Rp {{ (row?.planBudget | number) || '-' }}
+                    Rp {{ (row?.promoBudget | number) || '-' }}/Rp
+                    {{ (row?.planBudget | number) || '-' }}
                 </p>
             </ng-container>
             <ng-container *ngIf="row?.promoAllocation == 'promo_slot'">
@@ -101,8 +102,8 @@
         </mat-cell>
     </ng-container>
 
-     <!-- Status Column -->
-     <ng-container matColumnDef="status">
+    <!-- Status Column -->
+    <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <ng-container *ngIf="row?.status; else noStatus">
@@ -163,7 +164,6 @@
                             <mat-icon>remove_red_eye</mat-icon>
                             <span>Detail</span>
                         </button>
-
                     </ng-template>
                 </mat-menu>
             </div>

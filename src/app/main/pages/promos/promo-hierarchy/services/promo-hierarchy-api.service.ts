@@ -111,7 +111,7 @@ export class PromoHierarchyApiService {
 
     updatePromoHierarchy<T = EntityPayload<PromoHierarchyPayload>, R = undefined>(payload: T): Observable<R> {
         if (!payload['id'] || !payload['data']) {
-            throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_ENTITY_PAYLOAD');
+            throw new Error('ERR_SET_PROMO_HIERARCHY_REQUIRED_ENTITY_PAYLOAD');
         }
 
         this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
