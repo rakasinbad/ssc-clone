@@ -183,8 +183,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
 
         dialogRef.afterClosed().subscribe((result) => {
             if (result === 'yes') {
-                console.log
-            } else {
+                this._initTable();
             }
         });
     }

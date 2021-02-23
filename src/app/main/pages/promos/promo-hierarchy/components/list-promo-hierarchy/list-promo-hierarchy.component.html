@@ -86,15 +86,15 @@
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{
-                    row?.promoGroup === 'sinbad_promo'
+                    row?.promoGroup === 'sinbad-promo'
                         ? 'Sinbad Promo'
-                        : row?.promoGroup === 'distributor'
+                        : row?.promoGroup === 'distributor-promo'
                         ? 'Distributor'
-                        : row?.promoGroup === 'principal'
+                        : row?.promoGroup === 'principal-promo'
                         ? 'Principal'
                         : row?.promoGroup === 'none'
                         ? 'None'
-                        : row?.promoGroup === 'payment_promo'
+                        : row?.promoGroup === 'payment-method-promo'
                         ? 'Payment Method Promo'
                         : (row?.promoGroup | titlecase) || '-'
                 }}
