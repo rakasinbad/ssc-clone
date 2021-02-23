@@ -21,6 +21,7 @@ import { PromoHierarchyApiService } from '../../services/promo-hierarchy-api.ser
 import { catchOffline } from '@ngx-pwa/offline';
 import {
     PromoHierarchy,
+    PromoHierarchyPayload
     // SupplierVoucherPayload,
     // VoucherCreationPayload
 } from '../../models/promo-hierarchy.model';
@@ -107,6 +108,37 @@ export class PromoHierarchyEffects {
 
     
     updatePromoHierarchyRequest$ = createEffect(() =>
+        // this.actions$.pipe(
+        //     ofType(PromoHierarchyActions.updatePromoHierarchyRequest),
+        //     map((action) => action.payload),
+        //     withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+        //     switchMap(([payload, authState]: [{ body: IPromoHierarchyPayload }, TNullable<Auth>]) => {
+        //         if (!authState) {
+        //             return this._$helper.decodeUserToken().pipe(
+        //                 map(this._checkUserSupplier),
+        //                 retry(3),
+        //                 switchMap((userData) => of([userData, payload])),
+        //                 switchMap<[User, { body: IPromoHierarchyPayload }], Observable<AnyAction>>(
+        //                     this.updatePromoHierarchyRequest
+        //                 ),
+        //                 catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+        //             );
+        //         } else {
+        //             return of(authState.user).pipe(
+        //                 map(this._checkUserSupplier),
+        //                 retry(3),
+        //                 switchMap((userData) => of([userData, payload])),
+        //                 switchMap<[User, { body: IPromoHierarchyPayload }], Observable<AnyAction>>(
+        //                     this.updatePromoHierarchyRequest
+        //                 ),
+        //                 catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
+        //             );
+        //         }
+        //     }),
+        //     finalize(() => {
+        //         this.store.dispatch(UiActions.resetHighlightRow());
+        //     })
+        // )
         this.actions$.pipe(
             // Hanya untuk action penambahan Promo Hierarchy.
             ofType(PromoHierarchyActions.updatePromoHierarchyRequest),
@@ -116,15 +148,15 @@ export class PromoHierarchyEffects {
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
             switchMap(
-                ([queryParams, authState]: [EntityPayload<Partial<PromoHierarchy>>, TNullable<Auth>]) => {
+                ([payload, authState]: [{ body: PromoHierarchyPayload }, TNullable<Auth>]) => {
                     // Jika tidak ada data supplier-nya user dari state.
                     if (!authState) {
                         return this.helper$.decodeUserToken().pipe(
                             map(this.checkUserSupplier),
                             retry(3),
-                            switchMap((userData) => of([userData, queryParams])),
+                            switchMap((userData) => of([userData, payload])),
                             switchMap<
-                                [User, EntityPayload<Partial<PromoHierarchy>>],
+                            [User, { body: PromoHierarchyPayload }],
                                 Observable<AnyAction>
                             >(this.updatePromoHierarchyRequest),
                             catchError((err) => this.sendErrorToState(err, 'updatePromoHierarchyFailure'))
@@ -133,9 +165,9 @@ export class PromoHierarchyEffects {
                         return of(authState.user).pipe(
                             map(this.checkUserSupplier),
                             retry(3),
-                            switchMap((userData) => of([userData, queryParams])),
+                            switchMap((userData) => of([userData, payload])),
                             switchMap<
-                                [User, EntityPayload<Partial<PromoHierarchy>>],
+                            [User, { body: PromoHierarchyPayload }],
                                 Observable<AnyAction>
                             >(this.updatePromoHierarchyRequest),
                             catchError((err) => this.sendErrorToState(err, 'updatePromoHierarchyFailure'))
@@ -210,80 +242,6 @@ export class PromoHierarchyEffects {
                         // this.PromoHierarchyStore.dispatch(
                         //     PromoHierarchyActions.removePromoHierarchyRequest({ payload: response })
                         // );
-                    } else {
-                        this.PromoHierarchyStore.dispatch(UiActions.resetHighlightRow());
-                    }
-                })
-            ),
-        { dispatch: false }
-    );
-
-    confirmSetCatalogueToActive$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(PromoHierarchyActions.confirmSetActivePromoHierarchy),
-                map((action) => action.payload),
-                exhaustMap((params) => {
-                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
-                        data: {
-                            title: 'Set Promo Hierarchy to Active',
-                            message: `Are you sure want to set Promo Hierarchy <strong>${params.name}</strong> to <strong>Active</strong>?`,
-                            id: params.id,
-                        },
-                        disableClose: true,
-                    });
-
-                    return dialogRef.afterClosed();
-                }),
-                map((response) => {
-                    if (response) {
-                        this.PromoHierarchyStore.dispatch(
-                            PromoHierarchyActions.updatePromoHierarchyRequest({
-                                payload: {
-                                    id: response,
-                                    data: {
-                                        // status: 'active',
-                                    },
-                                },
-                            })
-                        );
-                    } else {
-                        this.PromoHierarchyStore.dispatch(UiActions.resetHighlightRow());
-                    }
-                })
-            ),
-        { dispatch: false }
-    );
-
-    confirmSetCatalogueToInactive$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(PromoHierarchyActions.confirmSetInactivePromoHierarchy),
-                map((action) => action.payload),
-                exhaustMap((params) => {
-                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
-                        data: {
-                            title: 'Set Promo Hierarchy to Inactive',
-                            message: `Are you sure want to set Promo Hierarchy <strong>${params.name}</strong> to <strong>Inactive</strong>?`,
-                            id: params.id,
-                        },
-                        disableClose: true,
-                    });
-
-                    return dialogRef.afterClosed();
-                }),
-                map((response) => {
-                    if (response) {
-                        this.PromoHierarchyStore.dispatch(
-                            PromoHierarchyActions.updatePromoHierarchyRequest({
-                                payload: {
-                                    id: response,
-                                    data: {
-                                        // status: 'inactive',
-                                    },
-                                },
-                            })
-                        );
                     } else {
                         this.PromoHierarchyStore.dispatch(UiActions.resetHighlightRow());
                     }
@@ -378,9 +336,38 @@ export class PromoHierarchyEffects {
         );
     };
 
-    updatePromoHierarchyRequest = ([_, payload]: [User, EntityPayload<Partial<PromoHierarchy>>]): Observable<AnyAction> => {
-        return this.PromoHierarchyApi$.updatePromoHierarchy<EntityPayload<Partial<PromoHierarchy>>, PromoHierarchy>(
-            payload
+    updatePromoHierarchyRequest = ([userData, { body }]: [
+        User,
+        { body: PromoHierarchyPayload }
+    ]): 
+    // Observable<AnyAction> => {
+    //     if (!Object.keys(body).length) {
+    //         throw new ErrorHandler({
+    //             id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+    //             errors: 'Check payload',
+    //         });
+    //     }
+
+    //     const newBody: PromoHierarchyPayload = { ...body, ...{userId: userData.id}}
+
+    //     return this.PromoHierarchyApi$.updatePromoHierarchy<PromoHierarchyPayload>(newBody).pipe(
+    //         map((resp) => {
+    //             return PromoHierarchyActions.updatePromoHierarchySuccess({
+    //                 payload: {
+    //                                             id: response.id,
+    //                                             data: response,
+    //                                         },
+    //             });
+    //         }),
+    //         catchError((err) => this._sendErrorToState$(err, 'updatePromoHierarchyFailure'))
+    //     );
+    
+    //     };
+    Observable<AnyAction> => {
+        const newBody: PromoHierarchyPayload = { ...body, ...{userId: userData.id}}
+
+        return this.PromoHierarchyApi$.updatePromoHierarchy<PromoHierarchyPayload>(
+            newBody
         ).pipe(
             catchOffline(),
             switchMap((response) => {
@@ -403,43 +390,6 @@ export class PromoHierarchyEffects {
             })
         );
     };
-
-    // removePromoHierarchyRequest = ([_, payload]: [User, string]): Observable<AnyAction> => {
-    //     return this.PromoHierarchyApi$.removeVoucher<string, any>(payload).pipe(
-    //         catchOffline(),
-    //         switchMap((response) => {
-    //             return of(
-    //                 PromoHierarchyActions.removePromoHierarchySuccess({
-    //                     payload: response,
-    //                 })
-    //             );
-    //         }),
-    //         catchError((err) => {
-    //             return this.sendErrorToState(err, 'removePromoHierarchyFailure');
-    //         })
-    //     );
-    // };
-
-    // addVoucherRequest = ([_, payload]: [User, SupplierVoucherPayload]): Observable<AnyAction> => {
-    //     return this.PromoHierarchyApi$.addVoucher<SupplierVoucherPayload, SupplierVoucher>(payload).pipe(
-    //         catchOffline(),
-    //         switchMap((response) => {
-    //             return of(
-    //                 VoucherActions.addSupplierVoucherSuccess({
-    //                     payload: response,
-    //                 })
-    //             );
-    //         }),
-    //         catchError((err) => {
-    //             this.PromoHierarchyStore.dispatch(UiActions.showFooterAction());
-    //             this.PromoHierarchyStore.dispatch(FormActions.enableSaveButton());
-    //             this.PromoHierarchyStore.dispatch(FormActions.resetClickSaveButton());
-    //             this.PromoHierarchyStore.dispatch(FormActions.resetClickCancelButton());
-
-    //             return this.sendErrorToState(err, 'addSupplierVoucherFailure');
-    //         })
-    //     );
-    // };
 
     sendErrorToState = (
         err: ErrorHandler | HttpErrorResponse | object,

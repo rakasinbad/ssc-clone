@@ -25,6 +25,7 @@ import { IQueryParams } from '../models/query.model';
 import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
 import { TriggerBase } from '../models/trigger-base.model';
+import { PromoHierarchyLayer } from '../models/promo-hierarchy.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 
@@ -442,6 +443,21 @@ export class HelperService {
         {
             id: 'inactive',
             label: 'Inactive',
+        },
+    ];
+
+    private static readonly _promoHierarchyLayer: { id: PromoHierarchyLayer; label: string }[] = [
+        {
+            id: PromoHierarchyLayer.NOL,
+            label: 'Layer 00',
+        },
+        {
+            id: PromoHierarchyLayer.ONE,
+            label: 'Layer 01',
+        },
+        {
+            id: PromoHierarchyLayer.TWO,
+            label: 'Layer 02',
         },
     ];
 
@@ -1055,6 +1071,11 @@ export class HelperService {
     triggerBase(): { id: TriggerBase; label: string }[] {
         return HelperService._triggerBase;
     }
+
+    promoHierarchyLayer(): { id: PromoHierarchyLayer; label: string }[] {
+        return HelperService._promoHierarchyLayer;
+    }
+    
 
     stockType(): { id: boolean; label: string }[] {
         return [

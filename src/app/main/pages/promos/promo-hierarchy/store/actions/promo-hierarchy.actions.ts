@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { PromoHierarchy } from '../../models';
 import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
-// import { PromoHierarchyPayload } from '../../models/promo-hierarchy.model';
+import { PromoHierarchyPayload } from '../../models/promo-hierarchy.model';
 import { EntityPayload } from 'app/shared/models/entity-payload.model';
 // import { VoucherCreationPayload } from '../../models/voucher.model';
 
@@ -88,7 +88,7 @@ export const fetchPromoHierarchyDetailSuccess = createAction(
  */
 export const updatePromoHierarchyRequest = createAction(
     '[Promo Hierarchy API] Update Promo Hierarchy Request',
-    props<{ payload: EntityPayload<Partial<PromoHierarchy>> }>()
+    props<{ payload: { body: PromoHierarchyPayload }}>()
 );
 
 export const updatePromoHierarchySuccess = createAction(

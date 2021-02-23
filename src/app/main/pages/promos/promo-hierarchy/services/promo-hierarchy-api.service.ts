@@ -109,19 +109,38 @@ export class PromoHierarchyApiService {
         return this.http.post<R>(this._url, payload);
     }
 
-    updatePromoHierarchy<T = EntityPayload<PromoHierarchyPayload>, R = undefined>(payload: T): Observable<R> {
-        if (!payload['id'] || !payload['data']) {
-            throw new Error('ERR_SET_PROMO_HIERARCHY_REQUIRED_ENTITY_PAYLOAD');
-        }
+    // updatePromoHierarchy<T = EntityPayload<PromoHierarchyPayload>, R = undefined>(payload: T): Observable<R> {
+    //     if (!payload['id'] || !payload['data']) {
+    //         throw new Error('ERR_SET_PROMO_HIERARCHY_REQUIRED_ENTITY_PAYLOAD');
+    //     }
 
-        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
+    //     this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
 
-        if (payload['data']['status']) {
-            return this.http.put<R>(`${this._url}/${payload['id']}`, payload['data']);
-        } else {
-            return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
-        }
+    //     if (payload['data']['status']) {
+    //         return this.http.put<R>(`${this._url}/${payload['id']}`, payload['data']);
+    //     } else {
+    //         return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+    //     }
+    // }
+
+    updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy> {
+        const _url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
+        return this.http.put<PromoHierarchy>(`${_url}/${body['id']}`, body['data']);
+
+        // return this.http.post<PromoHierarchy>(_urlExtend, body);
     }
+    
+    // create<T>(body: T): Observable<FlexiCombo> {
+    //     return this.http.post<FlexiCombo>(this._url, body);
+    // }
+
+    // patch<T>(body: T, id: string): Observable<FlexiCombo> {
+    //     return this.http.patch<FlexiCombo>(`${this._url}/${id}`, body);
+    // }
+
+    // updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy>  {
+    //     return this.http.put<PromoHierarchy>(`${this._url}/${body}`, body);
+    // }
 
     removePromoHierarchy<T = string, R = undefined>(payload: T): Observable<R> {
         if (typeof payload !== 'string') {

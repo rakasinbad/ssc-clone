@@ -10,12 +10,10 @@
 
 <mat-dialog-content class="mat-typography" style="width: 40vw">
     <form
-        id="app-extend-promo"
         [formGroup]="form"
         class="w-100-p"
         fxLayout="column"
         fxLayoutGap="6px"
-        (ngSubmit)="onSubmit()"
         fxFlex
         style="margin-top: 3vh"
     >
@@ -60,11 +58,33 @@
                         <mat-option value="active">Active</mat-option>
                         <mat-option value="inactive">Inactive</mat-option>
                     </mat-select> -->
-                    <mat-select formControlName="layer" name="layer">
+                    <!-- <mat-select formControlName="layer" name="layer">
                         <mat-option value="0">Layer 00</mat-option>
                         <mat-option value="1">Layer 01</mat-option>
                         <mat-option value="2">Layer 02</mat-option>
-                    </mat-select>
+                    </mat-select> -->
+                    <ng-container *ngIf="layerBase">
+                        <mat-select
+                            formControlName="layer"
+                            placeholder="layer"
+                        >
+                            <mat-option
+                                *ngFor="let row of layerBase"
+                                [value]="row.id"
+                            >
+                                {{ row.label }}
+                            </mat-option> 
+                        </mat-select>
+                    </ng-container>
+                    <!-- <ng-template #noPlatformsSinbad>
+                        <mat-select placeholder="Layer not found" disabled>
+                            <mat-option>None</mat-option>
+                        </mat-select>
+                    </ng-template> -->
+
+                    <!-- <mat-error *ngIf="hasError('platform', true)">
+                        {{ getErrorMessage('platform') }}
+                    </mat-error> -->
                 </mat-form-field>
             </div>
 
@@ -98,6 +118,7 @@
         mat-button
         [mat-dialog-close]="'yes'"
         cdkFocusInitial
+        (click)="onSubmit()"
         style="float: right; color: white; background-color: #f0444c; font-size: 14px"
     >
         Save
