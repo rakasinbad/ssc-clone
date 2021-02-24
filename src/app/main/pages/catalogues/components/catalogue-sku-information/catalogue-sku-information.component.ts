@@ -11,7 +11,7 @@ import {
     OnInit,
     Output,
     SimpleChanges,
-    ViewEncapsulation,
+    ViewEncapsulation
 } from '@angular/core';
 import {
     AbstractControl,
@@ -19,7 +19,7 @@ import {
     FormArray,
     FormBuilder,
     FormGroup,
-    ValidationErrors,
+    ValidationErrors
 } from '@angular/forms';
 import { MatChipInputEvent, MatDialog, MatSelectChange } from '@angular/material';
 import { SafeHtml } from '@angular/platform-browser';
@@ -41,7 +41,7 @@ import {
     take,
     takeUntil,
     tap,
-    withLatestFrom,
+    withLatestFrom
 } from 'rxjs/operators';
 import { CataloguesSelectCategoryComponent } from '../../catalogues-select-category/catalogues-select-category.component';
 import {
@@ -50,7 +50,7 @@ import {
     CatalogueUnit,
     SimpleCatalogueCategory,
     SubBrand,
-    SubBrandProps,
+    SubBrandProps
 } from '../../models';
 import { CataloguesService, SubBrandApiService } from '../../services';
 import { BrandActions, CatalogueActions } from '../../store/actions';
@@ -274,7 +274,7 @@ export class CatalogueSkuInformationComponent
 
                 // Get sub brand
 
-                if (catalogue.brandId) {
+                if (catalogue.brandId && this.isEditMode()) {
                     this._getSubBrandByBrandId(catalogue.brandId);
                 }
 
@@ -594,7 +594,7 @@ export class CatalogueSkuInformationComponent
             })
             .pipe(
                 map((resp) => (resp.total > 0 ? resp.data : [])),
-                takeUntil(this.subs$)
+                take(1)
             )
             .subscribe((sources) => {
                 this.subBrandCollections$.next(sources);
@@ -710,7 +710,7 @@ export class CatalogueSkuInformationComponent
             formMode: this.formMode,
         });
 
-        if (ev.value) {
+        if (ev.value && this.isEditMode()) {
             this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
             this._getSubBrandByBrandId(ev.value);
         }

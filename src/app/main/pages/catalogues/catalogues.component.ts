@@ -756,7 +756,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _handleApplyFilter(): void {
         this.globalFilterDto = {};
 
-        const { brand, faktur, maxAmount, minAmount, status, type: formType } = this.form.value;
+        const { brand, subBrand: subBrandId, faktur, maxAmount, minAmount, status, type: formType } = this.form.value;
 
         const configStatus = this.filterConfig.by['status'];
         const totalStatusSource =
@@ -773,11 +773,19 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         // Handle filter brand
-        if (brandId) {
+        if (brandId && !subBrandId) {
             this.globalFilterDto = {
                 ...this.globalFilterDto,
                 brandId,
             };
+        }
+
+        // Handle filter sub brand
+        if (subBrandId) {
+             this.globalFilterDto = {
+                 ...this.globalFilterDto,
+                 subBrandId,
+             };
         }
 
         // Handle filter faktur
