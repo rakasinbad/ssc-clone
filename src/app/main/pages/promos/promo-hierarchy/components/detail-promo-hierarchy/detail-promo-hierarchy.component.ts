@@ -106,16 +106,15 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
                         payload: this._breadCrumbs,
                     })
                 );
-
+                this.dataDetail = JSON.parse(localStorage.getItem('item'));
                 this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
-                console.log('promoHierarchy->', this.promoHierarchy$)
-                this.dataDetail = JSON.parse(localStorage.getItem('promo_hierarchy'));
-                    console.log('isi id n parameter->', id, parameter)
+                parameter['type'] = this.dataDetail.type;
+                parameter['supplierId'] = this.dataDetail.supplierId;
+                
                 this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetailRequest({ payload: { id, parameter } }));
-
                 this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
                 break;
         }

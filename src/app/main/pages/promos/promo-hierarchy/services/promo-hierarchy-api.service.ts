@@ -44,7 +44,6 @@ export class PromoHierarchyApiService {
     }
 
     find<T>(params: IQueryParamsVoucher): Observable<T> {
-        console.log('isi params->', params)
         if (params['id']) {
             this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
             return this.http.get<T>(`${this._url}/${params['id']}`);
@@ -106,7 +105,6 @@ export class PromoHierarchyApiService {
     }
 
     updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy> {
-        console.log('body PromoHierarchyPayload->', body)
         const newArgs = {
             layer: body['layer'],
             group: body['group']
@@ -115,21 +113,11 @@ export class PromoHierarchyApiService {
         
         const _url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
         return this.http.put<PromoHierarchy>(`${_url}/${body['id']}?type=${body['promoType']}`, newArgs);
-
-        // return this.http.post<PromoHierarchy>(_urlExtend, body);
     }
 
-    /**
-     *
-     *
-     * @template T
-     * @param {string} id
-     * @param {IQueryParams} [params]
-     * @returns {Observable<T>}
-     * @memberof PromoHierarchyApi
-     */
     findById<T>(id: string, params?: IQueryParams): Observable<T> {
         const newArg = [];
+        console.log('params findbyid->', params)
 
         if (params['supplierId']) {
             newArg.push({
@@ -146,7 +134,6 @@ export class PromoHierarchyApiService {
         }
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
-
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 

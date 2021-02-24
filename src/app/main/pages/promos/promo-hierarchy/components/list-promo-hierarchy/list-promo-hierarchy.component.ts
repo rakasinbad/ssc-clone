@@ -189,8 +189,9 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     }
 
     openDetailPage(id: string, row: any): void {
+        let itemPromoHierarchy = {type: row.promoType, supplierId: row.supplierId};
         this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
-        localStorage.setItem('promo_hierarchy', JSON.stringify(row));
+        localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
 
     isAllSelected(): boolean {

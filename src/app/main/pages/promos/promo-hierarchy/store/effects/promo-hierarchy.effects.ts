@@ -404,10 +404,7 @@ export class PromoHierarchyEffects {
         };
         if (parameter['splitRequest']) {
             return forkJoin([
-                this.PromoHierarchyApi$.findById<PromoHierarchyDetail>(id, {
-                    ...newParams,
-                    data: 'target',
-                } as IQueryParams).pipe(
+                this.PromoHierarchyApi$.findById<PromoHierarchyDetail>(id, newParams).pipe(
                     catchOffline(),
                     retry(3),
                     catchError((err) =>
