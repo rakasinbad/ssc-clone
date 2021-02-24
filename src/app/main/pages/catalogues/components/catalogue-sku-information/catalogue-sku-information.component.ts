@@ -11,7 +11,7 @@ import {
     OnInit,
     Output,
     SimpleChanges,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import {
     AbstractControl,
@@ -19,7 +19,7 @@ import {
     FormArray,
     FormBuilder,
     FormGroup,
-    ValidationErrors
+    ValidationErrors,
 } from '@angular/forms';
 import { MatChipInputEvent, MatDialog, MatSelectChange } from '@angular/material';
 import { SafeHtml } from '@angular/platform-browser';
@@ -41,7 +41,7 @@ import {
     take,
     takeUntil,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 import { CataloguesSelectCategoryComponent } from '../../catalogues-select-category/catalogues-select-category.component';
 import {
@@ -50,7 +50,7 @@ import {
     CatalogueUnit,
     SimpleCatalogueCategory,
     SubBrand,
-    SubBrandProps
+    SubBrandProps,
 } from '../../models';
 import { CataloguesService, SubBrandApiService } from '../../services';
 import { BrandActions, CatalogueActions } from '../../store/actions';
@@ -119,6 +119,8 @@ export class CatalogueSkuInformationComponent
 
     private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
     subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
+
+    subBrandLoading: boolean = false;
 
     // Untuk class yang digunakan di berbeda mode form.
     catalogueContent: {
@@ -583,6 +585,14 @@ export class CatalogueSkuInformationComponent
     }
 
     private _getSubBrandByBrandId(brandId: number): void {
+        this.subBrandLoading = true;
+
+        const subBrandIdCtrl = this.form.get('productInfo.subBrandId');
+
+        if (subBrandIdCtrl.enabled) {
+            subBrandIdCtrl.disable({ onlySelf: true });
+        }
+
         this.subBrandApiService
             .getWithQuery<PaginateResponse<SubBrandProps>>({
                 search: [
@@ -597,6 +607,12 @@ export class CatalogueSkuInformationComponent
                 take(1)
             )
             .subscribe((sources) => {
+                this.subBrandLoading = false;
+
+                if (subBrandIdCtrl.disable) {
+                    subBrandIdCtrl.enable({ onlySelf: true });
+                }
+
                 this.subBrandCollections$.next(sources);
             });
     }
@@ -711,7 +727,6 @@ export class CatalogueSkuInformationComponent
         });
 
         if (ev.value && this.isEditMode()) {
-            this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
             this._getSubBrandByBrandId(ev.value);
         }
     }

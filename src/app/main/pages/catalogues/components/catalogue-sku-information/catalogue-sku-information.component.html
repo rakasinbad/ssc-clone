@@ -270,6 +270,8 @@
                         </ng-template>
                     </mat-select>
 
+                    <mat-hint *ngIf="subBrandLoading"> Checking... </mat-hint>
+
                     <mat-error *ngIf="hasError(form.get('productInfo.subBrandId'))">
                         {{ getFormError(form.get('productInfo.subBrandId')) }}
                     </mat-error>
