@@ -56,7 +56,6 @@
                     <ng-container *ngIf="layerBase">
                         <mat-select
                             formControlName="layer"
-                            placeholder="layer"
                         >
                             <mat-option
                                 *ngFor="let row of layerBase"
@@ -78,13 +77,18 @@
                 <div class="label" fxFlexAlign="center" fxFlex="20">Promo Group</div>
 
                 <mat-form-field appearance="outline" fxFlex="50">
-                    <mat-select [formControl]="form.get('group')" [value]="form.get('group')">
-                        <mat-option value="none">None</mat-option>
-                        <mat-option value="principal-promo">Principal Promo</mat-option>
-                        <mat-option value="distributor-promo">Distributor Promo</mat-option>
-                        <mat-option value="sinbad-promo">Sinbad Promo</mat-option>
-                        <mat-option value="payment-method-promo">Payment Method Promo</mat-option>
-                    </mat-select>
+                    <ng-container *ngIf="groupBase">
+                        <mat-select
+                            formControlName="group"
+                        >
+                            <mat-option
+                                *ngFor="let row of groupBase"
+                                [value]="row.id"
+                            >
+                                {{ row.label }}
+                            </mat-option> 
+                        </mat-select>
+                    </ng-container>
                 </mat-form-field>
             </div>
         </div>
