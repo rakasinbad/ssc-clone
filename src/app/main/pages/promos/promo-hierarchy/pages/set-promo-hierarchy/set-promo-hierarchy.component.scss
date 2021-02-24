@@ -1,60 +1,6 @@
 @import 'src/@fuse/scss/fuse';
 
-// .extend-promo-dialog {
-//     // min-height: 406px;
-
-//     @include media-breakpoint('xs') {
-//         width: 100%;
-//     }
-
-//     @include media-breakpoint('gt-xs') {
-//         width: 667px;
-//     }
-
-//     .mat-dialog-container {
-//         padding: 0;
-//         min-height: 250px;
-
-//         app-extend-promo {
-//             .mat-toolbar {
-//                 background: none;
-//             }
-
-//             .spacer {
-//                 flex: 1 1 auto;
-//             }
-//         }
-//     }
-
-//     .dialog-content-wrapper {
-//         max-height: 85vh;
-//         display: flex;
-//         flex-direction: column;
-//     }
-
-//     .primary-color-input,
-//     .secondary-color-input {
-//         padding: 6px 8px;
-//     }
-
-//     .mat-form-field-prefix {
-//         top: -0.2em;
-//     }
-
-//     .mat-form-field-infix {
-//         padding: 0.5em 0 !important;
-//         top: -0.25em;
-//     }
-
-//     mat-dialog-content {
-        
-//         form {
-//             margin-top: 3vh;
-//         }
-//     }
-
-//     .custom-field {
-//         font-weight: lighter;
-//         font-size: large;
-//     }
-// }
+.dialog-content-wrapper {
+    max-height: 85vh;
+    flex-direction: column;
+}

@@ -25,6 +25,7 @@ import { IQueryParams } from '../models/query.model';
 import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
 import { TriggerBase } from '../models/trigger-base.model';
+import { PromoHierarchyLayer, PromoHierarchyGroup } from '../models/promo-hierarchy.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 
@@ -442,6 +443,52 @@ export class HelperService {
         {
             id: 'inactive',
             label: 'Inactive',
+        },
+    ];
+
+    private static readonly _promoHierarchyLayer: { id: PromoHierarchyLayer; label: string }[] = [
+        {
+            id: PromoHierarchyLayer.NOL,
+            label: 'Layer 00',
+        },
+        {
+            id: PromoHierarchyLayer.ONE,
+            label: 'Layer 01',
+        },
+        {
+            id: PromoHierarchyLayer.TWO,
+            label: 'Layer 02',
+        },
+        {
+            id: PromoHierarchyLayer.THREE,
+            label: 'Layer 03',
+        },
+        {
+            id: PromoHierarchyLayer.FOUR,
+            label: 'Layer 04',
+        },
+    ];
+
+    private static readonly _promoHierarchyGroup: { id: PromoHierarchyGroup; label: string }[] = [
+        {
+            id: PromoHierarchyGroup.NONE,
+            label: 'None',
+        },
+        {
+            id: PromoHierarchyGroup.PRINCIPAL,
+            label: 'Principal Promo',
+        },
+        {
+            id: PromoHierarchyGroup.DISTRIBUTOR,
+            label: 'Distributor Promo',
+        },
+        {
+            id: PromoHierarchyGroup.SINBAD,
+            label: 'Sinbad Promo',
+        },
+        {
+            id: PromoHierarchyGroup.PAYMENT,
+            label: 'Payment Method Promo',
         },
     ];
 
@@ -1054,6 +1101,14 @@ export class HelperService {
 
     triggerBase(): { id: TriggerBase; label: string }[] {
         return HelperService._triggerBase;
+    }
+
+    promoHierarchyLayer(): { id: PromoHierarchyLayer; label: string }[] {
+        return HelperService._promoHierarchyLayer;
+    }
+
+    promoHierarchyGroup(): { id: PromoHierarchyGroup; label: string }[] {
+        return HelperService._promoHierarchyGroup;
     }
 
     stockType(): { id: boolean; label: string }[] {

@@ -2,13 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher, IQueryParams } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
-
 import { PromoHierarchy } from '../models';
-import { fromPromoHierarchy } from '../store/reducers';
-import { EntityPayload } from 'app/shared/models/entity-payload.model';
-import { PromoHierarchyPayload } from '../models/promo-hierarchy.model';
 
 /**
  *
@@ -35,7 +31,7 @@ export class PromoHierarchyApiService {
      * @private
      * @memberof PromoHierarchyApiService
      */
-    private readonly _PromoHierarchyEndpoint = '/promohierarchy';
+    private readonly _PromoHierarchyEndpoint = '/promo-hierarchy';
 
     /**
      * Creates an instance of PromoHierarchyApiService.
@@ -63,9 +59,9 @@ export class PromoHierarchyApiService {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
-        if (params['totalOrderValue']) {
-            newArgs.push({ key: 'totalOrderValue', value: params['totalOrderValue'] });
-        }
+        // if (params['totalOrderValue']) {
+        //     newArgs.push({ key: 'totalOrderValue', value: params['totalOrderValue'] });
+        // }
 
         if (params['collected']) {
             newArgs.push({ key: 'collected', value: params['collected'] });
@@ -79,17 +75,23 @@ export class PromoHierarchyApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['status']) {
-            newArgs.push({ key: 'status', value: params['status'] });
+        // if (params['status']) {
+        //     newArgs.push({ key: 'status', value: params['status'] });
+        // }
+
+        if (params['layer'] !== null) {
+            if (params['layer'] == 0) {
+                newArgs.push({ key: 'layer', value: '0' });
+            } else {
+                newArgs.push({ key: 'layer', value: params['layer'] });
+            }
         }
 
-        if (params['typeView']) {
-            newArgs.push({ key: 'typeView', value: params['typeView'] });
+        if (params['type']) {
+            newArgs.push({ key: 'type', value: params['type'] });
         }
 
-        if (params['typeLayer']) {
-            newArgs.push({ key: 'typeLayer', value: params['typeLayer'] });
-        }
+       
 
         this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
@@ -102,18 +104,37 @@ export class PromoHierarchyApiService {
         return this.http.post<R>(this._url, payload);
     }
 
-    updatePromoHierarchy<T = EntityPayload<PromoHierarchyPayload>, R = undefined>(payload: T): Observable<R> {
-        if (!payload['id'] || !payload['data']) {
-            throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_ENTITY_PAYLOAD');
+    updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy> {
+        const newArgs = {
+            layer: body['layer'],
+            group: body['group']
+        };
+        
+        
+        const _url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
+        return this.http.put<PromoHierarchy>(`${_url}/${body['id']}?type=${body['promoType']}`, newArgs);
+    }
+
+    findById<T>(id: string, params?: IQueryParams): Observable<T> {
+        const newArg = [];
+        console.log('params findbyid->', params)
+
+        if (params['supplierId']) {
+            newArg.push({
+                key: 'supplierId',
+                value: params['supplierId'],
+            });
         }
 
-        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
-
-        if (payload['data']['status']) {
-            return this.http.put<R>(`${this._url}/${payload['id']}`, payload['data']);
-        } else {
-            return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+        if (params['type']) {
+            newArg.push({
+                key: 'type',
+                value: params['type'],
+            });
         }
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
     removePromoHierarchy<T = string, R = undefined>(payload: T): Observable<R> {

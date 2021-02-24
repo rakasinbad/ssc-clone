@@ -10,7 +10,7 @@ import {
     Input,
     SimpleChanges,
     OnChanges,
-    ChangeDetectorRef
+    ChangeDetectorRef,
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -32,252 +32,15 @@ import { PromoHierarchySelectors } from '../../store/selectors';
 import { HelperService } from 'app/shared/helpers';
 import { SetPromoHierarchyComponent } from '../../pages/set-promo-hierarchy/set-promo-hierarchy.component';
 
-const listHierarchy = [
-        {
-            "id": "442",
-            "name": "crossnew1",
-            "promoSellerId": "crossnew1",
-            "promoAllocation": "none",
-            "promoBudget": null,
-            "planSlot": null,
-            "planBudget": null,
-            "promoSlot": null,
-            "promoType": "cross_selling",
-            "status": "active",
-            "triggerBase": "sku",
-            "conditionBase": "qty",
-            "conditionQty": "11",
-            "conditionValue": null,
-            "benefitType": "qty",
-            "benefitQty": 1,
-            "layer": 3,
-            "promoGroup": "sinbad_promo",
-            "benefitDiscount": null,
-            "benefitSku": [
-                "Yupi Dino Land MIX Display 12x24x7 gr"
-            ],
-            "triggerCatalogues": [
-                "Yupi Dino Land MIX Display 12x24x7 gr",
-                "Yupi Rolleto Display 12x24x10gr"
-            ],
-            "benefitRebate": null,
-            "benefitMaxRebate": null,
-            "promoConditionCatalogues": [
-                {
-                    "crossSellingGroup": "Group 1",
-                    "conditionValue": null,
-                    "conditionBase": "qty",
-                    "fakturName": "COMBINE",
-                    "crossSellingGroupRelation": "AND",
-                    "conditionQty": "20",
-                    "choosenSku": [
-                        "Yupi Dino Land MIX Display 12x24x7 gr"
-                    ]
-                },
-                {
-                    "crossSellingGroup": "Group 2",
-                    "conditionValue": null,
-                    "conditionBase": "qty",
-                    "fakturName": "COMBINE",
-                    "crossSellingGroupRelation": "AND",
-                    "conditionQty": "20",
-                    "choosenSku": [
-                        "Yupi Rolleto Display 12x24x10gr"
-                    ]
-                }
-            ],
-            "layerInformation": [{
-                "layer0": 10,
-                "layer1": 11,
-                "layer2": 0,
-                "layer3": 10,
-                "layer4": 0
-              }],
-        },
-        {
-            "id": "443",
-            "name": "flexi1",
-            "promoSellerId": "flexi1",
-            "promoAllocation": "none",
-            "promoBudget": null,
-            "planSlot": null,
-            "planBudget": null,
-            "promoSlot": null,
-            "promoType": "flexi",
-            "status": "active",
-            "triggerBase": "sku",
-            "conditionBase": "qty",
-            "conditionQty": "11",
-            "conditionValue": null,
-            "benefitType": "qty",
-            "benefitQty": 1,
-            "layer": 0,
-            "promoGroup": "none",
-            "benefitDiscount": null,
-            "benefitSku": [
-                "Yupi Dino Land MIX Display 12x24x7 gr"
-            ],
-            "triggerCatalogues": [
-                "Yupi Dino Land MIX Display 12x24x7 gr",
-                "Yupi Rolleto Display 12x24x10gr"
-            ],
-            "benefitRebate": null,
-            "benefitMaxRebate": null,
-            "layerInformation": [{
-                "layer0": 11,
-                "layer1": 1,
-                "layer2": 0,
-                "layer3": 13,
-                "layer4": 0
-              }],
-        },
-        {
-            "id": "444",
-            "name": "voucher1",
-            "promoSellerId": "voucher1",
-            "promoAllocation": "none",
-            "promoBudget": null,
-            "planSlot": null,
-            "planBudget": null,
-            "promoSlot": null,
-            "promoType": "voucher",
-            "status": "inactive",
-            "triggerBase": "sku",
-            "conditionBase": "qty",
-            "conditionQty": "11",
-            "conditionValue": null,
-            "benefitType": "qty",
-            "benefitQty": 1,
-            "layer":1,
-            "promoGroup": "principal",
-            "benefitDiscount": null,
-            "benefitSku": [
-                "Yupi Dino Land MIX Display 12x24x7 gr"
-            ],
-            "triggerCatalogues": [
-                "Yupi Dino Land MIX Display 12x24x7 gr",
-                "Yupi Rolleto Display 12x24x10gr"
-            ],
-            "benefitRebate": null,
-            "benefitMaxRebate": null,
-            "layerInformation": [{
-                "layer0": 11,
-                "layer1": 14,
-                "layer2": 0,
-                "layer3": 15,
-                "layer4": 0
-              }],
-        },
-        {
-            "id": "445",
-            "name": "crossSelling2",
-            "promoSellerId": "crossSelling2",
-            "promoAllocation": "none",
-            "promoBudget": null,
-            "planSlot": null,
-            "planBudget": null,
-            "promoSlot": null,
-            "promoType": "cross_selling",
-            "status": "inactive",
-            "triggerBase": "sku",
-            "conditionBase": "qty",
-            "conditionQty": "11",
-            "conditionValue": null,
-            "benefitType": "qty",
-            "benefitQty": 1,
-            "layer":2,
-            "promoGroup": "distributor",
-            "benefitDiscount": null,
-            "benefitSku": [
-                "Yupi Dino Land MIX Display 12x24x7 gr"
-            ],
-            "triggerCatalogues": [
-                "Yupi Dino Land MIX Display 12x24x7 gr",
-                "Yupi Rolleto Display 12x24x10gr"
-            ],
-            "benefitRebate": null,
-            "benefitMaxRebate": null,
-            "promoConditionCatalogues": [
-                {
-                    "crossSellingGroup": "Group 1",
-                    "conditionValue": null,
-                    "conditionBase": "qty",
-                    "fakturName": "COMBINE",
-                    "crossSellingGroupRelation": "AND",
-                    "conditionQty": "20",
-                    "choosenSku": [
-                        "Yupi Dino Land MIX Display 12x24x7 gr"
-                    ]
-                },
-                {
-                    "crossSellingGroup": "Group 2",
-                    "conditionValue": null,
-                    "conditionBase": "qty",
-                    "fakturName": "COMBINE",
-                    "crossSellingGroupRelation": "AND",
-                    "conditionQty": "20",
-                    "choosenSku": [
-                        "Yupi Rolleto Display 12x24x10gr"
-                    ]
-                }
-            ],
-            "layerInformation": [{
-                "layer0": 12,
-                "layer1": 17,
-                "layer2": 10,
-                "layer3": 18,
-                "layer4": 4
-              }],
-        },
-        {
-            "id": "55",
-            "name": "PROMO OVALTINE MEI 2020 EMPATPULUHSATU",
-            "promoSellerId": "PROMO OVALTINE 41",
-            "promoAllocation": "promo_budget",
-            "promoBudget": null,
-            "planSlot": null,
-            "planBudget": null,
-            "promoLayer": 0,
-            "promoGroup": "none",
-            "promoSlot": null,
-            "promoType": "flexi",
-            "status": "active",
-            "triggerBase": "sku",
-            "conditionBase": "value",
-            "conditionQty": null,
-            "conditionValue": 9818190,
-            "benefitType": "qty",
-            "benefitQty": 15,
-            "benefitDiscount": null,
-            "benefitSku": [
-                "OVALTINE COOKIES 3s"
-            ],
-            "triggerCatalogues": [
-                "Ovaltine Classic (PP) 22g(10sx3Link)x8"
-            ],
-            "benefitRebate": null,
-            "benefitMaxRebate": null,
-            "layerInformation": [
-                {
-                    "layer0": 220,
-                    "layer1": 1,
-                    "layer2": 0,
-                    "layer3": 0,
-                    "layer4": 0
-                }
-            ]
-        }
-];
-
 type PromoHierarchyType = 'layer0' | 'layer1' | 'layer2' | 'layer3' | 'layer4';
 
 @Component({
-  selector: 'app-list-promo-hierarchy',
-  templateUrl: './list-promo-hierarchy.component.html',
-  styleUrls: ['./list-promo-hierarchy.component.scss'],
-  animations: fuseAnimations,
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.Default,
+    selector: 'app-list-promo-hierarchy',
+    templateUrl: './list-promo-hierarchy.component.html',
+    styleUrls: ['./list-promo-hierarchy.component.scss'],
+    animations: fuseAnimations,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
@@ -304,9 +67,9 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     selection: SelectionModel<PromoHierarchy>;
     dataSource = [];
     totalDataSource: number;
-    // dataSource$: Observable<Array<PromoHierarchy>>;
+    dataSource$: Observable<Array<PromoHierarchy>>;
     totalDataSource$: Observable<number>;
-    // isLoading$: Observable<boolean>;
+    isLoading$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -320,8 +83,6 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     private subs$: Subject<void> = new Subject<void>();
 
     constructor(
-        // private route: ActivatedRoute,
-        // private readonly sanitizer: DomSanitizer,
         private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
         private router: Router,
@@ -332,19 +93,20 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     ngOnInit(): void {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);
-        // this.dataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getAllPromoHierarchy).pipe(
-        //     takeUntil(this.subs$)
-        // );
-        // this.totalDataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getTotalItem);
+        this.dataSource$ = this.PromoHierarchyStore.select(
+            PromoHierarchySelectors.selectAll
+        ).pipe(takeUntil(this.subs$));
+        this.totalDataSource$ = this.PromoHierarchyStore.select(
+            PromoHierarchySelectors.getTotalItem
+        );
 
-        // this.isLoading$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.getLoadingState).pipe(
-        //     takeUntil(this.subs$)
-        // );
+        this.isLoading$ = this.PromoHierarchyStore.select(
+            PromoHierarchySelectors.getLoadingState
+        ).pipe(takeUntil(this.subs$));
 
         this._initTable();
 
         this.cdRef.detectChanges();
-
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -361,7 +123,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                 setTimeout(() => this._initTable());
             }
         }
-   
+
         if (changes['viewByPromo']) {
             if (!changes['viewByPromo'].isFirstChange()) {
                 this.viewByPromo = changes['viewByPromo'].currentValue;
@@ -385,16 +147,6 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
             .subscribe(() => {
                 this._initTable();
             });
-
-        // this.PromoHierarchyStore.select(PromoHierarchySelectors.getRefreshStatus)
-        //     .pipe(takeUntil(this.subs$))
-        //     .subscribe((needRefresh) => {
-        //         if (needRefresh) {
-        //             this._initTable();
-        //         }
-
-        //         this.PromoHierarchyStore.dispatch(PromoHierarchyActions.setRefreshStatus({ payload: false }));
-        //     });
     }
 
     ngOnDestroy(): void {
@@ -407,13 +159,14 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
 
         const data: IQueryParamsVoucher = {
             limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
+            skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
 
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
         }
-        // this.table.nativeElement.scrollTop = 0;
+
+        this.table.nativeElement.scrollTop = 0;
     }
 
     settingPromoHierarchy(value) {
@@ -423,23 +176,22 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                 name: value.name,
                 layer: value.layer,
                 group: value.promoGroup,
-                data: value
-            }, disableClose: true
+                data: value,
+            },
+            disableClose: true,
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-                if (result === 'yes') {
-                    
-                } else {
-
-                }
-            });
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result === 'yes') {
+                this._initTable();
+            }
+        });
     }
 
     openDetailPage(id: string, row: any): void {
+        let itemPromoHierarchy = {type: row.promoType, supplierId: row.supplierId};
         this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
-        localStorage.setItem('promo_hierarchy', JSON.stringify(row));
-
+        localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
 
     isAllSelected(): boolean {
@@ -458,290 +210,39 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
-            if (this.sort.direction) {
-                if (this.sort.active === 'total-order-value') {
-                    data['totalOrderValue'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
-                } else if (this.sort.active === 'collected') {
-                    data['collected'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
-                }  else if (this.sort.active === 'used') {
-                    data['used'] = this.sort.direction === 'desc' ? 'DESC' : 'ASC';
-                } 
-                
-            } 
-
             data['paginate'] = true;
             data['keyword'] = this.search.value;
-
-            if (this.searchValue !== '') {
-                switch(this.viewByPromo) {
-                    case 'all':
-                        switch(this.selectedStatus) {
-                            case 'layer0':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 0 && d.name == this.searchValue);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer1':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 1 && d.name == this.searchValue);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer2':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 2 && d.name == this.searchValue);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer3':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 3 && d.name == this.searchValue);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer4':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 4 && d.name == this.searchValue);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                        }
-                    break;
-                case 'flexi':
-                        let dataFlexi = listHierarchy.filter(d => d.promoType == 'flexi' && d.name == this.searchValue);
-                        switch(this.selectedStatus) {
-                            case 'layer0':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 0);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer1':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 1);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer2':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 2);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer3':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 3);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer4':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 4);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                        };
-                    break;
-                case 'cross_selling':
-                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'cross_selling' && d.name == this.searchValue);
-                    switch(this.selectedStatus) {
-                        case 'layer0':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 0);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer1':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 1);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer2':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 2);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer3':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 3);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer4':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 4);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                    };
-                    break;
-                case 'voucher':
-                    let dataVoucher = listHierarchy.filter(d => d.promoType == 'voucher' && d.name == this.searchValue);
-                    switch(this.selectedStatus) {
-                        case 'layer0':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 0);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer1':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 1);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer2':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 2);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer3':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 3);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer4':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 4);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                    };
-                    break;
-        
-                default:
-                    switch(this.selectedStatus) {
-                        case 'layer0':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 0 && d.name == this.searchValue);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer1':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 1 && d.name == this.searchValue);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer2':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 2 && d.name == this.searchValue);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer3':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 3 && d.name == this.searchValue);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer4':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 4 && d.name == this.searchValue);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                    }
-                    return;
-                };
-            } else {
-                switch(this.viewByPromo) {
-                    case 'all':
-                        switch(this.selectedStatus) {
-                            case 'layer0':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 0);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer1':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 1);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer2':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 2);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer3':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 3);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer4':
-                                this.dataSource = listHierarchy.filter(d => d.layer == 4);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                        }
-                    break;
-                case 'flexi':
-                        let dataFlexi = listHierarchy.filter(d => d.promoType == 'flexi');
-                        switch(this.selectedStatus) {
-                            case 'layer0':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 0);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer1':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 1);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer2':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 2);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer3':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 3);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                            case 'layer4':
-                                this.dataSource = dataFlexi.filter(d => d.layer == 4);
-                                this.totalDataSource = this.dataSource.length;
-                            break;
-                        };
-                    break;
-                case 'cross_selling':
-                    let dataCrossSelling = listHierarchy.filter(d => d.promoType == 'cross_selling');
-                    switch(this.selectedStatus) {
-                        case 'layer0':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 0);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer1':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 1);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer2':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 2);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer3':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 3);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer4':
-                            this.dataSource = dataCrossSelling.filter(d => d.layer == 4);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                    };
-                    break;
-                case 'voucher':
-                    let dataVoucher = listHierarchy.filter(d => d.promoType == 'voucher');
-                    switch(this.selectedStatus) {
-                        case 'layer0':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 0);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer1':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 1);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer2':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 2);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer3':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 3);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer4':
-                            this.dataSource = dataVoucher.filter(d => d.layer == 4);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                    };
-                    break;
-        
-                default:
-                    switch(this.selectedStatus) {
-                        case 'layer0':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 0);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer1':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 1);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer2':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 2);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer3':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 3);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                        case 'layer4':
-                            this.dataSource = listHierarchy.filter(d => d.layer == 4);
-                            this.totalDataSource = this.dataSource.length;
-                        break;
-                    }
-                    return;
-                };
+            if (data['keyword'] !== null) {
+                data['skip'] = 0;
             }
-            
-        this.cdRef.detectChanges();
+            data['type'] = this.viewByPromo;
 
-            // if (this.selectedStatus !== 'all') {
-            //     data['status'] = this.selectedStatus;
-            // }
+            switch (this.selectedStatus) {
+                case 'layer0':
+                    data['layer'] = 0;
+                    break;
+                case 'layer1':
+                    data['layer'] = 1;
+                    break;
+                case 'layer2':
+                    data['layer'] = 2;
+                    break;
+                case 'layer3':
+                    data['layer'] = 3;
+                    break;
+                case 'layer4':
+                    data['layer'] = 4;
+                    break;
+            }
 
-            // this.PromoHierarchyStore.dispatch(PromoHierarchyActions.resetPromoHierarchy());
-            // this.PromoHierarchyStore.dispatch(
-            //     PromoHierarchyActions.fetchPromoHierarchyRequest({
-            //         payload: data,
-            //     })
-            // );
+            this.PromoHierarchyStore.dispatch(PromoHierarchyActions.resetPromoHierarchy());
+            this.PromoHierarchyStore.dispatch(
+                PromoHierarchyActions.fetchPromoHierarchyRequest({
+                    payload: data,
+                })
+            );
+
+            this.cdRef.detectChanges();
         }
     }
-
 }
-
