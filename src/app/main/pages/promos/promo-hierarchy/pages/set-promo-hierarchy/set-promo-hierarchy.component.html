@@ -1,108 +1,115 @@
-<mat-toolbar style="background: none">
-    <mat-toolbar-row class="p-0" fxLayoutAlign="space-between center">
-        <span mat-dialog-title class="m-0" style="font-weight: 700">Set Promo Layer</span>
-        <span class="spacer"></span>
-        <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
-            <mat-icon>close</mat-icon>
+<div class="dialog-content-wrapper">
+    <mat-toolbar style="background: none">
+        <mat-toolbar-row class="p-0" fxLayoutAlign="space-between center">
+            <span mat-dialog-title class="m-0" style="font-weight: 700">Set Promo Layer</span>
+            <span class="spacer"></span>
+            <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <mat-dialog-content class="mat-typography" style="width: 40vw">
+        <form
+            [formGroup]="form"
+            class="w-100-p"
+            fxLayout="column"
+            fxLayoutGap="6px"
+            fxFlex
+            style="margin-top: 3vh"
+        >
+            <div class="center p-8" fxLayout="column" fxLayoutGap="16px" [formGroup]="form">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="30">Promo Seller Id</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ data.id }}
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="30">Promo Name</div>
+
+                    <div class="info" fxFlex="100">
+                        {{ data.name }}
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field mb-0"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div
+                        class="label"
+                        fxFlexAlign="center"
+                        fxFlex="30"
+                        style="padding-bottom: 15px"
+                    >
+                        Layer Level
+                    </div>
+
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <ng-container *ngIf="layerBase">
+                            <mat-select formControlName="layer">
+                                <mat-option *ngFor="let row of layerBase" [value]="row.id">
+                                    {{ row.label }}
+                                </mat-option>
+                            </mat-select>
+                        </ng-container>
+                    </mat-form-field>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div
+                        class="pb-15 label"
+                        fxFlexAlign="center"
+                        fxFlex="30"
+                        style="padding-bottom: 15px"
+                    >
+                        Promo Group
+                    </div>
+
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <ng-container *ngIf="groupBase">
+                            <mat-select formControlName="group">
+                                <mat-option *ngFor="let row of groupBase" [value]="row.id">
+                                    {{ row.label }}
+                                </mat-option>
+                            </mat-select>
+                        </ng-container>
+                    </mat-form-field>
+                </div>
+            </div>
+        </form>
+    </mat-dialog-content>
+
+    <div mat-dialog-actions align="end" style="margin-bottom: 0px">
+        <button
+            mat-button
+            [mat-dialog-close]="'yes'"
+            cdkFocusInitial
+            (click)="onSubmit()"
+            fxFlex="20"
+            style="float: right; color: white; background-color: #f0444c; font-size: 14px"
+        >
+            Save
         </button>
-    </mat-toolbar-row>
-</mat-toolbar>
-
-<mat-dialog-content class="mat-typography" style="width: 40vw">
-    <form
-        [formGroup]="form"
-        class="w-100-p"
-        fxLayout="column"
-        fxLayoutGap="6px"
-        fxFlex
-        style="margin-top: 3vh"
-    >
-        <div class="center p-8" fxLayout="column" fxLayoutGap="16px" [formGroup]="form">
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="20">Promo Seller Id</div>
-
-                <div class="info" fxFlex="100">
-                    {{ data.id }}
-                </div>
-            </div>
-
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="20">Promo Name</div>
-
-                <div class="info" fxFlex="100">
-                    {{ data.name }}
-                </div>
-            </div>
-
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="20">Layer Level</div>
-
-                <mat-form-field appearance="outline" fxFlex="50">
-                    <ng-container *ngIf="layerBase">
-                        <mat-select
-                            formControlName="layer"
-                        >
-                            <mat-option
-                                *ngFor="let row of layerBase"
-                                [value]="row.id"
-                            >
-                                {{ row.label }}
-                            </mat-option> 
-                        </mat-select>
-                    </ng-container>
-                </mat-form-field>
-            </div>
-
-            <div
-                class="custom-field info-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <div class="label" fxFlexAlign="center" fxFlex="20">Promo Group</div>
-
-                <mat-form-field appearance="outline" fxFlex="50">
-                    <ng-container *ngIf="groupBase">
-                        <mat-select
-                            formControlName="group"
-                        >
-                            <mat-option
-                                *ngFor="let row of groupBase"
-                                [value]="row.id"
-                            >
-                                {{ row.label }}
-                            </mat-option> 
-                        </mat-select>
-                    </ng-container>
-                </mat-form-field>
-            </div>
-        </div>
-    </form>
-</mat-dialog-content>
-
-<div mat-dialog-actions align="end" style="margin-bottom: 0px">
-    <button
-        mat-button
-        [mat-dialog-close]="'yes'"
-        cdkFocusInitial
-        (click)="onSubmit()"
-        style="float: right; color: white; background-color: #f0444c; font-size: 14px"
-    >
-        Save
-    </button>
+    </div>
 </div>

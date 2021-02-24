@@ -108,37 +108,6 @@ export class PromoHierarchyEffects {
 
     
     updatePromoHierarchyRequest$ = createEffect(() =>
-        // this.actions$.pipe(
-        //     ofType(PromoHierarchyActions.updatePromoHierarchyRequest),
-        //     map((action) => action.payload),
-        //     withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-        //     switchMap(([payload, authState]: [{ body: IPromoHierarchyPayload }, TNullable<Auth>]) => {
-        //         if (!authState) {
-        //             return this._$helper.decodeUserToken().pipe(
-        //                 map(this._checkUserSupplier),
-        //                 retry(3),
-        //                 switchMap((userData) => of([userData, payload])),
-        //                 switchMap<[User, { body: IPromoHierarchyPayload }], Observable<AnyAction>>(
-        //                     this.updatePromoHierarchyRequest
-        //                 ),
-        //                 catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
-        //             );
-        //         } else {
-        //             return of(authState.user).pipe(
-        //                 map(this._checkUserSupplier),
-        //                 retry(3),
-        //                 switchMap((userData) => of([userData, payload])),
-        //                 switchMap<[User, { body: IPromoHierarchyPayload }], Observable<AnyAction>>(
-        //                     this.updatePromoHierarchyRequest
-        //                 ),
-        //                 catchError((err) => this._sendErrorToState$(err, 'changeStatusFailure'))
-        //             );
-        //         }
-        //     }),
-        //     finalize(() => {
-        //         this.store.dispatch(UiActions.resetHighlightRow());
-        //     })
-        // )
         this.actions$.pipe(
             // Hanya untuk action penambahan Promo Hierarchy.
             ofType(PromoHierarchyActions.updatePromoHierarchyRequest),
@@ -197,26 +166,19 @@ export class PromoHierarchyEffects {
         { dispatch: false }
     );
 
-    // addVoucherSuccess$ = createEffect(
-    //     () =>
-    //         this.actions$.pipe(
-    //             // Hanya untuk action penambahan Supplier Voucher.
-    //             ofType(PromoHierarchyActions.addPromoHierarchySuccess),
-    //             // Hanya mengambil payload-nya saja dari action.
-    //             map((action) => action.payload),
-    //             tap(() => {
-    //                 const noticeSetting: MatSnackBarConfig = {
-    //                     horizontalPosition: 'right',
-    //                     verticalPosition: 'bottom',
-    //                     duration: 5000,
-    //                 };
-    //                 this.notice$.open(`Add Promo Hierarchy success.`, 'success', noticeSetting);
-
-    //                 this.router.navigate(['/pages/promos/promo-hierarchy']);
-    //             })
-    //         ),
-    //     { dispatch: false }
-    // );
+    updatePromoHierarchySuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PromoHierarchyActions.updatePromoHierarchySuccess),
+                tap(() => {
+                    this.notice$.open('Successfully set promo Hierarchy', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
 
     confirmRemoveCatalogue$ = createEffect(
         () =>

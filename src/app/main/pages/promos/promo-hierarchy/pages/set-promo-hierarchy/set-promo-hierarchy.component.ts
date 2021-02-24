@@ -1,12 +1,10 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
-// import { MAT_DIALOG_DATA } from '@angular/material';
+import { ChangeDetectionStrategy, ViewEncapsulation, Component, Inject, OnInit } from '@angular/core';
+import { fuseAnimations } from '@fuse/animations';
 import { FormGroup, FormArray, FormBuilder, FormControl, } from '@angular/forms';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { PromoHierarchyLayer, PromoHierarchyGroup } from 'app/shared/models/promo-hierarchy.model';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
-import {
-    MAT_DIALOG_DATA, MatDialogRef
-} from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
 import { PromoHierarchyActions } from '../../store/actions';
@@ -15,7 +13,10 @@ import { PromoHierarchyActions } from '../../store/actions';
   selector: 'app-set-promo-hierarchy',
   templateUrl: './set-promo-hierarchy.component.html',
   styleUrls: ['./set-promo-hierarchy.component.scss'],
+  animations: fuseAnimations,
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
+    
 })
 export class SetPromoHierarchyComponent implements OnInit {
     form: FormGroup;
