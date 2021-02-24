@@ -1,39 +1,46 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromPromoHierarchyCore from '../reducers';
-import { fromPromoHierarchy } from '../reducers';
+import * as fromPromoHierarchy from '../reducers/promo-hierarchy.reducer';
 
 // Get state from the feature key.
+// export const getPromoHierarchyCoreState = createFeatureSelector<
+//     fromPromoHierarchyCore.FeatureState,
+//     fromPromoHierarchyCore.State
+// >(fromPromoHierarchyCore.featureKey);
+
 export const getPromoHierarchyCoreState = createFeatureSelector<
-    fromPromoHierarchyCore.FeatureState,
-    fromPromoHierarchyCore.State
+fromPromoHierarchyCore.FeatureState,
+fromPromoHierarchyCore.State
 >(fromPromoHierarchyCore.featureKey);
 
+export const getPromoHierarchyEntitiesState = createSelector(
+    getPromoHierarchyCoreState,
+    (state) => state.promoHierarchy
+);
+
 export const {
-    selectAll: selectAllPromoHierarchy,
-    selectEntities: selectPromoHierarchyEntities,
-    selectIds: selectPromoHierarchyIds,
-    selectTotal: selectPromoHierarchyTotal,
-} = fromPromoHierarchyCore.fromPromoHierarchy.adapterPromoHierarchy.getSelectors();
+    selectAll,
+    selectEntities,
+    selectIds,
+    selectTotal,
+} = fromPromoHierarchy.adapter.getSelectors(getPromoHierarchyEntitiesState);
 
 const getPromoHierarchyState = createSelector(
     getPromoHierarchyCoreState,
-    (state) => state[fromPromoHierarchy.FEATURE_KEY]
+    (state) => state[fromPromoHierarchy.featureKey]
 );
-
-export const getPromoHierarchyEntity = createSelector(getPromoHierarchyState, selectPromoHierarchyEntities);
-
-export const getPromoHierarchyTotalEntity = createSelector(getPromoHierarchyState, selectPromoHierarchyTotal);
-
-export const getAllPromoHierarchy = createSelector(getPromoHierarchyState, selectAllPromoHierarchy);
-
-export const getPromoHierarchyIds = createSelector(getPromoHierarchyState, selectPromoHierarchyIds);
 
 export const getTotalItem = createSelector(getPromoHierarchyState, (state) => state.total);
 
-export const getSelectedPromoHierarchy = createSelector(
+export const getSelectedId = createSelector(
+    getPromoHierarchyEntitiesState,
+    (state) => state.selectedId
+);
+
+export const getSelectedItem = createSelector(
     getPromoHierarchyState,
-    getPromoHierarchyEntity,
-    (state, Voucher) => Voucher[state.selectedId]
+    getSelectedId,
+    (entities, id) => entities[id]
 );
 
 export const getLoadingState = createSelector(getPromoHierarchyState, (state) => state.isLoading);

@@ -107,16 +107,16 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
                     })
                 );
 
-                // this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedPromoHierarchy);
+                this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
-
+                console.log('promoHierarchy->', this.promoHierarchy$)
                 this.dataDetail = JSON.parse(localStorage.getItem('promo_hierarchy'));
+                    console.log('isi id n parameter->', id, parameter)
+                this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetailRequest({ payload: { id, parameter } }));
 
-                // this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetail({ payload: { id, parameter } }));
-
-                // this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
+                this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
                 break;
         }
     }

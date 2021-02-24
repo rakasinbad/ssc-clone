@@ -2,13 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher, IQueryParams } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
-
 import { PromoHierarchy } from '../models';
-import { fromPromoHierarchy } from '../store/reducers';
-import { EntityPayload } from 'app/shared/models/entity-payload.model';
-import { PromoHierarchyPayload } from '../models/promo-hierarchy.model';
 
 /**
  *
@@ -109,20 +105,6 @@ export class PromoHierarchyApiService {
         return this.http.post<R>(this._url, payload);
     }
 
-    // updatePromoHierarchy<T = EntityPayload<PromoHierarchyPayload>, R = undefined>(payload: T): Observable<R> {
-    //     if (!payload['id'] || !payload['data']) {
-    //         throw new Error('ERR_SET_PROMO_HIERARCHY_REQUIRED_ENTITY_PAYLOAD');
-    //     }
-
-    //     this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
-
-    //     if (payload['data']['status']) {
-    //         return this.http.put<R>(`${this._url}/${payload['id']}`, payload['data']);
-    //     } else {
-    //         return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
-    //     }
-    // }
-
     updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy> {
         console.log('body PromoHierarchyPayload->', body)
         const newArgs = {
@@ -136,18 +118,37 @@ export class PromoHierarchyApiService {
 
         // return this.http.post<PromoHierarchy>(_urlExtend, body);
     }
-    
-    // create<T>(body: T): Observable<FlexiCombo> {
-    //     return this.http.post<FlexiCombo>(this._url, body);
-    // }
 
-    // patch<T>(body: T, id: string): Observable<FlexiCombo> {
-    //     return this.http.patch<FlexiCombo>(`${this._url}/${id}`, body);
-    // }
+    /**
+     *
+     *
+     * @template T
+     * @param {string} id
+     * @param {IQueryParams} [params]
+     * @returns {Observable<T>}
+     * @memberof PromoHierarchyApi
+     */
+    findById<T>(id: string, params?: IQueryParams): Observable<T> {
+        const newArg = [];
 
-    // updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy>  {
-    //     return this.http.put<PromoHierarchy>(`${this._url}/${body}`, body);
-    // }
+        if (params['supplierId']) {
+            newArg.push({
+                key: 'supplierId',
+                value: params['supplierId'],
+            });
+        }
+
+        if (params['type']) {
+            newArg.push({
+                key: 'type',
+                value: params['type'],
+            });
+        }
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
+    }
 
     removePromoHierarchy<T = string, R = undefined>(payload: T): Observable<R> {
         if (typeof payload !== 'string') {

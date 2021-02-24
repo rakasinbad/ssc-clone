@@ -94,7 +94,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);
         this.dataSource$ = this.PromoHierarchyStore.select(
-            PromoHierarchySelectors.getAllPromoHierarchy
+            PromoHierarchySelectors.selectAll
         ).pipe(takeUntil(this.subs$));
         this.totalDataSource$ = this.PromoHierarchyStore.select(
             PromoHierarchySelectors.getTotalItem

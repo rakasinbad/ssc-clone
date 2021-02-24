@@ -1,18 +1,18 @@
 import { createAction, props } from '@ngrx/store';
 import { PromoHierarchy } from '../../models';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher, IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
-import { PromoHierarchyPayload } from '../../models/promo-hierarchy.model';
-import { EntityPayload } from 'app/shared/models/entity-payload.model';
-// import { VoucherCreationPayload } from '../../models/voucher.model';
+import { PromoHierarchyPayload, PromoHierarchyDetail } from '../../models/promo-hierarchy.model';
 
 export type requestActionNames =
     | 'fetchPromoHierarchyRequest'
     | 'updatePromoHierarchyRequest'
+    | 'fetchPromoHierarchyDetailRequest'
 
 export type failureActionNames =
     | 'fetchPromoHierarchyFailure'
     | 'updatePromoHierarchyFailure'
+    | 'fetchPromoHierarchyDetailFailure'
 
 /**
  * FETCH DATA
@@ -30,7 +30,7 @@ export const fetchPromoHierarchyFailure = createAction(
 
 export const fetchPromoHierarchySuccess = createAction(
     '[Promo Hierarchy API] Fetch Promo Hierarchy Success',
-    props<{ payload: { data: PromoHierarchy | Array<PromoHierarchy>; total?: number } }>()
+    props<{ payload: { data: PromoHierarchy[]; total: number } }>()
 );
 
 /**
@@ -67,19 +67,19 @@ export const confirmRemovePromoHierarchy = createAction(
  * Fetch Detail Promo Hierarchy
  */
 
-export const fetchPromoHierarchyDetail = createAction(
-    '[Promo Hierarchy API] Fetch Promo Hierarchy Request',
-    props<{ payload: { id: string, parameter?: IQueryParamsVoucher } }>()
+export const fetchPromoHierarchyDetailRequest = createAction(
+    '[Promo Hierarchy API] Fetch Detail Promo Hierarchy Request',
+    props<{ payload: { id: string, parameter?: IQueryParams } }>()
 );
 
 export const fetchPromoHierarchyDetailFailure = createAction(
-    '[Promo Hierarchy API] Fetch Promo Hierarchy Request Failure',
+    '[Promo Hierarchy API] Fetch Detail Promo Hierarchy Request Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const fetchPromoHierarchyDetailSuccess = createAction(
-    '[Promo Hierarchy API] Fetch Promo Hierarchy Request Success',
-    props<{ payload: PromoHierarchy }>()
+    '[Promo Hierarchy API] Fetch Detail Promo Hierarchy Request Success',
+    props<{ payload: PromoHierarchyDetail }>()
 );
 
 

@@ -77,7 +77,7 @@ export class PromoHierarchyPayload implements IPromoHierarchyPayload {
     [key: string]: any;
 }
 
-interface IPromoConditionCatalogues {
+export interface IPromoConditionCatalogues {
     readonly id: NonNullable<string>;
     crossSellingGroup: string;
     conditionValue: number;
@@ -88,7 +88,8 @@ interface IPromoConditionCatalogues {
     choosenSku: Array<any>;
 }
 
-interface IPromoLayerInformation {
+export interface IPromoLayerInformation {
+    readonly id: NonNullable<string>;
     layer0: number;
     layer1: number;
     layer2: number;
@@ -189,3 +190,4 @@ export class PromoHierarchyDetail {
         }
     }
 }
+

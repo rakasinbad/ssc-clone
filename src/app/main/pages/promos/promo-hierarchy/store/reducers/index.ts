@@ -1,23 +1,41 @@
 import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
-// import * as fromSalesRepErrs from './error.reducer';
 import * as fromPromoHierarchy from './promo-hierarchy.reducer';
 
-const featureKey = 'promoHierarchy';
+// Keyname for core reducer
+export const featureKey = 'promoHierarchy';
 
-interface State {
-    [fromPromoHierarchy.FEATURE_KEY]: fromPromoHierarchy.PromoHierarchyState;
+/**
+ *
+ * Main interface for core reducer
+ * @interface State
+ */
+export interface State {
+    [fromPromoHierarchy.featureKey]: fromPromoHierarchy.PromoHierarchyState;
 }
 
-interface FeatureState extends fromRoot.State {
+/**
+ *
+ * Main interface global for core reducer
+ * @export
+ * @interface FeatureState
+ * @extends {fromRoot.State}
+ */
+export interface FeatureState extends fromRoot.State {
     [featureKey]: State;
 }
 
-function reducers(state: State | undefined, action: Action): State {
+/**
+ *
+ * Combine reducers
+ * @export
+ * @param {(State | undefined)} state
+ * @param {Action} action
+ * @returns {State}
+ */
+export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
-        [fromPromoHierarchy.FEATURE_KEY]: fromPromoHierarchy.reducer,
+        [fromPromoHierarchy.featureKey]: fromPromoHierarchy.reducer,
     })(state, action);
 }
-
-export { fromPromoHierarchy, featureKey, FeatureState, reducers, State };

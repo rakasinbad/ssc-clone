@@ -5,9 +5,15 @@ import { PromoHierarchy } from '../../models/promo-hierarchy.model';
 import { PromoHierarchyActions } from '../actions';
 
 // Set reducer's feature key
-export const FEATURE_KEY = 'promoHierarchy';
+export const featureKey = 'promoHierarchy';
 
-// Store's Voucher
+// export interface State extends EntityState<CrossSelling> {
+//     isLoading: boolean;
+//     isRefresh: boolean;
+//     selectedId: string;
+//     total: number;
+// }
+
 export interface PromoHierarchyState extends EntityState<PromoHierarchy> {
     isLoading: boolean;
     needRefresh: boolean;
@@ -17,12 +23,13 @@ export interface PromoHierarchyState extends EntityState<PromoHierarchy> {
     selectedId: string;
 }
 
-export const adapterPromoHierarchy: EntityAdapter<PromoHierarchy> = createEntityAdapter<PromoHierarchy>({
-    selectId: (SupplierVoucher) => SupplierVoucher.id as string,
+// Adapter for promoHierarchy state
+export const adapter = createEntityAdapter<PromoHierarchy>({
+    selectId: (row) => row.id,
 });
 
 // Initial value for PromoHierarchy State.
-const initialPromoHierarchyState: PromoHierarchyState = adapterPromoHierarchy.getInitialState<
+const initialPromoHierarchyState: PromoHierarchyState = adapter.getInitialState<
     Omit<PromoHierarchyState, 'ids' | 'entities'>
 >({
     isLoading: false,
@@ -41,8 +48,8 @@ export const reducer = createReducer(
      */
     on(
         PromoHierarchyActions.fetchPromoHierarchyRequest,
-        // VoucherActions.addPromoHierarchyRequest,
         PromoHierarchyActions.updatePromoHierarchyRequest,
+        PromoHierarchyActions.fetchPromoHierarchyDetailRequest,
         PromoHierarchyActions.removePromoHierarchyRequest,
         (state) => ({
             ...state,
@@ -54,9 +61,8 @@ export const reducer = createReducer(
      */
     on(
         PromoHierarchyActions.fetchPromoHierarchyFailure,
-        // VoucherActions.addSupplierVoucherSuccess,
-        // PromoHierarchyActions.addPromoHierarchyFailure,
         PromoHierarchyActions.updatePromoHierarchyFailure,
+        PromoHierarchyActions.fetchPromoHierarchyDetailFailure,
         PromoHierarchyActions.removePromoHierarchyFailure,
         (state) => ({
             ...state,
@@ -66,27 +72,9 @@ export const reducer = createReducer(
     /**
      * FETCH SUCCESS STATE.
      */
-    on(PromoHierarchyActions.fetchPromoHierarchySuccess, (state, { payload }) => {
-        if (Array.isArray(payload.data)) {
-            return adapterPromoHierarchy.upsertMany(payload.data, {
-                ...state,
-                total: payload.total,
-                isLoading: false,
-            });
-        }
-
-        return adapterPromoHierarchy.upsertOne(payload.data, {
-            ...state,
-            isLoading: false,
-        });
-    }),
-    /**
-     * ADD SUCCESS STATE.
-     */
-    // on(VoucherActions.addPromoHierarchySuccess, (state, { payload }) => ({
-    //     ...state,
-    //     isLoading: false,
-    // })),
+    on(PromoHierarchyActions.fetchPromoHierarchySuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
     /**
      * REMOVE SUCCESS STATE.
      */
@@ -101,6 +89,14 @@ export const reducer = createReducer(
         ...state,
         isLoading: false,
     })),
+    on(PromoHierarchyActions.fetchPromoHierarchyDetailRequest, (state, { payload }) => ({
+        ...state,
+        isLoading: true,
+        selectedId: payload.id,
+    })),
+    on(PromoHierarchyActions.fetchPromoHierarchyDetailSuccess, (state, { payload }) =>
+        adapter.addOne(payload, { ...state, isLoading: false })
+    ),
     /**
      * SELECTION STATE.
      */
