@@ -4,7 +4,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import * as fromPromoHierarchy from './promo-hierarchy.reducer';
 
 // Keyname for core reducer
-export const featureKey = 'promoHierarchy';
+export const featureKey = 'promoHierarchys';
 
 /**
  *
@@ -12,7 +12,7 @@ export const featureKey = 'promoHierarchy';
  * @interface State
  */
 export interface State {
-    [fromPromoHierarchy.featureKey]: fromPromoHierarchy.PromoHierarchyState;
+    [fromPromoHierarchy.featureKey]: fromPromoHierarchy.State;
 }
 
 /**

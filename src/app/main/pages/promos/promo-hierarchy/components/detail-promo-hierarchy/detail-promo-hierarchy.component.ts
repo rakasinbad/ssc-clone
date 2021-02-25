@@ -112,7 +112,7 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
                 parameter['type'] = this.dataDetail.type;
-                parameter['supplierId'] = this.dataDetail.supplierId;
+                parameter['id'] = id;
                 
                 this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetailRequest({ payload: { id, parameter } }));
                 this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);

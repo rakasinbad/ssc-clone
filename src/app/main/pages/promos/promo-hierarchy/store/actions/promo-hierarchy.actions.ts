@@ -3,6 +3,7 @@ import { PromoHierarchy } from '../../models';
 import { IQueryParamsVoucher, IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
 import { PromoHierarchyPayload, PromoHierarchyDetail } from '../../models/promo-hierarchy.model';
+import { Update } from '@ngrx/entity';
 
 export type requestActionNames =
     | 'fetchPromoHierarchyRequest'
@@ -20,7 +21,7 @@ export type failureActionNames =
 
 export const fetchPromoHierarchyRequest = createAction(
     '[Promo Hierarchy API] Fetch Promo Hierarchy Request',
-    props<{ payload: IQueryParamsVoucher | string }>()
+    props<{ payload: IQueryParams}>()
 );
 
 export const fetchPromoHierarchyFailure = createAction(
@@ -79,8 +80,9 @@ export const fetchPromoHierarchyDetailFailure = createAction(
 
 export const fetchPromoHierarchyDetailSuccess = createAction(
     '[Promo Hierarchy API] Fetch Detail Promo Hierarchy Request Success',
-    props<{ payload: PromoHierarchyDetail }>()
+    props<{ payload: PromoHierarchy }>()
 );
+
 
 
 /**
@@ -93,7 +95,7 @@ export const updatePromoHierarchyRequest = createAction(
 
 export const updatePromoHierarchySuccess = createAction(
     '[Promo Hierarchy API] Update Promo Hierarchy Success',
-    props<{ payload: { id: string; data: PromoHierarchy } }>()
+    props<{ payload: Update<PromoHierarchy> }>()
 );
 
 export const updatePromoHierarchyFailure = createAction(
@@ -111,7 +113,7 @@ export const removePromoHierarchyRequest = createAction(
 
 export const removePromoHierarchySuccess = createAction(
     '[Promo Hierarchy API] Remove Promo Hierarchy Success',
-    props<{ payload: { id: string; data: PromoHierarchy } }>()
+    props<{ payload: string }>()
 );
 
 export const removePromoHierarchyFailure = createAction(

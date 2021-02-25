@@ -51,14 +51,14 @@ export class PromoHierarchyEffects {
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [IQueryParams | string, TNullable<Auth>]) => {
+            switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams ], Observable<AnyAction>>(
                             this.processPromoHierarchyRequest
                         ),
                         catchError((err) =>
@@ -70,7 +70,7 @@ export class PromoHierarchyEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, IQueryParamsVoucher | string], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
                             this.processPromoHierarchyRequest
                         ),
                         catchError((err) =>
@@ -187,17 +187,15 @@ export class PromoHierarchyEffects {
                 withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
                 // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
                 switchMap(
-                    ([{ id, parameter }, authState]: [{ id; parameter }, TNullable<Auth>]) => {
+                    ([{ id, parameter }, authState]: [{ id: string, parameter?: IQueryParams }, TNullable<Auth>]) => {
                         // Jika tidak ada data supplier-nya user dari state.
                         if (!authState) {
                             return this.helper$.decodeUserToken().pipe(
                                 map(this.checkUserSupplier),
                                 retry(3),
-                                switchMap((userData) => of({ userData, id, parameter })),
-                                switchMap<
-                                    { userData: User; id: string; parameter: IQueryParams },
-                                    Observable<AnyAction>
-                                >(this._fetchPromoHierarchyDetailRequest$),
+                                switchMap((userData) =>  of({ userData, id, parameter })),
+                                switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
+                                    this._fetchPromoHierarchyDetailRequest),
                                 catchError((err) =>
                                     this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure')
                                 )
@@ -207,10 +205,8 @@ export class PromoHierarchyEffects {
                                 map(this.checkUserSupplier),
                                 retry(3),
                                 switchMap((userData) => of({ userData, id, parameter })),
-                                switchMap<
-                                    { userData: User; id: string; parameter: IQueryParams },
-                                    Observable<AnyAction>
-                                >(this._fetchPromoHierarchyDetailRequest$),
+                                switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
+                                    this._fetchPromoHierarchyDetailRequest),
                                 catchError((err) =>
                                     this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure')
                                 )
@@ -373,8 +369,11 @@ export class PromoHierarchyEffects {
                 return of(
                     PromoHierarchyActions.updatePromoHierarchySuccess({
                         payload: {
-                            id: response.id,
-                            data: response,
+                            id: body.id,
+                            changes: {
+                                layer: response.layer,
+                                promoGroup: response.promoGroup,
+                            },
                         },
                     })
                 );
@@ -390,21 +389,26 @@ export class PromoHierarchyEffects {
         );
     };
 
-    _fetchPromoHierarchyDetailRequest$ = ({
-        userData,
-        id,
-        parameter = {},
-    }: {
-        userData: User;
-        id: string;
-        parameter: IQueryParams;
-    }): Observable<AnyAction> => {
-        const newParams: IQueryParams = {
-            paginate: false,
+    _fetchPromoHierarchyDetailRequest = ({ userData, id, parameter = {} }: { userData: User, id: string, parameter: IQueryParams }): Observable<AnyAction> => {
+        const newParams = {
+            ...parameter,
         };
-        if (parameter['splitRequest']) {
+        const { supplierId } = userData.userSupplier;
+        if (supplierId) {
+            newParams['supplierId'] = supplierId;
+        }
+
+        let promoTypes;
+        if (newParams['type'] == 'cross_selling') {
+            promoTypes = 'cross';
+        } else {
+            promoTypes = newParams['type'];
+        }
+        newParams['type'] = promoTypes;
+        
+        if (newParams['splitRequest']) {
             return forkJoin([
-                this.PromoHierarchyApi$.findById<PromoHierarchyDetail>(id, newParams).pipe(
+                this.PromoHierarchyApi$.findById<PromoHierarchy>(id, newParams).pipe(
                     catchOffline(),
                     retry(3),
                     catchError((err) =>
@@ -412,19 +416,24 @@ export class PromoHierarchyEffects {
                     )
                 ),
             ]).pipe(
-                switchMap(([general]: [PromoHierarchyDetail]) => {
+                switchMap(([general]: [PromoHierarchy]) => {
                     let promoCatalogues: Array<IPromoConditionCatalogues> = [];
                     let promoLayer: Array<IPromoLayerInformation> = [];
 
-                    promoCatalogues = (general.promoConditionCatalogues as unknown) as Array<IPromoConditionCatalogues>;
-                    promoLayer = (general.layerInformation as unknown) as Array<IPromoLayerInformation>;
+                    // promoCatalogues = general['promoConditionCatalogues'] as unknown as Array<IPromoConditionCatalogues>;
+                    // promoLayer = general['layerInformation'] as unknown as Array<IPromoLayerInformation>;
+
+                    console.log('isi general1->', general)
+                    console.log('isi promoCatalogues->', promoCatalogues)
+                    console.log('isi promoLayer->', promoLayer)
                     return of(
                         PromoHierarchyActions.fetchPromoHierarchyDetailSuccess({
-                            payload: new PromoHierarchyDetail({
+                            // payload: new PromoHierarchyDetail(general),
+                            payload: new PromoHierarchy({
                                 ...general,
-                                promoCatalogues,
-                                promoLayer,
-                            } as PromoHierarchyDetail),
+                                // promoCatalogues,
+                                // promoLayer,
+                            } as PromoHierarchy),
                         })
                     );
                 })
@@ -434,7 +443,7 @@ export class PromoHierarchyEffects {
                 catchOffline(),
                 map((resp) =>
                     PromoHierarchyActions.fetchPromoHierarchyDetailSuccess({
-                        payload: new PromoHierarchyDetail(resp),
+                        payload: new PromoHierarchyDetail(resp['data']),
                     })
                 ),
                 catchError((err) => this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure'))

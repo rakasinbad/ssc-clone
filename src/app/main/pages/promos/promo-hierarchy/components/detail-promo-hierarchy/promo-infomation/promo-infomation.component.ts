@@ -1,15 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { BenefitType, BenefitVoucherType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
-import { Observable } from 'rxjs';
-import { PromoHierarchy } from '../../../models';
+import { Observable, Subscription} from 'rxjs';
+import { PromoHierarchy, PromoHierarchyDetail } from '../../../models';
 import * as fromPromoHierarchy from '../../../store/reducers';
 import { PromoHierarchySelectors } from '../../../store/selectors';
 import { map } from 'rxjs/operators';
 import * as _ from 'lodash';
+import { PromoHierarchyApiService } from '../../../services/promo-hierarchy-api.service';
 
 @Component({
     selector: 'app-promo-infomation',
@@ -18,13 +19,10 @@ import * as _ from 'lodash';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PromoInfomationComponent implements OnInit {
-    public dataDetail: any;
-    dataGroup1: any;
-    dataGroup2: any;
-    flexiCombo$: Observable<PromoHierarchy>;
+export class PromoInfomationComponent implements OnInit, OnDestroy {
+    promoHierarchy$: Observable<PromoHierarchy>;
     isLoading$: Observable<boolean>;
-
+;
     conditionBase = this._$helperService.conditionBase();
     eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
@@ -34,19 +32,34 @@ export class PromoInfomationComponent implements OnInit {
     triggerBase = this._$helperService.triggerBase();
     eTriggerBase = TriggerBase;
 
+    public dataDetail: any;
+    public subs: Subscription;
+    dataGroup1: any;
+    dataGroup2: any;
+    promoDetail = [];
+
     constructor(
         private store: Store<fromPromoHierarchy.FeatureState>,
-        private _$helperService: HelperService
-    ) {}
+        private _$helperService: HelperService,
+        private cdRef: ChangeDetectorRef,
+    ) {
+    }
 
-    ngOnInit() {
-        this.dataDetail = JSON.parse(localStorage.getItem('promo_hierarchy'));
-        if (this.dataDetail.promoConditionCatalogues == undefined) {
-        } else {
-            this.dataGroup1 = this.dataDetail.promoConditionCatalogues.filter(d => d.crossSellingGroup == 'Group 1');
-            this.dataGroup2 = this.dataDetail.promoConditionCatalogues.filter(d => d.crossSellingGroup == 'Group 2');
-        }
-       
+    ngOnInit(): void {
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
+        this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
+        console.log('isi promoHierarchy->', this.promoHierarchy$)
+        this.subs = this.promoHierarchy$.subscribe((val) => {
+            console.log('isi val->', val)
+            if (val != undefined) {
+                this.promoDetail.push(val);
+            }
+            // this.promoDetail.push(val);
+            
+        });
+        console.log('promodetail->', this.promoDetail)
+        this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
     }
 
     getTriggerCatalogues(value: []): string {
@@ -87,5 +100,9 @@ export class PromoInfomationComponent implements OnInit {
         }
 
         return '-';
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
     }
 }
