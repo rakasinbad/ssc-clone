@@ -120,6 +120,8 @@ export class CatalogueSkuInformationComponent
     private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
     subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
 
+    subBrandLoading: boolean = false;
+
     // Untuk class yang digunakan di berbeda mode form.
     catalogueContent: {
         'content-card': boolean;
@@ -274,7 +276,7 @@ export class CatalogueSkuInformationComponent
 
                 // Get sub brand
 
-                if (catalogue.brandId) {
+                if (catalogue.brandId && this.isEditMode()) {
                     this._getSubBrandByBrandId(catalogue.brandId);
                 }
 
@@ -583,6 +585,14 @@ export class CatalogueSkuInformationComponent
     }
 
     private _getSubBrandByBrandId(brandId: number): void {
+        this.subBrandLoading = true;
+
+        const subBrandIdCtrl = this.form.get('productInfo.subBrandId');
+
+        if (subBrandIdCtrl.enabled) {
+            subBrandIdCtrl.disable({ onlySelf: true });
+        }
+
         this.subBrandApiService
             .getWithQuery<PaginateResponse<SubBrandProps>>({
                 search: [
@@ -594,9 +604,15 @@ export class CatalogueSkuInformationComponent
             })
             .pipe(
                 map((resp) => (resp.total > 0 ? resp.data : [])),
-                takeUntil(this.subs$)
+                take(1)
             )
             .subscribe((sources) => {
+                this.subBrandLoading = false;
+
+                if (subBrandIdCtrl.disable) {
+                    subBrandIdCtrl.enable({ onlySelf: true });
+                }
+
                 this.subBrandCollections$.next(sources);
             });
     }
@@ -710,8 +726,7 @@ export class CatalogueSkuInformationComponent
             formMode: this.formMode,
         });
 
-        if (ev.value) {
-            this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
+        if (ev.value && this.isEditMode()) {
             this._getSubBrandByBrandId(ev.value);
         }
     }

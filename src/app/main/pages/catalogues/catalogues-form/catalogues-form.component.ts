@@ -86,7 +86,6 @@ type IFormMode = 'add' | 'view' | 'edit';
     styleUrls: ['./catalogues-form.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private breadcrumbs: IBreadcrumbs[] = [
@@ -131,6 +130,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     };
 
     private unSubs$: Subject<any> = new Subject();
+
     formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
@@ -168,6 +168,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     productVariantSelectionControls: AbstractControl[];
 
     productVariantSelectionData: MatTableDataSource<object>[] = [];
+    subBrandLoading: boolean = false;
 
     readonly variantListColumns: string[] = ['name', 'price', 'stock', 'sku'];
 
@@ -1297,7 +1298,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         });
 
         if (ev.value) {
-            this.form.get('productInfo.subBrandId').enable({ onlySelf: true });
             this._getSubBrandByBrandId(ev.value);
         }
     }
@@ -1746,6 +1746,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     private _initFormCheck(): void {}
 
     private _getSubBrandByBrandId(brandId: string): void {
+        this.subBrandLoading = true;
+        const subBrandIdCtrl = this.form.get('productInfo.subBrandId');
+
+        if (subBrandIdCtrl.enabled) {
+            subBrandIdCtrl.disable({ onlySelf: true });
+        }
+
         this.subBrandApiService
             .getWithQuery<PaginateResponse<SubBrandProps>>({
                 search: [
@@ -1757,9 +1764,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             })
             .pipe(
                 map((resp) => (resp.total > 0 ? resp.data : [])),
-                takeUntil(this.unSubs$)
+                take(1)
             )
             .subscribe((sources) => {
+                this.subBrandLoading = false;
+
+                if (subBrandIdCtrl.disable) {
+                    subBrandIdCtrl.enable({ onlySelf: true });
+                }
+
                 this.subBrandCollections$.next(sources);
             });
     }

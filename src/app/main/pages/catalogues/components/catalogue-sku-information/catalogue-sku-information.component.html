@@ -253,17 +253,24 @@
 
                 <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
                     <mat-select name="subBrandId" formControlName="subBrandId">
-                        <mat-option>-</mat-option>
                         <ng-container *ngIf="subBrands$ | async as subBrands; else noSubBrands">
-                            <mat-option *ngFor="let subBrand of subBrands" [value]="subBrand.id">
-                                {{ subBrand.code + ' - ' + subBrand.name }}
-                            </mat-option>
+                            <ng-container *ngIf="subBrands?.length > 0; else noSubBrands">
+                                <mat-option>-</mat-option>
+                                <mat-option
+                                    *ngFor="let subBrand of subBrands"
+                                    [value]="subBrand.id"
+                                >
+                                    {{ subBrand.code + ' - ' + subBrand.name }}
+                                </mat-option>
+                            </ng-container>
                         </ng-container>
 
                         <ng-template #noSubBrands>
                             <mat-option> None </mat-option>
                         </ng-template>
                     </mat-select>
+
+                    <mat-hint *ngIf="subBrandLoading"> Checking... </mat-hint>
 
                     <mat-error *ngIf="hasError(form.get('productInfo.subBrandId'))">
                         {{ getFormError(form.get('productInfo.subBrandId')) }}
