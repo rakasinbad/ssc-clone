@@ -92,20 +92,16 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     ngOnInit(): void {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);
-        this.dataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.selectAll).pipe(
-            takeUntil(this.subs$)
-        );
+        this.dataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.selectAll);
         this.totalDataSource$ = this.PromoHierarchyStore.select(
             PromoHierarchySelectors.getTotalItem
         );
-
         this.isLoading$ = this.PromoHierarchyStore.select(
             PromoHierarchySelectors.getLoadingState
-        ).pipe(takeUntil(this.subs$));
+        );
 
         this._initTable();
 
-        this.cdRef.detectChanges();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -187,9 +183,9 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         });
     }
 
-    openDetailPage(id: string, row: any): void {
-        let itemPromoHierarchy = { type: row.promoType, supplierId: row.supplierId };
-        this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
+    openDetailPage(row: any): void {
+        let itemPromoHierarchy = { type: row.promoType };
+        // this.router.navigate([`/pages/promos/promo-hierarchy/${id}/detail`]);
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
 

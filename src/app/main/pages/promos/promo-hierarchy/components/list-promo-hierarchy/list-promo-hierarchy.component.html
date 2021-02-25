@@ -159,7 +159,8 @@
                             mat-menu-item
                             class="sinbad-mat-menu-item"
                             aria-label="Detail"
-                            (click)="openDetailPage(row.id, row)"
+                            (click)="openDetailPage(row)"
+                            [routerLink]="[row?.id, 'detail']"
                         >
                             <mat-icon>remove_red_eye</mat-icon>
                             <span>Detail</span>
@@ -180,7 +181,8 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="sinbad-promo-hierarchy-list-item"
-        (click)="openDetailPage(row.id, row)"
+        [routerLink]="[row?.id, 'detail']"
+        (click)="openDetailPage(row)"
     ></mat-row>
 
     <mat-footer-row

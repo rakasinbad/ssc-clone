@@ -37,43 +37,22 @@ const routes: Routes = [
             },
         },
     },
-    // {
-    //     path: 'new',
-    //     component: VoucherFormComponent,
-    //     canActivate: [AuthGuard, NgxPermissionsGuard],
-    //     data: {
-    //         permissions: {
-    //             only: getRoleByRouter('promos', 'voucher'),
-    //             redirectTo: {
-    //                 navigationCommands: ['/pages/errors/403'],
-    //                 navigationExtras: {
-    //                     replaceUrl: true,
-    //                     skipLocationChange: true,
-    //                 },
-    //             },
-    //         },
-    //     },
-    //     // resolve: {
-    //     //     catalogues: CatalogueResolver,
-    //     //     status: CatalogueStatusResolver
-    //     // },
-    // },
     {
-        path: 'view/:id',
+        path: ':id/detail',
         component: DetailPromoHierarchyComponent,
-        canActivate: [AuthGuard, NgxPermissionsGuard],
-        data: {
-            permissions: {
-                only: getRoleByRouter('promos', 'voucher'),
-                redirectTo: {
-                    navigationCommands: ['/pages/errors/403'],
-                    navigationExtras: {
-                        replaceUrl: true,
-                        skipLocationChange: true,
-                    },
-                },
-            },
-        },
+        // canActivate: [AuthGuard, NgxPermissionsGuard],
+        // data: {
+        //     permissions: {
+        //         only: getRoleByRouter('promos', 'promo-hierarchy'),
+        //         redirectTo: {
+        //             navigationCommands: ['/pages/errors/403'],
+        //             navigationExtras: {
+        //                 replaceUrl: true,
+        //                 skipLocationChange: true,
+        //             },
+        //         },
+        //     },
+        // },
     },
     
 ];

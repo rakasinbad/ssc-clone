@@ -433,11 +433,11 @@ export class PromoHierarchyEffects {
                 })
             );
         } else {
-            return this.PromoHierarchyApi$.findById<PromoHierarchyDetail>(id, newParams).pipe(
+            return this.PromoHierarchyApi$.findById<PromoHierarchy>(id, newParams).pipe(
                 catchOffline(),
                 map((resp) =>
                     PromoHierarchyActions.fetchPromoHierarchyDetailSuccess({
-                        payload: new PromoHierarchyDetail(resp['data']),
+                        payload: new PromoHierarchy(resp['data']),
                     })
                 ),
                 catchError((err) => this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure'))
