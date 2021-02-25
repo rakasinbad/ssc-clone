@@ -13,6 +13,7 @@ import {
     SegmentSettingFormDto,
 } from '../../models';
 import { CrossSellingPromoFacadeService, CrossSellingPromoFormService } from '../../services';
+import * as moment from 'moment';
 @Component({
     templateUrl: './cross-selling-promo-form-page.component.html',
     styleUrls: ['./cross-selling-promo-form-page.component.scss'],
@@ -149,6 +150,14 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (this.form.invalid) {
             return;
         }
+
+        const newGeneralInfo: GeneralInfoFormDto = {
+            ...this.generalInfoFormDto, 
+            ...{
+                startDate: moment.parseZone(this.generalInfoFormDto.startDate).add(7, 'hour').toISOString(),
+                endDate: moment.parseZone(this.generalInfoFormDto.endDate).add(7, 'hour').toISOString()
+            }
+        }
         
         const payload: CreateFormDto = {
             base: 'sku',
@@ -156,7 +165,7 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             type: 'cross_selling',
             status: 'active',
             conditions: [{ ...this.benefitFormDto }],
-            ...this.generalInfoFormDto,
+            ...newGeneralInfo,
             ...this.groupFormDto,
             ...this.segmentFormDto,
         };
