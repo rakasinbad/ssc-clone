@@ -1,10 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { BenefitType, BenefitVoucherType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase, RatioBaseCondition } from 'app/shared/models/condition-base.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
-import { Observable, Subscription} from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { PromoHierarchy, PromoHierarchyDetail } from '../../../models';
 import * as fromPromoHierarchy from '../../../store/reducers';
 import { PromoHierarchySelectors } from '../../../store/selectors';
@@ -19,10 +25,9 @@ import { PromoHierarchyApiService } from '../../../services/promo-hierarchy-api.
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PromoInfomationComponent implements OnInit, OnDestroy {
+export class PromoInfomationComponent implements OnInit {
     promoHierarchy$: Observable<PromoHierarchy>;
     isLoading$: Observable<boolean>;
-;
     conditionBase = this._$helperService.conditionBase();
     eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
@@ -32,33 +37,16 @@ export class PromoInfomationComponent implements OnInit, OnDestroy {
     triggerBase = this._$helperService.triggerBase();
     eTriggerBase = TriggerBase;
 
-    public dataDetail: any;
-    public subs: Subscription;
-    dataGroup1: any;
-    dataGroup2: any;
-    promoDetail = [];
-
     constructor(
         private store: Store<fromPromoHierarchy.FeatureState>,
         private _$helperService: HelperService,
-        private cdRef: ChangeDetectorRef,
-    ) {
-    }
+        private cdRef: ChangeDetectorRef
+    ) {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
         this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
-        console.log('isi promoHierarchy->', this.promoHierarchy$)
-        // this.subs = this.promoHierarchy$.subscribe((val) => {
-        //     console.log('isi val->', val)
-        //     if (val != undefined) {
-        //         this.promoDetail.push(val);
-        //     }
-        //     // this.promoDetail.push(val);
-            
-        // });
-        // console.log('promodetail->', this.promoDetail)
         this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
     }
 
@@ -100,9 +88,5 @@ export class PromoInfomationComponent implements OnInit, OnDestroy {
         }
 
         return '-';
-    }
-
-    ngOnDestroy(): void {
-        // this.subs.unsubscribe();
     }
 }

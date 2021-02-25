@@ -49,76 +49,7 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
             active: true,
         },
     ];
-    // constructor(
-    //     private route: ActivatedRoute,
-    //     private router: Router,
-    //     private store: Store<fromPromoHierarchy.FeatureState>,
-    //     private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-    // ) {
-    //     // Load translate
-    //     this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-    // }
 
-    // // -----------------------------------------------------------------------------------------------------
-    // // @ Lifecycle hooks
-    // // -----------------------------------------------------------------------------------------------------
-
-    // ngOnInit(): void {
-    //     // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //     // Add 'implements OnInit' to the class.
-
-    //     this._initPage();
-    // }
-
-    // ngOnDestroy(): void {
-    //     // Called once, before the instance is destroyed.
-    //     // Add 'implements OnDestroy' to the class.
-
-    //     this._initPage(LifecyclePlatform.OnDestroy);
-    // }
-
-    // onClickBack(): void {
-    //     this.router.navigateByUrl('/pages/promos/promo-hierarchy');
-    //     localStorage.clear();
-
-    // }
-
-    // // -----------------------------------------------------------------------------------------------------
-    // // @ Private methods
-    // // -----------------------------------------------------------------------------------------------------
-
-    // private _initPage(lifeCycle?: LifecyclePlatform): void {
-    //     const { id } = this.route.snapshot.params;
-
-    //     switch (lifeCycle) {
-    //         case LifecyclePlatform.OnDestroy:
-    //             // Reset breadcrumb state
-    //             this.store.dispatch(UiActions.resetBreadcrumb());
-
-    //             // Reset core state promohierarchy
-    //             this.store.dispatch(PromoHierarchyActions.resetPromoHierarchy());
-    //             break;
-
-    //         default:
-    //             // Set breadcrumbs
-    //             this.store.dispatch(
-    //                 UiActions.createBreadcrumb({
-    //                     payload: this._breadCrumbs,
-    //                 })
-    //             );
-    //             this.dataDetail = JSON.parse(localStorage.getItem('item'));
-    //             this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
-
-    //             const parameter: IQueryParams = {};
-    //             parameter['splitRequest'] = true;
-    //             parameter['type'] = this.dataDetail.type;
-    //             parameter['id'] = id;
-
-    //             this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetailRequest({ payload: { id, parameter } }));
-    //             this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
-    //             break;
-    //     }
-    // }
     constructor(
         private route: ActivatedRoute,
         private router: Router,

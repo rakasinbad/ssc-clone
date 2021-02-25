@@ -419,20 +419,14 @@ export class PromoHierarchyEffects {
                 switchMap(([general]: [PromoHierarchy]) => {
                     let promoCatalogues: Array<IPromoConditionCatalogues> = [];
                     let promoLayer: Array<IPromoLayerInformation> = [];
-
                     // promoCatalogues = general['promoConditionCatalogues'] as unknown as Array<IPromoConditionCatalogues>;
                     // promoLayer = general['layerInformation'] as unknown as Array<IPromoLayerInformation>;
 
-                    console.log('isi general1->', general)
-                    console.log('isi promoCatalogues->', promoCatalogues)
-                    console.log('isi promoLayer->', promoLayer)
                     return of(
                         PromoHierarchyActions.fetchPromoHierarchyDetailSuccess({
                             // payload: new PromoHierarchyDetail(general),
                             payload: new PromoHierarchy({
                                 ...general,
-                                // promoCatalogues,
-                                // promoLayer,
                             } as PromoHierarchy),
                         })
                     );

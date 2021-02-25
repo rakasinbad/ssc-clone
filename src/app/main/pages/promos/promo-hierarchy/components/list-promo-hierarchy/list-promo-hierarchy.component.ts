@@ -86,16 +86,15 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
         private router: Router,
-        private ngxPermissionsService: NgxPermissionsService,
         private PromoHierarchyStore: NgRxStore<PromoHierarchyCoreState>
     ) {}
 
     ngOnInit(): void {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);
-        this.dataSource$ = this.PromoHierarchyStore.select(
-            PromoHierarchySelectors.selectAll
-        ).pipe(takeUntil(this.subs$));
+        this.dataSource$ = this.PromoHierarchyStore.select(PromoHierarchySelectors.selectAll).pipe(
+            takeUntil(this.subs$)
+        );
         this.totalDataSource$ = this.PromoHierarchyStore.select(
             PromoHierarchySelectors.getTotalItem
         );
@@ -189,7 +188,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     }
 
     openDetailPage(id: string, row: any): void {
-        let itemPromoHierarchy = {type: row.promoType, supplierId: row.supplierId};
+        let itemPromoHierarchy = { type: row.promoType, supplierId: row.supplierId };
         this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
