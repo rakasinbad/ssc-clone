@@ -1,12 +1,26 @@
 .cross {
     padding-left: 16px;
 }
-
 .box-info {
+    .box-title {
+        color: #25282b;
+        font-weight: 600;
+        font-size: 16px;
+
+        ~ .custom-field {
+            padding-left: 16px;
+        }
+    }
+
     .info {
         color: #25282b;
         font-weight: 600;
         opacity: 0.5;
+
+        .mat-radio-group {
+            position: relative;
+            top: 0.8em;
+        }
     }
 
     .custom-field:not(.info-field) {
@@ -73,15 +87,11 @@
                     cursor: text;
                 }
             }
-
-            .mat-radio-button ~ .mat-radio-button {
-                margin-left: 10px;
-            }
-           
         }
     }
-    .mat-checkbox ~ .mat-checkbox {
+
+    .mat-radio-button ~ .mat-radio-button {
         margin-left: 16px;
     }
-
 }
+

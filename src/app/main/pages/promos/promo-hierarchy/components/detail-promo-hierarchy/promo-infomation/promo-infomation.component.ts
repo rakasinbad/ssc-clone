@@ -50,15 +50,15 @@ export class PromoInfomationComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
         this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
         console.log('isi promoHierarchy->', this.promoHierarchy$)
-        this.subs = this.promoHierarchy$.subscribe((val) => {
-            console.log('isi val->', val)
-            if (val != undefined) {
-                this.promoDetail.push(val);
-            }
-            // this.promoDetail.push(val);
+        // this.subs = this.promoHierarchy$.subscribe((val) => {
+        //     console.log('isi val->', val)
+        //     if (val != undefined) {
+        //         this.promoDetail.push(val);
+        //     }
+        //     // this.promoDetail.push(val);
             
-        });
-        console.log('promodetail->', this.promoDetail)
+        // });
+        // console.log('promodetail->', this.promoDetail)
         this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
     }
 
@@ -103,6 +103,6 @@ export class PromoInfomationComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.subs.unsubscribe();
+        // this.subs.unsubscribe();
     }
 }

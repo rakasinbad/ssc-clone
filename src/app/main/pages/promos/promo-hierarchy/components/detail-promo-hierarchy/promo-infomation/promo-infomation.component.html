@@ -251,9 +251,9 @@
         >
             <div class="label" fxFlexAlign="start" fxFlex="10">
                 <ng-container [ngSwitch]="(promoHierarchy$ | async)?.triggerBase">
-                    <ng-container *ngSwitchCase="'sku'"> Choose SKU </ng-container>
-                    <ng-container *ngSwitchCase="'brand'"> Choose Brand </ng-container>
-                    <ng-container *ngSwitchCase="'faktur'"> Choose Faktur </ng-container>
+                    <ng-container *ngSwitchCase="'sku'"> Chosen SKU </ng-container>
+                    <ng-container *ngSwitchCase="'brand'"> Chosen Brand </ng-container>
+                    <ng-container *ngSwitchCase="'invoice_group'"> Chosen Faktur </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>
                 </ng-container>
             </div>
@@ -338,12 +338,6 @@
 
             <div class="info" fxFlex="100">
                 {{ ((promoHierarchy$ | async)?.promoConditionCatalogues[0].fakturName | titlecase) || '-' }}
-                <!-- <ng-container *ngIf="generalGroup1[0].catalogue != null; else errorInvoice">
-                {{generalGroup1[0].catalogue.brand.invoiceGroupBrands[0].invoiceGroup.name || '-'}}  
-                </ng-container>
-                <ng-template #errorInvoice>
-                    -
-                </ng-template> -->
             </div>
         </div>
 
@@ -358,7 +352,7 @@
             <div class="info" fxFlex="100">SKU</div>
         </div>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -367,13 +361,13 @@
             <div class="label cross" fxFlexAlign="start" fxFlex="10">
                 *Chosen SKU
                 <br />
-                ({{ dataGroup1[0].choosenSku.length }} Selected)
+                ({{ (promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku.length }} Selected)
             </div>
 
             <div class="info" fxFlex="90">
                 <ng-container *ngIf="!(isLoading$ | async)">
                     <span>
-                        {{ getChoosenSku(dataGroup1[0].choosenSku) }}
+                        {{ getChoosenSku((promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku) }}
                     </span>
                 </ng-container>
 
@@ -382,9 +376,9 @@
                     *ngIf="isLoading$ | async"
                 ></ngx-skeleton-loader>
             </div>
-        </div> -->
+        </div>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -393,13 +387,13 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
 
             <div class="info" fxFlex="100">
-                {{ dataGroup1[0].crossSellingGroupRelation }}
+                {{ (promoHierarchy$ | async)?.promoConditionCatalogues[0].crossSellingGroupRelation }}
             </div>
-        </div> -->
+        </div>
 
-        <!-- <ng-container [ngSwitch]="dataGroup1[0].conditionBase"> -->
+        <ng-container [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase">
             <!-- Base Condition Type Qty -->
-            <!-- <ng-container *ngSwitchCase="eConditionBase.QTY">
+            <ng-container *ngSwitchCase="eConditionBase.QTY">
                 <div
                     class="custom-field info-field"
                     fxLayout="row"
@@ -409,14 +403,14 @@
                     <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
 
                     <div class="info" fxFlex="100">
-                        {{ (dataGroup1[0].conditionQty | number) || '-' }}
+                        {{ ((promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionQty | number) || '-' }}
                     </div>
                 </div>
-            </ng-container> -->
+            </ng-container>
             <!-- ./ Base Condition Type Qty -->
 
             <!-- Base Condition Type Value -->
-            <!-- <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+            <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
                 <div
                     class="custom-field info-field"
                     fxLayout="row"
@@ -427,15 +421,15 @@
 
                     <div class="info" fxFlex="100">
                         <p thousandSeparator=".">
-                            {{ (dataGroup1[0].conditionValue | number) || '-' }}
+                            {{ ((promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionValue | number) || '-' }}
                         </p>
                     </div>
                 </div>
-            </ng-container> -->
+            </ng-container>
             <!-- ./ Base Condition Type Amount -->
 
-            <!-- <ng-container *ngSwitchDefault>-</ng-container> -->
-        <!-- </ng-container> -->
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
     </div>
 
     <br />
@@ -443,7 +437,7 @@
     <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
         <span class="box-title"><b>Group 2</b></span>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -454,7 +448,7 @@
             <div class="info" fxFlex="100">
                 <ng-container *ngIf="!(isLoading$ | async)">
                     <ng-container *ngIf="conditionBase; else noConditionBase">
-                        <mat-radio-group [value]="dataGroup2[0].conditionBase">
+                        <mat-radio-group [value]="(promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase">
                             <mat-radio-button
                                 *ngFor="let row of conditionBase"
                                 [value]="row?.id"
@@ -473,9 +467,9 @@
                     *ngIf="isLoading$ | async"
                 ></ngx-skeleton-loader>
             </div>
-        </div> -->
+        </div>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -484,12 +478,12 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Faktur</div>
 
             <div class="info" fxFlex="100">
-                {{ dataGroup2[0].fakturName || '-' }}
+                {{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].fakturName || '-' }}
                
             </div>
-        </div> -->
+        </div>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -498,9 +492,9 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Trigger</div>
 
             <div class="info" fxFlex="100">SKU</div>
-        </div> -->
+        </div>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -509,13 +503,13 @@
             <div class="label cross" fxFlexAlign="start" fxFlex="10">
                 *Chosen SKU
                 <br />
-                ({{ dataGroup2[0].choosenSku.length }} Selected)
+                ({{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku.length || '-' }} Selected)
             </div>
 
             <div class="info" fxFlex="90">
                 <ng-container *ngIf="!(isLoading$ | async)">
                 <span>
-                    {{ getChoosenSku(dataGroup2[0].choosenSku) }}
+                    {{ getChoosenSku((promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku) }}
                 </span>
                 </ng-container>
 
@@ -524,9 +518,9 @@
                     *ngIf="isLoading$ | async"
                 ></ngx-skeleton-loader>
             </div>
-        </div> -->
+        </div>
 
-        <!-- <div
+        <div
             class="custom-field info-field"
             fxLayout="row"
             fxLayoutAlign="start center"
@@ -535,13 +529,13 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
 
             <div class="info" fxFlex="100">
-                {{ dataGroup2[0].crossSellingGroupRelation }}
+                {{(promoHierarchy$ | async)?.promoConditionCatalogues[1].crossSellingGroupRelation || '-' }}
             </div>
-        </div> -->
+        </div>
 
-        <!-- <ng-container [ngSwitch]="dataGroup2[0].conditionBase"> -->
+        <ng-container [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase">
             <!-- Base Condition Type Qty -->
-            <!-- <ng-container *ngSwitchCase="eConditionBase.QTY">
+            <ng-container *ngSwitchCase="eConditionBase.QTY">
                 <div
                     class="custom-field info-field"
                     fxLayout="row"
@@ -550,13 +544,13 @@
                 >
                     <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
 
-                    <div class="info" fxFlex="100">{{ dataGroup2[0].conditionQty || '-' }}</div>
+                    <div class="info" fxFlex="100">{{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionQty || '-' }}</div>
                 </div>
-            </ng-container> -->
+            </ng-container>
             <!-- ./ Base Condition Type Qty -->
 
             <!-- Base Condition Type Value -->
-            <!-- <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+            <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
                 <div
                     class="custom-field info-field"
                     fxLayout="row"
@@ -566,14 +560,14 @@
                     <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Value >=</div>
 
                     <div class="info" fxFlex="100">
-                        <p thousandSeparator=".">{{ dataGroup2[0].conditionValue || '-' }}</p>
+                        <p thousandSeparator=".">{{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionValue || '-' }}</p>
                     </div>
                 </div>
-            </ng-container> -->
+            </ng-container>
             <!-- ./ Base Condition Type Amount -->
 
-            <!-- <ng-container *ngSwitchDefault>-</ng-container> -->
-        <!-- </ng-container> -->
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
     </div>
     <br />
 </ng-container>
