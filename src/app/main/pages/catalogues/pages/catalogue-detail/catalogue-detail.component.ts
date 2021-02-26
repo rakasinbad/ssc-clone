@@ -170,6 +170,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     information,
                     detail,
                     brandId,
+                    subBrandId,
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
                     unitOfMeasureId,
@@ -183,6 +184,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     information,
                     detail,
                     brandId,
+                    subBrandId,
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
                     unitOfMeasureId,
@@ -303,7 +305,14 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this.selectedCatalogue$ = this.store
             .select(CatalogueSelectors.getSelectedCatalogueEntity)
             .pipe(
-                tap((catalogue) => console.log(catalogue)),
+                tap((catalogue) =>
+                    HelperService.debug(
+                        '[CatalogueDetailComponent] ngOnInit getSelectedCatalogueEntity',
+                        {
+                            catalogue,
+                        }
+                    )
+                ),
                 takeUntil(this.subs$)
             );
 

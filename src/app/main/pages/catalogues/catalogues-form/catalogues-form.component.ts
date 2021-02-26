@@ -5,7 +5,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import {
     AbstractControl,
@@ -14,10 +14,11 @@ import {
     FormBuilder,
     FormGroup,
     ValidationErrors,
-    ValidatorFn
+    ValidatorFn,
 } from '@angular/forms';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -31,14 +32,19 @@ import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-seg
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Brand } from 'app/shared/models/brand.model';
-import { IBreadcrumbs, IFooterActionConfig, TNullable } from 'app/shared/models/global.model';
+import {
+    IBreadcrumbs,
+    IFooterActionConfig,
+    PaginateResponse,
+    TNullable,
+} from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as numeral from 'numeral';
 import Quill from 'quill';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -48,7 +54,7 @@ import {
     take,
     takeUntil,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 import { locale as english } from '../i18n/en';
@@ -58,12 +64,19 @@ import {
     CatalogueUnit,
     StoreSegmentationChannel,
     StoreSegmentationCluster,
-    StoreSegmentationGroup
+    StoreSegmentationGroup,
+    SubBrandProps,
 } from '../models';
-import { BrandFacadeService, CatalogueFacadeService, CataloguesService } from '../services';
+import {
+    BrandFacadeService,
+    CatalogueFacadeService,
+    CataloguesService,
+    SubBrandApiService,
+} from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
 import { fromBrand, fromCatalogue } from '../store/reducers';
 import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
+import { SubBrand } from './../models/sub-brand.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -73,7 +86,6 @@ type IFormMode = 'add' | 'view' | 'edit';
     styleUrls: ['./catalogues-form.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit {
     private breadcrumbs: IBreadcrumbs[] = [
@@ -118,6 +130,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     };
 
     private unSubs$: Subject<any> = new Subject();
+
     formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
@@ -143,6 +156,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     brands$: Observable<Brand[]>;
     brandUser$: { id: string; name: string } = { id: '0', name: '' };
     productCategory$: SafeHtml;
+    private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
+    subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
 
     catalogueUnits: CatalogueUnit[];
 
@@ -153,6 +168,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     productVariantSelectionControls: AbstractControl[];
 
     productVariantSelectionData: MatTableDataSource<object>[] = [];
+    subBrandLoading: boolean = false;
 
     readonly variantListColumns: string[] = ['name', 'price', 'stock', 'sku'];
 
@@ -174,6 +190,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private $helper: HelperService,
         private errorMessageSvc: ErrorMessageService,
         private catalogueSvc: CataloguesService,
+        private readonly subBrandApiService: SubBrandApiService,
         private _$notice: NoticeService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
@@ -331,6 +348,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             displayStock: newStock === 0 ? false : true,
             catalogueTaxId: 1,
             unlimitedStock: formValues.productInfo.unlimitedStock,
+
+            // SUB BRAND
+            subBrandId: formValues.productInfo.subBrandId || null,
         };
 
         // if (this.formMode === 'edit') {
@@ -1157,11 +1177,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     onAddVariantSelection(_: Event, $variant: number): void {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
-        console.log((this.productVariantControls[$variant] as FormArray).controls);
+        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+            ev: _,
+            varian: $variant,
+            variantControl: (this.productVariantControls[$variant] as FormArray).controls,
+        });
+
         this.productVariantSelectionData[$variant] = new MatTableDataSource(
             (this.productVariantControls[$variant] as FormArray).controls
         );
-        console.log(this.productVariantSelectionData[$variant]);
+
+        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+            variantSelection: this.productVariantSelectionData[$variant],
+        });
     }
 
     onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
@@ -1262,6 +1290,16 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
             'fuse-white': this.isAddMode() || this.isEditMode(),
         };
+    }
+
+    onChangeBrand(ev: MatSelectChange): void {
+        HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
+            ev,
+        });
+
+        if (ev.value) {
+            this._getSubBrandByBrandId(ev.value);
+        }
     }
 
     onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
@@ -1430,6 +1468,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
+                subBrandId: [{ value: null, disabled: true }],
+                subBrandName: [{ value: null, disabled: true }],
                 category: [
                     null,
                     [
@@ -1704,4 +1744,36 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     private _initFormCheck(): void {}
+
+    private _getSubBrandByBrandId(brandId: string): void {
+        this.subBrandLoading = true;
+        const subBrandIdCtrl = this.form.get('productInfo.subBrandId');
+
+        if (subBrandIdCtrl.enabled) {
+            subBrandIdCtrl.disable({ onlySelf: true });
+        }
+
+        this.subBrandApiService
+            .getWithQuery<PaginateResponse<SubBrandProps>>({
+                search: [
+                    {
+                        fieldName: 'brandId',
+                        keyword: brandId,
+                    },
+                ],
+            })
+            .pipe(
+                map((resp) => (resp.total > 0 ? resp.data : [])),
+                take(1)
+            )
+            .subscribe((sources) => {
+                this.subBrandLoading = false;
+
+                if (subBrandIdCtrl.disable) {
+                    subBrandIdCtrl.enable({ onlySelf: true });
+                }
+
+                this.subBrandCollections$.next(sources);
+            });
+    }
 }

@@ -6,6 +6,7 @@ export interface ICatalogueInformation {
     information: string;
     detail: string;
     brandId: string;
+    subBrandId: string;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     unitOfMeasureId: number;
@@ -20,6 +21,7 @@ export class CatalogueInformation implements ICatalogueInformation {
     information: string;
     detail: string;
     brandId: string;
+    subBrandId: string;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     unitOfMeasureId: number;
@@ -34,6 +36,7 @@ export class CatalogueInformation implements ICatalogueInformation {
             information,
             detail,
             brandId,
+            subBrandId,
             firstCatalogueCategoryId,
             lastCatalogueCategoryId,
             unitOfMeasureId,
@@ -47,6 +50,7 @@ export class CatalogueInformation implements ICatalogueInformation {
         this.information = information;
         this.detail = detail;
         this.brandId = brandId;
+        this.subBrandId = subBrandId;
         this.firstCatalogueCategoryId = firstCatalogueCategoryId;
         this.lastCatalogueCategoryId = lastCatalogueCategoryId;
         this.unitOfMeasureId = unitOfMeasureId;
