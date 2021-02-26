@@ -45,6 +45,7 @@ export class PromoHierarchy {
     promoType: string;
     status: PromoHierarchyStatus;
     layer: number;
+    promoLayer: number;
     promoGroup: string;
     triggerBase: string;
     conditionBase: string;
@@ -75,6 +76,7 @@ export class PromoHierarchy {
             promoSellerId,
             promoGroup,
             layer,
+            promoLayer,
             status,
             triggerBase,
             conditionBase,
@@ -103,6 +105,7 @@ export class PromoHierarchy {
         this.promoSellerId = promoSellerId;
         this.promoGroup = promoGroup || null;
         this.layer = layer || 0;
+        this.promoLayer = promoLayer || 0;
         this.status = status;
         this.triggerBase = triggerBase || null;
         this.conditionBase = conditionBase;
@@ -167,6 +170,7 @@ export class PromoHierarchyDetail {
     promoType: string;
     status: PromoHierarchyStatus;
     layer: number;
+    promoLayer: number;
     promoGroup: string;
     triggerBase: string;
     conditionBase: string;
@@ -197,6 +201,7 @@ export class PromoHierarchyDetail {
             promoSellerId,
             promoGroup,
             layer,
+            promoLayer,
             status,
             triggerBase,
             conditionBase,
@@ -225,6 +230,7 @@ export class PromoHierarchyDetail {
         this.promoSellerId = promoSellerId;
         this.promoGroup = promoGroup || null;
         this.layer = layer || 0;
+        this.promoLayer = promoLayer || 0;
         this.status = status;
         this.triggerBase = triggerBase;
         this.conditionBase = conditionBase;

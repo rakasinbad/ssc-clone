@@ -82,11 +82,13 @@
                 <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'none'">
                     -
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'promo_slot'">
-                    {{ ((promoHierarchy$ | async)?.promoSlot | number) || '-' }} /
-                    {{ ((promoHierarchy$ | async)?.planSlot | number) || '-' }}
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'promo_slot' || 
+                (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'">
+                    {{ ((promoHierarchy$ | async)?.promoSlot | number) || 0 }} /
+                    {{ ((promoHierarchy$ | async)?.planSlot | number) || 0 }}
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'promo_budget'">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
+                (promoHierarchy$ | async)?.promoAllocation === 'voucher_budget'">
                     Rp {{ ((promoHierarchy$ | async)?.promoBudget | number) || '-' }} / Rp
                     {{ ((promoHierarchy$ | async)?.planBudget | number) || '-' }}
                 </ng-container>

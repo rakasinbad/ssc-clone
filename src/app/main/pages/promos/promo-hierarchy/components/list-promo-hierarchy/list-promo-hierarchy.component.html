@@ -56,7 +56,7 @@
             </ng-container>
             <ng-container *ngIf="row?.promoAllocation == 'promo_slot'">
                 <p style="word-break: break-word">
-                    {{ (row?.promoSlot | number) || '-' }}/{{ (row?.planSlot | number) || '-' }}
+                    {{ (row?.promoSlot | number) || 0 }}/{{ (row?.planSlot | number) || 0 }}
                 </p>
             </ng-container>
         </mat-cell>

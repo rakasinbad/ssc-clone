@@ -12,9 +12,8 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Layer Lever</div>
 
         <div class="info" fxFlex="100">
-            <!-- {{ (dataDetail.layer | number) || '-' }} -->
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (promoHierarchy$ | async)?.layer || '-' }}
+                {{ ((promoHierarchy$ | async)?.promoLayer | number) || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -32,23 +31,23 @@
     >
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                <ng-container *ngIf="(promoHierarchy$ | async)?.layer == 0">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoLayer == 0">
                     This promo running along with
                     {{ (promoHierarchy$ | async)?.layerInformation[0].layer0 }} other promos
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.layer == 1">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoLayer == 1">
                     This promo running along with
                     {{ (promoHierarchy$ | async)?.layerInformation[0].layer1 }} other promos
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.layer == 2">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoLayer == 2">
                     This promo running along with
                     {{ (promoHierarchy$ | async)?.layerInformation[0].layer2 }} other promos
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.layer == 3">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoLayer == 3">
                     This promo running along with
                     {{ (promoHierarchy$ | async)?.layerInformation[0].layer3 }} other promos
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.layer == 4">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoLayer == 4">
                     This promo running along with
                     {{ (promoHierarchy$ | async)?.layerInformation[0].layer4 }} other promos
                 </ng-container>
@@ -69,7 +68,7 @@
         <mat-list role="list">
             <mat-list-item
                 class="layer0"
-                [class.active]="(promoHierarchy$ | async)?.layer == 0"
+                [class.active]="(promoHierarchy$ | async)?.promoLayer == 0"
                 role="listitem"
             >
                 <p matLine><b>Layer 00:</b></p>
@@ -84,7 +83,7 @@
             </mat-list-item>
             <mat-list-item
                 class="layer1"
-                [class.active]="(promoHierarchy$ | async)?.layer == 1"
+                [class.active]="(promoHierarchy$ | async)?.promoLayer == 1"
                 role="listitem"
             >
                 <p matLine><b>Layer 01:</b></p>
@@ -95,7 +94,7 @@
                 </p>
             </mat-list-item>
             <mat-list-item
-                [class.active]="(promoHierarchy$ | async)?.layer == 2"
+                [class.active]="(promoHierarchy$ | async)?.promoLayer == 2"
                 role="listitem"
             >
                 <p matLine><b>Layer 02:</b></p>
@@ -107,7 +106,7 @@
             </mat-list-item>
             <mat-list-item
                 class="layer3"
-                [class.active]="(promoHierarchy$ | async)?.layer == 3"
+                [class.active]="(promoHierarchy$ | async)?.promoLayer == 3"
                 role="listitem"
             >
                 <p matLine><b>Layer 03:</b></p>
@@ -118,7 +117,7 @@
                 </p>
             </mat-list-item>
             <mat-list-item
-                [class.active]="(promoHierarchy$ | async)?.layer == 4"
+                [class.active]="(promoHierarchy$ | async)?.promoLayer == 4"
                 role="listitem"
             >
                 <p matLine><b>Layer 04:</b></p>
