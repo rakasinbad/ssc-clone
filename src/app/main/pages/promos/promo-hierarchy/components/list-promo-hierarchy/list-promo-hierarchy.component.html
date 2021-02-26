@@ -29,9 +29,9 @@
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{
-                    row?.promoAllocation === 'promo_slot'
+                    row?.promoAllocation === 'promo_slot' ||  row?.promoAllocation === 'voucher_slot'
                         ? 'Max Promo Redemption (Transaction)'
-                        : row?.promoAllocation === 'promo_budget'
+                        : row?.promoAllocation === 'promo_budget' ||  row?.promoAllocation === 'voucher_budget'
                         ? 'Max Promo Redemption (Rp)'
                         : row?.promoAllocation === 'none'
                         ? 'None'

@@ -53,9 +53,11 @@
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{
-                    (promoHierarchy$ | async)?.promoAllocation === 'promo_slot'
+                    (promoHierarchy$ | async)?.promoAllocation === 'promo_slot' || 
+                    (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'
                         ? 'Max Promo Redemption (Transaction)'
-                        : (promoHierarchy$ | async)?.promoAllocation === 'promo_budget'
+                        : (promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
+                          (promoHierarchy$ | async)?.promoAllocation === 'voucher_budget'
                         ? 'Max Promo Redemption (Rp)'
                         : (promoHierarchy$ | async)?.promoAllocation === 'none'
                         ? 'None'
