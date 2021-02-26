@@ -23,12 +23,12 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-detail-promo-hierarchy',
-  templateUrl: './detail-promo-hierarchy.component.html',
-  styleUrls: ['./detail-promo-hierarchy.component.scss'],
-  animations: fuseAnimations,
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.Default,
+    selector: 'app-detail-promo-hierarchy',
+    templateUrl: './detail-promo-hierarchy.component.html',
+    styleUrls: ['./detail-promo-hierarchy.component.scss'],
+    animations: fuseAnimations,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
     public dataDetail: any;
@@ -49,11 +49,12 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
             active: true,
         },
     ];
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromPromoHierarchy.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -63,10 +64,15 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
+    onClickBack(): void {
+        this.router.navigateByUrl('/pages/promos/promo-hierarchy');
+        localStorage.clear();
+    }
+
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
+        this.dataDetail = JSON.parse(localStorage.getItem('item'));
         this._initPage();
     }
 
@@ -75,12 +81,6 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this._initPage(LifecyclePlatform.OnDestroy);
-    }
-
-    onClickBack(): void {
-        this.router.navigateByUrl('/pages/promos/promo-hierarchy');
-        localStorage.clear();
-
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -95,8 +95,8 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
                 // Reset breadcrumb state
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
-                // Reset core state promohierarchy
-                this.store.dispatch(PromoHierarchyActions.resetPromoHierarchy());
+                // Reset core state crossSellingPromo
+                this.store.dispatch(PromoHierarchyActions.clearState());
                 break;
 
             default:
@@ -106,15 +106,19 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
                         payload: this._breadCrumbs,
                     })
                 );
-                this.dataDetail = JSON.parse(localStorage.getItem('item'));
+
                 this.promoHierarchy$ = this.store.select(PromoHierarchySelectors.getSelectedItem);
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
                 parameter['type'] = this.dataDetail.type;
-                parameter['supplierId'] = this.dataDetail.supplierId;
-                
-                this.store.dispatch(PromoHierarchyActions.fetchPromoHierarchyDetailRequest({ payload: { id, parameter } }));
+
+                this.store.dispatch(
+                    PromoHierarchyActions.fetchPromoHierarchyDetailRequest({
+                        payload: { id, parameter },
+                    })
+                );
+
                 this.isLoading$ = this.store.select(PromoHierarchySelectors.getLoadingState);
                 break;
         }

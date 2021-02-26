@@ -11,6 +11,7 @@ import {
     SimpleChanges,
     OnChanges,
     ChangeDetectorRef,
+    SecurityContext,
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -21,12 +22,13 @@ import { PromoHierarchyActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { Observable, Subject, merge } from 'rxjs';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { DomSanitizer } from '@angular/platform-browser';
 import { takeUntil, flatMap, filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
-// import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { PromoHierarchy } from '../../models';
 import { PromoHierarchySelectors } from '../../store/selectors';
 import { HelperService } from 'app/shared/helpers';
@@ -80,36 +82,36 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    private subs$: Subject<void> = new Subject<void>();
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private domSanitizer: DomSanitizer,
         private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
         private router: Router,
-        private ngxPermissionsService: NgxPermissionsService,
         private PromoHierarchyStore: NgRxStore<PromoHierarchyCoreState>
     ) {}
 
     ngOnInit(): void {
+        this.table.nativeElement.scrollTop = 0;
+        this.paginator.pageIndex = 0;
+        this._initTable();
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);
-        this.dataSource$ = this.PromoHierarchyStore.select(
-            PromoHierarchySelectors.selectAll
-        ).pipe(takeUntil(this.subs$));
-        this.totalDataSource$ = this.PromoHierarchyStore.select(
-            PromoHierarchySelectors.getTotalItem
-        );
+        this._initPage();
+    }
 
-        this.isLoading$ = this.PromoHierarchyStore.select(
-            PromoHierarchySelectors.getLoadingState
-        ).pipe(takeUntil(this.subs$));
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
 
-        this._initTable();
-
-        this.cdRef.detectChanges();
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        // Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+        // Add '${implements OnChanges}' to the class.
+
         if (changes['searchValue']) {
             if (!changes['searchValue'].isFirstChange()) {
                 this.search.setValue(changes['searchValue'].currentValue);
@@ -134,30 +136,17 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         this.cdRef.detectChanges();
     }
 
-    ngAfterViewInit(): void {
-        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-        // Add 'implements AfterViewInit' to the class.
-
-        this.sort.sortChange
-            .pipe(takeUntil(this.subs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this.subs$))
-            .subscribe(() => {
-                this._initTable();
-            });
-    }
-
     ngOnDestroy(): void {
-        this.subs$.next();
-        this.subs$.complete();
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
 
-        const data: IQueryParamsVoucher = {
+        const data: IQueryParams = {
             limit: this.paginator.pageSize,
             skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
@@ -188,9 +177,8 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         });
     }
 
-    openDetailPage(id: string, row: any): void {
-        let itemPromoHierarchy = {type: row.promoType, supplierId: row.supplierId};
-        this.router.navigate([`/pages/promos/promo-hierarchy/view/${id}`]);
+    openDetailPage(row: any): void {
+        let itemPromoHierarchy = { type: row.promoType };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
 
@@ -203,15 +191,68 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         return numSelected === numRows;
     }
 
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        // this.table.nativeElement.scrollIntoView(true);
+                        this.table.nativeElement.scrollTop = 0;
+                        this._initTable();
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset core state CrossSellingPromoActions
+                this.PromoHierarchyStore.dispatch(PromoHierarchyActions.clearState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+
+                this.selection = new SelectionModel<any>(true, []);
+
+                this.dataSource$ = this.PromoHierarchyStore.select(
+                    PromoHierarchySelectors.selectAll
+                );
+                this.totalDataSource$ = this.PromoHierarchyStore.select(
+                    PromoHierarchySelectors.getTotalItem
+                );
+                this.isLoading$ = this.PromoHierarchyStore.select(
+                    PromoHierarchySelectors.getLoadingState
+                );
+
+                this._initTable();
+                break;
+        }
+    }
+
     private _initTable(): void {
         if (this.paginator) {
-            const data: IQueryParamsVoucher = {
+            const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
-            data['keyword'] = this.search.value;
+
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            data['paginate'] = true;
+            data['keyword'] = query;
             if (data['keyword'] !== null) {
                 data['skip'] = 0;
             }
@@ -235,14 +276,11 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                     break;
             }
 
-            this.PromoHierarchyStore.dispatch(PromoHierarchyActions.resetPromoHierarchy());
             this.PromoHierarchyStore.dispatch(
                 PromoHierarchyActions.fetchPromoHierarchyRequest({
                     payload: data,
                 })
             );
-
-            this.cdRef.detectChanges();
         }
     }
 }

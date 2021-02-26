@@ -3,8 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
 import { MatSnackBarConfig } from '@angular/material';
 import { map, switchMap, withLatestFrom, catchError, retry, tap } from 'rxjs/operators';
-
-import { PromoHierarchyActions, PromoHierarchyFailureActionNames } from '../actions';
+import { PromoHierarchyActions, PromoHierarchyFailureAction } from '../actions';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of, Observable, throwError, forkJoin } from 'rxjs';
@@ -22,8 +21,7 @@ import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 import  * as fromPromoHierarchy from '../reducers';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
-import { IQueryParamsVoucher, IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 import { User } from 'app/shared/models/user.model';
 import { AnyAction } from 'app/shared/models/actions.model';
@@ -31,16 +29,9 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 
 @Injectable()
 export class PromoHierarchyEffects {
-    constructor(
-        private actions$: Actions,
-        private authStore: NgRxStore<fromAuth.FeatureState>,
-        private PromoHierarchyStore: NgRxStore<fromPromoHierarchy.FeatureState>,
-        private PromoHierarchyApi$: PromoHierarchyApiService,
-        private notice$: NoticeService,
-        private router: Router,
-        private helper$: HelperService,
-        private matDialog: MatDialog
-    ) {}
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [Promo Hierarchy] list
+    // -----------------------------------------------------------------------------------------------------
 
     fetchPromoHierarchyRequest$ = createEffect(() =>
         this.actions$.pipe(
@@ -51,14 +42,14 @@ export class PromoHierarchyEffects {
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [IQueryParams | string, TNullable<Auth>]) => {
+            switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams ], Observable<AnyAction>>(
                             this.processPromoHierarchyRequest
                         ),
                         catchError((err) =>
@@ -70,7 +61,7 @@ export class PromoHierarchyEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap((userData) => of([userData, queryParams])),
-                        switchMap<[User, IQueryParamsVoucher | string], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
                             this.processPromoHierarchyRequest
                         ),
                         catchError((err) =>
@@ -98,6 +89,10 @@ export class PromoHierarchyEffects {
             ),
         { dispatch: false }
     );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [Promo Hierarchy] set promo
+    // -----------------------------------------------------------------------------------------------------
 
     updatePromoHierarchyRequest$ = createEffect(() =>
         this.actions$.pipe(
@@ -176,6 +171,10 @@ export class PromoHierarchyEffects {
         { dispatch: false }
     );
 
+     // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [Promo Hierarchy] detail
+    // -----------------------------------------------------------------------------------------------------
+
     fetchPromoHierarchyDetailRequest$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -187,17 +186,15 @@ export class PromoHierarchyEffects {
                 withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
                 // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
                 switchMap(
-                    ([{ id, parameter }, authState]: [{ id; parameter }, TNullable<Auth>]) => {
+                    ([{ id, parameter }, authState]: [{ id: string, parameter?: IQueryParams }, TNullable<Auth>]) => {
                         // Jika tidak ada data supplier-nya user dari state.
                         if (!authState) {
                             return this.helper$.decodeUserToken().pipe(
                                 map(this.checkUserSupplier),
                                 retry(3),
-                                switchMap((userData) => of({ userData, id, parameter })),
-                                switchMap<
-                                    { userData: User; id: string; parameter: IQueryParams },
-                                    Observable<AnyAction>
-                                >(this._fetchPromoHierarchyDetailRequest$),
+                                switchMap((userData) =>  of({ userData, id, parameter })),
+                                switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
+                                    this._fetchPromoHierarchyDetailRequest),
                                 catchError((err) =>
                                     this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure')
                                 )
@@ -207,10 +204,8 @@ export class PromoHierarchyEffects {
                                 map(this.checkUserSupplier),
                                 retry(3),
                                 switchMap((userData) => of({ userData, id, parameter })),
-                                switchMap<
-                                    { userData: User; id: string; parameter: IQueryParams },
-                                    Observable<AnyAction>
-                                >(this._fetchPromoHierarchyDetailRequest$),
+                                switchMap<{ userData: User, id: string, parameter: IQueryParams }, Observable<AnyAction>>(
+                                    this._fetchPromoHierarchyDetailRequest),
                                 catchError((err) =>
                                     this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure')
                                 )
@@ -240,23 +235,6 @@ export class PromoHierarchyEffects {
         { dispatch: false }
     );
 
-    setRefreshStatusToActive$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(
-                    // PromoHierarchyActions.removeSupplierVoucherSuccess,
-                    PromoHierarchyActions.updatePromoHierarchySuccess
-                ),
-                map((action) => action.payload),
-                tap(() => {
-                    this.PromoHierarchyStore.dispatch(
-                        PromoHierarchyActions.setRefreshStatus({ payload: true })
-                    );
-                })
-            ),
-        { dispatch: false }
-    );
-
     checkUserSupplier = (userData: User): User | Observable<never> => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
@@ -270,6 +248,16 @@ export class PromoHierarchyEffects {
 
         return userData;
     };
+
+    constructor(
+        private actions$: Actions,
+        private authStore: NgRxStore<fromAuth.FeatureState>,
+        private PromoHierarchyStore: NgRxStore<fromPromoHierarchy.FeatureState>,
+        private PromoHierarchyApi$: PromoHierarchyApiService,
+        private notice$: NoticeService,
+        private router: Router,
+        private helper$: HelperService,
+    ) {}
 
     processPromoHierarchyRequest = ([userData, params]: [User, IQueryParams]): Observable<
         AnyAction
@@ -301,66 +289,6 @@ export class PromoHierarchyEffects {
         );
     };
 
-    // processPromoHierarchyRequest = ([userData, queryParams]: [
-    //     User,
-    //     IQueryParams | string
-    // ]): Observable<AnyAction> => {
-    //     let newQuery: IQueryParams = {};
-
-    //     if (typeof queryParams === 'string') {
-    //         newQuery['id'] = queryParams;
-    //     } else {
-    //         // Membentuk parameter query yang baru.
-    //         newQuery = {
-    //             ...queryParams,
-    //         };
-    //     }
-
-    //     // Hanya mengambil ID supplier saja.
-    //     const { supplierId } = userData.userSupplier;
-
-    //     // Memasukkan ID supplier ke dalam parameter.
-    //     newQuery['supplierId'] = supplierId;
-
-    //     return this.PromoHierarchyApi$.find<IPaginatedResponse<PromoHierarchy>>(newQuery).pipe(
-    //         catchOffline(),
-    //         switchMap((response) => {
-    //             if (typeof queryParams === 'string') {
-    //                 return of(
-    //                     PromoHierarchyActions.fetchPromoHierarchySuccess({
-    //                         payload: {
-    //                             data: new PromoHierarchy((response as unknown) as PromoHierarchy),
-    //                         },
-    //                     })
-    //                 );
-    //             } else if (newQuery.paginate) {
-    //                 return of(
-    //                     PromoHierarchyActions.fetchPromoHierarchySuccess({
-    //                         payload: {
-    //                             data: (response as IPaginatedResponse<PromoHierarchy>).data.map(
-    //                                 (p) => new PromoHierarchy(p)
-    //                             ),
-    //                             total: response.total,
-    //                         },
-    //                     })
-    //                 );
-    //             } else {
-    //                 return of(
-    //                     PromoHierarchyActions.fetchPromoHierarchySuccess({
-    //                         payload: {
-    //                             data: ((response as unknown) as Array<PromoHierarchy>).map(
-    //                                 (p) => new PromoHierarchy(p)
-    //                             ),
-    //                             total: ((response as unknown) as Array<PromoHierarchy>).length,
-    //                         },
-    //                     })
-    //                 );
-    //             }
-    //         }),
-    //         catchError((err) => this.sendErrorToState(err, 'fetchPromoHierarchyFailure'))
-    //     );
-    // };
-
     updatePromoHierarchyRequest = ([userData, { body }]: [
         User,
         { body: PromoHierarchyPayload }
@@ -373,8 +301,11 @@ export class PromoHierarchyEffects {
                 return of(
                     PromoHierarchyActions.updatePromoHierarchySuccess({
                         payload: {
-                            id: response.id,
-                            data: response,
+                            id: body.id,
+                            changes: {
+                                layer: response.layer,
+                                promoGroup: response.promoGroup,
+                            },
                         },
                     })
                 );
@@ -390,21 +321,26 @@ export class PromoHierarchyEffects {
         );
     };
 
-    _fetchPromoHierarchyDetailRequest$ = ({
-        userData,
-        id,
-        parameter = {},
-    }: {
-        userData: User;
-        id: string;
-        parameter: IQueryParams;
-    }): Observable<AnyAction> => {
-        const newParams: IQueryParams = {
-            paginate: false,
+    _fetchPromoHierarchyDetailRequest = ({ userData, id, parameter = {} }: { userData: User, id: string, parameter: IQueryParams }): Observable<AnyAction> => {
+        const newParams = {
+            ...parameter,
         };
-        if (parameter['splitRequest']) {
+        const { supplierId } = userData.userSupplier;
+        if (supplierId) {
+            newParams['supplierId'] = supplierId;
+        }
+
+        let promoTypes;
+        if (newParams['type'] == 'cross_selling') {
+            promoTypes = 'cross';
+        } else {
+            promoTypes = newParams['type'];
+        }
+        newParams['type'] = promoTypes;
+        
+        if (newParams['splitRequest']) {
             return forkJoin([
-                this.PromoHierarchyApi$.findById<PromoHierarchyDetail>(id, newParams).pipe(
+                this.PromoHierarchyApi$.findById<PromoHierarchy>(id, newParams).pipe(
                     catchOffline(),
                     retry(3),
                     catchError((err) =>
@@ -412,29 +348,23 @@ export class PromoHierarchyEffects {
                     )
                 ),
             ]).pipe(
-                switchMap(([general]: [PromoHierarchyDetail]) => {
-                    let promoCatalogues: Array<IPromoConditionCatalogues> = [];
-                    let promoLayer: Array<IPromoLayerInformation> = [];
-
-                    promoCatalogues = (general.promoConditionCatalogues as unknown) as Array<IPromoConditionCatalogues>;
-                    promoLayer = (general.layerInformation as unknown) as Array<IPromoLayerInformation>;
+                switchMap(([general]: [PromoHierarchy]) => {
                     return of(
                         PromoHierarchyActions.fetchPromoHierarchyDetailSuccess({
-                            payload: new PromoHierarchyDetail({
+                            // payload: new PromoHierarchyDetail(general),
+                            payload: new PromoHierarchy({
                                 ...general,
-                                promoCatalogues,
-                                promoLayer,
-                            } as PromoHierarchyDetail),
+                            } as PromoHierarchy),
                         })
                     );
                 })
             );
         } else {
-            return this.PromoHierarchyApi$.findById<PromoHierarchyDetail>(id, newParams).pipe(
+            return this.PromoHierarchyApi$.findById<PromoHierarchy>(id, newParams).pipe(
                 catchOffline(),
                 map((resp) =>
                     PromoHierarchyActions.fetchPromoHierarchyDetailSuccess({
-                        payload: new PromoHierarchyDetail(resp),
+                        payload: new PromoHierarchy(resp),
                     })
                 ),
                 catchError((err) => this.sendErrorToState(err, 'fetchPromoHierarchyDetailFailure'))
@@ -444,7 +374,7 @@ export class PromoHierarchyEffects {
 
     sendErrorToState = (
         err: ErrorHandler | HttpErrorResponse | object,
-        dispatchTo: PromoHierarchyFailureActionNames
+        dispatchTo: PromoHierarchyFailureAction
     ): Observable<AnyAction> => {
         // Memunculkan error di console.
         if (err instanceof ErrorHandler) {

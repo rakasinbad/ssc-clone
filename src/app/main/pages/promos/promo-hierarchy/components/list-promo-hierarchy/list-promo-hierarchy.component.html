@@ -29,9 +29,9 @@
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{
-                    row?.promoAllocation === 'promo_slot'
+                    row?.promoAllocation === 'promo_slot' ||  row?.promoAllocation === 'voucher_slot'
                         ? 'Max Promo Redemption (Transaction)'
-                        : row?.promoAllocation === 'promo_budget'
+                        : row?.promoAllocation === 'promo_budget' ||  row?.promoAllocation === 'voucher_budget'
                         ? 'Max Promo Redemption (Rp)'
                         : row?.promoAllocation === 'none'
                         ? 'None'
@@ -56,7 +56,7 @@
             </ng-container>
             <ng-container *ngIf="row?.promoAllocation == 'promo_slot'">
                 <p style="word-break: break-word">
-                    {{ (row?.promoSlot | number) || '-' }}/{{ (row?.planSlot | number) || '-' }}
+                    {{ (row?.promoSlot | number) || 0 }}/{{ (row?.planSlot | number) || 0 }}
                 </p>
             </ng-container>
         </mat-cell>
@@ -70,7 +70,7 @@
                 {{
                     row?.promoType === 'flexi'
                         ? 'Flexi Combo'
-                        : row?.promoType === 'crossSelling'
+                        : row?.promoType === 'cross_selling'
                         ? 'Cross Selling'
                         : row?.promoType === 'voucher'
                         ? 'Supllier Voucher'
@@ -159,7 +159,8 @@
                             mat-menu-item
                             class="sinbad-mat-menu-item"
                             aria-label="Detail"
-                            (click)="openDetailPage(row.id, row)"
+                            (click)="openDetailPage(row)"
+                            [routerLink]="[row?.id, 'detail']"
                         >
                             <mat-icon>remove_red_eye</mat-icon>
                             <span>Detail</span>
@@ -180,7 +181,8 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumns"
         class="sinbad-promo-hierarchy-list-item"
-        (click)="openDetailPage(row.id, row)"
+        [routerLink]="[row?.id, 'detail']"
+        (click)="openDetailPage(row)"
     ></mat-row>
 
     <mat-footer-row

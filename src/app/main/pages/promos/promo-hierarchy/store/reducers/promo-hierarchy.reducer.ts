@@ -1,94 +1,53 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { environment } from 'environments/environment';
-import { PromoHierarchy } from '../../models/promo-hierarchy.model';
+
+import { PromoHierarchy } from '../../models';
 import { PromoHierarchyActions } from '../actions';
 
-// Set reducer's feature key
-export const featureKey = 'promoHierarchy';
+// Keyname for reducer
+export const featureKey = 'promoHierarchys';
 
-// export interface State extends EntityState<CrossSelling> {
-//     isLoading: boolean;
-//     isRefresh: boolean;
-//     selectedId: string;
-//     total: number;
-// }
-
-export interface PromoHierarchyState extends EntityState<PromoHierarchy> {
+export interface State extends EntityState<PromoHierarchy> {
     isLoading: boolean;
-    needRefresh: boolean;
-    limit: number;
-    skip: number;
-    total: number;
+    isRefresh: boolean;
     selectedId: string;
+    total: number;
 }
 
-// Adapter for promoHierarchy state
+// Adapter for crossSellingPromo state
 export const adapter = createEntityAdapter<PromoHierarchy>({
     selectId: (row) => row.id,
 });
 
-// Initial value for PromoHierarchy State.
-const initialPromoHierarchyState: PromoHierarchyState = adapter.getInitialState<
-    Omit<PromoHierarchyState, 'ids' | 'entities'>
->({
+// Initialize state
+export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
-    needRefresh: false,
-    total: 0,
-    limit: environment.pageSize,
-    skip: 0,
+    isRefresh: undefined,
     selectedId: null,
+    total: 0,
 });
 
 // Create the reducer.
 export const reducer = createReducer(
-    initialPromoHierarchyState,
-    /**
-     * REQUEST STATES.
-     */
+    initialState,
     on(
         PromoHierarchyActions.fetchPromoHierarchyRequest,
         PromoHierarchyActions.updatePromoHierarchyRequest,
         PromoHierarchyActions.fetchPromoHierarchyDetailRequest,
-        PromoHierarchyActions.removePromoHierarchyRequest,
         (state) => ({
             ...state,
             isLoading: true,
         })
     ),
-    /**
-     * FAILURE STATES.
-     */
     on(
         PromoHierarchyActions.fetchPromoHierarchyFailure,
         PromoHierarchyActions.updatePromoHierarchyFailure,
         PromoHierarchyActions.fetchPromoHierarchyDetailFailure,
-        PromoHierarchyActions.removePromoHierarchyFailure,
         (state) => ({
             ...state,
             isLoading: false,
         })
     ),
-    /**
-     * FETCH SUCCESS STATE.
-     */
-    on(PromoHierarchyActions.fetchPromoHierarchySuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
-    ),
-    /**
-     * REMOVE SUCCESS STATE.
-     */
-    on(PromoHierarchyActions.removePromoHierarchySuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-    })),
-    /**
-     * UPDATE SUCCESS STATE.
-     */
-    on(PromoHierarchyActions.updatePromoHierarchySuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-    })),
     on(PromoHierarchyActions.fetchPromoHierarchyDetailRequest, (state, { payload }) => ({
         ...state,
         isLoading: true,
@@ -97,23 +56,15 @@ export const reducer = createReducer(
     on(PromoHierarchyActions.fetchPromoHierarchyDetailSuccess, (state, { payload }) =>
         adapter.addOne(payload, { ...state, isLoading: false })
     ),
-    /**
-     * SELECTION STATE.
-     */
-    on(PromoHierarchyActions.selectPromoHierarchy, (state, { payload }) => ({
-        ...state,
-        selectedId: payload,
-    })),
-    on(PromoHierarchyActions.deselectPromoHierarchy, (state) => ({
-        ...state,
-        selectedId: null,
-    })),
-    /**
-     * RESET STATE.
-     */
+    on(PromoHierarchyActions.fetchPromoHierarchySuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
+    on(PromoHierarchyActions.updatePromoHierarchySuccess, (state, { payload }) =>
+        adapter.updateOne(payload, { ...state, isLoading: false })
+    ),
     on(PromoHierarchyActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
         needRefresh: payload,
     })),
-    on(PromoHierarchyActions.resetPromoHierarchy, () => initialPromoHierarchyState)
+    on(PromoHierarchyActions.clearState, () => initialState)
 );
