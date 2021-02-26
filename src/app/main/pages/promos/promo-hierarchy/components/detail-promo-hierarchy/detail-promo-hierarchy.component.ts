@@ -96,7 +96,7 @@ export class DetailPromoHierarchyComponent implements OnInit, OnDestroy {
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
                 // Reset core state crossSellingPromo
-                this.store.dispatch(PromoHierarchyActions.resetPromoHierarchy());
+                this.store.dispatch(PromoHierarchyActions.clearState());
                 break;
 
             default:

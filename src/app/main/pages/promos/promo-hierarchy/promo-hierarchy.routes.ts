@@ -13,9 +13,6 @@ import { AuthGuard } from '../../core/auth/auth.guard';
 // The component.
 import { PromoHierarchyComponent } from './promo-hierarchy.component';
 import { DetailPromoHierarchyComponent } from './components/detail-promo-hierarchy/detail-promo-hierarchy.component';
-// import { VoucherDetailComponent } from './pages/detail/detail.component';
-// import { SkuAssignmentDetailComponent } from './sku-assignment-detail';
-
 import { getRoleByRouter } from 'app/shared/helpers';
 
 // Routes

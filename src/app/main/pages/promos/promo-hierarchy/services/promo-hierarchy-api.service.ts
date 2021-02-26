@@ -117,7 +117,6 @@ export class PromoHierarchyApiService {
 
     findById<T>(id: string, params?: IQueryParams): Observable<T> {
         const newArg = [];
-        console.log('params findbyid->', params)
 
         if (params['supplierId']) {
             newArg.push({
@@ -137,12 +136,4 @@ export class PromoHierarchyApiService {
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
 
-    removePromoHierarchy<T = string, R = undefined>(payload: T): Observable<R> {
-        if (typeof payload !== 'string') {
-            throw new Error('ERR_DELETE_PROMO_HIERARCHY_REQUIRED_ID');
-        }
-
-        this._url = this._$helper.handleApiRouter(this._PromoHierarchyEndpoint);
-        return this.http.delete<R>(`${this._url}/${payload}`);
-    }
 }

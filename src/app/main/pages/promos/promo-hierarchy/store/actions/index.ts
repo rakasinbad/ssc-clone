@@ -1,6 +1,5 @@
 import * as PromoHierarchyActions from './promo-hierarchy.actions';
 
-type PromoHierarchyFailureActionNames = PromoHierarchyActions.failureActionNames;
-type PromoHierarchyRequestActionNames = PromoHierarchyActions.requestActionNames;
+type PromoHierarchyFailureAction = PromoHierarchyActions.FailureActions;
 
-export { PromoHierarchyFailureActionNames, PromoHierarchyRequestActionNames, PromoHierarchyActions };
+export { PromoHierarchyFailureAction, PromoHierarchyActions };

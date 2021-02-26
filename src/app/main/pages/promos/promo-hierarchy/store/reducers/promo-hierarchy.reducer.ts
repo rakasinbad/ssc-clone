@@ -34,7 +34,6 @@ export const reducer = createReducer(
         PromoHierarchyActions.fetchPromoHierarchyRequest,
         PromoHierarchyActions.updatePromoHierarchyRequest,
         PromoHierarchyActions.fetchPromoHierarchyDetailRequest,
-        // PromoHierarchyActions.removePromoHierarchyRequest,
         (state) => ({
             ...state,
             isLoading: true,
@@ -44,7 +43,6 @@ export const reducer = createReducer(
         PromoHierarchyActions.fetchPromoHierarchyFailure,
         PromoHierarchyActions.updatePromoHierarchyFailure,
         PromoHierarchyActions.fetchPromoHierarchyDetailFailure,
-        // PromoHierarchyActions.removePromoHierarchyFailure,
         (state) => ({
             ...state,
             isLoading: false,
@@ -64,17 +62,9 @@ export const reducer = createReducer(
     on(PromoHierarchyActions.updatePromoHierarchySuccess, (state, { payload }) =>
         adapter.updateOne(payload, { ...state, isLoading: false })
     ),
-    // on(PromoHierarchyActions.removePromoHierarchySuccess, (state, { payload }) =>
-    //     adapter.removeOne(payload, {
-    //         ...state,
-    //         isLoading: false,
-    //         selectedId: null,
-    //         total: state.total - 1,
-    //     })
-    // ),
     on(PromoHierarchyActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
         needRefresh: payload,
     })),
-    on(PromoHierarchyActions.resetPromoHierarchy, () => initialState)
+    on(PromoHierarchyActions.clearState, () => initialState)
 );

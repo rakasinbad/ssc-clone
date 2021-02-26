@@ -3,8 +3,8 @@ import * as fromPromoHierarchyCore from '../reducers';
 import * as fromPromoHierarchy from '../reducers/promo-hierarchy.reducer';
 
 export const getPromoHierarchyCoreState = createFeatureSelector<
-fromPromoHierarchyCore.FeatureState,
-fromPromoHierarchyCore.State
+    fromPromoHierarchyCore.FeatureState,
+    fromPromoHierarchyCore.State
 >(fromPromoHierarchyCore.featureKey);
 
 export const getPromoHierarchyEntitiesState = createSelector(
@@ -19,7 +19,6 @@ export const {
     selectTotal,
 } = fromPromoHierarchy.adapter.getSelectors(getPromoHierarchyEntitiesState);
 
-
 export const getTotalItem = createSelector(getPromoHierarchyEntitiesState, (state) => state.total);
 
 export const getSelectedId = createSelector(
@@ -33,4 +32,7 @@ export const getSelectedItem = createSelector(
     (entities, id) => entities[id]
 );
 
-export const getLoadingState = createSelector(getPromoHierarchyEntitiesState, (state) => state.isLoading);
+export const getLoadingState = createSelector(
+    getPromoHierarchyEntitiesState,
+    (state) => state.isLoading
+);
