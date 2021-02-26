@@ -19,7 +19,6 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        <!-- {{ dataDetail.name }} -->
                         <ng-container *ngIf="!(isLoading$ | async)">
                             {{ (promoHierarchy$ | async)?.name }}
                         </ng-container>

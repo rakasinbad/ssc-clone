@@ -37,19 +37,6 @@ const routes: Routes = [
     {
         path: ':id/detail',
         component: DetailPromoHierarchyComponent,
-        // canActivate: [AuthGuard, NgxPermissionsGuard],
-        // data: {
-        //     permissions: {
-        //         only: getRoleByRouter('promos', 'promo-hierarchy'),
-        //         redirectTo: {
-        //             navigationCommands: ['/pages/errors/403'],
-        //             navigationExtras: {
-        //                 replaceUrl: true,
-        //                 skipLocationChange: true,
-        //             },
-        //         },
-        //     },
-        // },
     },
     
 ];
