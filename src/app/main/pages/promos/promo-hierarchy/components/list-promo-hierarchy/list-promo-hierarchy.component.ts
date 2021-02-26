@@ -28,7 +28,6 @@ import { takeUntil, flatMap, filter } from 'rxjs/operators';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as PromoHierarchyCoreState } from '../../store/reducers';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { PromoHierarchy } from '../../models';
 import { PromoHierarchySelectors } from '../../store/selectors';
@@ -147,7 +146,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
 
-        const data: IQueryParamsVoucher = {
+        const data: IQueryParams = {
             limit: this.paginator.pageSize,
             skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
