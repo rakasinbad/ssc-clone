@@ -3,7 +3,7 @@
     "material-icon-theme.activeIconPack": "angular_ngrx",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "files.exclude": {
-        ".vscode": true,
+        ".vscode": false,
         "node_modules/": true,
         "dist/": true,
         "e2e/": true
@@ -24,5 +24,6 @@
     "[scss]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "html.format.contentUnformatted": ""
+    "html.format.contentUnformatted": "",
+    "angular.enable-experimental-ivy-prompt": false
 }

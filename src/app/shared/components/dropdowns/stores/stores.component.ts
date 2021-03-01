@@ -526,7 +526,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
                 this.subStore = this.dataSource$.subscribe((val) => {
                     if (val != undefined) {
-                        //checking if data length == 0
+                        //checking if data exclude length > 0
                         if (val.totalExclude > 0) {
                             this.toggleLoading(false);
                             this.toggleSelectedLoading(false);
@@ -539,7 +539,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 });
                         
                                 dialogRef.afterClosed().subscribe(result => {
-                                    if (result == 'yes') {
+                                    if (result == 'yes') { //if click button yes
                                         let fileEntities = [];
                                         fileEntities = val.massData.filter(d => !!d)
                                         .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
@@ -558,12 +558,31 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                             this.onSelectedEntity(this.entityFormValue.value);
                                         }
                                         this.updateFormView();
-                                        
+                                    } else { //if click button no
+                                        this.toggleLoading(false);
+                                        this.toggleSelectedLoading(false);
                                     }
                                   });
-                        } else {
+                        } else { //checking if data exclude length == 0
                             this.toggleLoading(false);
                             this.toggleSelectedLoading(false);
+                            let fileEntities = [];
+                            fileEntities = val.massData.filter(d => !!d)
+                                .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+                            for (const entity of (fileEntities as Array<Entity>)) {
+                                this.upsertEntity(entity);
+                            }
+
+                            for (let i= 0; i < fileEntities.length; i++) {
+                                this.tempEntity.push(fileEntities[i]);
+                                this.initialSelection.push(fileEntities[i]);
+                            }
+                                        
+                            this.entityFormValue.setValue(this.tempEntity);
+                            if (this.entityFormValue.value.length != 0) {
+                                this.onSelectedEntity(this.entityFormValue.value);
+                            }
+                            this.updateFormView();
                         }
                     }
                 });
