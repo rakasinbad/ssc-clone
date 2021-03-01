@@ -170,7 +170,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     information,
                     detail,
                     brandId,
-                    subBrandId,
+                    subBrandId = null,
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
                     unitOfMeasureId,
