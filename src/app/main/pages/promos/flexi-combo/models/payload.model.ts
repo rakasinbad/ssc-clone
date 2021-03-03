@@ -56,6 +56,8 @@ export class CreateFlexiComboDto {
     isNewStore: boolean;
     isActiveStore: boolean;
     skpId: number;
+    promoLayer: number;
+    promoGroup: string;
 
     constructor(data: CreateFlexiComboDto) {
         const {
@@ -82,7 +84,9 @@ export class CreateFlexiComboDto {
             promoAllocationType,
             isNewStore,
             isActiveStore,
-            skpId
+            skpId,
+            promoLayer,
+            promoGroup
         } = data;
 
         this.base = base;
@@ -108,6 +112,8 @@ export class CreateFlexiComboDto {
         this.isNewStore = isNewStore;
         this.isActiveStore = isActiveStore;
         this.skpId = skpId;
+        this.promoLayer = promoLayer;
+        this.promoGroup = promoGroup;
         
         if (this.promoAllocationType == 'none') {
             this.promoBudget = null;

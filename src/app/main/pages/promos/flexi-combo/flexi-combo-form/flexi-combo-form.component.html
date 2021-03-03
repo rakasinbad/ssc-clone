@@ -370,28 +370,23 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label
+                            <label fxFlexAlign="center" fxFlex="10"> Linked SKP </label>
+
+                            <app-select-linked-skp
+                                #selectSkpLinked
+                                [required]="false"
+                                (selected)="onSelectedSkpLinked($event)"
                                 fxFlexAlign="center"
-                                fxFlex="10"
+                                fxFlex="50"
+                                [disabled]="dateStatus"
+                                [promoDateEnd]="promoEnd"
                             >
-                                Linked SKP
-                            </label>
-                
-                                <app-select-linked-skp
-                                    #selectSkpLinked
-                                    [required]="false"
-                                    (selected)="onSelectedSkpLinked($event)"
-                                    fxFlexAlign="center"
-                                    fxFlex="50"
-                                    [disabled]="dateStatus"
-                                    [promoDateEnd]="promoEnd"
-                                >
-                                    <!-- <ng-container *ngIf="errorSkpLinkedList == true">
+                                <!-- <ng-container *ngIf="errorSkpLinkedList == true">
                                         <mat-hint class="mat-error">
                                             This field is required.
                                         </mat-hint>
                                     </ng-container> -->
-                                </app-select-linked-skp>
+                            </app-select-linked-skp>
                         </div>
 
                         <div
@@ -580,6 +575,58 @@
                             </div>
                         </div>
                         <!-- ./ FIELD TIER MULTIPLICATION -->
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline"> Layer Settings </span>
+
+                    <div class="form-box">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="10"> Promo Layer Level </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container *ngIf="layerBase">
+                                    <mat-select
+                                        formControlName="layer"
+                                        placeholder="Choose Promo Layer Level"
+                                    >
+                                        <mat-option *ngFor="let row of layerBase" [value]="row.id">
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field info-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="10"> Promo Group </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container *ngIf="groupBase">
+                                    <mat-select
+                                        formControlName="group"
+                                        placeholder="Choose Promo Group"
+                                    >
+                                        <mat-option *ngFor="let row of groupBase" [value]="row.id">
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+                            </mat-form-field>
+                        </div>
                     </div>
                 </div>
             </mat-card>
@@ -2228,7 +2275,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenWarehouse')"
                                 >
-                                   <span class="sinbad-red-fg">*</span>
+                                    <span class="sinbad-red-fg">*</span>
                                     Warehouse<br />({{
                                         form.get('chosenWarehouse').value?.length || 0
                                     }}
@@ -2265,8 +2312,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreType')"
                                 >
-
-                                <!-- <span class="sinbad-red-fg">*</span> -->
+                                    <!-- <span class="sinbad-red-fg">*</span> -->
                                     Store Type<br />({{
                                         form.get('chosenStoreType').value?.length || 0
                                     }}
@@ -2306,7 +2352,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreGroup')"
                                 >
-                                  <!-- <span class="sinbad-red-fg">*</span> -->
+                                    <!-- <span class="sinbad-red-fg">*</span> -->
                                     Store Group<br />({{
                                         form.get('chosenStoreGroup').value?.length || 0
                                     }}
@@ -2327,7 +2373,6 @@
                                     [fakturIdSelect]="fakturIdSelected"
                                     (selected)="onStoreGroupSelected($event)"
                                     [typeTrigger]="triggerSelected"
-
                                     fxFlex="50"
                                 >
                                     <div error>
@@ -2347,7 +2392,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreChannel')"
                                 >
-                                  <!-- <span class="sinbad-red-fg">*</span> -->
+                                    <!-- <span class="sinbad-red-fg">*</span> -->
                                     Store Channel<br />({{
                                         form.get('chosenStoreChannel').value?.length || 0
                                     }}
@@ -2387,7 +2432,7 @@
                                     fxFlex="10"
                                     [class.sinbad-red-fg]="hasError('chosenStoreCluster')"
                                 >
-                                   <!-- <span class="sinbad-red-fg">*</span> -->
+                                    <!-- <span class="sinbad-red-fg">*</span> -->
 
                                     Store Cluster<br />({{
                                         form.get('chosenStoreCluster').value?.length || 0
@@ -2428,17 +2473,14 @@
                                 fxLayoutAlign="start stretch"
                                 fxLayoutGap="16px"
                             >
-                                <label
-                                    fxFlexAlign="center"
-                                    fxFlex="10"
-                                >
-                                    Warehouse<br />({{warehouseLength || 0 }} Selected)
+                                <label fxFlexAlign="center" fxFlex="10">
+                                    Warehouse<br />({{ warehouseLength || 0 }} Selected)
                                 </label>
 
                                 <select-warehouses
                                     [initialSelection]="[]"
                                     [disabled]="true"
-                                    placeholder="{{warehouseSelectAll}}"
+                                    placeholder="{{ warehouseSelectAll }}"
                                     [required]="false"
                                     [typePromo]="typePromo"
                                     [segmentBases]="segmentBases"
@@ -2449,7 +2491,6 @@
                                     (valueSelectAll)="dataValueWarehouse($event)"
                                     fxFlex="50"
                                 >
-                                  
                                 </select-warehouses>
                             </div>
 
@@ -2459,17 +2500,14 @@
                                 fxLayoutAlign="start stretch"
                                 fxLayoutGap="16px"
                             >
-                                <label
-                                    fxFlexAlign="center"
-                                    fxFlex="10"
-                                >
-                                    Store Type<br />({{storeTypeLength || 0 }} Selected)
+                                <label fxFlexAlign="center" fxFlex="10">
+                                    Store Type<br />({{ storeTypeLength || 0 }} Selected)
                                 </label>
 
                                 <select-store-segmentation
                                     [initialSelection]="[]"
                                     [disabled]="true"
-                                    placeholder="{{storeTypeSelectAll}}"
+                                    placeholder="{{ storeTypeSelectAll }}"
                                     segmentationType="type"
                                     [required]="false"
                                     [typePromo]="typePromo"
@@ -2491,17 +2529,14 @@
                                 fxLayoutAlign="start stretch"
                                 fxLayoutGap="16px"
                             >
-                                <label
-                                    fxFlexAlign="center"
-                                    fxFlex="10"
-                                >
-                                    Store Group<br />({{storeGroupLength|| 0}} Selected)
+                                <label fxFlexAlign="center" fxFlex="10">
+                                    Store Group<br />({{ storeGroupLength || 0 }} Selected)
                                 </label>
 
                                 <select-store-segmentation
                                     [initialSelection]="[]"
                                     [disabled]="true"
-                                    placeholder="{{storeGroupSelectAll}}"
+                                    placeholder="{{ storeGroupSelectAll }}"
                                     title="Select Store Group"
                                     segmentationType="group"
                                     [required]="false"
@@ -2524,17 +2559,14 @@
                                 fxLayoutAlign="start stretch"
                                 fxLayoutGap="16px"
                             >
-                                <label
-                                    fxFlexAlign="center"
-                                    fxFlex="10"
-                                >
-                                    Store Channel<br />({{storeChannelLength|| 0}} Selected)
+                                <label fxFlexAlign="center" fxFlex="10">
+                                    Store Channel<br />({{ storeChannelLength || 0 }} Selected)
                                 </label>
 
                                 <select-store-segmentation
                                     [initialSelection]="[]"
                                     [disabled]="true"
-                                    placeholder="{{storeChannelSelectAll}}"
+                                    placeholder="{{ storeChannelSelectAll }}"
                                     title="Select Store Channel"
                                     segmentationType="channel"
                                     [required]="false"
@@ -2557,17 +2589,14 @@
                                 fxLayoutAlign="start stretch"
                                 fxLayoutGap="16px"
                             >
-                                <label
-                                    fxFlexAlign="center"
-                                    fxFlex="10"
-                                >
-                                    Store Cluster<br />({{storeClusterLength|| 0}} Selected)
+                                <label fxFlexAlign="center" fxFlex="10">
+                                    Store Cluster<br />({{ storeClusterLength || 0 }} Selected)
                                 </label>
 
                                 <select-store-segmentation
                                     [initialSelection]="[]"
                                     [disabled]="true"
-                                    placeholder="{{storeClusterSelectAll}}"
+                                    placeholder="{{ storeClusterSelectAll }}"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
                                     [required]="false"
@@ -2581,15 +2610,14 @@
                                     [typeTrigger]="triggerSelected"
                                     fxFlex="50"
                                 >
-                                    
                                 </select-store-segmentation>
                             </div>
                         </ng-container>
 
                         <ng-container
                             *ngIf="
-                                getSegmentationBase() === eSegmentBase.ALLSEGMENTATION || 
-                                getSegmentationBase() === eSegmentBase.SEGMENTATION 
+                                getSegmentationBase() === eSegmentBase.ALLSEGMENTATION ||
+                                getSegmentationBase() === eSegmentBase.SEGMENTATION
                             "
                         >
                             <div
