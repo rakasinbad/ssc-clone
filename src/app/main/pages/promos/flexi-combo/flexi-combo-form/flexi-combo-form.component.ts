@@ -3552,10 +3552,12 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
 
         const newStartDate =
             startDate && moment.isMoment(startDate)
-                ? startDate.toISOString(this.strictISOString)
+                ? startDate.add(7, 'hour').toISOString(this.strictISOString)
                 : null;
         const newEndDate =
-            endDate && moment.isMoment(endDate) ? endDate.toISOString(this.strictISOString) : null;
+            endDate && moment.isMoment(endDate) 
+                ? endDate.add(7, 'hour').toISOString(this.strictISOString) 
+                : null;
 
         if (this.pageType === 'new') {
             const payload: CreateFlexiComboDto = {
