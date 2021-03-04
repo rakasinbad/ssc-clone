@@ -612,13 +612,13 @@
                             fxLayoutAlign="start center"
                             fxLayoutGap="15px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10"> Promo Group </label>
+                            <label fxFlexAlign="center" fxFlex="10"> Promo Owner </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container *ngIf="groupBase">
                                     <mat-select
                                         formControlName="group"
-                                        placeholder="Choose Promo Group"
+                                        placeholder="Choose Promo Owner"
                                     >
                                         <mat-option *ngFor="let row of groupBase" [value]="row.id">
                                             {{ row.label }}

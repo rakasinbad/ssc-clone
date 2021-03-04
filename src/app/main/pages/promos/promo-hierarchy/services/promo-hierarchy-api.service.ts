@@ -107,7 +107,7 @@ export class PromoHierarchyApiService {
     updatePromoHierarchy<T>(body: T): Observable<PromoHierarchy> {
         const newArgs = {
             layer: body['layer'],
-            group: body['group']
+            promoOwner: body['group']
         };
         
         
