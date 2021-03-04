@@ -3,14 +3,13 @@
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-
     <div
         class="custom-field info-field"
         fxLayout="row"
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Layer Lever</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Layer Level</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
@@ -24,4 +23,35 @@
         </div>
     </div>
 
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Owner</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{
+                    (flexiCombo$ | async)?.promoOwner === 'sinbad-promo'
+                        ? 'Sinbad Promo'
+                        : (flexiCombo$ | async)?.promoOwner === 'distributor-promo'
+                        ? 'Distributor'
+                        : (flexiCombo$ | async)?.promoOwner === 'principal-promo'
+                        ? 'Principal'
+                        : (flexiCombo$ | async)?.promoOwner === 'none'
+                        ? 'None'
+                        : (flexiCombo$ | async)?.promoOwner === 'payment-method-promo'
+                        ? 'Payment Method Promo'
+                        : ((flexiCombo$ | async)?.promoOwner | titlecase) || '-'
+                }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
 </div>
