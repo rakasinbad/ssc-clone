@@ -99,17 +99,6 @@
                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                 *ngIf="isLoading$ | async"
             ></ngx-skeleton-loader>
-
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                Rp {{ ((flexiCombo$ | async)?.promoBudget | number) }} / Rp  {{ ((flexiCombo$ | async)?.planBudget | number) }} 
-            </ng-container>
-
-            {{ ((flexiCombo$ | async)?.promoSlot | number) || '-' }}/ {{ ((flexiCombo$ | async)?.planSlot | number) || '-' }}
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
         </div>
     </div>
 
@@ -146,12 +135,12 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Group</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Owner</div>
 
         <div class="info" fxFlex="100">
 
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ ((promoHierarchy$ | async)?.promoGroup | titlecase) || '-' }}
+                {{ ((promoHierarchy$ | async)?.promoOwner | titlecase) || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -226,24 +215,6 @@
                 ></ngx-skeleton-loader>
 
                 <ng-template #noTriggerBase> - </ng-template>
-                <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                    <ng-container *ngIf="triggerBase; else noTriggerBase">
-                        <mat-radio-group [value]="(flexiCombo$ | async)?.base">
-                            <mat-radio-button *ngFor="let row of triggerBase" [value]="row?.id" [disabled]="true">
-                                {{ row?.label }}
-                            </mat-radio-button>
-                        </mat-radio-group>
-                    </ng-container>
-    
-                    <ng-template #noTriggerBase>
-                        -
-                    </ng-template>
-                </ng-container>
-    
-                <ngx-skeleton-loader
-                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                    *ngIf="isLoading$ | async"
-                ></ngx-skeleton-loader> -->
             </div>
         </div>
 
@@ -275,18 +246,6 @@
                     *ngIf="isLoading$ | async"
                 ></ngx-skeleton-loader>
 
-                <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                    <ng-container [ngSwitch]="(flexiCombo$ | async)?.base">
-                        <ng-container *ngSwitchCase="eTriggerBase.SKU">
-                            <span>
-                                {{ (flexiCombo$ | async)?.triggerCatalogues || '-' }}
-                            </span>
-                        </ng-container>
-                        <ng-container *ngSwitchDefault>-</ng-container>
-                    </ng-container>
-                </ng-container>
-    
-                 -->
             </div>
         </div>
     </div>

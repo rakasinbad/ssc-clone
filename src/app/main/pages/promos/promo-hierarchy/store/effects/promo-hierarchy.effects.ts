@@ -304,7 +304,7 @@ export class PromoHierarchyEffects {
                             id: body.id,
                             changes: {
                                 layer: response.layer,
-                                promoGroup: response.promoGroup,
+                                promoOwner: response.promoOwner,
                             },
                         },
                     })

@@ -3615,7 +3615,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 isActiveStore,
                 skpId,
                 promoLayer : layerVal,
-                promoGroup: groupVal
+                promoOwner: groupVal
             };
 
             if (payload.skpId == null) {
