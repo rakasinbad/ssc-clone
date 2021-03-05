@@ -294,7 +294,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             promoOwner: groupVal,
         };
 
-        console.log('isi payload general->', payload)
         this.formValue.emit(payload);
     }
 
