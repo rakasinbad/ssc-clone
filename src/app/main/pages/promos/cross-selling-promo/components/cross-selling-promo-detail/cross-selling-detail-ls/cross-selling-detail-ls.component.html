@@ -22,7 +22,7 @@
             ></ngx-skeleton-loader>
         </div>
     </div>
-    
+
     <div
         class="custom-field info-field"
         fxLayout="row"
@@ -33,7 +33,20 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (crossSellingPromo$ | async)?.promoOwner || '-' }}
+                {{ 
+                    (crossSellingPromo$ | async)?.promoOwner  === 'sinbad-promo'
+                    ? 'Sinbad Promo'
+                    : (crossSellingPromo$ | async)?.promoOwner  === 'distributor-promo'
+                    ? 'Distributor'
+                    : (crossSellingPromo$ | async)?.promoOwner  === 'principal-promo'
+                    ? 'Principal'
+                    : (crossSellingPromo$ | async)?.promoOwner  === 'none'
+                    ? 'None'
+                    : (crossSellingPromo$ | async)?.promoOwner === 'payment-method-promo'
+                    ? 'Payment Method Promo'
+                    : ((crossSellingPromo$ | async)?.promoOwner | titlecase) || '-'
+                    
+            }}
             </ng-container>
 
             <ngx-skeleton-loader
