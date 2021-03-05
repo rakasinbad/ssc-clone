@@ -64,7 +64,7 @@
 
     <!-- Promo Type Column -->
     <ng-container matColumnDef="promo-type">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Promo Type </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Promo Type </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{
@@ -80,23 +80,23 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Promo Group Column -->
+    <!-- Promo Owner Column -->
     <ng-container matColumnDef="promo-group">
-        <mat-header-cell *matHeaderCellDef mat-sort-header> Promo Group </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Promo Owner </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{
-                    row?.promoGroup === 'sinbad-promo'
+                    row?.promoOwner === 'sinbad-promo'
                         ? 'Sinbad Promo'
-                        : row?.promoGroup === 'distributor-promo'
+                        : row?.promoOwner === 'distributor-promo'
                         ? 'Distributor'
-                        : row?.promoGroup === 'principal-promo'
+                        : row?.promoOwner === 'principal-promo'
                         ? 'Principal'
-                        : row?.promoGroup === 'none'
+                        : row?.promoOwner === 'none'
                         ? 'None'
-                        : row?.promoGroup === 'payment-method-promo'
+                        : row?.promoOwner === 'payment-method-promo'
                         ? 'Payment Method Promo'
-                        : (row?.promoGroup | titlecase) || '-'
+                        : (row?.promoOwner | titlecase) || '-'
                 }}
             </p>
         </mat-cell>

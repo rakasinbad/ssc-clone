@@ -13,7 +13,7 @@ interface IPromoHierarchy {
     planSlot: number;
     promoType: string;
     promoSellerId: string;
-    promoGroup: string;
+    promoOwner: string;
     layer: number;
     status: PromoHierarchyStatus;
     triggerBase: string;
@@ -46,7 +46,7 @@ export class PromoHierarchy {
     status: PromoHierarchyStatus;
     layer: number;
     promoLayer: number;
-    promoGroup: string;
+    promoOwner: string;
     triggerBase: string;
     conditionBase: string;
     conditionQty: string;
@@ -74,7 +74,7 @@ export class PromoHierarchy {
             planSlot,
             promoType,
             promoSellerId,
-            promoGroup,
+            promoOwner,
             layer,
             promoLayer,
             status,
@@ -103,7 +103,7 @@ export class PromoHierarchy {
         this.planBudget = planBudget || null;
         this.planSlot = planSlot || null;
         this.promoSellerId = promoSellerId;
-        this.promoGroup = promoGroup || null;
+        this.promoOwner = promoOwner || null;
         this.layer = layer || 0;
         this.promoLayer = promoLayer || 0;
         this.status = status;
@@ -171,7 +171,7 @@ export class PromoHierarchyDetail {
     status: PromoHierarchyStatus;
     layer: number;
     promoLayer: number;
-    promoGroup: string;
+    promoOwner: string;
     triggerBase: string;
     conditionBase: string;
     conditionQty: string;
@@ -199,7 +199,7 @@ export class PromoHierarchyDetail {
             planSlot,
             promoType,
             promoSellerId,
-            promoGroup,
+            promoOwner,
             layer,
             promoLayer,
             status,
@@ -228,7 +228,7 @@ export class PromoHierarchyDetail {
         this.planBudget = planBudget || null;
         this.planSlot = planSlot || null;
         this.promoSellerId = promoSellerId;
-        this.promoGroup = promoGroup || null;
+        this.promoOwner = promoOwner || null;
         this.layer = layer || 0;
         this.promoLayer = promoLayer || 0;
         this.status = status;

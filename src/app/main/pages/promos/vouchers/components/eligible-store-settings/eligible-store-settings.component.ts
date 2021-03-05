@@ -240,15 +240,6 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                     id: voucher.id,
                     segmentationBase: voucher.target === 'store' ? 'direct-store' : voucher.target,
                     chosenStore: voucher.voucherStores.length === 0 ? '' : voucher.voucherStores,
-                    // UNUSED
-                    //
-                    //
-                    //
-                    // chosenWarehouse: voucher.promoWarehouses.length === 0 ? '' : voucher.promoWarehouses,
-                    // chosenStoreType: voucher.promoTypes.length === 0 ? '' : voucher.promoTypes,
-                    // chosenStoreGroup: voucher.promoGroups.length === 0 ? '' : voucher.promoGroups,
-                    // chosenStoreChannel: voucher.promoChannels.length === 0 ? '' : voucher.promoChannels,
-                    // chosenStoreCluster: voucher.promoClusters.length === 0 ? '' : voucher.promoClusters,
                 });
 
                 if (voucher.target === 'store') {
@@ -261,50 +252,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                         }))
                     );
                 } else if (voucher.target === 'segmentation') {
-                    // UNUSED
-                    //
-                    //
-                    //
-                    // WAREHOUSE
-                    // this.chosen$[1].next(
-                    //     voucher.promoWarehouses.map((data) => ({
-                    //         id: data.warehouse.id,
-                    //         label: data.warehouse.name,
-                    //         group: 'warehouses',
-                    //     }))
-                    // );
-                    // // STORE SEGMENTATION TYPE
-                    // this.chosen$[2].next(
-                    //     voucher.promoTypes.map((data) => ({
-                    //         id: data.type.id,
-                    //         label: data.type.name,
-                    //         group: 'store-segmentation-types',
-                    //     }))
-                    // );
-                    // // STORE SEGMENTATION GROUP
-                    // this.chosen$[3].next(
-                    //     voucher.promoGroups.map((data) => ({
-                    //         id: data.group.id,
-                    //         label: data.group.name,
-                    //         group: 'store-segmentation-groups',
-                    //     }))
-                    // );
-                    // // STORE SEGMENTATION CHANNEL
-                    // this.chosen$[4].next(
-                    //     voucher.promoChannels.map((data) => ({
-                    //         id: data.channel.id,
-                    //         label: data.channel.name,
-                    //         group: 'store-segmentation-channels',
-                    //     }))
-                    // );
-                    // // STORE SEGMENTATION CLUSTER
-                    // this.chosen$[5].next(
-                    //     voucher.promoClusters.map((data) => ({
-                    //         id: data.cluster.id,
-                    //         label: data.cluster.name,
-                    //         group: 'store-segmentation-clusters',
-                    //     }))
-                    // );
+                   
                 }
 
                 if (this.formMode === 'view') {

@@ -164,7 +164,7 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
                 id: value.promoSellerId,
                 name: value.name,
                 layer: value.layer,
-                group: value.promoGroup,
+                group: value.promoOwner,
                 data: value,
             },
             disableClose: true,
