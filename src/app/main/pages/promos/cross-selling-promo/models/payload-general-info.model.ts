@@ -18,4 +18,6 @@ export interface GeneralInfoFormDto {
     shortDescription: string;
     startDate: string;
     skpId: number;
+    promoLayer: number;
+    promoOwner: string;
 }

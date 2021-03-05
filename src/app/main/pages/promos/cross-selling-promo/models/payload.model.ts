@@ -65,6 +65,8 @@ export class CreateCrossSellingDto {
     type: string;
     isNewStore: boolean;
     isActiveStore: boolean;
+    promoLayer: number;
+    promoOwner: string;
 
     constructor(data: CreateCrossSellingDto) {
         const {
@@ -91,7 +93,9 @@ export class CreateCrossSellingDto {
             target,
             type,
             isNewStore,
-            isActiveStore
+            isActiveStore,
+            promoLayer,
+            promoOwner
         } = data;
 
         this.base = base;
@@ -118,6 +122,8 @@ export class CreateCrossSellingDto {
         this.type = type;
         this.isNewStore = isNewStore;
         this.isActiveStore = isActiveStore;
+        this.promoLayer = promoLayer;
+        this.promoOwner = promoOwner;
     }
 }
 
@@ -181,6 +187,8 @@ export class PatchCrossSellingDto {
     type?: string;
     isActiveStore?: boolean;
     isNewStore?: boolean;
+    promoLayer?: number;
+    promoOwner?: string;
 
     constructor(data: PatchCrossSellingDto) {
         const {
@@ -207,7 +215,9 @@ export class PatchCrossSellingDto {
             target,
             type,
             isNewStore,
-            isActiveStore
+            isActiveStore,
+            promoLayer,
+            promoOwner
         } = data;
 
         if (typeof base !== 'undefined') {
@@ -304,6 +314,14 @@ export class PatchCrossSellingDto {
 
         if (typeof isActiveStore !== 'undefined') {
             this.isActiveStore = isActiveStore;
+        }
+
+        if (typeof promoLayer !== 'undefined') {
+            this.promoLayer = promoLayer;
+        }
+
+        if (typeof promoOwner !== 'undefined') {
+            this.promoOwner = promoOwner;
         }
 
     }

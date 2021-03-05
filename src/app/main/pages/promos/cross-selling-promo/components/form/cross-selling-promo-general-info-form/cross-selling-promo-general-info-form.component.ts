@@ -24,6 +24,7 @@ import { first, map, takeUntil } from 'rxjs/operators';
 import { GeneralInfoFormDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
 import { SkpLinkedList } from 'app/shared/components/dropdowns/select-linked-skp/models/select-linked-skp.model';
+import { PromoHierarchyLayer, PromoHierarchyGroup } from 'app/shared/models/promo-hierarchy.model';
 
 type TmpKey = 'imgSuggestion';
 @Component({
@@ -40,6 +41,10 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
 
     platformsSinbad: { id: PlatformSinbad; label: string }[];
     promoAllocation: { id: PromoAllocation; label: string }[];
+    layerBase: { id: PromoHierarchyLayer; label: string }[];
+    groupBase: { id: PromoHierarchyGroup; label: string }[];
+    // groupBase = this._$helperService.promoHierarchyGroup();
+    // eGroupBase = PromoHierarchyGroup;
     promoAllocationType = PromoAllocation;
     tmp: Partial<Record<TmpKey, FormControl>> = {
         imgSuggestion: new FormControl({ value: '', disabled: true }),
@@ -76,6 +81,8 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
     ngOnInit() {
         this.platformsSinbad = this.crossSellingPromoFormService.platformsSinbad;
         this.promoAllocation = this.crossSellingPromoFormService.promoAllocation;
+        this.layerBase = this.crossSellingPromoFormService.promoHierarchyLayer;
+        this.groupBase = this.crossSellingPromoFormService.promoHierarchyGroup;
 
         this.form.statusChanges
             .pipe(
@@ -124,7 +131,6 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             maxRedemptionCtrl.setValue(1);
             maxRedemptionCtrl.disable({ onlySelf: true });
         } else {
-
             maxRedemptionCtrl.enable({ onlySelf: true });
         }
     }
@@ -177,7 +183,7 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
      *
      * Handle change event for Select Linked SKP
      * @output bring value select skp
-     * @param {event} 
+     * @param {event}
      * @returns {void}
      * @memberof FlexiComboFormComponent
      */
@@ -241,6 +247,28 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
         const newStartDate =
             startDate && isMoment(startDate) ? startDate.toISOString(this.strictISOString) : null;
 
+        let layerVal;
+        if (body['promoLayer'] == 'nol') {
+            layerVal = 0;
+        } else if (body['promoLayer'] == 'one') {
+            layerVal = 1;
+        } else if (body['promoLayer'] == 'two') {
+            layerVal = 2;
+        } else if (body['promoLayer'] == 'three') {
+            layerVal = 3;
+        } else if (body['promoLayer'] == 'four') {
+            layerVal = 4;
+        } else {
+            layerVal = 0;
+        }
+
+        let groupVal;
+        if (body['promoOwner'] == null) {
+            groupVal = 'none';
+        } else {
+            groupVal = body['promoOwner'];
+        }
+
         const payload: GeneralInfoFormDto = {
             promoAllocationType: body['promoAllocationType'],
             externalId: body['promoSellerId'],
@@ -261,9 +289,12 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             shortDescription: body['shortDescription'] || null,
             firstBuy: body['firstBuy'] || false,
             multiplication: body['multiplication'] || false,
-            skpId: body['skpId']
+            skpId: body['skpId'],
+            promoLayer: layerVal,
+            promoOwner: groupVal,
         };
 
+        console.log('isi payload general->', payload)
         this.formValue.emit(payload);
     }
 
