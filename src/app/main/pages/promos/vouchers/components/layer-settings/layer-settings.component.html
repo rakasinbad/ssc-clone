@@ -1,6 +1,6 @@
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-500 font-size-20 line-height-20 mt-10">General Information</div>
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Layer Settings</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -22,9 +22,8 @@
                     fxFlexAlign="center"
                     class="pr-0 form-label"
                     fxFlex="12"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('platform'))"
                 >
-                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Platform
+                    Promo Layer Level
                 </label>
 
                 <mat-form-field

@@ -15,6 +15,17 @@
             ></voucher-general-information>
         </div>
         <!-- / GENERAL INFORMATION -->
+
+         <!-- LAYER SETTING -->
+         <div class="content-card">
+            <app-layer-settings
+                [formMode]="'add'"
+                (formStatusChange)="layerStatus$.next($event)"
+                (formValueChange)="layerSettingValue$.next($event)"
+            ></app-layer-settings>
+        </div>
+        <!-- / LAYER SETTING -->
+
         <!-- ELIGIBLE PRODUCT -->
         <div class="content-card">
             <voucher-eligible-product-settings

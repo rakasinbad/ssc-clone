@@ -135,6 +135,13 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             )
             .subscribe();
 
+        this.layerStatus$.
+            pipe(
+                tap((status) => HelperService.debug('layerStatus$ CHANGED', status)),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
+
         this.conditionSettingsStatus$
             .pipe(
                 tap((status) => HelperService.debug('conditionSettingsStatus$ CHANGED', status)),
@@ -172,6 +179,13 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             )
             .subscribe();
 
+        this.layerSettingValue$
+            .pipe(
+                tap((value) => HelperService.debug('layerSettingValue$ CHANGED', value)),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
+
         this.conditionSettingsValue$
             .pipe(
                 tap((value) => HelperService.debug('conditionSettingsValue$ CHANGED', value)),
@@ -204,6 +218,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     private initSubscribeFormStatuses(): void {
         combineLatest([
             this.generalInformationStatus$,
+            this.layerStatus$,
             this.conditionSettingsStatus$,
             this.eligibleProductStatus$,
             this.benefitStatus$,
@@ -243,6 +258,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         const eligibleProductValue = this.eligibleProductValue$.value;
         const benefitValue = this.benefitValue$.value;
         const eligibleStoreValue = this.eligibleStoreValue$.value;
+        const layerSettingValue = this.layerSettingValue$.value;
 
         const payload: SupplierVoucherPayload = {
             // MASTER
