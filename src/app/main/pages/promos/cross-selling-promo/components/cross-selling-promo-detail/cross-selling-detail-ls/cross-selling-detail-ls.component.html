@@ -13,7 +13,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Layer 0{{ (crossSellingPromo$ | async)?.promoLayer || 0 }}
+                Layer 0{{ (crossSellingPromo$ | async)?.layer || 0 }}
             </ng-container>
 
             <ngx-skeleton-loader

@@ -101,7 +101,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
     deletedAt: TNullable<string>;
     catalogueSegmentationObjectId: string;
     skpId: string;
-    promoLayer: number;
+    layer: number;
     promoOwner: string;
 
     constructor(data: CrossSellingPromoDetail) {
@@ -136,7 +136,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
             deletedAt,
             catalogueSegmentationObjectId,
             skpId,
-            promoLayer,
+            layer,
             promoOwner
 
         } = data;
@@ -171,7 +171,7 @@ export class CrossSellingPromoDetail implements ITimestamp {
         this.deletedAt = deletedAt;
         this.catalogueSegmentationObjectId = catalogueSegmentationObjectId || null;
         this.skpId = skpId;
-        this.promoLayer = promoLayer || 0;
+        this.layer = layer || 0;
         this.promoOwner = promoOwner || 'none';
 
     }
