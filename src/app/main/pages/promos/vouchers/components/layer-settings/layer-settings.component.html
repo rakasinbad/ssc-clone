@@ -33,13 +33,13 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="formMode !== 'view'"
                 >
-                    <mat-select placeholder="Choose Promo Layer Level" formControlName="platform">
-                        <mat-option *ngFor="let platform of sinbadPlatforms" [value]="platform.id">
-                            {{ platform.label }}
+                    <mat-select placeholder="Choose Promo Layer Level" formControlName="promoLayer">
+                        <mat-option *ngFor="let promoLayer of sinbadPromoLayer" [value]="promoLayer.id">
+                            {{ promoLayer.label }}
                         </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="hasError(form.get('platform'))">
-                        {{ getFormError(form.get('platform')) }}
+                    <mat-error *ngIf="hasError(form.get('promoLayer'))">
+                        {{ getFormError(form.get('promoLayer')) }}
                     </mat-error>
                 </mat-form-field>
 
@@ -59,7 +59,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('platform').value | titlecase) || '-' }}
+                    {{ (form.get('promoLayer').value | titlecase) || '-' }}
                 </span>
             </div>
             <!-- / LAYER LEVEL -->
@@ -75,13 +75,13 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="formMode !== 'view'"
                 >
-                    <mat-select placeholder="Choose Promo Group" formControlName="platform">
-                        <mat-option *ngFor="let platform of sinbadPlatforms" [value]="platform.id">
-                            {{ platform.label }}
+                    <mat-select placeholder="Choose Promo Group" formControlName="promoOwner">
+                        <mat-option *ngFor="let promoOwner of sinbadPromoOwner" [value]="promoOwner.id">
+                            {{ promoOwner.label }}
                         </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="hasError(form.get('platform'))">
-                        {{ getFormError(form.get('platform')) }}
+                    <mat-error *ngIf="hasError(form.get('promoOwner'))">
+                        {{ getFormError(form.get('promoOwner')) }}
                     </mat-error>
                 </mat-form-field>
                 <span
@@ -91,7 +91,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('platform').value | titlecase) || '-' }}
+                    {{ (form.get('promoOwner').value | titlecase) || '-' }}
                 </span>
             </div>
             <!-- / PROMO OWNER -->
