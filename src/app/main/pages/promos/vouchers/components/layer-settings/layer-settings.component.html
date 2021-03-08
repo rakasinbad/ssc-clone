@@ -66,7 +66,7 @@
 
             <!-- PROMO OWNER -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="13">
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12" *ngIf="!isViewMode()">
                     Promo Owner
                 </label>
 
@@ -84,6 +84,11 @@
                         {{ getFormError(form.get('promoOwner')) }}
                     </mat-error>
                 </mat-form-field>
+
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="13" *ngIf="isViewMode()">
+                    Promo Owner
+                </label>
+
                 <span
                     class="form-value"
                     fxFlexAlign="center"

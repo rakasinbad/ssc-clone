@@ -135,7 +135,6 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
         private domSanitizer: DomSanitizer
     ) {
         // Untuk menyimpan platform-nya Sinbad yang tersedia.
-        this.sinbadPlatforms = this.helper$.platformSupplierVoucher();
         this.sinbadPromoLayer = this.helper$.promoHierarchyLayer();
         this.sinbadPromoOwner = this.helper$.promoHierarchyGroup();
     }
@@ -237,14 +236,6 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
     private initForm(): void {
         this.form = this.fb.group({
             id: [null],
-            platform: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                    }),
-                ],
-            ],
             promoLayer: null,
             promoOwner: null
             
@@ -299,6 +290,26 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
+                if (value.promoLayer == 'nol') {
+                    value.promoLayer = 0;
+                } else if (value.promoLayer == 'one') {
+                    value.promoLayer = 1;
+                } else if (value.promoLayer == 'two') {
+                    value.promoLayer = 2;
+                } else if (value.promoLayer == 'three') {
+                    value.promoLayer = 3;
+                }  else if (value.promoLayer == 'four') {
+                    value.promoLayer = 4;
+                } else {
+                    value.promoLayer = 0;
+                }
+                
+                if (value.promoOwner == null) {
+                    value.promoOwner = 'none';            
+                } else {
+                    value.promoOwner = value.promoOwner;
+                }
+                console.log('isi value formValueChange->', value)
                 this.formValueChange.emit(value);
             });
     }

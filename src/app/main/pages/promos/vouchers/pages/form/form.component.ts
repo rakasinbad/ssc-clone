@@ -260,6 +260,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         const eligibleStoreValue = this.eligibleStoreValue$.value;
         const layerSettingValue = this.layerSettingValue$.value;
 
+        // .promoLayer;
+        
+
         const payload: SupplierVoucherPayload = {
             // MASTER
             supplierId,
@@ -409,9 +412,10 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             // };
         }
 
-        payload['promoLayer'] = 0;
-        payload['promoOwner'] = 'none';
+        payload['promoLayer'] = layerSettingValue.promoLayer;
+        payload['promoOwner'] = layerSettingValue.promoOwner;
 
+        console.log('isi payload voucher->', payload)
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
 
         this.VoucherStore.dispatch(
