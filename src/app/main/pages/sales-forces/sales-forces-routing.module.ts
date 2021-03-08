@@ -164,6 +164,23 @@ const routes: Routes = [
         },
     },
     {
+        path: 'journey-planssv2',
+        loadChildren: () => import('./journey-plansv2/journey-plansv2.module').then((m) => m.JourneyPlanV2Module),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'journey-plans'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
         path: 'associations',
         loadChildren: () =>
             import('./associations/associations.module').then((m) => m.AssociationsModule),

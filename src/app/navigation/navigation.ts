@@ -212,6 +212,12 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/journey-plans',
             },
             {
+                id: 'journey-planv2',
+                title: 'Journey Plan V2',
+                type: 'item',
+                url: '/pages/sales-force/journey-planssv2',
+            },
+            {
                 id: 'workday-setting',
                 title: 'Workday Setting',
                 type: 'item',
