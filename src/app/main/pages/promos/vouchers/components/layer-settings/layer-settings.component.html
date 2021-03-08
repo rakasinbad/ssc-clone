@@ -16,14 +16,16 @@
             <input hidden name="id" formControlName="id" />
             <!-- / *HIDDEN* ID -->
 
-            <!-- PLATFORM -->
+            <!-- LAYER LEVEL -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
                 <label
                     fxFlexAlign="center"
                     class="pr-0 form-label"
                     fxFlex="12"
+                    *ngIf="!isViewMode()"
                 >
-                    Promo Layer Level
+                    Promo Layer<br />
+                    Level
                 </label>
 
                 <mat-form-field
@@ -31,7 +33,49 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="formMode !== 'view'"
                 >
-                    <mat-select name="platform" formControlName="platform">
+                    <mat-select placeholder="Choose Promo Layer Level" formControlName="platform">
+                        <mat-option *ngFor="let platform of sinbadPlatforms" [value]="platform.id">
+                            {{ platform.label }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('platform'))">
+                        {{ getFormError(form.get('platform')) }}
+                    </mat-error>
+                </mat-form-field>
+
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    *ngIf="isViewMode()"
+                >
+                    Promo Layer Level
+                </label>
+                
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('platform').value | titlecase) || '-' }}
+                </span>
+            </div>
+            <!-- / LAYER LEVEL -->
+
+            <!-- PROMO OWNER -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+                    Promo Owner
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="formMode !== 'view'"
+                >
+                    <mat-select placeholder="Choose Promo Group" formControlName="platform">
                         <mat-option *ngFor="let platform of sinbadPlatforms" [value]="platform.id">
                             {{ platform.label }}
                         </mat-option>
@@ -50,8 +94,7 @@
                     {{ (form.get('platform').value | titlecase) || '-' }}
                 </span>
             </div>
-            <!-- / PLATFORM -->
-
+            <!-- / PROMO OWNER -->
         </form>
     </div>
 </div>
