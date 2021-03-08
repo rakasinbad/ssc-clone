@@ -33,14 +33,12 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="formMode !== 'view'"
                 >
-                    <mat-select placeholder="Choose Promo Layer Level" formControlName="promoLayer">
-                        <mat-option *ngFor="let promoLayer of sinbadPromoLayer" [value]="promoLayer.id">
-                            {{ promoLayer.label }}
+                    <mat-select placeholder="Choose Promo Layer Level" formControlName="layer">
+                        <mat-option *ngFor="let layer of sinbadPromoLayer" [value]="layer.id">
+                            {{ layer.label }}
                         </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="hasError(form.get('promoLayer'))">
-                        {{ getFormError(form.get('promoLayer')) }}
-                    </mat-error>
+                   
                 </mat-form-field>
 
                 <label
@@ -59,7 +57,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    Layer 0{{ (form.get('promoLayer').value) || 0 }}
+                    Layer 0{{ (form.get('layer').value) || 0 }}
                 </span>
             </div>
             <!-- / LAYER LEVEL -->
@@ -80,9 +78,7 @@
                             {{ promoOwner.label }}
                         </mat-option>
                     </mat-select>
-                    <mat-error *ngIf="hasError(form.get('promoOwner'))">
-                        {{ getFormError(form.get('promoOwner')) }}
-                    </mat-error>
+                  
                 </mat-form-field>
 
                 <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="13" *ngIf="isViewMode()">

@@ -59,7 +59,7 @@ interface ISupplierVoucher extends Timestamp {
     voucherClusters?: Array<any>;
     voucherChannels?: Array<any>;
 
-    promoLayer: number;
+    layer: number;
     promoOwner: string;
 }
 
@@ -120,7 +120,7 @@ export class SupplierVoucher implements ISupplierVoucher {
     voucherClusters?: Array<any>;
     voucherChannels?: Array<any>;
 
-    promoLayer: number;
+    layer: number;
     promoOwner: string;
 
     constructor(data: ISupplierVoucher) {
@@ -180,7 +180,7 @@ export class SupplierVoucher implements ISupplierVoucher {
             voucherClusters = [],
             voucherChannels = [],
             
-            promoLayer,
+            layer,
             promoOwner
         } = data;
 
@@ -241,7 +241,7 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.voucherClusters = voucherClusters;
         this.voucherChannels = voucherChannels;
 
-        this.promoLayer = promoLayer || 0;
+        this.layer = layer || 0;
         this.promoOwner = promoOwner || 'none';
     }
 }

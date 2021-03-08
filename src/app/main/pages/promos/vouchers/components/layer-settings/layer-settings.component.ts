@@ -222,7 +222,7 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
 
                 this.form.patchValue({
                     id: voucher.id,
-                    promoLayer: voucher.promoLayer,
+                    layer: voucher.layer,
                     promoOwner: voucher.promoOwner
                 });
 
@@ -236,7 +236,7 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
     private initForm(): void {
         this.form = this.fb.group({
             id: [null],
-            promoLayer: null,
+            layer: null,
             promoOwner: null
             
         });
@@ -254,7 +254,7 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
                     )
                 ),
                 map(([_, status]) => {
-                        return status;
+                   return status;
                 }),
                 tap((value) =>
                     HelperService.debug(
@@ -265,6 +265,15 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
                 takeUntil(this.subs$)
             )
             .subscribe((status) => {
+                const rawValue = this.form.getRawValue();
+                console.log('rawvalue layer set->', rawValue)
+                if (rawValue.layer == null || rawValue.layer !== null) {
+                    status = 'VALID';
+                } else if (rawValue.promoOwner == null || rawValue.promoOwner !== null) {
+                    status = 'VALID';
+                } else {
+                    status = 'VALID';
+                }
                 this.formStatusChange.emit(status);
             });
 
@@ -290,18 +299,18 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
-                if (value.promoLayer == 'nol') {
-                    value.promoLayer = 0;
-                } else if (value.promoLayer == 'one') {
-                    value.promoLayer = 1;
-                } else if (value.promoLayer == 'two') {
-                    value.promoLayer = 2;
-                } else if (value.promoLayer == 'three') {
-                    value.promoLayer = 3;
-                }  else if (value.promoLayer == 'four') {
-                    value.promoLayer = 4;
+                if (value.layer == 'nol') {
+                    value.layer = 0;
+                } else if (value.layer == 'one') {
+                    value.layer = 1;
+                } else if (value.layer == 'two') {
+                    value.layer = 2;
+                } else if (value.layer == 'three') {
+                    value.layer = 3;
+                }  else if (value.layer == 'four') {
+                    value.layer = 4;
                 } else {
-                    value.promoLayer = 0;
+                    value.layer = 0;
                 }
                 
                 if (value.promoOwner == null) {
@@ -309,9 +318,11 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
                 } else {
                     value.promoOwner = value.promoOwner;
                 }
-                console.log('isi value formValueChange->', value)
                 this.formValueChange.emit(value);
             });
+        console.log('isi value formValueChange->', this.formValueChange)
+        console.log('isi value formStatusChange->', this.formStatusChange)
+
     }
 
     getFormError(form: any): string {
@@ -353,7 +364,19 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
         this.initForm();
 
         this.checkRoute();
+
         this.initFormCheck();
+
+        const rawValue = this.form.getRawValue();
+                console.log('rawvalue on init ->', rawValue)
+        //         if (rawValue.layer == null || rawValue.layer !== null) {
+        //             status = 'VALID';
+        //         } else if (rawValue.promoOwner == null || rawValue.promoOwner !== null) {
+        //             status = 'VALID';
+        //         } else {
+        //             status = 'VALID';
+        //         }
+        // this.formStatusChange.emit(status);
 
         console.log('this.formMode->', this.formMode)
     }
