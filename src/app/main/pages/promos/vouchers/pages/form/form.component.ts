@@ -235,6 +235,8 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                     this.VoucherStore.dispatch(FormActions.setFormStatusInvalid());
                 }
             });
+
+            console.log('this.layerSettingValue$.value->', this.layerSettingValue$.value)
     }
 
     private initHandleFormSubmission(): void {
@@ -260,7 +262,15 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         const eligibleStoreValue = this.eligibleStoreValue$.value;
         const layerSettingValue = this.layerSettingValue$.value;
 
-        console.log('layerSettingValue->', layerSettingValue)
+        let layers;
+        let group;
+        if (layerSettingValue == null || layerSettingValue == undefined) {
+            layers = 0;
+            group = 'none';
+        } else {
+            layers = layerSettingValue.layer;
+            group = layerSettingValue.promoOwner;
+        }
 
         const payload: SupplierVoucherPayload = {
             // MASTER
@@ -411,10 +421,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             // };
         }
 
-        payload['layer'] = layerSettingValue.layer;
-        payload['promoOwner'] = layerSettingValue.promoOwner;
+        payload['layer'] = layers;
+        payload['promoOwner'] = group;
 
-        console.log('isi payload voucher->', payload)
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
 
         this.VoucherStore.dispatch(
@@ -426,6 +435,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.initSubscribeFormStatuses();
+
         this.initHandleFormSubmission();
     }
 

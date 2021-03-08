@@ -243,40 +243,42 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
     }
 
     private initFormCheck(): void {
-        combineLatest([this.triggerStatus$, this.form.statusChanges as Observable<FormStatus>])
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(300),
-                tap(([_, value]) =>
-                    HelperService.debug(
-                        '[BEFORE MAP] SUPPLIER VOUCHER LAYER SETTING FORM VALUE CHANGED',
-                        value
-                    )
-                ),
-                map(([_, status]) => {
-                   return status;
-                }),
-                tap((value) =>
-                    HelperService.debug(
-                        '[AFTER MAP] SUPPLIER VOUCHER LAYER SETTING FORM VALUE CHANGED',
-                        value
-                    )
-                ),
-                takeUntil(this.subs$)
-            )
-            .subscribe((status) => {
-                const rawValue = this.form.getRawValue();
-                console.log('rawvalue layer set->', rawValue)
-                if (rawValue.layer == null || rawValue.layer !== null) {
-                    status = 'VALID';
-                } else if (rawValue.promoOwner == null || rawValue.promoOwner !== null) {
-                    status = 'VALID';
-                } else {
-                    status = 'VALID';
-                }
-                this.formStatusChange.emit(status);
-            });
+        // combineLatest([this.triggerStatus$, this.form.statusChanges as Observable<FormStatus>])
+        //     .pipe(
+        //         distinctUntilChanged(),
+        //         debounceTime(300),
+        //         tap(([_, value]) =>
+        //             HelperService.debug(
+        //                 '[BEFORE MAP] SUPPLIER VOUCHER LAYER SETTING FORM VALUE CHANGED',
+        //                 value
+        //             )
+        //         ),
+        //         map(([_, status]) => {
+        //            return status;
+        //         }),
+        //         tap((value) =>
+        //             HelperService.debug(
+        //                 '[AFTER MAP] SUPPLIER VOUCHER LAYER SETTING FORM VALUE CHANGED',
+        //                 value
+        //             )
+        //         ),
+        //         takeUntil(this.subs$)
+        //     )
+        //     .subscribe((status) => {
+        //         const rawValue = this.form.getRawValue();
+        //         console.log('rawvalue layer set->', rawValue)
+        //         if (rawValue.layer == null || rawValue.layer !== null) {
+        //             status = 'VALID';
+        //         } else if (rawValue.promoOwner == null || rawValue.promoOwner !== null) {
+        //             status = 'VALID';
+        //         } else {
+        //             status = 'VALID';
+        //         }
+        //         this.formStatusChange.emit(status);
+        //     });
 
+        this.formStatusChange.emit('VALID');
+        console.log('valueChanges->', this.form.valueChanges)
         this.form.valueChanges
             .pipe(
                 distinctUntilChanged(),
