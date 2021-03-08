@@ -12,7 +12,7 @@ export class VoucherBenefit implements IVoucherBenefit {
     rupiah: string;
     percent: string;
     benefitMaxRebate: number;
-
+    VoucherBenefit
     constructor(data: IVoucherBenefit) {
         const {
             id,

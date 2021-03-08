@@ -10,6 +10,7 @@ import {
     VoucherEligibleProduct as EligibleProduct,
     VoucherBenefit as Benefit,
     VoucherSegmentationSettings as EligibleStore,
+    VoucherLayer as LayerSetting
 } from '../../models';
 import { FormStatus } from 'app/shared/models/global.model';
 import { takeUntil, tap, filter, withLatestFrom } from 'rxjs/operators';
@@ -39,6 +40,8 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     eligibleProductValue$: BehaviorSubject<EligibleProduct> = new BehaviorSubject<EligibleProduct>(null);
     benefitValue$: BehaviorSubject<Benefit> = new BehaviorSubject<Benefit>(null);
     eligibleStoreValue$: BehaviorSubject<EligibleStore> = new BehaviorSubject<EligibleStore>(null);
+    layerSettingValue$: BehaviorSubject<LayerSetting> = new BehaviorSubject<LayerSetting>(null);
+
 
     // Untuk menyimpan status masing-masing form.
     generalInformationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
@@ -46,6 +49,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     eligibleProductStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
     benefitStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
     eligibleStoreStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
+    layerStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
 
     constructor(private VoucherStore: NgRxStore<VoucherCoreState>) {
         this.isLoading$ = this.VoucherStore.select(VoucherSelectors.getLoadingState).pipe(
@@ -388,6 +392,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             //               ),
             // };
         }
+
+        payload['promoLayer'] = 0;
+        payload['promoOwner'] = 'none';
 
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
 

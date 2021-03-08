@@ -1,0 +1,59 @@
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-500 font-size-20 line-height-20 mt-10">General Information</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
+            <!-- *HIDDEN* ID -->
+            <input hidden name="id" formControlName="id" />
+            <!-- / *HIDDEN* ID -->
+
+            <!-- PLATFORM -->
+            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0 form-label"
+                    fxFlex="12"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('platform'))"
+                >
+                    <span class="sinbad-red-fg" *ngIf="!isViewMode()">*</span>Platform
+                </label>
+
+                <mat-form-field
+                    appearance="outline"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="formMode !== 'view'"
+                >
+                    <mat-select name="platform" formControlName="platform">
+                        <mat-option *ngFor="let platform of sinbadPlatforms" [value]="platform.id">
+                            {{ platform.label }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="hasError(form.get('platform'))">
+                        {{ getFormError(form.get('platform')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span
+                    class="form-value"
+                    fxFlexAlign="center"
+                    fxFlexAlign="center"
+                    [fxFlex]="formFieldLength"
+                    *ngIf="isViewMode()"
+                >
+                    {{ (form.get('platform').value | titlecase) || '-' }}
+                </span>
+            </div>
+            <!-- / PLATFORM -->
+
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->

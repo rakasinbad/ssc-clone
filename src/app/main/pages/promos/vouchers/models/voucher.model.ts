@@ -58,6 +58,9 @@ interface ISupplierVoucher extends Timestamp {
     voucherGroups?: Array<any>;
     voucherClusters?: Array<any>;
     voucherChannels?: Array<any>;
+
+    promoLayer: number;
+    promoOwner: string;
 }
 
 export class SupplierVoucher implements ISupplierVoucher {
@@ -117,6 +120,9 @@ export class SupplierVoucher implements ISupplierVoucher {
     voucherClusters?: Array<any>;
     voucherChannels?: Array<any>;
 
+    promoLayer: number;
+    promoOwner: string;
+
     constructor(data: ISupplierVoucher) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
@@ -173,6 +179,9 @@ export class SupplierVoucher implements ISupplierVoucher {
             voucherGroups = [],
             voucherClusters = [],
             voucherChannels = [],
+            
+            promoLayer,
+            promoOwner
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
@@ -231,6 +240,9 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.voucherGroups = voucherGroups;
         this.voucherClusters = voucherClusters;
         this.voucherChannels = voucherChannels;
+
+        this.promoLayer = promoLayer || 0;
+        this.promoOwner = promoOwner || 'none';
     }
 }
 
