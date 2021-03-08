@@ -1,16 +1,5 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
-import {
-    Catalogue,
-    StoreSegmentationGroup,
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-} from 'app/main/pages/catalogues/models';
-import { Brand } from 'app/shared/models/brand.model';
-import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
-import { Store } from 'app/shared/models/store.model';
-import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
-import { StoreSegmentationType } from 'app/shared/components/selection-tree/store-segmentation/models';
 
 type VoucherStatus = 'active' | 'inactive';
 
