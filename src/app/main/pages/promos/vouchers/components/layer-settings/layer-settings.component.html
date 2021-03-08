@@ -46,7 +46,7 @@
                 <label
                     fxFlexAlign="center"
                     class="pr-0 form-label"
-                    fxFlex="12"
+                    fxFlex="13"
                     *ngIf="isViewMode()"
                 >
                     Promo Layer Level
@@ -59,14 +59,14 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('promoLayer').value | titlecase) || '-' }}
+                    Layer 0{{ (form.get('promoLayer').value) || 0 }}
                 </span>
             </div>
             <!-- / LAYER LEVEL -->
 
             <!-- PROMO OWNER -->
             <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
-                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="12">
+                <label fxFlexAlign="center" class="pr-0 form-label" fxFlex="13">
                     Promo Owner
                 </label>
 
@@ -91,7 +91,19 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('promoOwner').value | titlecase) || '-' }}
+                    {{ 
+                        form.get('promoOwner').value === 'sinbad-promo'
+                        ? 'Sinbad Promo'
+                        : form.get('promoOwner').value === 'distributor-promo'
+                        ? 'Distributor'
+                        : form.get('promoOwner').value === 'principal-promo'
+                        ? 'Principal'
+                        : form.get('promoOwner').value === 'none'
+                        ? 'None'
+                        : form.get('promoOwner').value === 'payment-method-promo'
+                        ? 'Payment Method Promo'
+                        : (form.get('promoOwner').value | titlecase) || '-'
+                    }}
                 </span>
             </div>
             <!-- / PROMO OWNER -->
