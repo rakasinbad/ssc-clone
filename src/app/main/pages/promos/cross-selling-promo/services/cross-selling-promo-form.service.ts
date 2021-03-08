@@ -17,6 +17,7 @@ import { CrossSellingPromoFacadeService } from './cross-selling-promo-facade.ser
 
 import { HttpClient } from '@angular/common/http';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { PromoHierarchyLayer, PromoHierarchyGroup } from 'app/shared/models/promo-hierarchy.model';
 
 @Injectable({ providedIn: CrossSellingPromoModule })
 export class CrossSellingPromoFormService {
@@ -79,6 +80,14 @@ export class CrossSellingPromoFormService {
 
     get platformsSinbad(): { id: PlatformSinbad; label: string }[] {
         return this.helperService.platformSinbad();
+    }
+
+    get promoHierarchyLayer(): { id: PromoHierarchyLayer; label: string }[] {
+        return this.helperService.promoHierarchyLayer();
+    }
+
+    get promoHierarchyGroup(): { id: PromoHierarchyGroup; label: string }[] {
+        return this.helperService.promoHierarchyGroup();
     }
 
     get promoAllocation(): { id: PromoAllocation; label: string }[] {
@@ -233,7 +242,9 @@ export class CrossSellingPromoFormService {
                 ],
                 shortDescription: null,
                 firstBuy: false,
-                multiplication: false
+                multiplication: false,
+                promoLayer: null,
+                promoOwner: null,
             }),
             groupSetting: this.fb.group({
                 groups: this.fb.array([this._createGroupForm(), this._createGroupForm()]),

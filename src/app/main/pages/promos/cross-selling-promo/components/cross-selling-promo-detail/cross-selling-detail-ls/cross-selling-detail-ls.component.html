@@ -13,7 +13,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Layer 0{{ (flexiCombo$ | async)?.promoLayer || 0 }}
+                Layer 0{{ (crossSellingPromo$ | async)?.promoLayer || 0 }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -33,19 +33,20 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{
-                    (flexiCombo$ | async)?.promoOwner === 'sinbad-promo'
-                        ? 'Sinbad Promo'
-                        : (flexiCombo$ | async)?.promoOwner === 'distributor-promo'
-                        ? 'Distributor'
-                        : (flexiCombo$ | async)?.promoOwner === 'principal-promo'
-                        ? 'Principal'
-                        : (flexiCombo$ | async)?.promoOwner === 'none'
-                        ? 'None'
-                        : (flexiCombo$ | async)?.promoOwner === 'payment-method-promo'
-                        ? 'Payment Method Promo'
-                        : ((flexiCombo$ | async)?.promoOwner | titlecase) || '-'
-                }}
+                {{ 
+                    (crossSellingPromo$ | async)?.promoOwner  === 'sinbad-promo'
+                    ? 'Sinbad Promo'
+                    : (crossSellingPromo$ | async)?.promoOwner  === 'distributor-promo'
+                    ? 'Distributor'
+                    : (crossSellingPromo$ | async)?.promoOwner  === 'principal-promo'
+                    ? 'Principal'
+                    : (crossSellingPromo$ | async)?.promoOwner  === 'none'
+                    ? 'None'
+                    : (crossSellingPromo$ | async)?.promoOwner === 'payment-method-promo'
+                    ? 'Payment Method Promo'
+                    : ((crossSellingPromo$ | async)?.promoOwner | titlecase) || '-'
+                    
+            }}
             </ng-container>
 
             <ngx-skeleton-loader
