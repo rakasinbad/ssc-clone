@@ -11,8 +11,6 @@ import {
     SimpleChanges,
     EventEmitter,
     Output,
-    ViewChild,
-    ElementRef,
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -22,41 +20,25 @@ import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/he
 import {
     FormGroup,
     FormBuilder,
-    AsyncValidatorFn,
-    AbstractControl,
-    ValidationErrors,
-    FormControl,
 } from '@angular/forms';
-import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import {
     distinctUntilChanged,
     debounceTime,
     withLatestFrom,
     take,
-    switchMap,
     map,
     takeUntil,
     tap,
 } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { VoucherSelectors } from '../../store/selectors';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
-import { MatRadioChange } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
-import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
-import * as moment from 'moment';
 import * as _ from 'lodash';
-import * as numeral from 'numeral';
-import { VoucherAllocation } from 'app/shared/models/promo-allocation.model';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
@@ -360,9 +342,7 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
     ngOnInit(): void {
         /** Menyiapkan form. */
         this.initForm();
-
         this.checkRoute();
-
         this.initFormCheck();
 
     }
