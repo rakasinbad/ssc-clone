@@ -54,7 +54,7 @@ export class SetPromoHierarchyComponent implements OnInit {
                     }),
                 ],
             ],
-            group:  [
+            promoOwner:  [
                 null,
                 [
                     RxwebValidators.required({
@@ -86,27 +86,27 @@ export class SetPromoHierarchyComponent implements OnInit {
                 break;
         }
 
-        switch (this.data.group) {
+        switch (this.data.promoOwner) {
             case 'none':
-                this.form.get('group').setValue('none');
+                this.form.get('promoOwner').setValue('none');
                 break;
             case 'principal-promo':
-                this.form.get('group').setValue('principal-promo');
+                this.form.get('promoOwner').setValue('principal-promo');
                 break;
             case 'distributor-promo':
-                this.form.get('group').setValue('distributor-promo');
+                this.form.get('promoOwner').setValue('distributor-promo');
                 break;
             case 'sinbad-promo':
-                this.form.get('group').setValue('sinbad-promo');
+                this.form.get('promoOwner').setValue('sinbad-promo');
                 break;
-            case 'payment-method-prmo':
-                this.form.get('group').setValue('payment-method-promo');
+            case 'payment-method-promo':
+                this.form.get('promoOwner').setValue('payment-method-promo');
                 break;
         }
     }
 
     onSubmit(): void {
-        let { layer, group } = this.form.getRawValue();
+        let { layer, promoOwner } = this.form.getRawValue();
         
         if (layer == 'nol') {
             layer = 0;
@@ -129,7 +129,7 @@ export class SetPromoHierarchyComponent implements OnInit {
         
         const data = {
             layer: layer,
-            group: group,
+            group: promoOwner,
             id: this.data.data.id,
             promoType: promoTypes
         };
