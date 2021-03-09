@@ -13,7 +13,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Layer 0{{ (crossSellingPromo$ | async)?.promoLayer || 0 }}
+                Layer 0{{ (crossSellingPromo$ | async)?.layer || 0 }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -37,9 +37,9 @@
                     (crossSellingPromo$ | async)?.promoOwner  === 'sinbad-promo'
                     ? 'Sinbad Promo'
                     : (crossSellingPromo$ | async)?.promoOwner  === 'distributor-promo'
-                    ? 'Distributor'
+                    ? 'Distributor Promo'
                     : (crossSellingPromo$ | async)?.promoOwner  === 'principal-promo'
-                    ? 'Principal'
+                    ? 'Principal Promo'
                     : (crossSellingPromo$ | async)?.promoOwner  === 'none'
                     ? 'None'
                     : (crossSellingPromo$ | async)?.promoOwner === 'payment-method-promo'

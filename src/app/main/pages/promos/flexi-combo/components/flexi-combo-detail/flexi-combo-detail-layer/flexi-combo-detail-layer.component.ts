@@ -8,11 +8,9 @@ import {
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-
 import { FlexiCombo } from '../../../models';
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
-
 import { PromoAllocation } from 'app/shared/models/promo-allocation.model';
 import { HelperService } from 'app/shared/helpers';
 import * as _ from 'lodash';

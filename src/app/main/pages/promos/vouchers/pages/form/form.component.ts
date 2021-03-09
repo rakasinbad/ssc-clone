@@ -10,6 +10,7 @@ import {
     VoucherEligibleProduct as EligibleProduct,
     VoucherBenefit as Benefit,
     VoucherSegmentationSettings as EligibleStore,
+    VoucherLayer as LayerSetting
 } from '../../models';
 import { FormStatus } from 'app/shared/models/global.model';
 import { takeUntil, tap, filter, withLatestFrom } from 'rxjs/operators';
@@ -39,6 +40,8 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     eligibleProductValue$: BehaviorSubject<EligibleProduct> = new BehaviorSubject<EligibleProduct>(null);
     benefitValue$: BehaviorSubject<Benefit> = new BehaviorSubject<Benefit>(null);
     eligibleStoreValue$: BehaviorSubject<EligibleStore> = new BehaviorSubject<EligibleStore>(null);
+    layerSettingValue$: BehaviorSubject<LayerSetting> = new BehaviorSubject<LayerSetting>(null);
+
 
     // Untuk menyimpan status masing-masing form.
     generalInformationStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
@@ -46,6 +49,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     eligibleProductStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
     benefitStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
     eligibleStoreStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
+    layerStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject<FormStatus>('INVALID');
 
     constructor(private VoucherStore: NgRxStore<VoucherCoreState>) {
         this.isLoading$ = this.VoucherStore.select(VoucherSelectors.getLoadingState).pipe(
@@ -131,6 +135,13 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             )
             .subscribe();
 
+        this.layerStatus$.
+            pipe(
+                tap((status) => HelperService.debug('layerStatus$ CHANGED', status)),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
+
         this.conditionSettingsStatus$
             .pipe(
                 tap((status) => HelperService.debug('conditionSettingsStatus$ CHANGED', status)),
@@ -168,6 +179,13 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             )
             .subscribe();
 
+        this.layerSettingValue$
+            .pipe(
+                tap((value) => HelperService.debug('layerSettingValue$ CHANGED', value)),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
+
         this.conditionSettingsValue$
             .pipe(
                 tap((value) => HelperService.debug('conditionSettingsValue$ CHANGED', value)),
@@ -200,6 +218,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
     private initSubscribeFormStatuses(): void {
         combineLatest([
             this.generalInformationStatus$,
+            this.layerStatus$,
             this.conditionSettingsStatus$,
             this.eligibleProductStatus$,
             this.benefitStatus$,
@@ -216,6 +235,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                     this.VoucherStore.dispatch(FormActions.setFormStatusInvalid());
                 }
             });
+
     }
 
     private initHandleFormSubmission(): void {
@@ -239,6 +259,17 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
         const eligibleProductValue = this.eligibleProductValue$.value;
         const benefitValue = this.benefitValue$.value;
         const eligibleStoreValue = this.eligibleStoreValue$.value;
+        const layerSettingValue = this.layerSettingValue$.value;
+
+        let layers;
+        let group;
+        if (layerSettingValue == null || layerSettingValue == undefined) {
+            layers = 0;
+            group = 'none';
+        } else {
+            layers = layerSettingValue.layer;
+            group = layerSettingValue.promoOwner;
+        }
 
         const payload: SupplierVoucherPayload = {
             // MASTER
@@ -389,6 +420,9 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
             // };
         }
 
+        payload['layer'] = layers;
+        payload['promoOwner'] = group;
+
         this.VoucherStore.dispatch(UiActions.hideFooterAction());
 
         this.VoucherStore.dispatch(
@@ -400,6 +434,7 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.initSubscribeFormStatuses();
+
         this.initHandleFormSubmission();
     }
 

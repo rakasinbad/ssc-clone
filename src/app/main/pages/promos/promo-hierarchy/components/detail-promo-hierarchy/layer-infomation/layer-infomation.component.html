@@ -9,11 +9,11 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="10">Layer Lever</div>
+        <div class="label" fxFlexAlign="center" fxFlex="10">Layer Level</div>
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ ((promoHierarchy$ | async)?.promoLayer | number) || '-' }}
+                Layer 0{{ ((promoHierarchy$ | async)?.promoLayer | number) || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader

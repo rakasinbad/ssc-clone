@@ -248,15 +248,15 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             startDate && isMoment(startDate) ? startDate.toISOString(this.strictISOString) : null;
 
         let layerVal;
-        if (body['promoLayer'] == 'nol') {
+        if (body['layer'] == 'nol') {
             layerVal = 0;
-        } else if (body['promoLayer'] == 'one') {
+        } else if (body['layer'] == 'one') {
             layerVal = 1;
-        } else if (body['promoLayer'] == 'two') {
+        } else if (body['layer'] == 'two') {
             layerVal = 2;
-        } else if (body['promoLayer'] == 'three') {
+        } else if (body['layer'] == 'three') {
             layerVal = 3;
-        } else if (body['promoLayer'] == 'four') {
+        } else if (body['layer'] == 'four') {
             layerVal = 4;
         } else {
             layerVal = 0;
@@ -290,7 +290,7 @@ export class CrossSellingPromoGeneralInfoFormComponent implements OnInit, OnDest
             firstBuy: body['firstBuy'] || false,
             multiplication: body['multiplication'] || false,
             skpId: body['skpId'],
-            promoLayer: layerVal,
+            layer: layerVal,
             promoOwner: groupVal,
         };
 

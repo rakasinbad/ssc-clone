@@ -13,7 +13,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                Layer 0{{ (flexiCombo$ | async)?.promoLayer || 0 }}
+                Layer 0{{ (flexiCombo$ | async)?.layer || 0 }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -37,9 +37,9 @@
                     (flexiCombo$ | async)?.promoOwner === 'sinbad-promo'
                         ? 'Sinbad Promo'
                         : (flexiCombo$ | async)?.promoOwner === 'distributor-promo'
-                        ? 'Distributor'
+                        ? 'Distributor Promo'
                         : (flexiCombo$ | async)?.promoOwner === 'principal-promo'
-                        ? 'Principal'
+                        ? 'Principal Promo'
                         : (flexiCombo$ | async)?.promoOwner === 'none'
                         ? 'None'
                         : (flexiCombo$ | async)?.promoOwner === 'payment-method-promo'

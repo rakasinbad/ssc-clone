@@ -284,7 +284,7 @@ export class FlexiCombo implements ITimestamp {
     planSlot: string;
     planBudget: string;
     skpId: string;
-    promoLayer: number;
+    layer: number;
     promoOwner: string;
 
     constructor(data: FlexiCombo) {
@@ -332,7 +332,7 @@ export class FlexiCombo implements ITimestamp {
             planSlot,
             planBudget,
             skpId,
-            promoLayer,
+            layer,
             promoOwner
         } = data;
 
@@ -369,7 +369,7 @@ export class FlexiCombo implements ITimestamp {
         this.planSlot = planSlot;
         this.planBudget = planBudget;
         this.skpId = skpId;
-        this.promoLayer = promoLayer || 0;
+        this.layer = layer || 0;
         this.promoOwner = promoOwner || 'none';
 
         /* Handle promoBrands */

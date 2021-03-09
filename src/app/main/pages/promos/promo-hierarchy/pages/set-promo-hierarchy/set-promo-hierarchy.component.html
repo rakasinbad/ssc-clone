@@ -88,7 +88,7 @@
 
                     <mat-form-field appearance="outline" fxFlex="50">
                         <ng-container *ngIf="groupBase">
-                            <mat-select formControlName="group">
+                            <mat-select formControlName="promoOwner">
                                 <mat-option *ngFor="let row of groupBase" [value]="row.id">
                                     {{ row.label }}
                                 </mat-option>

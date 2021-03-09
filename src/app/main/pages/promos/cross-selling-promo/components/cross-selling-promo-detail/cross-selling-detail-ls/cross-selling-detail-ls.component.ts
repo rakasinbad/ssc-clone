@@ -1,17 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
-import { Observable, Subscription } from 'rxjs';
-
+import { Observable } from 'rxjs';
 import { CrossSelling } from '../../../models';
 import * as fromCrossSellingPromos from '../../../store/reducers';
 import { CrossSellingPromoSelectors } from '../../../store/selectors';
-
 import { HelperService } from 'app/shared/helpers';
 import { PromoAllocationCross } from 'app/shared/models/promo-allocation.model';
-import { map } from 'rxjs/operators';
-import { IQueryParams } from 'app/shared/models/query.model';
 import { CrossSellingPromoApiService } from '../../../services/cross-selling-promo-api.service';
 
 @Component({
@@ -30,9 +25,6 @@ export class CrossSellingDetailLsComponent implements OnInit, OnDestroy {
    
     constructor(private matDialog: MatDialog, private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService, 
-        private cdRef: ChangeDetectorRef,
-        private crossSellingPromoApiService: CrossSellingPromoApiService
-
         ) {}
 
     // -----------------------------------------------------------------------------------------------------

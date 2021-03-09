@@ -243,7 +243,7 @@ export class CrossSellingPromoFormService {
                 shortDescription: null,
                 firstBuy: false,
                 multiplication: false,
-                promoLayer: null,
+                layer: null,
                 promoOwner: null,
             }),
             groupSetting: this.fb.group({
