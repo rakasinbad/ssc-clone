@@ -53,7 +53,7 @@
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{
-                    (promoHierarchy$ | async)?.promoAllocation === 'promo_slot' || 
+                    (promoHierarchy$ | async)?.promoAllocation === 'promo_slot' ||
                     (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'
                         ? 'Max Promo Redemption (Transaction)'
                         : (promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
@@ -84,13 +84,21 @@
                 <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'none'">
                     -
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'promo_slot' || 
-                (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'">
+                <ng-container
+                    *ngIf="
+                        (promoHierarchy$ | async)?.promoAllocation === 'promo_slot' ||
+                        (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'
+                    "
+                >
                     {{ ((promoHierarchy$ | async)?.promoSlot | number) || 0 }} /
                     {{ ((promoHierarchy$ | async)?.planSlot | number) || 0 }}
                 </ng-container>
-                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
-                (promoHierarchy$ | async)?.promoAllocation === 'voucher_budget'">
+                <ng-container
+                    *ngIf="
+                        (promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
+                        (promoHierarchy$ | async)?.promoAllocation === 'voucher_budget'
+                    "
+                >
                     Rp {{ ((promoHierarchy$ | async)?.promoBudget | number) || '-' }} / Rp
                     {{ ((promoHierarchy$ | async)?.planBudget | number) || '-' }}
                 </ng-container>
@@ -123,9 +131,9 @@
                 }}
             </ng-container>
             <ngx-skeleton-loader
-            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-            *ngIf="isLoading$ | async"
-        ></ngx-skeleton-loader>
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
@@ -138,9 +146,20 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Promo Owner</div>
 
         <div class="info" fxFlex="100">
-
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ ((promoHierarchy$ | async)?.promoOwner | titlecase) || '-' }}
+                {{
+                    (promoHierarchy$ | async)?.promoOwner === 'sinbad-promo'
+                        ? 'Sinbad Promo'
+                        : (promoHierarchy$ | async)?.promoOwner === 'distributor-promo'
+                        ? 'Distributor'
+                        : (promoHierarchy$ | async)?.promoOwner === 'principal-promo'
+                        ? 'Principal'
+                        : (promoHierarchy$ | async)?.promoOwner === 'none'
+                        ? 'None'
+                        : (promoHierarchy$ | async)?.promoOwner === 'payment-method-promo'
+                        ? 'Payment Method Promo'
+                        : ((promoHierarchy$ | async)?.promoOwner | titlecase) || '-'
+                }}
             </ng-container>
 
             <ngx-skeleton-loader
@@ -159,7 +178,6 @@
         <div class="label" fxFlexAlign="center" fxFlex="10">Status</div>
 
         <div class="info" fxFlex="100">
-
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{ ((promoHierarchy$ | async)?.status | titlecase) || '-' }}
             </ng-container>
@@ -245,7 +263,6 @@
                     [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                     *ngIf="isLoading$ | async"
                 ></ngx-skeleton-loader>
-
             </div>
         </div>
     </div>
@@ -270,7 +287,11 @@
             <div class="info" fxFlex="100">
                 <ng-container *ngIf="!(isLoading$ | async)">
                     <ng-container *ngIf="conditionBase; else noConditionBase">
-                        <mat-radio-group [value]="(promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase">
+                        <mat-radio-group
+                            [value]="
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase
+                            "
+                        >
                             <mat-radio-button
                                 *ngFor="let row of conditionBase"
                                 [value]="row?.id"
@@ -300,7 +321,10 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Faktur</div>
 
             <div class="info" fxFlex="100">
-                {{ ((promoHierarchy$ | async)?.promoConditionCatalogues[0].fakturName | titlecase) || '-' }}
+                {{
+                    ((promoHierarchy$ | async)?.promoConditionCatalogues[0].fakturName
+                        | titlecase) || '-'
+                }}
             </div>
         </div>
 
@@ -324,13 +348,20 @@
             <div class="label cross" fxFlexAlign="start" fxFlex="10">
                 *Chosen SKU
                 <br />
-                ({{ (promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku.length }} Selected)
+                ({{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku.length
+                }}
+                Selected)
             </div>
 
             <div class="info" fxFlex="90">
                 <ng-container *ngIf="!(isLoading$ | async)">
                     <span>
-                        {{ getChoosenSku((promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku) }}
+                        {{
+                            getChoosenSku(
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku
+                            )
+                        }}
                     </span>
                 </ng-container>
 
@@ -350,11 +381,15 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
 
             <div class="info" fxFlex="100">
-                {{ (promoHierarchy$ | async)?.promoConditionCatalogues[0].crossSellingGroupRelation }}
+                {{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[0].crossSellingGroupRelation
+                }}
             </div>
         </div>
 
-        <ng-container [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase">
+        <ng-container
+            [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase"
+        >
             <!-- Base Condition Type Qty -->
             <ng-container *ngSwitchCase="eConditionBase.QTY">
                 <div
@@ -366,7 +401,10 @@
                     <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
 
                     <div class="info" fxFlex="100">
-                        {{ ((promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionQty | number) || '-' }}
+                        {{
+                            ((promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionQty
+                                | number) || '-'
+                        }}
                     </div>
                 </div>
             </ng-container>
@@ -384,7 +422,10 @@
 
                     <div class="info" fxFlex="100">
                         <p thousandSeparator=".">
-                            {{ ((promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionValue | number) || '-' }}
+                            {{
+                                ((promoHierarchy$ | async)?.promoConditionCatalogues[0]
+                                    .conditionValue | number) || '-'
+                            }}
                         </p>
                     </div>
                 </div>
@@ -411,7 +452,11 @@
             <div class="info" fxFlex="100">
                 <ng-container *ngIf="!(isLoading$ | async)">
                     <ng-container *ngIf="conditionBase; else noConditionBase">
-                        <mat-radio-group [value]="(promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase">
+                        <mat-radio-group
+                            [value]="
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase
+                            "
+                        >
                             <mat-radio-button
                                 *ngFor="let row of conditionBase"
                                 [value]="row?.id"
@@ -442,7 +487,6 @@
 
             <div class="info" fxFlex="100">
                 {{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].fakturName || '-' }}
-               
             </div>
         </div>
 
@@ -466,14 +510,21 @@
             <div class="label cross" fxFlexAlign="start" fxFlex="10">
                 *Chosen SKU
                 <br />
-                ({{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku.length || '-' }} Selected)
+                ({{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku.length || '-'
+                }}
+                Selected)
             </div>
 
             <div class="info" fxFlex="90">
                 <ng-container *ngIf="!(isLoading$ | async)">
-                <span>
-                    {{ getChoosenSku((promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku) }}
-                </span>
+                    <span>
+                        {{
+                            getChoosenSku(
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku
+                            )
+                        }}
+                    </span>
                 </ng-container>
 
                 <ngx-skeleton-loader
@@ -492,11 +543,16 @@
             <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
 
             <div class="info" fxFlex="100">
-                {{(promoHierarchy$ | async)?.promoConditionCatalogues[1].crossSellingGroupRelation || '-' }}
+                {{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[1]
+                        .crossSellingGroupRelation || '-'
+                }}
             </div>
         </div>
 
-        <ng-container [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase">
+        <ng-container
+            [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase"
+        >
             <!-- Base Condition Type Qty -->
             <ng-container *ngSwitchCase="eConditionBase.QTY">
                 <div
@@ -507,7 +563,12 @@
                 >
                     <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
 
-                    <div class="info" fxFlex="100">{{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionQty || '-' }}</div>
+                    <div class="info" fxFlex="100">
+                        {{
+                            (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionQty ||
+                                '-'
+                        }}
+                    </div>
                 </div>
             </ng-container>
             <!-- ./ Base Condition Type Qty -->
@@ -523,7 +584,12 @@
                     <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Value >=</div>
 
                     <div class="info" fxFlex="100">
-                        <p thousandSeparator=".">{{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionValue || '-' }}</p>
+                        <p thousandSeparator=".">
+                            {{
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[1]
+                                    .conditionValue || '-'
+                            }}
+                        </p>
                     </div>
                 </div>
             </ng-container>
@@ -537,7 +603,12 @@
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
     <ng-container *ngIf="(promoHierarchy$ | async)?.promoType !== 'cross_selling'">
-        <div *ngIf="(promoHierarchy$ | async)?.promoType !== 'cross_selling' && (promoHierarchy$ | async)?.promoType !== 'voucher'">
+        <div
+            *ngIf="
+                (promoHierarchy$ | async)?.promoType !== 'cross_selling' &&
+                (promoHierarchy$ | async)?.promoType !== 'voucher'
+            "
+        >
             <span><b>Condition</b></span>
         </div>
 
@@ -554,7 +625,9 @@
             <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
 
             <div class="info" fxFlexAlign="center" fxFlex="100">
-                <ng-container *ngIf="(promoHierarchy$ | async)?.conditionBase; else noConditionBase">
+                <ng-container
+                    *ngIf="(promoHierarchy$ | async)?.conditionBase; else noConditionBase"
+                >
                     <mat-radio-group [value]="(promoHierarchy$ | async)?.conditionBase">
                         <mat-radio-button
                             *ngFor="let row of conditionBase"
@@ -594,7 +667,9 @@
                         </p>
                     </ng-container>
                     <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
-                        <p thousandSeparator=".">Rp {{ (promoHierarchy$ | async)?.conditionValue | number }}</p>
+                        <p thousandSeparator=".">
+                            Rp {{ (promoHierarchy$ | async)?.conditionValue | number }}
+                        </p>
                     </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>
                 </ng-container>
