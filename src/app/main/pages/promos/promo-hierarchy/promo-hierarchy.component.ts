@@ -135,19 +135,19 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
                 break;
             case 1:
                 this.section = 'layer1';
-                this.labelInfo = "Layer 01: This layer is recommended for promo that flagged as “Principal promo”";
+                this.labelInfo = "Layer 01: This layer is recommended for promo that flagged as “Principal Promo”";
                 break;
             case 2:
                 this.section = 'layer2';
-                this.labelInfo = "Layer 02: This layer is recommended for promo that flagged as “Distributor promo”";
+                this.labelInfo = "Layer 02: This layer is recommended for promo that flagged as “Distributor Promo”";
                 break;
             case 3:
                 this.section = 'layer3';
-                this.labelInfo = "Layer 03: This layer is recommended for promo that flagged as “Sinbad promo”";
+                this.labelInfo = "Layer 03: This layer is recommended for promo that flagged as “Sinbad Promo”";
                 break;
             case 4:
                 this.section = 'layer4';
-                this.labelInfo = "Layer 04: This layer is recommended for promo that flagged as “Payment method promo”";
+                this.labelInfo = "Layer 04: This layer is recommended for promo that flagged as “Payment Method Promo”";
                 break;
         }
     }
