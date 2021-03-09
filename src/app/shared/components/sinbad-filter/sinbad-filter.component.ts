@@ -20,6 +20,7 @@ import { SinbadFilterService } from './services';
 export class SinbadFilterComponent implements OnInit {
     form: FormGroup;
     resetBrand: boolean = false;
+    resetSubBrand: boolean = false;
     resetFaktur: boolean = false;
     resetSegmentChannel: boolean = false;
     resetSegmentCluster: boolean = false;
@@ -32,6 +33,7 @@ export class SinbadFilterComponent implements OnInit {
     filterSegmentGroup: boolean = false;
     filterSegmentType: boolean = false;
     filterBrand: boolean = false;
+    filterSubBrand: boolean = false;
     filterFaktur: boolean = false;
     filterbasePrice: boolean = false;
     filterWarehouse: boolean = false;
@@ -48,9 +50,9 @@ export class SinbadFilterComponent implements OnInit {
     config$: Observable<SinbadFilterConfig>;
 
     constructor(
-        private fuseSidebarService: FuseSidebarService,
-        private sinbadFilterService: SinbadFilterService,
-        private singleWarehouseService: SingleWarehouseDropdownService
+        private readonly fuseSidebarService: FuseSidebarService,
+        private readonly sinbadFilterService: SinbadFilterService,
+        private readonly singleWarehouseService: SingleWarehouseDropdownService
     ) {}
 
     ngOnInit(): void {
@@ -74,6 +76,10 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['brand'] !== 'undefined') {
                             this.filterBrand = true;
+                        }
+
+                        if (typeof config.by['subBrand'] !== 'undefined') {
+                            this.filterSubBrand = true;
                         }
 
                         if (typeof config.by['faktur'] !== 'undefined') {
@@ -104,6 +110,10 @@ export class SinbadFilterComponent implements OnInit {
                             this.filterWarehouse = true;
                         }
 
+                        HelperService.debug('[SinbadFilterComponent] ngOnInit getConfig$()', {
+                            config,
+                        });
+
                         // if (config.by['suppliers']) {
                         //     this.sourceSuppliers = config.by['suppliers'];
                         // }
@@ -120,6 +130,7 @@ export class SinbadFilterComponent implements OnInit {
 
     onClickReset(): void {
         this.resetBrand = true;
+        this.resetSubBrand = true;
         this.resetFaktur = true;
         this._resetSegment();
         this._resetStatus();

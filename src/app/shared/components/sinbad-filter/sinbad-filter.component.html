@@ -116,6 +116,52 @@
         </mat-list>
         <!-- / BRAND -->
 
+        <!--SUB BRAND -->
+        <mat-list *ngIf="filterSubBrand">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.subBrand?.title as subBrandTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ subBrandTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div class="custom-field" fxLayout="row">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <mat-select [formControl]="form.get('subBrand')">
+                                <ng-container
+                                    *ngIf="
+                                        (config$ | async)?.by?.subBrand?.sources as subBrands;
+                                        else noSubBrands
+                                    "
+                                >
+                                    <ng-container *ngIf="subBrands?.length > 0; else noSubBrands">
+                                        <mat-option>-</mat-option>
+                                        <mat-option
+                                            *ngFor="let subBrand of subBrands"
+                                            [value]="subBrand.id"
+                                        >
+                                            {{ subBrand.code + ' - ' + subBrand.name }}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+
+                                <ng-template #noSubBrands>
+                                    <mat-option> None </mat-option>
+                                </ng-template>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / SUB BRAND -->
+
         <!-- FAKTUR -->
         <mat-list *ngIf="filterFaktur">
             <mat-expansion-panel

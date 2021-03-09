@@ -51,6 +51,7 @@ export class HelperService {
         'search',
         'status',
         'statusPayment',
+        'subBrandId',
         'supplierId',
         'type',
         'typeId',

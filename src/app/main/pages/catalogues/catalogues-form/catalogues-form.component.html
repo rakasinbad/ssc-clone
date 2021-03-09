@@ -368,7 +368,11 @@
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <mat-select name="brandId" formControlName="brandId">
+                            <mat-select
+                                name="brandId"
+                                formControlName="brandId"
+                                (selectionChange)="onChangeBrand($event)"
+                            >
                                 <ng-container *ngIf="brands$ | async as brands; else noBrands">
                                     <mat-option *ngFor="let brand of brands" [value]="brand.id">
                                         {{ brand.name }}
@@ -407,6 +411,59 @@
                         </span> -->
                     </div>
                     <!-- / BRAND PRODUK -->
+
+                    <!-- SUB BRAND PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.sinbad-red-fg]="
+                                form.get('productInfo.subBrandId').value ||
+                                    form.get('productInfo.subBrandId').touched
+                                    | hasErrorField: form.get('productInfo.subBrandId'):false
+                            "
+                        >
+                            Sub Brand
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <mat-select name="subBrandId" formControlName="subBrandId">
+                                <ng-container
+                                    *ngIf="subBrands$ | async as subBrands; else noSubBrands"
+                                >
+                                    <ng-container *ngIf="subBrands?.length > 0; else noSubBrands">
+                                        <mat-option>-</mat-option>
+                                        <mat-option
+                                            *ngFor="let subBrand of subBrands"
+                                            [value]="subBrand.id"
+                                        >
+                                            {{ subBrand.code + ' - ' + subBrand.name }}
+                                        </mat-option>
+                                    </ng-container>
+                                </ng-container>
+
+                                <ng-template #noSubBrands>
+                                    <mat-option> None </mat-option>
+                                </ng-template>
+                            </mat-select>
+
+                            <mat-hint *ngIf="subBrandLoading"> Checking... </mat-hint>
+
+                            <mat-error>
+                                {{
+                                    form.get('productInfo.subBrandId').value
+                                        | errorMessage: form:'productInfo.subBrandId'
+                                }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / SUB BRAND PRODUK -->
 
                     <!-- KATEGORI PRODUK -->
                     <div
@@ -2188,7 +2245,8 @@
                                 Yes
                             </mat-checkbox>
                             <span class="mat-caption text-helper">
-                                If the checkbox is checked the SKU change to be a exclusive and only can order by registered store
+                                If the checkbox is checked the SKU change to be a exclusive and only
+                                can order by registered store
                             </span>
                         </div>
                         <span

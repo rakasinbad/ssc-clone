@@ -372,12 +372,22 @@ export class CataloguesService implements OnDestroy {
                 ];
             }
 
-            if (globalFilter.brandId) {
+            if (globalFilter.brandId && !globalFilter.subBrandId) {
                 paramsSearch = [
                     ...paramsSearch,
                     {
                         fieldName: 'brandId',
                         keyword: globalFilter.brandId,
+                    },
+                ];
+            }
+
+            if (globalFilter.subBrandId) {
+                paramsSearch = [
+                    ...paramsSearch,
+                    {
+                        fieldName: 'subBrandId',
+                        keyword: globalFilter.subBrandId,
                     },
                 ];
             }
