@@ -1,17 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { Store as NgRxStore } from '@ngrx/store';
-import { environment } from 'environments/environment';
-import { fuseAnimations } from '@fuse/animations';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Observable, Subject } from 'rxjs';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { UiActions } from 'app/shared/store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
-import { IQueryParams } from 'app/shared/models/query.model';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { FeatureState as PromoHierarchyCoreState } from './store/reducers';
@@ -63,7 +56,6 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
         private PromoHierarchyStore: NgRxStore<PromoHierarchyCoreState>,
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
-        private router: Router
     ) {
         // Memuat terjemahan.
         this.fuseTranslationLoader$.loadTranslations(indonesian, english);
@@ -96,31 +88,14 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
         switch (action) {
             case 'all':
                 this.selectedViewBy = action;
-
-                // this.SkuAssignmentsStore.dispatch(
-                //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-warehouse' })
-                // );
                 break;
             case 'flexi':
                 this.selectedViewBy = action;
-
-                // this.SkuAssignmentsStore.dispatch(
-                //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
-                // );
-                break;
             case 'cross':
-                    this.selectedViewBy = action;
-    
-                    // this.SkuAssignmentsStore.dispatch(
-                    //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
-                    // );
+                this.selectedViewBy = action;
                 break;
             case 'voucher':
-                    this.selectedViewBy = action;
-    
-                    // this.SkuAssignmentsStore.dispatch(
-                    //     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
-                    // );
+                this.selectedViewBy = action;
                 break;
     
             default:
@@ -153,17 +128,12 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // this.buttonViewByActive$ = this.SkuAssignmentsStore.select(
-        //     UiSelectors.getCustomToolbarActive
-        // );
+      
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
-
-        // this.SkuAssignmentsStore.dispatch(UiActions.hideCustomToolbar());
-        // this.SkuAssignmentsStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.fuseNavigation$.unregister('customNavigation');
     }
 }
