@@ -890,7 +890,6 @@ export class VoucherGeneralInformationComponent
         this.checkRoute();
         this.initFormCheck();
 
-        console.log('this.formMode->', this.formMode)
         // this.initCatalogueBrand();
         // this.initCatalogueUnitState();
         // this.initCatalogueCategoryState();

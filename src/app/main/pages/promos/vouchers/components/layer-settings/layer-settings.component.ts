@@ -266,7 +266,6 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
         //     )
         //     .subscribe((status) => {
         //         const rawValue = this.form.getRawValue();
-        //         console.log('rawvalue layer set->', rawValue)
         //         if (rawValue.layer == null || rawValue.layer !== null) {
         //             status = 'VALID';
         //         } else if (rawValue.promoOwner == null || rawValue.promoOwner !== null) {
@@ -278,7 +277,6 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
         //     });
 
         this.formStatusChange.emit('VALID');
-        console.log('valueChanges->', this.form.valueChanges)
         this.form.valueChanges
             .pipe(
                 distinctUntilChanged(),
@@ -322,8 +320,6 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
                 }
                 this.formValueChange.emit(value);
             });
-        console.log('isi value formValueChange->', this.formValueChange)
-        console.log('isi value formStatusChange->', this.formStatusChange)
 
     }
 
@@ -369,18 +365,6 @@ export class LayerSettingsComponent implements OnInit, AfterViewInit, OnChanges,
 
         this.initFormCheck();
 
-        const rawValue = this.form.getRawValue();
-                console.log('rawvalue on init ->', rawValue)
-        //         if (rawValue.layer == null || rawValue.layer !== null) {
-        //             status = 'VALID';
-        //         } else if (rawValue.promoOwner == null || rawValue.promoOwner !== null) {
-        //             status = 'VALID';
-        //         } else {
-        //             status = 'VALID';
-        //         }
-        // this.formStatusChange.emit(status);
-
-        console.log('this.formMode->', this.formMode)
     }
 
     ngAfterViewInit(): void {}

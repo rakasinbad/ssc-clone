@@ -236,7 +236,6 @@ export class VoucherFormComponent implements OnInit, OnDestroy {
                 }
             });
 
-            console.log('this.layerSettingValue$.value->', this.layerSettingValue$.value)
     }
 
     private initHandleFormSubmission(): void {
