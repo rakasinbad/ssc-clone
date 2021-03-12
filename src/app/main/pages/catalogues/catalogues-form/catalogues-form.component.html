@@ -2013,6 +2013,70 @@
                     </div>
                     <!-- / MINIMUM OF QUANTITY -->
 
+                    <!-- MAXIMUM OF QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            [class.sinbad-red-fg]="
+                                form.get('productCount.maxQtyValue').value ||
+                                    form.get('productCount.maxQtyValue').touched
+                                    | hasErrorField: form.get('productCount.maxQtyValue'):false
+                            "
+                        >
+                            Maximum Order<br />
+                            Quantity
+                        </label>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxLayoutGap="5px"
+                            fxFlex="80"
+                        >
+                            <!-- RADIO BUTTON SELECT TYPE -->
+                            <!-- <mat-radio-group formControlName="minQtyOption">
+                                <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id"
+                                >
+                                    {{ choice.label }}
+                                </mat-radio-button>
+                            </mat-radio-group> -->
+                            <mat-checkbox formControlName="isMaximum" labelPosition="after">
+                                Custom
+                            </mat-checkbox>
+                            <!-- / RADIO BUTTON SELECT TYPE -->
+
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    formControlName="maxQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                    [placeholder]="form.get('productCount.isMaximum').value ? null : 'Unlimited'"
+                                />
+
+                                <mat-error>
+                                    {{
+                                        form.get('productCount.maxQtyValue').value
+                                            | errorMessage: form:'productCount.maxQtyValue'
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
+                        </div>
+                    </div>
+                    <!-- / MAXIMUM OF QUANTITY -->
+
                     <!-- ADDITIONAL QUANTITY -->
                     <div
                         class="custom-field"
