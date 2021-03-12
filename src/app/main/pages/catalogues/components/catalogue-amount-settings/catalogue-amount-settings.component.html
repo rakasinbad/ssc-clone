@@ -159,9 +159,6 @@
                     *ngIf="!isViewMode()"
                 >
                     <!-- CHECKBOX FOR IS MAXIMUM -->
-                    <!-- <mat-radio-group formControlName="minQtyOption">
-                        <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices;" [value]="choice.id">{{ choice.label }}</mat-radio-button>
-                    </mat-radio-group> -->
                     <mat-checkbox formControlName="isMaximum" labelPosition="after">
                         Custom
                     </mat-checkbox>
@@ -179,11 +176,6 @@
                                 form.get('productCount.isMaximum').value ? null : 'Unlimited'
                             "
                         />
-                        <!-- <mat-error
-                            *ngIf="hasError(form.get('productCount.maxQtyValue'))"
-                        >
-                            {{ getFormError(form.get('productCount.maxQtyValue')) }}
-                        </mat-error> -->
 
                         <mat-error>
                             {{

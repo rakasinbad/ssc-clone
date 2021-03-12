@@ -321,7 +321,7 @@
                         fxLayoutAlign="start center"
                         *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline" style="width: 70%">
+                        <mat-form-field appearance="outline" style="width: 60%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
@@ -342,6 +342,53 @@
                 </mat-cell>
             </ng-container>
             <!-- / SKU's Price Column -->
+
+            <!-- Maximum Order Qty Column -->
+            <ng-container matColumnDef="max-order-qty">
+                <mat-header-cell *matHeaderCellDef>
+                    Max Order Quantity
+                    <!-- HELP -->
+                    <mat-icon
+                        color="accent"
+                        style="font-size: 16px"
+                        matTooltip="Maximum order quantity is not related&#10;to the maximum order quantity in the&#10;amount setting"
+                        matTooltipClass="tooltip-br"
+                        *ngIf="formMode | hasFormMode: 'edit'"
+                    >
+                        help
+                    </mat-icon>
+                    <!-- / HELP -->
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; index as idx">
+                    <p *ngIf="formMode | hasFormMode: 'view'">
+                        <!-- {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }} -->
+                        -
+                    </p>
+
+                    <div
+                        [ngClass]="formClass"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        *ngIf="formMode | hasFormMode: 'edit'"
+                    >
+                        <mat-form-field appearance="outline" style="width: 60%">
+                            <input
+                                matInput
+                                name="retailBuyingPrice"
+                                [formControl]="form.get(['priceSettings', idx, 'maxOrderQtyValue'])"
+                                [class.mat-error]="
+                                    form.get(['priceSettings', idx, 'maxOrderQtyValue']).value ||
+                                        form.get(['priceSettings', idx, 'maxOrderQtyValue']).touched
+                                        | hasErrorField
+                                            : form.get(['priceSettings', idx, 'maxOrderQtyValue'])
+                                            : false
+                                "
+                            />
+                        </mat-form-field>
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <!-- / Maximum Order Qty Column -->
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
