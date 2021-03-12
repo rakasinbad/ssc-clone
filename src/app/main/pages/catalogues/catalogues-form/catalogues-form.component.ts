@@ -1713,6 +1713,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
+                isMaximum: false,
+                maxQtyValue: [{ value: null, disabled: true }],
             }),
 
             // VISIBILITY
