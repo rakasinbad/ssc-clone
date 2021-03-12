@@ -96,6 +96,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         'store-channel',
         'store-cluster',
         'price',
+        'max-order-qty',
     ];
 
     catalogueContent: {
@@ -759,6 +760,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                                     updateOn: 'blur',
                                 },
                             ],
+                            maxOrderQtyValue: null,
                         });
 
                         (this.form.get('priceSettings') as FormArray).push(control);
@@ -818,6 +820,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'max-order-qty',
                     'actions',
                 ];
                 this.formMode = 'edit';
@@ -831,6 +834,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'max-order-qty',
                 ];
                 this.formMode = 'view';
                 this._prepareEditCatalogue();
@@ -957,6 +961,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 'store-channel',
                 'store-cluster',
                 'price',
+                'max-order-qty',
             ];
 
             this.form.get('advancePrice').disable();
@@ -970,6 +975,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'max-order-qty',
                     'actions',
                 ];
             }
