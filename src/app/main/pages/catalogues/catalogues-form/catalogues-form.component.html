@@ -2040,7 +2040,7 @@
                             fxLayoutGap="5px"
                             fxFlex="80"
                         >
-                            <!-- RADIO BUTTON SELECT TYPE -->
+                            <!-- CHECKBOX FOR IS MAXIMUM -->
                             <!-- <mat-radio-group formControlName="minQtyOption">
                                 <mat-radio-button
                                     class="pr-36"
@@ -2053,7 +2053,7 @@
                             <mat-checkbox formControlName="isMaximum" labelPosition="after">
                                 Custom
                             </mat-checkbox>
-                            <!-- / RADIO BUTTON SELECT TYPE -->
+                            <!-- / CHECKBOX FOR IS MAXIMUM -->
 
                             <!-- INPUT TEXT BOX -->
                             <mat-form-field appearance="outline">
@@ -2062,7 +2062,11 @@
                                     formControlName="maxQtyValue"
                                     mask="separator"
                                     thousandSeparator="."
-                                    [placeholder]="form.get('productCount.isMaximum').value ? null : 'Unlimited'"
+                                    [placeholder]="
+                                        form.get('productCount.isMaximum').value
+                                            ? null
+                                            : 'Unlimited'
+                                    "
                                 />
 
                                 <mat-error>
