@@ -2061,7 +2061,11 @@
                                     {{ choice.label }}
                                 </mat-radio-button>
                             </mat-radio-group> -->
-                            <mat-checkbox formControlName="isMaximum" labelPosition="after">
+                            <mat-checkbox
+                                formControlName="isMaximum"
+                                labelPosition="after"
+                                (change)="onChangeMaxOrderQty($event)"
+                            >
                                 Custom
                             </mat-checkbox>
                             <!-- / CHECKBOX FOR IS MAXIMUM -->
@@ -2080,7 +2084,7 @@
                                     "
                                 />
 
-                                <mat-error>
+                                <mat-error *ngIf="form.get('productCount.maxQtyValue').invalid">
                                     {{
                                         form.get('productCount.maxQtyValue').value
                                             | errorMessage: form:'productCount.maxQtyValue'
