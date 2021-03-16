@@ -207,7 +207,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     onChangeMaxOrderQty(ev: MatCheckboxChange): void {
-        HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+        // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
 
         this.form.get('productCount.maxQtyValue').reset();
 
@@ -229,20 +229,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
 
-            HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
                 minQty,
                 maxQtyValue: this.form.get('productCount.maxQtyValue'),
                 qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
-            });
+            }); */
         } else {
             this.form.get('productCount.maxQtyValue').clearValidators();
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
 
-            HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
                 maxQtyValue: this.form.get('productCount.maxQtyValue'),
                 qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
-            });
+            }); */
         }
     }
 
@@ -425,13 +425,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         // }
 
         if (this.formMode !== 'edit') {
-            HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
+            /* HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
                 payload: catalogueData,
-            });
+            }); */
 
-            /* this.store.dispatch(
+            this.store.dispatch(
                 CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
-            ); */
+            );
         }
 
         // else {
@@ -749,7 +749,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             .subscribe((value) => {
                 const isMaximum = this.form.get('productCount.isMaximum').value;
 
-                HelperService.debug(
+                /* HelperService.debug(
                     '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
                     {
                         value,
@@ -757,7 +757,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         isMaximum,
                         maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
                     }
-                );
+                ); */
 
                 if (isMaximum) {
                     this.form.get('productCount.maxQtyValue').reset();
@@ -1265,19 +1265,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     onAddVariantSelection(_: Event, $variant: number): void {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
-        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+        /* HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
             ev: _,
             varian: $variant,
             variantControl: (this.productVariantControls[$variant] as FormArray).controls,
-        });
+        }); */
 
         this.productVariantSelectionData[$variant] = new MatTableDataSource(
             (this.productVariantControls[$variant] as FormArray).controls
         );
 
-        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+        /* HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
             variantSelection: this.productVariantSelectionData[$variant],
-        });
+        }); */
     }
 
     onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
@@ -1381,9 +1381,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     onChangeBrand(ev: MatSelectChange): void {
-        HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
+        /* HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
             ev,
-        });
+        }); */
 
         if (ev.value) {
             this._getSubBrandByBrandId(ev.value);
