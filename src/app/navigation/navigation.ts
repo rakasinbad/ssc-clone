@@ -153,11 +153,24 @@ export const navigation: FuseNavigation[] = [
         icon: 'custom-sinbad-sales-force-logo',
         children: [
             {
+                id: 'sales-team',
+                title: 'Sales Team',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/sales-team',
+            },
+            {
                 id: 'sales-rep',
                 title: 'Sales Rep',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/sales-force/sales-rep',
+            },
+            {
+                id: 'sales-repsv2',
+                title: 'Sales Rep V2',
+                type: 'item',
+                url: '/pages/sales-force/sales-repsv2',
             },
             {
                 id: 'portfolio',
@@ -167,10 +180,23 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/portfolio',
             },
             {
+                id: 'portfoliov2',
+                title: 'Portfolio of Store V2',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/portfoliosv2',
+            },
+            {
                 id: 'sr-target',
                 title: 'SR Target',
                 type: 'item',
                 url: '/pages/sales-force/sr-target',
+            },
+            {
+                id: 'pjp',
+                title: 'Permanent Journey Plan',
+                type: 'item',
+                url: '/pages/sales-force/pjp',
             },
             {
                 id: 'association',
@@ -184,6 +210,12 @@ export const navigation: FuseNavigation[] = [
                 title: 'Journey Plan',
                 type: 'item',
                 url: '/pages/sales-force/journey-plans',
+            },
+            {
+                id: 'journey-planv2',
+                title: 'Journey Plan V2',
+                type: 'item',
+                url: '/pages/sales-force/journey-planssv2',
             },
             {
                 id: 'workday-setting',
