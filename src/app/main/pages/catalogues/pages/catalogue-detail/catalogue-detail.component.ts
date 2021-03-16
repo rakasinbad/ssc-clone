@@ -6,7 +6,7 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
+    ViewEncapsulation
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -219,6 +219,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     minQtyType,
                     multipleQty,
                     multipleQtyType,
+                    isMaximum,
+                    maxQty,
                 } = $event as Catalogue;
 
                 this.formValue = {
@@ -227,6 +229,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     minQtyType,
                     multipleQty,
                     multipleQtyType,
+                    isMaximum,
+                    maxQty: isMaximum ? maxQty : null,
                 };
 
                 break;
