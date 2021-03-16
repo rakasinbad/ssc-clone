@@ -13,7 +13,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatCheckboxChange, MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -194,6 +194,8 @@ export class CatalogueAmountSettingsComponent
                             minQtyValue: catalogue.minQty,
                             additionalQtyOption: catalogue.multipleQtyType,
                             additionalQtyValue: catalogue.multipleQty,
+                            isMaximum: catalogue.isMaximum,
+                            maxQtyValue: catalogue.maxQty,
                         },
                     },
                     { onlySelf: false }
@@ -296,6 +298,58 @@ export class CatalogueAmountSettingsComponent
                 this.formValue$.next();
             });
 
+        // Re-validate maximum order quantity field based on changes in minimum order quantity
+        this.form
+            .get('productCount.minQtyValue')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
+            .subscribe((value) => {
+                const isMaximum = this.form.get('productCount.isMaximum').value;
+
+                /* HelperService.debug(
+                    '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
+                    {
+                        value,
+                        minQtyOption: this.form.get('productCount.minQtyOption').value,
+                        isMaximum,
+                        maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
+                    }
+                ); */
+
+                if (isMaximum) {
+                    this.form.get('productCount.maxQtyValue').reset();
+                    this.form.get('productCount.maxQtyValue').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.greaterThanEqualTo({
+                            fieldName: 'productCount.minQtyValue',
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'gte_number',
+                                {
+                                    limitValue: value,
+                                }
+                            ),
+                        }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
+                    ]);
+
+                    this.form
+                        .get('productCount.maxQtyValue')
+                        .updateValueAndValidity({ onlySelf: true });
+                }
+
+                this.formValue$.next();
+            });
+
         this.form.statusChanges
             .pipe(
                 debounceTime(250),
@@ -312,20 +366,24 @@ export class CatalogueAmountSettingsComponent
         this.form.valueChanges
             .pipe(
                 debounceTime(250),
-                // map(() => this.form.getRawValue()),
+                map(() => this.form.getRawValue()),
                 tap((value) =>
                     HelperService.debug(
                         '[BEFORE MAP] CATALOGUE AMOUNT SETTINGS FORM VALUE CHANGED',
-                        value
+                        { value, form: this.form }
                     )
                 ),
                 map((value) => {
                     const formValue = {
                         packagedQty: value.productCount.qtyPerMasterBox,
-                        minQty: this.form.get('productCount.minQtyValue').value,
+                        minQty: value.productCount.minQtyValue, // this.form.get('productCount.minQtyValue').value,
                         minQtyType: value.productCount.minQtyOption,
-                        multipleQty: this.form.get('productCount.additionalQtyValue').value,
+                        multipleQty: value.productCount.additionalQtyValue, // this.form.get('productCount.additionalQtyValue').value,
                         multipleQtyType: value.productCount.additionalQtyOption,
+                        isMaximum: value.productCount.isMaximum,
+                        maxQty: value.productCount.isMaximum
+                            ? value.productCount.maxQtyValue
+                            : null,
                     };
 
                     return formValue;
@@ -341,6 +399,49 @@ export class CatalogueAmountSettingsComponent
             .subscribe((value) => {
                 this.formValueChange.emit(value);
             });
+    }
+
+    onChangeMaxOrderQty(ev: MatCheckboxChange): void {
+        // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+
+        this.form.get('productCount.maxQtyValue').reset();
+
+        if (ev.checked) {
+            const minQty = this.form.get('productCount.minQtyValue').value;
+
+            this.form.get('productCount.maxQtyValue').setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.greaterThanEqualTo({
+                    fieldName: 'productCount.minQtyValue',
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'gte_number', {
+                        limitValue: minQty,
+                    }),
+                }),
+                RxwebValidators.digit({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                }),
+            ]);
+
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
+                minQty,
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        } else {
+            this.form.get('productCount.maxQtyValue').clearValidators();
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        }
     }
 
     getFormError(form: any): string {
@@ -398,6 +499,12 @@ export class CatalogueAmountSettingsComponent
                                 { minValue: 1 }
                             ),
                         }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
                     ],
                 ],
                 minQtyOption: ['pcs'],
@@ -416,6 +523,12 @@ export class CatalogueAmountSettingsComponent
                                 'default',
                                 'min_number',
                                 { minValue: 1 }
+                            ),
+                        }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
                             ),
                         }),
                     ],
@@ -438,10 +551,16 @@ export class CatalogueAmountSettingsComponent
                                 { minValue: 1 }
                             ),
                         }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
                     ],
                 ],
                 isMaximum: false,
-                maxQtyValue: [{ value: null, disabled: true }],
+                maxQtyValue: [{ value: '1', disabled: true }],
             }),
         });
 

@@ -146,9 +146,25 @@
                     class="pr-0"
                     fxFlexAlign="start"
                     fxFlex="18"
-                    [class.mat-error]="hasError(form.get('productCount.maxQtyValue'))"
+                    [class.mat-error]="
+                        form.get('productCount.maxQtyValue').invalid &&
+                        form.get('productCount.maxQtyValue').touched
+                    "
                 >
-                    Maximum Order <br />Quantity
+                    Maximum Order<br />
+                    Quantity
+
+                    <!-- HELP -->
+                    <mat-icon
+                        color="accent"
+                        style="font-size: 16px"
+                        matTooltip="Maximum order quantity, will be&#10; applied if SKU does not have a&#10; maximum quantities orders in a&#10; particular segmentation"
+                        matTooltipClass="tooltip-br"
+                        *ngIf="formMode === 'edit'"
+                    >
+                        help
+                    </mat-icon>
+                    <!-- / HELP -->
                 </label>
 
                 <div
@@ -159,7 +175,11 @@
                     *ngIf="!isViewMode()"
                 >
                     <!-- CHECKBOX FOR IS MAXIMUM -->
-                    <mat-checkbox formControlName="isMaximum" labelPosition="after">
+                    <mat-checkbox
+                        formControlName="isMaximum"
+                        labelPosition="after"
+                        (change)="onChangeMaxOrderQty($event)"
+                    >
                         Custom
                     </mat-checkbox>
                     <!-- / CHECKBOX FOR IS MAXIMUM -->
@@ -177,7 +197,7 @@
                             "
                         />
 
-                        <mat-error>
+                        <mat-error *ngIf="form.get('productCount.maxQtyValue').invalid">
                             {{
                                 form.get('productCount.maxQtyValue').value
                                     | errorMessage: form:'productCount.maxQtyValue'
@@ -202,7 +222,7 @@
                     fxFlex="80"
                     *ngIf="isViewMode() && !form.get('productCount.maxQtyValue').value"
                 >
-                    -
+                    Unlimited
                 </span>
             </div>
             <!-- / MAXIMUM OF QUANTITY -->
