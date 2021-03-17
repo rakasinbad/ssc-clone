@@ -96,6 +96,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         'store-channel',
         'store-cluster',
         'price',
+        'custom-qty',
         'max-order-qty',
     ];
 
@@ -760,7 +761,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                                     updateOn: 'blur',
                                 },
                             ],
-                            maxOrderQtyValue: null,
+                            isMaximum: false,
+                            maxOrderQtyValue: [{ value: cataloguePrice.maxQty, disabled: true }],
                         });
 
                         (this.form.get('priceSettings') as FormArray).push(control);
@@ -820,6 +822,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'custom-qty',
                     'max-order-qty',
                     'actions',
                 ];
@@ -834,6 +837,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'custom-qty',
                     'max-order-qty',
                 ];
                 this.formMode = 'view';
@@ -961,6 +965,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 'store-channel',
                 'store-cluster',
                 'price',
+                'custom-qty',
                 'max-order-qty',
             ];
 
@@ -975,6 +980,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'custom-qty',
                     'max-order-qty',
                     'actions',
                 ];
