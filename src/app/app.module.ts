@@ -106,7 +106,7 @@ registerLocaleData(localId, 'id');
         AppStoreModule,
 
         AgmCoreModule.forRoot({
-            apiKey: 'AIzaSyC-VPAr6zLzdC8NYplwHKPhm4GI0xfTd9g',
+            apiKey: 'AIzaSyCysXfZnhUFnXQ_PGPqPEdeF2mGDl8Hs14',
             libraries: ['geometry', 'places']
         }),
 
