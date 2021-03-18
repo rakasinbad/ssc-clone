@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -447,6 +448,77 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         });
     }
 
+    onChangeCustomQty(ev: MatCheckboxChange, idx: number): void {
+        HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty', {
+            ev,
+            idx,
+            selectedCatalogue: this.selectedCatalogue$.value,
+        });
+
+        const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
+
+        maxOrderQtyControl.reset();
+
+        if (ev.checked) {
+            const { minQty } = this.selectedCatalogue$.value;
+
+            maxOrderQtyControl.setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.minNumber({
+                    value: minQty,
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'gte_number', {
+                        limitValue: minQty,
+                    }),
+                }),
+                RxwebValidators.digit({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                }),
+            ]);
+            maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
+            maxOrderQtyControl.enable({ onlySelf: true });
+
+            HelperService.debug(
+                '[CataloguePriceSettingsComponent] onChangeCustomQty checked TRUE',
+                {
+                    minQty,
+                    maxQtyValue: maxOrderQtyControl,
+                }
+            );
+        } else {
+            // this.form.get('productCount.maxQtyValue').clearValidators();
+            // this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            // this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+            // /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
+            //     maxQtyValue: this.form.get('productCount.maxQtyValue'),
+            //     qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            // }); */
+        }
+    }
+
+    onChangeMaxOrderQty(value: any, idx: number): void {
+        const { minQty, multipleQtyType } = this.selectedCatalogue$.value;
+        const hasErrorMinQty = this.form
+            .get(['priceSettings', idx, 'maxOrderQtyValue'])
+            .hasError('minNumber');
+
+        HelperService.debug('[CataloguePriceSettingsComponent] onChangeMaxOrderQty', {
+            value,
+            idx,
+            form: this.form.get(['priceSettings', idx, 'maxOrderQtyValue']),
+            hasError: hasErrorMinQty,
+        });
+
+        if (hasErrorMinQty) {
+            this.notice$.open(`Minimum order quantity is ${minQty} ${multipleQtyType}`, 'error', {
+                verticalPosition: 'bottom',
+                horizontalPosition: 'right',
+            });
+        } else {
+        }
+    }
+
     onDelete(item: CataloguePrice, idx: number): void {
         if (!item || !item.id) {
             return;
@@ -761,8 +833,11 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                                     updateOn: 'blur',
                                 },
                             ],
-                            isMaximum: false,
-                            maxOrderQtyValue: [{ value: cataloguePrice.maxQty, disabled: true }],
+                            isMaximum: cataloguePrice.isMaximum || false,
+                            maxOrderQtyValue: [
+                                { value: cataloguePrice.maxQty, disabled: true },
+                                { updateOn: 'blur' },
+                            ],
                         });
 
                         (this.form.get('priceSettings') as FormArray).push(control);
