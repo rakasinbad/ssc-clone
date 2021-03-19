@@ -359,14 +359,14 @@
                 <mat-cell *matCellDef="let row; index as idx">
                     <mat-checkbox
                         *ngIf="formMode | hasFormMode: 'view'"
-                        [value]="row?.isMaximum"
+                        [checked]="row?.isMaximum"
                         disabled
                     ></mat-checkbox>
 
                     <mat-checkbox
                         *ngIf="formMode | hasFormMode: 'edit'"
                         [formControl]="form.get(['priceSettings', idx, 'isMaximum'])"
-                        (change)="onChangeCustomQty($event, idx)"
+                        (change)="onChangeCustomQty($event, row, idx)"
                     ></mat-checkbox>
                 </mat-cell>
             </ng-container>
@@ -420,7 +420,7 @@
                                         ? null
                                         : 'Unlimited'
                                 "
-                                (blur)="onChangeMaxOrderQty($event.target.value, idx)"
+                                (blur)="onChangeMaxOrderQty(row, idx)"
                             />
                         </mat-form-field>
                     </div>

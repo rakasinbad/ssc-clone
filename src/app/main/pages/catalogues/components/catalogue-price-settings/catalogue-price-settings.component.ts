@@ -42,7 +42,7 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import { CataloguePriceSegmentationDataSource } from '../../datasources';
-import { AdjustCataloguePriceDto, Catalogue } from '../../models';
+import { AdjustCataloguePriceDto, Catalogue, MaxOrderQtySegmentationDto } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
 import { CatalogueFacadeService, CataloguesService } from '../../services';
 import { CatalogueActions, CatalogueDetailPageActions } from '../../store/actions';
@@ -448,12 +448,12 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         });
     }
 
-    onChangeCustomQty(ev: MatCheckboxChange, idx: number): void {
-        HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty', {
+    onChangeCustomQty(ev: MatCheckboxChange, item: CataloguePrice, idx: number): void {
+        /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty', {
             ev,
             idx,
             selectedCatalogue: this.selectedCatalogue$.value,
-        });
+        }); */
 
         const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
 
@@ -479,43 +479,59 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
             maxOrderQtyControl.enable({ onlySelf: true });
 
-            HelperService.debug(
+            /* HelperService.debug(
                 '[CataloguePriceSettingsComponent] onChangeCustomQty checked TRUE',
                 {
                     minQty,
                     maxQtyValue: maxOrderQtyControl,
                 }
-            );
+            ); */
         } else {
-            // this.form.get('productCount.maxQtyValue').clearValidators();
-            // this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
-            // this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
-            // /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
-            //     maxQtyValue: this.form.get('productCount.maxQtyValue'),
-            //     qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
-            // }); */
+            maxOrderQtyControl.clearValidators();
+            maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
+            maxOrderQtyControl.disable({ onlySelf: true });
+
+            const payload: MaxOrderQtySegmentationDto = {
+                id: item.id,
+                isMaximum: ev.checked,
+                maxQty: null,
+            };
+
+            this.catalogueFacade.updateMaxOrderQtySegmentation(payload, idx);
+
+            /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty checked FALSE', {
+                maxQtyValue: maxOrderQtyControl,
+            }); */
         }
     }
 
-    onChangeMaxOrderQty(value: any, idx: number): void {
+    onChangeMaxOrderQty(item: CataloguePrice, idx: number): void {
         const { minQty, multipleQtyType } = this.selectedCatalogue$.value;
-        const hasErrorMinQty = this.form
-            .get(['priceSettings', idx, 'maxOrderQtyValue'])
-            .hasError('minNumber');
+        const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
+        const hasErrorMinQty = maxOrderQtyControl.hasError('minNumber');
 
-        HelperService.debug('[CataloguePriceSettingsComponent] onChangeMaxOrderQty', {
-            value,
+        const isMaximum = this.form.get(['priceSettings', idx, 'isMaximum']).value;
+
+        /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeMaxOrderQty', {
+            item,
             idx,
-            form: this.form.get(['priceSettings', idx, 'maxOrderQtyValue']),
+            form: maxOrderQtyControl,
             hasError: hasErrorMinQty,
-        });
+        }); */
 
         if (hasErrorMinQty) {
             this.notice$.open(`Minimum order quantity is ${minQty} ${multipleQtyType}`, 'error', {
                 verticalPosition: 'bottom',
                 horizontalPosition: 'right',
             });
-        } else {
+        } else if (isMaximum) {
+            const payload: MaxOrderQtySegmentationDto = {
+                id: item.id,
+                isMaximum,
+                maxQty: maxOrderQtyControl.value,
+            };
+
+            this.catalogueFacade.updateMaxOrderQtySegmentation(payload, idx);
         }
     }
 
