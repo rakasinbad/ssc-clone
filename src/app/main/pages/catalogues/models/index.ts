@@ -9,6 +9,7 @@ export * from './catalogue.model';
 export * from './sub-brand.model';
 
 export * from './interfaces/adjust-catalogue-price.interface';
+export * from './interfaces/max-order-qty-segmentation-dto.interface';
 export * from './interfaces/sub-brand.interface';
 
 export { StoreSegmentationChannel } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-channels/models';

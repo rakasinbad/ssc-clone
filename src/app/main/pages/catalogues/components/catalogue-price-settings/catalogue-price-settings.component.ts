@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -41,7 +42,7 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import { CataloguePriceSegmentationDataSource } from '../../datasources';
-import { AdjustCataloguePriceDto, Catalogue } from '../../models';
+import { AdjustCataloguePriceDto, Catalogue, MaxOrderQtySegmentationDto } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
 import { CatalogueFacadeService, CataloguesService } from '../../services';
 import { CatalogueActions, CatalogueDetailPageActions } from '../../store/actions';
@@ -96,6 +97,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         'store-channel',
         'store-cluster',
         'price',
+        'custom-qty',
         'max-order-qty',
     ];
 
@@ -446,6 +448,93 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         });
     }
 
+    onChangeCustomQty(ev: MatCheckboxChange, item: CataloguePrice, idx: number): void {
+        /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty', {
+            ev,
+            idx,
+            selectedCatalogue: this.selectedCatalogue$.value,
+        }); */
+
+        const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
+
+        maxOrderQtyControl.reset();
+
+        if (ev.checked) {
+            const { minQty } = this.selectedCatalogue$.value;
+
+            maxOrderQtyControl.setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.minNumber({
+                    value: minQty,
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'gte_number', {
+                        limitValue: minQty,
+                    }),
+                }),
+                RxwebValidators.digit({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                }),
+            ]);
+            maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
+            maxOrderQtyControl.enable({ onlySelf: true });
+
+            /* HelperService.debug(
+                '[CataloguePriceSettingsComponent] onChangeCustomQty checked TRUE',
+                {
+                    minQty,
+                    maxQtyValue: maxOrderQtyControl,
+                }
+            ); */
+        } else {
+            maxOrderQtyControl.clearValidators();
+            maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
+            maxOrderQtyControl.disable({ onlySelf: true });
+
+            const payload: MaxOrderQtySegmentationDto = {
+                id: item.id,
+                isMaximum: ev.checked,
+                maxQty: null,
+            };
+
+            this.catalogueFacade.updateMaxOrderQtySegmentation(payload, idx);
+
+            /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty checked FALSE', {
+                maxQtyValue: maxOrderQtyControl,
+            }); */
+        }
+    }
+
+    onChangeMaxOrderQty(item: CataloguePrice, idx: number): void {
+        const { minQty, multipleQtyType } = this.selectedCatalogue$.value;
+        const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
+        const hasErrorMinQty = maxOrderQtyControl.hasError('minNumber');
+
+        const isMaximum = this.form.get(['priceSettings', idx, 'isMaximum']).value;
+
+        /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeMaxOrderQty', {
+            item,
+            idx,
+            form: maxOrderQtyControl,
+            hasError: hasErrorMinQty,
+        }); */
+
+        if (hasErrorMinQty) {
+            this.notice$.open(`Minimum order quantity is ${minQty} ${multipleQtyType}`, 'error', {
+                verticalPosition: 'bottom',
+                horizontalPosition: 'right',
+            });
+        } else if (isMaximum) {
+            const payload: MaxOrderQtySegmentationDto = {
+                id: item.id,
+                isMaximum,
+                maxQty: maxOrderQtyControl.value,
+            };
+
+            this.catalogueFacade.updateMaxOrderQtySegmentation(payload, idx);
+        }
+    }
+
     onDelete(item: CataloguePrice, idx: number): void {
         if (!item || !item.id) {
             return;
@@ -760,7 +849,11 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                                     updateOn: 'blur',
                                 },
                             ],
-                            maxOrderQtyValue: null,
+                            isMaximum: cataloguePrice.isMaximum || false,
+                            maxOrderQtyValue: [
+                                { value: cataloguePrice.maxQty, disabled: true },
+                                { updateOn: 'blur' },
+                            ],
                         });
 
                         (this.form.get('priceSettings') as FormArray).push(control);
@@ -820,6 +913,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'custom-qty',
                     'max-order-qty',
                     'actions',
                 ];
@@ -834,6 +928,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'custom-qty',
                     'max-order-qty',
                 ];
                 this.formMode = 'view';
@@ -961,6 +1056,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 'store-channel',
                 'store-cluster',
                 'price',
+                'custom-qty',
                 'max-order-qty',
             ];
 
@@ -975,6 +1071,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'custom-qty',
                     'max-order-qty',
                     'actions',
                 ];

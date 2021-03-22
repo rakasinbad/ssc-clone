@@ -7,6 +7,7 @@ import { CataloguePrice } from '../../models/catalogue-price.model';
 import {
     CatalogueActions,
     CatalogueDetailPageActions,
+    CatalogueMaxOrderQtySegmentationActions,
     CataloguePriceSegmentationActions,
 } from '../actions';
 
@@ -332,6 +333,10 @@ const catalogueReducer = createReducer(
         ...state,
         cataloguePrices: adapterCataloguePrice.updateOne(payload.data, state.cataloguePrices),
     })),
+    on(CatalogueMaxOrderQtySegmentationActions.updateSuccess, (state, { data }) => ({
+        ...state,
+        cataloguePrices: adapterCataloguePrice.updateOne(data, { ...state.cataloguePrices }),
+    })),
     on(
         CatalogueActions.setCatalogueToActiveSuccess,
         CatalogueActions.setCatalogueToInactiveSuccess,
@@ -422,13 +427,19 @@ const catalogueReducer = createReducer(
         cataloguePrices: initialState.cataloguePrices,
     })),
     on(CatalogueActions.resetCatalogueUnits, (state) => ({ ...state, units: initialState.units })),
-    on(CatalogueActions.updateCataloguePriceSettingRequest, (state) => ({
-        ...state,
-        isLoading: true,
-    })),
+    on(
+        CatalogueActions.updateCataloguePriceSettingRequest,
+        CatalogueMaxOrderQtySegmentationActions.updateRequest,
+        (state) => ({
+            ...state,
+            isLoading: true,
+        })
+    ),
     on(
         CatalogueActions.updateCataloguePriceSettingFailure,
         CatalogueActions.updateCataloguePriceSettingSuccess,
+        CatalogueMaxOrderQtySegmentationActions.updateFailure,
+        CatalogueMaxOrderQtySegmentationActions.updateSuccess,
         (state) => ({
             ...state,
             isLoading: false,

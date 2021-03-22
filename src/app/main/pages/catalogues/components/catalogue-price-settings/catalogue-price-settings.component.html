@@ -309,7 +309,12 @@
 
             <!-- SKU's Price Column -->
             <ng-container matColumnDef="price">
-                <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+                <mat-header-cell
+                    *matHeaderCellDef
+                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
+                >
+                    Price
+                </mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <p *ngIf="formMode | hasFormMode: 'view'">
                         {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
@@ -321,7 +326,7 @@
                         fxLayoutAlign="start center"
                         *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline" style="width: 60%">
+                        <mat-form-field appearance="outline" style="width: 50%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
@@ -343,9 +348,36 @@
             </ng-container>
             <!-- / SKU's Price Column -->
 
+            <!-- Custom Qty Column -->
+            <ng-container matColumnDef="custom-qty">
+                <mat-header-cell
+                    *matHeaderCellDef
+                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
+                >
+                    Custom Quantity
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; index as idx">
+                    <mat-checkbox
+                        *ngIf="formMode | hasFormMode: 'view'"
+                        [checked]="row?.isMaximum"
+                        disabled
+                    ></mat-checkbox>
+
+                    <mat-checkbox
+                        *ngIf="formMode | hasFormMode: 'edit'"
+                        [formControl]="form.get(['priceSettings', idx, 'isMaximum'])"
+                        (change)="onChangeCustomQty($event, row, idx)"
+                    ></mat-checkbox>
+                </mat-cell>
+            </ng-container>
+            <!-- / Custom Qty Column -->
+
             <!-- Maximum Order Qty Column -->
             <ng-container matColumnDef="max-order-qty">
-                <mat-header-cell *matHeaderCellDef>
+                <mat-header-cell
+                    *matHeaderCellDef
+                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '170px' : null }"
+                >
                     Max Order Quantity
                     <!-- HELP -->
                     <mat-icon
@@ -359,10 +391,10 @@
                     </mat-icon>
                     <!-- / HELP -->
                 </mat-header-cell>
+
                 <mat-cell *matCellDef="let row; index as idx">
                     <p *ngIf="formMode | hasFormMode: 'view'">
-                        <!-- {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }} -->
-                        -
+                        {{ row?.isMaximum ? row?.maxQty : 'Unlimited' }}
                     </p>
 
                     <div
@@ -371,7 +403,7 @@
                         fxLayoutAlign="start center"
                         *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline" style="width: 60%">
+                        <mat-form-field appearance="outline" style="width: 50%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
@@ -383,6 +415,12 @@
                                             : form.get(['priceSettings', idx, 'maxOrderQtyValue'])
                                             : false
                                 "
+                                [placeholder]="
+                                    form.get(['priceSettings', idx, 'isMaximum']).value
+                                        ? null
+                                        : 'Unlimited'
+                                "
+                                (blur)="onChangeMaxOrderQty(row, idx)"
                             />
                         </mat-form-field>
                     </div>

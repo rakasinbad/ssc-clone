@@ -45,7 +45,11 @@ import {
     CatalogueFacadeService,
     CataloguePriceSegmentationApiService,
 } from './services';
-import { CatalogueEffects, DeletePriceSegmentationEffects } from './store/effects';
+import {
+    CatalogueEffects,
+    DeletePriceSegmentationEffects,
+    UpdateMaxOrderQtySegmentationEffects,
+} from './store/effects';
 import { AdjustPriceSettingEffects } from './store/effects/adjust-price-setting.effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
@@ -108,6 +112,7 @@ import { fromBrand, fromCatalogue } from './store/reducers';
             CatalogueEffects,
             DeletePriceSegmentationEffects,
             ExportsEffects,
+            UpdateMaxOrderQtySegmentationEffects,
         ]),
     ],
     entryComponents: [

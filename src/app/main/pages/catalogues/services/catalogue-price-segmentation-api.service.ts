@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { CataloguesModule } from '../catalogues.module';
-import { AdjustCataloguePriceDto } from '../models';
+import { AdjustCataloguePriceDto, CataloguePrice } from '../models';
 
 @Injectable({ providedIn: CataloguesModule })
 export class CataloguePriceSegmentationApiService {
@@ -20,5 +20,13 @@ export class CataloguePriceSegmentationApiService {
 
     create(body: AdjustCataloguePriceDto): Observable<any> {
         return this.http.post(this.url, body);
+    }
+
+    update<T>(body: T, id?: string): Observable<CataloguePrice> {
+        if (typeof id !== 'undefined') {
+            return this.http.patch<CataloguePrice>(`${this.url}/${id}`, body);
+        }
+
+        return this.http.patch<CataloguePrice>(this.url, body);
     }
 }
