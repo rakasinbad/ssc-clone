@@ -3562,9 +3562,11 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const newStartDate =
             startDate && moment.isMoment(startDate)
                 ? startDate.toISOString(this.strictISOString)
-                : null;
+                : null
         const newEndDate =
-            endDate && moment.isMoment(endDate) ? endDate.toISOString(this.strictISOString) : null;
+            endDate && moment.isMoment(endDate) 
+                ? endDate.toISOString(this.strictISOString) 
+                : null
         
         let layerVal;
         if (layer == 'nol') {
