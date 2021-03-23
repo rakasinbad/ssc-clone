@@ -200,11 +200,11 @@ export class ExtendPromoComponent implements OnInit {
 
     newStartDate =
         newStartDate && moment.isMoment(newStartDate)
-            ? newStartDate.add(7, 'hour').toISOString()
+            ? newStartDate.toISOString()
             : null;
     newEndDate =
         newEndDate && moment.isMoment(newEndDate) 
-            ? newEndDate.add(7, 'hour').toISOString() 
+            ? newEndDate.toISOString() 
             : null;
 
     this.matDialog.close({
