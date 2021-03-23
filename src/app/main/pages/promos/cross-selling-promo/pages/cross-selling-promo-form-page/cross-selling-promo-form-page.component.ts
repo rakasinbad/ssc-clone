@@ -149,13 +149,16 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (this.form.invalid) {
             return;
         }
-
         const payload: CreateFormDto = {
             base: 'sku',
             supplierId: null,
             type: 'cross_selling',
             status: 'active',
-            conditions: [{ ...this.benefitFormDto }],
+            conditions: [
+                { 
+                    ...this.benefitFormDto 
+                }
+            ],
             ...this.generalInfoFormDto,
             ...this.groupFormDto,
             ...this.segmentFormDto,
