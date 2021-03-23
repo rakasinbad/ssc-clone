@@ -1,7 +1,3 @@
-import { Catalogue } from 'app/main/pages/catalogues/models';
-import { Brand } from 'app/shared/models/brand.model';
-import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
-
 interface IVoucherBenefit {
     id?: string;
     base: string;
@@ -16,7 +12,7 @@ export class VoucherBenefit implements IVoucherBenefit {
     rupiah: string;
     percent: string;
     benefitMaxRebate: number;
-
+    VoucherBenefit
     constructor(data: IVoucherBenefit) {
         const {
             id,

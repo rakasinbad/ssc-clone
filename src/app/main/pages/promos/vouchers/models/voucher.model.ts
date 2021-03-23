@@ -1,16 +1,5 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
-import {
-    Catalogue,
-    StoreSegmentationGroup,
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-} from 'app/main/pages/catalogues/models';
-import { Brand } from 'app/shared/models/brand.model';
-import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
-import { Store } from 'app/shared/models/store.model';
-import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
-import { StoreSegmentationType } from 'app/shared/components/selection-tree/store-segmentation/models';
 
 type VoucherStatus = 'active' | 'inactive';
 
@@ -69,6 +58,9 @@ interface ISupplierVoucher extends Timestamp {
     voucherGroups?: Array<any>;
     voucherClusters?: Array<any>;
     voucherChannels?: Array<any>;
+
+    layer: number;
+    promoOwner: string;
 }
 
 export class SupplierVoucher implements ISupplierVoucher {
@@ -128,6 +120,9 @@ export class SupplierVoucher implements ISupplierVoucher {
     voucherClusters?: Array<any>;
     voucherChannels?: Array<any>;
 
+    layer: number;
+    promoOwner: string;
+
     constructor(data: ISupplierVoucher) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
@@ -184,6 +179,9 @@ export class SupplierVoucher implements ISupplierVoucher {
             voucherGroups = [],
             voucherClusters = [],
             voucherChannels = [],
+            
+            layer,
+            promoOwner
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
@@ -242,6 +240,9 @@ export class SupplierVoucher implements ISupplierVoucher {
         this.voucherGroups = voucherGroups;
         this.voucherClusters = voucherClusters;
         this.voucherChannels = voucherChannels;
+
+        this.layer = layer || 0;
+        this.promoOwner = promoOwner || 'none';
     }
 }
 

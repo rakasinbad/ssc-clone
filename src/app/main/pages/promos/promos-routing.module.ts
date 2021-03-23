@@ -87,6 +87,24 @@ const routes: Routes = [
             },
         },
     },
+    {
+        path: 'promo-hierarchy',
+        loadChildren: () =>
+            import('./promo-hierarchy/promo-hierarchy.module').then((m) => m.PromoHierarchyModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('promos', 'promo-hierarchy'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
 ];
 
 @NgModule({
