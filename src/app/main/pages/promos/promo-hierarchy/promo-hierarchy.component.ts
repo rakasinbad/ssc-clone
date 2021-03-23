@@ -125,11 +125,15 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
                 this.section = 'layer4';
                 this.labelInfo = "Layer 04: This layer is recommended for promo that flagged as “Payment Method Promo”";
                 break;
+            default:
+                this.section = 'layer0';
+                this.labelInfo = "Layer 00: Promos in this layer will run first";
+                break;
         }
     }
 
     ngOnInit(): void {
-      
+      this.onSelectedTab(0);
     }
 
     ngOnDestroy(): void {
