@@ -178,5 +178,11 @@ export class IconModule {
             'sinbad-skp-logo',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/skp-logo.svg')
         );
+
+        // Info logo - packed box
+          this.matIconRegistry.addSvgIcon(
+            'sinbad-info',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/info.svg')
+        );
     }
 }

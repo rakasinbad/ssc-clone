@@ -889,6 +889,7 @@ export class VoucherGeneralInformationComponent
 
         this.checkRoute();
         this.initFormCheck();
+
         // this.initCatalogueBrand();
         // this.initCatalogueUnitState();
         // this.initCatalogueCategoryState();

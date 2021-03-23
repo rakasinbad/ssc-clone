@@ -9,3 +9,7 @@ export enum BenefitMultiType {
     AMOUNT = 'amount'
 }
 
+export enum BenefitVoucherType {
+    QTY = 'qty',
+    PERCENT = 'percent'
+}

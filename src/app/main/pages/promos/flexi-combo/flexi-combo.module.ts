@@ -12,6 +12,7 @@ import {
     FlexiComboDetailCustomerComponent,
     FlexiComboDetailGeneralComponent,
     FlexiComboDetailTriggerComponent,
+    FlexiComboDetailLayerComponent
 } from './components/flexi-combo-detail';
 import { FlexiComboListComponent } from './components/flexi-combo-list';
 import { FlexiComboFormComponent } from './flexi-combo-form';
@@ -28,6 +29,7 @@ import { FlexiComboNgrxModule } from './store';
         FlexiComboDetailComponent,
         FlexiComboDetailGeneralComponent,
         FlexiComboDetailTriggerComponent,
+        FlexiComboDetailLayerComponent,
         FlexiComboFormComponent,
         FlexiComboListComponent,
         CanAddTierPipe,

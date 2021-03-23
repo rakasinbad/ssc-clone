@@ -45,19 +45,6 @@ export interface PeriodicElement {
     endDate: string;
     status: string;
   }
-  
-  const ELEMENT_DATA: PeriodicElement[] = [
-    {id: 1, sellerId: 'promo cross 1', promoName: 'promo cross selling 1', promoAllocation: 'slot', allocationVal: 1, startDate: '20/09/2020', endDate:'20/09/2020', status: 'inactive'},
-    {id: 2, sellerId: 'promo cross 1a', promoName: 'promo cross selling 1a', promoAllocation: 'none', allocationVal: 4, startDate: '20/09/2020', endDate:'20/09/2020', status: 'active'},
-    {id: 3, sellerId: 'promo cross 1s', promoName: 'promo cross selling 1s', promoAllocation: 'none', allocationVal: 6, startDate: '20/09/2020', endDate:'20/09/2020', status: 'inactive'},
-    {id: 4, sellerId: 'promo cross 1d', promoName: 'promo cross selling 1d', promoAllocation: 'budget', allocationVal: 9, startDate: '20/09/2020', endDate:'20/09/2020', status: 'active'},
-    {id: 5, sellerId: 'promo cross 1f', promoName: 'promo cross selling 1f', promoAllocation: 'slot', allocationVal: 10, startDate: '20/09/2020', endDate:'20/09/2020', status: 'inactive'},
-    {id: 6, sellerId: 'promo cross 1g', promoName: 'promo cross selling 1g', promoAllocation: 'none', allocationVal: 12, startDate: '20/09/2020', endDate:'20/09/2020', status: 'active'},
-    {id: 7, sellerId: 'promo cross 1h', promoName: 'promo cross selling 1h', promoAllocation: 'none', allocationVal: 14, startDate: '20/09/2020', endDate:'20/09/2020', status: 'inactive'},
-    {id: 8, sellerId: 'promo cross 1j', promoName: 'promo cross selling 1j', promoAllocation: 'slot', allocationVal: 15, startDate: '20/09/2020', endDate:'20/09/2020', status: 'active'},
-    {id: 9, sellerId: 'promo cross 1i', promoName: 'promo cross selling 1i', promoAllocation: 'none', allocationVal: 18, startDate: '20/09/2020', endDate:'20/09/2020', status: 'inactive'},
-    {id: 10, sellerId: 'promo cross 1k', promoName: 'promo cross selling 1k', promoAllocation: 'budget', allocationVal: 20, startDate: '20/09/2020', endDate:'20/09/2020', status: 'active'},
-  ];
 
 @Component({
   selector: 'app-cross-selling-promo-list',
@@ -238,8 +225,6 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
                 this.paginator.pageSize = this.defaultPageSize;
 
                 this.selection = new SelectionModel<any>(true, []);
-                // this.totalDataSource = this.dummyData.length;
-                // this.dataSource.data = ELEMENT_DATA;
 
                 this.dataSource$ = this.store.select(CrossSellingPromoSelectors.selectAll);
                 this.totalDataSource$ = this.store.select(CrossSellingPromoSelectors.getTotalItem);
@@ -298,16 +283,6 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
                     ];
                 }
             }
-
-            // if (this.type == 1) {
-            //     const activeData = ELEMENT_DATA.filter((item) => item.status == 'active');
-            //     this.dataSource.data = activeData;
-            // } else if (this.type == 2) {
-            //     const activeData = ELEMENT_DATA.filter((item) => item.status == 'inactive');
-            //     this.dataSource.data = activeData;
-            // } else {
-            //     this.dataSource.data = ELEMENT_DATA;
-            // }
 
             this.store.dispatch(
                 CrossSellingPromoActions.fetchCrossSellingPromoListRequest({

@@ -1,0 +1,57 @@
+<div class="pb-16">
+    <span class="mat-headline"> Layer Settings </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="13">Promo Layer Level</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                Layer 0{{ (flexiCombo$ | async)?.layer || 0 }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="13">Promo Owner</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{
+                    (flexiCombo$ | async)?.promoOwner === 'sinbad-promo'
+                        ? 'Sinbad Promo'
+                        : (flexiCombo$ | async)?.promoOwner === 'distributor-promo'
+                        ? 'Distributor Promo'
+                        : (flexiCombo$ | async)?.promoOwner === 'principal-promo'
+                        ? 'Principal Promo'
+                        : (flexiCombo$ | async)?.promoOwner === 'none'
+                        ? 'None'
+                        : (flexiCombo$ | async)?.promoOwner === 'payment-method-promo'
+                        ? 'Payment Method Promo'
+                        : ((flexiCombo$ | async)?.promoOwner | titlecase) || '-'
+                }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+</div>
