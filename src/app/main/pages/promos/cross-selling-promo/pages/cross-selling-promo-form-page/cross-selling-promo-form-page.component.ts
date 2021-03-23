@@ -150,14 +150,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (this.form.invalid) {
             return;
         }
-
-        const newGeneralInfo: GeneralInfoFormDto = {
-            ...this.generalInfoFormDto, 
-            ...{
-                startDate: moment.parseZone(this.generalInfoFormDto.startDate).add(7, 'hour').toISOString(),
-                endDate: moment.parseZone(this.generalInfoFormDto.endDate).add(7, 'hour').toISOString()
-            }
-        }
         
         const payload: CreateFormDto = {
             base: 'sku',
