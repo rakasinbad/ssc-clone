@@ -107,6 +107,7 @@ export class PromoHierarchyComponent implements OnInit, OnDestroy {
         switch (index) {
             case 0:
                 this.section = 'layer0';
+                this.labelInfo = "Layer 00: Promos in this layer will run first";
                 break;
             case 1:
                 this.section = 'layer1';

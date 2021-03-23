@@ -7,14 +7,11 @@
                 [config]="cardHeaderConfig"
             ></sinbad-card-header>
 
-            <ng-container *ngIf="section != 'layer0'">
                 <div class="label-info">
                     <mat-icon class="label-info__icon s-24" svgIcon="sinbad-info"></mat-icon>
                     <!-- <mat-icon class="label-info__icon">info</mat-icon> -->
                     <p class="label-info__text">{{labelInfo}}</p>
                 </div>
-            </ng-container>
-           
 
             <mat-tab-group
                 color="accent"
