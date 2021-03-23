@@ -351,12 +351,7 @@
                 fxLayoutGap="16px"
                 [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
             >
-                <label
-                    fxFlexAlign="center"
-                    fxFlex="12"
-                >
-                    Linked SKP
-                </label>
+                <label fxFlexAlign="center" fxFlex="12"> Linked SKP </label>
 
                 <app-select-linked-skp
                     #selectSkpLinked
@@ -528,10 +523,10 @@
                         First Buy
 
                         <mat-icon
-                                class="active-icon s-14 ml-8 cursor-pointer"
-                                color="accent"
-                                matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
-                                matTooltipClass="tooltip-br"
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
+                            matTooltipClass="tooltip-br"
                         >
                             help
                         </mat-icon>
@@ -540,22 +535,83 @@
                     <mat-checkbox
                         [formControl]="form.get('multiplication')"
                         (change)="onChangeMultiplication($event)"
-
                     >
                         Multiplication
 
                         <mat-icon
-                                    class="active-icon s-14 ml-8 cursor-pointer"
-                                    color="accent"
-                                    matTooltip="Check this checkbox if you want&#10;to apply multiplication logic for&#10;cross selling promo"
-                                    matTooltipClass="tooltip-br"
-                                >
-                                    help
-                                </mat-icon>
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="Check this checkbox if you want&#10;to apply multiplication logic for&#10;cross selling promo"
+                            matTooltipClass="tooltip-br"
+                        >
+                            help
+                        </mat-icon>
                     </mat-checkbox>
                 </div>
             </div>
             <!-- / FIRST BUY -->
+        </div>
+    </div>
+</mat-card>
+
+<br />
+
+<mat-card>
+    <div fxLayout="column">
+        <span
+            class="mat-headline"
+            [@animate]="{ value: '*', params: { delay: '120ms', x: '-25px' } }"
+        >
+            Layer Settings
+        </span>
+
+        <div class="form-box">
+            <!-- PROMO LAYER -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12"> Promo LayerLevel </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <ng-container *ngIf="layerBase">
+                        <mat-select
+                            [formControl]="form.get('layer')"
+                            placeholder="Choose Promo Layer Level"
+                        >
+                            <mat-option *ngFor="let row of layerBase" [value]="row.id">
+                                {{ row.label }}
+                            </mat-option>
+                        </mat-select>
+                    </ng-container>
+                </mat-form-field>
+            </div>
+            <!-- / PROMO LAYER -->
+
+            <!-- PROMO OWNER -->
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="16px"
+                [@animate]="{ value: '*', params: { delay: '150ms', x: '-25px' } }"
+            >
+                <label fxFlexAlign="center" fxFlex="12"> Promo Owner </label>
+
+                <mat-form-field appearance="outline" fxFlex="50">
+                    <ng-container *ngIf="groupBase">
+                        <mat-select [formControl]="form.get('promoOwner')" placeholder="Choose Promo Owner">
+                            <mat-option *ngFor="let row of groupBase" [value]="row.id">
+                                {{ row.label }}
+                            </mat-option>
+                        </mat-select>
+                    </ng-container>
+                </mat-form-field>
+            </div>
+            <!-- / PROMO OWNER -->
         </div>
     </div>
 </mat-card>

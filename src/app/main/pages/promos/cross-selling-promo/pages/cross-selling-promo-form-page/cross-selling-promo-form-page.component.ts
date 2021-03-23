@@ -164,8 +164,12 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
             supplierId: null,
             type: 'cross_selling',
             status: 'active',
-            conditions: [{ ...this.benefitFormDto }],
-            ...newGeneralInfo,
+            conditions: [
+                { 
+                    ...this.benefitFormDto 
+                }
+            ],
+            ...this.generalInfoFormDto,
             ...this.groupFormDto,
             ...this.segmentFormDto,
         };
@@ -177,7 +181,9 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         if (payload.target == 'store') {
             delete payload['catalogueSegmentationObjectId'];
         } else if (payload.target == 'all') {
-            payload['catalogueSegmentationObjectId'] = this.groupFormDto['catalogueSegmentationObjectId'];
+            payload['catalogueSegmentationObjectId'] = this.groupFormDto[
+                'catalogueSegmentationObjectId'
+            ];
         } else if (payload.target == 'segmentation') {
             delete payload['catalogueSegmentationObjectId'];
         }
@@ -185,18 +191,23 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         payload['conditions'][0]['multiplication'] = this.generalInfoFormDto.multiplication;
 
         if (payload['conditions'][0]['multiplication'] == true) {
-            payload['conditions'][0]['conditionBase'] = this.groupFormDto.promoConditionCatalogues[0].conditionBase;
+            payload['conditions'][0][
+                'conditionBase'
+            ] = this.groupFormDto.promoConditionCatalogues[0].conditionBase;
             if (payload['conditions'][0]['conditionBase'] == 'qty') {
-                delete payload['conditions'][0]['conditionValue']
-                payload['conditions'][0]['conditionQty'] = this.groupFormDto.promoConditionCatalogues[0].conditionQty.toString();
+                delete payload['conditions'][0]['conditionValue'];
+                payload['conditions'][0][
+                    'conditionQty'
+                ] = this.groupFormDto.promoConditionCatalogues[0].conditionQty.toString();
             } else if (payload['conditions'][0]['conditionBase'] == 'value') {
                 delete payload['conditions'][0]['conditionQty'];
-                payload['conditions'][0]['conditionValue'] = this.groupFormDto.promoConditionCatalogues[0].conditionValue;
+                payload['conditions'][0][
+                    'conditionValue'
+                ] = this.groupFormDto.promoConditionCatalogues[0].conditionValue;
             }
         } else {
             payload['conditions'][0]['conditionBase'] = 'qty';
             payload['conditions'][0]['conditionQty'] = '11';
-
         }
         this.crossSellingPromoFacade.create(payload);
     }
@@ -210,11 +221,11 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         ])
             .pipe(takeUntil(this.unSubs$))
             .subscribe((statuses) => {
-                    if (statuses.every((status) => status === 'VALID')) {
-                        this.crossSellingPromoFacade.setFormValid();
-                    } else {
-                        this.crossSellingPromoFacade.setFormInvalid();
-                    }
+                if (statuses.every((status) => status === 'VALID')) {
+                    this.crossSellingPromoFacade.setFormValid();
+                } else {
+                    this.crossSellingPromoFacade.setFormInvalid();
+                }
             });
     }
 }

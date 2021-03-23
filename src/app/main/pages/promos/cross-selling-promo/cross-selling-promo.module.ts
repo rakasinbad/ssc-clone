@@ -23,6 +23,7 @@ import { CrossSellingPromoRoutingModule } from './cross-selling-promo.routes';
 import { CrossSellingPromoFormPageComponent } from './pages';
 import { CrossSellingPromoFacadeService, CrossSellingPromoFormService } from './services';
 import { CrossSellingPromoNgrxModule } from './store';
+import { CrossSellingDetailLsComponent } from './components/cross-selling-promo-detail/cross-selling-detail-ls/cross-selling-detail-ls.component';
 
 @NgModule({
     declarations: [
@@ -38,6 +39,7 @@ import { CrossSellingPromoNgrxModule } from './store';
         CrossSellingPromoGeneralInfoFormComponent,
         CrossSellingPromoGroupFormComponent,
         CrossSellingPromoSegmentSettingFormComponent,
+        CrossSellingDetailLsComponent,
     ],
     imports: [
         CrossSellingPromoRoutingModule,

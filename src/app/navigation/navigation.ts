@@ -287,6 +287,12 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/promos/voucher',
             },
+            {
+                id: 'promo-hierarchy',
+                title: 'Promo Hierarchy',
+                type: 'item',
+                url: '/pages/promos/promo-hierarchy',
+            },
         ],
     },
     {

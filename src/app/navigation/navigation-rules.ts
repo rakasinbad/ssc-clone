@@ -12,7 +12,7 @@ interface Routing {
   'supplier-inventories'? : ('' | '*')[],
   'settings'? : ('' | 'accounts' | '*')[],
   'logistics'? : ('' | 'warehouses' | 'warehouse-coverages' | 'sku-assignments' | 'stock-managements' | '*')[],
-  'promos'? : ('' | 'flexi-combo' | 'voucher' | 'cross-selling-promo' | '*')[],
+  'promos'? : ('' | 'flexi-combo' | 'voucher' | 'cross-selling-promo' | 'promo-hierarchy' | '*')[],
   'catalogue-segmentations'? : ('' | 'add' | 'edit' | 'detail' | '*')[],
   'survey'? : ('' | 'response' | 'manage' | '*')[],
   'skp'? : ('' | 'list' | 'detail' | '*')[]
@@ -28,7 +28,7 @@ type Navbar = (
   'journey-plan' | 'workday-setting' | 'warehouse' | 'wh-list' |
   'wh-coverage' | 'wh-sku-assignment' | 'wh-stock-management' |
   'promo' | 'flexi-combo'| 'cross-selling-promo' | 'period-target-promo' |
-  'voucher' | 'survey' | 'survey-manage' | 'survey-response' | 'skp'
+  'voucher' | 'promo-hierarchy' | 'survey' | 'survey-manage' | 'survey-response' | 'skp'
 )[];
 
 type Toolbar = ('Informasi Supplier' | 'Pengaturan akun' | 'Internal' | '*')[]
@@ -213,7 +213,7 @@ export const Rules : Rule[] = [
         'supplier-inventories' : ['*'],
         'settings' : ['*'],
         'logistics': ['', 'stock-managements', 'warehouse-coverages', 'warehouses'],
-        'promos' : ['','voucher'],
+        'promos' : ['','voucher', 'promo-hierarchy'],
         'catalogue-segmentations' : ['*'],
         'survey' : ['*'],
         'skp': ['*']
@@ -248,6 +248,7 @@ export const Rules : Rule[] = [
         'wh-stock-management',
         'promo',
         'voucher',
+        'promo-hierarchy',
         'survey',
         'survey-manage',
         'survey-response',
