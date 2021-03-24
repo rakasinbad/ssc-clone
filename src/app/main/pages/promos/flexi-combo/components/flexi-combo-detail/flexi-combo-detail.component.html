@@ -69,6 +69,14 @@
                         </ng-template>
                     </mat-tab>
 
+                    <mat-tab label="Layer Settings" [disabled]="isLoading$ | async">
+                        <ng-template matTabContent>
+                            <div class="tab-content p-16" fusePerfectScrollbar>
+                                <app-flexi-combo-detail-layer></app-flexi-combo-detail-layer>
+                            </div>
+                        </ng-template>
+                    </mat-tab>
+
                     <mat-tab label="Trigger" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>

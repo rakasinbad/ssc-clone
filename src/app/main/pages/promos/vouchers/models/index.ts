@@ -6,3 +6,5 @@ export * from './customer-segmentation-settings.model';
 export * from './general-information.model';
 export * from './benefit.model';
 export * from './condition-settings.model';
+export * from './layer-settings.model';
+
