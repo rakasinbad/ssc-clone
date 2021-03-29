@@ -1502,6 +1502,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // SALES INFORMATION
             productSale: this.fb.group({
+                tax: '0',
                 retailPrice: null,
                 productPrice: [
                     null,
