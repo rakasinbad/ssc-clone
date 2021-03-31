@@ -71,6 +71,7 @@ import {
     BrandFacadeService,
     CatalogueFacadeService,
     CataloguesService,
+    CatalogueTaxFacadeService,
     SubBrandApiService,
 } from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
@@ -191,6 +192,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private errorMessageSvc: ErrorMessageService,
         private catalogueSvc: CataloguesService,
         private readonly subBrandApiService: SubBrandApiService,
+        private readonly catalogueTaxFacade: CatalogueTaxFacadeService,
         private _$notice: NoticeService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
@@ -496,6 +498,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     );
                 }
             });
+
+        // Get tax list
+        this.catalogueTaxFacade.fetchCatalogueTaxes({
+            search: [{ fieldName: 'typeAmount', keyword: 'percent' }],
+        });
 
         /** Menyiapkan form. */
         this._initForm();
