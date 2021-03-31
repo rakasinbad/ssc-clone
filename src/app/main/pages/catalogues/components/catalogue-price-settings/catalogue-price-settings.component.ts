@@ -204,6 +204,15 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             supplierId: null,
             discountRetailBuyerPrice: null,
             discountRetailBuyerPriceView: null,
+            tax: [
+                '10',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            taxView: '10',
             retailBuyingPrice: [
                 '',
                 [

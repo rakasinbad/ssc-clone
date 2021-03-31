@@ -17,7 +17,7 @@
 
         <!-- PRODUCT PRICE SECTION -->
         <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
-            <!-- PRODUCT RETAIL BUYING PRICE -->
+            <!-- TAX -->
             <div
                 [ngClass]="formClass"
                 fxLayout="row"
@@ -27,6 +27,51 @@
             >
                 <label
                     fxFlexAlign="center"
+                    fxFlex="150px"
+                    [class.pr-0]="formMode | hasFormMode: 'edit'"
+                    [class.sinbad-red-fg]="
+                        !(formMode | hasFormMode: 'view') &&
+                        (form.get('tax').value || form.get('tax').touched
+                            | hasErrorField: form.get('tax'):false)
+                    "
+                >
+                    <span class="red-500-fg" *ngIf="formMode | hasFormMode: 'edit'">*</span>
+                    Tax
+                </label>
+
+                <mat-radio-group formControlName="tax" *ngIf="formMode | hasFormMode: 'edit'">
+                    <!-- <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id"
+                                >
+                                    {{ choice.label }}
+                                </mat-radio-button> -->
+                    <mat-radio-button class="pr-36" value="0"> 0% </mat-radio-button>
+                    <mat-radio-button class="pr-36" value="10"> 10% </mat-radio-button>
+                </mat-radio-group>
+
+                <span fxFlexAlign="center" class="grey-fg" *ngIf="formMode | hasFormMode: 'view'">
+                    <!-- {{
+                        form.get('retailBuyingPriceView').value
+                            | price: 'full':'IDR':'narrow':'1.0-2'
+                    }} -->
+                    10%
+                </span>
+            </div>
+            <!-- / TAX -->
+
+            <!-- PRODUCT RETAIL BUYING PRICE (BEFORE TAX) -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="150px"
                     [class.pr-0]="formMode | hasFormMode: 'edit'"
                     [class.sinbad-red-fg]="
                         !(formMode | hasFormMode: 'view') &&
@@ -35,8 +80,8 @@
                             | hasErrorField: form.get('retailBuyingPrice'):false)
                     "
                 >
-                    <span class="red-500-fg">*</span>
-                    Retail Buyer Price
+                    <span class="red-500-fg" *ngIf="formMode | hasFormMode: 'edit'">*</span>
+                    Retail Buyer Price (Before Tax)
                 </label>
 
                 <mat-form-field appearance="outline" *ngIf="formMode | hasFormMode: 'edit'">
@@ -63,8 +108,10 @@
                     }}
                 </span>
             </div>
-            <!-- / PRODUCT RETAIL BUYING PRICE -->
+            <!-- / PRODUCT RETAIL BUYING PRICE (BEFORE TAX) -->
+        </div>
 
+        <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
             <!-- PRODUCT BASE PRICE -->
             <div
                 [ngClass]="formClass"
@@ -73,7 +120,11 @@
                 fxFlex="40"
                 fxLayoutGap="16px"
             >
-                <label fxFlexAlign="center" [class.pr-0]="formMode | hasFormMode: 'edit'">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="150px"
+                    [class.pr-0]="formMode | hasFormMode: 'edit'"
+                >
                     Discount Retail Buyer Price
                 </label>
 
@@ -102,6 +153,32 @@
                 </span>
             </div>
             <!-- / PRODUCT BASE PRICE -->
+
+            <!-- PRODUCT RETAIL BUYING PRICE (AFTER TAX) -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label fxFlexAlign="center" fxFlex="150px"> Retail Buyer Price (After Tax) </label>
+
+                <span
+                    fxFlexAlign="center"
+                    [class.grey-fg]="formMode | hasFormMode: 'view'"
+                    [ngStyle]="{
+                        position: (formMode | hasFormMode: 'view') ? null : 'relative',
+                        top: (formMode | hasFormMode: 'view') ? null : '-0.78em'
+                    }"
+                >
+                    {{
+                        form.get('retailBuyingPriceView').value
+                            | price: 'full':'IDR':'narrow':'1.0-2'
+                    }}
+                </span>
+            </div>
+            <!-- / PRODUCT RETAIL BUYING PRICE (AFTER TAX) -->
         </div>
         <!-- PRODUCT PRICE SECTION -->
 
