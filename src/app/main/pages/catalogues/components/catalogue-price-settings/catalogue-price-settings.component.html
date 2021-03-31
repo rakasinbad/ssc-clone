@@ -307,9 +307,14 @@
             </ng-container>
             <!-- / Store Cluster Column -->
 
-            <!-- SKU's Price Column -->
+            <!-- PRICE (BEFORE TAX) COLUMN -->
             <ng-container matColumnDef="price">
-                <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+                <mat-header-cell
+                    *matHeaderCellDef
+                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
+                >
+                    Price Before Tax
+                </mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <p *ngIf="formMode | hasFormMode: 'view'">
                         {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
@@ -321,7 +326,7 @@
                         fxLayoutAlign="start center"
                         *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline" style="width: 70%">
+                        <mat-form-field appearance="outline" style="width: 50%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
@@ -341,7 +346,23 @@
                     </div>
                 </mat-cell>
             </ng-container>
-            <!-- / SKU's Price Column -->
+            <!-- / PRICE (BEFORE TAX) COLUMN -->
+
+            <!-- PRICE (AFTER TAX) COLUMN -->
+            <ng-container matColumnDef="price-after-tax">
+                <mat-header-cell
+                    *matHeaderCellDef
+                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
+                >
+                    Price After Tax
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>
+                        {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
+                    </p>
+                </mat-cell>
+            </ng-container>
+            <!-- / PRICE (AFTER TAX) COLUMN -->
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">

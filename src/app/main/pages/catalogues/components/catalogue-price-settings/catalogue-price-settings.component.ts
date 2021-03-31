@@ -96,6 +96,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         'store-channel',
         'store-cluster',
         'price',
+        'price-after-tax',
     ];
 
     catalogueContent: {
@@ -818,6 +819,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
                     'actions',
                 ];
                 this.formMode = 'edit';
@@ -831,6 +833,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
                 ];
                 this.formMode = 'view';
                 this._prepareEditCatalogue();
@@ -957,6 +960,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 'store-channel',
                 'store-cluster',
                 'price',
+                'price-after-tax',
             ];
 
             this.form.get('advancePrice').disable();
@@ -970,6 +974,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
                     'actions',
                 ];
             }
