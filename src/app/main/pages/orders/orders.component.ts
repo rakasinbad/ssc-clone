@@ -7,6 +7,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -21,7 +22,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
-import { HelperService, NoticeService } from 'app/shared/helpers';
+import { HelperService, LogService, NoticeService } from 'app/shared/helpers';
 import { ButtonDesignType } from 'app/shared/models/button.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -47,7 +48,7 @@ import { OrderSelectors } from './store/selectors';
     encapsulation: ViewEncapsulation.None,
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = 25;
+    readonly defaultPageSize = this.route.snapshot.queryParams.limit || 25;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     allOrder: number;
@@ -154,12 +155,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    firstOne: boolean;
+
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
     private _unSubs$: Subject<any> = new Subject<any>();
 
     constructor(
+        private router: Router,
+        private route: ActivatedRoute,
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
@@ -199,14 +204,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
         this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-
         this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
@@ -220,6 +223,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    private _initParams(): void {
+        this.paginator.pageSize =  this.defaultPageSize;
+        this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
+
+        if(this.route.snapshot.queryParams.keyword){
+            this.search.setValue(this.route.snapshot.queryParams.keyword);
+        }
+    }
+
 
     get searchOrder(): string {
         return localStorage.getItem('filter.search.order') || '';
@@ -512,7 +525,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             default:
-                this.paginator.pageSize = this.defaultPageSize;
+                this.firstOne = true;
+                this._initParams();
+                
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
@@ -681,6 +696,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _initTable(): void {
+        console.log(this.paginator.pageSize);
+
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
@@ -754,6 +771,37 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.store.dispatch(OrderActions.fetchOrdersRequest({ payload: data }));
+
+        if (!this.firstOne) {
+            this._handleQueryParam(data);
+        }
+
+        this.firstOne = false;
+    }
+
+    private _handleQueryParam(params: IQueryParams) : void {
+        console.log(params);
+
+        var qParam = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex+1
+        }
+
+        !!params.search ? params.search.forEach((e) => {
+            switch (e.fieldName) {
+                case 'statuses[]':
+                    qParam['statuses'] = !!qParam['statuses'] ? `${qParam['statuses']}~${e.keyword}` : e.keyword;
+                    break;
+                case 'supplierIds[]':
+                    qParam['supplierIds'] = !!qParam['supplierIds'] ? `${qParam['supplierIds']}~${e.keyword}` : e.keyword;
+                    break;
+                default:
+                    qParam[e.fieldName] = !!qParam[e.fieldName] ? `${qParam[e.fieldName]}~${e.keyword}` : e.keyword;
+                    break;
+            }
+        }):null;
+
+        this.router.navigate(['.'], {relativeTo: this.route, queryParams: qParam});
     }
 
     private _onRefreshTable(): void {
