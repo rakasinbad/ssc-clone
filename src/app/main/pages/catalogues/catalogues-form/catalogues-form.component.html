@@ -807,19 +807,15 @@
                             fxLayoutGap="5px"
                             fxFlex="80"
                         >
-                            <!-- RADIO BUTTON SELECT TYPE -->
                             <mat-radio-group formControlName="tax">
-                                <!-- <mat-radio-button
+                                <mat-radio-button
                                     class="pr-36"
-                                    *ngFor="let choice of quantityChoices"
-                                    [value]="choice.id"
+                                    *ngFor="let tax of taxes"
+                                    [value]="tax?.amount"
                                 >
-                                    {{ choice.label }}
-                                </mat-radio-button> -->
-                                <mat-radio-button class="pr-36" value="0"> 0% </mat-radio-button>
-                                <mat-radio-button class="pr-36" value="10"> 10% </mat-radio-button>
+                                    {{ tax?.amount | tax }}
+                                </mat-radio-button>
                             </mat-radio-group>
-                            <!-- / RADIO BUTTON SELECT TYPE -->
                         </div>
                     </div>
                     <!-- / TAX -->
@@ -891,7 +887,7 @@
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
                         <label fxFlexAlign="center" fxFlex="18" class="pr-0">
                             Retail<br />
-                            Buyer Price (Before Tax)
+                            Buyer Price (After Tax)
                         </label>
 
                         <span
@@ -901,7 +897,13 @@
                             fxLayoutAlign="start stretch"
                         >
                             <div fxFlex fxLayout="row" fxLayoutAlign="start stretch">
-                                <span fxFlexAlign="center">Rp. 500.000</span>
+                                <span fxFlexAlign="center">
+                                    {{
+                                        form.get('productSale.productPrice')?.value
+                                            | calculateAfterTax: form.get('productSale.tax')?.value
+                                            | price: 'full':'IDR':'narrow':'1.0-2'
+                                    }}
+                                </span>
                                 <!-- <strong
                                     [innerHTML]="productCategory$"
                                     fxFlexAlign="center"

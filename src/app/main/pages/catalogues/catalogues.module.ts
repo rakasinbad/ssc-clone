@@ -30,6 +30,7 @@ import { CatalogueSkuInformationComponent } from './components/catalogue-sku-inf
 import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
 import {
+    CalculateAfterTaxPipe,
     ChannelPriceSettingPipe,
     ClusterPriceSettingPipe,
     GroupPriceSettingPipe,
@@ -61,6 +62,7 @@ import { CatalogueNgrxModule } from './store';
         CataloguePriceSettingsComponent,
         CatalogueSkuInformationComponent,
         CatalogueWeightAndDimensionComponent,
+        CalculateAfterTaxPipe,
         ChannelPriceSettingPipe,
         ClusterPriceSettingPipe,
         GroupPriceSettingPipe,
