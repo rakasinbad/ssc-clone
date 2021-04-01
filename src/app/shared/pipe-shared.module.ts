@@ -8,6 +8,7 @@ import {
     HighlightPipe,
     InvoiceGroupNamePipe,
     SegmentationViewPipe,
+    TaxPipe,
     VisibilityTypePipe,
 } from './pipes';
 
@@ -21,6 +22,7 @@ import {
         HighlightPipe,
         InvoiceGroupNamePipe,
         SegmentationViewPipe,
+        TaxPipe,
         VisibilityTypePipe,
     ],
     exports: [
@@ -32,6 +34,7 @@ import {
         HighlightPipe,
         InvoiceGroupNamePipe,
         SegmentationViewPipe,
+        TaxPipe,
         VisibilityTypePipe,
     ],
 })
