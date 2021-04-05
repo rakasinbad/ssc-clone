@@ -438,9 +438,23 @@
                 >
                     Price After Tax
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <mat-cell *matCellDef="let row; index as idx">
                     <p>
-                        {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        <ng-container *ngIf="formMode | hasFormMode: 'view'">
+                            {{
+                                row?.price
+                                    | calculateAfterTax: form.get('taxView')?.value
+                                    | price: 'full':'IDR':'narrow':'1.0-2'
+                            }}
+                        </ng-container>
+
+                        <ng-container *ngIf="formMode | hasFormMode: 'edit'">
+                            {{
+                                form.get(['priceSettings', idx, 'price'])?.value
+                                    | calculateAfterTax: form.get('tax')?.value
+                                    | price: 'full':'IDR':'narrow':'1.0-2'
+                            }}
+                        </ng-container>
                     </p>
                 </mat-cell>
             </ng-container>
