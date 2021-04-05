@@ -56,6 +56,8 @@ export class CreateFlexiComboDto {
     isNewStore: boolean;
     isActiveStore: boolean;
     skpId: number;
+    layer: number;
+    promoOwner: string;
 
     constructor(data: CreateFlexiComboDto) {
         const {
@@ -82,7 +84,9 @@ export class CreateFlexiComboDto {
             promoAllocationType,
             isNewStore,
             isActiveStore,
-            skpId
+            skpId,
+            layer,
+            promoOwner
         } = data;
 
         this.base = base;
@@ -108,6 +112,8 @@ export class CreateFlexiComboDto {
         this.isNewStore = isNewStore;
         this.isActiveStore = isActiveStore;
         this.skpId = skpId;
+        this.layer = layer || 0;
+        this.promoOwner = promoOwner || 'none';
         
         if (this.promoAllocationType == 'none') {
             this.promoBudget = null;
@@ -117,6 +123,43 @@ export class CreateFlexiComboDto {
             this.promoSlot = promoSlot || null;
         }
     }
+}
+
+export class ExtendFlexiComboDto {
+    // userId: string
+    promoId: string
+    startDateBeforeExtended: string
+    endDateBeforeExtended: string
+    startDateAfterExtended: string
+    endDateAfterExtended: string
+
+    constructor(data: ExtendFlexiComboDto) {
+        const {
+            // userId,
+            promoId,
+            startDateBeforeExtended,
+            endDateBeforeExtended,
+            startDateAfterExtended,
+            endDateAfterExtended
+        } = data
+
+        // this.userId = userId
+        this.promoId = promoId
+
+        if (startDateBeforeExtended) {
+            this.startDateBeforeExtended = startDateBeforeExtended
+        }
+        if (endDateBeforeExtended) {
+            this.endDateBeforeExtended = endDateBeforeExtended
+        }
+        if (startDateAfterExtended) {
+            this.startDateAfterExtended = startDateAfterExtended
+        }
+        if (endDateAfterExtended) {
+            this.endDateAfterExtended = endDateAfterExtended
+        }
+    }
+
 }
 
 export class PatchFlexiComboDto {

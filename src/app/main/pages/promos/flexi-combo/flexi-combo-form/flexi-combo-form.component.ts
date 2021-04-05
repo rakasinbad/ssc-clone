@@ -64,6 +64,7 @@ import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { ConditionDto, CreateFlexiComboDto, FlexiCombo, PatchFlexiComboDto } from '../models';
+import { PromoHierarchyLayer, PromoHierarchyGroup } from 'app/shared/models/promo-hierarchy.model';
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 import { FlexiComboSelectors } from '../store/selectors';
@@ -103,6 +104,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
     ePromoAllocation = PromoAllocation;
     specifiedTargets = this._$helperService.specifiedTarget();
     eSpecifiedTargets = SpecifiedTarget;
+    layerBase = this._$helperService.promoHierarchyLayer();
+    eLayerBase = PromoHierarchyLayer;
+    groupBase = this._$helperService.promoHierarchyGroup();
+    eGroupBase = PromoHierarchyGroup;
 
     minStartDate: Date = new Date();
     maxStartDate: Date = null;
@@ -2887,6 +2892,8 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             isNewStore: false,
             isActiveStore: false,
             skpId: null,
+            layer: null,
+            group: null,
         });
 
         this.conditionForm = this.form.get('conditions') as FormArray;
@@ -3418,7 +3425,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             promoSlot,
             isNewStore,
             isActiveStore,
-            skpId
+            skpId,
+            layer,
+            group
         } = body;
 
         const newChosenSku =
@@ -3553,10 +3562,34 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         const newStartDate =
             startDate && moment.isMoment(startDate)
                 ? startDate.toISOString(this.strictISOString)
-                : null;
+                : null
         const newEndDate =
-            endDate && moment.isMoment(endDate) ? endDate.toISOString(this.strictISOString) : null;
-
+            endDate && moment.isMoment(endDate) 
+                ? endDate.toISOString(this.strictISOString) 
+                : null
+        
+        let layerVal;
+        if (layer == 'nol') {
+            layerVal = 0;
+        } else if (layer == 'one') {
+            layerVal = 1;
+        } else if (layer == 'two') {
+            layerVal = 2;
+        } else if (layer == 'three') {
+            layerVal = 3;
+        }  else if (layer == 'four') {
+            layerVal = 4;
+        } else {
+            layerVal = 0;
+        }
+        
+        let groupVal;
+        if (group == null) {
+            groupVal = 'none';            
+        } else {
+            groupVal = group;
+        }
+        
         if (this.pageType === 'new') {
             const payload: CreateFlexiComboDto = {
                 base,
@@ -3582,7 +3615,9 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 promoSlot,
                 isNewStore,
                 isActiveStore,
-                skpId
+                skpId,
+                layer : layerVal,
+                promoOwner: groupVal
             };
 
             if (payload.skpId == null) {

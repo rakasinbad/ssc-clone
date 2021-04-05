@@ -1,11 +1,4 @@
-import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
-import {
-    StoreSegmentationGroup,
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-} from 'app/main/pages/catalogues/models';
 import { SupplierStore } from 'app/shared/models/supplier.model';
-import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 
 interface IVoucherSegmentationSettings {
     id?: string;

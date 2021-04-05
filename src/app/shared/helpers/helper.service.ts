@@ -11,7 +11,7 @@ import * as moment from 'moment';
 import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 import { LogicRelation, SpecifiedTarget } from '../models';
-import { BenefitMultiType, BenefitType } from '../models/benefit-type.model';
+import { BenefitMultiType, BenefitType, BenefitVoucherType } from '../models/benefit-type.model';
 import { CalculationMechanism } from '../models/calculation-mechanism.model';
 import { ConditionBase, RatioBaseCondition } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
@@ -26,6 +26,7 @@ import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-
 
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
 import { TriggerBase } from '../models/trigger-base.model';
+import { PromoHierarchyLayer, PromoHierarchyGroup } from '../models/promo-hierarchy.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 
@@ -52,6 +53,7 @@ export class HelperService {
         'search',
         'status',
         'statusPayment',
+        'subBrandId',
         'supplierId',
         'type',
         'typeId',
@@ -81,6 +83,17 @@ export class HelperService {
         {
             id: BenefitMultiType.AMOUNT,
             label: 'Rp',
+        },
+    ];
+
+    private static readonly _benefitVoucherType: { id: BenefitVoucherType; label: string }[] = [
+        {
+            id: BenefitVoucherType.QTY,
+            label: 'Qty',
+        },
+        {
+            id: BenefitVoucherType.PERCENT,
+            label: '%',
         },
     ];
 
@@ -432,6 +445,52 @@ export class HelperService {
         {
             id: 'inactive',
             label: 'Inactive',
+        },
+    ];
+
+    private static readonly _promoHierarchyLayer: { id: PromoHierarchyLayer; label: string }[] = [
+        {
+            id: PromoHierarchyLayer.NOL,
+            label: 'Layer 00',
+        },
+        {
+            id: PromoHierarchyLayer.ONE,
+            label: 'Layer 01',
+        },
+        {
+            id: PromoHierarchyLayer.TWO,
+            label: 'Layer 02',
+        },
+        {
+            id: PromoHierarchyLayer.THREE,
+            label: 'Layer 03',
+        },
+        {
+            id: PromoHierarchyLayer.FOUR,
+            label: 'Layer 04',
+        },
+    ];
+
+    private static readonly _promoHierarchyGroup: { id: PromoHierarchyGroup; label: string }[] = [
+        {
+            id: PromoHierarchyGroup.NONE,
+            label: 'None',
+        },
+        {
+            id: PromoHierarchyGroup.PRINCIPAL,
+            label: 'Principal Promo',
+        },
+        {
+            id: PromoHierarchyGroup.DISTRIBUTOR,
+            label: 'Distributor Promo',
+        },
+        {
+            id: PromoHierarchyGroup.SINBAD,
+            label: 'Sinbad Promo',
+        },
+        {
+            id: PromoHierarchyGroup.PAYMENT,
+            label: 'Payment Method Promo',
         },
     ];
 
@@ -959,6 +1018,10 @@ export class HelperService {
         return HelperService._benefitMultiType;
     }
 
+    benefitVoucherType(): { id: BenefitVoucherType; label: string }[] {
+        return HelperService._benefitVoucherType;
+    }
+
     skpStatusType(): { id: string; label: string }[] {
         return HelperService._skpStatus;
     }
@@ -1040,6 +1103,14 @@ export class HelperService {
 
     triggerBase(): { id: TriggerBase; label: string }[] {
         return HelperService._triggerBase;
+    }
+
+    promoHierarchyLayer(): { id: PromoHierarchyLayer; label: string }[] {
+        return HelperService._promoHierarchyLayer;
+    }
+
+    promoHierarchyGroup(): { id: PromoHierarchyGroup; label: string }[] {
+        return HelperService._promoHierarchyGroup;
     }
 
     stockType(): { id: boolean; label: string }[] {

@@ -1,5 +1,6 @@
 export interface CatalogueFilterDto {
     brandId?: number;
+    subBrandId?: string;
     invoiceGroupId?: number;
     priceGte?: string;
     priceLte?: string;

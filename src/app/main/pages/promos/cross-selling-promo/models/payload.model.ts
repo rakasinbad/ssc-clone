@@ -65,6 +65,8 @@ export class CreateCrossSellingDto {
     type: string;
     isNewStore: boolean;
     isActiveStore: boolean;
+    layer: number;
+    promoOwner: string;
 
     constructor(data: CreateCrossSellingDto) {
         const {
@@ -91,7 +93,9 @@ export class CreateCrossSellingDto {
             target,
             type,
             isNewStore,
-            isActiveStore
+            isActiveStore,
+            layer,
+            promoOwner
         } = data;
 
         this.base = base;
@@ -118,7 +122,43 @@ export class CreateCrossSellingDto {
         this.type = type;
         this.isNewStore = isNewStore;
         this.isActiveStore = isActiveStore;
+        this.layer = layer;
+        this.promoOwner = promoOwner;
     }
+}
+
+export class ExtendCrossSellingDto {
+    promoId: string
+    startDateBeforeExtended: string
+    endDateBeforeExtended: string
+    startDateAfterExtended: string
+    endDateAfterExtended: string
+
+    constructor(data: ExtendCrossSellingDto) {
+        const {
+            promoId,
+            startDateBeforeExtended,
+            endDateBeforeExtended,
+            startDateAfterExtended,
+            endDateAfterExtended
+        } = data
+
+        this.promoId = promoId
+
+        if (startDateBeforeExtended) {
+            this.startDateBeforeExtended = startDateBeforeExtended
+        }
+        if (endDateBeforeExtended) {
+            this.endDateBeforeExtended = endDateBeforeExtended
+        }
+        if (startDateAfterExtended) {
+            this.startDateAfterExtended = startDateAfterExtended
+        }
+        if (endDateAfterExtended) {
+            this.endDateAfterExtended = endDateAfterExtended
+        }
+    }
+
 }
 
 export class PatchCrossSellingDto {
@@ -147,6 +187,8 @@ export class PatchCrossSellingDto {
     type?: string;
     isActiveStore?: boolean;
     isNewStore?: boolean;
+    layer?: number;
+    promoOwner?: string;
 
     constructor(data: PatchCrossSellingDto) {
         const {
@@ -173,7 +215,9 @@ export class PatchCrossSellingDto {
             target,
             type,
             isNewStore,
-            isActiveStore
+            isActiveStore,
+            layer,
+            promoOwner
         } = data;
 
         if (typeof base !== 'undefined') {
@@ -270,6 +314,14 @@ export class PatchCrossSellingDto {
 
         if (typeof isActiveStore !== 'undefined') {
             this.isActiveStore = isActiveStore;
+        }
+
+        if (typeof layer !== 'undefined') {
+            this.layer = layer;
+        }
+
+        if (typeof promoOwner !== 'undefined') {
+            this.promoOwner = promoOwner;
         }
 
     }

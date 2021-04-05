@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -15,13 +15,18 @@ import { Observable } from 'rxjs';
 })
 export class SupplierStoresApiService {
     private _url: string;
+    private _url2: string;
     private readonly _endpoint = '/supplier-stores';
     private readonly _endpointPromo = '/get-segmentation-promo';
+    private readonly _endpointMass = '/mass-upload';
 
     constructor(
         private http: HttpClient,
         private helper$: HelperService,
-    ) {}
+    ) {
+
+        this._url2 = this.helper$.handleApiRouter(this._endpointMass);
+    }
 
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
@@ -83,4 +88,24 @@ export class SupplierStoresApiService {
 
         return this.http.get<T>(this._url, { params: newParams });
     }
+
+    uploadMassStore(payload, files: File): Observable<any> {
+        console.log('isi payload upmass1->', payload)
+        // payload.file = payload.file.name;
+        let formData = new FormData();
+        formData.append('file', files);
+        formData.append('type', payload.type);
+        formData.append('supplierId', payload.supplierId);
+        formData.append('catalogueId', payload.catalogueId);
+        return this.http.post(this._endpointMass, formData, {
+            reportProgress: true
+        });
+    }
+       
+    uploadFormData(formData: FormData): Observable<any> {
+        return this.http.post(`${this._url2}`, formData, {
+            reportProgress: true
+        });
+    }
+
 }

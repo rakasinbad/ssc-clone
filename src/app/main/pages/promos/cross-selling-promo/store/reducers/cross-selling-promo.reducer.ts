@@ -36,6 +36,7 @@ export const reducer = createReducer(
         CrossSellingPromoActions.createCrossSellingPromoRequest,
         // CrossSellingPromoActions.updateCrossSellingPromoRequest,
         CrossSellingPromoActions.changeStatusRequest,
+        CrossSellingPromoActions.extendPromoRequest,
         CrossSellingPromoActions.deleteCrossSellingPromoRequest,
         (state) => ({
             ...state,
@@ -48,6 +49,7 @@ export const reducer = createReducer(
         CrossSellingPromoActions.createCrossSellingPromoFailure,
         // CrossSellingPromoActions.updateCrossSellingPromoFailure,
         CrossSellingPromoActions.changeStatusFailure,
+        CrossSellingPromoActions.extendPromoFailure,
         CrossSellingPromoActions.deleteCrossSellingPromoFailure,
         (state) => ({
             ...state,
@@ -66,6 +68,9 @@ export const reducer = createReducer(
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
     on(CrossSellingPromoActions.changeStatusSuccess, (state, { payload }) =>
+        adapter.updateOne(payload, { ...state, isLoading: false })
+    ),
+    on(CrossSellingPromoActions.extendPromoSuccess, (state, { payload }) =>
         adapter.updateOne(payload, { ...state, isLoading: false })
     ),
     on(CrossSellingPromoActions.deleteCrossSellingPromoSuccess, (state, { payload }) =>

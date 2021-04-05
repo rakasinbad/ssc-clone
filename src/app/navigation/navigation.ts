@@ -193,6 +193,12 @@ export const navigation: FuseNavigation[] = [
                 url: '/pages/sales-force/sr-target',
             },
             {
+                id: 'pjp',
+                title: 'Permanent Journey Plan',
+                type: 'item',
+                url: '/pages/sales-force/pjp',
+            },
+            {
                 id: 'association',
                 title: 'SR Assignment',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
@@ -204,6 +210,12 @@ export const navigation: FuseNavigation[] = [
                 title: 'Journey Plan',
                 type: 'item',
                 url: '/pages/sales-force/journey-plans',
+            },
+            {
+                id: 'journey-planv2',
+                title: 'Journey Plan V2',
+                type: 'item',
+                url: '/pages/sales-force/journey-planssv2',
             },
             {
                 id: 'workday-setting',
@@ -274,6 +286,12 @@ export const navigation: FuseNavigation[] = [
                 title: 'Supplier Voucher',
                 type: 'item',
                 url: '/pages/promos/voucher',
+            },
+            {
+                id: 'promo-hierarchy',
+                title: 'Promo Hierarchy',
+                type: 'item',
+                url: '/pages/promos/promo-hierarchy',
             },
         ],
     },

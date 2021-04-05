@@ -1,0 +1,815 @@
+<div class="pb-16">
+    <span class="mat-headline"> Promo Information </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Seller ID</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (promoHierarchy$ | async)?.promoSellerId || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Name</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (promoHierarchy$ | async)?.name || '-' }}
+            </ng-container>
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Allocation Type</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{
+                    (promoHierarchy$ | async)?.promoAllocation === 'promo_slot' ||
+                    (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'
+                        ? 'Max Promo Redemption (Transaction)'
+                        : (promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
+                          (promoHierarchy$ | async)?.promoAllocation === 'voucher_budget'
+                        ? 'Max Promo Redemption (Rp)'
+                        : (promoHierarchy$ | async)?.promoAllocation === 'none'
+                        ? 'None'
+                        : ((promoHierarchy$ | async)?.promoAllocation | titlecase) || '-'
+                }}
+            </ng-container>
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Allocation Value</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                <ng-container *ngIf="(promoHierarchy$ | async)?.promoAllocation === 'none'">
+                    -
+                </ng-container>
+                <ng-container
+                    *ngIf="
+                        (promoHierarchy$ | async)?.promoAllocation === 'promo_slot' ||
+                        (promoHierarchy$ | async)?.promoAllocation === 'voucher_slot'
+                    "
+                >
+                    {{ ((promoHierarchy$ | async)?.promoSlot | number) || 0 }} /
+                    {{ ((promoHierarchy$ | async)?.planSlot | number) || 0 }}
+                </ng-container>
+                <ng-container
+                    *ngIf="
+                        (promoHierarchy$ | async)?.promoAllocation === 'promo_budget' ||
+                        (promoHierarchy$ | async)?.promoAllocation === 'voucher_budget'
+                    "
+                >
+                    Rp {{ ((promoHierarchy$ | async)?.promoBudget | number) || '-' }} / Rp
+                    {{ ((promoHierarchy$ | async)?.planBudget | number) || '-' }}
+                </ng-container>
+            </ng-container>
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Type</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{
+                    (promoHierarchy$ | async)?.promoType === 'flexi'
+                        ? 'Flexi Combo'
+                        : (promoHierarchy$ | async)?.promoType === 'cross_selling'
+                        ? 'Cross Selling'
+                        : (promoHierarchy$ | async)?.promoType === 'voucher'
+                        ? 'Supplier Voucher'
+                        : ((promoHierarchy$ | async)?.promoType | titlecase) || '-'
+                }}
+            </ng-container>
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Promo Owner</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{
+                    (promoHierarchy$ | async)?.promoOwner === 'sinbad-promo'
+                        ? 'Sinbad Promo'
+                        : (promoHierarchy$ | async)?.promoOwner === 'distributor-promo'
+                        ? 'Distributor Promo'
+                        : (promoHierarchy$ | async)?.promoOwner === 'principal-promo'
+                        ? 'Principal Promo'
+                        : (promoHierarchy$ | async)?.promoOwner === 'none'
+                        ? 'None'
+                        : (promoHierarchy$ | async)?.promoOwner === 'payment-method-promo'
+                        ? 'Payment Method Promo'
+                        : ((promoHierarchy$ | async)?.promoOwner | titlecase) || '-'
+                }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Status</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ ((promoHierarchy$ | async)?.status | titlecase) || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
+        </div>
+    </div>
+</div>
+
+<div class="pb-16 pt-16">
+    <ng-container *ngIf="(promoHierarchy$ | async)?.promoType == 'flexi'">
+        <span class="mat-headline">Trigger</span>
+    </ng-container>
+    <ng-container *ngIf="(promoHierarchy$ | async)?.promoType == 'cross_selling'">
+        <span class="mat-headline">Cross Selling Group</span>
+    </ng-container>
+    <ng-container *ngIf="(promoHierarchy$ | async)?.promoType == 'voucher'">
+        <span class="mat-headline">Eligible Product</span>
+    </ng-container>
+</div>
+
+<ng-container *ngIf="(promoHierarchy$ | async)?.promoType !== 'cross_selling'">
+    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+
+            <div class="info" fxFlex="100">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    <ng-container *ngIf="triggerBase; else noTriggerBase">
+                        <mat-radio-group [value]="(promoHierarchy$ | async)?.triggerBase">
+                            <mat-radio-button
+                                *ngFor="let row of triggerBase"
+                                [value]="row?.id"
+                                [disabled]="true"
+                            >
+                                {{ row?.label }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+                </ng-container>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+
+                <ng-template #noTriggerBase> - </ng-template>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="start" fxFlex="10">
+                <ng-container [ngSwitch]="(promoHierarchy$ | async)?.triggerBase">
+                    <ng-container *ngSwitchCase="'sku'"> Chosen SKU </ng-container>
+                    <ng-container *ngSwitchCase="'brand'"> Chosen Brand </ng-container>
+                    <ng-container *ngSwitchCase="'invoice_group'"> Chosen Faktur </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </div>
+
+            <div class="info" fxFlex="90">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    <ng-container [ngSwitch]="(promoHierarchy$ | async)?.triggerBase">
+                        <span>
+                            {{ getTriggerCatalogues((promoHierarchy$ | async)?.triggerCatalogues) }}
+                        </span>
+                    </ng-container>
+                </ng-container>
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+            </div>
+        </div>
+    </div>
+
+    <div class="pb-16 pt-16" *ngIf="(promoHierarchy$ | async)?.promoType == 'flexi'">
+        <span class="mat-headline"> Condition & Benefit </span>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="(promoHierarchy$ | async)?.promoType == 'cross_selling'">
+    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+        <span class="box-title"><b>Group 1</b></span>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Base</div>
+
+            <div class="info" fxFlex="100">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    <ng-container *ngIf="conditionBase; else noConditionBase">
+                        <mat-radio-group
+                            [value]="
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase
+                            "
+                        >
+                            <mat-radio-button
+                                *ngFor="let row of conditionBase"
+                                [value]="row?.id"
+                                [disabled]="true"
+                            >
+                                {{ row?.label }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+
+                    <ng-template #noConditionBase> - </ng-template>
+                </ng-container>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Faktur</div>
+
+            <div class="info" fxFlex="100">
+                {{
+                    ((promoHierarchy$ | async)?.promoConditionCatalogues[0].fakturName
+                        | titlecase) || '-'
+                }}
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Trigger</div>
+
+            <div class="info" fxFlex="100">SKU</div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="start" fxFlex="10">
+                *Chosen SKU
+                <br />
+                ({{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku.length
+                }}
+                Selected)
+            </div>
+
+            <div class="info" fxFlex="90">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    <span>
+                        {{
+                            getChoosenSku(
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[0].choosenSku
+                            )
+                        }}
+                    </span>
+                </ng-container>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
+
+            <div class="info" fxFlex="100">
+                {{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[0].crossSellingGroupRelation
+                }}
+            </div>
+        </div>
+
+        <ng-container
+            [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionBase"
+        >
+            <!-- Base Condition Type Qty -->
+            <ng-container *ngSwitchCase="eConditionBase.QTY">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
+
+                    <div class="info" fxFlex="100">
+                        {{
+                            ((promoHierarchy$ | async)?.promoConditionCatalogues[0].conditionQty
+                                | number) || '-'
+                        }}
+                    </div>
+                </div>
+            </ng-container>
+            <!-- ./ Base Condition Type Qty -->
+
+            <!-- Base Condition Type Value -->
+            <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center cross" fxFlex="10">*Order Value >=</div>
+
+                    <div class="info" fxFlex="100">
+                        <p thousandSeparator=".">
+                            {{
+                                ((promoHierarchy$ | async)?.promoConditionCatalogues[0]
+                                    .conditionValue | number) || '-'
+                            }}
+                        </p>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- ./ Base Condition Type Amount -->
+
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
+    </div>
+
+    <br />
+
+    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+        <span class="box-title"><b>Group 2</b></span>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Base</div>
+
+            <div class="info" fxFlex="100">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    <ng-container *ngIf="conditionBase; else noConditionBase">
+                        <mat-radio-group
+                            [value]="
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase
+                            "
+                        >
+                            <mat-radio-button
+                                *ngFor="let row of conditionBase"
+                                [value]="row?.id"
+                                [disabled]="true"
+                            >
+                                {{ row?.label }}
+                            </mat-radio-button>
+                        </mat-radio-group>
+                    </ng-container>
+
+                    <ng-template #noConditionBase> - </ng-template>
+                </ng-container>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Faktur</div>
+
+            <div class="info" fxFlex="100">
+                {{ (promoHierarchy$ | async)?.promoConditionCatalogues[1].fakturName || '-' }}
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Trigger</div>
+
+            <div class="info" fxFlex="100">SKU</div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="start" fxFlex="10">
+                *Chosen SKU
+                <br />
+                ({{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku.length || '-'
+                }}
+                Selected)
+            </div>
+
+            <div class="info" fxFlex="90">
+                <ng-container *ngIf="!(isLoading$ | async)">
+                    <span>
+                        {{
+                            getChoosenSku(
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[1].choosenSku
+                            )
+                        }}
+                    </span>
+                </ng-container>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label cross" fxFlexAlign="center" fxFlex="10">*Relation</div>
+
+            <div class="info" fxFlex="100">
+                {{
+                    (promoHierarchy$ | async)?.promoConditionCatalogues[1]
+                        .crossSellingGroupRelation || '-'
+                }}
+            </div>
+        </div>
+
+        <ng-container
+            [ngSwitch]="(promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionBase"
+        >
+            <!-- Base Condition Type Qty -->
+            <ng-container *ngSwitchCase="eConditionBase.QTY">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Qty >=</div>
+
+                    <div class="info" fxFlex="100">
+                        {{
+                            (promoHierarchy$ | async)?.promoConditionCatalogues[1].conditionQty ||
+                                '-'
+                        }}
+                    </div>
+                </div>
+            </ng-container>
+            <!-- ./ Base Condition Type Qty -->
+
+            <!-- Base Condition Type Value -->
+            <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label cross" fxFlexAlign="center" fxFlex="10">*Order Value >=</div>
+
+                    <div class="info" fxFlex="100">
+                        <p thousandSeparator=".">
+                            {{
+                                (promoHierarchy$ | async)?.promoConditionCatalogues[1]
+                                    .conditionValue || '-'
+                            }}
+                        </p>
+                    </div>
+                </div>
+            </ng-container>
+            <!-- ./ Base Condition Type Amount -->
+
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
+    </div>
+    <br />
+</ng-container>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <ng-container *ngIf="(promoHierarchy$ | async)?.promoType !== 'cross_selling'">
+        <div
+            *ngIf="
+                (promoHierarchy$ | async)?.promoType !== 'cross_selling' &&
+                (promoHierarchy$ | async)?.promoType !== 'voucher'
+            "
+        >
+            <span><b>Condition</b></span>
+        </div>
+
+        <div class="pt-16" *ngIf="(promoHierarchy$ | async)?.promoType == 'voucher'">
+            <span class="mat-headline"> Condition </span>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">Base</div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container
+                    *ngIf="(promoHierarchy$ | async)?.conditionBase; else noConditionBase"
+                >
+                    <mat-radio-group [value]="(promoHierarchy$ | async)?.conditionBase">
+                        <mat-radio-button
+                            *ngFor="let row of conditionBase"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noConditionBase> - </ng-template>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">
+                <ng-container [ngSwitch]="(promoHierarchy$ | async)?.conditionBase">
+                    <ng-container *ngSwitchCase="eConditionBase.QTY"> Qty >= </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                        Order Value >=
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </div>
+
+            <div class="info" fxFlex="100">
+                <ng-container [ngSwitch]="(promoHierarchy$ | async)?.conditionBase">
+                    <ng-container *ngSwitchCase="eConditionBase.QTY">
+                        <p thousandSeparator=".">
+                            {{ (promoHierarchy$ | async)?.conditionQty | number }}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                        <p thousandSeparator=".">
+                            Rp {{ (promoHierarchy$ | async)?.conditionValue | number }}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </div>
+        </div>
+    </ng-container>
+
+    <div *ngIf="(promoHierarchy$ | async)?.promoType == 'flexi'">
+        <span><b>Benefit</b></span>
+    </div>
+
+    <div *ngIf="(promoHierarchy$ | async)?.promoType !== 'flexi'">
+        <span class="mat-headline"> Benefit </span>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Benefit Type</div>
+
+        <ng-container *ngIf="(promoHierarchy$ | async)?.promoType !== 'voucher'">
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="benefitType; else noBenefitType">
+                    <mat-radio-group [value]="(promoHierarchy$ | async)?.benefitType">
+                        <mat-radio-button
+                            *ngFor="let row of benefitType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noBenefitType> - </ng-template>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="(promoHierarchy$ | async)?.promoType == 'voucher'">
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="benefitVoucherType; else noBenefitVoucherType">
+                    <mat-radio-group [value]="(promoHierarchy$ | async)?.benefitType">
+                        <mat-radio-button
+                            *ngFor="let row of benefitVoucherType"
+                            [value]="row?.id"
+                            [disabled]="true"
+                        >
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noBenefitVoucherType> - </ng-template>
+            </div>
+        </ng-container>
+    </div>
+
+    <ng-container [ngSwitch]="(promoHierarchy$ | async)?.benefitType">
+        <!-- Benefit Type Qty -->
+        <ng-container *ngSwitchCase="'qty'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Bonus SKU</div>
+
+                <div class="info" fxFlex="100">
+                    {{ getBenefitSku((promoHierarchy$ | async)?.benefitSku) }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Bonus Qty</div>
+
+                <div class="info" fxFlex="100">
+                    {{ (promoHierarchy$ | async)?.benefitQty || '-' }}
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Benefit Type Qty -->
+
+        <!-- Benefit Type Amount -->
+        <ng-container *ngSwitchCase="'amount'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Rebate</div>
+
+                <div class="info" fxFlex="100">
+                    <p thousandSeparator=".">
+                        {{ ((promoHierarchy$ | async)?.benefitRebate | number) || '-' }}
+                    </p>
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Benefit Type Amount -->
+
+        <!-- Benefit Type Percent -->
+        <ng-container *ngSwitchCase="'percent'">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">% Discount</div>
+
+                <div class="info" fxFlex="100">
+                    {{ (promoHierarchy$ | async)?.benefitDiscount || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="center" fxFlex="10">Max Rebate</div>
+
+                <div class="info" fxFlex="100">
+                    {{ (promoHierarchy$ | async)?.benefitRebate || '-' }}
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Benefit Type Percent -->
+
+        <ng-container *ngSwitchDefault>-</ng-container>
+    </ng-container>
+</div>

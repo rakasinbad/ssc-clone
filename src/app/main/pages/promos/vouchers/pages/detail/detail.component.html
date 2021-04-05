@@ -69,6 +69,17 @@
                 </ng-template>
             </mat-tab>
             <!-- / GENERAL INFORMATION -->
+             <!-- LAYER SETTING -->
+             <mat-tab label="Layer Settings" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-layer-settings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></app-layer-settings>
+                </ng-template>
+            </mat-tab>
+            <!-- / LAYER SETTING -->
             <!-- ELIGIBLE PRODUCT -->
             <mat-tab label="Eligible Product" [disabled]="isEditMode()">
                 <ng-template matTabContent>

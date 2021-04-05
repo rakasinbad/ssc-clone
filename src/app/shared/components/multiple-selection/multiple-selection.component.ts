@@ -224,7 +224,6 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
             // Menghitung kembali jumlah opsi yang terpilih.
             this.totalSelectedOptions = (this.totalInitialSelectedOptions - this.removedOptions.length) + this.selectedOptions.length;
-
             // Mengirim emit event kembali untuk di-update hasil pilihannya.
             this.selectionListChanged.emit({
                 added: this.selectedOptions,
@@ -335,7 +334,6 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                     if (isAtSelectedOptions && isSelected) {
                         return;
                     }
-    
                     if (isAtInitialSelection) {
                         if (isSelected) {
                             this.removedOptions = this.removedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
@@ -396,12 +394,10 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
                 // Mengirim event selectionListChanged dengan membawa nilai option-option yang tambahan baru dan terhapus.
                 this.selectionListChanged.emit({ added, removed, merged: this.mergedSelectedOptions, isAllSelected: this.allSelected });
-
                 // Menetapkan jumlah selected options.
                 const addedLength = (this.selectedOptions.length);
                 const removedLength =  (removed.length);
                 this.totalSelectedOptions = (this.totalInitialSelectedOptions - removedLength) + addedLength;
-
                 // Mendeteksi adanya perubahan.
                 this.cdRef.detectChanges();
             }),

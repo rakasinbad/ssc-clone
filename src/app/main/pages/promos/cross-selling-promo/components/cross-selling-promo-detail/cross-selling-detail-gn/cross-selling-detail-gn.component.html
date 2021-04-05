@@ -172,13 +172,13 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                     <span class="date">
-                        {{ ((crossSellingPromo$ | async)?.startDate | date: 'dd/MM/yyyy') || '-' }}
+                        {{ ((crossSellingPromo$ | async)?.startDate | date: 'dd/MM/yyyy': '+0700') || '-' }}
                     </span>
 
                     <mat-icon class="sinbad-red-10-fg">today</mat-icon>
 
                     <span class="time">
-                        {{ ((crossSellingPromo$ | async)?.startDate | date: 'HH:mm') || '-' }}
+                        {{ ((crossSellingPromo$ | async)?.startDate | date: 'HH:mm': '+0700') || '-' }}
                     </span>
                 </span>
             </ng-container>
@@ -202,13 +202,13 @@
             <ng-container *ngIf="!(isLoading$ | async)">
                 <span fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px">
                     <span class="date">
-                        {{ ((crossSellingPromo$ | async)?.endDate | date: 'dd/MM/yyyy') || '-' }}
+                        {{ ((crossSellingPromo$ | async)?.endDate | date: 'dd/MM/yyyy': '+0700') || '-' }}
                     </span>
 
                     <mat-icon class="sinbad-red-10-fg">today</mat-icon>
 
                     <span class="time">
-                        {{ ((crossSellingPromo$ | async)?.endDate | date: 'HH:mm') || '-' }}
+                        {{ ((crossSellingPromo$ | async)?.endDate | date: 'HH:mm': '+0700') || '-' }}
                     </span>
                 </span>
             </ng-container>

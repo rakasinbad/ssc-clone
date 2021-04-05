@@ -20,6 +20,7 @@ import { VoucherConditionSettingsComponent } from './components/condition-settin
 import { VoucherEligibleProductSettingsComponent } from './components/eligible-product-settings/eligible-product-settings.component';
 import { VoucherBenefitInformationComponent } from './components/benefit/benefit.component';
 import { VoucherEligibleStoreSettingsComponent } from './components/eligible-store-settings/eligible-store-settings.component';
+import { LayerSettingsComponent } from './components/layer-settings/layer-settings.component';
 
 @NgModule({
     declarations: [
@@ -32,6 +33,7 @@ import { VoucherEligibleStoreSettingsComponent } from './components/eligible-sto
         VoucherEligibleStoreSettingsComponent,
         VoucherBenefitInformationComponent,
         VoucherEligibleProductSettingsComponent,
+        LayerSettingsComponent,
     ],
     imports: [
         CommonModule,

@@ -147,6 +147,40 @@ const routes: Routes = [
         },
     },
     {
+        path: 'pjp',
+        loadChildren: () => import('./pjp/pjp.module').then((m) => m.PjpModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'pjp'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
+        path: 'journey-planssv2',
+        loadChildren: () => import('./journey-plansv2/journey-plansv2.module').then((m) => m.JourneyPlanV2Module),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: getRoleByRouter('sales-force', 'journey-plans'),
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true,
+                },
+            },
+        },
+    },
+    {
         path: 'associations',
         loadChildren: () =>
             import('./associations/associations.module').then((m) => m.AssociationsModule),
