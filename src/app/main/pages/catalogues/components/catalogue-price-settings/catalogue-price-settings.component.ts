@@ -16,7 +16,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { MatDialog, MatPaginator, MatRadioChange, MatSort, PageEvent } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -43,7 +43,12 @@ import {
 import { CataloguePriceSegmentationDataSource } from '../../datasources';
 import { AdjustCataloguePriceDto, Catalogue } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
-import { CatalogueFacadeService, CataloguesService } from '../../services';
+import { CatalogueTax } from '../../models/classes/catalogue-tax.class';
+import {
+    CatalogueFacadeService,
+    CataloguesService,
+    CatalogueTaxFacadeService,
+} from '../../services';
 import { CatalogueActions, CatalogueDetailPageActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
 
@@ -177,6 +182,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         clusters: '',
         price: '',
     });
+    taxes: CatalogueTax[];
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -190,7 +196,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
-        private errorMessage$: ErrorMessageService
+        private errorMessage$: ErrorMessageService,
+        private readonly catalogueTaxFacade: CatalogueTaxFacadeService
     ) {}
 
     ngOnInit(): void {
@@ -205,14 +212,14 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             discountRetailBuyerPrice: null,
             discountRetailBuyerPriceView: null,
             tax: [
-                '10',
+                0,
                 [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
                 ],
             ],
-            taxView: '10',
+            taxView: 0,
             retailBuyingPrice: [
                 '',
                 [
@@ -226,6 +233,21 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             priceSettings: this.fb.array([]),
             advancePrice: false,
         });
+
+        // Get tax list
+        this.catalogueTaxFacade.catalogueTaxes$
+            .pipe(
+                tap((taxes) => {
+                    if (!taxes || !taxes.length) {
+                        this.catalogueTaxFacade.fetchCatalogueTaxes();
+                    }
+                }),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((taxes) => {
+                this.taxes = taxes;
+                this.cdRef.detectChanges();
+            });
 
         /* this.dataSource
             .collections$()
@@ -677,6 +699,20 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         this._initTable(this.selectedCatalogue$.value.id);
     }
 
+    onTaxChange(ev: MatRadioChange): void {
+        HelperService.debug('[CataloguePriceSettingsComponent] onTaxChange', { ev });
+
+        // Get Tax Id
+        const taxId =
+            this.taxes && !!this.taxes.length
+                ? +this.taxes.find((tax) => tax.amount === ev.value).id
+                : null;
+
+        if (taxId) {
+            this.formValueChange.emit({ catalogueTaxId: taxId } as Catalogue);
+        }
+    }
+
     onTrackPriceSetting(index: number, item: CataloguePrice): string {
         if (!item) {
             return null;
@@ -686,14 +722,21 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     }
 
     private _initFormCheck(): void {
-        // (this.form.statusChanges as Observable<FormStatus>).pipe(
-        //     distinctUntilChanged(),
-        //     debounceTime(100),
-        //     tap(value => HelperService.debug('CATALOGUE PRICE SETTINGS FORM STATUS CHANGED:', value)),
-        //     takeUntil(this.unSubs$)
-        // ).subscribe(status => {
-        //     this.formStatusChange.emit(status);
-        // });
+        (this.form.statusChanges as Observable<FormStatus>)
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((value) =>
+                    HelperService.debug(
+                        '[CataloguePriceSettingsComponent - _initFormCheck] statusChanges',
+                        { value }
+                    )
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((status) => {
+                this.formStatusChange.emit(status);
+            });
 
         this.form
             .get('retailBuyingPrice')
@@ -702,8 +745,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 debounceTime(100),
                 tap((value) =>
                     HelperService.debug(
-                        'CATALOGUE PRICE SETTINGS -> RETAIL BUYING PRICE FORM VALUE CHANGED',
-                        value
+                        '[CataloguePriceSettingsComponent - _initFormCheck] retailBuyingPrice valueChanges',
+                        { value }
                     )
                 ),
                 takeUntil(this.unSubs$)
@@ -713,6 +756,23 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             });
 
         this.form
+            .get('discountRetailBuyerPrice')
+            .valueChanges.pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((value) =>
+                    HelperService.debug(
+                        '[CataloguePriceSettingsComponent - _initFormCheck] discountRetailBuyerPrice valueChanges',
+                        { value }
+                    )
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((value) => {
+                this.formValueChange.emit({ discountedRetailBuyingPrice: value } as Catalogue);
+            });
+
+        /* this.form
             .get('retailBuyingPrice')
             .statusChanges.pipe(
                 distinctUntilChanged(),
@@ -727,7 +787,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             )
             .subscribe((status) => {
                 this.formStatusChange.emit(status);
-            });
+            }); */
 
         this.updateForm$
             .pipe(
@@ -929,6 +989,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     supplierId: (catalogue.brand as any).supplierId,
                     retailBuyingPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
                     retailBuyingPriceView: catalogue.retailBuyingPrice,
+                    tax: catalogue.catalogueTax.amount,
+                    taxView: catalogue.catalogueTax.amount,
                     discountRetailBuyerPrice: String(catalogue.discountedRetailBuyingPrice).replace(
                         '.',
                         ','
