@@ -7,6 +7,8 @@ import { Role } from './role.model';
 import { UserSupplier } from './supplier.model';
 import { Team } from './team.model';
 import { ITimestamp } from './timestamp.model';
+import { UserBank } from './bank.model';
+import { HelperService } from '../helpers';
 
 export enum UserStatus {
     ACTIVE = 'active',
@@ -28,6 +30,7 @@ export interface IUser extends ITimestamp {
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
     roles?: Array<Role>;
+    bank?: UserBank;
     saleTeam?: Team;
     saleTeamId?: string;
     selfieImageUrl: TNullable<string>;
@@ -58,6 +61,7 @@ export class User implements IUser {
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
     roles?: Array<Role>;
+    bank?: UserBank;
     saleTeam?: Team;
     saleTeamId?: string;
     selfieImageUrl: TNullable<string>;
@@ -91,6 +95,7 @@ export class User implements IUser {
             phoneNo,
             portfolios,
             roles,
+            bank,
             saleTeam,
             saleTeamId,
             selfieImageUrl,
@@ -129,6 +134,7 @@ export class User implements IUser {
                 : null;
         this.storeQty = +storeQty;
         this.setRoles = roles;
+        this.setUserBank = bank;
         this.setSaleTeam = saleTeam;
         this.setUserStores = userStores;
         this.setUserSuppliers = userSuppliers;
@@ -142,6 +148,10 @@ export class User implements IUser {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
+
+    set setUserBank(value: UserBank) {
+        this.bank = value ? new UserBank(value) : null;
     }
 
     set setPortfolios(value: Array<Portfolio>) {

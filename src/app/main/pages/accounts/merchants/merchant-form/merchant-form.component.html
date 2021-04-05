@@ -24,7 +24,7 @@
                     <!-- <span class="mat-headline">
                         Owner Information
                     </span> -->
-                    <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Store Information</span>
+                    <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Owner Information</span>
 
                     <div>
                         <!-- OWNER PHONE NUMBER -->
@@ -34,7 +34,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.phoneNumber')"
                             >
-                                *Owner Phone
+                                *Phone Number
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -69,7 +69,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.name')"
                             >
-                                *Owner Name
+                                *Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -89,6 +89,52 @@
                             </mat-form-field>
                         </div>
                         <!-- / OWNER NAME -->
+                        <!-- OWNER EMAIL -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.email')"
+                            >
+                                Email
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="email"
+                                    formControlName="email"
+                                />
+
+                                <mat-error *ngIf="hasError('profileInfo.email', true)">
+                                    {{ getErrorMessage('profileInfo.email') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / OWNER EMAIL -->
+                        <!-- OWNER BANK -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.bank')"
+                            >
+                                Bank
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="bank"
+                                    formControlName="bank"
+                                />
+
+                                <mat-error *ngIf="hasError('profileInfo.bank', true)">
+                                    {{ getErrorMessage('profileInfo.bank') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / OWNER BANK -->                        
                         <!-- OWNER NPWP ID -->
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label class="form-label"
@@ -96,7 +142,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.taxId')"
                             >
-                                Owner NPWP ID
+                                NPWP ID
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -145,7 +191,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.taxPhoto')"
                             >
-                                Owner<br/>NPWP Photo
+                                NPWP Photo
                             </label>
 
                             <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
