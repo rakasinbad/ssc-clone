@@ -204,11 +204,25 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             }
             case 'price-settings': {
-                const { retailBuyingPrice } = $event as Catalogue;
-
-                this.formValue = {
+                const {
                     retailBuyingPrice,
-                };
+                    catalogueTaxId,
+                    discountedRetailBuyingPrice,
+                } = $event as Catalogue;
+
+                this.formValue = {};
+
+                if (typeof retailBuyingPrice !== 'undefined') {
+                    this.formValue = { ...this.formValue, retailBuyingPrice };
+                }
+
+                if (typeof catalogueTaxId !== 'undefined') {
+                    this.formValue = { ...this.formValue, catalogueTaxId };
+                }
+
+                if (typeof discountedRetailBuyingPrice !== 'undefined') {
+                    this.formValue = { ...this.formValue, discountedRetailBuyingPrice };
+                }
 
                 break;
             }

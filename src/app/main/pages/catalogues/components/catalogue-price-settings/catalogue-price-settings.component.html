@@ -39,24 +39,18 @@
                     Tax
                 </label>
 
-                <mat-radio-group formControlName="tax" *ngIf="formMode | hasFormMode: 'edit'">
-                    <!-- <mat-radio-button
-                                    class="pr-36"
-                                    *ngFor="let choice of quantityChoices"
-                                    [value]="choice.id"
-                                >
-                                    {{ choice.label }}
-                                </mat-radio-button> -->
-                    <mat-radio-button class="pr-36" value="0"> 0% </mat-radio-button>
-                    <mat-radio-button class="pr-36" value="10"> 10% </mat-radio-button>
+                <mat-radio-group
+                    formControlName="tax"
+                    (change)="onTaxChange($event)"
+                    *ngIf="formMode | hasFormMode: 'edit'"
+                >
+                    <mat-radio-button class="pr-36" *ngFor="let tax of taxes" [value]="tax?.amount">
+                        {{ tax?.amount | tax }}
+                    </mat-radio-button>
                 </mat-radio-group>
 
                 <span fxFlexAlign="center" class="grey-fg" *ngIf="formMode | hasFormMode: 'view'">
-                    <!-- {{
-                        form.get('retailBuyingPriceView').value
-                            | price: 'full':'IDR':'narrow':'1.0-2'
-                    }} -->
-                    10%
+                    {{ form.get('taxView').value | tax }}
                 </span>
             </div>
             <!-- / TAX -->
@@ -172,10 +166,21 @@
                         top: (formMode | hasFormMode: 'view') ? null : '-0.78em'
                     }"
                 >
-                    {{
-                        form.get('retailBuyingPriceView').value
-                            | price: 'full':'IDR':'narrow':'1.0-2'
-                    }}
+                    <ng-container *ngIf="formMode | hasFormMode: 'view'">
+                        {{
+                            form.get('retailBuyingPriceView')?.value
+                                | calculateAfterTax: form.get('taxView')?.value
+                                | price: 'full':'IDR':'narrow':'1.0-2'
+                        }}
+                    </ng-container>
+
+                    <ng-container *ngIf="formMode | hasFormMode: 'edit'">
+                        {{
+                            form.get('retailBuyingPrice')?.value
+                                | calculateAfterTax: form.get('tax')?.value
+                                | price: 'full':'IDR':'narrow':'1.0-2'
+                        }}
+                    </ng-container>
                 </span>
             </div>
             <!-- / PRODUCT RETAIL BUYING PRICE (AFTER TAX) -->
