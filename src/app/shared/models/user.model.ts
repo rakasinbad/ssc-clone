@@ -21,6 +21,8 @@ export interface IUser extends ITimestamp {
     userCode?: TNullable<string>;
     attendances?: any;
     email: TNullable<string>;
+    isEmailVerified: boolean;
+    isMobilePhoneNoVerified: boolean;
     fullName: string;
     idImageUrl: TNullable<string>;
     idNo: string;
@@ -52,6 +54,8 @@ export class User implements IUser {
     userCode?: TNullable<string>;
     attendances?: any;
     email: TNullable<string>;
+    isEmailVerified: boolean;
+    isMobilePhoneNoVerified: boolean;
     fullName: string;
     idImageUrl: TNullable<string>;
     idNo: string;
@@ -86,12 +90,14 @@ export class User implements IUser {
             userCode,
             attendances,
             email,
+            isEmailVerified,
             fullName,
             idImageUrl,
             idNo,
             imageUrl,
             joinDate,
             mobilePhoneNo,
+            isMobilePhoneNoVerified,
             phoneNo,
             portfolios,
             roles,
@@ -118,12 +124,14 @@ export class User implements IUser {
         this.userCode = userCode;
         this.attendances = attendances;
         this.email = email ? String(email).trim() : null;
+        this.isEmailVerified = isEmailVerified;
         this.fullName = fullName ? String(fullName).trim() : null;
         this.idImageUrl = idImageUrl ? String(idImageUrl).trim() : null;
         this.idNo = idNo ? String(idNo).trim() : null;
         this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
         this.joinDate = joinDate;
         this.mobilePhoneNo = mobilePhoneNo ? String(mobilePhoneNo).trim() : null;
+        this.isMobilePhoneNoVerified = isMobilePhoneNoVerified;
         this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
         this.saleTeamId = saleTeamId;
         this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
