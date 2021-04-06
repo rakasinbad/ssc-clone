@@ -112,29 +112,6 @@
                             </mat-form-field>
                         </div>
                         <!-- / OWNER EMAIL -->
-                        <!-- OWNER BANK -->
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
-                            <label class="form-label"
-                                fxFlexAlign="center"
-                                fxFlex="12"
-                                [class.mat-error]="hasError('profileInfo.bank')"
-                            >
-                                <b class="text-red">*</b> Bank
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <input
-                                    matInput
-                                    name="bank"
-                                    formControlName="bank"
-                                />
-
-                                <mat-error *ngIf="hasError('profileInfo.bank', true)">
-                                    {{ getErrorMessage('profileInfo.bank') }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                        <!-- / OWNER BANK -->                        
                         <!-- OWNER NPWP ID -->
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label class="form-label"
@@ -2186,7 +2163,7 @@
                                                     : null
                                             "
                                         >
-                                            {{ tempCreditLimitAmount[i] ? '*' : '' }}Value
+                                            <b class="text-red">{{ tempCreditLimitAmount[i] ? '*' : '' }}</b> Value
                                         </label>
 
                                         <mat-form-field appearance="outline" fxFlex="50">
@@ -2247,7 +2224,7 @@
                                                     : null
                                             "
                                         >
-                                            {{ tempTermOfPayment[i] ? '*' : '' }}ToP
+                                            <b class="text-red">{{ tempTermOfPayment[i] ? '*' : '' }}</b> ToP
                                         </label>
 
                                         <mat-form-field appearance="outline" fxFlex="50">
