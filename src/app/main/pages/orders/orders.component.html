@@ -194,6 +194,20 @@
                     </mat-cell>
                 </ng-container>
 
+
+                <!-- Paylater type Column -->
+                <ng-container matColumnDef="paylater-type">
+                    <mat-header-cell *matHeaderCellDef>
+                        Pay Later Type
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.paylaterType?.name) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+
                 <!-- Total Product Column -->
                 <ng-container matColumnDef="total-product">
                     <mat-header-cell *matHeaderCellDef>
