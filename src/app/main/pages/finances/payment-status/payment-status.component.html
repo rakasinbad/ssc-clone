@@ -128,6 +128,18 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Paylater Type Column -->
+                <ng-container matColumnDef="paylater-type">
+                    <mat-header-cell *matHeaderCellDef>
+                       Pay Later Type
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.paylaterType?.name) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Payment Method Column -->
                 <ng-container matColumnDef="payment-method">
                     <mat-header-cell *matHeaderCellDef>
