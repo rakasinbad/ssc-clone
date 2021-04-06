@@ -317,6 +317,13 @@ export const navigation: FuseNavigation[] = [
         ],
     },
     {
+        id: 'quest',
+        title: 'Sinbad Quest',
+        type: 'item',
+        icon: 'custom-sinbad-quest-logo',
+        url: '/pages/quest',
+    },
+    {
         id: 'skp',
         title: 'SKP',
         // translate: 'NAV.SKP.TITLE',
