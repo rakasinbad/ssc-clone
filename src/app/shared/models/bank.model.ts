@@ -1,7 +1,7 @@
 export interface IUserBank {
     id?: string,
     name?: string,
-    branch?: string,
+    branchName?: string,
     accountNo?: string,
     accountName?: string,
     isVerified?: boolean
@@ -10,7 +10,7 @@ export interface IUserBank {
 export class UserBank implements IUserBank{
     id?: string;
     name?: string;
-    branch?: string;
+    branchName?: string;
     accountNo?: string;
     accountName?: string;
     isVerified?: boolean;
@@ -18,14 +18,14 @@ export class UserBank implements IUserBank{
     constructor({
         id,
         name,
-        branch,
+        branchName,
         accountNo,
         accountName,
         isVerified
     }: IUserBank){
         this.id = id;
         this.name = name;
-        this.branch = branch;
+        this.branchName = branchName;
         this.accountNo = accountNo;
         this.accountName = accountName;
         this.isVerified = isVerified;
