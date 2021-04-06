@@ -7,6 +7,8 @@ import { Role } from './role.model';
 import { UserSupplier } from './supplier.model';
 import { Team } from './team.model';
 import { ITimestamp } from './timestamp.model';
+import { UserBank } from './bank.model';
+import { HelperService } from '../helpers';
 
 export enum UserStatus {
     ACTIVE = 'active',
@@ -19,6 +21,8 @@ export interface IUser extends ITimestamp {
     userCode?: TNullable<string>;
     attendances?: any;
     email: TNullable<string>;
+    isEmailVerified: boolean;
+    isMobilePhoneNoVerified: boolean;
     fullName: string;
     idImageUrl: TNullable<string>;
     idNo: string;
@@ -28,6 +32,7 @@ export interface IUser extends ITimestamp {
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
     roles?: Array<Role>;
+    bank?: UserBank;
     saleTeam?: Team;
     saleTeamId?: string;
     selfieImageUrl: TNullable<string>;
@@ -49,6 +54,8 @@ export class User implements IUser {
     userCode?: TNullable<string>;
     attendances?: any;
     email: TNullable<string>;
+    isEmailVerified: boolean;
+    isMobilePhoneNoVerified: boolean;
     fullName: string;
     idImageUrl: TNullable<string>;
     idNo: string;
@@ -58,6 +65,7 @@ export class User implements IUser {
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
     roles?: Array<Role>;
+    bank?: UserBank;
     saleTeam?: Team;
     saleTeamId?: string;
     selfieImageUrl: TNullable<string>;
@@ -82,15 +90,18 @@ export class User implements IUser {
             userCode,
             attendances,
             email,
+            isEmailVerified,
             fullName,
             idImageUrl,
             idNo,
             imageUrl,
             joinDate,
             mobilePhoneNo,
+            isMobilePhoneNoVerified,
             phoneNo,
             portfolios,
             roles,
+            bank,
             saleTeam,
             saleTeamId,
             selfieImageUrl,
@@ -113,12 +124,14 @@ export class User implements IUser {
         this.userCode = userCode;
         this.attendances = attendances;
         this.email = email ? String(email).trim() : null;
+        this.isEmailVerified = isEmailVerified;
         this.fullName = fullName ? String(fullName).trim() : null;
         this.idImageUrl = idImageUrl ? String(idImageUrl).trim() : null;
         this.idNo = idNo ? String(idNo).trim() : null;
         this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
         this.joinDate = joinDate;
         this.mobilePhoneNo = mobilePhoneNo ? String(mobilePhoneNo).trim() : null;
+        this.isMobilePhoneNoVerified = isMobilePhoneNoVerified;
         this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
         this.saleTeamId = saleTeamId;
         this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
@@ -129,6 +142,7 @@ export class User implements IUser {
                 : null;
         this.storeQty = +storeQty;
         this.setRoles = roles;
+        this.setUserBank = bank;
         this.setSaleTeam = saleTeam;
         this.setUserStores = userStores;
         this.setUserSuppliers = userSuppliers;
@@ -142,6 +156,10 @@ export class User implements IUser {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
+
+    set setUserBank(value: UserBank) {
+        this.bank = value ? new UserBank(value) : null;
     }
 
     set setPortfolios(value: Array<Portfolio>) {
