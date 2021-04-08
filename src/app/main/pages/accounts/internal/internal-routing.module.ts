@@ -30,10 +30,37 @@ const routes: Routes = [
         // }
     },
     {
-        path: ':id',
+        path: 'new',
         component: InternalFormComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
+            type: 'new',
+            permissions: {
+                only: ['ACCOUNT.INTERNAL.CREATE', 'ACCOUNT.INTERNAL.UPDATE'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
+    },
+    {
+        path: ':id/detail',
+        component: InternalFormComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            type: 'detail',
+        }
+    },
+    {
+        path: ':id/edit',
+        component: InternalFormComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            type: 'edit',
             permissions: {
                 only: ['ACCOUNT.INTERNAL.CREATE', 'ACCOUNT.INTERNAL.UPDATE'],
                 redirectTo: {
@@ -46,6 +73,23 @@ const routes: Routes = [
             }
         }
     }
+    // {
+    //     path: ':id',
+    //     component: InternalFormComponent,
+    //     canActivate: [AuthGuard, NgxPermissionsGuard],
+    //     data: {
+    //         permissions: {
+    //             only: ['ACCOUNT.INTERNAL.CREATE', 'ACCOUNT.INTERNAL.UPDATE'],
+    //             redirectTo: {
+    //                 navigationCommands: ['/pages/errors/403'],
+    //                 navigationExtras: {
+    //                     replaceUrl: true,
+    //                     skipLocationChange: true
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     // {
     //     path: ':id/detail',
     //     component: InternalDetailComponent,
