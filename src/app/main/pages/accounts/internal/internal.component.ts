@@ -12,12 +12,12 @@ import {
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { NoticeService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Role } from 'app/shared/models/role.model';
@@ -106,7 +106,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         //     translate: 'BREADCRUMBS.ACCOUNT'
         // },
         {
-            title: 'Internal',
+            title: 'User Management',
             translate: 'BREADCRUMBS.INTERNAL',
             active: true
         }
@@ -115,6 +115,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private domSanitizer: DomSanitizer,
         private router: Router,
+        private route: ActivatedRoute,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromInternal.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -219,6 +220,18 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    goUserInfoPage(id, row): void
+    {
+        HelperService.debug("ROW CLICKED", {id, row});
+        this.router.navigateByUrl(`/pages/account/internal/${id}/detail`);
+    }
+
+    onEdit(id): void
+    {
+        HelperService.debug("EDIT CLICKED", {id});
+        this.router.navigateByUrl(`/pages/account/internal/${id}/edit`);
+    }
+
     onRemoveSearchInternalEmployee(): void {
         localStorage.removeItem('filter.internal.employee');
         this.search.reset();
@@ -253,9 +266,9 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 canDoActions.then(hasAccess => {
                     if (hasAccess) {
-                        this.displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
+                        this.displayedColumns = ['user', 'email', 'role', 'status', 'created_at', 'updated_at', 'actions'];
                     } else {
-                        this.displayedColumns = ['user', 'email', 'role', 'status'];
+                        this.displayedColumns = ['user', 'email', 'role', 'status', 'created_at', 'updated_at', 'actions'];
                     }
                 });
                 break;
