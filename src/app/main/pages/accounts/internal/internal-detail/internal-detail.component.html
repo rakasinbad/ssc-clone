@@ -57,65 +57,6 @@
             <div class="content px-24 py-8" fxLayout="column">
                 <span class="mat-title">Detail User</span>
 
-                <form
-                    id="internal-form"
-                    name="internalForm"
-                    class="internal w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    fxFlex
-                    novalidate
-                >
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Nama</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="fullName" formControlName="fullName" />
-                        </mat-form-field>
-                    </div>
-
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Role</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="role" formControlName="role" />
-                            <mat-icon matSuffix>arrow_drop_down</mat-icon>
-                        </mat-form-field>
-
-                        <!-- <mat-form-field appearance="outline" fxFlex="30">
-                            <mat-select
-                                formControlName="roles"
-                                placeholder="Choose role..."
-                                multiple
-                            >
-                                <mat-option *ngFor="let role of roles$ | async" [value]="role?.id">
-                                    {{ role?.role }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field> -->
-                    </div>
-
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Email</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="email" formControlName="email" />
-                        </mat-form-field>
-                    </div>
-
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">*Phone Number</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input
-                                matInput
-                                type="tel"
-                                name="phoneNumber"
-                                formControlName="phoneNumber"
-                            />
-                        </mat-form-field>
-                    </div>
-                </form>
             </div>
             <!-- / CONTENT -->
         </div>
