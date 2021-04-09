@@ -107,7 +107,6 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         // },
         {
             title: 'User Management',
-            translate: 'BREADCRUMBS.INTERNAL',
             active: true
         }
     ];

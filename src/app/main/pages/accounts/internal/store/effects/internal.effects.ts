@@ -5,12 +5,13 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService, UserApiService } from 'app/shared/helpers';
+import { HelperService, LogService, NoticeService, UserApiService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
 import { PaginateResponse, TStatus } from 'app/shared/models/global.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import { UiActions } from 'app/shared/store/actions';
+import { InternalEmployeeDetails } from 'app/main/pages/accounts/internal/models';
 import { of } from 'rxjs';
 import {
     catchError,
@@ -546,29 +547,53 @@ export class InternalEffects {
      * [REQUEST] Internal Employee
      * @memberof InternalEffects
      */
-    fetchInternalEmployeeRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(InternalActions.fetchInternalEmployeeRequest),
-            map(action => action.payload),
-            switchMap(id => {
-                return this._$userApi.findById(id).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        return InternalActions.fetchInternalEmployeeSuccess({
-                            payload: new User(resp)
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            InternalActions.fetchInternalEmployeeFailure({
-                                payload: { id: 'fetchInternalEmployeeFailure', errors: err }
-                            })
+    // fetchInternalEmployeeRequest$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(InternalActions.fetchInternalEmployeeRequest),
+    //         map(action => action.payload),
+    //         switchMap(id => {
+    //             return this._$userApi.findById(id).pipe(
+    //                 catchOffline(),
+    //                 map(resp => {
+    //                     return InternalActions.fetchInternalEmployeeSuccess({
+    //                         payload: new User(resp)
+    //                     });
+    //                 }),
+    //                 catchError(err =>
+    //                     of(
+    //                         InternalActions.fetchInternalEmployeeFailure({
+    //                             payload: { id: 'fetchInternalEmployeeFailure', errors: err }
+    //                         })
+    //                     )
+    //                 )
+    //             );
+    //         })
+    //     )
+    // );
+
+        fetchInternalEmployeeRequest$ = createEffect(() =>
+            this.actions$.pipe(
+                ofType(InternalActions.fetchInternalEmployeeRequest),
+                map(action => action.payload),
+                switchMap(id => {
+                    return this._$internalApi.findById(id).pipe(
+                        catchOffline(),
+                        map(resp => {
+                            return InternalActions.fetchInternalEmployeeSuccess({
+                                payload: new InternalEmployeeDetails(resp)
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                InternalActions.fetchInternalEmployeeFailure({
+                                    payload: { id: 'fetchInternalEmployeeFailure', errors: err }
+                                })
+                            )
                         )
-                    )
-                );
-            })
-        )
-    );
+                    );
+                })
+            )
+        );
 
     /**
      *

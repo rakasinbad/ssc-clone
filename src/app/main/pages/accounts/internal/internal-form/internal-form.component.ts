@@ -25,6 +25,7 @@ import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
+import { IInternalEmployeeDetails } from '../models';
 import { InternalActions } from '../store/actions';
 import { fromInternal } from '../store/reducers';
 import { InternalSelectors } from '../store/selectors';
@@ -42,7 +43,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     isEdit: boolean;
     pageType: string;
 
-    employee$: Observable<User>;
+    employee$: Observable<IInternalEmployeeDetails>;
     isLoading$: Observable<boolean>;
     roles$: Observable<Array<Role>>;
 
@@ -111,8 +112,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                         //        translate: 'BREADCRUMBS.ACCOUNT'
                         //    },
                         {
-                            title: 'Internal',
-                            translate: 'BREADCRUMBS.INTERNAL'
+                            title: 'User Management',
                         },
                         {
                             title: 'Detail',
@@ -366,6 +366,14 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
+            platform: [
+                'Sinbad Seller Center',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
             roles: [
                 '',
                 [
@@ -381,6 +389,9 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             email: [
                 '',
                 [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
                     RxwebValidators.email({
                         message: this._$errorMessage.getErrorMessageNonState(
                             'default',
@@ -440,13 +451,13 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                         .select(DropdownSelectors.getRoleDropdownState)
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe(roles => {
-                            if (employee.roles && employee.roles.length > 0) {
-                                const currRoles = employee.roles
-                                    .map((v, i) => {
-                                        return v && v.id
-                                            ? roles.findIndex(r => r.id === v.id) === -1
+                            if (employee.roleIds && employee.roleIds.length > 0) {
+                                const currRoles = employee.roleIds
+                                    .map((v) => {
+                                        return v
+                                            ? roles.findIndex(r => r.id === v.toString()) === -1
                                                 ? null
-                                                : v.id
+                                                : v.toString()
                                             : null;
                                     })
                                     .filter(v => v !== null);
@@ -491,8 +502,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                             // translate: 'BREADCRUMBS.HOME'
                         },
                         {
-                            title: 'Internal',
-                            translate: 'BREADCRUMBS.INTERNAL'
+                            title: 'User Management',
                         },
                         {
                             title: 'Detail',
@@ -519,8 +529,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                             // translate: 'BREADCRUMBS.HOME'
                         },
                         {
-                            title: 'Internal',
-                            translate: 'BREADCRUMBS.INTERNAL'
+                            title: 'User Management',
                         },
                         {
                             title: this.pageType === 'edit' ? 'Edit' : 'Create',

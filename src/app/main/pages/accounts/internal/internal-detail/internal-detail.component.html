@@ -21,16 +21,7 @@
                     class="employee-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <!-- <img
-                        *ngIf="(account$ | async)?.imageUrl"
-                        [src]="(account$ | async)?.imageUrl"
-                    />
-                    <img
-                        *ngIf="!(account$ | async)?.imageUrl"
-                        [src]="'assets/images/avatars/profile.jpg'"
-                    /> -->
-
-                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                    <img [src]="(employee$ | async)?.imageUrl || 'assets/images/avatars/profile.jpg'" />
                 </div>
 
                 <div
@@ -39,7 +30,7 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        Anwar Sahid
+                        {{(employee$ | async)?.fullName || '-'}}
                     </div>
 
                     <div class="subtitle secondary-text">
@@ -48,75 +39,106 @@
                 </div>
             </div>
             <!-- / APP TITLE -->
+            <!-- EDIT BUTTON -->
+            <ng-container>
+                <button style="margin-right: 16px;" mat-flat-button (click)="onEdit()">
+                    <span class="red-500-fg">Edit</span>
+                </button>
+            </ng-container>
+            <!-- / EDIT BUTTON -->
         </div>
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
         <div class="content-card sinbad">
             <!-- CONTENT -->
-            <div class="content px-24 py-8" fxLayout="column">
-                <span class="mat-title">Detail User</span>
-
-                <form
-                    id="internal-form"
-                    name="internalForm"
-                    class="internal w-100-p"
-                    [formGroup]="form"
-                    fxLayout="column"
-                    fxFlex
-                    novalidate
-                >
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Nama</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="fullName" formControlName="fullName" />
-                        </mat-form-field>
-                    </div>
-
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Role</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="role" formControlName="role" />
-                            <mat-icon matSuffix>arrow_drop_down</mat-icon>
-                        </mat-form-field>
-
-                        <!-- <mat-form-field appearance="outline" fxFlex="30">
-                            <mat-select
-                                formControlName="roles"
-                                placeholder="Choose role..."
-                                multiple
-                            >
-                                <mat-option *ngFor="let role of roles$ | async" [value]="role?.id">
-                                    {{ role?.role }}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field> -->
-                    </div>
-
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Email</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="email" formControlName="email" />
-                        </mat-form-field>
-                    </div>
-
-                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">*Phone Number</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input
-                                matInput
-                                type="tel"
-                                name="phoneNumber"
-                                formControlName="phoneNumber"
-                            />
-                        </mat-form-field>
-                    </div>
-                </form>
+            <div class="px-24 py-8" fxLayout="column">
+                <span class="mat-title">User Information</span>
             </div>
+            <div
+                class="px-24 py-8 form-field"
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="27px"
+                >
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="25px"
+                    >
+                        <div class="label" fxFlex="120px">Name</div>
+                        <div>
+                            {{(employee$| async)?.fullName || '-'}}
+                        </div>
+                    </div>
+
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="25px"
+                    >
+                        <div class="label" fxFlex="120px">Platform</div>
+                        <div>
+                            {{(employee$| async)?.platform || '-'}}
+                        </div>
+                    </div>
+
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="25px"
+                    >
+                        <div class="label" fxFlex="120px">Role</div>
+                        <div>
+                            {{(employee$| async)?.roleNames || '-'}}
+                        </div>
+                    </div>
+
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="25px"
+                    >
+                        <div class="label" fxFlex="120px">Email</div>
+                        <div>
+                            {{(employee$| async)?.email || '-'}}
+                        </div>
+                    </div>
+
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="25px"
+                    >
+                        <div class="label" fxFlex="120px">Phone Number</div>
+                        <div>
+                            {{(employee$| async)?.mobilePhoneNo || '-'}}                                        
+                        </div>
+                    </div>
+
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="25px"
+                    >
+                        <div class="label" fxFlex="120px">Access</div>
+                        <div>
+                            {{(employee$| async)?.privileges || '-'}}                                        
+                        </div>
+                    </div>
+                </div>
             <!-- / CONTENT -->
         </div>
         <!-- / CONTENT CARD -->
