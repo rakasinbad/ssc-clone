@@ -4,7 +4,7 @@ import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import * as fromRoot from 'app/store/app.reducer';
-
+import { InternalEmployeeDetails } from '../../models';
 import { InternalActions } from '../actions';
 
 export const FEATURE_KEY = 'internals';
@@ -21,7 +21,7 @@ export interface State {
     isLoading: boolean;
     // selectedInternalEmployeeId: string | number;
     source: TSource;
-    internalEmployee?: User;
+    internalEmployee?: InternalEmployeeDetails;
     internalEmployees: InternalEmployeeState;
     errors: ErrorState;
 }
