@@ -9,6 +9,8 @@ interface ICataloguePrice {
     createdAt: string;
     groupId: string;
     groups: any;
+    isMaximum: boolean;
+    maxQty: number;
     name: string;
     price: number;
     segmentationId: string;
@@ -29,6 +31,8 @@ export class CataloguePrice implements CataloguePrice {
     createdAt: string;
     groupId: string;
     groups: any;
+    isMaximum: boolean;
+    maxQty: number;
     name: string;
     price: number;
     segmentationId: string;
@@ -49,6 +53,8 @@ export class CataloguePrice implements CataloguePrice {
             createdAt,
             groupId,
             groups,
+            isMaximum,
+            maxQty,
             name,
             price,
             segmentationId,
@@ -68,6 +74,8 @@ export class CataloguePrice implements CataloguePrice {
         this.createdAt = createdAt;
         this.groupId = groupId;
         this.groups = groups || [];
+        this.isMaximum = isMaximum;
+        this.maxQty = maxQty;
         this.name = (name && name.trim()) || null;
         this.price = price;
         this.segmentationId = segmentationId;

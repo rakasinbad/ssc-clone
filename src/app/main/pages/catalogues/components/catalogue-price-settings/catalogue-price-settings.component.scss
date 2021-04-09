@@ -119,6 +119,16 @@ catalogue-price-settings {
             min-width: 120px;
         }
 
+        .mat-column-custom-qty {
+            flex: 1 1 120px;
+            min-width: 120px;
+        }
+
+        .mat-column-max-order-qty {
+            flex: 1 1 120px;
+            min-width: 120px;
+        }
+
         .mat-column-actions {
             flex: 0 1 80px;
             min-width: 80px;

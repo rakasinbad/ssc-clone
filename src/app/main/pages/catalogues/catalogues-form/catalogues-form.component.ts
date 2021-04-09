@@ -16,7 +16,7 @@ import {
     ValidationErrors,
     ValidatorFn,
 } from '@angular/forms';
-import { MatDialog, MatTableDataSource } from '@angular/material';
+import { MatCheckboxChange, MatDialog, MatTableDataSource } from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -206,6 +206,46 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.store.dispatch(FormActions.resetFormStatus()); */
     }
 
+    onChangeMaxOrderQty(ev: MatCheckboxChange): void {
+        // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+
+        this.form.get('productCount.maxQtyValue').reset();
+
+        if (ev.checked) {
+            const minQty = this.form.get('productCount.minQtyValue').value;
+
+            this.form.get('productCount.maxQtyValue').setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.greaterThanEqualTo({
+                    fieldName: 'productCount.minQtyValue',
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'gte_number', {
+                        limitValue: minQty,
+                    }),
+                }),
+            ]);
+
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
+                minQty,
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        } else {
+            this.form.get('productCount.maxQtyValue').clearValidators();
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        }
+    }
+
     private fileSizeValidator(fieldName: string, maxSize: number = 0): ValidatorFn {
         return (control: AbstractControl): { [key: string]: any } | null => {
             if (!(control.value instanceof File)) {
@@ -351,6 +391,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // SUB BRAND
             subBrandId: formValues.productInfo.subBrandId || null,
+
+            // MAXIMUM ORDER QTY
+            isMaximum: formValues.productCount.isMaximum,
+            maxQty: formValues.productCount.isMaximum ? formValues.productCount.maxQtyValue : null,
         };
 
         // if (this.formMode === 'edit') {
@@ -381,9 +425,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         // }
 
         if (this.formMode !== 'edit') {
-            HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
+            /* HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
                 payload: catalogueData,
-            });
+            }); */
 
             this.store.dispatch(
                 CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
@@ -695,6 +739,50 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 /** Menetapkan nilai input Additional Quantity sesuai dengan nilai Quantity per Master Box jika opsinya adalah Master Box. */
                 if (additionalQtyOption.value === 'master_box') {
                     additionalQtyValue.setValue(value);
+                }
+            });
+
+        // Re-validate maximum order quantity field based on changes in minimum order quantity
+        this.form
+            .get('productCount.minQtyValue')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
+            .subscribe((value) => {
+                const isMaximum = this.form.get('productCount.isMaximum').value;
+
+                /* HelperService.debug(
+                    '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
+                    {
+                        value,
+                        minQtyOption: this.form.get('productCount.minQtyOption').value,
+                        isMaximum,
+                        maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
+                    }
+                ); */
+
+                if (isMaximum) {
+                    this.form.get('productCount.maxQtyValue').reset();
+                    this.form.get('productCount.maxQtyValue').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.greaterThanEqualTo({
+                            fieldName: 'productCount.minQtyValue',
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'gte_number',
+                                {
+                                    limitValue: value,
+                                }
+                            ),
+                        }),
+                    ]);
+
+                    this.form
+                        .get('productCount.maxQtyValue')
+                        .updateValueAndValidity({ onlySelf: true });
                 }
             });
 
@@ -1177,19 +1265,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     onAddVariantSelection(_: Event, $variant: number): void {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
-        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+        /* HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
             ev: _,
             varian: $variant,
             variantControl: (this.productVariantControls[$variant] as FormArray).controls,
-        });
+        }); */
 
         this.productVariantSelectionData[$variant] = new MatTableDataSource(
             (this.productVariantControls[$variant] as FormArray).controls
         );
 
-        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+        /* HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
             variantSelection: this.productVariantSelectionData[$variant],
-        });
+        }); */
     }
 
     onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
@@ -1293,9 +1381,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     onChangeBrand(ev: MatSelectChange): void {
-        HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
+        /* HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
             ev,
-        });
+        }); */
 
         if (ev.value) {
             this._getSubBrandByBrandId(ev.value);
@@ -1713,6 +1801,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
+                isMaximum: false,
+                maxQtyValue: [{ value: null, disabled: true }],
             }),
 
             // VISIBILITY

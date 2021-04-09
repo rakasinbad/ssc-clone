@@ -2013,6 +2013,89 @@
                     </div>
                     <!-- / MINIMUM OF QUANTITY -->
 
+                    <!-- MAXIMUM OF QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            [class.sinbad-red-fg]="
+                                form.get('productCount.maxQtyValue').value ||
+                                    form.get('productCount.maxQtyValue').touched
+                                    | hasErrorField: form.get('productCount.maxQtyValue'):false
+                            "
+                        >
+                            Maximum Order<br />
+                            Quantity
+
+                            <!-- HELP -->
+                            <mat-icon
+                                color="accent"
+                                style="font-size: 16px"
+                                matTooltip="Maximum order quantity, will be&#10; applied if SKU does not have a&#10; maximum quantities orders in a&#10; particular segmentation"
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                            <!-- / HELP -->
+                        </label>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxLayoutGap="5px"
+                            fxFlex="80"
+                        >
+                            <!-- CHECKBOX FOR IS MAXIMUM -->
+                            <!-- <mat-radio-group formControlName="minQtyOption">
+                                <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id"
+                                >
+                                    {{ choice.label }}
+                                </mat-radio-button>
+                            </mat-radio-group> -->
+                            <mat-checkbox
+                                formControlName="isMaximum"
+                                labelPosition="after"
+                                (change)="onChangeMaxOrderQty($event)"
+                            >
+                                Custom
+                            </mat-checkbox>
+                            <!-- / CHECKBOX FOR IS MAXIMUM -->
+
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    formControlName="maxQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                    [placeholder]="
+                                        form.get('productCount.isMaximum').value
+                                            ? null
+                                            : 'Unlimited'
+                                    "
+                                />
+
+                                <mat-error *ngIf="form.get('productCount.maxQtyValue').invalid">
+                                    {{
+                                        form.get('productCount.maxQtyValue').value
+                                            | errorMessage: form:'productCount.maxQtyValue'
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
+                        </div>
+                    </div>
+                    <!-- / MAXIMUM OF QUANTITY -->
+
                     <!-- ADDITIONAL QUANTITY -->
                     <div
                         class="custom-field"

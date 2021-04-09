@@ -5,8 +5,12 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { Observable } from 'rxjs';
 import { CataloguesModule } from '../catalogues.module';
-import { Catalogue, CataloguePrice } from '../models';
-import { CatalogueActions, CataloguePriceSegmentationActions } from '../store/actions';
+import { Catalogue, CataloguePrice, MaxOrderQtySegmentationDto } from '../models';
+import {
+    CatalogueActions,
+    CatalogueMaxOrderQtySegmentationActions,
+    CataloguePriceSegmentationActions,
+} from '../store/actions';
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
 
@@ -69,6 +73,12 @@ export class CatalogueFacadeService {
                     formIndex,
                 },
             })
+        );
+    }
+
+    updateMaxOrderQtySegmentation(payload: MaxOrderQtySegmentationDto, formIndex?: number): void {
+        this.store.dispatch(
+            CatalogueMaxOrderQtySegmentationActions.updateRequest({ payload, formIndex })
         );
     }
 
