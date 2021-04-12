@@ -185,9 +185,9 @@ export class IconModule {
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/info.svg')
           );
 
-                // quest
+        // quest
           this.matIconRegistry.addSvgIcon(
-            'custom-sinbad-quest-logo',
+            'sinbad-quest-logo',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/quest.svg')
         );
     }
