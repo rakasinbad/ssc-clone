@@ -16,7 +16,12 @@ import {
     ValidationErrors,
     ValidatorFn,
 } from '@angular/forms';
-import { MatCheckboxChange, MatDialog, MatTableDataSource, MatRadioChange } from '@angular/material';
+import {
+    MatCheckboxChange,
+    MatDialog,
+    MatRadioChange,
+    MatTableDataSource,
+} from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -404,7 +409,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             // MAXIMUM ORDER QTY
             isMaximum: formValues.productCount.isMaximum,
             maxQty: formValues.productCount.isMaximum ? formValues.productCount.maxQtyValue : null,
-            
+
             // CatalogueTaxId
             catalogueTaxId: taxId,
         };

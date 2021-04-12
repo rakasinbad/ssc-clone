@@ -42,7 +42,6 @@ import {
     CatalogueFacadeService,
     CataloguePriceSegmentationApiService,
 } from './services';
-
 import { CatalogueNgrxModule } from './store';
 
 @NgModule({

@@ -320,6 +320,7 @@
             #table
             class="catalogue-price-table sinbad-table sinbad-table__hover"
             [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+            [class.edit]="formMode | hasFormMode: 'edit'"
             [class.h-360]="formMode === 'edit'"
             [dataSource]="dataSource"
             [trackBy]="onTrackPriceSetting"
@@ -337,7 +338,7 @@
         >
             <!-- Segmentation Name Column -->
             <ng-container matColumnDef="segmentation-name">
-                <mat-header-cell *matHeaderCellDef>Segmentation Name</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Segmentation Name </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.name || '-' }}</p>
                 </mat-cell>
@@ -391,12 +392,7 @@
 
             <!-- PRICE (BEFORE TAX) COLUMN -->
             <ng-container matColumnDef="price">
-                <mat-header-cell
-                    *matHeaderCellDef
-                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
-                >
-                    Price Before Tax
-                </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Price Before Tax </mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <p *ngIf="formMode | hasFormMode: 'view'">
                         {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
@@ -432,12 +428,7 @@
 
             <!-- PRICE (AFTER TAX) COLUMN -->
             <ng-container matColumnDef="price-after-tax">
-                <mat-header-cell
-                    *matHeaderCellDef
-                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
-                >
-                    Price After Tax
-                </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Price After Tax </mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <p>
                         <ng-container *ngIf="formMode | hasFormMode: 'view'">
@@ -462,12 +453,7 @@
 
             <!-- Custom Qty Column -->
             <ng-container matColumnDef="custom-qty">
-                <mat-header-cell
-                    *matHeaderCellDef
-                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '130px' : null }"
-                >
-                    Custom Quantity
-                </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Custom Quantity </mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <mat-checkbox
                         *ngIf="formMode | hasFormMode: 'view'"
@@ -486,18 +472,14 @@
 
             <!-- Maximum Order Qty Column -->
             <ng-container matColumnDef="max-order-qty">
-                <mat-header-cell
-                    *matHeaderCellDef
-                    [ngStyle]="{ 'min-width': (formMode | hasFormMode: 'edit') ? '170px' : null }"
-                >
+                <mat-header-cell *matHeaderCellDef>
                     Max Order Quantity
                     <!-- HELP -->
                     <mat-icon
                         color="accent"
-                        style="font-size: 16px"
+                        style="font-size: 16px; position: relative; top: 3px"
                         matTooltip="Maximum order quantity is not related&#10;to the maximum order quantity in the&#10;amount setting"
                         matTooltipClass="tooltip-br"
-                        *ngIf="formMode | hasFormMode: 'edit'"
                     >
                         help
                     </mat-icon>

@@ -102,9 +102,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         'store-channel',
         'store-cluster',
         'price',
+        'price-after-tax',
         'custom-qty',
         'max-order-qty',
-        'price-after-tax',
     ];
 
     catalogueContent: {
@@ -921,7 +921,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                             ],
                             isMaximum: cataloguePrice.isMaximum || false,
                             maxOrderQtyValue: [
-                                { value: cataloguePrice.maxQty, disabled: true },
+                                { value: cataloguePrice.maxQty, disabled: !cataloguePrice.isMaximum },
                                 { updateOn: 'blur' },
                             ],
                         });
@@ -983,9 +983,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
                     'custom-qty',
                     'max-order-qty',
-                    'price-after-tax',
                     'actions',
                 ];
                 this.formMode = 'edit';
@@ -999,9 +999,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
                     'custom-qty',
                     'max-order-qty',
-                    'price-after-tax',
                 ];
                 this.formMode = 'view';
                 this._prepareEditCatalogue();
@@ -1130,9 +1130,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 'store-channel',
                 'store-cluster',
                 'price',
+                'price-after-tax',
                 'custom-qty',
                 'max-order-qty',
-                'price-after-tax',
             ];
 
             this.form.get('advancePrice').disable();
@@ -1146,9 +1146,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
                     'custom-qty',
                     'max-order-qty',
-                    'price-after-tax',
                     'actions',
                 ];
             }
