@@ -16,7 +16,7 @@ import {
     ValidationErrors,
     ValidatorFn,
 } from '@angular/forms';
-import { MatCheckboxChange, MatDialog, MatTableDataSource } from '@angular/material';
+import { MatCheckboxChange, MatDialog, MatTableDataSource, MatRadioChange } from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -71,11 +71,13 @@ import {
     BrandFacadeService,
     CatalogueFacadeService,
     CataloguesService,
+    CatalogueTaxFacadeService,
     SubBrandApiService,
 } from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
 import { fromBrand, fromCatalogue } from '../store/reducers';
 import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
+import { CatalogueTax } from './../models/classes/catalogue-tax.class';
 import { SubBrand } from './../models/sub-brand.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
@@ -169,6 +171,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     productVariantSelectionData: MatTableDataSource<object>[] = [];
     subBrandLoading: boolean = false;
+    taxes: CatalogueTax[];
 
     readonly variantListColumns: string[] = ['name', 'price', 'stock', 'sku'];
 
@@ -191,6 +194,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private errorMessageSvc: ErrorMessageService,
         private catalogueSvc: CataloguesService,
         private readonly subBrandApiService: SubBrandApiService,
+        private readonly catalogueTaxFacade: CatalogueTaxFacadeService,
         private _$notice: NoticeService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
@@ -318,6 +322,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 ? chosenStoreCluster.map((item: Selection) => +item.id)
                 : null;
 
+        // Get Tax Id
+        const taxId =
+            this.taxes && !!this.taxes.length
+                ? this.taxes.find((tax) => tax.amount === formValues.productSale.tax).id
+                : null;
+
         /** Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing. */
         const catalogueData: any = {
             // PRODUCT INFORMATION
@@ -386,7 +396,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // OTHERS
             displayStock: newStock === 0 ? false : true,
-            catalogueTaxId: 1,
             unlimitedStock: formValues.productInfo.unlimitedStock,
 
             // SUB BRAND
@@ -395,6 +404,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             // MAXIMUM ORDER QTY
             isMaximum: formValues.productCount.isMaximum,
             maxQty: formValues.productCount.isMaximum ? formValues.productCount.maxQtyValue : null,
+            
+            // CatalogueTaxId
+            catalogueTaxId: taxId,
         };
 
         // if (this.formMode === 'edit') {
@@ -539,6 +551,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         })
                     );
                 }
+            });
+
+        // Get tax list
+        this.catalogueTaxFacade.catalogueTaxes$
+            .pipe(
+                tap((taxes) => {
+                    if (!taxes || !taxes.length) {
+                        this.catalogueTaxFacade.fetchCatalogueTaxes();
+                    }
+                }),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((taxes) => {
+                this.taxes = taxes;
             });
 
         /** Menyiapkan form. */
@@ -1390,6 +1416,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
     }
 
+    onChangeTax(ev: MatRadioChange): void {
+        HelperService.debug('[CataloguesFormComponent - Add] onChangeTax', {
+            ev,
+        });
+
+        if (ev.value) {
+        }
+    }
+
     onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
         const chosenStoreChannelCtrl = this.form.get('productSegmentation.chosenStoreChannel');
 
@@ -1590,6 +1625,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // SALES INFORMATION
             productSale: this.fb.group({
+                tax: [
+                    0,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
                 retailPrice: null,
                 productPrice: [
                     null,

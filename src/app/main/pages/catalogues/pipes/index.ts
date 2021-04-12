@@ -1,3 +1,4 @@
+export * from './calculate-after-tax.pipe';
 export * from './channel-price-setting.pipe';
 export * from './cluster-price-setting.pipe';
 export * from './group-price-setting.pipe';
