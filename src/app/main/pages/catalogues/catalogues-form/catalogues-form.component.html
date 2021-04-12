@@ -779,7 +779,48 @@
                     fxFlex
                     novalidate
                 >
-                    <!-- HARGA PRODUK -->
+                    <!-- TAX -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            style="top: 0"
+                            [class.sinbad-red-fg]="
+                                form.get('productSale.tax').value ||
+                                    form.get('productSale.tax').touched
+                                    | hasErrorField: form.get('productSale.tax'):false
+                            "
+                        >
+                            <span class="red-500-fg">*</span>
+                            Tax
+                        </label>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxLayoutGap="5px"
+                            fxFlex="80"
+                        >
+                            <mat-radio-group formControlName="tax">
+                                <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let tax of taxes"
+                                    [value]="tax?.amount"
+                                >
+                                    {{ tax?.amount | tax }}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                    <!-- / TAX -->
+
+                    <!-- HARGA PRODUK (BEFORE TAX) -->
                     <div
                         class="custom-field"
                         fxLayout="row"
@@ -798,7 +839,7 @@
                         >
                             <span class="red-500-fg">*</span>
                             Retail<br />
-                            Buyer Price
+                            Buyer Price (Before Tax)
                         </label>
 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
@@ -840,7 +881,37 @@
                             -
                         </span> -->
                     </div>
-                    <!-- / HARGA PRODUK -->
+                    <!-- / HARGA PRODUK (BEFORE TAX) -->
+
+                    <!-- HARGA PRODUK (AFTER TAX) -->
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                        <label fxFlexAlign="center" fxFlex="18" class="pr-0">
+                            Retail<br />
+                            Buyer Price (After Tax)
+                        </label>
+
+                        <span
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            fxLayout="column"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <div fxFlex fxLayout="row" fxLayoutAlign="start stretch">
+                                <span fxFlexAlign="center">
+                                    {{
+                                        form.get('productSale.productPrice')?.value
+                                            | calculateAfterTax: form.get('productSale.tax')?.value
+                                            | price: 'full':'IDR':'narrow':'1.0-2'
+                                    }}
+                                </span>
+                                <!-- <strong
+                                    [innerHTML]="productCategory$"
+                                    fxFlexAlign="center"
+                                ></strong> -->
+                            </div>
+                        </span>
+                    </div>
+                    <!-- / HARGA PRODUK (AFTER TAX) -->
 
                     <!-- HARGA RETAIL -->
                     <div
