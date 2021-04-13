@@ -5,7 +5,14 @@
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
-        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
+        <form
+            class="w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
+            novalidate
+        >
             <!-- QUANTITY PER MASTER BOX -->
             <div
                 [ngClass]="formClass"
@@ -17,14 +24,19 @@
                     class="pr-0"
                     fxFlexAlign="center"
                     fxFlex="18"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('productCount.qtyPerMasterBox'))"
+                    [class.mat-error]="
+                        !isViewMode() && hasError(form.get('productCount.qtyPerMasterBox'))
+                    "
                 >
-                    <span
-                        class="red-500-fg"
-                    >* </span>Quantity <br/>per Master Box
+                    <span class="red-500-fg">* </span>Quantity <br />per Master Box
                 </label>
-        
-                <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
+
+                <mat-form-field
+                    appearance="outline"
+                    fxFlex="80"
+                    fxFlexAlign="center"
+                    *ngIf="!isViewMode()"
+                >
                     <input
                         matInput
                         name="qtyPerMasterBox"
@@ -32,20 +44,29 @@
                         mask="separator"
                         thousandSeparator="."
                     />
-                    <mat-error
-                        *ngIf="hasError(form.get('productCount.qtyPerMasterBox'))"
-                    >
+                    <mat-error *ngIf="hasError(form.get('productCount.qtyPerMasterBox'))">
                         {{ getFormError(form.get('productCount.qtyPerMasterBox')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productCount.qtyPerMasterBox').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productCount.qtyPerMasterBox').value"
+                >
                     {{ form.get('productCount.qtyPerMasterBox').value | number: '1.0-2' }}
                 </span>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productCount.qtyPerMasterBox').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productCount.qtyPerMasterBox').value"
+                >
                     -
                 </span>
             </div>
             <!-- / QUANTITY PER MASTER BOX -->
+
             <!-- MINIMUM OF QUANTITY -->
             <div
                 [ngClass]="formClass"
@@ -59,39 +80,153 @@
                     fxFlex="18"
                     [class.mat-error]="hasError(form.get('productCount.minQtyValue'))"
                 >
-                    Minimum Order <br/>Quantity
+                    Minimum Order <br />Quantity
                 </label>
 
-                <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80" *ngIf="!isViewMode()">
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="space-between stretch"
+                    fxLayoutGap="5px"
+                    fxFlex="80"
+                    *ngIf="!isViewMode()"
+                >
                     <!-- RADIO BUTTON SELECT TYPE -->
                     <mat-radio-group formControlName="minQtyOption">
-                        <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices;" [value]="choice.id">{{ choice.label }}</mat-radio-button>
+                        <mat-radio-button
+                            class="pr-36"
+                            *ngFor="let choice of quantityChoices"
+                            [value]="choice.id"
+                            >{{ choice.label }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <!-- / RADIO BUTTON SELECT TYPE -->
+
                     <!-- INPUT TEXT BOX -->
                     <mat-form-field appearance="outline">
-                        <input matInput
+                        <input
+                            matInput
                             name="minQtyValue"
                             formControlName="minQtyValue"
                             mask="separator"
                             thousandSeparator="."
                         />
-                        <mat-error
-                            *ngIf="hasError(form.get('productCount.minQtyValue'))"
-                        >
+                        <mat-error *ngIf="hasError(form.get('productCount.minQtyValue'))">
                             {{ getFormError(form.get('productCount.minQtyValue')) }}
                         </mat-error>
                     </mat-form-field>
                     <!-- / INPUT TEXT BOX -->
                 </div>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productCount.minQtyValue').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productCount.minQtyValue').value"
+                >
                     {{ form.get('productCount.minQtyValue').value | number: '1.0-2' }}
                 </span>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productCount.minQtyValue').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productCount.minQtyValue').value"
+                >
                     -
                 </span>
             </div>
             <!-- / MINIMUM OF QUANTITY -->
+
+            <!-- MAXIMUM OF QUANTITY -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formGroupName="productCount"
+            >
+                <label
+                    class="pr-0"
+                    fxFlexAlign="start"
+                    fxFlex="18"
+                    [class.mat-error]="
+                        form.get('productCount.maxQtyValue').invalid &&
+                        form.get('productCount.maxQtyValue').touched
+                    "
+                >
+                    Maximum Order<br />
+                    Quantity
+
+                    <!-- HELP -->
+                    <mat-icon
+                        color="accent"
+                        style="font-size: 16px"
+                        matTooltip="Maximum order quantity, will be&#10; applied if SKU does not have a&#10; maximum quantities orders in a&#10; particular segmentation"
+                        matTooltipClass="tooltip-br"
+                        *ngIf="formMode === 'edit'"
+                    >
+                        help
+                    </mat-icon>
+                    <!-- / HELP -->
+                </label>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="space-between stretch"
+                    fxLayoutGap="5px"
+                    fxFlex="80"
+                    *ngIf="!isViewMode()"
+                >
+                    <!-- CHECKBOX FOR IS MAXIMUM -->
+                    <mat-checkbox
+                        formControlName="isMaximum"
+                        labelPosition="after"
+                        (change)="onChangeMaxOrderQty($event)"
+                    >
+                        Custom
+                    </mat-checkbox>
+                    <!-- / CHECKBOX FOR IS MAXIMUM -->
+
+                    <!-- INPUT TEXT BOX -->
+                    <mat-form-field appearance="outline">
+                        <input
+                            matInput
+                            name="maxQtyValue"
+                            formControlName="maxQtyValue"
+                            mask="separator"
+                            thousandSeparator="."
+                            [placeholder]="
+                                form.get('productCount.isMaximum').value ? null : 'Unlimited'
+                            "
+                        />
+
+                        <mat-error *ngIf="form.get('productCount.maxQtyValue').invalid">
+                            {{
+                                form.get('productCount.maxQtyValue').value
+                                    | errorMessage: form:'productCount.maxQtyValue'
+                            }}
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- / INPUT TEXT BOX -->
+                </div>
+
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productCount.maxQtyValue').value"
+                >
+                    {{ form.get('productCount.maxQtyValue').value | number: '1.0-2' }}
+                </span>
+
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productCount.maxQtyValue').value"
+                >
+                    Unlimited
+                </span>
+            </div>
+            <!-- / MAXIMUM OF QUANTITY -->
+
             <!-- ADDITIONAL QUANTITY -->
             <div
                 [ngClass]="formClass"
@@ -105,35 +240,56 @@
                     fxFlex="18"
                     [class.mat-error]="hasError(form.get('productCount.additionalQtyValue'))"
                 >
-                    Additional <br/>Quantity
+                    Additional <br />Quantity
                 </label>
 
-                <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80" *ngIf="!isViewMode()">
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="space-between stretch"
+                    fxLayoutGap="5px"
+                    fxFlex="80"
+                    *ngIf="!isViewMode()"
+                >
                     <!-- RADIO BUTTON SELECT TYPE -->
                     <mat-radio-group formControlName="additionalQtyOption">
-                        <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices;" [value]="choice.id">{{ choice.label }}</mat-radio-button>
+                        <mat-radio-button
+                            class="pr-36"
+                            *ngFor="let choice of quantityChoices"
+                            [value]="choice.id"
+                            >{{ choice.label }}</mat-radio-button
+                        >
                     </mat-radio-group>
                     <!-- / RADIO BUTTON SELECT TYPE -->
+
                     <!-- INPUT TEXT BOX -->
                     <mat-form-field appearance="outline">
-                        <input matInput
+                        <input
+                            matInput
                             name="additionalQtyValue"
                             formControlName="additionalQtyValue"
                             mask="separator"
                             thousandSeparator="."
                         />
-                        <mat-error
-                            *ngIf="hasError(form.get('productCount.additionalQtyValue'))"
-                        >
+                        <mat-error *ngIf="hasError(form.get('productCount.additionalQtyValue'))">
                             {{ getFormError(form.get('productCount.additionalQtyValue')) }}
                         </mat-error>
                     </mat-form-field>
                     <!-- / INPUT TEXT BOX -->
                 </div>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productCount.additionalQtyValue').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && form.get('productCount.additionalQtyValue').value"
+                >
                     {{ form.get('productCount.additionalQtyValue').value | number: '1.0-2' }}
                 </span>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productCount.additionalQtyValue').value">
+                <span
+                    class="grey-fg"
+                    fxFlexAlign="center"
+                    fxFlex="80"
+                    *ngIf="isViewMode() && !form.get('productCount.additionalQtyValue').value"
+                >
                     -
                 </span>
             </div>

@@ -56,6 +56,7 @@ export class HelperService {
         'subBrandId',
         'supplierId',
         'type',
+        'typeAmount',
         'typeId',
         'warehouseId',
     ];
