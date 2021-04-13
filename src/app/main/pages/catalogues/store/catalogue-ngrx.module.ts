@@ -9,6 +9,7 @@ import {
     CatalogueEffects,
     DeletePriceSegmentationEffects,
     FetchCatalogueTaxesEffects,
+    UpdateMaxOrderQtySegmentationEffects,
 } from './effects';
 import { fromBrand, fromCatalogue, fromCatalogueTax } from './reducers';
 
@@ -26,6 +27,7 @@ import { fromBrand, fromCatalogue, fromCatalogueTax } from './reducers';
             DeletePriceSegmentationEffects,
             ExportsEffects,
             FetchCatalogueTaxesEffects,
+            UpdateMaxOrderQtySegmentationEffects,
         ]),
     ],
 })
