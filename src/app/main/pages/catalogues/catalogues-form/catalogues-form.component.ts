@@ -16,7 +16,12 @@ import {
     ValidationErrors,
     ValidatorFn,
 } from '@angular/forms';
-import { MatDialog, MatTableDataSource } from '@angular/material';
+import {
+    MatCheckboxChange,
+    MatDialog,
+    MatRadioChange,
+    MatTableDataSource,
+} from '@angular/material';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -71,11 +76,13 @@ import {
     BrandFacadeService,
     CatalogueFacadeService,
     CataloguesService,
+    CatalogueTaxFacadeService,
     SubBrandApiService,
 } from '../services';
 import { BrandActions, CatalogueActions } from '../store/actions';
 import { fromBrand, fromCatalogue } from '../store/reducers';
 import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
+import { CatalogueTax } from './../models/classes/catalogue-tax.class';
 import { SubBrand } from './../models/sub-brand.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
@@ -169,6 +176,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     productVariantSelectionData: MatTableDataSource<object>[] = [];
     subBrandLoading: boolean = false;
+    taxes: CatalogueTax[];
 
     readonly variantListColumns: string[] = ['name', 'price', 'stock', 'sku'];
 
@@ -191,6 +199,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         private errorMessageSvc: ErrorMessageService,
         private catalogueSvc: CataloguesService,
         private readonly subBrandApiService: SubBrandApiService,
+        private readonly catalogueTaxFacade: CatalogueTaxFacadeService,
         private _$notice: NoticeService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
@@ -204,6 +213,46 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         );
 
         this.store.dispatch(FormActions.resetFormStatus()); */
+    }
+
+    onChangeMaxOrderQty(ev: MatCheckboxChange): void {
+        // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+
+        this.form.get('productCount.maxQtyValue').reset();
+
+        if (ev.checked) {
+            const minQty = this.form.get('productCount.minQtyValue').value;
+
+            this.form.get('productCount.maxQtyValue').setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.greaterThanEqualTo({
+                    fieldName: 'productCount.minQtyValue',
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'gte_number', {
+                        limitValue: minQty,
+                    }),
+                }),
+            ]);
+
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
+                minQty,
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        } else {
+            this.form.get('productCount.maxQtyValue').clearValidators();
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        }
     }
 
     private fileSizeValidator(fieldName: string, maxSize: number = 0): ValidatorFn {
@@ -278,6 +327,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 ? chosenStoreCluster.map((item: Selection) => +item.id)
                 : null;
 
+        // Get Tax Id
+        const taxId =
+            this.taxes && !!this.taxes.length
+                ? this.taxes.find((tax) => tax.amount === formValues.productSale.tax).id
+                : null;
+
         /** Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing. */
         const catalogueData: any = {
             // PRODUCT INFORMATION
@@ -346,11 +401,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // OTHERS
             displayStock: newStock === 0 ? false : true,
-            catalogueTaxId: 1,
             unlimitedStock: formValues.productInfo.unlimitedStock,
 
             // SUB BRAND
             subBrandId: formValues.productInfo.subBrandId || null,
+
+            // MAXIMUM ORDER QTY
+            isMaximum: formValues.productCount.isMaximum,
+            maxQty: formValues.productCount.isMaximum ? formValues.productCount.maxQtyValue : null,
+
+            // CatalogueTaxId
+            catalogueTaxId: taxId,
         };
 
         // if (this.formMode === 'edit') {
@@ -381,9 +442,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         // }
 
         if (this.formMode !== 'edit') {
-            HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
+            /* HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
                 payload: catalogueData,
-            });
+            }); */
 
             this.store.dispatch(
                 CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
@@ -495,6 +556,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         })
                     );
                 }
+            });
+
+        // Get tax list
+        this.catalogueTaxFacade.catalogueTaxes$
+            .pipe(
+                tap((taxes) => {
+                    if (!taxes || !taxes.length) {
+                        this.catalogueTaxFacade.fetchCatalogueTaxes();
+                    }
+                }),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((taxes) => {
+                this.taxes = taxes;
             });
 
         /** Menyiapkan form. */
@@ -695,6 +770,50 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 /** Menetapkan nilai input Additional Quantity sesuai dengan nilai Quantity per Master Box jika opsinya adalah Master Box. */
                 if (additionalQtyOption.value === 'master_box') {
                     additionalQtyValue.setValue(value);
+                }
+            });
+
+        // Re-validate maximum order quantity field based on changes in minimum order quantity
+        this.form
+            .get('productCount.minQtyValue')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
+            .subscribe((value) => {
+                const isMaximum = this.form.get('productCount.isMaximum').value;
+
+                /* HelperService.debug(
+                    '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
+                    {
+                        value,
+                        minQtyOption: this.form.get('productCount.minQtyOption').value,
+                        isMaximum,
+                        maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
+                    }
+                ); */
+
+                if (isMaximum) {
+                    this.form.get('productCount.maxQtyValue').reset();
+                    this.form.get('productCount.maxQtyValue').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.greaterThanEqualTo({
+                            fieldName: 'productCount.minQtyValue',
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'gte_number',
+                                {
+                                    limitValue: value,
+                                }
+                            ),
+                        }),
+                    ]);
+
+                    this.form
+                        .get('productCount.maxQtyValue')
+                        .updateValueAndValidity({ onlySelf: true });
                 }
             });
 
@@ -1177,19 +1296,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     onAddVariantSelection(_: Event, $variant: number): void {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
-        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+        /* HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
             ev: _,
             varian: $variant,
             variantControl: (this.productVariantControls[$variant] as FormArray).controls,
-        });
+        }); */
 
         this.productVariantSelectionData[$variant] = new MatTableDataSource(
             (this.productVariantControls[$variant] as FormArray).controls
         );
 
-        HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
+        /* HelperService.debug('[CataloguesFormComponent] onAddVariantSelection', {
             variantSelection: this.productVariantSelectionData[$variant],
-        });
+        }); */
     }
 
     onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
@@ -1293,12 +1412,21 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     onChangeBrand(ev: MatSelectChange): void {
-        HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
+        /* HelperService.debug('[CataloguesFormComponent - Add] onChangeBrand', {
+            ev,
+        }); */
+
+        if (ev.value) {
+            this._getSubBrandByBrandId(ev.value);
+        }
+    }
+
+    onChangeTax(ev: MatRadioChange): void {
+        HelperService.debug('[CataloguesFormComponent - Add] onChangeTax', {
             ev,
         });
 
         if (ev.value) {
-            this._getSubBrandByBrandId(ev.value);
         }
     }
 
@@ -1502,6 +1630,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // SALES INFORMATION
             productSale: this.fb.group({
+                tax: [
+                    0,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
                 retailPrice: null,
                 productPrice: [
                     null,
@@ -1713,6 +1852,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }),
                     ],
                 ],
+                isMaximum: false,
+                maxQtyValue: [{ value: null, disabled: true }],
             }),
 
             // VISIBILITY

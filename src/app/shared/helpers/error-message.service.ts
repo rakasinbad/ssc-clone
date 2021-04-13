@@ -107,11 +107,27 @@ export class ErrorMessageService {
                 });
             }
 
+            case 'gte_number': {
+                const { limitValue = 0 } = args;
+                return this.translate.instant('ERROR.GTE_NUMBER', {
+                    fieldName: labelName,
+                    limitValue,
+                });
+            }
+
             case 'lt_number': {
                 const { maxValue = 0 } = args;
                 return this.translate.instant('ERROR.LT_NUMBER', {
                     fieldName: labelName,
                     maxValue,
+                });
+            }
+
+            case 'lte_number': {
+                const { limitValue = 0 } = args;
+                return this.translate.instant('ERROR.LTE_NUMBER', {
+                    fieldName: labelName,
+                    limitValue,
                 });
             }
 
