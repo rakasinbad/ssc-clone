@@ -15,7 +15,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('supplier-inventories')
+                only: ['INVENTORY.SI.READ']
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -32,7 +32,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['INVENTORY.SI.UPDATE']
+                only: ['INVENTORY.SI.UPDATE', 'INVENTORY.SI.CREATE']
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

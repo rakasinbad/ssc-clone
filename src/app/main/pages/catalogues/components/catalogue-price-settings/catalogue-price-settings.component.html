@@ -369,16 +369,18 @@
                             <mat-icon>edit</mat-icon>
                             <span>Adjust Price</span>
                         </button> -->
-                        <button
-                            type="button"
-                            mat-menu-item
-                            class="sinbad-mat-menu-item"
-                            aria-label="Delete"
-                            (click)="onDelete(row, idx)"
-                        >
-                            <mat-icon>delete</mat-icon>
-                            <span>Delete</span>
-                        </button>
+                        <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Delete"
+                                (click)="onDelete(row, idx)"
+                            >
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                            </button>
+                        </ng-template>
                     </mat-menu>
                 </mat-cell>
             </ng-container>

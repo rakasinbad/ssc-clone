@@ -53,7 +53,7 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
             }
         },
         add: {
-            permissions: []
+            permissions: ['WH.SM.CREATE']
         },
         export: {
             // permissions: ['OMS.EXPORT']

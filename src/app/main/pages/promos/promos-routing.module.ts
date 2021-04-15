@@ -15,7 +15,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'flexi-combo'),
+                only: ['PRM.FC.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -58,7 +58,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'voucher'),
+                only: ['PRM.FC.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -76,7 +76,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'cross-selling-promo'),
+                only: ['PRM.CSP.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -94,7 +94,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'promo-hierarchy'),
+                only: ['PRM.PH.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

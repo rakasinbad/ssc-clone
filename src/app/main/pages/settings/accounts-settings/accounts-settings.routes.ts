@@ -28,7 +28,7 @@ const routes: Routes = [
         ],
         data: {
             permissions: {
-                only: getRoleByRouter('settings', 'accounts')
+                only: []
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

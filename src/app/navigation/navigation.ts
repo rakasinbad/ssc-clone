@@ -1,6 +1,11 @@
 import { FuseNavigation } from '@fuse/types';
 
-export const navigation: FuseNavigation[] = [
+export interface IFuseNavigation extends FuseNavigation{
+    privilages?: string
+    children?: IFuseNavigation[];
+}
+
+export const navigation: IFuseNavigation[] = [
     {
         id: 'dashboard',
         title: 'Dashboard',
@@ -21,6 +26,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Store List',
                 translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
+                privilages: 'ACCOUNT.STORE.READ',
                 url: '/pages/account/stores',
             },
             {
@@ -28,6 +34,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Store Setting',
                 translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
+                privilages: 'ACCOUNT.STORE.READ',
                 url: '/pages/account/store-setting',
             },
             {
@@ -35,6 +42,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Store Segmentation',
                 //    translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
+                privilages: 'ACCOUNT.STORE.READ',
                 url: '/pages/account/store-segmentation',
             },
             // {
@@ -65,12 +73,14 @@ export const navigation: FuseNavigation[] = [
                 title: 'Manage Product',
                 translate: 'NAV.MANAGE_PRODUCT.TITLE',
                 type: 'item',
+                privilages: 'CATALOGUE.READ',
                 url: '/pages/catalogues/list',
             },
             {
                 id: 'segmentation',
                 title: 'Catalogue Segmentation',
                 type: 'item',
+                privilages: 'CATALOGUE.READ',
                 url: '/pages/catalogue-segmentations',
             },
         ],
@@ -81,6 +91,7 @@ export const navigation: FuseNavigation[] = [
         translate: 'NAV.ATTENDANCES.TITLE',
         type: 'item',
         icon: 'custom-sinbad-attendance-logo',
+        privilages: 'ATTENDANCE.READ',
         url: '/pages/attendances',
     },
     {
@@ -95,6 +106,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Credit Limit/Balance',
                 translate: 'NAV.CREDIT_LIMIT_BALANCE.TITLE',
                 type: 'item',
+                privilages: 'FINANCE.CLB.SL.READ',
                 url: '/pages/finances/credit-limit-balance',
             },
             // {
@@ -109,6 +121,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Payment Status',
                 translate: 'NAV.PAYMENT_STATUS.TITLE',
                 type: 'item',
+                privilages: 'FINANCE.PS.READ',
                 url: '/pages/finances/payment-status',
             },
         ],
@@ -119,6 +132,7 @@ export const navigation: FuseNavigation[] = [
         translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
         type: 'item',
         icon: 'custom-sinbad-oms-logo',
+        privilages: 'OMS.READ',
         url: '/pages/orders',
     },
     {
@@ -140,6 +154,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'In-Store Inventory',
                 translate: 'NAV.IN_STORE_INVENTORIES.TITLE',
                 type: 'item',
+                privilages: 'INVENTORY.ISI.READ',
                 url: '/pages/in-store-inventories',
                 exactMatch: false,
             },
@@ -164,12 +179,14 @@ export const navigation: FuseNavigation[] = [
                 title: 'Sales Rep',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
+                privilages: 'SRM.SR.READ',
                 url: '/pages/sales-force/sales-rep',
             },
             {
                 id: 'sales-repsv2',
                 title: 'Sales Rep V2',
                 type: 'item',
+                privilages: 'SRM.SR.READ',
                 url: '/pages/sales-force/sales-repsv2',
             },
             {
@@ -177,6 +194,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Portfolio of Store',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
+                privilages: 'SRM.PFO.READ',
                 url: '/pages/sales-force/portfolio',
             },
             {
@@ -184,6 +202,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Portfolio of Store V2',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
+                privilages: 'SRM.PFO.READ',
                 url: '/pages/sales-force/portfoliosv2',
             },
             {
@@ -203,18 +222,21 @@ export const navigation: FuseNavigation[] = [
                 title: 'SR Assignment',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
+                privilages: 'SRM.ASC.READ',
                 url: '/pages/sales-force/associations',
             },
             {
                 id: 'journey-plan',
                 title: 'Journey Plan',
                 type: 'item',
+                privilages: 'SRM.JP.READ',
                 url: '/pages/sales-force/journey-plans',
             },
             {
                 id: 'journey-planv2',
                 title: 'Journey Plan V2',
                 type: 'item',
+                privilages: 'SRM.JP.READ',
                 url: '/pages/sales-force/journey-planssv2',
             },
             {
@@ -235,24 +257,28 @@ export const navigation: FuseNavigation[] = [
                 id: 'wh-list',
                 title: 'Warehouse List',
                 type: 'item',
+                privilages: 'WH.L.READ',
                 url: '/pages/logistics/warehouses',
             },
             {
                 id: 'wh-coverage',
                 title: 'Warehouse Coverage',
                 type: 'item',
+                privilages: 'WH.C.READ',
                 url: '/pages/logistics/warehouse-coverages',
             },
             {
                 id: 'wh-sku-assignment',
                 title: 'SKU Assignment',
                 type: 'item',
+                privilages: 'WH.SKU.READ',
                 url: '/pages/logistics/sku-assignments',
             },
             {
                 id: 'wh-stock-management',
                 title: 'Stock Management',
                 type: 'item',
+                privilages: 'WH.SM.READ',
                 url: '/pages/logistics/stock-managements',
             },
         ],
@@ -267,30 +293,35 @@ export const navigation: FuseNavigation[] = [
                 id: 'flexi-combo',
                 title: 'Flexi Combo',
                 type: 'item',
+                privilages: 'PRM.FC.READ',
                 url: '/pages/promos/flexi-combo',
             },
             {
                 id: 'cross-selling-promo',
                 title: 'Cross Selling Promo',
                 type: 'item',
+                privilages: 'PRM.CSP.READ',
                 url: '/pages/promos/cross-selling-promo',
             },
             {
                 id: 'period-target-promo',
                 title: 'Period Target Promo',
                 type: 'item',
+                // privilages: 'PRM.CSP.READ',
                 url: '/pages/promos/period-target-promo',
             },
             {
                 id: 'voucher',
                 title: 'Supplier Voucher',
                 type: 'item',
+                privilages: 'PRM.SV.READ',
                 url: '/pages/promos/voucher',
             },
             {
                 id: 'promo-hierarchy',
                 title: 'Promo Hierarchy',
                 type: 'item',
+                privilages: 'PRM.PH.READ',
                 url: '/pages/promos/promo-hierarchy',
             },
         ],
@@ -305,6 +336,7 @@ export const navigation: FuseNavigation[] = [
                 id: 'survey-manage',
                 title: 'Manage',
                 type: 'item',
+                privilages: 'SS.READ',
                 url: '/pages/survey/manage',
             },
             // TODO: temporary disable
@@ -322,6 +354,7 @@ export const navigation: FuseNavigation[] = [
         // translate: 'NAV.SKP.TITLE',
         type: 'item',
         icon: 'custom-sinbad-skp-logo',
+        privilages: 'SKP.READ',
         url: '/pages/skp',
     },
 ];

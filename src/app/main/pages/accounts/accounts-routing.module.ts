@@ -17,7 +17,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'stores'),
+                only: ['ACCOUNT.STORE.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -34,10 +34,10 @@ const routes: Routes = [
             import('./merchants/merchant-setting/merchant-setting.module').then(
                 m => m.MerchantSettingModule
             ),
-        canActivate: [AuthGuard, NgxPermissionsGuard],
+        canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'store-setting'),
+                only: ['ACCOUNT.STORE.CREATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -54,7 +54,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'internal'),
+                only: ['ACCOUNT.INTERNAL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -74,7 +74,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'store-segmentation'),
+                only: ['ACCOUNT.STORE.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

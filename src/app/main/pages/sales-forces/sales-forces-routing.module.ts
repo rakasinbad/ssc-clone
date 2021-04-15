@@ -13,7 +13,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sales-rep'),
+                only: ['SRM.SR.READ']
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -31,7 +31,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfolio'),
+                only: ['SRM.PFO.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -49,7 +49,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'journey-plans'),
+                only: ['SRM.JP.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -67,7 +67,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'workday-setting'),
+                only: [],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -84,7 +84,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sr-target'),
+                only: [],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -101,7 +101,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sales-team'),
+                only: [],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -118,7 +118,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfoliosv2'),
+                only: ['SRM.PFO.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -135,7 +135,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sales-repsv2'),
+                only: ['SRM.SR.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -152,7 +152,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'pjp'),
+                only: [],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -169,7 +169,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'journey-plans'),
+                only: ['SRM.JP.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],
@@ -187,7 +187,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'associations'),
+                only: ['SRM.ASC.READ'],
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

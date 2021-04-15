@@ -121,19 +121,21 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button mat-menu-item type="button" class="sinbad-mat-menu-item"
-                                    aria-label="archive" (click)="setActive(row?.catalogue)"
-                                    *ngIf="row?.catalogue?.status === 'inactive'">
-                                    <mat-icon>unarchive</mat-icon>
-                                    <span>Active</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['WH.SKU.UPDATE']">
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                                        aria-label="archive" (click)="setActive(row?.catalogue)"
+                                        *ngIf="row?.catalogue?.status === 'inactive'">
+                                        <mat-icon>unarchive</mat-icon>
+                                        <span>Active</span>
+                                    </button>
 
-                                <button mat-menu-item type="button" class="sinbad-mat-menu-item"
-                                    aria-label="archive" (click)="setInactive(row?.catalogue)"
-                                    *ngIf="row?.catalogue?.status === 'active'">
-                                    <mat-icon>archive</mat-icon>
-                                    <span>Inactive</span>
-                                </button>
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                                        aria-label="archive" (click)="setInactive(row?.catalogue)"
+                                        *ngIf="row?.catalogue?.status === 'active'">
+                                        <mat-icon>archive</mat-icon>
+                                        <span>Inactive</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>

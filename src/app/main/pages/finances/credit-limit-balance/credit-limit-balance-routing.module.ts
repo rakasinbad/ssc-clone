@@ -34,7 +34,7 @@ const routes: Routes = [
         ],
         data: {
             permissions: {
-                only: getRoleByRouter('finances', 'credit-limit-balance'),
+                only: ['FINANCE.CLB.CLG.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

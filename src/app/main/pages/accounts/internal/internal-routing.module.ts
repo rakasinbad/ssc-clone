@@ -16,7 +16,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'internal'),
+                only: ['ACCOUNT.INTERNAL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -37,7 +37,7 @@ const routes: Routes = [
         data: {
             type: 'new',
             permissions: {
-                only: ['ACCOUNT.INTERNAL.CREATE', 'ACCOUNT.INTERNAL.UPDATE'],
+                only: ['ACCOUNT.INTERNAL.CREATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -53,7 +53,17 @@ const routes: Routes = [
         component: InternalDetailComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
-            type: 'detail',
+            type: 'edit',
+            permissions: {
+                only: ['ACCOUNT.INTERNAL.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
         }
     },
     {
@@ -63,7 +73,7 @@ const routes: Routes = [
         data: {
             type: 'edit',
             permissions: {
-                only: ['ACCOUNT.INTERNAL.CREATE', 'ACCOUNT.INTERNAL.UPDATE'],
+                only: ['ACCOUNT.INTERNAL.UPDATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

@@ -54,10 +54,10 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
             },
         },
         add: {
-            permissions: [],
+            permissions: ['WH.L.CREATE'],
         },
         export: {
-            permissions: ['OMS.EXPORT'],
+            permissions: ['WH.L.EXPORT'],
             useAdvanced: true,
             pageType: 'warehouses',
         },

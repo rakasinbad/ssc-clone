@@ -74,7 +74,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
             active: false
         },
         add: {
-            permissions: []
+            permissions: ['WH.C.CREATE']
         },
         // export: {
         //     permissions: ['SRM.JP.EXPORT'],
