@@ -7,7 +7,12 @@ error-403 {
         .content-card{
             .message{
                 h1{
+                    font-weight: 700;
                     height: 20px;
+                    text-align: center;
+                }
+                h4{
+                    text-align: center;
                 }
             }
         }
