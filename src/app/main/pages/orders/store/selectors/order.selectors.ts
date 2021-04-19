@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { HelperService } from 'app/shared/helpers';
 import { OrderLineType } from 'app/shared/models/order-line-type.model';
 import { flatten, map } from 'lodash';
 import { fromOrder } from '../reducers';

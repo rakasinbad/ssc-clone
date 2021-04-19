@@ -21,9 +21,17 @@
     <ng-container matColumnDef="order-qty">
         <mat-header-cell *matHeaderCellDef> Order Quantity </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p class="text-word-break">
-                {{ (row?.qty | number) || '-' }}
-            </p>
+            <ng-container [ngSwitch]="type">
+                <p class="text-word-break" *ngSwitchCase="'delivered'">
+                    {{ (row?.deliveredQty | number) || '-' }}
+                </p>    
+                <p class="text-word-break" *ngSwitchCase="'dispatched'">
+                    {{ (row?.invoicedQty | number) || '-' }}
+                </p>    
+                <p class="text-word-break" *ngSwitchDefault>
+                    {{ (row?.qty | number) || '-' }}
+                </p>    
+            </ng-container>
         </mat-cell>
     </ng-container>
 
