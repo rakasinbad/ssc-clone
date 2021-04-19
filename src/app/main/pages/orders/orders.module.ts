@@ -25,6 +25,7 @@ import { OrdersComponent } from './orders.component';
 import { OrderDetailViewComponent } from './pages';
 import { OrderEffects } from './store/effects';
 import { fromOrder } from './store/reducers';
+import { FuseSidebarModule } from '@fuse/components';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { fromOrder } from './store/reducers';
         SharedModule,
         SharedComponentsModule,
         MaterialModule,
+        FuseSidebarModule,
 
         QuillModule,
         RxReactiveFormsModule,

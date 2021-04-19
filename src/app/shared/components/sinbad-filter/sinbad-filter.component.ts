@@ -37,12 +37,15 @@ export class SinbadFilterComponent implements OnInit {
     filterFaktur: boolean = false;
     filterbasePrice: boolean = false;
     filterWarehouse: boolean = false;
+    filterDate: boolean = false;
+    filterOrderStatus: boolean = false;
 
     selectedSuppliers: any[] = [];
 
     sourceStatus: DefaultCheckbox[] = [];
     sourceType: { id: string; label: string }[] = [];
     sourceOrderStatus: any[] = [];
+    sourcePaymentStatus: any[] = [];
     sourceSuppliers: any[] = [];
 
     maxDate = new Date();
@@ -108,6 +111,24 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['warehouse'] !== 'undefined') {
                             this.filterWarehouse = true;
+                        }
+
+                        if (typeof config.by['date'] !== 'undefined') {
+                            this.filterDate = true;
+                        }
+
+                        if (typeof config.by['orderStatus'] !== 'undefined') {
+                            this.filterOrderStatus = true;
+                            if (config.by['orderStatus'].sources) {
+                                this.sourceOrderStatus = [...config.by['orderStatus'].sources];
+                            }
+                        }
+
+                        if (typeof config.by['paymentStatus'] !== 'undefined') {
+                            this.filterOrderStatus = true;
+                            if (config.by['paymentStatus'].sources) {
+                                this.sourcePaymentStatus = [...config.by['paymentStatus'].sources];
+                            }
                         }
 
                         HelperService.debug('[SinbadFilterComponent] ngOnInit getConfig$()', {

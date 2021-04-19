@@ -25,6 +25,64 @@
     </mat-list>
 
     <ng-container *ngIf="(config$ | async)?.by">
+        
+        <!-- ORDER DATE -->
+        <mat-list *ngIf="filterDate">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.date?.title as dateTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">{{ dateTitle }}</mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div fxLayout="column">
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                [formControl]="form.get('startDate')"
+                                [matDatepicker]="startDatePicker"
+                                autocomplete="off"
+                                name="startDate"
+                                placeholder="Start Date"
+                                [max]="maxDate"
+                            />
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="startDatePicker"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker
+                                touchUi
+                                #startDatePicker
+                                [disabled]="false"
+                            ></mat-datepicker>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline">
+                            <input
+                                matInput
+                                [formControl]="form.get('endDate')"
+                                [matDatepicker]="endDatePicker"
+                                autocomplete="off"
+                                name="endDate"
+                                placeholder="End Date"
+                                [max]="maxDate"
+                            />
+                            <mat-datepicker-toggle
+                                matSuffix
+                                [for]="endDatePicker"
+                            ></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / ORDER DATE -->
+
         <!-- STATUS -->
         <mat-list *ngIf="sourceStatus && sourceStatus.length > 0">
             <mat-expansion-panel
@@ -187,7 +245,7 @@
         <!-- / FAKTUR -->
 
         <!-- BASE PRICE -->
-        <mat-list *ngIf="filterFaktur">
+        <mat-list *ngIf="filterbasePrice">
             <mat-expansion-panel
                 class="sinbad__expansion-panel--filter mat-elevation-z0"
                 [expanded]="showPanel"
@@ -366,6 +424,64 @@
         </mat-list>
         <!-- / SEGMENTATION CLUSTER -->
 
+        <!-- ORDER STATUS -->
+        <mat-list *ngIf="filterOrderStatus">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.paymentStatus?.title as paymentStatusTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ paymentStatusTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div fxLayout="column" class="custom-field">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <mat-select [formControl]="form.get('orderStatus')" placeholder="Choose Order Status" multiple>
+                                <mat-option *ngFor="let sources of sourceOrderStatus | async" [value]="sources?.id">
+                                    {{ sources?.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / ORDER STATUS -->
+
+        <!-- PAYMENT STATUS -->
+        <mat-list *ngIf="filterPaymentStatus">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.paymentStatus?.title as paymentStatusTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ paymentStatusTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div fxLayout="column" class="custom-field">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <mat-select [formControl]="form.get('paymentStatus')" placeholder="Choose Payment Status" multiple>
+                                <mat-option *ngFor="let sources of sourcePaymentStatus | async" [value]="sources?.id">
+                                    {{ sources?.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / PAYMENT STATUS -->
+
         <!-- SUPPLIER -->
         <!-- <mat-list *ngIf="sourceSuppliers && sourceSuppliers.length > 0">
             <mat-expansion-panel
@@ -472,61 +588,6 @@
         </mat-expansion-panel>
     </mat-list> -->
     <!-- / AMOUNT RELATION -->
-
-    <!-- ORDER DATE -->
-    <!-- <mat-list *ngIf="hasStartOrderDate() && hasEndOrderDate()">
-        <mat-expansion-panel
-            class="sinbad__expansion-panel--filter mat-elevation-z0"
-            [expanded]="showPanel"
-        >
-            <mat-expansion-panel-header>
-                <mat-panel-title class="sinbad__filter-title">Order Date</mat-panel-title>
-            </mat-expansion-panel-header>
-
-            <ng-template matExpansionPanelContent>
-                <div fxLayout="column">
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            [formControl]="form.get('startOrderDate')"
-                            [matDatepicker]="startDatePicker"
-                            autocomplete="off"
-                            name="startDate"
-                            placeholder="Start"
-                            [max]="maxDate"
-                        />
-                        <mat-datepicker-toggle
-                            matSuffix
-                            [for]="startDatePicker"
-                        ></mat-datepicker-toggle>
-                        <mat-datepicker
-                            touchUi
-                            #startDatePicker
-                            [disabled]="false"
-                        ></mat-datepicker>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                        <input
-                            matInput
-                            [formControl]="form.get('endOrderDate')"
-                            [matDatepicker]="endDatePicker"
-                            autocomplete="off"
-                            name="endDate"
-                            placeholder="End"
-                            [max]="maxDate"
-                        />
-                        <mat-datepicker-toggle
-                            matSuffix
-                            [for]="endDatePicker"
-                        ></mat-datepicker-toggle>
-                        <mat-datepicker touchUi #endDatePicker [disabled]="false"></mat-datepicker>
-                    </mat-form-field>
-                </div>
-            </ng-template>
-        </mat-expansion-panel>
-    </mat-list> -->
-    <!-- / ORDER DATE -->
 
     <!-- DELIVERED DATE -->
     <!-- <mat-list *ngIf="hasStartDeliveredDate() && hasEndDeliveredDate()">
