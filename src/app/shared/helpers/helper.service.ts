@@ -23,6 +23,7 @@ import {
 } from '../models/promo-allocation.model';
 import { IQueryParams } from '../models/query.model';
 import { SegmentationBase, SegmentationBasePromo } from '../models/segmentation-base.model';
+
 import { SupplierVoucherCategory, SupplierVoucherType } from '../models/supplier-voucher.model';
 import { TriggerBase } from '../models/trigger-base.model';
 import { PromoHierarchyLayer, PromoHierarchyGroup } from '../models/promo-hierarchy.model';
@@ -55,6 +56,7 @@ export class HelperService {
         'subBrandId',
         'supplierId',
         'type',
+        'typeAmount',
         'typeId',
         'warehouseId',
     ];

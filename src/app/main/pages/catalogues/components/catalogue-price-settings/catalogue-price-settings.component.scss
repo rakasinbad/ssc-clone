@@ -37,8 +37,15 @@ catalogue-price-settings {
             background: white;
 
             // For horizontal scroll
-            min-width: 100vw;
-            width: 100%;
+            min-width: 110vw;
+        }
+
+        &.edit {
+            .mat-header-row,
+            .mat-row {
+                // For horizontal scroll
+                min-width: 115vw;
+            }
         }
 
         .mat-header-cell,
@@ -65,10 +72,10 @@ catalogue-price-settings {
             padding-right: 0;
         }
 
-        .mat-header-cell:nth-last-of-type(2),
-        .mat-cell:nth-last-of-type(2) {
-            padding-right: 0;
-        }
+        // .mat-header-cell:nth-last-of-type(2),
+        // .mat-cell:nth-last-of-type(2) {
+        //     padding-right: 0;
+        // }
 
         mat-header-cell:last-of-type,
         mat-cell:last-of-type,
@@ -85,43 +92,36 @@ catalogue-price-settings {
         }
 
         .mat-column-segmentation-name {
-            flex: 1 1 150px;
-            min-width: 150px;
+            flex: 0 0 150px;
         }
 
-        .mat-column-warehouse-name {
-            flex: 1 1 150px;
-            min-width: 150px;
-        }
-
-        .mat-column-store-type {
-            flex: 1 1 150px;
-            min-width: 150px;
-        }
-
-        .mat-column-store-group {
-            flex: 1 1 150px;
-            min-width: 150px;
-        }
-
-        .mat-column-store-channel {
-            flex: 1 1 150px;
-            min-width: 150px;
-        }
-
+        .mat-column-warehouse-name,
+        .mat-column-store-type,
+        .mat-column-store-group,
+        .mat-column-store-channel,
         .mat-column-store-cluster {
-            flex: 1 1 150px;
-            min-width: 150px;
+            flex: 0 0 150px;
         }
 
         .mat-column-price {
-            flex: 1 1 120px;
-            min-width: 120px;
+            flex: 0 0 135px;
+        }
+
+        .mat-column-price-after-tax {
+            flex: 0 0 130px;
+        }
+
+        .mat-column-custom-qty {
+            flex: 0 0 150px;
+            justify-content: center;
+        }
+
+        .mat-column-max-order-qty {
+            flex: 0 0 170px;
         }
 
         .mat-column-actions {
-            flex: 0 1 80px;
-            min-width: 80px;
+            flex: 0 0 80px;
             justify-content: flex-end;
         }
 

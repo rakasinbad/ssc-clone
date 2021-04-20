@@ -16,7 +16,8 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { MatDialog, MatPaginator, MatRadioChange, MatSort, PageEvent } from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -41,9 +42,14 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import { CataloguePriceSegmentationDataSource } from '../../datasources';
-import { AdjustCataloguePriceDto, Catalogue } from '../../models';
+import { AdjustCataloguePriceDto, Catalogue, MaxOrderQtySegmentationDto } from '../../models';
 import { CataloguePrice } from '../../models/catalogue-price.model';
-import { CatalogueFacadeService, CataloguesService } from '../../services';
+import { CatalogueTax } from '../../models/classes/catalogue-tax.class';
+import {
+    CatalogueFacadeService,
+    CataloguesService,
+    CatalogueTaxFacadeService,
+} from '../../services';
 import { CatalogueActions, CatalogueDetailPageActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
 
@@ -96,6 +102,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         'store-channel',
         'store-cluster',
         'price',
+        'price-after-tax',
+        'custom-qty',
+        'max-order-qty',
     ];
 
     catalogueContent: {
@@ -176,6 +185,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         clusters: '',
         price: '',
     });
+    taxes: CatalogueTax[];
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -189,7 +199,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
         private applyDialogFactoryService: ApplyDialogFactoryService,
-        private errorMessage$: ErrorMessageService
+        private errorMessage$: ErrorMessageService,
+        private readonly catalogueTaxFacade: CatalogueTaxFacadeService
     ) {}
 
     ngOnInit(): void {
@@ -203,6 +214,15 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             supplierId: null,
             discountRetailBuyerPrice: null,
             discountRetailBuyerPriceView: null,
+            tax: [
+                0,
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            taxView: 0,
             retailBuyingPrice: [
                 '',
                 [
@@ -216,6 +236,21 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             priceSettings: this.fb.array([]),
             advancePrice: false,
         });
+
+        // Get tax list
+        this.catalogueTaxFacade.catalogueTaxes$
+            .pipe(
+                tap((taxes) => {
+                    if (!taxes || !taxes.length) {
+                        this.catalogueTaxFacade.fetchCatalogueTaxes();
+                    }
+                }),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((taxes) => {
+                this.taxes = taxes;
+                this.cdRef.detectChanges();
+            });
 
         /* this.dataSource
             .collections$()
@@ -445,6 +480,93 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         });
     }
 
+    onChangeCustomQty(ev: MatCheckboxChange, item: CataloguePrice, idx: number): void {
+        /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty', {
+            ev,
+            idx,
+            selectedCatalogue: this.selectedCatalogue$.value,
+        }); */
+
+        const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
+
+        maxOrderQtyControl.reset();
+
+        if (ev.checked) {
+            const { minQty } = this.selectedCatalogue$.value;
+
+            maxOrderQtyControl.setValidators([
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.minNumber({
+                    value: minQty,
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'gte_number', {
+                        limitValue: minQty,
+                    }),
+                }),
+                RxwebValidators.digit({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                }),
+            ]);
+            maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
+            maxOrderQtyControl.enable({ onlySelf: true });
+
+            /* HelperService.debug(
+                '[CataloguePriceSettingsComponent] onChangeCustomQty checked TRUE',
+                {
+                    minQty,
+                    maxQtyValue: maxOrderQtyControl,
+                }
+            ); */
+        } else {
+            maxOrderQtyControl.clearValidators();
+            maxOrderQtyControl.updateValueAndValidity({ onlySelf: true });
+            maxOrderQtyControl.disable({ onlySelf: true });
+
+            const payload: MaxOrderQtySegmentationDto = {
+                id: item.id,
+                isMaximum: ev.checked,
+                maxQty: null,
+            };
+
+            this.catalogueFacade.updateMaxOrderQtySegmentation(payload, idx);
+
+            /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeCustomQty checked FALSE', {
+                maxQtyValue: maxOrderQtyControl,
+            }); */
+        }
+    }
+
+    onChangeMaxOrderQty(item: CataloguePrice, idx: number): void {
+        const { minQty, multipleQtyType } = this.selectedCatalogue$.value;
+        const maxOrderQtyControl = this.form.get(['priceSettings', idx, 'maxOrderQtyValue']);
+        const hasErrorMinQty = maxOrderQtyControl.hasError('minNumber');
+
+        const isMaximum = this.form.get(['priceSettings', idx, 'isMaximum']).value;
+
+        /* HelperService.debug('[CataloguePriceSettingsComponent] onChangeMaxOrderQty', {
+            item,
+            idx,
+            form: maxOrderQtyControl,
+            hasError: hasErrorMinQty,
+        }); */
+
+        if (hasErrorMinQty) {
+            this.notice$.open(`Minimum order quantity is ${minQty} ${multipleQtyType}`, 'error', {
+                verticalPosition: 'bottom',
+                horizontalPosition: 'right',
+            });
+        } else if (isMaximum) {
+            const payload: MaxOrderQtySegmentationDto = {
+                id: item.id,
+                isMaximum,
+                maxQty: maxOrderQtyControl.value,
+            };
+
+            this.catalogueFacade.updateMaxOrderQtySegmentation(payload, idx);
+        }
+    }
+
     onDelete(item: CataloguePrice, idx: number): void {
         if (!item || !item.id) {
             return;
@@ -667,6 +789,20 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         this._initTable(this.selectedCatalogue$.value.id);
     }
 
+    onTaxChange(ev: MatRadioChange): void {
+        HelperService.debug('[CataloguePriceSettingsComponent] onTaxChange', { ev });
+
+        // Get Tax Id
+        const taxId =
+            this.taxes && !!this.taxes.length
+                ? +this.taxes.find((tax) => tax.amount === ev.value).id
+                : null;
+
+        if (taxId) {
+            this.formValueChange.emit({ catalogueTaxId: taxId } as Catalogue);
+        }
+    }
+
     onTrackPriceSetting(index: number, item: CataloguePrice): string {
         if (!item) {
             return null;
@@ -676,14 +812,21 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
     }
 
     private _initFormCheck(): void {
-        // (this.form.statusChanges as Observable<FormStatus>).pipe(
-        //     distinctUntilChanged(),
-        //     debounceTime(100),
-        //     tap(value => HelperService.debug('CATALOGUE PRICE SETTINGS FORM STATUS CHANGED:', value)),
-        //     takeUntil(this.unSubs$)
-        // ).subscribe(status => {
-        //     this.formStatusChange.emit(status);
-        // });
+        (this.form.statusChanges as Observable<FormStatus>)
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((value) =>
+                    HelperService.debug(
+                        '[CataloguePriceSettingsComponent - _initFormCheck] statusChanges',
+                        { value }
+                    )
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((status) => {
+                this.formStatusChange.emit(status);
+            });
 
         this.form
             .get('retailBuyingPrice')
@@ -692,8 +835,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 debounceTime(100),
                 tap((value) =>
                     HelperService.debug(
-                        'CATALOGUE PRICE SETTINGS -> RETAIL BUYING PRICE FORM VALUE CHANGED',
-                        value
+                        '[CataloguePriceSettingsComponent - _initFormCheck] retailBuyingPrice valueChanges',
+                        { value }
                     )
                 ),
                 takeUntil(this.unSubs$)
@@ -703,6 +846,23 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             });
 
         this.form
+            .get('discountRetailBuyerPrice')
+            .valueChanges.pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((value) =>
+                    HelperService.debug(
+                        '[CataloguePriceSettingsComponent - _initFormCheck] discountRetailBuyerPrice valueChanges',
+                        { value }
+                    )
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((value) => {
+                this.formValueChange.emit({ discountedRetailBuyingPrice: value } as Catalogue);
+            });
+
+        /* this.form
             .get('retailBuyingPrice')
             .statusChanges.pipe(
                 distinctUntilChanged(),
@@ -717,7 +877,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             )
             .subscribe((status) => {
                 this.formStatusChange.emit(status);
-            });
+            }); */
 
         this.updateForm$
             .pipe(
@@ -758,6 +918,11 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                                     ],
                                     updateOn: 'blur',
                                 },
+                            ],
+                            isMaximum: cataloguePrice.isMaximum || false,
+                            maxOrderQtyValue: [
+                                { value: cataloguePrice.maxQty, disabled: !cataloguePrice.isMaximum },
+                                { updateOn: 'blur' },
                             ],
                         });
 
@@ -818,6 +983,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
+                    'custom-qty',
+                    'max-order-qty',
                     'actions',
                 ];
                 this.formMode = 'edit';
@@ -831,6 +999,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
+                    'custom-qty',
+                    'max-order-qty',
                 ];
                 this.formMode = 'view';
                 this._prepareEditCatalogue();
@@ -917,6 +1088,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     supplierId: (catalogue.brand as any).supplierId,
                     retailBuyingPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
                     retailBuyingPriceView: catalogue.retailBuyingPrice,
+                    tax: catalogue.catalogueTax.amount,
+                    taxView: catalogue.catalogueTax.amount,
                     discountRetailBuyerPrice: String(catalogue.discountedRetailBuyingPrice).replace(
                         '.',
                         ','
@@ -957,6 +1130,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 'store-channel',
                 'store-cluster',
                 'price',
+                'price-after-tax',
+                'custom-qty',
+                'max-order-qty',
             ];
 
             this.form.get('advancePrice').disable();
@@ -970,6 +1146,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                     'store-channel',
                     'store-cluster',
                     'price',
+                    'price-after-tax',
+                    'custom-qty',
+                    'max-order-qty',
                     'actions',
                 ];
             }
