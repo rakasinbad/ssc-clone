@@ -88,6 +88,33 @@
                     </mat-cell>
                 </ng-container> -->
 
+                <!-- Created At Column -->
+                <ng-container matColumnDef="created_at">
+                    <mat-header-cell *matHeaderCellDef>
+                        Created At
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Updated At Column -->
+                <ng-container matColumnDef="updated_at">
+                    <mat-header-cell *matHeaderCellDef>
+                        Updated At
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.updatedAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+                <!-- Updated At Column -->
+
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
                     <mat-header-cell *matHeaderCellDef>
@@ -106,32 +133,7 @@
                         </ng-template>
                     </mat-cell>
                 </ng-container>
-
-                <!-- Status Created At -->
-                <ng-container matColumnDef="created_at">
-                    <mat-header-cell *matHeaderCellDef>
-                        Created At
-                    </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ (row?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Status Column -->
-                <ng-container matColumnDef="updated_at">
-                    <mat-header-cell *matHeaderCellDef>
-                        Updated At
-                    </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ (row?.updatedAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
+                <!-- Status Column -->                
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>

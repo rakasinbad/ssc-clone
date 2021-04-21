@@ -81,11 +81,13 @@
             </div>
             <!-- / APP TITLE -->
 
-            <!-- EDIT BUTTON -->
-            <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
-                <span class="red-500-fg">Edit</span>
-            </button>
-            <!-- / EDIT BUTTON -->
+            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                <!-- EDIT BUTTON -->
+                <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
+                    <span class="red-500-fg">Edit</span>
+                </button>
+                <!-- / EDIT BUTTON -->
+            </ng-template>
         </div>
         <!-- / CONTENT HEADER -->
 
@@ -100,17 +102,15 @@
             fusePerfectScrollbar
         >
             <!-- SKU INFORMATION TAB -->
-            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
-                <mat-tab label="SKU Information" [disabled]="isEditMode()">
-                    <ng-template matTabContent>
-                        <catalogue-sku-information
-                            [(formMode)]="formMode"
-                            (formValueChange)="onFormValueChanged($event)"
-                            (formStatusChange)="onFormStatusChanged($event)"
-                        ></catalogue-sku-information>
-                    </ng-template>
-                </mat-tab>
-            </ng-template>
+            <mat-tab label="SKU Information" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <catalogue-sku-information
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-sku-information>
+                </ng-template>
+            </mat-tab>
             <!-- / SKU INFORMATION TAB -->
 
             <!-- SEGMENTATION SETTINGS TAB -->
