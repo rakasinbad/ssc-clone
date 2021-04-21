@@ -26,7 +26,7 @@ export class RoleGuard implements CanActivate{
           }
         } else {
           const hasAccess = this.ngxPermissions.getPermission(nav.privilages);
-          if (!!hasAccess) return this.router.navigateByUrl(nav.privilages, {replaceUrl: true}); 
+          if (!!hasAccess) return this.router.navigateByUrl(nav.url, {replaceUrl: true}); 
         }
       }
   
