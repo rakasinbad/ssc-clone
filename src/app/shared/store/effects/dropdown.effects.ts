@@ -522,7 +522,7 @@ export class DropdownEffects {
                 }
 
                 return this._$roleApi
-                    .findAll<Role[]>(payload.user.userSuppliers[0].supplierId, { paginate: false })
+                    .findAll<Role[]>(payload.user.userSupplier.supplierId, { paginate: false })
                     .pipe(
                         catchOffline(),
                         retry(3),
