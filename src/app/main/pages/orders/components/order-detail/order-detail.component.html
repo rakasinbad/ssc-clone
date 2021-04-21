@@ -51,8 +51,8 @@
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab [label]="'Original'"></mat-tab>
-            <mat-tab [label]="'Dispatched'" [disabled]="!data?.orderBrands[0]?.orderBrandCatalogues[0]?.invoicedOrderModified"></mat-tab>
-            <mat-tab [label]="'Delivered'" [disabled]="!data?.orderBrands[0]?.orderBrandCatalogues[0]?.deliveredOrderModified"></mat-tab>
+            <mat-tab [label]="'Dispatched'" [disabled]="!data?.invoicedParcelModified"></mat-tab>
+            <mat-tab [label]="'Delivered'" [disabled]="!data?.deliveredParcelFinalPrice"></mat-tab>
         </mat-tab-group>
 
         <!-- ORDER LINE -->
@@ -217,10 +217,26 @@
                                     ></ngx-skeleton-loader>
 
                                     <ng-container *ngIf="!loading">
-                                        {{
-                                            (data?.parcelGrossPrice
-                                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                        }}
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelGrossPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}        
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelGrossPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}        
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelGrossPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                        </ng-container>                            
                                     </ng-container>
                                 </div>
                             </div>
@@ -245,10 +261,26 @@
                                     ></ngx-skeleton-loader>
 
                                     <ng-container *ngIf="!loading">
-                                        {{
-                                            (data?.parcelPromo
-                                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                        }}
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelPromo
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelPromo
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelPromo
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
                                     </ng-container>
                                 </div>
                             </div>
@@ -273,10 +305,26 @@
                                     ></ngx-skeleton-loader>
 
                                     <ng-container *ngIf="!loading">
-                                        {{
-                                            (data?.parcelVoucher
-                                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                        }}
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelVoucher
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelVoucher
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelVoucher
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
                                     </ng-container>
                                 </div>
                             </div>
@@ -301,10 +349,26 @@
                                     ></ngx-skeleton-loader>
 
                                     <ng-container *ngIf="!loading">
-                                        {{
-                                            ((data?.parcelGrossPrice - data?.parcelPromo - data?.parcelVoucher)
-                                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                        }}
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    ((data?.deliveredParcelGrossPrice - data?.deliveredParcelPromo - data?.deliveredParcelVoucher)
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    ((data?.invoicedParcelGrossPrice - data?.invoicedParcelPromo - data?.invoicedParcelVoucher)
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    ((data?.parcelGrossPrice - data?.parcelPromo - data?.parcelVoucher)
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
                                     </ng-container>
                                 </div>
                             </div>
@@ -329,10 +393,26 @@
                                     ></ngx-skeleton-loader>
 
                                     <ng-container *ngIf="!loading">
-                                        {{
-                                            (data?.parcelTaxes
-                                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                        }}
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelTaxes
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelTaxes
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelTaxes
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
                                     </ng-container>
                                 </div>
                             </div>
@@ -357,10 +437,26 @@
                                     ></ngx-skeleton-loader>
 
                                     <ng-container *ngIf="!loading">
-                                        {{
-                                            (data?.parcelFinalPrice
-                                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                        }}
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.invoicedParcelFinalPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.deliveredParcelFinalPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelFinalPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
                                     </ng-container>
                                 </div>
                             </div>
