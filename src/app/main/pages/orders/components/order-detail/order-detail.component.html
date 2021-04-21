@@ -440,13 +440,13 @@
                                         <ng-container [ngSwitch]="type">
                                             <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
                                                 {{
-                                                    (data?.invoicedParcelFinalPrice
+                                                    (data?.deliveredParcelFinalPrice
                                                         | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                                                 }}
                                             </ng-container>    
                                             <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
                                                 {{
-                                                    (data?.deliveredParcelFinalPrice
+                                                    (data?.invoicedParcelFinalPrice
                                                         | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                                                 }}
                                             </ng-container>    
