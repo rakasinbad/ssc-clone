@@ -352,19 +352,19 @@
                                         <ng-container [ngSwitch]="type">
                                             <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
                                                 {{
-                                                    ((data?.deliveredParcelGrossPrice - data?.deliveredParcelPromo - data?.deliveredParcelVoucher)
+                                                    ((data?.deliveredParcelNettPrice)
                                                         | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                                                 }}
                                             </ng-container>    
                                             <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
                                                 {{
-                                                    ((data?.invoicedParcelGrossPrice - data?.invoicedParcelPromo - data?.invoicedParcelVoucher)
+                                                    ((data?.invoicedParcelNettPrice)
                                                         | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                                                 }}
                                             </ng-container>    
                                             <ng-container class="text-word-break" *ngSwitchDefault>
                                                 {{
-                                                    ((data?.parcelGrossPrice - data?.parcelPromo - data?.parcelVoucher)
+                                                    ((data?.parcelNettPrice)
                                                         | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                                                 }}
                                             </ng-container>
