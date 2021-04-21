@@ -16,7 +16,7 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['FINANCE.CLB.CLG.READ'],
+                only: ['FINANCE.CLB.SL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
