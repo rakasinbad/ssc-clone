@@ -431,10 +431,10 @@
                 [expanded]="showPanel"
             >
                 <mat-expansion-panel-header
-                    *ngIf="(config$ | async)?.by?.paymentStatus?.title as paymentStatusTitle"
+                    *ngIf="(config$ | async)?.by?.orderStatus?.title as orderStatusTitle"
                 >
                     <mat-panel-title class="sinbad__filter-title">
-                        {{ paymentStatusTitle }}
+                        {{ orderStatusTitle }}
                     </mat-panel-title>
                 </mat-expansion-panel-header>
 
@@ -442,8 +442,8 @@
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
                             <mat-select [formControl]="form.get('orderStatus')" placeholder="Choose Order Status" multiple>
-                                <mat-option *ngFor="let sources of sourceOrderStatus | async" [value]="sources?.id">
-                                    {{ sources?.name }}
+                                <mat-option *ngFor="let sources of sourceOrderStatus" [value]="sources?.status">
+                                    {{ sources?.title }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -471,8 +471,8 @@
                     <div fxLayout="column" class="custom-field">
                         <mat-form-field appearance="outline" fxFlex>
                             <mat-select [formControl]="form.get('paymentStatus')" placeholder="Choose Payment Status" multiple>
-                                <mat-option *ngFor="let sources of sourcePaymentStatus | async" [value]="sources?.id">
-                                    {{ sources?.name }}
+                                <mat-option *ngFor="let sources of sourcePaymentStatus" [value]="sources?.status">
+                                    {{ sources?.title }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>

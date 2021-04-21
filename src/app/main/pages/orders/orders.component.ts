@@ -1,9 +1,11 @@
 import {
     AfterViewInit,
     Component,
+    OnChanges,
     OnDestroy,
     OnInit,
     SecurityContext,
+    SimpleChanges,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
@@ -26,7 +28,7 @@ import { SinbadFilterService } from 'app/shared/components/sinbad-filter/service
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ButtonDesignType } from 'app/shared/models/button.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQuerySearchParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -36,13 +38,13 @@ import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { OrderFilterDTO } from './models/order-filter.model';
 import { OrderStatusFacadeService } from './services/order-status-facade.service';
 import { PaymentStatusFacadeService } from './services/payment-status-facade.service';
 import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
+import { isMoment } from 'moment';
 
 @Component({
     selector: 'app-orders',
@@ -51,7 +53,7 @@ import { OrderSelectors } from './store/selectors';
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
 })
-export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
     readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
     private form: FormGroup;
@@ -66,7 +68,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     canceledOrder: number;
     pendingPayment: number;
     selectedTab: string;
-    showFilter: boolean = false;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -85,9 +86,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         filter: {
             permissions: [],
-            onClick: () => { 
-                this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
-             }
+            onClick: () => {this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();}
         },
         export: {
             permissions: ['OMS.EXPORT'],
@@ -118,7 +117,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             paymentStatus: {
                 title: 'Payment Status',
-                sources: null
+                sources: null,
             }
         },
         showFilter: true,
@@ -157,7 +156,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
-    globalFilterDto: OrderFilterDTO;
+    globalFilterDto: IQuerySearchParams[];
     isRequestingExport$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
@@ -205,6 +204,22 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.statusOrder = statusOrder;
     }
+    ngOnChanges(changes: SimpleChanges): void {
+        for (const key in changes) {
+            if (changes.hasOwnProperty(key)) {
+                switch (key) {
+                    case 'globalFilter':
+                        if (!changes['globalFilter'].isFirstChange()) {
+                            this.paginator.pageIndex = 0;
+                            this._initTable();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -238,7 +253,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.form.reset();
                     this.globalFilterDto = null;
                 } else {
-                    // this._handleApplyFilter();
+                    this.applyFilter();
                 }
 
                 HelperService.debug('[CatalogueSegmentationComponent] ngOnInit getClickAction$()', {
@@ -247,6 +262,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             });
 
+        this.filterSource();
+        
         this._initPage();
     }
 
@@ -277,6 +294,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onSelectedTab(index: number): void {
+        this.filterConfig.by.orderStatus.sources = [];
+        this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+
         switch (index) {
             case 1:
                 this.selectedTab = 'pending';
@@ -320,6 +340,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
             default:
                 this.selectedTab = '';
+                this.filterSource();
                 this._onRefreshTable();
                 break;
         }
@@ -512,6 +533,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Reset orders state
                 this.store.dispatch(OrderActions.resetOrders());
 
+                this.sinbadFilterService.resetConfig();
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
@@ -594,7 +617,102 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         }
 
+        if (this.globalFilterDto) {
+            data['search'] = data['search'] ? [...data['search'], ...this.globalFilterDto] : [...this.globalFilterDto];
+        }
+
         this.store.dispatch(OrderActions.fetchOrdersRequest({ payload: data }));
+    }
+
+    private applyFilter(): void {
+        this.globalFilterDto = null;
+        var data: IQuerySearchParams[] = [];
+
+        const {
+            startDate,
+            endDate,
+            minAmount,
+            maxAmount,
+            warehouse,
+            orderStatus,
+            paymentStatus
+        } = this.form.value;
+
+        const nStartDate = startDate && isMoment(startDate) ? startDate.format('YYYY-MM-DD') : null;
+        const nEndDate = endDate && isMoment(endDate) ? endDate.format('YYYY-MM-DD') : null;
+
+        if (!!nStartDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'startDate',
+                    keyword: nStartDate,    
+                }
+            ];
+        }
+
+        if (!!nEndDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'endDate',
+                    keyword: nEndDate,    
+                }
+            ];
+        }
+
+        if(!!minAmount){
+            data = [
+                ...data,
+                {
+                    fieldName: 'minAmount',
+                    keyword: minAmount,    
+                }
+            ];
+        }
+
+        if(!!maxAmount){
+            data = [
+                ...data,
+                {
+                    fieldName: 'maxAmount',
+                    keyword: maxAmount,    
+                }
+            ];
+        }
+
+        if(!!warehouse){
+            data = [
+                ...data,
+                {
+                    fieldName: 'warehouseId',
+                    keyword: warehouse,
+                }
+            ];
+        }
+
+        if(!!orderStatus){
+            data = [
+                ...data,
+                {
+                    fieldName: 'orderStatus',
+                    keyword: orderStatus,
+                }
+            ];
+        }
+
+        if(!!paymentStatus){
+            data = [
+                ...data,
+                {
+                    fieldName: 'paymentStatus',
+                    keyword: paymentStatus,
+                }
+            ];
+        }
+
+        this.globalFilterDto = data;
+        this._onRefreshTable();
     }
 
     private _onRefreshTable(): void {
@@ -643,5 +761,24 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     // this.cdRef.markForCheck();
                 }
             );
+    }
+
+    filterSource(): void {
+        this.orderStatusFacade.getWithQuery({ search: [{ fieldName: 'web', keyword: 'true' }] });
+        this.paymentStatusFacade.getWithQuery();
+
+        this.orderStatusFacade.collections$
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe((orderStatus) => {
+                    this.filterConfig.by.orderStatus.sources = orderStatus;
+                    this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+                });
+
+        this.paymentStatusFacade.collections$
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe((paymentStatus) => {
+                    this.filterConfig.by.paymentStatus.sources = paymentStatus;
+                    this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+                });
     }
 }
