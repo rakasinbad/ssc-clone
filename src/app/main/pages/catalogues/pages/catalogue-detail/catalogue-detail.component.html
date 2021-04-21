@@ -100,15 +100,17 @@
             fusePerfectScrollbar
         >
             <!-- SKU INFORMATION TAB -->
-            <mat-tab label="SKU Information" [disabled]="isEditMode()">
-                <ng-template matTabContent>
-                    <catalogue-sku-information
-                        [(formMode)]="formMode"
-                        (formValueChange)="onFormValueChanged($event)"
-                        (formStatusChange)="onFormStatusChanged($event)"
-                    ></catalogue-sku-information>
-                </ng-template>
-            </mat-tab>
+            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                <mat-tab label="SKU Information" [disabled]="isEditMode()">
+                    <ng-template matTabContent>
+                        <catalogue-sku-information
+                            [(formMode)]="formMode"
+                            (formValueChange)="onFormValueChanged($event)"
+                            (formStatusChange)="onFormStatusChanged($event)"
+                        ></catalogue-sku-information>
+                    </ng-template>
+                </mat-tab>
+            </ng-template>
             <!-- / SKU INFORMATION TAB -->
 
             <!-- SEGMENTATION SETTINGS TAB -->
