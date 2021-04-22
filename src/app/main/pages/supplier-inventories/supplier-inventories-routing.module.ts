@@ -15,15 +15,15 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['INVENTORY.SI.READ']
+                only: ['INVENTORY.SI.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }    
             },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
         }
     },
     {
@@ -32,15 +32,15 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['INVENTORY.SI.UPDATE', 'INVENTORY.SI.CREATE']
+                only: ['INVENTORY.SI.UPDATE', 'INVENTORY.SI.CREATE'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }    
             },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
         }
     }
 ];

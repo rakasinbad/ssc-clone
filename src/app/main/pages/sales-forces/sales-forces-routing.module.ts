@@ -13,14 +13,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SRM.SR.READ']
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.SR.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -32,13 +32,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SRM.PFO.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -50,13 +50,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SRM.JP.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -68,13 +68,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: [],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -85,13 +85,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: [],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -102,13 +102,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: [],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -119,13 +119,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SRM.PFO.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -136,13 +136,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SRM.SR.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -153,13 +153,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: [],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -170,13 +170,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SRM.JP.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -188,13 +188,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SRM.ASC.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },

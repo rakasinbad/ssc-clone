@@ -14,13 +14,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['WH.C.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -31,13 +31,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['WH.C.CREATE'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -48,13 +48,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['WH.C.READ'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -65,13 +65,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['WH.C.UPDATE'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },

@@ -11,13 +11,13 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SS.READ', 'SS.CREATE', 'SS.UPDATE'],
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         }
     }
