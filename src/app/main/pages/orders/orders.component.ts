@@ -104,13 +104,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         by: {
             date: {
                 title: 'Order Date',
-                sources: null,                
+                sources: null,            
             },
             basePrice: {
                 title: 'Order Value',
                 sources: null,
             },
-            warehouse: null,
             orderStatus: {
                 title: 'Order Status',
                 sources: null
@@ -234,7 +233,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             endDate: null,
             minAmount: null,
             maxAmount: null,
-            warehouse: null,
             orderStatus: null,
             paymentStatus: null
         });
@@ -256,7 +254,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     this.applyFilter();
                 }
 
-                HelperService.debug('[CatalogueSegmentationComponent] ngOnInit getClickAction$()', {
+                HelperService.debug('[OrdesComponent] ngOnInit getClickAction$()', {
                     form: this.form,
                     filterConfig: this.filterConfig,
                 });
@@ -633,7 +631,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             endDate,
             minAmount,
             maxAmount,
-            warehouse,
             orderStatus,
             paymentStatus
         } = this.form.value;
@@ -646,7 +643,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 ...data,
                 {
                     fieldName: 'startDate',
-                    keyword: nStartDate,    
+                    keyword: nStartDate,
                 }
             ];
         }
@@ -656,7 +653,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 ...data,
                 {
                     fieldName: 'endDate',
-                    keyword: nEndDate,    
+                    keyword: nEndDate,
                 }
             ];
         }
@@ -666,7 +663,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 ...data,
                 {
                     fieldName: 'minAmount',
-                    keyword: minAmount,    
+                    keyword: minAmount,
                 }
             ];
         }
@@ -676,17 +673,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 ...data,
                 {
                     fieldName: 'maxAmount',
-                    keyword: maxAmount,    
-                }
-            ];
-        }
-
-        if(!!warehouse){
-            data = [
-                ...data,
-                {
-                    fieldName: 'warehouseId',
-                    keyword: warehouse,
+                    keyword: maxAmount,
                 }
             ];
         }
@@ -695,7 +682,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             data = [
                 ...data,
                 {
-                    fieldName: 'orderStatus',
+                    fieldName: 'statuses[]',
                     keyword: orderStatus,
                 }
             ];
@@ -705,7 +692,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             data = [
                 ...data,
                 {
-                    fieldName: 'paymentStatus',
+                    fieldName: 'paymentStatuses[]',
                     keyword: paymentStatus,
                 }
             ];

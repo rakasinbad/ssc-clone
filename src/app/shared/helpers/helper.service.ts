@@ -59,12 +59,12 @@ export class HelperService {
         'typeAmount',
         'typeId',
         'warehouseId',
-        'startDate',
-        'endDate',
-        'minAmount',
-        'maxAmount',
-        'orderStatus',
-        'paymentStatus'
+        'startOrderDate',
+        'endOrderDate',
+        'minOrderValue',
+        'maxOrderValue',
+        'statuses[]',
+        'paymentStatuses[]'
     ];
 
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
