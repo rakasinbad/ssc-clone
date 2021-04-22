@@ -10,7 +10,7 @@ const routes: Routes = [
     {
         path: '',
         component: WarehouseCoveragesComponent,
-        canLoad: [AuthGuard, NgxPermissionsGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
                 only: ['WH.C.READ'],
@@ -27,7 +27,7 @@ const routes: Routes = [
     {
         path: 'new',
         component: WarehouseCoveragesFormComponent,
-        canLoad: [AuthGuard, NgxPermissionsGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
                 only: ['WH.C.CREATE'],
@@ -44,7 +44,7 @@ const routes: Routes = [
     {
         path: ':id/detail',
         component: WarehouseCoveragesFormComponent,
-        canLoad: [AuthGuard, NgxPermissionsGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
                 only: ['WH.C.READ'],
@@ -61,7 +61,7 @@ const routes: Routes = [
     {
         path: ':id/edit',
         component: WarehouseCoveragesFormComponent,
-        canLoad: [AuthGuard, NgxPermissionsGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
                 only: ['WH.C.UPDATE'],
