@@ -1,6 +1,11 @@
 @import 'src/@fuse/scss/fuse';
 
 #order-detail {
+    .content-card{
+        background-color: inherit !important;
+        box-shadow: none;
+    }
+    
     .top-bg {
         height: 144px;
     }

@@ -42,6 +42,9 @@ export class OmsOrderLineComponent implements OnInit {
     @Input()
     orderLineType: OrderLineType = 'non_bonus';
 
+    @Input()
+    type: string;
+
     constructor(private orderFacade: OrderFacadeService) {}
 
     ngOnInit(): void {
