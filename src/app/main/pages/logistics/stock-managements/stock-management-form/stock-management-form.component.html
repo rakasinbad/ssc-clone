@@ -389,11 +389,11 @@
                     </ng-container>
 
                     <mat-header-row
-                        *matHeaderRowDef="; sticky: true"
+                        *matHeaderRowDef="displayedColumns; sticky: true"
                     ></mat-header-row>
 
                     <mat-row
-                        *matRowDef="let row; columns: "
+                        *matRowDef="let row; columns: displayedColumns"
                         class="stock-management-catalogue"
                     ></mat-row>
 
