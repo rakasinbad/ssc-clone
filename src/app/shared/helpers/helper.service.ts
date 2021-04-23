@@ -802,7 +802,12 @@ export class HelperService {
                                 }
                             }
 
-                            newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                            if (search.fieldName.includes('[]')) {
+                                newParams = newParams.append(search.fieldName, `${search.keyword}`);
+                            } else {
+                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                            }
+
                         } else if (search.fieldName && search.fieldName !== 'id') {
                             newParams = newParams.append(
                                 `search[${search.fieldName}]`,

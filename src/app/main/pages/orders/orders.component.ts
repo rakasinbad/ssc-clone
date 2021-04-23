@@ -35,7 +35,7 @@ import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { OrderStatusFacadeService } from './services/order-status-facade.service';
@@ -45,6 +45,7 @@ import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
 import { isMoment } from 'moment';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-orders',
@@ -54,7 +55,7 @@ import { isMoment } from 'moment';
     encapsulation: ViewEncapsulation.None,
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
-    readonly defaultPageSize = 25;
+    readonly defaultPageSize = this.route.snapshot.queryParams.limit || 25;
     readonly defaultPageOpts = environment.pageSizeTable;
     private form: FormGroup;
     
@@ -131,9 +132,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         'order-date',
         'store-name',
         'trx-amount',
+        'warehouse',
         'payment-method',
-        'total-product',
+        'paylater-type',
         'status',
+        'payment-status',
+        'total-product',
+        // 'deliveredOn',
+        // 'actual-amount-delivered',
         'delivered-date',
         'actions',
     ];
@@ -150,6 +156,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     };
     hasSelected = false;
     statusOrder: any;
+    firstOne: boolean;
 
     dataSource$: Observable<any>;
     selectedRowIndex$: Observable<string>;
@@ -168,6 +175,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
 
     constructor(
         private fb: FormBuilder,
+        private router: Router,
+        private route: ActivatedRoute,
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
@@ -282,6 +291,26 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    private _initParams(): void {
+        this.paginator.pageSize =  this.defaultPageSize;
+        this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
+
+        if(this.route.snapshot.queryParams.keyword){
+            this.search.setValue(this.route.snapshot.queryParams.keyword);
+        }
+
+        this.form.patchValue({
+            startDate: this.route.snapshot.queryParams.startOrderDate,
+            endDate: this.route.snapshot.queryParams.endOrderDate,
+            minAmount: this.route.snapshot.queryParams.minOrderValue,
+            maxAmount: this.route.snapshot.queryParams.maxOrderValue,
+            orderStatus: this.route.snapshot.queryParams['statuses'] ? this.route.snapshot.queryParams['statuses'].split("~") : null,
+            paymentStatus: this.route.snapshot.queryParams['paymentStatuses'] ? this.route.snapshot.queryParams['paymentStatuses'].split("~") : null
+        });
+
+        this.applyFilter();
+    }
 
     get searchOrder(): string {
         return localStorage.getItem('filter.search.order') || '';
@@ -486,27 +515,39 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 canUpdate.then((hasAccess) => {
                     if (hasAccess) {
                         this.displayedColumns = [
+                            // 'checkbox',
                             'order-code',
                             'order-ref',
                             'order-date',
                             'store-name',
                             'trx-amount',
+                            'warehouse',
                             'payment-method',
-                            'total-product',
+                            'paylater-type',
                             'status',
+                            'payment-status',
+                            'total-product',
+                            // 'deliveredOn',
+                            // 'actual-amount-delivered',
                             'delivered-date',
                             'actions',
                         ];
                     } else {
                         this.displayedColumns = [
+                            // 'checkbox',
                             'order-code',
                             'order-ref',
                             'order-date',
                             'store-name',
                             'trx-amount',
+                            'warehouse',
                             'payment-method',
-                            'total-product',
+                            'paylater-type',
                             'status',
+                            'payment-status',
+                            'total-product',
+                            // 'deliveredOn',
+                            // 'actual-amount-delivered',
                             'delivered-date',
                         ];
                     }
@@ -538,7 +579,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 break;
 
             default:
-                this.paginator.pageSize = this.defaultPageSize;
+                this.firstOne = true;
+                this._initParams();
+
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
@@ -619,7 +662,35 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             data['search'] = data['search'] ? [...data['search'], ...this.globalFilterDto] : [...this.globalFilterDto];
         }
 
+        if (!this.firstOne) {
+            this._handleQueryParam(data);
+        }
+
         this.store.dispatch(OrderActions.fetchOrdersRequest({ payload: data }));
+        this.firstOne = false;
+    }
+
+    private _handleQueryParam(params: IQueryParams) : void {
+        var qParam = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex+1
+        }
+
+        !!params.search ? params.search.forEach((e) => {
+            switch (e.fieldName) {
+                case 'statuses[]':
+                    qParam['statuses'] = !!qParam['statuses'] ? `${qParam['statuses']}~${e.keyword}` : e.keyword;
+                    break;
+                case 'paymentStatuses[]':
+                    qParam['paymentStatuses'] = !!qParam['paymentStatuses'] ? `${qParam['paymentStatuses']}~${e.keyword}` : e.keyword;
+                    break;
+                default:
+                    qParam[e.fieldName] = !!qParam[e.fieldName] ? `${qParam[e.fieldName]}~${e.keyword}` : e.keyword;
+                    break;
+            }
+        }):null;
+
+        this.router.navigate(['.'], {relativeTo: this.route, queryParams: qParam});
     }
 
     private applyFilter(): void {
@@ -638,11 +709,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         const nStartDate = startDate && isMoment(startDate) ? startDate.format('YYYY-MM-DD') : null;
         const nEndDate = endDate && isMoment(endDate) ? endDate.format('YYYY-MM-DD') : null;
 
+        const newOrderStatus = orderStatus && orderStatus.length > 0 ? orderStatus.filter((v) => v) : [];
+        const newPaymentStatus = paymentStatus && paymentStatus.length > 0 ? paymentStatus.filter((v) => v) : [];
+
         if (!!nStartDate) {
             data = [
                 ...data,
                 {
-                    fieldName: 'startDate',
+                    fieldName: 'startOrderDate',
                     keyword: nStartDate,
                 }
             ];
@@ -652,7 +726,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             data = [
                 ...data,
                 {
-                    fieldName: 'endDate',
+                    fieldName: 'endOrderDate',
                     keyword: nEndDate,
                 }
             ];
@@ -662,7 +736,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             data = [
                 ...data,
                 {
-                    fieldName: 'minAmount',
+                    fieldName: 'minOrderValue',
                     keyword: minAmount,
                 }
             ];
@@ -672,30 +746,34 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             data = [
                 ...data,
                 {
-                    fieldName: 'maxAmount',
+                    fieldName: 'maxOrderValue',
                     keyword: maxAmount,
                 }
             ];
         }
 
-        if(!!orderStatus){
-            data = [
-                ...data,
-                {
-                    fieldName: 'statuses[]',
-                    keyword: orderStatus,
-                }
-            ];
+        if(!!newOrderStatus && !!newOrderStatus.length){
+            for (const value of newOrderStatus) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'statuses[]',
+                        keyword: value,
+                    }
+                ];    
+            }
         }
 
-        if(!!paymentStatus){
-            data = [
-                ...data,
-                {
-                    fieldName: 'paymentStatuses[]',
-                    keyword: paymentStatus,
-                }
-            ];
+        if(!!newPaymentStatus && !!newPaymentStatus.length){
+            for (const value of newPaymentStatus) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'paymentStatuses[]',
+                        keyword: value,
+                    }
+                ];
+            }
         }
 
         this.globalFilterDto = data;
@@ -755,14 +833,26 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         this.paymentStatusFacade.getWithQuery();
 
         this.orderStatusFacade.collections$
-                .pipe(takeUntil(this._unSubs$))
+                .pipe(
+                    filter((sources) => sources && sources.length > 0),
+                    map((sources) => {
+                        return sources.map((source) => ({ id: source.status, label: source.title }));
+                    }),
+                    takeUntil(this._unSubs$)
+                )
                 .subscribe((orderStatus) => {
                     this.filterConfig.by.orderStatus.sources = orderStatus;
                     this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
                 });
-
+                
         this.paymentStatusFacade.collections$
-                .pipe(takeUntil(this._unSubs$))
+                .pipe(
+                    filter((sources) => sources && sources.length > 0),
+                    map((sources) => {
+                        return sources.map((source) => ({ id: source.status, label: source.title }));
+                    }),    
+                    takeUntil(this._unSubs$)
+                )
                 .subscribe((paymentStatus) => {
                     this.filterConfig.by.paymentStatus.sources = paymentStatus;
                     this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });

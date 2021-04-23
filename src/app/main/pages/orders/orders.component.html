@@ -86,9 +86,7 @@
 
         <!-- CONTENT CARD [class.mt-8]="!filterStatus || filterStatus === 'all-status'" -->
         <div class="content-card">
-            <sinbad-card-header
-                [config]="cardHeaderConfig"
-            ></sinbad-card-header>
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
                 class="orders-table sinbad-table mx-12"
@@ -184,6 +182,32 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Warehouse Column -->
+                <ng-container matColumnDef="warehouse">
+                    <mat-header-cell *matHeaderCellDef>
+                        Warehouse
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.warehouse) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+
+                <!-- Paylater type Column -->
+                <ng-container matColumnDef="paylater-type">
+                    <mat-header-cell *matHeaderCellDef>
+                        Pay Later Type
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.paylaterType?.name) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+
                 <!-- Payment Method Column -->
                 <ng-container matColumnDef="payment-method">
                     <mat-header-cell *matHeaderCellDef>
@@ -196,26 +220,10 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Total Product Column -->
-                <ng-container matColumnDef="total-product">
-                    <mat-header-cell *matHeaderCellDef>
-                        Qty(pcs)
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{
-                                row?.parcelQty > 0 || row?.parcelQty == 0
-                                    ? (row?.parcelQty | number)
-                                    : safeValue(row?.parcelQty)
-                            }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
                     <mat-header-cell *matHeaderCellDef>
-                        Status
+                        Order Status
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -252,6 +260,9 @@
                                     Done
                                 </ng-container>
 
+                                <ng-container *ngSwitchCase="'pending_supplier'">
+                                    Pending Supplier
+                                </ng-container>
 
                                 <ng-container *ngSwitchCase="'cancel'">
                                     Canceled
@@ -261,6 +272,34 @@
                                     -
                                 </ng-container>
                             </ng-container>
+                        </p>
+                    </mat-cell>
+                </ng-container>                
+
+                <!-- Warehouse Column -->
+                <ng-container matColumnDef="payment-status">
+                    <mat-header-cell *matHeaderCellDef>
+                        Payment Status
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.statusPayment) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Total Product Column -->
+                <ng-container matColumnDef="total-product">
+                    <mat-header-cell *matHeaderCellDef>
+                        Qty(pcs)
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{
+                                row?.parcelQty > 0 || row?.parcelQty == 0
+                                    ? (row?.parcelQty | number)
+                                    : safeValue(row?.parcelQty)
+                            }}
                         </p>
                     </mat-cell>
                 </ng-container>
