@@ -280,7 +280,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         const canDoActions = this.ngxPermissions.hasPermission([
             'CATALOGUE.UPDATE',
-            'CATALOGUE.DELET'
+            'CATALOGUE.DELETE'
         ]);
 
         canDoActions.then(hasAccess => {

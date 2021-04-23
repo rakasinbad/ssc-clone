@@ -128,7 +128,7 @@ export class CatalogueSegmentationListComponent
 
         const canDoActions = this.ngxPermissions.hasPermission([
             'CATALOGUE.UPDATE',
-            'CATALOGUE.DELET'
+            'CATALOGUE.DELETE'
         ]);
 
         canDoActions.then(hasAccess => {
