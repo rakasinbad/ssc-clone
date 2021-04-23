@@ -322,8 +322,7 @@ export class VoucherListComponent implements OnInit, OnChanges, AfterViewInit, O
                         'used',
                         'start-date',
                         'end-date',
-                        'status',
-                        'actions',
+                        'status'
                     ];
                 }
             });

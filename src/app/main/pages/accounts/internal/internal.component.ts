@@ -267,7 +267,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
                     if (hasAccess) {
                         this.displayedColumns = ['user', 'email', 'role', 'created_at', 'updated_at', 'status', 'actions'];
                     } else {
-                        this.displayedColumns = ['user', 'email', 'role', 'created_at', 'updated_at', 'status', 'actions'];
+                        this.displayedColumns = ['user', 'email', 'role', 'created_at', 'updated_at', 'status'];
                     }
                 });
                 break;

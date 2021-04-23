@@ -20,6 +20,7 @@ import { User } from 'app/shared/models/user.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, Subject, merge } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -97,6 +98,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private ngxPermissions: NgxPermissionsService,
         private _helper: HelperService
     ) {
         /** Mendapatkan ID user dan toko dari parameter URL. */
@@ -139,7 +141,39 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         this.selectedUser$ = this._fromUser
             .select(UserSelectors.getUser)
             .pipe(takeUntil(this._unSubs$));
-    }
+
+        this.ngxPermissions
+            .hasPermission(['ATTENDANCE.UPDATE', 'ATTENDANCE.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'number',
+                        'employee',
+                        'role',
+                        'attendanceType',
+                        'locationType',
+                        'checkDate',
+                        'checkIn',
+                        'checkOut',
+                        'duration',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'number',
+                        'employee',
+                        'role',
+                        'attendanceType',
+                        'locationType',
+                        'checkDate',
+                        'checkIn',
+                        'checkOut',
+                        'duration'
+                    ];
+                }
+            });
+        }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.

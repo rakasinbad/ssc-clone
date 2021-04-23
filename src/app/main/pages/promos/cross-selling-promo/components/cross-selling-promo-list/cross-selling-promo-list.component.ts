@@ -116,6 +116,34 @@ export class CrossSellingPromoListComponent implements OnInit, OnChanges, AfterV
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        this.ngxPermissionsService
+            .hasPermission(['PRM.CSP.READ', 'PRM.CSP.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'promo-seller-id',
+                        'promo-name',
+                        'promo-allocation',
+                        'allocation-value',
+                        'start-date',
+                        'end-date',
+                        'status',
+                        'actions',
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'promo-seller-id',
+                        'promo-name',
+                        'promo-allocation',
+                        'allocation-value',
+                        'start-date',
+                        'end-date',
+                        'status'
+                    ];
+                }
+            });
+
         this._initPage();
     }
 

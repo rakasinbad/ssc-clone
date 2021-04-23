@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { UiActions } from 'app/shared/store/actions';
 import { CatalogueSelectors } from 'app/main/pages/catalogues/store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-sku-assignment-detail',
@@ -70,6 +71,7 @@ export class SkuAssignmentDetailComponent implements OnInit, AfterViewInit, OnDe
     constructor(
         private store: NgRxStore<SkuAssignmentCoreFeatureState>,
         private router: Router,
+        private ngxPermissions: NgxPermissionsService,
     ) {
         // Memuat breadcrumb.
         this.store.dispatch(
@@ -155,6 +157,29 @@ export class SkuAssignmentDetailComponent implements OnInit, AfterViewInit, OnDe
     }
 
     ngOnInit(): void {
+
+        this.ngxPermissions
+            .hasPermission(['WH.SKU.UPDATE', 'WH.SKU.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'indexNumber',
+                        'sinbadSku',
+                        'productName',
+                        'skuStatus',
+                        'actions',
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'indexNumber',
+                        'sinbadSku',
+                        'productName',
+                        'skuStatus'
+                    ];
+                }
+            });
+
         this.store.select(
             CatalogueSelectors.getRefreshStatus
         ).pipe(
