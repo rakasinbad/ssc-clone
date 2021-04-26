@@ -81,11 +81,13 @@
             </div>
             <!-- / APP TITLE -->
 
-            <!-- EDIT BUTTON -->
-            <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
-                <span class="red-500-fg">Edit</span>
-            </button>
-            <!-- / EDIT BUTTON -->
+            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                <!-- EDIT BUTTON -->
+                <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
+                    <span class="red-500-fg">Edit</span>
+                </button>
+                <!-- / EDIT BUTTON -->
+            </ng-template>
         </div>
         <!-- / CONTENT HEADER -->
 

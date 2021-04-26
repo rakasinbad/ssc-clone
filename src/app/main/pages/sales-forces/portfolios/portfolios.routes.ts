@@ -16,7 +16,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfolio'),
+                only: ['SRM.PFO.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -33,7 +33,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfolio'),
+                only: ['SRM.PFO.CREATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -50,7 +50,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfolio'),
+                only: ['SRM.PFO.UPDATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -67,7 +67,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfolio'),
+                only: ['SRM.PFO.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

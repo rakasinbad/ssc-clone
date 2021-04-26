@@ -50,7 +50,7 @@ export class VoucherComponent implements OnInit, OnDestroy {
             },
         },
         add: {
-            permissions: [],
+            permissions: ['PRM.SV.CREATE'],
         },
         // viewBy: {
         //     list: [

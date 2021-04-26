@@ -37,16 +37,18 @@
                 </div>
             </div>
             <!-- / APP TITLE -->
-
-            <button
-                type="button"
-                mat-raised-button
-                class="accent-fg"
-                [routerLink]="['../', 'edit']"
-                *ngIf="!isLoadingCombine"
-            >
-                <span>Edit</span>
-            </button>
+            
+            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                <button
+                    type="button"
+                    mat-raised-button
+                    class="accent-fg"
+                    [routerLink]="['../', 'edit']"
+                    *ngIf="!isLoadingCombine"
+                >
+                    <span>Edit</span>
+                </button>
+            </ng-template>
 
             <ngx-skeleton-loader
                 [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"

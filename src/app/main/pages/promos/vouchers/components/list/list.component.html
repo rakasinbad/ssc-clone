@@ -196,7 +196,7 @@
                 </button>
 
                 <mat-menu #moreMenu="matMenu">
-                    <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
+                    <ng-template [ngxPermissionsOnly]="['PRM.SV.READ']">
                         <button
                             type="button"
                             mat-menu-item
@@ -242,7 +242,9 @@
                             <mat-icon>unarchive</mat-icon>
                             <span>Set to Active</span>
                         </button>
+                    </ng-template>
 
+                    <ng-template [ngxPermissionsOnly]="['PRM.SV.DELETE']">
                         <button
                             mat-menu-item
                             type="button"

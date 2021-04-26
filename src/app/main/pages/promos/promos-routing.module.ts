@@ -15,14 +15,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'flexi-combo'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['PRM.FC.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -58,14 +58,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'voucher'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['PRM.FC.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -76,14 +76,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'cross-selling-promo'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['PRM.CSP.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -94,14 +94,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'promo-hierarchy'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['PRM.PH.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },

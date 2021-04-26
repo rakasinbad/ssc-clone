@@ -7,8 +7,6 @@ import {CrossSellingPromoComponent} from './cross-selling-promo.component'
 import { CrossSellingPromoDetailComponent } from './components/cross-selling-promo-detail/cross-selling-promo-detail.component';
 import { CrossSellingPromoFormPageComponent } from './pages';
 
-import { getRoleByRouter } from 'app/shared/helpers';
-
 const routes: Routes = [
     {
         path: '',
@@ -16,7 +14,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'cross-selling-promo'),
+                only: ['PRM.CSP.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -27,14 +25,30 @@ const routes: Routes = [
             },
         },
     },
-    { path: ':id/detail', component: CrossSellingPromoDetailComponent },
+    {
+        path: ':id/detail',
+        component: CrossSellingPromoDetailComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['PRM.CSP.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
     {
         path: 'add',
         component: CrossSellingPromoFormPageComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'cross-selling-promo'),
+                only: ['PRM.SV.CREATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

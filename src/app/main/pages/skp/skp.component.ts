@@ -38,7 +38,7 @@ export class SkpComponent implements OnInit, OnDestroy {
         },
         add: {
             label: 'Create',
-            permissions: [],
+            permissions: ['SKP.CREATE'],
         }
     };
 

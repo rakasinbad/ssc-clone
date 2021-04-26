@@ -22,6 +22,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { WarehouseInvoiceGroup } from 'app/shared/models/warehouse-invoice-group.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
@@ -54,10 +55,10 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
             },
         },
         add: {
-            permissions: [],
+            permissions: ['WH.L.CREATE'],
         },
         export: {
-            permissions: ['OMS.EXPORT'],
+            permissions: ['WH.L.EXPORT'],
             useAdvanced: true,
             pageType: 'warehouses',
         },
@@ -114,7 +115,8 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private domSanitizer: DomSanitizer,
         private router: Router,
-        private store: Store<fromWarehouses.FeatureState>
+        private store: Store<fromWarehouses.FeatureState>,
+        private ngxPermissions: NgxPermissionsService,
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -124,6 +126,39 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.ngxPermissions
+            .hasPermission(['WH.L.UPDATE', 'WH.L.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'wh-id',
+                        'wh-name',
+                        'lead-time',
+                        'invoice',
+                        'assigned-sku',
+                        'stock-available',
+                        'total-urban',
+                        // 'status',
+                        'actions',
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'wh-id',
+                        'wh-name',
+                        'lead-time',
+                        'invoice',
+                        'assigned-sku',
+                        'stock-available',
+                        'total-urban',
+                        // 'status',
+                        'actions',
+                    ];
+                }
+            });
 
         this._initPage();
     }

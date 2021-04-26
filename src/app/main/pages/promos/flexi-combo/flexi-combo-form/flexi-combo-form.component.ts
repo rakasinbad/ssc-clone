@@ -69,6 +69,7 @@ import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 import { FlexiComboSelectors } from '../store/selectors';
 import { SkpLinkedList } from 'app/shared/components/dropdowns/select-linked-skp/models/select-linked-skp.model';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 type TmpKey = 'imgSuggestion';
 
@@ -199,6 +200,7 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
         private formBuilder: FormBuilder,
         private location: Location,
         private matDialog: MatDialog,
+        private ngxPermissions: NgxPermissionsService,
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromFlexiCombo.FeatureState>,
@@ -2606,8 +2608,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                 const { id } = this.route.snapshot.params;
 
                 if (id === 'new') {
+                    const hasAccess = this.ngxPermissions.hasPermission('PRM.FC.CREATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+
                     this.pageType = 'new';
                 } else if (Math.sign(id) === 1) {
+                    const hasAccess = this.ngxPermissions.hasPermission('PRM.FC.UPDATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+
                     this.pageType = 'edit';
 
                     this._breadCrumbs = [

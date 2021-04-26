@@ -34,7 +34,7 @@ export class CrossSellingPromoComponent implements OnInit, OnDestroy {
         active: true,
     },
     add: {
-        permissions: [],
+        permissions: ['PRM.CSP.CREATE'],
     },
     // export: {
     //     permissions: [],
