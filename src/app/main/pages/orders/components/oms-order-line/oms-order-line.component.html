@@ -49,13 +49,29 @@
     <ng-container matColumnDef="gross-price">
         <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p class="text-word-break">
-                {{
-                    (row?.grossPrice
-                        | calculateGrossPrice: true:row?.qty:row?.cataloguePromo
-                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                }}
-            </p>
+            <ng-container [ngSwitch]="type">
+                <p class="text-word-break" *ngSwitchCase="'delivered'">
+                    {{
+                        (row?.grossPrice
+                            | calculateGrossPrice: true:row?.deliveredQty:row?.deliveredCataloguePromo
+                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                    }}
+                </p>    
+                <p class="text-word-break" *ngSwitchCase="'dispatched'">
+                    {{
+                        (row?.grossPrice
+                            | calculateGrossPrice: true:row?.invoicedQty:row?.invoicedCataloguePromo
+                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                    }}
+                </p>    
+                <p class="text-word-break" *ngSwitchDefault>
+                    {{
+                        (row?.grossPrice
+                            | calculateGrossPrice: true:row?.qty:row?.cataloguePromo
+                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                    }}
+                </p>    
+            </ng-container>
         </mat-cell>
     </ng-container>
 
@@ -63,9 +79,17 @@
     <ng-container matColumnDef="discount-price">
         <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p class="text-word-break">
-                {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-            </p>
+            <ng-container [ngSwitch]="type">
+                <p class="text-word-break" *ngSwitchCase="'delivered'">
+                    {{ (row?.deliveredCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                </p>    
+                <p class="text-word-break" *ngSwitchCase="'dispatched'">
+                    {{ (row?.invoicedCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                </p>    
+                <p class="text-word-break" *ngSwitchDefault>
+                    {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                </p>
+            </ng-container>
         </mat-cell>
     </ng-container>
 
