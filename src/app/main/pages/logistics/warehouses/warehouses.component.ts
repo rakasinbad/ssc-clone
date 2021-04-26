@@ -136,21 +136,26 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                         // 'checkbox',
                         'wh-id',
                         'wh-name',
-                        'total-sku', // totalCatalogue
-                        'stock-sellable', // totalCatalogueStock
-                        // 'stock-on-hand',
-                        'last-action-date', // lastActivity
-                        'actions'
+                        'lead-time',
+                        'invoice',
+                        'assigned-sku',
+                        'stock-available',
+                        'total-urban',
+                        // 'status',
+                        'actions',
                     ];
                 } else {
                     this.displayedColumns = [
                         // 'checkbox',
                         'wh-id',
                         'wh-name',
-                        'total-sku', // totalCatalogue
-                        'stock-sellable', // totalCatalogueStock
-                        // 'stock-on-hand',
-                        'last-action-date' // lastActivity
+                        'lead-time',
+                        'invoice',
+                        'assigned-sku',
+                        'stock-available',
+                        'total-urban',
+                        // 'status',
+                        'actions',
                     ];
                 }
             });
