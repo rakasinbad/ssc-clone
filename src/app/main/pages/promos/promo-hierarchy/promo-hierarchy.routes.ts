@@ -23,7 +23,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'promo-hierarchy'),
+                only: ['PRM.PH.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -37,6 +37,18 @@ const routes: Routes = [
     {
         path: ':id/detail',
         component: DetailPromoHierarchyComponent,
+        data: {
+            permissions: {
+                only: ['PRM.PH.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
     },
     
 ];

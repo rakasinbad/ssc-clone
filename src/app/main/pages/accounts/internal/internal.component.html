@@ -62,7 +62,7 @@
                 </ng-container>
 
                 <!-- Status Column -->
-                <ng-container matColumnDef="status">
+                <!-- <ng-container matColumnDef="status">
                     <mat-header-cell *matHeaderCellDef>
                         Status
                     </mat-header-cell>
@@ -85,12 +85,55 @@
                                 remove
                             </mat-icon>
                         </ng-container>
+                    </mat-cell>
+                </ng-container> -->
 
-                        <ng-container *ngIf="!row?.status">
-                            -
-                        </ng-container>
+                <!-- Created At Column -->
+                <ng-container matColumnDef="created_at">
+                    <mat-header-cell *matHeaderCellDef>
+                        Created At
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
+
+                <!-- Updated At Column -->
+                <ng-container matColumnDef="updated_at">
+                    <mat-header-cell *matHeaderCellDef>
+                        Updated At
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.updatedAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+                <!-- Updated At Column -->
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef>
+                        Status
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="status-active" style="word-break: break-word;" *ngIf="row?.status === 'active'; else inactive">
+                            Active
+                        </p>
+                        
+                        <ng-template #inactive>
+                            <p class="status-inactive" style="word-break: break-word;">
+                                Inactive
+                            </p>    
+                        </ng-template>
+                    </mat-cell>
+                </ng-container>
+                <!-- Status Column -->                
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
@@ -112,32 +155,6 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.INTERNAL.UPDATE']">
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="Edit"
-                                        [routerLink]="[row?.userId]"
-                                    >
-                                        <mat-icon>edit</mat-icon>
-                                        <span>Edit</span>
-                                    </button>
-                                </ng-template>
-
-                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.INTERNAL.DELETE']">
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="Delete"
-                                        (click)="onDelete(row)"
-                                    >
-                                        <mat-icon>delete</mat-icon>
-                                        <span>Delete</span>
-                                    </button>
-                                </ng-template>
-
                                 <ng-template [ngxPermissionsOnly]="['ACCOUNT.INTERNAL.UPDATE']">
                                     <button
                                         mat-menu-item
@@ -165,6 +182,32 @@
                                         </span>
                                     </button>
                                 </ng-template>
+
+                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.INTERNAL.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        (click)="onEdit(row?.user?.id)"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
+
+                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.INTERNAL.DELETE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Delete"
+                                        (click)="onDelete(row)"
+                                    >
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Delete</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -182,6 +225,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="internal"
                     [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    (click)="goUserInfoPage(row?.user?.id, row)"
                 >
                 </mat-row>
                 <mat-footer-row

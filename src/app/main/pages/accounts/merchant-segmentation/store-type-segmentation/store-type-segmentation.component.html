@@ -96,66 +96,68 @@
                                                     </div>
 
                                                     <mat-menu #moreMenu="matMenu">
-                                                        <button
-                                                            type="button"
-                                                            mat-menu-item
-                                                            class="sinbad-mat-menu-item"
-                                                            aria-label="Edit"
-                                                            (click)="onEdit(segmentIdx, branchIdx)"
-                                                        >
-                                                            <mat-icon>edit</mat-icon>
-                                                            <span>Edit</span>
-                                                        </button>
+                                                        <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Edit"
+                                                                (click)="onEdit(segmentIdx, branchIdx)"
+                                                            >
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>Edit</span>
+                                                            </button>
 
-                                                        <button
-                                                            type="button"
-                                                            mat-menu-item
-                                                            class="sinbad-mat-menu-item"
-                                                            [attr.aria-label]="
-                                                                getStatus(segmentIdx, branchIdx) ===
-                                                                'active'
-                                                                    ? 'Inactive'
-                                                                    : 'Active'
-                                                            "
-                                                            (click)="
-                                                                onSetStatus(segmentIdx, branchIdx)
-                                                            "
-                                                        >
-                                                            <mat-icon>
-                                                                {{
-                                                                    getStatus(
-                                                                        segmentIdx,
-                                                                        branchIdx
-                                                                    ) === 'active'
-                                                                        ? 'archive'
-                                                                        : 'check_circle_outline'
-                                                                }}
-                                                            </mat-icon>
-                                                            <span>
-                                                                {{
-                                                                    (getStatus(
-                                                                        segmentIdx,
-                                                                        branchIdx
-                                                                    ) === 'active'
-                                                                        ? 'ACTION.INACTIVE'
-                                                                        : 'ACTION.ACTIVE'
-                                                                    ) | translate
-                                                                }}
-                                                            </span>
-                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                [attr.aria-label]="
+                                                                    getStatus(segmentIdx, branchIdx) ===
+                                                                    'active'
+                                                                        ? 'Inactive'
+                                                                        : 'Active'
+                                                                "
+                                                                (click)="
+                                                                    onSetStatus(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>
+                                                                    {{
+                                                                        getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'archive'
+                                                                            : 'check_circle_outline'
+                                                                    }}
+                                                                </mat-icon>
+                                                                <span>
+                                                                    {{
+                                                                        (getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'ACTION.INACTIVE'
+                                                                            : 'ACTION.ACTIVE'
+                                                                        ) | translate
+                                                                    }}
+                                                                </span>
+                                                            </button>
 
-                                                        <button
-                                                            type="button"
-                                                            mat-menu-item
-                                                            class="sinbad-mat-menu-item"
-                                                            aria-label="Rename"
-                                                            (click)="
-                                                                onRename(segmentIdx, branchIdx)
-                                                            "
-                                                        >
-                                                            <mat-icon>title</mat-icon>
-                                                            <span>Rename</span>
-                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Rename"
+                                                                (click)="
+                                                                    onRename(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>title</mat-icon>
+                                                                <span>Rename</span>
+                                                            </button>
+                                                        </ng-template>
                                                     </mat-menu>
 
                                                     <div
@@ -276,66 +278,68 @@
                                                     </div>
 
                                                     <mat-menu #moreMenu="matMenu">
-                                                        <button
-                                                            type="button"
-                                                            mat-menu-item
-                                                            class="sinbad-mat-menu-item"
-                                                            aria-label="Edit"
-                                                            (click)="onEdit(segmentIdx, branchIdx)"
-                                                        >
-                                                            <mat-icon>edit</mat-icon>
-                                                            <span>Edit</span>
-                                                        </button>
+                                                        <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Edit"
+                                                                (click)="onEdit(segmentIdx, branchIdx)"
+                                                            >
+                                                                <mat-icon>edit</mat-icon>
+                                                                <span>Edit</span>
+                                                            </button>
 
-                                                        <button
-                                                            type="button"
-                                                            mat-menu-item
-                                                            class="sinbad-mat-menu-item"
-                                                            [attr.aria-label]="
-                                                                getStatus(segmentIdx, branchIdx) ===
-                                                                'active'
-                                                                    ? 'Inactive'
-                                                                    : 'Active'
-                                                            "
-                                                            (click)="
-                                                                onSetStatus(segmentIdx, branchIdx)
-                                                            "
-                                                        >
-                                                            <mat-icon>
-                                                                {{
-                                                                    getStatus(
-                                                                        segmentIdx,
-                                                                        branchIdx
-                                                                    ) === 'active'
-                                                                        ? 'archive'
-                                                                        : 'check_circle_outline'
-                                                                }}
-                                                            </mat-icon>
-                                                            <span>
-                                                                {{
-                                                                    (getStatus(
-                                                                        segmentIdx,
-                                                                        branchIdx
-                                                                    ) === 'active'
-                                                                        ? 'ACTION.INACTIVE'
-                                                                        : 'ACTION.ACTIVE'
-                                                                    ) | translate
-                                                                }}
-                                                            </span>
-                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                [attr.aria-label]="
+                                                                    getStatus(segmentIdx, branchIdx) ===
+                                                                    'active'
+                                                                        ? 'Inactive'
+                                                                        : 'Active'
+                                                                "
+                                                                (click)="
+                                                                    onSetStatus(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>
+                                                                    {{
+                                                                        getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'archive'
+                                                                            : 'check_circle_outline'
+                                                                    }}
+                                                                </mat-icon>
+                                                                <span>
+                                                                    {{
+                                                                        (getStatus(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        ) === 'active'
+                                                                            ? 'ACTION.INACTIVE'
+                                                                            : 'ACTION.ACTIVE'
+                                                                        ) | translate
+                                                                    }}
+                                                                </span>
+                                                            </button>
 
-                                                        <button
-                                                            type="button"
-                                                            mat-menu-item
-                                                            class="sinbad-mat-menu-item"
-                                                            aria-label="Rename"
-                                                            (click)="
-                                                                onRename(segmentIdx, branchIdx)
-                                                            "
-                                                        >
-                                                            <mat-icon>title</mat-icon>
-                                                            <span>Rename</span>
-                                                        </button>
+                                                            <button
+                                                                type="button"
+                                                                mat-menu-item
+                                                                class="sinbad-mat-menu-item"
+                                                                aria-label="Rename"
+                                                                (click)="
+                                                                    onRename(segmentIdx, branchIdx)
+                                                                "
+                                                            >
+                                                                <mat-icon>title</mat-icon>
+                                                                <span>Rename</span>
+                                                            </button>
+                                                        </ng-template>
                                                     </mat-menu>
 
                                                     <ng-container

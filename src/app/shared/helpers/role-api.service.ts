@@ -50,8 +50,17 @@ export class RoleApiService {
      * @returns {Observable<T>}
      * @memberof RoleApiService
      */
-    findAll<T>(params: IQueryParams): Observable<T> {
-        const newParams = this._$helper.handleParams(this._url, params);
+    findAll<T>(supplierId: string, params: IQueryParams): Observable<T> {
+        const newArg = supplierId
+            ? [
+                {
+                    key: 'supplierId',
+                    value: supplierId
+                }
+            ]
+            : [];
+
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, {
             params: newParams

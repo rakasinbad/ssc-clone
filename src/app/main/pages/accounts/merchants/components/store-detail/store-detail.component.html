@@ -6,15 +6,27 @@
         fxLayoutAlign="start stretch"
     >
         <!-- FOTO -->
-        <div class="img-container" fxFlex="20">
+        <div class="img-container" *ngIf="!!supplierStore?.outerStore?.imageUrl || !!supplierStore?.outerStore?.store?.imageUrl; else noCatalogueImage;">
             <img
-                [src]="supplierStore?.outerStore?.imageUrl"
-                (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl, 'Store Photo')"
+                [src]="supplierStore?.outerStore?.imageUrl || supplierStore?.outerStore?.store?.imageUrl"
+                (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl || supplierStore?.outerStore?.store?.imageUrl, 'Store Photo')"
                 alt="Store Photo"
                 class="fit-image"
                 style="cursor: pointer;"
             />
         </div>
+
+        <ng-template #noCatalogueImage>
+            <div class="img-container">
+                <img
+                    src="https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/store-images/dummy_store.svg"
+                    alt="Store Photo"
+                    class="fit-image"
+                    style="cursor: pointer;"
+                />
+            </div>                
+        </ng-template>
+
         <!-- / FOTO -->
         <!-- FAKTUR AND SALES INFORMATION -->
         <div
@@ -84,51 +96,67 @@
                     Owner Information
                 </span>
                 <!-- Owner Phone Number -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
-                        Owner Phone Number
+                        Phone Number
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.store?.legalInfo?.mobilePhoneNo || '-' }}
                     </p>
+                    <div class="check-icon" fxLayout="row" fxLayoutAlign="center center" *ngIf="supplierStore?.store?.legalInfo?.isMobilePhoneNoVerified">
+                        <mat-icon class="s-16">check</mat-icon>
+                    </div>
                 </div>
                 <!-- / Owner Phone Number -->
                 <!-- Owner Name -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
-                        Owner Name
+                        Name
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.store?.legalInfo?.fullName || '-' }}
                     </p>
                 </div>
                 <!-- / Owner Name -->
+                <!-- Owner Email -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Email
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ supplierStore?.store?.legalInfo?.email || '-' }}
+                    </p>
+                    <div class="check-icon" fxLayout="row" fxLayoutAlign="center center" *ngIf="supplierStore?.store?.legalInfo?.isEmailVerified">
+                        <mat-icon class="s-16">check</mat-icon>
+                    </div>
+                </div>
+                <!-- / Owner Email -->
                 <!-- Owner NPWP ID -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Owner NPWP ID
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.store?.legalInfo?.taxNo || '-' }}
                     </p>
                 </div>
                 <!-- / Owner NPWP ID -->
                 <!-- KTP ID -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         KTP ID
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.store?.legalInfo?.idNo || '-' }}
                     </p>
                 </div>
                 <!-- / KTP ID -->
                 <!-- Owner NPWP Photo -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Owner NPWP Photo
                     </p>
-                    <div class="field-value" [fxFlex]="valueFlex">
+                    <div class="field-value">
                         <a
                             style="cursor: pointer;"
                             (click)="openPreviewPhoto(supplierStore?.store?.legalInfo?.taxImageUrl, 'Owner NPWP Photo')"
@@ -139,18 +167,18 @@
                         </a>
                     </div>
                     <ng-template #noOwnerTaxPhoto>
-                        <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        <p class="font-size-14 field-value">
                             -
                         </p>
                     </ng-template>
                 </div>
                 <!-- / Owner NPWP Photo -->
                 <!-- KTP Photo -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         KTP Photo
                     </p>
-                    <div class="field-value" [fxFlex]="valueFlex">
+                    <div class="field-value">
                         <a
                             style="cursor: pointer;"
                             (click)="openPreviewPhoto(supplierStore?.store?.legalInfo?.idImageUrl, 'KTP Photo')"
@@ -161,18 +189,18 @@
                         </a>
                     </div>
                     <ng-template #noOwnerIdPhoto>
-                        <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        <p class="font-size-14 field-value">
                             -
                         </p>
                     </ng-template>
                 </div>
                 <!-- / KTP Photo -->
                 <!-- KTP Photo + Selfie -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         KTP Photo + Selfie
                     </p>
-                    <div class="field-value" [fxFlex]="valueFlex">
+                    <div class="field-value">
                         <a
                             style="cursor: pointer;"
                             (click)="openPreviewPhoto(supplierStore?.store?.legalInfo?.selfieImageUrl, 'KTP Photo + Selfie')"
@@ -183,24 +211,25 @@
                         </a>
                     </div>
                     <ng-template #noOwnerSelfiePhoto>
-                        <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        <p class="font-size-14 field-value">
                             -
                         </p>
                     </ng-template>
                 </div>
                 <!-- / KTP Photo + Selfie -->
                 <!-- Date Created -->
-                <div fxLayout="row">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Date Created
                     </p>
-                    <p class="font-size-14 field-value" *ngIf="supplierStore?.store?.legalInfo?.createdAt" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value" *ngIf="supplierStore?.store?.legalInfo?.createdAt">
                         {{ supplierStore?.store?.legalInfo?.createdAt | date: 'dd/MM/yyyy HH:mm:ss' || '-' }}
                     </p>
                 </div>
                 <!-- / Date Created -->
             </div>
             <!-- / OWNER INFORMATION -->
+
             <!-- STORE ADDRESS -->
             <div
                 fxLayout="column"
@@ -213,101 +242,101 @@
                     Store Address
                 </span>
                 <!-- Province -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Province
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.urban?.province?.name || '-' }}
                     </p>
                 </div>
                 <!-- / Province -->
                 <!-- City -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         City
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.urban?.city || '-' }}
                     </p>
                 </div>
                 <!-- City -->                
                 <!-- District -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         District
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.urban?.district || '-' }}
                     </p>
                 </div>
                 <!-- / District -->
                 <!-- Urban -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Urban
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.urban?.urban || '-' }}
                     </p>
                 </div>
                 <!-- / Urban -->
                 <!-- Postcode -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Postcode
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.urban?.zipCode || '-' }}
                     </p>
                 </div>
                 <!-- / Postcode -->
                 <!-- Address -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Address
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.address }}
                     </p>
                 </div>
                 <!-- / Address -->
                 <!-- Notes Address -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Notes Address
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.noteAddress || '-' }}
                     </p>
                 </div>
                 <!-- / Notes Address -->
                 <!-- Latitude -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Latitude
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.latitude || '-' }}
                     </p>
                 </div>
                 <!-- / Latitude -->
                 <!-- Longitude -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Longitude
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.longitude || '-' }}
                     </p>
                 </div>
                 <!-- / Longitude -->
                 <!-- Warehouse -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Warehouse
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.store?.warehouses[0]?.name || '-' }}
                     </p>
                 </div>
@@ -326,21 +355,21 @@
                     Store Rejected
                 </span>
                 <!-- District -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Reject List
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.rejectedFieldsString || '-' }}
                     </p>
                 </div>
                 <!-- / District -->
                 <!-- Urban -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Reason
                     </p>
-                    <p class="font-size-14 field-value" style="word-break: break-all;" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value" style="word-break: break-all;">
                         {{ supplierStore?.outerStore?.rejectionSupplierStores[0]?.reasons || '-' }}
                     </p>
                 </div>
@@ -372,7 +401,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Name
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.name || '-' }}
                     </p>
                 </div>
@@ -382,7 +411,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store NPWP ID
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.taxNo || '-' }}
                     </p>
                 </div>
@@ -392,7 +421,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Phone Number
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.phoneNo || '-' }}
                     </p>
                 </div>
@@ -402,7 +431,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store NPWP Photo
                     </p>
-                    <div class="field-value" [fxFlex]="valueFlex">
+                    <div class="field-value">
                         <a
                             style="cursor: pointer;"
                             (click)="openPreviewPhoto(supplierStore?.outerStore?.taxImageUrl, 'Store NPWP Photo')"
@@ -413,7 +442,7 @@
                         </a>
                     </div>
                     <ng-template #noStoreTaxPhoto>
-                        <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        <p class="font-size-14 field-value">
                             -
                         </p>
                     </ng-template>
@@ -424,7 +453,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Photo
                     </p>
-                    <div class="field-value" [fxFlex]="valueFlex">
+                    <div class="field-value">
                         <a
                             style="cursor: pointer;"
                             (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl, 'Store Photo')"
@@ -435,7 +464,7 @@
                         </a>
                     </div>
                     <ng-template #noStorePhoto>
-                        <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        <p class="font-size-14 field-value">
                             -
                         </p>
                     </ng-template>
@@ -450,7 +479,7 @@
                         class="font-size-14"
                         [class.sinbad-green-fg]="supplierStore?.outerStore?.status === 'active'"
                         [class.sinbad-red-fg]="supplierStore?.outerStore?.status === 'inactive'"
-                        [fxFlex]="valueFlex"
+                    
                     >
                         {{ (supplierStore?.outerStore?.status | titlecase) || '-' }}
                     </p>
@@ -461,7 +490,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Date Created
                     </p>
-                    <p class="font-size-14 field-value" *ngIf="supplierStore?.outerStore?.createdAt" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value" *ngIf="supplierStore?.outerStore?.createdAt">
                         {{ (supplierStore?.outerStore?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
                     </p>
                 </div>
@@ -480,7 +509,7 @@
                     Store Classification
                 </span>
                 <!-- Store Type -->
-                <div class="h-48" fxLayout="row" fxLayoutAlign="start center">
+                <div class="h-48" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Type
                     </p>
@@ -489,7 +518,7 @@
                             fxLayout="row"
                             fxLayoutAlign="start center"
                             class="font-size-14 field-value"
-                            [fxFlex]="valueFlex"
+                        
                         >
                             (Loading ...)
                         </p> -->
@@ -503,13 +532,13 @@
                             fxLayoutAlign="start center"
                             class="font-size-14 field-value"
                             [innerHTML]="(supplierStore?.outerStore?.selectedStoreType | safe: 'html')"
-                            [fxFlex]="valueFlex"
+                        
                         ></p>
                     </ng-template>
                 </div>
                 <!-- / Store Type -->
                 <!-- Store Group -->
-                <div class="h-48" fxLayout="row" fxLayoutAlign="start center">
+                <div class="h-48" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Group
                     </p>
@@ -518,7 +547,7 @@
                             fxLayout="row"
                             fxLayoutAlign="start center"
                             class="font-size-14 field-value"
-                            [fxFlex]="valueFlex"
+                        
                         >
                             (Loading ...)
                         </p> -->
@@ -532,13 +561,13 @@
                             fxLayoutAlign="start center"
                             class="font-size-14 field-value"
                             [innerHTML]="(supplierStore?.outerStore?.selectedStoreGroup | safe: 'html')"
-                            [fxFlex]="valueFlex"
+                        
                         ></p>
                     </ng-template>
                 </div>
                 <!-- / Store Group -->
                 <!-- Store Channel -->
-                <div class="h-48" fxLayout="row" fxLayoutAlign="start center">
+                <div class="h-48" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Channel
                     </p>
@@ -547,7 +576,7 @@
                             fxLayout="row"
                             fxLayoutAlign="start center"
                             class="font-size-14 field-value"
-                            [fxFlex]="valueFlex"
+                        
                         >
                             (Loading ...)
                         </p> -->
@@ -561,7 +590,7 @@
                             fxLayoutAlign="start center"
                             class="font-size-14 field-value"
                             [innerHTML]="(supplierStore?.outerStore?.selectedStoreChannel | safe: 'html')"
-                            [fxFlex]="valueFlex"
+                        
                         ></p>
                     </ng-template>
                 </div>
@@ -580,51 +609,51 @@
                     Physical Store Information
                 </span>
                 <!-- Physical Store Size -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Physical Store Size
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.largeArea || '-' }}
                     </p>
                 </div>
                 <!-- / Physical Store Size -->
                 <!-- Number of Employee -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Number of Employee
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.numberOfEmployee || '-' }}
                     </p>
                 </div>
                 <!-- / Number of Employee -->
                 <!-- Top Brand Selling -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Top Brand Selling
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.topSellingBrand || '-' }}
                     </p>
                 </div>
                 <!-- / Top Brand Selling -->
                 <!-- The Most Wanted Brand -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         The Most Wanted Brand
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.mostWantedBrand || '-' }}
                     </p>
                 </div>
                 <!-- / The Most Wanted Brand -->
                 <!-- Vehicle Accessibility -->
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Vehicle Accessibility
                     </p>
-                    <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                    <p class="font-size-14 field-value">
                         {{ supplierStore?.outerStore?.vehicleAccessibility?.name || '-' }}
                     </p>
                 </div>
@@ -634,7 +663,7 @@
                     <p class="font-size-14 field-label" [fxFlex]="labelFlex">
                         Store Photo
                     </p>
-                    <div class="field-value" [fxFlex]="valueFlex">
+                    <div class="field-value">
                         <a
                             style="cursor: pointer;"
                             (click)="openPreviewPhoto(supplierStore?.outerStore?.imageUrl, 'Store Photo')"
@@ -645,7 +674,7 @@
                         </a>
                     </div>
                     <ng-template #noStorePhoto>
-                        <p class="font-size-14 field-value" [fxFlex]="valueFlex">
+                        <p class="font-size-14 field-value">
                             -
                         </p>
                     </ng-template>

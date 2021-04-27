@@ -44,6 +44,7 @@ import {
 } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { TemperatureSelectors, WarehouseValueSelectors } from 'app/shared/store/selectors/sources';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, fromEvent, Observable, Subject } from 'rxjs';
 import {
     debounceTime,
@@ -142,6 +143,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     private _deletedInvoiceGroups = [];
 
     constructor(
+        private ngxPermissions: NgxPermissionsService,
         private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
         private location: Location,
@@ -628,8 +630,22 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 const { id } = this.route.snapshot.params;
 
                 if (id === 'new') {
+                    const hasAccess = this.ngxPermissions.hasPermission('WH.L.CREATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+
                     this.pageType = 'new';
                 } else if (Math.sign(id) === 1) {
+                    const hasAccess = this.ngxPermissions.hasPermission('WH.L.UPDATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+                    
                     this.pageType = 'edit';
 
                     this._breadCrumbs = [

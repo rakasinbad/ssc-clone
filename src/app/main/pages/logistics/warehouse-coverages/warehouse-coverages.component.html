@@ -213,11 +213,13 @@
                             </button>
             
                             <mat-menu #moreMenu="matMenu">
-                                <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
-                                    (click)="onEditWarehouseCoverage(row)">
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['WH.C.UPDATE']">
+                                    <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
+                                        (click)="onEditWarehouseCoverage(row)">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>

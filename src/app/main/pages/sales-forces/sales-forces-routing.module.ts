@@ -13,14 +13,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sales-rep'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.SR.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -31,14 +31,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfolio'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.PFO.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -49,14 +49,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'journey-plans'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.JP.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -67,14 +67,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'workday-setting'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: [],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -84,14 +84,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sr-target'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: [],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -101,14 +101,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sales-team'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: [],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -118,14 +118,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'portfoliosv2'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.PFO.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -135,14 +135,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'sales-repsv2'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.SR.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -152,14 +152,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'pjp'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: [],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -169,14 +169,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'journey-plans'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.JP.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },
@@ -187,14 +187,14 @@ const routes: Routes = [
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('sales-force', 'associations'),
-            },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
-                },
+                only: ['SRM.ASC.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },    
             },
         },
     },

@@ -78,6 +78,17 @@ export class SkpListComponent implements OnInit, AfterViewInit {
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<SkpModel>(true, []);
 
+        this.ngxPermissionsService
+            .hasPermission(['SKP.READ', 'SKP.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = ['skp-name', 'description', 'start-date', 'end-date', 'status', 'actions'];
+                } else {
+                    this.displayedColumns = ['skp-name', 'description', 'start-date', 'end-date', 'status'];
+                }
+            });
+
         this.dataSource$ = this.SkpStore.select(SkpSelectors.selectAll).pipe(takeUntil(this.subs$));
         this.totalDataSource$ = this.SkpStore.select(SkpSelectors.getTotalItem);
         this.isLoading$ = this.SkpStore.select(SkpSelectors.getIsLoading).pipe(
