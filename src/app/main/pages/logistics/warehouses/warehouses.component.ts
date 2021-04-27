@@ -155,7 +155,6 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                         'stock-available',
                         'total-urban',
                         // 'status',
-                        'actions',
                     ];
                 }
             });
