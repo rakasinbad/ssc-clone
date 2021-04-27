@@ -45,7 +45,6 @@ export class StoreDetailComponent implements OnInit {
                 panelClass: 'dialog-container-no-padding'
             }
         );
-
         this.dialogPreviewPhoto.closed$.subscribe({
             next: () => {
                 HelperService.debug('DIALOG PREVIEW PHOTO CLOSED');

@@ -6,7 +6,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { select, Store } from '@ngrx/store';
@@ -51,6 +51,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private router: Router,
         private ngxPermissions: NgxPermissionsService,
         private storage: StorageMap,
         private store: Store<fromInternal.FeatureState>,
@@ -92,9 +93,9 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         );
         this.store.dispatch(UiActions.showFooterAction()); */
 
-        const { id } = this.route.snapshot.params;
+        const { type } = this.route.snapshot.data;
 
-        if (id === 'new') {
+        if (type === 'new') {
             this.pageType = 'new';
         } else {
             // Set breadcrumbs
@@ -133,8 +134,12 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
+        const { type } = this.route.snapshot.data;
         this.isEdit = false;
+
+        if (type === 'edit') {
+            this.isEdit = true;
+        }
 
         this.initForm();
 
@@ -184,8 +189,10 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     }
 
     onEdit(isEdit: boolean): void {
-        this.isEdit = isEdit ? false : true;
-        this.formStatus();
+        if (!isEdit) {
+            const { id } = this.route.snapshot.params;
+            this.router.navigateByUrl(`/pages/account/internal/${id}/edit`);
+        }
     }
 
     onSubmit(): void {

@@ -24,7 +24,7 @@
                     <!-- <span class="mat-headline">
                         Owner Information
                     </span> -->
-                    <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Store Information</span>
+                    <span class="mat-subheading-2" fxLayout="row" fxLayoutAlign="start center">Owner Information</span>
 
                     <div>
                         <!-- OWNER PHONE NUMBER -->
@@ -34,7 +34,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.phoneNumber')"
                             >
-                                *Owner Phone
+                                <b class="text-red">*</b> Phone Number
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -69,7 +69,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.name')"
                             >
-                                *Owner Name
+                                <b class="text-red">*</b> Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -89,6 +89,29 @@
                             </mat-form-field>
                         </div>
                         <!-- / OWNER NAME -->
+                        <!-- OWNER EMAIL -->
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
+                            <label class="form-label"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('profileInfo.email')"
+                            >
+                                <b class="text-red">*</b> Email
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="email"
+                                    formControlName="email"
+                                />
+
+                                <mat-error *ngIf="hasError('profileInfo.email', true)">
+                                    {{ getErrorMessage('profileInfo.email') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / OWNER EMAIL -->
                         <!-- OWNER NPWP ID -->
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start center">
                             <label class="form-label"
@@ -96,7 +119,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.taxId')"
                             >
-                                Owner NPWP ID
+                                NPWP ID
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -145,7 +168,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('profileInfo.taxPhoto')"
                             >
-                                Owner<br/>NPWP Photo
+                                NPWP Photo
                             </label>
 
                             <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
@@ -350,7 +373,7 @@
                                     [class.mat-error]="hasError('storeInfo.storeId.id')"
                                     class="pt-16 form-label"
                                 >
-                                    *ID
+                                <b class="text-red">*</b> ID
                                 </label>
     
                                 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="50">
@@ -405,7 +428,7 @@
                                     fxFlex="12"
                                     [class.mat-error]="hasError('storeInfo.storeId.storeName')"
                                 >
-                                    *Store Name
+                                    <b class="text-red">*</b> Store Name
                                 </label>
     
                                 <mat-form-field appearance="outline" fxFlex="50">
@@ -641,7 +664,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.district')"
                             >
-                                *District
+                                <b class="text-red">*</b> District
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -794,7 +817,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.urban')"
                             >
-                                *Urban
+                                <b class="text-red">*</b> Urban
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1136,7 +1159,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.postcode')"
                             >
-                                *Postcode
+                                <b class="text-red">*</b> Postcode
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1171,7 +1194,7 @@
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.address.address')"
                             >
-                                *Address
+                                <b class="text-red">*</b> Address
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1276,7 +1299,7 @@
                                         hasError('storeInfo.address.warehouse')
                                     "
                                 >
-                                    *Warehouse
+                                    <b class="text-red">*</b> Warehouse
                                 </label>
                                 <!-- FORM FIELD WRAPPER -->
                                 <div fxFlex="50" fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="26px">
@@ -2140,7 +2163,7 @@
                                                     : null
                                             "
                                         >
-                                            {{ tempCreditLimitAmount[i] ? '*' : '' }}Value
+                                            <b class="text-red">{{ tempCreditLimitAmount[i] ? '*' : '' }}</b> Value
                                         </label>
 
                                         <mat-form-field appearance="outline" fxFlex="50">
@@ -2201,7 +2224,7 @@
                                                     : null
                                             "
                                         >
-                                            {{ tempTermOfPayment[i] ? '*' : '' }}ToP
+                                            <b class="text-red">{{ tempTermOfPayment[i] ? '*' : '' }}</b> ToP
                                         </label>
 
                                         <mat-form-field appearance="outline" fxFlex="50">

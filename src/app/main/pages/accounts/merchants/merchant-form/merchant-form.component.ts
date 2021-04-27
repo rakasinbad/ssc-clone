@@ -2267,6 +2267,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         )
                     }),
                 ]],
+                // Email Pemilik Toko
+                email: [{ value: null, disabled: true }, [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        )
+                    }),
+                ]],
                 // Nomor Pokok Wajib Pajak (NPWP) Pemilik Toko
                 taxId: [{ value: null, disabled: true }, [
                         // RxwebValidators.required({
@@ -2898,6 +2907,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Informasi pemilik toko akan di-load setelah isi nomor telepon dan hanya read-only.
                 phoneNumber: data.store.legalInfo.mobilePhoneNo,
                 name: data.store.legalInfo.fullName,
+                email: data.store.legalInfo.email,
                 taxId: data.store.legalInfo.taxNo,
                 identityId: data.store.legalInfo.idNo,
                 taxPhoto: data.store.legalInfo.taxImageUrl,

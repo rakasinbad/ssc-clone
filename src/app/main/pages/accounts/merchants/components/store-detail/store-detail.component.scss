@@ -1,6 +1,14 @@
 @import 'src/@sinbad/scss/helper';
 
 store-detail-component {
+    .check-icon{
+        background-color:#31B057;
+        color:white;
+        width: 24px;
+        height: 24px;
+        justify-content: center;
+        border-radius: 50%;
+    }
     .img-container {
         width: 128px; /*any size*/
         height: 128px; /*any size*/
