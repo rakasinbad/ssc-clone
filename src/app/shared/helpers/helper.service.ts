@@ -202,6 +202,14 @@ export class HelperService {
             id: 'overdue',
             label: 'Overdue',
         },
+        {
+            id: 'waiting_for_refund',
+            label: 'Waiting for Refund'
+        },
+        {
+            id: 'refunded',
+            label: 'Refunded'
+        }
     ];
 
     private static readonly _platformSinbad: { id: PlatformSinbad; label: string }[] = [

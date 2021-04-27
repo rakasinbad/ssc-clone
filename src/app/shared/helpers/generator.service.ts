@@ -90,7 +90,7 @@ export class GeneratorService {
                         entity[key] = faker.random.arrayElement([
                             'Temp Paid',
                             'Waiting for Payment',
-                            'Paid'
+                            'Paid',
                         ]);
                         break;
 

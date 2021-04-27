@@ -6,6 +6,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import { IStatusPayment } from '../../models';
 import { PaymentStatusActions } from '../actions';
 import { OrderActions } from '../../../../orders/store/actions';
+import { getTotalRefunded } from '../selectors/payment-status.selectors';
 
 export const FEATURE_KEY = 'paymentStatuses';
 
@@ -49,7 +50,9 @@ const initialPaymentStatus = adapterPaymentStatus.getInitialState({
         totalD0PaymentOrder: '0',
         totalPaidOrder: '0',
         totalPaymentFailedOrder: '0',
-        totalOverdueOrder: '0'
+        totalOverdueOrder: '0',
+        totalWaitingForRefund: '0',
+        totalRefunded: '0'
     }
 });
 

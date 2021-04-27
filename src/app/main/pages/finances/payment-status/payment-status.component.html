@@ -94,6 +94,10 @@
                                     Payment Failed
                                 </ng-container>
 
+                                <ng-container *ngSwitchCase="'waiting_for_refund'">
+                                    Waiting for Refund
+                                </ng-container>
+
                                 <ng-container *ngSwitchDefault>
                                     {{ (row?.statusPayment | titlecase) || '-' }}
                                 </ng-container>
