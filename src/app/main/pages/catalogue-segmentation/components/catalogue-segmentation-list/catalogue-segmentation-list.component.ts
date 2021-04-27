@@ -17,6 +17,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, merge, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { CatalogueSegmentationDataSource } from '../../datasources';
@@ -83,7 +84,8 @@ export class CatalogueSegmentationListComponent
     constructor(
         private cdRef: ChangeDetectorRef,
         private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private catalogueSegmentationService: CatalogueSegmentationService
+        private catalogueSegmentationService: CatalogueSegmentationService,
+        private ngxPermissions: NgxPermissionsService,
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -123,6 +125,38 @@ export class CatalogueSegmentationListComponent
                 this.totalItem = totalItem;
                 this.cdRef.detectChanges();
             });
+
+        const canDoActions = this.ngxPermissions.hasPermission([
+            'CATALOGUE.UPDATE',
+            'CATALOGUE.DELETE'
+        ]);
+
+        canDoActions.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    'segmentation-name',
+                    'warehouse-name',
+                    'store-type',
+                    'store-group',
+                    'store-channel',
+                    'store-cluster',
+                    'status',
+                    'actions',
+                ];
+            
+            } else {
+                this.displayedColumns = [
+                    'segmentation-name',
+                    'warehouse-name',
+                    'store-type',
+                    'store-group',
+                    'store-channel',
+                    'store-cluster',
+                    'status'
+                ];
+            
+            }
+        });
 
         this._initTable();
     }

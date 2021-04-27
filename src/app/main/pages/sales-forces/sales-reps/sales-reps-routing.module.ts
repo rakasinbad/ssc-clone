@@ -14,15 +14,15 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SRM.SR.READ']
+                only: ['SRM.SR.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }    
             },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
         }
     },
     {
@@ -31,15 +31,15 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SRM.SR.CREATE', 'SRM.SR.UPDATE']
+                only: ['SRM.SR.CREATE', 'SRM.SR.UPDATE'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }    
             },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
         }
     },
     {
@@ -48,15 +48,15 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SRM.SR.READ']
+                only: ['SRM.SR.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }    
             },
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true
-                }
-            }
         }
     }
 ];

@@ -261,7 +261,7 @@
                 </button>
 
                 <mat-menu #moreMenu="matMenu">
-                    <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
+                    <ng-template [ngxPermissionsOnly]="['PRM.FC.READ']">
                         <!-- <button
                             type="button"
                             mat-menu-item
@@ -304,7 +304,9 @@
                                 }}
                             </span>
                         </button>
+                    </ng-template>
 
+                    <ng-template [ngxPermissionsOnly]="['PRM.FC.DELETE']">
                         <button
                             type="button"
                             mat-menu-item

@@ -61,11 +61,13 @@
             </div>
             <!-- / APP TITLE -->
             <!-- EDIT BUTTON -->
-            <ng-container *ngIf="(selectedSupplierStore$ | async) as selectedSupplierStore">
-                <button mat-flat-button (click)="editSupplierStore(selectedSupplierStore)" *ngIf="isViewMode() && section !== 'employee' && !(isEditLocation$ | async)">
-                    <span class="red-500-fg">Edit</span>
-                </button>
-            </ng-container>
+            <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                <ng-container *ngIf="(selectedSupplierStore$ | async) as selectedSupplierStore">
+                    <button mat-flat-button (click)="editSupplierStore(selectedSupplierStore)" *ngIf="isViewMode() && section !== 'employee' && !(isEditLocation$ | async)">
+                        <span class="red-500-fg">Edit</span>
+                    </button>
+                </ng-container>    
+            </ng-template>
             <!-- / EDIT BUTTON -->
         </div>
         <!-- / CONTENT HEADER -->
@@ -84,11 +86,15 @@
                     <store-detail-component [supplierStore]="(selectedSupplierStore$ | async)"></store-detail-component>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Employee" [disabled]="isEditMode()">
-                <ng-template matTabContent>
-                    <store-employee-component [supplierStore]="(selectedSupplierStore$ | async)"></store-employee-component>
-                </ng-template>
-            </mat-tab>
+
+            <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.EMPLOYEE.UPDATE']">
+                <mat-tab label="Employee" [disabled]="isEditMode()">
+                    <ng-template matTabContent>
+                        <store-employee-component [supplierStore]="(selectedSupplierStore$ | async)"></store-employee-component>
+                    </ng-template>
+                </mat-tab>
+            </ng-template>
+
             <mat-tab label="Location" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <app-merchant-location-detail></app-merchant-location-detail>

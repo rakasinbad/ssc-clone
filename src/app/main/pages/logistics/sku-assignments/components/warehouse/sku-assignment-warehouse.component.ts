@@ -286,8 +286,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
                         // 'checkbox',
                         'wh-id',
                         'wh-name',
-                        'total-sku',
-                        'actions'
+                        'total-sku'
                     ];
                 }
             });

@@ -31,6 +31,7 @@ import {
     WarehouseSelectors,
 } from 'app/shared/store/selectors/sources';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
@@ -161,6 +162,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromStockManagements.FeatureState>,
+        private ngxPermissions: NgxPermissionsService,
         private _$errorMessage: ErrorMessageService,
         private _$helper: HelperService,
         private _$notice: NoticeService
@@ -461,8 +463,22 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 const { id } = this.route.snapshot.params;
 
                 if (id === 'new') {
+                    const hasAccess = this.ngxPermissions.hasPermission('WH.SM.CREATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+
                     this.pageType = 'new';
                 } else if (Math.sign(id) === 1) {
+                    const hasAccess = this.ngxPermissions.hasPermission('WH.SM.UPDATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+                    
                     this.pageType = 'edit';
                 } else {
                     this.router.navigateByUrl('/pages/logistics/stock-managements');

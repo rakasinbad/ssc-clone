@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -45,6 +45,7 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private router: Router,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSupplierInventory.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -57,8 +58,23 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
         const { id } = this.route.snapshot.params;
 
         if (id === 'new') {
+            const hasAccess = this.ngxPermissions.hasPermission('INVENTORY.SI.CREATE');
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.pageType = 'new';
         } else {
+            const hasAccess = this.ngxPermissions.hasPermission('INVENTORY.SI.UPDATE');
+
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.store.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
@@ -162,7 +178,7 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
         // } = this.form.controls;
 
         if (this.pageType === 'edit') {
-            const canUpdate = this.ngxPermissions.hasPermission('');
+            const canUpdate = this.ngxPermissions.hasPermission('INVENTORY.SI.UPDATE');
 
             canUpdate.then(hasAccess => {
                 if (hasAccess) {
@@ -180,10 +196,7 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
                         })
                     );
                 } else {
-                    this._$notice.open('Sorry, permission denied!', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
                 }
             });
         }

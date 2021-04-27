@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
@@ -19,6 +19,7 @@ import { ErrorMessageService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import * as moment from 'moment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
@@ -65,6 +66,8 @@ export class AttendanceFormComponent implements OnInit, OnDestroy, AfterViewInit
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private storage: StorageMap,
+        private ngxPermissions: NgxPermissionsService,
+        private router: Router,
         private store: Store<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private errorMessageSvc: ErrorMessageService
@@ -115,9 +118,23 @@ export class AttendanceFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.initForm();
 
         if (id === 'new') {
+            const hasAccess = this.ngxPermissions.hasPermission('ATTENDANCE.CREATE');
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.attendance$ = of(null);
             this.pageType = 'new';
         } else {
+            const hasAccess = this.ngxPermissions.hasPermission('ATTENDANCE.UPDATE');
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.attendance$ = this.store.pipe(
                 select(AttendanceSelectors.getSelectedAttendance),
                 distinctUntilChanged(),

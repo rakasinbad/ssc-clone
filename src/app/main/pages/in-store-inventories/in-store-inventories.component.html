@@ -169,11 +169,13 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Edit"
-                                    [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']">
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['INVENTORY.ISI.UPDATE']">
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Edit"
+                                        [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
 
                                 <!-- <button
                                     mat-menu-item
