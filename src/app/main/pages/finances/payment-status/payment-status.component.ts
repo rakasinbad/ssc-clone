@@ -280,14 +280,14 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                     moment.isMoment(payload.start) && payload.start
                         ? (payload.start as moment.Moment).format('YYYY-MM-DD')
                         : payload.start
-                        ? moment(payload.start).format('YYYY-MM-DD')
-                        : null,
+                            ? moment(payload.start).format('YYYY-MM-DD')
+                            : null,
                 dateLte:
                     moment.isMoment(payload.end) && payload.end
                         ? (payload.end as moment.Moment).format('YYYY-MM-DD')
                         : payload.end
-                        ? moment(payload.end).format('YYYY-MM-DD')
-                        : null
+                            ? moment(payload.end).format('YYYY-MM-DD')
+                            : null
             };
 
             this.store.dispatch(PaymentStatusActions.exportRequest({ payload: body }));
@@ -684,7 +684,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.filterStatus === 'paid' ||
                 this.filterStatus === 'overdue' ||
                 this.filterStatus === 'payment_failed' ||
-                this.filterStatus === 'waiting_for_refund'||
+                this.filterStatus === 'waiting_for_refund' ||
                 this.filterStatus === 'refunded'
             ) {
                 if (data['search'] && data['search'].length > 0) {
