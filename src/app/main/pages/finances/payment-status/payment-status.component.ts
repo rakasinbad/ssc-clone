@@ -280,14 +280,14 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                     moment.isMoment(payload.start) && payload.start
                         ? (payload.start as moment.Moment).format('YYYY-MM-DD')
                         : payload.start
-                        ? moment(payload.start).format('YYYY-MM-DD')
-                        : null,
+                            ? moment(payload.start).format('YYYY-MM-DD')
+                            : null,
                 dateLte:
                     moment.isMoment(payload.end) && payload.end
                         ? (payload.end as moment.Moment).format('YYYY-MM-DD')
                         : payload.end
-                        ? moment(payload.end).format('YYYY-MM-DD')
-                        : null
+                            ? moment(payload.end).format('YYYY-MM-DD')
+                            : null
             };
 
             this.store.dispatch(PaymentStatusActions.exportRequest({ payload: body }));
@@ -509,7 +509,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                     this.store.select(PaymentStatusSelectors.getTotalD0Payment),
                     this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
                     this.store.select(PaymentStatusSelectors.getTotalFailPayment),
-                    this.store.select(PaymentStatusSelectors.getTotalOverduePayment)
+                    this.store.select(PaymentStatusSelectors.getTotalOverduePayment),
+                    this.store.select(PaymentStatusSelectors.getTotalWaitingForRefund),
+                    this.store.select(PaymentStatusSelectors.getTotalRefunded)
                 ])
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(
@@ -521,7 +523,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                             d0Payment,
                             paidPayment,
                             failPayment,
-                            overduePayment
+                            overduePayment,
+                            waitingRefundPayment,
+                            refundedPayment
                         ]) => {
                             if (typeof allPayment !== 'undefined') {
                                 this._updateStatus(
@@ -583,6 +587,20 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                                 this._updateStatus(
                                     'overdue',
                                     { title: `Overdue (${overduePayment})` },
+                                    'customNavigation'
+                                );
+                            }
+                            if (typeof waitingRefundPayment !== 'undefined') {
+                                this._updateStatus(
+                                    'waiting_for_refund',
+                                    { title: `Waiting for Refund (${waitingRefundPayment})` },
+                                    'customNavigation'
+                                );
+                            }
+                            if (typeof refundedPayment !== 'undefined') {
+                                this._updateStatus(
+                                    'refunded',
+                                    { title: `Refunded (${refundedPayment})` },
                                     'customNavigation'
                                 );
                             }
@@ -665,7 +683,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.filterStatus === 'waiting_for_payment' ||
                 this.filterStatus === 'paid' ||
                 this.filterStatus === 'overdue' ||
-                this.filterStatus === 'payment_failed'
+                this.filterStatus === 'payment_failed' ||
+                this.filterStatus === 'waiting_for_refund' ||
+                this.filterStatus === 'refunded'
             ) {
                 if (data['search'] && data['search'].length > 0) {
                     data['search'].push({
