@@ -20,6 +20,7 @@ import { Role } from 'app/shared/models/role.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, Subject, merge } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 
@@ -98,6 +99,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private ngxPermissions: NgxPermissionsService,
         private _helper: HelperService
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
@@ -181,6 +183,38 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         this.totalEmployeesActivities$ = this._fromAttendance
             .select(AttendanceSelectors.getTotalAttendance)
             .pipe(takeUntil(this._unSubs$));
+
+        this.ngxPermissions
+            .hasPermission(['ATTENDANCE.UPDATE', 'ATTENDANCE.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'number',
+                        'employee',
+                        'role',
+                        'attendanceType',
+                        'locationType',
+                        'checkDate',
+                        'checkIn',
+                        'checkOut',
+                        'duration',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'number',
+                        'employee',
+                        'role',
+                        'attendanceType',
+                        'locationType',
+                        'checkDate',
+                        'checkIn',
+                        'checkOut',
+                        'duration'
+                    ];
+                }
+            });
     }
 
     ngOnDestroy(): void {

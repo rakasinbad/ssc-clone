@@ -17,7 +17,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('promos', 'flexi-combo'),
+                only: ['PRM.FC.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -28,8 +28,40 @@ const routes: Routes = [
             },
         },
     },
-    { path: ':id/detail', component: FlexiComboDetailComponent },
-    { path: ':id', component: FlexiComboFormComponent },
+    {
+        path: ':id/detail',
+        component: FlexiComboDetailComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['PRM.FC.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
+    { 
+        path: ':id', 
+        component: FlexiComboFormComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['PRM.FC.CREATE', 'PRM.FC.UPDATE'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
 ];
 
 @NgModule({

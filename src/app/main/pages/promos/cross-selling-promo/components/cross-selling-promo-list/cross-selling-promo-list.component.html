@@ -173,8 +173,8 @@
                 </button>
 
                 <mat-menu #moreMenu="matMenu">
-                    <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
-
+                    <!-- SEMENTARA -->
+                    <ng-template [ngxPermissionsOnly]="['PRM.CSP.READ']">
                         <button
                             type="button"
                             [disabled]="isDisabled(row.status, row.endDate)"
@@ -205,7 +205,9 @@
                                 }}
                             </span>
                         </button>
-
+                    </ng-template>
+                    
+                    <ng-template [ngxPermissionsOnly]="['PRM.CSP.DELETE']">
                         <button
                             type="button"
                             mat-menu-item

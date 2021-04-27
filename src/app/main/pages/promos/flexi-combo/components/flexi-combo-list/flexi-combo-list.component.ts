@@ -108,6 +108,40 @@ export class FlexiComboListComponent implements OnInit, OnChanges, AfterViewInit
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
+        this.ngxPermissionsService
+            .hasPermission(['PRM.FC.READ', 'PRM.FC.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'promo-seller-id',
+                        'promo-name',
+                        'promo-type',
+                        'promo-allocation',
+                        'allocation-value',
+                        'base',
+                        'start-date',
+                        'end-date',
+                        'status',
+                        'actions',
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'promo-seller-id',
+                        'promo-name',
+                        'promo-type',
+                        'promo-allocation',
+                        'allocation-value',
+                        'base',
+                        'start-date',
+                        'end-date',
+                        'status'
+                    ];
+                }
+            });
+
         this._initPage();
     }
 

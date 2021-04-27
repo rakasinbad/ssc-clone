@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier, UserSupplierOptions } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import { Observable } from 'rxjs';
 
 import { IInternalEmployeeDetails, InternalEmployeeDetail } from '../models';
@@ -34,7 +35,7 @@ export class InternalApiService {
      */
     private readonly _endpoint = '/user-suppliers';
 
-    private readonly _endpointEmployeeDetail = '/supplier-employees';
+    private readonly _endpointSupplierEmployeee = '/supplier-employees';
 
     /**
      * Creates an instance of InternalApiService.
@@ -63,7 +64,7 @@ export class InternalApiService {
     }
 
     findById(userId: string): Observable<IInternalEmployeeDetails> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+        this._url = this._$helper.handleApiRouter(this._endpointSupplierEmployeee);
         return this.http.get<IInternalEmployeeDetails>(`${this._url}/${userId}`);
     }
 
@@ -96,6 +97,11 @@ export class InternalApiService {
     updatePatch(body: InternalEmployeeDetail, id: string): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
+
+    patchUserManagement<T>(body: T, id: string): Observable<User> {
+        this._url = this._$helper.handleApiRouter(this._endpointSupplierEmployeee);
+        return this.http.patch<User>(`${this._url}/${id}`, body);
     }
 
     updatePatchStatusInternalEmployee(body: { status: string }, id: string): Observable<any> {

@@ -122,16 +122,18 @@
             </button>
 
             <mat-menu class="actions-panel" #actionMenu="matMenu">
-                <button
-                    type="button"
-                    mat-menu-item
-                    class="sinbad-mat-menu-item"
-                    aria-label="Unassign"
-                    (click)="onUnassign(row)"
-                >
-                    <mat-icon>archive</mat-icon>
-                    <span>Unassign</span>
-                </button>
+                <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                    <button
+                        type="button"
+                        mat-menu-item
+                        class="sinbad-mat-menu-item"
+                        aria-label="Unassign"
+                        (click)="onUnassign(row)"
+                    >
+                        <mat-icon>archive</mat-icon>
+                        <span>Unassign</span>
+                    </button>
+                </ng-template>
             </mat-menu>
         </mat-cell>
     </ng-container>

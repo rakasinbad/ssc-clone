@@ -21,6 +21,7 @@ import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model'
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
@@ -53,7 +54,7 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
             }
         },
         add: {
-            permissions: []
+            permissions: ['WH.SM.CREATE']
         },
         export: {
             // permissions: ['OMS.EXPORT']
@@ -109,7 +110,8 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
     constructor(
         private domSanitizer: DomSanitizer,
         private router: Router,
-        private store: Store<fromStockManagements.FeatureState>
+        private store: Store<fromStockManagements.FeatureState>,
+        private ngxPermissions: NgxPermissionsService,
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -119,6 +121,34 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.ngxPermissions
+            .hasPermission(['WH.SM.UPDATE', 'WH.SM.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'wh-id',
+                        'wh-name',
+                        'total-sku', // totalCatalogue
+                        'stock-sellable', // totalCatalogueStock
+                        // 'stock-on-hand',
+                        'last-action-date', // lastActivity
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'wh-id',
+                        'wh-name',
+                        'total-sku', // totalCatalogue
+                        'stock-sellable', // totalCatalogueStock
+                        // 'stock-on-hand',
+                        'last-action-date' // lastActivity
+                    ];
+                }
+            });
 
         this._initPage();
     }

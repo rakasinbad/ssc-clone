@@ -119,8 +119,32 @@ export class InternalEffects {
             ofType(InternalActions.updateInternalEmployeeRequest),
             map(action => action.payload),
             switchMap(({ body, id }) => {
-                return this._$userApi
-                    .patchCustom<{
+                // return this._$userApi
+                // .patchCustom<{
+                //     fullName?: string;
+                //     roles?: number[];
+                //     mobilePhoneNo?: string;
+                //     email?: string;
+                // }>(body, id)
+                // .pipe(
+                //     map(resp => {
+                //         return InternalActions.updateInternalEmployeeSuccess({
+                //             payload: resp
+                //         });
+                //     }),
+                //     catchError(err =>
+                //         of(
+                //             InternalActions.updateInternalEmployeeFailure({
+                //                 payload: {
+                //                     id: 'updateInternalEmployeeFailure',
+                //                     errors: err
+                //                 }
+                //             })
+                //         )
+                //     )
+                // );
+                return this._$internalApi
+                    .patchUserManagement<{
                         fullName?: string;
                         roles?: number[];
                         mobilePhoneNo?: string;

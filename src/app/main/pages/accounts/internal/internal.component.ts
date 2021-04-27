@@ -52,7 +52,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Internal Employee'
+            label: 'User Management'
         },
         search: {
             active: true,
@@ -265,9 +265,9 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 canDoActions.then(hasAccess => {
                     if (hasAccess) {
-                        this.displayedColumns = ['user', 'email', 'role', 'status', 'created_at', 'updated_at', 'actions'];
+                        this.displayedColumns = ['user', 'email', 'role', 'created_at', 'updated_at', 'status', 'actions'];
                     } else {
-                        this.displayedColumns = ['user', 'email', 'role', 'status', 'created_at', 'updated_at', 'actions'];
+                        this.displayedColumns = ['user', 'email', 'role', 'created_at', 'updated_at', 'status'];
                     }
                 });
                 break;

@@ -52,6 +52,7 @@ import { SkpSelectors } from '../../store/selectors';
 import { SelectPromo } from 'app/shared/components/dropdowns/select-promo/models';
 import { skpPromoList } from '../../models';
 import { SkpApiService } from '../../services/skp-api.service';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 type TmpKey = 'imageUrl';
 type TmpFiles = 'file';
@@ -142,6 +143,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSkp.FeatureState>,
         private skpService: SkpApiService,
         private _fuseProgressBarService: FuseProgressBarService,
@@ -217,8 +219,22 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 const { id } = this.route.snapshot.params;
                 if (id === 'create') {
+                    const hasAccess = this.ngxPermissions.hasPermission('SKP.CREATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+
                     this.pageType = 'new';
                 } else {
+                    const hasAccess = this.ngxPermissions.hasPermission('SKP.UPDATE');
+                    hasAccess.then(hasAccess => {
+                        if (!hasAccess) {
+                            this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                        }
+                    });
+
                     this.pageType = 'edit';
                     this.skpId = id
 
@@ -255,6 +271,7 @@ export class SkpFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             }
                         })
                     );
+
                 // } else {
                     // this.router.navigateByUrl('/pages/skp/list');
                 }

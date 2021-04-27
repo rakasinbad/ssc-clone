@@ -510,7 +510,8 @@ export class DropdownEffects {
             //     )
             // ),
             // withLatestFrom(this.store.select(NetworkSelectors.isNetworkConnected)),
-            switchMap(_ => {
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([_, payload]) => {
                 if (this._isOnline) {
                     this._$log.generateGroup('[REQUEST FETCH DROPDOWN ROLE] ONLINE', {
                         online: {
@@ -521,7 +522,7 @@ export class DropdownEffects {
                 }
 
                 return this._$roleApi
-                    .findAll<Role[]>({ paginate: false })
+                    .findAll<Role[]>(payload.user.userSupplier.supplierId, { paginate: false })
                     .pipe(
                         catchOffline(),
                         retry(3),

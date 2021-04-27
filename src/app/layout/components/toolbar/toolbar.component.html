@@ -73,20 +73,22 @@
                     <span>Inbox</span>
                 </button> -->
 
-                <button *ngIf="_navigationRulesService.validateToolbarOnRole('Informasi Supplier')" type="button" mat-menu-item [routerLink]="['/profile']">
+                <button type="button" mat-menu-item [routerLink]="['/profile']">
                     <mat-icon>person</mat-icon>
                     <span>Informasi Supplier</span>
                 </button>
 
-                <button *ngIf="_navigationRulesService.validateToolbarOnRole('Pengaturan akun')" type="button" mat-menu-item [routerLink]="['/pages/settings/accounts']">
+                <button type="button" mat-menu-item [routerLink]="['/pages/settings/accounts']">
                     <mat-icon>settings</mat-icon>
                     <span>Pengaturan akun</span>
                 </button>
 
-                <button *ngIf="_navigationRulesService.validateToolbarOnRole('Internal')" type="button" mat-menu-item [routerLink]="['/pages/account/internal']">
-                    <mat-icon>people</mat-icon>
-                    <span>User Management</span>
-                </button>
+                <ng-template [ngxPermissionsOnly]="['ACCOUNT.INTERNAL.READ']">
+                    <button type="button" mat-menu-item [routerLink]="['/pages/account/internal']">
+                        <mat-icon>people</mat-icon>
+                        <span>User Management</span>
+                    </button>    
+                </ng-template>
 
                 <button type="button" mat-menu-item (click)="onLogout()">
                     <mat-icon>exit_to_app</mat-icon>
