@@ -6,12 +6,13 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { MatTabGroup } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -43,7 +44,9 @@ export class JourneyPlanFormComponent implements OnInit {
     @ViewChild(MatTabGroup, { static: true }) tabGroup: MatTabGroup;
 
     constructor(
+        private ngxPermissions: NgxPermissionsService,
         private route: ActivatedRoute,
+        private router: Router,
         private store: Store<fromJourneyPlans.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
@@ -59,8 +62,22 @@ export class JourneyPlanFormComponent implements OnInit {
         const { id } = this.route.snapshot.params;
 
         if (id === 'new') {
+            const hasAccess = this.ngxPermissions.hasPermission('SRM.JP.CREATE');
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.pageType = 'new';
         } else {
+            const hasAccess = this.ngxPermissions.hasPermission('SRM.JP.UPDATE');                    
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.pageType = 'edit';
 
             this._breadCrumbs = [

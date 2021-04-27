@@ -192,7 +192,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         public translate: TranslateService,
         private _helper: HelperService,
         private _notice: NoticeService,
-        private ngxPermissionsService: NgxPermissionsService
+        private ngxPermissions: NgxPermissionsService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
@@ -276,6 +276,44 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             search: null,
             status: null,
             type: null,
+        });
+
+        const canDoActions = this.ngxPermissions.hasPermission([
+            'CATALOGUE.UPDATE',
+            'CATALOGUE.DELETE'
+        ]);
+
+        canDoActions.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'name',
+                    'sku',
+                    'externalId',
+                    // 'variant',
+                    'price',
+                    // 'stock',
+                    // 'sales',
+                    'type',
+                    'exclusive',
+                    'status',
+                    'actions',
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'name',
+                    'sku',
+                    'externalId',
+                    // 'variant',
+                    'price',
+                    // 'stock',
+                    // 'sales',
+                    'type',
+                    'exclusive',
+                    'status'
+                ];
+            }
         });
 
         this.form

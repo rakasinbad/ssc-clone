@@ -135,14 +135,16 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    aria-label="Show Product"
-                                    [routerLink]="['/pages/in-store-inventories/catalogs']"
-                                >
-                                    <mat-icon>visibility</mat-icon>
-                                    <span>Show Catalogs</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['INVENTORY.ISI.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        aria-label="Show Product"
+                                        [routerLink]="['/pages/in-store-inventories/catalogs']"
+                                    >
+                                        <mat-icon>visibility</mat-icon>
+                                        <span>Show Catalogs</span>
+                                    </button>
+                                </ng-template>
 
                                 <button mat-menu-item aria-label="remove" disabled>
                                     <mat-icon>delete</mat-icon>

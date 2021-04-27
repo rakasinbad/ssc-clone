@@ -75,7 +75,7 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
             }
         },
         add: {
-            permissions: []
+            permissions: ['WH.SKU.CREATE']
         },
         viewBy: {
             list: [

@@ -18,6 +18,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
@@ -103,7 +104,8 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
     constructor(
         private domSanitizer: DomSanitizer,
         private matDialog: MatDialog,
-        private store: Store<fromStoreSegments.FeatureState>
+        private store: Store<fromStoreSegments.FeatureState>,
+        private ngxPermissions: NgxPermissionsService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -113,6 +115,31 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+        this.ngxPermissions
+            .hasPermission(['ACCOUNT.STORE.UPDATE', 'ACCOUNT.STORE.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'branch-id',
+                        'segment-branch',
+                        'branch-level',
+                        'desc',
+                        'total-store',
+                        'status',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'branch-id',
+                        'segment-branch',
+                        'branch-level',
+                        'desc',
+                        'total-store',
+                        'status'
+                    ];
+                }
+            });
 
         this._initPage();
     }

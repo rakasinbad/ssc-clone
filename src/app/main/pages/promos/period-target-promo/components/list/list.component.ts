@@ -279,8 +279,7 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
                         'base',
                         'start-date',
                         'end-date',
-                        'status',
-                        'actions'
+                        'status'
                     ];
                 }
             });

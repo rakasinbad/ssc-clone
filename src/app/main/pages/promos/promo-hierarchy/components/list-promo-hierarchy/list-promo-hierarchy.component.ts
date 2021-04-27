@@ -89,12 +89,42 @@ export class ListPromoHierarchyComponent implements OnInit, OnChanges, AfterView
         private matDialog: MatDialog,
         private cdRef: ChangeDetectorRef,
         private router: Router,
+        private ngxPermissionsService: NgxPermissionsService,
         private PromoHierarchyStore: NgRxStore<PromoHierarchyCoreState>
     ) {}
 
     ngOnInit(): void {
         this.table.nativeElement.scrollTop = 0;
         this.paginator.pageIndex = 0;
+
+        this.ngxPermissionsService
+            .hasPermission(['PRM.PH.UPDATE', 'PRM.PH.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'promo-seller-id',
+                        'promo-name',
+                        'promo-allocation',
+                        'allocation-value',
+                        'promo-type',
+                        'promo-group',
+                        'status',
+                        'actions',
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'promo-seller-id',
+                        'promo-name',
+                        'promo-allocation',
+                        'allocation-value',
+                        'promo-type',
+                        'promo-group',
+                        'status'
+                    ];
+                }
+            });
+
         this._initTable();
         this.paginator.pageSize = this.defaultPageSize;
         this.selection = new SelectionModel<PromoHierarchy>(true, []);

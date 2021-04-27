@@ -22,7 +22,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('skp', 'list'),
+                only: ['SKP.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -33,7 +33,23 @@ const routes: Routes = [
             }
         }
     },
-    { path: ':id', component: SkpFormComponent },
+    {
+        path: ':id',
+        component: SkpFormComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['SKP.CREATE', 'SKP.UPDATE'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
+    },
     {
         
         path: 'detail/:id',
@@ -41,7 +57,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('skp','detail'),
+                only: ['SKP.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
