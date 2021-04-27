@@ -26,6 +26,7 @@ app-internal-detail {
         .content-card.sinbad {
             max-height: 70%;
             border-radius: 8px !important;
+            overflow: auto;
         }
 
         .content {

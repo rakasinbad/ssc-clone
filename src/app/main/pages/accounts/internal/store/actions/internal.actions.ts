@@ -4,6 +4,7 @@ import { IErrorHandler, TStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
+import { InternalEmployeeDetails } from 'app/main/pages/accounts/internal/models';
 
 import { IInternalDemo } from '../../models';
 
@@ -40,9 +41,14 @@ export const fetchInternalEmployeeFailure = createAction(
     props<{ payload: IErrorHandler }>()
 );
 
+// export const fetchInternalEmployeeSuccess = createAction(
+//     '[Internal Employee API] Fetch Internal Employee Success',
+//     props<{ payload: User }>()
+// );
+
 export const fetchInternalEmployeeSuccess = createAction(
     '[Internal Employee API] Fetch Internal Employee Success',
-    props<{ payload: User }>()
+    props<{ payload: InternalEmployeeDetails }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

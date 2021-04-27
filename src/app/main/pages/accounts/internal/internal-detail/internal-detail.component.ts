@@ -5,16 +5,19 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { UiActions } from 'app/shared/store/actions';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
-import { IInternalDemo } from '../models';
+import { User } from 'app/shared/models/user.model';
+import { IInternalDemo, IInternalEmployeeDetails, InternalEmployeeDetails } from '../models';
 import { fromInternal } from '../store/reducers';
 import { InternalSelectors } from '../store/selectors';
+import { InternalActions } from '../store/actions';
+import { UiActions } from 'app/shared/store/actions';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { HelperService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-internal-detail',
@@ -25,72 +28,71 @@ import { InternalSelectors } from '../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InternalDetailComponent implements OnInit, OnDestroy {
-    form: FormGroup;
+    private subs$: Subject<void> = new Subject<void>();
 
-    internal$: Observable<IInternalDemo>;
+    employee$ : Observable<IInternalEmployeeDetails>;
+    isLoading$: Observable<boolean>;
 
-    private _unSubs$: Subject<void>;
+    private createBreadcrumbs(): void {
+        // Menyiapkan breadcrumb-nya.
+        const breadcrumbs: Array<IBreadcrumbs> = [
+            {
+                title: 'Home',
+                // translate: 'BREADCRUMBS.HOME',
+                active: false
+            },
+            {
+                title: 'User Management',
+                // translate: 'BREADCRUMBS.CATALOGUE',
+                active: false,
+                // url: '/pages/catalogues'
+            },
+            {
+                title: 'Store Detail',
+                active: true,
+                // translate: 'BREADCRUMBS.CATALOGUE',
+                // url: '/pages/catalogues'
+            },
+        ];
 
-    constructor(private formBuilder: FormBuilder, private store: Store<fromInternal.FeatureState>) {
-        // Set breadcrumbs
+        // Memunculkan breadcrumb.
         this.store.dispatch(
             UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
-                    },
-                    // {
-                    //     title: 'Account',
-                    //     translate: 'BREADCRUMBS.ACCOUNT'
-                    // },
-                    {
-                        title: 'Internal',
-                        translate: 'BREADCRUMBS.INTERNAL'
-                    },
-                    {
-                        title: 'Detail',
-                        translate: 'BREADCRUMBS.DETAIL',
-                        active: true
-                    }
-                ]
+                payload: breadcrumbs
             })
         );
     }
 
+    constructor(
+        private store: Store<fromInternal.FeatureState>,
+        private route: ActivatedRoute,
+        private router: Router,
+    ) {
+        this.createBreadcrumbs();
+    }
+
     ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
+        const { id } = this.route.snapshot.params;
+        
+        this.employee$ = this.store.select(InternalSelectors.getInternalEmployee)
+                            .pipe(
+                                takeUntil(this.subs$)
+                            );
 
-        this._unSubs$ = new Subject<void>();
-        this.form = this.formBuilder.group({
-            fullName: [{ value: '', disabled: true }],
-            role: [{ value: '', disabled: true }],
-            email: [{ value: '', disabled: true }],
-            phoneNumber: [{ value: '', disabled: true }]
-        });
+        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading).pipe(
+            takeUntil(this.subs$)
+        );
 
-        this.store
-            .select(InternalSelectors.getSelectedInternalEmployee)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(selectedInternal => {
-                console.log('Selected internal', selectedInternal);
-                if (selectedInternal) {
-                    this.form.patchValue({
-                        fullName: selectedInternal.user,
-                        role: null,
-                        email: null,
-                        phoneNumber: null
-                    });
-                }
-            });
+        this.store.dispatch(InternalActions.fetchInternalEmployeeRequest({ payload: id }));
     }
 
     ngOnDestroy(): void {
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
+        this.subs$.next();
+        this.subs$.complete();
+    }
 
-        this._unSubs$.next();
-        this._unSubs$.complete();
+    onEdit() : void {
+        const { id } = this.route.snapshot.params;
+        this.router.navigateByUrl(`/pages/account/internal/${id}/edit`);
     }
 }

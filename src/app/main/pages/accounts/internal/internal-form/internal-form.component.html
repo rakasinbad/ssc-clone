@@ -152,7 +152,7 @@
                                 (form.get('fullName').dirty || form.get('fullName').touched)
                             "
                         >
-                            *Nama
+                            <b class="required">*</b> Nama
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
@@ -179,12 +179,49 @@
                             fxFlexAlign="center"
                             fxFlex="12"
                             [class.mat-error]="
+                                form.get('platform').errors &&
+                                !form.get('platform').untouched &&
+                                (form.get('platform').dirty || form.get('platform').touched)
+                            "
+                        >
+                            <span class="required">*</span>
+                            Platform
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <mat-select
+                                name="platform"
+                                formControlName="platform"
+                                placeholder="Choose Platform"
+                            >
+                                <mat-option
+                                    [value]="'Sinbad Seller Center'"
+                                >
+                                    Sinbad Seller Center
+                                </mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="
+                                    form.get('platform').errors &&
+                                    (form.get('platform').dirty || form.get('platform').touched)
+                                "
+                            >
+                                {{ getErrorMessage('platform') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
                                 form.get('roles').errors &&
                                 !form.get('roles').untouched &&
                                 (form.get('roles').dirty || form.get('roles').touched)
                             "
                         >
-                            *Role
+                            <b class="required">*</b> Role
                         </label>
 
                         <!-- <mat-form-field appearance="outline" fxFlex="30">
@@ -211,7 +248,9 @@
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Email</label>
+                        <label fxFlexAlign="center" fxFlex="12">
+                            <b class="required">*</b> Email
+                        </label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
                             <input matInput name="email" formControlName="email" />
@@ -228,7 +267,7 @@
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">*Phone Number</label>
+                        <label fxFlexAlign="center" fxFlex="12"><b class="required">*</b> Phone Number</label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
                             <input
