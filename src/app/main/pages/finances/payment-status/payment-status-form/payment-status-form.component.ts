@@ -25,7 +25,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
     paymentStatuses: Array<{ id: string; label: string }>;
-
     isDisabled = true;
     minDate: Date;
     maxDate: Date;

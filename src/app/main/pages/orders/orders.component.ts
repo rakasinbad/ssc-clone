@@ -231,7 +231,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.paginator.pageSize =  this.defaultPageSize;
         this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
 
-        if(this.route.snapshot.queryParams.keyword){
+        if (this.route.snapshot.queryParams.keyword){
             this.search.setValue(this.route.snapshot.queryParams.keyword);
         }
     }

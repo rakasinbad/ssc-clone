@@ -181,6 +181,7 @@ export class HelperService {
         },
     ];
 
+    // tslint:disable-next-line:member-ordering
     private static _paymentStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -201,14 +202,6 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
-        },
-        {
-            id: 'waiting_for_refund',
-            label: 'Waiting for Refund'
-        },
-        {
-            id: 'refunded',
-            label: 'Refunded'
         }
     ];
 
