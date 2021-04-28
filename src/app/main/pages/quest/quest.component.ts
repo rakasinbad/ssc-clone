@@ -9,11 +9,11 @@ import { environment } from 'environments/environment';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
-    selector: 'app-workday-setting',
-    templateUrl: './workday-setting.component.html',
-    styleUrls: ['./workday-setting.component.scss'],
+    selector: 'app-quest',
+    templateUrl: './quest.component.html',
+    styleUrls: ['./quest.component.scss'],
 })
-export class WorkdaySettingComponent implements OnInit {
+export class QuestComponent implements OnInit {
     url$: BehaviorSubject<SafeResourceUrl> = new BehaviorSubject<SafeResourceUrl>('');
     isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
@@ -22,10 +22,7 @@ export class WorkdaySettingComponent implements OnInit {
             title: 'Home',
         },
         {
-            title: 'Sales Management',
-        },
-        {
-            title: 'Workday Setting',
+            title: 'Sinbad Quest',
         },
     ];
 
@@ -40,11 +37,19 @@ export class WorkdaySettingComponent implements OnInit {
 
         this.storage.get('user').subscribe((data: any) => {
             const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-                `${environment.microSiteHost}/salessetting?token=${data.token}`
+                `${environment.microSiteHost}/managequest?token=${data.token}`
             );
-
+            
             this.url$.next(safeUrl);
         });
+    }
+
+    ngOnDestroy(): void {
+        this.url$.next('');
+        this.url$.complete();
+
+        this.isLoading$.next(false);
+        this.isLoading$.complete();
     }
 
     onLoad(): void {

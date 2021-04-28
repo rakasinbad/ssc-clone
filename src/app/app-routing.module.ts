@@ -314,6 +314,24 @@ const routes: Routes = [
                 // },
             },
             {
+                path: 'quest',
+                loadChildren: () =>
+                    import('./main/pages/quest/quest.module').then((m) => m.QuestModule),
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: getRoleByRouter('survey'),
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true,
+                        },
+                    },
+                },
+            },
+            {
                 path: 'skp',
                 loadChildren: () =>
                     import('./main/pages/skp/skp.module').then(
