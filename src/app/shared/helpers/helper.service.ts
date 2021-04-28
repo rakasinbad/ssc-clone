@@ -63,6 +63,7 @@ export class HelperService {
         'endOrderDate',
         'minOrderValue',
         'maxOrderValue',
+        'web',
         'statuses[]',
         'paymentStatuses[]'
     ];
