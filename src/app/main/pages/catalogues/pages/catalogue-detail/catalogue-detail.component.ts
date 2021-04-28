@@ -310,7 +310,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
     editCatalogue(): void {
         const canUpdate = this.ngxPermissions.hasPermission('CATALOGUE.UPDATE');
-        
+
         canUpdate.then(hasAccess => {
             if (hasAccess) {
                 this.formMode = 'edit';
@@ -362,7 +362,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             .subscribe(([needRefresh, catalogue]) => {
                 if (needRefresh) {
                     const canView = this.ngxPermissions.hasPermission('CATALOGUE.READ');
-        
+
                     canView.then(hasAccess => {
                         if (hasAccess) {
                             this.formMode = 'view';
@@ -371,13 +371,13 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                             this.store.dispatch(FormActions.resetClickCancelButton());
                             this.store.dispatch(FormActions.resetClickSaveButton());
                             this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
-        
+
                             this.store.dispatch(
                                 CatalogueActions.fetchCatalogueRequest({
                                     payload: catalogue.id,
                                 })
                             );
-        
+
                             // Scrolled to top.
                             this.scrollTop(this.catalogueDetailRef);
                         } else {
@@ -407,10 +407,10 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             .pipe(withLatestFrom(this.selectedCatalogue$), takeUntil(this.subs$))
             .subscribe(([isClick, catalogue]) => {
                 if (isClick) {
-                    HelperService.debug('[CatalogueDetailComponent] getIsClickSaveButton', {
+                    /* HelperService.debug('[CatalogueDetailComponent] getIsClickSaveButton', {
                         payload: this.formValue,
                         section: this.section,
-                    });
+                    }); */
 
                     switch (this.section) {
                         case 'sku-information': {
