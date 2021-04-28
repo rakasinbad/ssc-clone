@@ -393,7 +393,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     onRemoveSearchPaymentStatus(): void {
         // localStorage.removeItem('filter.payment.status');
         this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
-        // this.selectedTab = '';
     }
 
     onTrackBy(index: number, item: any): string {
@@ -460,19 +459,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                         payload: 'all-status'
                     })
                 );
-
-                // Register to navigation [FuseNavigation]
-                // this.store.dispatch(
-                //     UiActions.registerNavigation({
-                //         payload: {
-                //             key: 'customNavigation',
-                //             navigation: this.statusPayment
-                //         }
-                //     })
-                // );
-
-                // Show custom toolbar
-                // this.store.dispatch(UiActions.showCustomToolbar());
 
                 this.sort.sortChange
                     .pipe(takeUntil(this._unSubs$))
@@ -563,112 +549,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
 
                 this._initStatusPayment();
-
-                // combineLatest([
-                //     this.store.select(PaymentStatusSelectors.getTotalAllPayment),
-                //     this.store.select(PaymentStatusSelectors.getTotalWaitingPayment),
-                //     this.store.select(PaymentStatusSelectors.getTotalD7Payment),
-                //     this.store.select(PaymentStatusSelectors.getTotalD3Payment),
-                //     this.store.select(PaymentStatusSelectors.getTotalD0Payment),
-                //     this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
-                //     this.store.select(PaymentStatusSelectors.getTotalFailPayment),
-                //     this.store.select(PaymentStatusSelectors.getTotalOverduePayment),
-                //     this.store.select(PaymentStatusSelectors.getTotalWaitingForRefund),
-                //     this.store.select(PaymentStatusSelectors.getTotalRefunded)
-                // ])
-                //     .pipe(takeUntil(this._unSubs$))
-                //     .subscribe(
-                //         ([
-                //             allPayment,
-                //             waitingPayment,
-                //             d7Payment,
-                //             d3Payment,
-                //             d0Payment,
-                //             paidPayment,
-                //             failPayment,
-                //             overduePayment,
-                //             waitingRefundPayment,
-                //             refundedPayment
-                //         ]) => {
-                //             if (typeof allPayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'all-status',
-                //                     { title: `All (${allPayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof waitingPayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'waiting_for_payment',
-                //                     { title: `Waiting for Payment (${waitingPayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof d7Payment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'd-7',
-                //                     { title: `D-7 (${d7Payment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof d3Payment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'd-3',
-                //                     { title: `D-3 (${d3Payment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof d0Payment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'd-0',
-                //                     { title: `D-0 (${d0Payment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof paidPayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'paid',
-                //                     { title: `Paid (${paidPayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof failPayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'payment_failed',
-                //                     { title: `Cancel (${failPayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-
-                //             if (typeof overduePayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'overdue',
-                //                     { title: `Overdue (${overduePayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-                //             if (typeof waitingRefundPayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'waiting_for_refund',
-                //                     { title: `Waiting for Refund (${waitingRefundPayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-                //             if (typeof refundedPayment !== 'undefined') {
-                //                 this._updateStatus(
-                //                     'refunded',
-                //                     { title: `Refunded (${refundedPayment})` },
-                //                     'customNavigation'
-                //                 );
-                //             }
-                //         }
-                //     );
 
                 this._initTable();
 
