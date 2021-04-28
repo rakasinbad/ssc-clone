@@ -849,8 +849,15 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 .pipe(
                     filter((sources) => sources && sources.length > 0),
                     map((sources) => {
-                        return sources.map((source) => ({ id: source.status, label: source.title }));
-                    }),    
+                        return sources.map((source) => {
+                            var label = source.status.replaceAll("_", " ");
+                            label = label.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+                            
+                            return {
+                                id: source.status, label: label
+                            }
+                        }).filter(e => !!e.id);
+                    }),
                     takeUntil(this._unSubs$)
                 )
                 .subscribe((paymentStatus) => {
