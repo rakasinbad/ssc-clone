@@ -183,6 +183,12 @@ export class IconModule {
           this.matIconRegistry.addSvgIcon(
             'sinbad-info',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/info.svg')
+          );
+
+        // quest
+          this.matIconRegistry.addSvgIcon(
+            'sinbad-quest-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/quest.svg')
         );
     }
 }

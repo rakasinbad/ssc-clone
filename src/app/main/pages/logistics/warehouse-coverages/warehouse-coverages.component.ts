@@ -31,6 +31,7 @@ import { WarehouseCoverage } from './models/warehouse-coverage.model';
 import { WarehouseCoverageSelectors } from './store/selectors';
 import { WarehouseCoverageActions } from './store/actions';
 import { NoticeService } from 'app/shared/helpers';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -74,7 +75,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
             active: false
         },
         add: {
-            permissions: []
+            permissions: ['WH.C.CREATE']
         },
         // export: {
         //     permissions: ['SRM.JP.EXPORT'],
@@ -118,6 +119,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         private router: Router,
         private store: Store<fromWarehouseCoverages.FeatureState>,
         private notice$: NoticeService,
+        private ngxPermissions: NgxPermissionsService,
     ) {
         this.isLoading$ = this.store.select(
             WarehouseCoverageSelectors.getIsLoading
@@ -249,6 +251,22 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
     }
 
     ngOnInit(): void {
+
+        this.ngxPermissions
+            .hasPermission(['WH.C.UPDATE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        'province', 'city', 'district', 'urban', 'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'province', 'city', 'district', 'urban'
+                    ];
+                }
+            });
+
         // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
@@ -355,9 +373,20 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
                 'wh-name', 'province', 'city', 'district', 'urban'
             ];
         } else if (this.selectedViewBy === 'warehouse') {
-            this.displayedColumns = [
-                'province', 'city', 'district', 'urban', 'actions'
-            ];
+            this.ngxPermissions
+                .hasPermission(['WH.C.UPDATE'])
+                .then(result => {
+                    // Jika ada permission-nya.
+                    if (result) {
+                        this.displayedColumns = [
+                            'province', 'city', 'district', 'urban', 'actions'
+                        ];
+                    } else {
+                        this.displayedColumns = [
+                            'province', 'city', 'district', 'urban'
+                        ];
+                    }
+                });
         }
 
         this.truncateTable();

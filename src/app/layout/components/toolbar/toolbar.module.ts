@@ -8,6 +8,7 @@ import { FuseSearchBarModule, FuseShortcutsModule } from '@fuse/components';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { ToolbarComponent } from 'app/layout/components/toolbar/toolbar.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 @NgModule({
     declarations: [ToolbarComponent],
@@ -21,7 +22,8 @@ import { ToolbarComponent } from 'app/layout/components/toolbar/toolbar.componen
         FuseSharedModule,
         FuseSearchBarModule,
         FuseShortcutsModule,
-
+        
+        NgxPermissionsModule.forChild(),
         TranslateModule.forChild()
     ],
     exports: [ToolbarComponent]

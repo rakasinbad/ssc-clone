@@ -240,19 +240,23 @@
                                 </button>
     
                                 <mat-menu #moreMenu="matMenu">
-                                    <button
-                                        mat-menu-item
-                                        aria-label="edit"
-                                        (click)="openEmployeeAttendanceDetail(row)"
-                                    >
-                                        <mat-icon>edit</mat-icon>
-                                        <span>Edit</span>
-                                    </button>
-    
-                                    <button mat-menu-item aria-label="remove" disabled>
-                                        <mat-icon>delete</mat-icon>
-                                        <span>Remove</span>
-                                    </button>
+                                    <ng-template [ngxPermissionsOnly]="['ATTENDANCE.UPDATE']">
+                                        <button
+                                            mat-menu-item
+                                            aria-label="edit"
+                                            (click)="openEmployeeAttendanceDetail(row)"
+                                        >
+                                            <mat-icon>edit</mat-icon>
+                                            <span>Edit</span>
+                                        </button>
+                                    </ng-template>
+
+                                    <ng-template [ngxPermissionsOnly]="['ATTENDANCE.DELETE']">
+                                        <button mat-menu-item aria-label="remove" disabled>
+                                            <mat-icon>delete</mat-icon>
+                                            <span>Remove</span>
+                                        </button>
+                                    </ng-template>
                                 </mat-menu>
                             </div>
                         </mat-cell>

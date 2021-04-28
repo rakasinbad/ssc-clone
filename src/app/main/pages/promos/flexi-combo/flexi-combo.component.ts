@@ -34,7 +34,7 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
             active: true,
         },
         add: {
-            permissions: [],
+            permissions: ['PRM.FC.CREATE'],
         },
         // export: {
         //     permissions: [],
