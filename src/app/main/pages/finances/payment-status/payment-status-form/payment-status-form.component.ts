@@ -25,7 +25,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
     paymentStatuses: Array<{ id: string; label: string }>;
-
     isDisabled = true;
     minDate: Date;
     maxDate: Date;
@@ -237,6 +236,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     }
 
     private filterPaymentStatus(element, index, array): boolean{
-        return element.id !== 'all';
+        return element.id !== 'all' && element.id !== 'refunded' && element.id !== 'waiting_for_refund';
     }
 }
