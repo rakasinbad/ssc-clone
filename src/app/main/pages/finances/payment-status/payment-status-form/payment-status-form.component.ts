@@ -236,6 +236,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     }
 
     private filterPaymentStatus(element, index, array): boolean{
-        return element.id !== 'all' && element.id !== 'refunded' && element.id !== 'waiting_for_refund';
+        return element.id !== 'all';
     }
 }
