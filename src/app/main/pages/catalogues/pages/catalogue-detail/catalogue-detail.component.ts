@@ -1,13 +1,5 @@
-import {
-    AfterViewInit,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    OnDestroy,
-    OnInit,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
+import { Location } from '@angular/common';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -58,6 +50,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
     constructor(
         private cdRef: ChangeDetectorRef,
+        private location: Location,
         private router: Router,
         private ngxPermissions: NgxPermissionsService,
         private store: NgRxStore<fromCatalogue.FeatureState>
@@ -159,6 +152,10 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 this.store.dispatch(FormActions.setFormStatusInvalid());
             }
         }
+    }
+
+    goBack(): void {
+        this.location.back();
     }
 
     onFormValueChanged(
@@ -311,7 +308,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     editCatalogue(): void {
         const canUpdate = this.ngxPermissions.hasPermission('CATALOGUE.UPDATE');
 
-        canUpdate.then(hasAccess => {
+        canUpdate.then((hasAccess) => {
             if (hasAccess) {
                 this.formMode = 'edit';
 
@@ -319,7 +316,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 this.store.dispatch(FormActions.setFormStatusInvalid());
                 this.store.dispatch(FormActions.resetClickCancelButton());
             } else {
-                this.router.navigateByUrl('/pages/errors/403', {replaceUrl: true});
+                this.router.navigateByUrl('/pages/errors/403', { replaceUrl: true });
             }
         });
 
@@ -363,14 +360,16 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 if (needRefresh) {
                     const canView = this.ngxPermissions.hasPermission('CATALOGUE.READ');
 
-                    canView.then(hasAccess => {
+                    canView.then((hasAccess) => {
                         if (hasAccess) {
                             this.formMode = 'view';
 
                             this.store.dispatch(UiActions.hideFooterAction());
                             this.store.dispatch(FormActions.resetClickCancelButton());
                             this.store.dispatch(FormActions.resetClickSaveButton());
-                            this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
+                            this.store.dispatch(
+                                CatalogueActions.setRefreshStatus({ status: false })
+                            );
 
                             this.store.dispatch(
                                 CatalogueActions.fetchCatalogueRequest({
@@ -381,7 +380,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                             // Scrolled to top.
                             this.scrollTop(this.catalogueDetailRef);
                         } else {
-                            this.router.navigateByUrl('/pages/errors/403', {replaceUrl: true});
+                            this.router.navigateByUrl('/pages/errors/403', { replaceUrl: true });
                         }
                     });
                 }

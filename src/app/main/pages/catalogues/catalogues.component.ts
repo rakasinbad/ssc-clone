@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog, MatTableDataSource } from '@angular/material';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
@@ -72,6 +72,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+    pageSize: number;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -180,6 +181,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
         private router: Router,
+        private route: ActivatedRoute,
         private store: Store<fromCatalogue.FeatureState>,
         private fuseSidebarService: FuseSidebarService,
         private sinbadFilterService: SinbadFilterService,
@@ -278,12 +280,14 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             type: null,
         });
 
+        this.pageSize = this.defaultPageSize;
+
         const canDoActions = this.ngxPermissions.hasPermission([
             'CATALOGUE.UPDATE',
-            'CATALOGUE.DELETE'
+            'CATALOGUE.DELETE',
         ]);
 
-        canDoActions.then(hasAccess => {
+        canDoActions.then((hasAccess) => {
             if (hasAccess) {
                 this.displayedColumns = [
                     // 'checkbox',
@@ -311,7 +315,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     // 'sales',
                     'type',
                     'exclusive',
-                    'status'
+                    'status',
                 ];
             }
         });
@@ -367,7 +371,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataSource$ = this.store
             .select(CatalogueSelectors.getAllCatalogues)
             .pipe(shareReplay());
+
         this.isLoading$ = this.store.select(CatalogueSelectors.getIsLoading).pipe(shareReplay());
+
         this.isRequestingExport$ = this.store.select(ExportSelector.getRequestingState);
 
         this.store
@@ -380,16 +386,23 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
             });
-        this.paginator.pageSize = this.defaultPageSize;
 
-        this.store
-            .select(CatalogueSelectors.getRefreshStatus)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe((status) => {
-                if (status) {
+        // this.paginator.pageSize = this.defaultPageSize;
+
+        this.route.queryParams.pipe(takeUntil(this._unSubs$)).subscribe({
+            next: (params) => {
+                if (
+                    typeof params['limit'] !== 'undefined' &&
+                    typeof params['pageIndex'] !== 'undefined'
+                ) {
+                    this.paginator.pageSize = +params['limit'];
+                    this.paginator.pageIndex = +params['pageIndex'];
                     this.onRefreshTable();
+                } else {
+                    this.paginator.pageSize = this.pageSize;
                 }
-            });
+            },
+        });
     }
 
     ngAfterViewInit(): void {
@@ -559,6 +572,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+        this.unSubs$.next();
+        this.unSubs$.complete();
         this.sinbadFilterService.resetConfig();
     }
 
@@ -590,7 +605,12 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     onChangePage(ev: PageEvent): void {
         HelperService.debug('[CataloguesComponent] onChangePage', { ev });
 
-        const data: IQueryParams = {
+        this.router.navigate(['.'], {
+            relativeTo: this.route,
+            queryParams: { limit: ev.pageSize, pageIndex: ev.pageIndex },
+        });
+
+        /* const data: IQueryParams = {
             limit: this.paginator.pageSize,
             skip: this.paginator.pageSize * this.paginator.pageIndex,
         };
@@ -608,7 +628,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             CatalogueActions.fetchCataloguesRequest({
                 payload: data,
             })
-        );
+        ); */
     }
 
     onDelete(item: Catalogue): void {
@@ -698,8 +718,27 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private initTable(): void {
         if (this.paginator) {
+            // const { pageIndex, limit } = this.route.snapshot.queryParams;
+
+            // console.log('INIT LIST', {
+            //     pageIndex,
+            //     limit,
+            //     route: this.route.snapshot,
+            //     paginator: this.paginator,
+            // });
+
+            /* if (typeof limit !== 'undefined') {
+                this.paginator.pageSize = +limit;
+            } else {
+                this.paginator.pageSize = this.defaultPageSize;
+            }
+
+            if (typeof pageIndex !== 'undefined') {
+                this.paginator.pageIndex = +pageIndex;
+            } */
+
             const data: IQueryParams = {
-                limit: this.paginator.pageSize || this.defaultPageSize,
+                limit: this.paginator.pageSize || this.pageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
@@ -781,7 +820,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.globalFilterDto
             );
 
-            this.store.dispatch(CatalogueActions.resetCatalogues());
+            // this.store.dispatch(CatalogueActions.resetCatalogues());
 
             this.store.dispatch(
                 CatalogueActions.fetchCataloguesRequest({
@@ -794,7 +833,15 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _handleApplyFilter(): void {
         this.globalFilterDto = {};
 
-        const { brand, subBrand: subBrandId, faktur, maxAmount, minAmount, status, type: formType } = this.form.value;
+        const {
+            brand,
+            subBrand: subBrandId,
+            faktur,
+            maxAmount,
+            minAmount,
+            status,
+            type: formType,
+        } = this.form.value;
 
         const configStatus = this.filterConfig.by['status'];
         const totalStatusSource =
@@ -820,10 +867,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Handle filter sub brand
         if (subBrandId) {
-             this.globalFilterDto = {
-                 ...this.globalFilterDto,
-                 subBrandId,
-             };
+            this.globalFilterDto = {
+                ...this.globalFilterDto,
+                subBrandId,
+            };
         }
 
         // Handle filter faktur
