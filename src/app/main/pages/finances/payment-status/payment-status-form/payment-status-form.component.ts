@@ -128,7 +128,7 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                 if (hasAccess) {
                     const payload = {
                         statusPayment,
-                        paidTime: moment(paidDate).toISOString()
+                        paidTime: moment(paidDate).format('YYYY-MM-DD')
                     };
 
                     if (!statusPayment) {
