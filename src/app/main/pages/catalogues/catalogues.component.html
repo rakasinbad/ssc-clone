@@ -410,7 +410,6 @@
             <mat-paginator
                 [fxHide]="(totalDataSource$ | async) === 0"
                 [length]="totalDataSource$ | async"
-                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
                 showFirstLastButtons

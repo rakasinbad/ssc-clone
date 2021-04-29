@@ -13,12 +13,7 @@
         <div class="h-120 accent mb-0 mt-20" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button
-                    type="button"
-                    mat-icon-button
-                    class="mr-0 mr-sm-16"
-                    [routerLink]="['/pages/catalogues/list']"
-                >
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" (click)="goBack()">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
@@ -70,7 +65,7 @@
                             ></ngx-skeleton-loader>
                         </ng-container>
                         <ng-template #isCatalogueNameLoading>
-                            <strong>{{ (selectedCatalogue$ | async)?.name | uppercase }}</strong>
+                            <strong>{{ (selectedCatalogue$ | async)?.name }}</strong>
                         </ng-template>
                     </div>
 
