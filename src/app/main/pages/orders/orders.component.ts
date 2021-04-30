@@ -263,6 +263,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     this.applyFilter();
                 }
 
+                this._onRefreshTable();
+
                 HelperService.debug('[OrdesComponent] ngOnInit getClickAction$()', {
                     form: this.form,
                     filterConfig: this.filterConfig,
@@ -323,54 +325,51 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     onSelectedTab(index: number): void {
         this.filterConfig.by.orderStatus.sources = [];
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+        this.globalFilterDto = null;
+        this.search.reset();
+        this.form.reset();
+        this.router.navigate(['.'], {relativeTo: this.route});
 
         switch (index) {
             case 1:
                 this.selectedTab = 'pending';
-                this._onRefreshTable();
                 break;
 
             case 2:
                 this.selectedTab = 'pending_payment';
-                this._onRefreshTable();
                 break;
 
             case 3:
                 this.selectedTab = 'confirm';
-                this._onRefreshTable();
                 break;
 
             case 4:
                 this.selectedTab = 'packing';
-                this._onRefreshTable();
                 break;
 
             case 5:
                 this.selectedTab = 'shipping';
-                this._onRefreshTable();
                 break;
 
             case 6:
                 this.selectedTab = 'delivered';
-                this._onRefreshTable();
                 break;
 
             case 7:
                 this.selectedTab = 'done';
-                this._onRefreshTable();
                 break;
 
             case 8:
                 this.selectedTab = 'cancel';
-                this._onRefreshTable();
                 break;
 
             default:
                 this.selectedTab = '';
                 this.filterSource();
-                this._onRefreshTable();
                 break;
         }
+
+        this._onRefreshTable();
     }
 
     safeValue(item: any): any {
@@ -684,6 +683,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 case 'paymentStatuses[]':
                     qParam['paymentStatuses'] = !!qParam['paymentStatuses'] ? `${qParam['paymentStatuses']}~${e.keyword}` : e.keyword;
                     break;
+                case 'keyword':
+                    break;
                 default:
                     qParam[e.fieldName] = !!qParam[e.fieldName] ? `${qParam[e.fieldName]}~${e.keyword}` : e.keyword;
                     break;
@@ -777,7 +778,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         }
 
         this.globalFilterDto = data;
-        this._onRefreshTable();
     }
 
     private _onRefreshTable(): void {
