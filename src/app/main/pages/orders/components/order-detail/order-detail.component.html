@@ -1,357 +1,471 @@
 <div class="mb-24" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex>
-    <div fxLayout="row" fxFlex>
-        <div class="box-container no-border" fxLayout="column" fxLayoutGap="16px">
-            <div class="box-container__title mx-0">
-                <span class="mat-headline"> Sales Order </span>
+    <!-- ORDER DETAIL WRAPPER -->
+    <div class="split-wrap-content p-16" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex>
+        <div fxLayout="row" fxFlex>
+            <div class="box-container no-border" fxLayout="column" fxLayoutGap="16px">
+                <div class="box-container__title mx-0">
+                    <span class="mat-headline"> Sales Order </span>
+                </div>
             </div>
         </div>
+    
+        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
+            <!-- DOCUMENT ORDER -->
+            <app-document-order-info
+                [data]="data"
+                [loading]="loading"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex="70"
+            ></app-document-order-info>
+            <!-- / DOCUMENT ORDER -->
+    
+            <!-- DELIVERY STATUS -->
+            <app-delivery-status-info
+                [data]="data"
+                [loading]="loading"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex
+            ></app-delivery-status-info>
+            <!-- / DELIVERY STATUS -->
+        </div>
+    
+        <!-- ORDER STATUS -->
+        <app-order-status-info
+            [data]="data"
+            [loading]="loading"
+            fxLayout="column"
+            fxLayoutGap="20px"
+        ></app-order-status-info>
+        <!-- / ORDER STATUS -->    
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
-        <!-- DOCUMENT ORDER -->
-        <app-document-order-info
-            [data]="data"
-            [loading]="loading"
-            fxLayout="column"
-            fxLayoutGap="16px"
-            fxFlex="70"
-        ></app-document-order-info>
-        <!-- / DOCUMENT ORDER -->
+    <!-- ORDER SUMMARY WRAPPER -->
+    <div class="split-wrap-content p-16" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex>
+        <mat-tab-group
+            color="accent"
+            style="border-radius: 4px;"
+            class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab [label]="'Original'"></mat-tab>
+            <mat-tab [label]="'Dispatched'" [disabled]="!data?.invoicedParcelModified"></mat-tab>
+            <mat-tab [label]="'Delivered'" [disabled]="!data?.deliveredParcelFinalPrice"></mat-tab>
+        </mat-tab-group>
 
-        <!-- DELIVERY STATUS -->
-        <app-delivery-status-info
-            [data]="data"
-            [loading]="loading"
+        <!-- ORDER LINE -->
+        <div class="box-container" fxLayout="column" fxLayoutGap="16px">
+            <div class="box-container__title">
+                <span class="mat-headline m-0"> Order Line </span>
+            </div>
+
+            <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
+            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type"></app-oms-order-line>
+        </div>
+        <!-- / ORDER LINE -->
+
+        <!-- BONUS SKU -->
+        <div class="box-container" fxLayout="column" fxLayoutGap="16px">
+            <div class="box-container__title">
+                <span class="mat-headline m-0"> Bonus SKU </span>
+            </div>
+
+            <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
+            <app-oms-order-line [orderLineType]="'bonus'" *ngIf="!loading"></app-oms-order-line>
+        </div>
+        <!-- / BONUS SKU -->
+
+        <!-- ORDER STATUS -->
+        <div
+            class="box-container"
             fxLayout="column"
+            fxLayoutAlign="start stretch"
             fxLayoutGap="16px"
             fxFlex
-        ></app-delivery-status-info>
-        <!-- / DELIVERY STATUS -->
-    </div>
+        >
+            <div class="box-container__title">
+                <span class="mat-headline m-0"> Order Summary </span>
+            </div>
 
-    <!-- ORDER STATUS -->
-    <app-order-status-info
-        [data]="data"
-        [loading]="loading"
-        fxLayout="column"
-        fxLayoutGap="20px"
-    ></app-order-status-info>
-    <!-- / ORDER STATUS -->
-
-    <!-- ORDER LINE -->
-    <div class="box-container" fxLayout="column" fxLayoutGap="16px">
-        <div class="box-container__title">
-            <span class="mat-headline m-0"> Order Line </span>
-        </div>
-
-        <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-        <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading"></app-oms-order-line>
-    </div>
-    <!-- / ORDER LINE -->
-
-    <!-- BONUS SKU -->
-    <div class="box-container" fxLayout="column" fxLayoutGap="16px">
-        <div class="box-container__title">
-            <span class="mat-headline m-0"> Bonus SKU </span>
-        </div>
-
-        <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-        <app-oms-order-line [orderLineType]="'bonus'" *ngIf="!loading"></app-oms-order-line>
-    </div>
-    <!-- / BONUS SKU -->
-
-    <!-- ORDER STATUS -->
-    <div
-        class="box-container"
-        fxLayout="column"
-        fxLayoutAlign="start stretch"
-        fxLayoutGap="16px"
-        fxFlex
-    >
-        <div class="box-container__title">
-            <span class="mat-headline m-0"> Order Status </span>
-        </div>
-
-        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="20px" fxFlex>
-            <!-- ORIGINAL -->
-            <!-- <div class="box-content__container shadow-mode" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="337px">
-                <div class="box-content p-16" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="26px">
-                    <div class="box-content__title">
-                        <span class="mat-subheading-2 text-semibold">
-                            Original
-                        </span>
-                    </div>
-
-                    <div class="form-field" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="27px">
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Gross Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
-                            </div>
+            <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="20px" fxFlex>
+                <!-- ORIGINAL -->
+                <!-- <div class="box-content__container shadow-mode" fxLayout="column" fxLayoutAlign="start stretch" fxFlex="337px">
+                    <div class="box-content p-16" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="26px">
+                        <div class="box-content__title">
+                            <span class="mat-subheading-2 text-semibold">
+                                Original
+                            </span>
                         </div>
 
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Discount Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
+                        <div class="form-field" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="27px">
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Gross Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Promo Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Discount Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Voucher Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Promo Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Untaxed Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Voucher Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Tax Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Untaxed Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
-                            <div class="label" fxFlex="120px">Total Original</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <sinbad-skeleton-view [loading]="loading">
-                                    {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                                </sinbad-skeleton-view>
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Tax Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
+                            </div>
+
+                            <div class="field" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="37px">
+                                <div class="label" fxFlex="120px">Total Original</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <sinbad-skeleton-view [loading]="loading">
+                                        {{ (0 | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                                    </sinbad-skeleton-view>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div> -->
-            <!-- / ORIGINAL -->
+                </div> -->
+                <!-- / ORIGINAL -->
 
-            <!-- FINAL -->
-            <div
-                class="box-content__container shadow-mode"
-                fxLayout="column"
-                fxLayoutAlign="start stretch"
-                fxFlex="337px"
-            >
+                <!-- FINAL -->
                 <div
-                    class="box-content p-16"
+                    class="box-content__container shadow-mode"
                     fxLayout="column"
                     fxLayoutAlign="start stretch"
-                    fxLayoutGap="26px"
+                    fxFlex="337px"
                 >
-                    <div class="box-content__title">
-                        <span class="mat-subheading-2 text-semibold"> Final </span>
-                    </div>
-
                     <div
-                        class="form-field"
+                        class="box-content p-16"
                         fxLayout="column"
                         fxLayoutAlign="start stretch"
-                        fxLayoutGap="27px"
+                        fxLayoutGap="26px"
                     >
-                        <div
-                            class="field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                            fxFlex="37px"
-                        >
-                            <div class="label" fxFlex="120px">Gross</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <ngx-skeleton-loader
-                                    [theme]="{
-                                        width: '84px',
-                                        height: '35px',
-                                        'margin-bottom': '-5px'
-                                    }"
-                                    *ngIf="loading"
-                                ></ngx-skeleton-loader>
-
-                                <ng-container *ngIf="!loading">
-                                    {{
-                                        (data?.parcelGrossPrice
-                                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                    }}
-                                </ng-container>
-                            </div>
+                        <div class="box-content__title">
+                            <span class="mat-subheading-2 text-semibold"> Final </span>
                         </div>
 
                         <div
-                            class="field"
-                            fxLayout="row"
+                            class="form-field"
+                            fxLayout="column"
                             fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                            fxFlex="37px"
+                            fxLayoutGap="27px"
                         >
-                            <div class="label" fxFlex="120px">Promo</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <ngx-skeleton-loader
-                                    [theme]="{
-                                        width: '84px',
-                                        height: '35px',
-                                        'margin-bottom': '-5px'
-                                    }"
-                                    *ngIf="loading"
-                                ></ngx-skeleton-loader>
+                            <div
+                                class="field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                                fxFlex="37px"
+                            >
+                                <div class="label" fxFlex="120px">Gross</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <ngx-skeleton-loader
+                                        [theme]="{
+                                            width: '84px',
+                                            height: '35px',
+                                            'margin-bottom': '-5px'
+                                        }"
+                                        *ngIf="loading"
+                                    ></ngx-skeleton-loader>
 
-                                <ng-container *ngIf="!loading">
-                                    {{
-                                        (data?.parcelPromo
-                                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                    }}
-                                </ng-container>
+                                    <ng-container *ngIf="!loading">
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelGrossPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}        
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelGrossPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}        
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelGrossPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                        </ng-container>                            
+                                    </ng-container>
+                                </div>
                             </div>
-                        </div>
 
-                        <div
-                            class="field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                            fxFlex="37px"
-                        >
-                            <div class="label" fxFlex="120px">Voucher</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <ngx-skeleton-loader
-                                    [theme]="{
-                                        width: '84px',
-                                        height: '35px',
-                                        'margin-bottom': '-5px'
-                                    }"
-                                    *ngIf="loading"
-                                ></ngx-skeleton-loader>
+                            <div
+                                class="field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                                fxFlex="37px"
+                            >
+                                <div class="label" fxFlex="120px">Promo</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <ngx-skeleton-loader
+                                        [theme]="{
+                                            width: '84px',
+                                            height: '35px',
+                                            'margin-bottom': '-5px'
+                                        }"
+                                        *ngIf="loading"
+                                    ></ngx-skeleton-loader>
 
-                                <ng-container *ngIf="!loading">
-                                    {{
-                                        (data?.parcelVoucher
-                                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                    }}
-                                </ng-container>
+                                    <ng-container *ngIf="!loading">
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelPromo
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelPromo
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelPromo
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
                             </div>
-                        </div>
 
-                        <div
-                            class="field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                            fxFlex="37px"
-                        >
-                            <div class="label" fxFlex="120px">Untaxed</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <ngx-skeleton-loader
-                                    [theme]="{
-                                        width: '84px',
-                                        height: '35px',
-                                        'margin-bottom': '-5px'
-                                    }"
-                                    *ngIf="loading"
-                                ></ngx-skeleton-loader>
+                            <div
+                                class="field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                                fxFlex="37px"
+                            >
+                                <div class="label" fxFlex="120px">Voucher</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <ngx-skeleton-loader
+                                        [theme]="{
+                                            width: '84px',
+                                            height: '35px',
+                                            'margin-bottom': '-5px'
+                                        }"
+                                        *ngIf="loading"
+                                    ></ngx-skeleton-loader>
 
-                                <ng-container *ngIf="!loading">
-                                    {{
-                                        ((data?.parcelGrossPrice - data?.parcelPromo - data?.parcelVoucher)
-                                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                    }}
-                                </ng-container>
+                                    <ng-container *ngIf="!loading">
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelVoucher
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelVoucher
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelVoucher
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
                             </div>
-                        </div>
 
-                        <div
-                            class="field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                            fxFlex="37px"
-                        >
-                            <div class="label" fxFlex="120px">Tax.</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <ngx-skeleton-loader
-                                    [theme]="{
-                                        width: '84px',
-                                        height: '35px',
-                                        'margin-bottom': '-5px'
-                                    }"
-                                    *ngIf="loading"
-                                ></ngx-skeleton-loader>
+                            <div
+                                class="field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                                fxFlex="37px"
+                            >
+                                <div class="label" fxFlex="120px">Untaxed</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <ngx-skeleton-loader
+                                        [theme]="{
+                                            width: '84px',
+                                            height: '35px',
+                                            'margin-bottom': '-5px'
+                                        }"
+                                        *ngIf="loading"
+                                    ></ngx-skeleton-loader>
 
-                                <ng-container *ngIf="!loading">
-                                    {{
-                                        (data?.parcelTaxes
-                                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                    }}
-                                </ng-container>
+                                    <ng-container *ngIf="!loading">
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    ((data?.deliveredParcelNettPrice)
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    ((data?.invoicedParcelNettPrice)
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    ((data?.parcelNettPrice)
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
                             </div>
-                        </div>
 
-                        <div
-                            class="field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                            fxFlex="37px"
-                        >
-                            <div class="label" fxFlex="120px">Total</div>
-                            <div class="delimiter">:</div>
-                            <div>
-                                <ngx-skeleton-loader
-                                    [theme]="{
-                                        width: '84px',
-                                        height: '35px',
-                                        'margin-bottom': '-5px'
-                                    }"
-                                    *ngIf="loading"
-                                ></ngx-skeleton-loader>
+                            <div
+                                class="field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                                fxFlex="37px"
+                            >
+                                <div class="label" fxFlex="120px">Tax.</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <ngx-skeleton-loader
+                                        [theme]="{
+                                            width: '84px',
+                                            height: '35px',
+                                            'margin-bottom': '-5px'
+                                        }"
+                                        *ngIf="loading"
+                                    ></ngx-skeleton-loader>
 
-                                <ng-container *ngIf="!loading">
-                                    {{
-                                        (data?.parcelFinalPrice
-                                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                    }}
-                                </ng-container>
+                                    <ng-container *ngIf="!loading">
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelTaxes
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelTaxes
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelTaxes
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
+                            </div>
+
+                            <div
+                                class="field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                                fxFlex="37px"
+                            >
+                                <div class="label" fxFlex="120px">Total</div>
+                                <div class="delimiter">:</div>
+                                <div>
+                                    <ngx-skeleton-loader
+                                        [theme]="{
+                                            width: '84px',
+                                            height: '35px',
+                                            'margin-bottom': '-5px'
+                                        }"
+                                        *ngIf="loading"
+                                    ></ngx-skeleton-loader>
+
+                                    <ng-container *ngIf="!loading">
+                                        <ng-container [ngSwitch]="type">
+                                            <ng-container class="text-word-break" *ngSwitchCase="'delivered'">
+                                                {{
+                                                    (data?.deliveredParcelFinalPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchCase="'dispatched'">
+                                                {{
+                                                    (data?.invoicedParcelFinalPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>    
+                                            <ng-container class="text-word-break" *ngSwitchDefault>
+                                                {{
+                                                    (data?.parcelFinalPrice
+                                                        | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                                }}
+                                            </ng-container>
+                                        </ng-container>
+                                    </ng-container>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- / FINAL -->
             </div>
-            <!-- / FINAL -->
         </div>
+        <!-- / ORDER STATUS -->
     </div>
-    <!-- / ORDER STATUS -->
 </div>
