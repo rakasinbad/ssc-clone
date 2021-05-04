@@ -9,11 +9,7 @@
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button
-                    mat-icon-button
-                    class="mr-0 mr-sm-16"
-                    [routerLink]="['/pages', 'logistics', 'warehouses']"
-                >
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" (click)="goBack()">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
