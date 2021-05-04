@@ -389,20 +389,31 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // this.paginator.pageSize = this.defaultPageSize;
 
-        this.route.queryParams.pipe(takeUntil(this._unSubs$)).subscribe({
-            next: (params) => {
-                if (
-                    typeof params['limit'] !== 'undefined' &&
-                    typeof params['pageIndex'] !== 'undefined'
-                ) {
-                    this.paginator.pageSize = +params['limit'];
-                    this.paginator.pageIndex = +params['pageIndex'];
-                    this.onRefreshTable();
-                } else {
-                    this.paginator.pageSize = this.pageSize;
-                }
-            },
-        });
+        this.route.queryParams
+            .pipe(
+                filter((params) => {
+                    const { limit, page_index: pageIndex } = params;
+
+                    if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                        return true;
+                    } else {
+                        this.onRefreshTable();
+                        return false;
+                    }
+                }),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe({
+                next: ({ limit, page_index: pageIndex }) => {
+                    if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                        this.paginator.pageSize = +limit;
+                        this.paginator.pageIndex = +pageIndex;
+                        this.initTable();
+                    } else {
+                        this.paginator.pageSize = this.pageSize;
+                    }
+                },
+            });
     }
 
     ngAfterViewInit(): void {
@@ -607,7 +618,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.router.navigate(['.'], {
             relativeTo: this.route,
-            queryParams: { limit: ev.pageSize, pageIndex: ev.pageIndex },
+            queryParams: { limit: ev.pageSize, page_index: ev.pageIndex },
         });
 
         /* const data: IQueryParams = {
@@ -713,6 +724,9 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private onRefreshTable(): void {
         // this.paginator.pageIndex = 0;
+        this.table.nativeElement.scrollTop = 0;
+        this.paginator.pageIndex = 0;
+        this.paginator.pageSize = this.defaultPageSize;
         this.initTable();
     }
 
@@ -820,7 +834,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.globalFilterDto
             );
 
-            // this.store.dispatch(CatalogueActions.resetCatalogues());
+            this.store.dispatch(CatalogueActions.resetCatalogues());
 
             this.store.dispatch(
                 CatalogueActions.fetchCataloguesRequest({

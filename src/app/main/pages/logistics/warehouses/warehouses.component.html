@@ -44,9 +44,7 @@
 
                 <!-- Warehouse ID Column -->
                 <ng-container matColumnDef="wh-id">
-                    <mat-header-cell *matHeaderCellDef>
-                        Warehouse ID
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Warehouse ID </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.code || '-' }}
@@ -56,9 +54,7 @@
 
                 <!-- Warehouse Name Column -->
                 <ng-container matColumnDef="wh-name">
-                    <mat-header-cell *matHeaderCellDef>
-                        Warehouse Name
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Warehouse Name </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.name || '-' }}
@@ -68,33 +64,29 @@
 
                 <!-- Lead Time Column -->
                 <ng-container matColumnDef="lead-time">
-                    <mat-header-cell *matHeaderCellDef>
-                        Lead Time
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Lead Time </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
-                            {{ getLeadTime(row?.leadTime) || '-' }}
+                            {{ row?.leadTime | leadTime }}
+                            <!-- {{ getLeadTime(row?.leadTime) || '-' }} -->
                         </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Invoice Column -->
                 <ng-container matColumnDef="invoice">
-                    <mat-header-cell *matHeaderCellDef>
-                        Faktur
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Faktur </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
-                            {{ getInvoices(row?.warehouseInvoiceGroups) || '-' }}
+                            {{ row?.warehouseInvoiceGroups | invoiceGroup }}
+                            <!-- {{ getInvoices(row?.warehouseInvoiceGroups) || '-' }} -->
                         </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Assigned SKU Column -->
                 <ng-container matColumnDef="assigned-sku">
-                    <mat-header-cell *matHeaderCellDef>
-                        Assigned SKU
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Assigned SKU </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.totalCatalogue }}
@@ -104,9 +96,7 @@
 
                 <!-- Stock Available Column -->
                 <ng-container matColumnDef="stock-available">
-                    <mat-header-cell *matHeaderCellDef>
-                        Stock Available
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Stock Available </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.totalCatalogueStock }}
@@ -116,9 +106,7 @@
 
                 <!-- Total Urban Column -->
                 <ng-container matColumnDef="total-urban">
-                    <mat-header-cell *matHeaderCellDef>
-                        Total Urban
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Total Urban </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.totalUrban }}
@@ -128,9 +116,7 @@
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef>
-                        Actions
-                    </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
@@ -232,8 +218,8 @@
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
                 [length]="totalDataSource$ | async"
-                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
+                (page)="onChangePage($event)"
                 showFirstLastButtons
             ></mat-paginator>
 
