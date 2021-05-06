@@ -7,6 +7,8 @@ export interface IStatusPayment {
     totalPaidOrder: string;
     totalPaymentFailedOrder: string;
     totalOverdueOrder: string;
+    totalWaitingForRefund: string;
+    totalRefunded: string;
 }
 
 export interface IPaymentStatusDemo {

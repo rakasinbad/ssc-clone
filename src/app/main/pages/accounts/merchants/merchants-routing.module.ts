@@ -24,7 +24,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'stores'),
+                only: ['ACCOUNT.STORE.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -89,7 +89,7 @@ const routes: Routes = [
         ],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'stores'),
+                only: ['ACCOUNT.STORE.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -106,7 +106,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: getRoleByRouter('account', 'stores'),
+                only: ['ACCOUNT.STORE.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

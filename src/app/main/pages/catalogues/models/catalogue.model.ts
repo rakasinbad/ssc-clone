@@ -132,6 +132,7 @@ export interface ICatalogue extends ITimestamp {
     retailBuyingPrice: number; // Harga yang dibeli dari supplier.
     suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
     discountedRetailBuyingPrice: TNullable<number>; // Harga potongan yang diberikan oleh supplier untuk dijual ke toko.
+    maxQty: number;
     minQty: number;
     minQtyType: TQuantityType;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
@@ -185,6 +186,7 @@ export interface ICatalogue extends ITimestamp {
     isBonus?: boolean;
     isBundle?: boolean;
     isExclusive?: boolean;
+    isMaximum?: boolean;
     isPromo?: boolean;
 }
 
@@ -569,6 +571,7 @@ export class Catalogue implements ICatalogue {
     retailBuyingPrice: number; // Harga yang dibeli dari supplier.
     suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
     discountedRetailBuyingPrice: TNullable<number>; // Harga potongan untuk konsumen.
+    maxQty: number;
     minQty: number;
     minQtyType: TQuantityType;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
@@ -619,6 +622,7 @@ export class Catalogue implements ICatalogue {
     isBonus?: boolean;
     isBundle?: boolean;
     isExclusive?: boolean;
+    isMaximum?: boolean;
     isPromo?: boolean;
 
     constructor(data: ICatalogue) {
@@ -638,6 +642,7 @@ export class Catalogue implements ICatalogue {
             retailBuyingPrice,
             suggestedConsumerBuyingPrice,
             discountedRetailBuyingPrice,
+            maxQty,
             minQty,
             minQtyType,
             packagedQty,
@@ -677,6 +682,7 @@ export class Catalogue implements ICatalogue {
             isBonus,
             isBundle,
             isExclusive,
+            isMaximum,
             isPromo,
         } = data;
 
@@ -695,6 +701,7 @@ export class Catalogue implements ICatalogue {
         this.retailBuyingPrice = retailBuyingPrice;
         this.suggestedConsumerBuyingPrice = suggestedConsumerBuyingPrice;
         this.discountedRetailBuyingPrice = discountedRetailBuyingPrice;
+        this.maxQty = maxQty;
         this.minQty = minQty;
         this.minQtyType = minQtyType;
         this.packagedQty = packagedQty;
@@ -729,6 +736,7 @@ export class Catalogue implements ICatalogue {
         this.isBonus = isBonus;
         this.isBundle = isBundle;
         this.isExclusive = isExclusive;
+        this.isMaximum = isMaximum;
         this.isPromo = isPromo;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8

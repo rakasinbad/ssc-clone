@@ -17,7 +17,7 @@
 
         <!-- PRODUCT PRICE SECTION -->
         <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
-            <!-- PRODUCT RETAIL BUYING PRICE -->
+            <!-- TAX -->
             <div
                 [ngClass]="formClass"
                 fxLayout="row"
@@ -27,6 +27,45 @@
             >
                 <label
                     fxFlexAlign="center"
+                    fxFlex="150px"
+                    [class.pr-0]="formMode | hasFormMode: 'edit'"
+                    [class.sinbad-red-fg]="
+                        !(formMode | hasFormMode: 'view') &&
+                        (form.get('tax').value || form.get('tax').touched
+                            | hasErrorField: form.get('tax'):false)
+                    "
+                >
+                    <span class="red-500-fg" *ngIf="formMode | hasFormMode: 'edit'">*</span>
+                    Tax
+                </label>
+
+                <mat-radio-group
+                    formControlName="tax"
+                    (change)="onTaxChange($event)"
+                    *ngIf="formMode | hasFormMode: 'edit'"
+                >
+                    <mat-radio-button class="pr-36" *ngFor="let tax of taxes" [value]="tax?.amount">
+                        {{ tax?.amount | tax }}
+                    </mat-radio-button>
+                </mat-radio-group>
+
+                <span fxFlexAlign="center" class="grey-fg" *ngIf="formMode | hasFormMode: 'view'">
+                    {{ form.get('taxView').value | tax }}
+                </span>
+            </div>
+            <!-- / TAX -->
+
+            <!-- PRODUCT RETAIL BUYING PRICE (BEFORE TAX) -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="150px"
                     [class.pr-0]="formMode | hasFormMode: 'edit'"
                     [class.sinbad-red-fg]="
                         !(formMode | hasFormMode: 'view') &&
@@ -35,8 +74,8 @@
                             | hasErrorField: form.get('retailBuyingPrice'):false)
                     "
                 >
-                    <span class="red-500-fg">*</span>
-                    Retail Buyer Price
+                    <span class="red-500-fg" *ngIf="formMode | hasFormMode: 'edit'">*</span>
+                    Retail Buyer Price (Before Tax)
                 </label>
 
                 <mat-form-field appearance="outline" *ngIf="formMode | hasFormMode: 'edit'">
@@ -63,8 +102,10 @@
                     }}
                 </span>
             </div>
-            <!-- / PRODUCT RETAIL BUYING PRICE -->
+            <!-- / PRODUCT RETAIL BUYING PRICE (BEFORE TAX) -->
+        </div>
 
+        <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
             <!-- PRODUCT BASE PRICE -->
             <div
                 [ngClass]="formClass"
@@ -73,7 +114,11 @@
                 fxFlex="40"
                 fxLayoutGap="16px"
             >
-                <label fxFlexAlign="center" [class.pr-0]="formMode | hasFormMode: 'edit'">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="150px"
+                    [class.pr-0]="formMode | hasFormMode: 'edit'"
+                >
                     Discount Retail Buyer Price
                 </label>
 
@@ -102,6 +147,43 @@
                 </span>
             </div>
             <!-- / PRODUCT BASE PRICE -->
+
+            <!-- PRODUCT RETAIL BUYING PRICE (AFTER TAX) -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label fxFlexAlign="center" fxFlex="150px"> Retail Buyer Price (After Tax) </label>
+
+                <span
+                    fxFlexAlign="center"
+                    [class.grey-fg]="formMode | hasFormMode: 'view'"
+                    [ngStyle]="{
+                        position: (formMode | hasFormMode: 'view') ? null : 'relative',
+                        top: (formMode | hasFormMode: 'view') ? null : '-0.78em'
+                    }"
+                >
+                    <ng-container *ngIf="formMode | hasFormMode: 'view'">
+                        {{
+                            form.get('retailBuyingPriceView')?.value
+                                | calculateAfterTax: form.get('taxView')?.value
+                                | price: 'full':'IDR':'narrow':'1.0-2'
+                        }}
+                    </ng-container>
+
+                    <ng-container *ngIf="formMode | hasFormMode: 'edit'">
+                        {{
+                            form.get('retailBuyingPrice')?.value
+                                | calculateAfterTax: form.get('tax')?.value
+                                | price: 'full':'IDR':'narrow':'1.0-2'
+                        }}
+                    </ng-container>
+                </span>
+            </div>
+            <!-- / PRODUCT RETAIL BUYING PRICE (AFTER TAX) -->
         </div>
         <!-- PRODUCT PRICE SECTION -->
 
@@ -238,6 +320,7 @@
             #table
             class="catalogue-price-table sinbad-table sinbad-table__hover"
             [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+            [class.edit]="formMode | hasFormMode: 'edit'"
             [class.h-360]="formMode === 'edit'"
             [dataSource]="dataSource"
             [trackBy]="onTrackPriceSetting"
@@ -255,7 +338,7 @@
         >
             <!-- Segmentation Name Column -->
             <ng-container matColumnDef="segmentation-name">
-                <mat-header-cell *matHeaderCellDef>Segmentation Name</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Segmentation Name </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p>{{ row?.name || '-' }}</p>
                 </mat-cell>
@@ -307,9 +390,9 @@
             </ng-container>
             <!-- / Store Cluster Column -->
 
-            <!-- SKU's Price Column -->
+            <!-- PRICE (BEFORE TAX) COLUMN -->
             <ng-container matColumnDef="price">
-                <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Price Before Tax </mat-header-cell>
                 <mat-cell *matCellDef="let row; index as idx">
                     <p *ngIf="formMode | hasFormMode: 'view'">
                         {{ row?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
@@ -321,7 +404,7 @@
                         fxLayoutAlign="start center"
                         *ngIf="formMode | hasFormMode: 'edit'"
                     >
-                        <mat-form-field appearance="outline" style="width: 70%">
+                        <mat-form-field appearance="outline" style="width: 50%">
                             <input
                                 matInput
                                 name="retailBuyingPrice"
@@ -341,7 +424,103 @@
                     </div>
                 </mat-cell>
             </ng-container>
-            <!-- / SKU's Price Column -->
+            <!-- / PRICE (BEFORE TAX) COLUMN -->
+
+            <!-- PRICE (AFTER TAX) COLUMN -->
+            <ng-container matColumnDef="price-after-tax">
+                <mat-header-cell *matHeaderCellDef> Price After Tax </mat-header-cell>
+                <mat-cell *matCellDef="let row; index as idx">
+                    <p>
+                        <ng-container *ngIf="formMode | hasFormMode: 'view'">
+                            {{
+                                row?.price
+                                    | calculateAfterTax: form.get('taxView')?.value
+                                    | price: 'full':'IDR':'narrow':'1.0-2'
+                            }}
+                        </ng-container>
+
+                        <ng-container *ngIf="formMode | hasFormMode: 'edit'">
+                            {{
+                                form.get(['priceSettings', idx, 'price'])?.value
+                                    | calculateAfterTax: form.get('tax')?.value
+                                    | price: 'full':'IDR':'narrow':'1.0-2'
+                            }}
+                        </ng-container>
+                    </p>
+                </mat-cell>
+            </ng-container>
+            <!-- / PRICE (AFTER TAX) COLUMN -->
+
+            <!-- Custom Qty Column -->
+            <ng-container matColumnDef="custom-qty">
+                <mat-header-cell *matHeaderCellDef> Custom Quantity </mat-header-cell>
+                <mat-cell *matCellDef="let row; index as idx">
+                    <mat-checkbox
+                        *ngIf="formMode | hasFormMode: 'view'"
+                        [checked]="row?.isMaximum"
+                        disabled
+                    ></mat-checkbox>
+
+                    <mat-checkbox
+                        *ngIf="formMode | hasFormMode: 'edit'"
+                        [formControl]="form.get(['priceSettings', idx, 'isMaximum'])"
+                        (change)="onChangeCustomQty($event, row, idx)"
+                    ></mat-checkbox>
+                </mat-cell>
+            </ng-container>
+            <!-- / Custom Qty Column -->
+
+            <!-- Maximum Order Qty Column -->
+            <ng-container matColumnDef="max-order-qty">
+                <mat-header-cell *matHeaderCellDef>
+                    Max Order Quantity
+                    <!-- HELP -->
+                    <mat-icon
+                        color="accent"
+                        style="font-size: 16px; position: relative; top: 3px"
+                        matTooltip="Maximum order quantity is not related&#10;to the maximum order quantity in the&#10;amount setting"
+                        matTooltipClass="tooltip-br"
+                    >
+                        help
+                    </mat-icon>
+                    <!-- / HELP -->
+                </mat-header-cell>
+
+                <mat-cell *matCellDef="let row; index as idx">
+                    <p *ngIf="formMode | hasFormMode: 'view'">
+                        {{ row?.isMaximum ? row?.maxQty : 'Unlimited' }}
+                    </p>
+
+                    <div
+                        [ngClass]="formClass"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        *ngIf="formMode | hasFormMode: 'edit'"
+                    >
+                        <mat-form-field appearance="outline" style="width: 50%">
+                            <input
+                                matInput
+                                name="retailBuyingPrice"
+                                [formControl]="form.get(['priceSettings', idx, 'maxOrderQtyValue'])"
+                                [class.mat-error]="
+                                    form.get(['priceSettings', idx, 'maxOrderQtyValue']).value ||
+                                        form.get(['priceSettings', idx, 'maxOrderQtyValue']).touched
+                                        | hasErrorField
+                                            : form.get(['priceSettings', idx, 'maxOrderQtyValue'])
+                                            : false
+                                "
+                                [placeholder]="
+                                    form.get(['priceSettings', idx, 'isMaximum']).value
+                                        ? null
+                                        : 'Unlimited'
+                                "
+                                (blur)="onChangeMaxOrderQty(row, idx)"
+                            />
+                        </mat-form-field>
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <!-- / Maximum Order Qty Column -->
 
             <!-- Actions Column -->
             <ng-container matColumnDef="actions">
@@ -369,16 +548,18 @@
                             <mat-icon>edit</mat-icon>
                             <span>Adjust Price</span>
                         </button> -->
-                        <button
-                            type="button"
-                            mat-menu-item
-                            class="sinbad-mat-menu-item"
-                            aria-label="Delete"
-                            (click)="onDelete(row, idx)"
-                        >
-                            <mat-icon>delete</mat-icon>
-                            <span>Delete</span>
-                        </button>
+                        <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Delete"
+                                (click)="onDelete(row, idx)"
+                            >
+                                <mat-icon>delete</mat-icon>
+                                <span>Delete</span>
+                            </button>
+                        </ng-template>
                     </mat-menu>
                 </mat-cell>
             </ng-container>

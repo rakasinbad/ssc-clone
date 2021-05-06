@@ -6,7 +6,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -16,6 +16,7 @@ import {
     LifecyclePlatform
 } from 'app/shared/models/global.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
@@ -88,7 +89,9 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     constructor(
+        private ngxPermissions: NgxPermissionsService,
         private route: ActivatedRoute,
+        private router: Router,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
@@ -135,8 +138,22 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const { id } = this.route.snapshot.params;
 
         if (id === 'new') {
+            const hasAccess = this.ngxPermissions.hasPermission('SRM.SR.CREATE');
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.pageType = 'new';
         } else {
+            const hasAccess = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
+            hasAccess.then(hasAccess => {
+                if (!hasAccess) {
+                    this.router.navigate(['/pages/errors/403'], {skipLocationChange: true});
+                }
+            });
+
             this.pageType = 'edit';
 
             this._breadCrumbs = [

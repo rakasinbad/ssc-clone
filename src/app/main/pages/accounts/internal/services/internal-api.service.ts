@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { UserSupplier, UserSupplierOptions } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import { Observable } from 'rxjs';
 
-import { IInternalEmployeeDetail, InternalEmployeeDetail } from '../models';
+import { IInternalEmployeeDetails, InternalEmployeeDetail } from '../models';
 
 /**
  *
@@ -34,7 +35,7 @@ export class InternalApiService {
      */
     private readonly _endpoint = '/user-suppliers';
 
-    private readonly _endpointEmployeeDetail = '/users';
+    private readonly _endpointSupplierEmployeee = '/supplier-employees';
 
     /**
      * Creates an instance of InternalApiService.
@@ -47,6 +48,7 @@ export class InternalApiService {
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         const newArg = supplierId
             ? [
                   {
@@ -61,9 +63,9 @@ export class InternalApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findById(userId: string): Observable<IInternalEmployeeDetail> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
-        return this.http.get<IInternalEmployeeDetail>(`${this._url}/${userId}`);
+    findById(userId: string): Observable<IInternalEmployeeDetails> {
+        this._url = this._$helper.handleApiRouter(this._endpointSupplierEmployeee);
+        return this.http.get<IInternalEmployeeDetails>(`${this._url}/${userId}`);
     }
 
     /**
@@ -75,6 +77,7 @@ export class InternalApiService {
      * @memberof InternalApiService
      */
     create<T>(body: T): Observable<UserSupplier> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.post<UserSupplier>(this._url, body);
     }
 
@@ -87,12 +90,18 @@ export class InternalApiService {
      * @memberof InternalApiService
      */
     patch(body: UserSupplierOptions, id: string): Observable<UserSupplier> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch<UserSupplier>(`${this._url}/${id}`, body);
     }
 
     updatePatch(body: InternalEmployeeDetail, id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
+
+    patchUserManagement<T>(body: T, id: string): Observable<User> {
+        this._url = this._$helper.handleApiRouter(this._endpointSupplierEmployeee);
+        return this.http.patch<User>(`${this._url}/${id}`, body);
     }
 
     updatePatchStatusInternalEmployee(body: { status: string }, id: string): Observable<any> {
@@ -108,6 +117,7 @@ export class InternalApiService {
      * @memberof InternalApiService
      */
     delete(id: string): Observable<UserSupplier> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.delete<UserSupplier>(`${this._url}/${id}`);
     }
 }

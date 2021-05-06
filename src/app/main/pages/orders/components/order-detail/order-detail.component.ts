@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { LogService } from 'app/shared/helpers';
+import { HelperService, LogService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -34,6 +34,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     loading: boolean;
 
     private _unSubs$: Subject<any> = new Subject();
+
+    type: string;
 
     constructor(
         private matDialog: MatDialog,
@@ -208,5 +210,20 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         );
 
         this.store.dispatch(OrderActions.fetchOrderRequest({ payload: id })); */
+    }
+
+    onSelectedTab(value) : void {
+        switch (value) {
+            case 2:
+                this.type = "delivered"
+                break;
+            case 1:
+                this.type = "dispatched"
+                break;
+            case 0:
+            default:
+                this.type = "original"
+                break;
+        }
     }
 }

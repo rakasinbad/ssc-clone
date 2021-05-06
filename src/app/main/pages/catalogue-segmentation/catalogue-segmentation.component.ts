@@ -30,7 +30,7 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
             active: true,
         },
         add: {
-            permissions: [],
+            permissions: ['CATALOGUE.CREATE'],
         },
         filter: {
             permissions: [],

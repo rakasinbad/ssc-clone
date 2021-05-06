@@ -18,23 +18,23 @@ export class Error403Component {
         private store: Store<fromRoot.State>,
         private _fuseConfigService: FuseConfigService
     ) {
-        // Configure the layout
-        this._fuseConfigService.config = {
-            layout: {
-                navbar: {
-                    hidden: true
-                },
-                toolbar: {
-                    hidden: true
-                },
-                footer: {
-                    hidden: true
-                },
-                sidepanel: {
-                    hidden: true
-                }
-            }
-        };
+        // // Configure the layout
+        // this._fuseConfigService.config = {
+        //     layout: {
+        //         navbar: {
+        //             hidden: true
+        //         },
+        //         toolbar: {
+        //             hidden: true
+        //         },
+        //         footer: {
+        //             hidden: true
+        //         },
+        //         sidepanel: {
+        //             hidden: true
+        //         }
+        //     }
+        // };
     }
 
     onLogout(): void {

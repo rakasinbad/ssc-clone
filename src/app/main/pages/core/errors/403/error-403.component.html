@@ -1,24 +1,25 @@
-<div id="error-403" fxLayout="column" fxLayoutAlign="center center">
-    <div class="content" fxLayout="column" fxLayoutAlign="center center">
-        <div class="error-code">403</div>
+<div id="error-403" class="page-layout carded fullwidth inner-scroll line-height-1.75" fxLayout="column" fxLayoutAlign="center center">
+    <div class="center p-8">
+        <div class="content-card" fxLayout="column" fxLayoutAlign="center center">
+            <!-- <div class="error-code">403</div> -->
 
-        <div class="message">
-            Sorry but you don't have permission to access. Please contact administrator.
+            <div>
+                <img
+                    class="fit-image fuse-white"
+                    style="border-radius: 5px"
+                    src="assets/images/errors/access_denied.png"
+                />
+            </div>
+
+            <div class="message">
+                <h1>Maaf, Anda tidak memiliki akses ke halaman ini</h1>
+                <h4>Silakan hubungi admin untuk proses lebih lanjut</h4>
+            </div>
+
+            <!-- <div class="search" fxLayout="row" fxLayoutAlign="start center" *ngIf="false">
+                <mat-icon class="icon s-24">search</mat-icon>
+                <input placeholder="Search for something" fxFlex />
+            </div> -->
         </div>
-
-        <!-- <div class="search" fxLayout="row" fxLayoutAlign="start center" *ngIf="false">
-            <mat-icon class="icon s-24">search</mat-icon>
-            <input placeholder="Search for something" fxFlex />
-        </div> -->
-
-        <a class="back-link mt-24" [routerLink]="['/']">
-            Go back to main page
-        </a>
-
-        or
-
-        <button type="button" mat-flat-button color="accent" (click)="onLogout()">
-            Logout
-        </button>
     </div>
 </div>

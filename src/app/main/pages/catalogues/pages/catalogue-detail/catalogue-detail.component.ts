@@ -6,14 +6,16 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
+    ViewEncapsulation
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
 import { FormStatus, IBreadcrumbs } from 'app/shared/models/global.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { Catalogue, CatalogueInformation, CatalogueWeightDimension } from '../../models';
@@ -56,7 +58,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
     constructor(
         private cdRef: ChangeDetectorRef,
-        // private router: Router,
+        private router: Router,
+        private ngxPermissions: NgxPermissionsService,
         private store: NgRxStore<fromCatalogue.FeatureState>
     ) {
         const breadcrumbs: Array<IBreadcrumbs> = [
@@ -204,11 +207,25 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 break;
             }
             case 'price-settings': {
-                const { retailBuyingPrice } = $event as Catalogue;
-
-                this.formValue = {
+                const {
                     retailBuyingPrice,
-                };
+                    catalogueTaxId,
+                    discountedRetailBuyingPrice,
+                } = $event as Catalogue;
+
+                this.formValue = {};
+
+                if (typeof retailBuyingPrice !== 'undefined') {
+                    this.formValue = { ...this.formValue, retailBuyingPrice };
+                }
+
+                if (typeof catalogueTaxId !== 'undefined') {
+                    this.formValue = { ...this.formValue, catalogueTaxId };
+                }
+
+                if (typeof discountedRetailBuyingPrice !== 'undefined') {
+                    this.formValue = { ...this.formValue, discountedRetailBuyingPrice };
+                }
 
                 break;
             }
@@ -219,6 +236,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     minQtyType,
                     multipleQty,
                     multipleQtyType,
+                    isMaximum,
+                    maxQty,
                 } = $event as Catalogue;
 
                 this.formValue = {
@@ -227,6 +246,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     minQtyType,
                     multipleQty,
                     multipleQtyType,
+                    isMaximum,
+                    maxQty: isMaximum ? maxQty : null,
                 };
 
                 break;
@@ -288,11 +309,19 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     editCatalogue(): void {
-        this.formMode = 'edit';
+        const canUpdate = this.ngxPermissions.hasPermission('CATALOGUE.UPDATE');
+        
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.formMode = 'edit';
 
-        this.store.dispatch(UiActions.showFooterAction());
-        this.store.dispatch(FormActions.setFormStatusInvalid());
-        this.store.dispatch(FormActions.resetClickCancelButton());
+                this.store.dispatch(UiActions.showFooterAction());
+                this.store.dispatch(FormActions.setFormStatusInvalid());
+                this.store.dispatch(FormActions.resetClickCancelButton());
+            } else {
+                this.router.navigateByUrl('/pages/errors/403', {replaceUrl: true});
+            }
+        });
 
         // this.cdRef.markForCheck();
     }
@@ -332,21 +361,29 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             .pipe(withLatestFrom(this.selectedCatalogue$), takeUntil(this.subs$))
             .subscribe(([needRefresh, catalogue]) => {
                 if (needRefresh) {
-                    this.formMode = 'view';
+                    const canView = this.ngxPermissions.hasPermission('CATALOGUE.READ');
+        
+                    canView.then(hasAccess => {
+                        if (hasAccess) {
+                            this.formMode = 'view';
 
-                    this.store.dispatch(UiActions.hideFooterAction());
-                    this.store.dispatch(FormActions.resetClickCancelButton());
-                    this.store.dispatch(FormActions.resetClickSaveButton());
-                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
-
-                    this.store.dispatch(
-                        CatalogueActions.fetchCatalogueRequest({
-                            payload: catalogue.id,
-                        })
-                    );
-
-                    // Scrolled to top.
-                    this.scrollTop(this.catalogueDetailRef);
+                            this.store.dispatch(UiActions.hideFooterAction());
+                            this.store.dispatch(FormActions.resetClickCancelButton());
+                            this.store.dispatch(FormActions.resetClickSaveButton());
+                            this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
+        
+                            this.store.dispatch(
+                                CatalogueActions.fetchCatalogueRequest({
+                                    payload: catalogue.id,
+                                })
+                            );
+        
+                            // Scrolled to top.
+                            this.scrollTop(this.catalogueDetailRef);
+                        } else {
+                            this.router.navigateByUrl('/pages/errors/403', {replaceUrl: true});
+                        }
+                    });
                 }
             });
 

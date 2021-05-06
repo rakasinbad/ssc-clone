@@ -56,8 +56,16 @@ export class HelperService {
         'subBrandId',
         'supplierId',
         'type',
+        'typeAmount',
         'typeId',
         'warehouseId',
+        'startOrderDate',
+        'endOrderDate',
+        'minOrderValue',
+        'maxOrderValue',
+        'web',
+        'statuses[]',
+        'paymentStatuses[]'
     ];
 
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
@@ -180,6 +188,7 @@ export class HelperService {
         },
     ];
 
+    // tslint:disable-next-line:member-ordering
     private static _paymentStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -200,7 +209,7 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
-        },
+        }
     ];
 
     private static readonly _platformSinbad: { id: PlatformSinbad; label: string }[] = [
@@ -795,7 +804,12 @@ export class HelperService {
                                 }
                             }
 
-                            newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                            if (search.fieldName.includes('[]')) {
+                                newParams = newParams.append(search.fieldName, `${search.keyword}`);
+                            } else {
+                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                            }
+
                         } else if (search.fieldName && search.fieldName !== 'id') {
                             newParams = newParams.append(
                                 `search[${search.fieldName}]`,

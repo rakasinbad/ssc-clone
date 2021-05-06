@@ -231,6 +231,26 @@
                         fxLayoutGap="16px"
                         fxFlex="37px"
                     >
+                    <div class="label" fxFlex="120px">Payment Status</div>
+                    <div>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ data?.statusPaymentName || '-' }}
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <div
+                        class="field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="37px"
+                    >
                         <div class="label" fxFlex="120px">Payment Due Date</div>
                         <div fxFlexAlign="center">
                             <ngx-skeleton-loader
