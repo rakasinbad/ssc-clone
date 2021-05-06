@@ -9,6 +9,18 @@ app-oms-order-line {
         -webkit-overflow-scrolling: touch;
         position: relative;
 
+        .text-center{
+            text-align: center;
+        }
+
+        .mat-form-field-wrapper{
+            padding: 0 !important;
+        }
+
+        .mat-form-field-infix{
+            padding: 5px 0 12px;
+        }
+
         // No record table
         &.sinbad-table-no-record {
             background: #ffffff !important;

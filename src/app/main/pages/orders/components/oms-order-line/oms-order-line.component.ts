@@ -45,6 +45,9 @@ export class OmsOrderLineComponent implements OnInit {
     @Input()
     type: string;
 
+    @Input()
+    editable: boolean;
+
     constructor(private orderFacade: OrderFacadeService) {}
 
     ngOnInit(): void {

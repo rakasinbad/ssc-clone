@@ -35,7 +35,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
 
     private _unSubs$: Subject<any> = new Subject();
 
-    type: string;
+    type: string = 'original';
+    proposeEdit: boolean = false;
 
     constructor(
         private matDialog: MatDialog,
