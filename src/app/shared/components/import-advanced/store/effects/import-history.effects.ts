@@ -4,10 +4,15 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { ImportLogApiService } from 'app/shared/helpers';
 import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { IImportLog, ImportLog } from '../../models';
 import { ImportHistroyActions } from '../actions';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
+import { fromImportAdvanced } from '../reducers';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Injectable()
 export class ImportHistoryEffects {
@@ -15,8 +20,16 @@ export class ImportHistoryEffects {
         this.actions$.pipe(
             ofType(ImportHistroyActions.importHistoryRequest),
             map(action => action.payload),
-            switchMap(({ params, page }) => {
-                return this._$importLogApi.findAll<PaginateResponse<IImportLog>>(params, page).pipe(
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            
+            switchMap(([{ params, page }, userSupplier]) => {
+                const supplierId = userSupplier.supplierId;
+                const newQuery: IQueryParams = {
+                    ...params,
+                };
+                // Memasukkan ID supplier ke dalam parameter.
+                newQuery['supplierId'] = supplierId;
+                return this._$importLogApi.findAll<PaginateResponse<IImportLog>>(newQuery, page).pipe(
                     catchOffline(),
                     map(resp => {
                         const newResp = {
@@ -43,5 +56,9 @@ export class ImportHistoryEffects {
         )
     );
 
-    constructor(private actions$: Actions, private _$importLogApi: ImportLogApiService) {}
+    constructor(
+        private actions$: Actions, private _$importLogApi: ImportLogApiService,
+        private storage: StorageMap,
+        private store: Store<fromImportAdvanced.FeatureState>,
+        ) {}
 }
