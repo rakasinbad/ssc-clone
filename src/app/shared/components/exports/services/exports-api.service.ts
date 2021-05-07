@@ -157,7 +157,7 @@ export class ExportsApiService {
             });
         }
 
-        if(params['page'] !== 'catalogues'){
+        if (params['page'] !== 'catalogues'){
             if (params['dateGte']) {
                 newArgs.push({
                     key: 'dateGte',

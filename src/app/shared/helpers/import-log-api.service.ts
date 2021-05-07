@@ -60,7 +60,12 @@ export class ImportLogApiService {
                   }
               ]
             : [];
-
+        if (!isNaN(params['supplierId'])) {
+                newArg.push({
+                    key: 'supplierId',
+                    value: params['supplierId'],
+                });
+            }
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
