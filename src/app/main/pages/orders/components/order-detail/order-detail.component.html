@@ -9,28 +9,6 @@
             </div>
         </div>
     
-        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
-            <!-- DOCUMENT ORDER -->
-            <app-document-order-info
-                [data]="data"
-                [loading]="loading"
-                fxLayout="column"
-                fxLayoutGap="16px"
-                fxFlex="70"
-            ></app-document-order-info>
-            <!-- / DOCUMENT ORDER -->
-    
-            <!-- DELIVERY STATUS -->
-            <app-delivery-status-info
-                [data]="data"
-                [loading]="loading"
-                fxLayout="column"
-                fxLayoutGap="16px"
-                fxFlex
-            ></app-delivery-status-info>
-            <!-- / DELIVERY STATUS -->
-        </div>
-    
         <!-- ORDER STATUS -->
         <app-order-status-info
             [data]="data"
@@ -38,6 +16,45 @@
             fxLayout="column"
             fxLayoutGap="20px"
         ></app-order-status-info>
+        <!-- / ORDER STATUS -->  
+
+        <app-document-order-info
+            [data]="data"
+            [loading]="loading"
+            fxLayout="column"
+            fxLayoutGap="16px"
+        ></app-document-order-info>
+
+
+        <!-- <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100"> -->
+            <!-- DOCUMENT ORDER -->
+            <!-- <app-document-order-info
+                [data]="data"
+                [loading]="loading"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex="70"
+            ></app-document-order-info> -->
+            <!-- / DOCUMENT ORDER -->
+    
+            <!-- DELIVERY STATUS -->
+            <!-- <app-delivery-status-info
+                [data]="data"
+                [loading]="loading"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex
+            ></app-delivery-status-info> -->
+            <!-- / DELIVERY STATUS -->
+        <!-- </div> -->
+    
+        <!-- ORDER STATUS -->
+        <!-- <app-order-status-info
+            [data]="data"
+            [loading]="loading"
+            fxLayout="column"
+            fxLayoutGap="20px"
+        ></app-order-status-info> -->
         <!-- / ORDER STATUS -->    
     </div>
 

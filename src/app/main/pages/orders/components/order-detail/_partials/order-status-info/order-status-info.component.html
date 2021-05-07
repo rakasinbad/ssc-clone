@@ -1,18 +1,24 @@
 <div class="box-container" fxLayout="column" fxLayoutGap="20px">
     <div class="box-container__title">
-        <span class="mat-headline m-0"> Status Order </span>
+        <div>
+            <span class="mat-headline m-0"> Status Order : </span>
+            <span class="mat-subheading-2 text-semibold sinbad-red-50-fg" *ngIf="!loading">
+                {{ (data?.status | orderStatus) || '-' }}
+            </span>
+            <span class="cancel-reason" fxLayoutGap="10px" *ngIf="data?.status === 'cancel'">
+                <mat-icon class="s-16">help</mat-icon>
+                <span class="cancel-reason-content-wrap">
+                    <mat-icon class="s-16">signal_cellular_4_bar</mat-icon>
+                    <span class="cancel-reason-content">
+                        {{data?.orderCancelReason?.reason || '-'}}
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div>
+            
+        </div>
     </div>
-
-    <span class="mat-subheading-2 text-semibold sinbad-red-50-fg">
-        <ngx-skeleton-loader
-            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-            *ngIf="loading"
-        ></ngx-skeleton-loader>
-
-        <ng-container *ngIf="!loading">
-            {{ (data?.status | orderStatus) || '-' }}
-        </ng-container>
-    </span>
 
     <div fxLayout="column">
         <div class="tracking-info-simple horizontal">
@@ -27,10 +33,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'checkout'"
-                                ></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -55,7 +57,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'pending'"></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -80,10 +81,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'pending_payment'"
-                                ></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -108,7 +105,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'confirm'"></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -133,10 +129,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'pending_supplier'"
-                                ></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -161,7 +153,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'packing'"></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -186,10 +177,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'shipping'"
-                                ></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -214,10 +201,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'delivered'"
-                                ></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -242,7 +225,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'done'"></div>
                             </div>
 
                             <div class="v-line"></div>
@@ -267,7 +249,6 @@
                         >
                             <div class="indicator" fxLayout="column">
                                 <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'cancel'"></div>
                             </div>
 
                             <div class="v-line"></div>
