@@ -27,8 +27,7 @@ export class ImportHistoryEffects {
                 const newQuery: IQueryParams = {
                     ...params,
                 };
-
-        // Memasukkan ID supplier ke dalam parameter.
+                // Memasukkan ID supplier ke dalam parameter.
                 newQuery['supplierId'] = supplierId;
                 return this._$importLogApi.findAll<PaginateResponse<IImportLog>>(newQuery, page).pipe(
                     catchOffline(),

@@ -52,7 +52,7 @@ export class ExportLogApiService {
      * @returns {Observable<T>}
      * @memberof ExportLogApiService
      */
-    findAll<T>(params: IQueryParams, type: string, page: string): Observable<T> {
+    findAll<T>(params: IQueryParams, type: string, page: string, supplierId: string): Observable<T> {
         const newArg =
             type && page
                 ? [
@@ -66,6 +66,14 @@ export class ExportLogApiService {
                       }
                   ]
                 : [];
+        if (supplierId) {
+            newArg.push({
+                key: 'supplierId',
+                value: supplierId,
+            });
+        }
+
+        console.log('supplierId:', supplierId);
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
