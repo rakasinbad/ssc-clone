@@ -6,6 +6,7 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ExportLogApiService, NoticeService } from 'app/shared/helpers';
 import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { UserSupplier } from 'app/shared/models/supplier.model';
 import { User } from 'app/shared/models/user.model';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -57,20 +58,20 @@ export class TemplateHistoryEffects {
         this.actions$.pipe(
             ofType(TemplateHistoryActions.createTemplateHistoryRequest),
             map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserDataState)),
-            exhaustMap(([payload, userAuth]) => {
+            withLatestFrom(this.store.select(AuthSelectors.getUserDataState), this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([payload, userAuth, userSupplier]) => {
                 if (!userAuth) {
                     return this.storage
                         .get('user')
                         .toPromise()
-                        .then(user => (user ? [payload, user] : [payload, null]));
+                        .then(user => (user ? [payload, user] : [payload, null, userSupplier]));
                 }
 
                 const { id } = userAuth;
 
-                return of([payload, id]);
+                return of([payload, id, userSupplier]);
             }),
-            switchMap(([payload, data]: [PayloadTemplateHistory, string | User]) => {
+            switchMap(([payload, data, userSupplier]: [PayloadTemplateHistory, string | User, UserSupplier]) => {
                 if (!data) {
                     return of(
                         TemplateHistoryActions.createTemplateHistoryFailure({
@@ -105,6 +106,9 @@ export class TemplateHistoryEffects {
                     ...payload,
                     userId
                 };
+                if (payload.page === 'payments') {
+                    body['supplierId'] = userSupplier.supplierId;
+                }
 
                 return this._$exportLogApi.create(body).pipe(
                     map(resp => {
