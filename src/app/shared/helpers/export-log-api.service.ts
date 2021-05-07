@@ -66,11 +66,13 @@ export class ExportLogApiService {
                       }
                   ]
                 : [];
-        if (supplierId) {
-            newArg.push({
-                key: 'supplierId',
-                value: supplierId,
-            });
+        if (page === 'payments') {
+            if (supplierId) {
+                newArg.push({
+                    key: 'supplierId',
+                    value: supplierId,
+                });
+            }
         }
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
