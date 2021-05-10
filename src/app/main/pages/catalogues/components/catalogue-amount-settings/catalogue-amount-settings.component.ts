@@ -349,6 +349,7 @@ export class CatalogueAmountSettingsComponent
                     this.form
                         .get('productCount.maxQtyValue')
                         .updateValueAndValidity({ onlySelf: true });
+                    this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
                 }
 
                 this.formValue$.next();
