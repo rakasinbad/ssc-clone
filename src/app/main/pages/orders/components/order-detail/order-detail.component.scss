@@ -21,6 +21,17 @@ app-order-detail {
             border: none;
         }
 
+        .button-order_purpose{
+            height: 40px;
+            padding: 0 40px;
+            background-color: #4d4d4d;
+            color: white!important;
+        }
+
+        button[disabled].button-order_purpose{
+            background-color: #a8a8a8!important;
+        }
+
         .box-content__container {
             &.column-mode {
                 height: 540px;
