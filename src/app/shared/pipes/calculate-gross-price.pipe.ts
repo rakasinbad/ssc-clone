@@ -11,11 +11,7 @@ export class CalculateGrossPricePipe implements PipeTransform {
         if (!afterDiscount) {
             return value * qty;
         } else {
-            if (value >= cataloguePromo && qty) {
-                return value * qty - cataloguePromo;
-            }
-
-            return 0;
+            return value * qty - cataloguePromo;
         }
     }
 }
