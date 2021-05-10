@@ -1,37 +1,49 @@
 app-order-status-info{
-    .cancel-reason{
-        cursor: help;
-        position: relative;
-        &>mat-icon{
-            margin-top: 2px;
-            color: #f0444c;
-        }
-        .cancel-reason-content-wrap{
-            display: none;
-            z-index: 2;
-            left: 0;
-            bottom: -20px;
-            position: absolute;
-            &>mat-icon{
-                color: rgb(53, 55, 62);
-                transform: rotate(225deg);
+    .box-container{
+        .box-container__title{
+            .btn-cancel-status{
+                border: 2px solid rgb(141, 141, 141);
             }
-            .cancel-reason-content{
-                left: -5px;
-                top: 8px;
-                border-radius: 5px;
-                background-color: rgb(53, 55, 62);
-                color: white;
-                padding: 10px;
-                max-width: 200px;
-                width: max-content;
-                position: absolute;
+
+            .order-status-content{
+                margin-top: 2px;
             }
-        }
-        &:hover{
-            .cancel-reason-content-wrap{
-                display: inherit;
-            }
+            .cancel-reason{
+                cursor: help;
+                position: relative;
+                &>mat-icon{
+                    margin-left: -9px;
+                    margin-top: 9px;
+                    color: #f0444c;
+                }
+                .cancel-reason-content-wrap{
+                    display: none;
+                    z-index: 2;
+                    left: 0;
+                    bottom: -20px;
+                    position: absolute;
+                    &>mat-icon{
+                        color: rgb(53, 55, 62);
+                        transform: rotate(225deg);
+                    }
+                    .cancel-reason-content{
+                        left: -5px;
+                        top: 8px;
+                        border-radius: 5px;
+                        background-color: rgb(53, 55, 62);
+                        color: white;
+                        padding: 10px;
+                        max-width: 200px;
+                        width: max-content;
+                        position: absolute;
+                    }
+                }
+                &:hover{
+                    .cancel-reason-content-wrap{
+                        display: inherit;
+                    }
+                }
+            }        
         }
     }
 
@@ -88,9 +100,14 @@ app-order-status-info{
                                 height: 2.5em;
                                 color: white;
                                 border-radius: 3em;
-                                background: rgba(155, 155, 155);
+                                background: rgb(197, 197, 197);
                                 font-size: 8px;
                                 z-index: 1;
+
+                                .mat-icon {
+                                    margin: 3px 1px 0px 0px;
+                                    color: white;
+                                }
                             }
                         }
 
@@ -117,6 +134,15 @@ app-order-status-info{
                                 content: '';
                                 display: none;
                             }
+                        }
+                    }
+
+                    .step.check {
+                        .circle {
+                            background: rgb(80, 80, 80);
+                        }
+                        .v-line{
+                            border-top: 2px solid rgb(80, 80, 80) !important;
                         }
                     }
 
