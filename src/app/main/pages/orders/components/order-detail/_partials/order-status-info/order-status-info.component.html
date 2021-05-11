@@ -1,18 +1,90 @@
 <div class="box-container" fxLayout="column" fxLayoutGap="20px">
-    <div class="box-container__title">
-        <span class="mat-headline m-0"> Status Order </span>
+    <div class="box-container__title" fxLayout="row" fxLayoutAlign="start stretch">
+        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
+            <span class="mat-headline m-0"> Status Order : </span>
+            <span class="order-status-content mat-subheading-2 text-semibold sinbad-red-50-fg" *ngIf="!loading">
+                {{ (data?.status | orderStatus) || '-' }}
+            </span>
+            <span class="cancel-reason" fxLayoutGap="10px" *ngIf="data?.status === 'cancel'">
+                <mat-icon class="s-16">help</mat-icon>
+                <span class="cancel-reason-content-wrap">
+                    <mat-icon class="s-16">signal_cellular_4_bar</mat-icon>
+                    <span class="cancel-reason-content">
+                        {{data?.orderCancelReason?.reason || '-'}}
+                    </span>
+                </span>
+            </span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100">
+            <ng-container *ngIf="!loading">
+                <button
+                    type="button"
+                    mat-button
+                    class="btn-cancel-status sinbad-black-fg ml-8"
+                    *ngIf="data?.status !== 'cancel'"
+                    (click)="orderStatus.emit('cancel')"
+                >
+                    Cancel
+                </button>
+                <ng-container [ngSwitch]="data?.status">
+                    <button
+                        type="button"
+                        mat-button
+                        class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                        *ngSwitchCase="'confirm'"
+                        (click)="orderStatus.emit('packing')"
+                    >
+                        Mark as Packed
+                    </button>
+                    <button
+                        type="button"
+                        mat-button
+                        class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                        *ngSwitchCase="'packing'"
+                        (click)="orderStatus.emit('shipping')"
+                    >
+                        Mark as Shipped
+                    </button>
+                    <button
+                        type="button"
+                        mat-button
+                        class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                        *ngSwitchCase="'shipping'"
+                        (click)="orderStatus.emit('delivered')"
+                    >
+                        Mark as Delivered
+                    </button>
+                    <button
+                        type="button"
+                        mat-button
+                        class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                        *ngSwitchCase="'delivered'"
+                        (click)="orderStatus.emit('done')"
+                    >
+                        Mark as Done
+                    </button>
+                    <button
+                        type="button"
+                        mat-button
+                        class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                        *ngSwitchCase="'done'"
+                        [disabled]="true"
+                    >
+                        Mark as Done
+                    </button>
+                    <button
+                        type="button"
+                        mat-button
+                        class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+                        *ngSwitchCase="'cancel'"
+                        [disabled]="true"
+                    >
+                        Mark as Cancel
+                    </button>
+                </ng-container>
+            </ng-container>
+        </div>
     </div>
-
-    <span class="mat-subheading-2 text-semibold sinbad-red-50-fg">
-        <ngx-skeleton-loader
-            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-            *ngIf="loading"
-        ></ngx-skeleton-loader>
-
-        <ng-container *ngIf="!loading">
-            {{ (data?.status | orderStatus) || '-' }}
-        </ng-container>
-    </span>
 
     <div fxLayout="column">
         <div class="tracking-info-simple horizontal">
@@ -21,16 +93,15 @@
                     <div class="detail" fxLayout="row" fxFlex="90">
                         <div
                             class="step"
+                            [class.check]="check(0, data?.status)"
                             [class.active]="data?.status === 'checkout'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'checkout'"
-                                ></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(0, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -49,13 +120,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(1, data?.status)"
                             [class.active]="data?.status === 'pending'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'pending'"></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(1, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -74,16 +147,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(2, data?.status)"
                             [class.active]="data?.status === 'pending_payment'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'pending_payment'"
-                                ></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(2, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -102,13 +174,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(3, data?.status)"
                             [class.active]="data?.status === 'confirm'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'confirm'"></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(3, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -127,16 +201,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(4, data?.status)"
                             [class.active]="data?.status === 'pending_supplier'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'pending_supplier'"
-                                ></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(4, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -155,13 +228,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(5, data?.status)"
                             [class.active]="data?.status === 'packing'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'packing'"></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(5, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -180,16 +255,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(6, data?.status)"
                             [class.active]="data?.status === 'shipping'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'shipping'"
-                                ></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(6, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -208,16 +282,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(7, data?.status)"
                             [class.active]="data?.status === 'delivered'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div
-                                    class="second-circle"
-                                    *ngIf="data?.status === 'delivered'"
-                                ></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(7, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -236,13 +309,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(8, data?.status)"
                             [class.active]="data?.status === 'done'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'done'"></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(8, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>
@@ -261,13 +336,15 @@
 
                         <div
                             class="step"
+                            [class.check]="check(9, data?.status)"
                             [class.active]="data?.status === 'cancel'"
                             fxLayout="column"
                             fxFlex
                         >
                             <div class="indicator" fxLayout="column">
-                                <div class="circle"></div>
-                                <div class="second-circle" *ngIf="data?.status === 'cancel'"></div>
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(9, data?.status)">check</mat-icon>
+                                </div>
                             </div>
 
                             <div class="v-line"></div>

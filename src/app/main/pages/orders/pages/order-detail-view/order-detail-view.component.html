@@ -63,6 +63,7 @@
                     [loading]="loading"
                     fxLayout="column"
                     fxFlex
+                    (onChangeOrderStatus)="onChangeOrderStatus($event)"
                 ></app-order-detail>
 
                 <!-- <app-order-management-detail

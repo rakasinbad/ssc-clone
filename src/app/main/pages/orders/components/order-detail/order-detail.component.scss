@@ -99,223 +99,223 @@ app-order-detail {
             }
         }
 
-        .tracking-info {
-            header {
-                border-bottom: 1px solid #dfdfdf;
+        // .tracking-info {
+        //     header {
+        //         border-bottom: 1px solid #dfdfdf;
 
-                .title {
-                    font-weight: bold;
-                }
-            }
+        //         .title {
+        //             font-weight: bold;
+        //         }
+        //     }
 
-            .content {
-                font-size: 13px;
+        //     .content {
+        //         font-size: 13px;
 
-                .status {
-                    .delivery-status-header {
-                        font-weight: bold;
-                    }
+        //         .status {
+        //             .delivery-status-header {
+        //                 font-weight: bold;
+        //             }
 
-                    .detail {
-                        .step {
-                            .indicator {
-                                margin-top: 5px;
+        //             .detail {
+        //                 .step {
+        //                     .indicator {
+        //                         margin-top: 5px;
 
-                                .circle {
-                                    text-align: center;
-                                    width: 1.2em;
-                                    height: 1.2em;
-                                    color: white;
-                                    border-radius: 1em;
-                                    background: rgba(0, 0, 0, 0.12);
-                                    font-size: 8px;
+        //                         .circle {
+        //                             text-align: center;
+        //                             width: 1.2em;
+        //                             height: 1.2em;
+        //                             color: white;
+        //                             border-radius: 1em;
+        //                             background: rgba(0, 0, 0, 0.12);
+        //                             font-size: 8px;
 
-                                    &::before {
-                                        content: '';
-                                        z-index: 2;
-                                    }
-                                }
+        //                             &::before {
+        //                                 content: '';
+        //                                 z-index: 2;
+        //                             }
+        //                         }
 
-                                &::before {
-                                    content: '';
-                                    z-index: 2;
-                                }
-                            }
+        //                         &::before {
+        //                             content: '';
+        //                             z-index: 2;
+        //                         }
+        //                     }
 
-                            .v-line {
-                                border-left: 2px solid rgba(0, 0, 0, 0.12);
-                                margin-left: -11px;
-                                margin-right: 15px !important;
-                                position: relative;
-                                top: 10px;
-                                margin-top: 4px;
-                            }
+        //                     .v-line {
+        //                         border-left: 2px solid rgba(0, 0, 0, 0.12);
+        //                         margin-left: -11px;
+        //                         margin-right: 15px !important;
+        //                         position: relative;
+        //                         top: 10px;
+        //                         margin-top: 4px;
+        //                     }
 
-                            .content {
-                                // border: 1px solid black;
+        //                     .content {
+        //                         // border: 1px solid black;
 
-                                .label {
-                                    font-weight: bold;
-                                    font-size: 12px;
-                                }
+        //                         .label {
+        //                             font-weight: bold;
+        //                             font-size: 12px;
+        //                         }
 
-                                .time {
-                                    // margin
-                                }
-                            }
+        //                         .time {
+        //                             // margin
+        //                         }
+        //                     }
 
-                            &:last-child {
-                                .v-line {
-                                    content: '';
-                                    display: none;
-                                }
+        //                     &:last-child {
+        //                         .v-line {
+        //                             content: '';
+        //                             display: none;
+        //                         }
 
-                                .content {
-                                    margin-left: 6px;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        //                         .content {
+        //                             margin-left: 6px;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            .status.active {
-                .delivery-status-header {
-                    color: #f0444c;
-                }
+        //     .status.active {
+        //         .delivery-status-header {
+        //             color: #f0444c;
+        //         }
 
-                .detail {
-                    .step {
-                        &:last-child {
-                            .indicator {
-                                .circle {
-                                    background: #f0444c;
-                                }
-                            }
+        //         .detail {
+        //             .step {
+        //                 &:last-child {
+        //                     .indicator {
+        //                         .circle {
+        //                             background: #f0444c;
+        //                         }
+        //                     }
 
-                            .content {
-                                .label {
-                                    color: rgba(0, 0, 0, 0.87);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                     .content {
+        //                         .label {
+        //                             color: rgba(0, 0, 0, 0.87);
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        .tracking-info-simple.horizontal {
-            .content {
-                font-size: 13px;
+        // .tracking-info-simple.horizontal {
+        //     .content {
+        //         font-size: 13px;
 
-                .status {
-                    .detail {
-                        .step {
-                            .indicator {
-                                //  After second circle
-                                height: 42px;
+        //         .status {
+        //             .detail {
+        //                 .step {
+        //                     .indicator {
+        //                         //  After second circle
+        //                         height: 42px;
 
-                                .circle {
-                                    text-align: center;
-                                    width: 1.2em;
-                                    height: 1.2em;
-                                    color: white;
-                                    border-radius: 1em;
-                                    background: rgba(0, 0, 0, 0.12);
-                                    font-size: 8px;
-                                    z-index: 1;
-                                }
+        //                         .circle {
+        //                             text-align: center;
+        //                             width: 1.2em;
+        //                             height: 1.2em;
+        //                             color: white;
+        //                             border-radius: 1em;
+        //                             background: rgba(0, 0, 0, 0.12);
+        //                             font-size: 8px;
+        //                             z-index: 1;
+        //                         }
 
-                                .second-circle {
-                                    text-align: center;
-                                    width: 1.8em;
-                                    height: 1.8em;
-                                    color: white;
-                                    border-radius: 1em;
-                                    background: rgba(0, 0, 0, 0.12);
-                                    font-size: 8px;
+        //                         .second-circle {
+        //                             text-align: center;
+        //                             width: 1.8em;
+        //                             height: 1.8em;
+        //                             color: white;
+        //                             border-radius: 1em;
+        //                             background: rgba(0, 0, 0, 0.12);
+        //                             font-size: 8px;
 
-                                    // After second circle
-                                    position: relative;
-                                    top: -12px;
-                                    z-index: 0;
-                                }
-                            }
+        //                             // After second circle
+        //                             position: relative;
+        //                             top: -12px;
+        //                             z-index: 0;
+        //                         }
+        //                     }
 
-                            .v-line {
-                                border-top: 2px solid rgba(0, 0, 0, 0.12);
-                                margin-left: 10px;
-                                position: relative;
+        //                     .v-line {
+        //                         border-top: 2px solid rgba(0, 0, 0, 0.12);
+        //                         margin-left: 10px;
+        //                         position: relative;
 
-                                // After second circle
-                                top: -22px;
-                            }
+        //                         // After second circle
+        //                         top: -22px;
+        //                     }
 
-                            .content {
-                                max-width: 80%;
+        //                     .content {
+        //                         max-width: 80%;
 
-                                .label {
-                                    font-weight: bold;
-                                    font-size: 12px;
-                                }
-                            }
+        //                         .label {
+        //                             font-weight: bold;
+        //                             font-size: 12px;
+        //                         }
+        //                     }
 
-                            &:last-child {
-                                .v-line {
-                                    content: '';
-                                    display: none;
-                                }
-                            }
-                        }
+        //                     &:last-child {
+        //                         .v-line {
+        //                             content: '';
+        //                             display: none;
+        //                         }
+        //                     }
+        //                 }
 
-                        .step.active {
-                            .indicator {
-                                .circle {
-                                    background: #f0444c;
+        //                 .step.active {
+        //                     .indicator {
+        //                         .circle {
+        //                             background: #f0444c;
 
-                                    // After second circle
-                                    position: relative;
-                                    left: 2.3px;
-                                }
+        //                             // After second circle
+        //                             position: relative;
+        //                             left: 2.3px;
+        //                         }
 
-                                .second-circle {
-                                    background: #fcc0c3;
-                                }
-                            }
+        //                         .second-circle {
+        //                             background: #fcc0c3;
+        //                         }
+        //                     }
 
-                            // After second circle
-                            .v-line {
-                                top: -22px;
-                                margin-left: 15px;
-                            }
+        //                     // After second circle
+        //                     .v-line {
+        //                         top: -22px;
+        //                         margin-left: 15px;
+        //                     }
 
-                            .content {
-                                // After second circle
-                                position: relative;
-                                top: 10;
+        //                     .content {
+        //                         // After second circle
+        //                         position: relative;
+        //                         top: 10;
 
-                                .label {
-                                    color: #f0444c;
-                                }
-                            }
+        //                         .label {
+        //                             color: #f0444c;
+        //                         }
+        //                     }
 
-                            &:last-child {
-                                .indicator {
-                                    // background: #fcc0c3;
+        //                     &:last-child {
+        //                         .indicator {
+        //                             // background: #fcc0c3;
 
-                                    .circle {
-                                        background: #f0444c;
-                                    }
+        //                             .circle {
+        //                                 background: #f0444c;
+        //                             }
 
-                                    .second-circle {
-                                        background: #fcc0c3;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                             .second-circle {
+        //                                 background: #fcc0c3;
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
