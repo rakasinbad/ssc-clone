@@ -62,15 +62,20 @@
                     <span class="mat-headline m-0"> Order Line </span>
                 </div>
                 <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && !proposeEdit">
-                    <button class="button-order_purpose" mat-button (click)="proposeEdit = true;" [disabled]="
+                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="proposeEdit = true;" [disabled]="
                         !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name === 'Bayar Sekarang' &&
                         (data?.status === 'confirm' || data?.status === 'packing'))
                     ">Purpose</button>
                 </div>
+
+                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && proposeEdit">
+                    <button style="border: 2px solid #52575C;" mat-button (click)="proposeEdit = false;" [disabled]="!proposeEdit">Cancel</button>
+                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!proposeEdit">Submit</button>
+                </div>
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit" (formValue)="onChangeQtys($event)"></app-oms-order-line>
         </div>
         <!-- / ORDER LINE -->
 

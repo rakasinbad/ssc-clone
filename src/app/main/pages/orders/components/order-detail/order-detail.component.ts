@@ -1,9 +1,11 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
     OnDestroy,
     OnInit,
+    Output,
     ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -38,12 +40,19 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     type: string = 'original';
     proposeEdit: boolean = false;
 
+    cataloguesChanges: any;
+    
+    @Output('onSubmit')
+    formValue: EventEmitter<any>;
+
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService
-    ) {}
+    ) {
+        this.formValue = new EventEmitter();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -226,5 +235,13 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
                 this.type = "original"
                 break;
         }
+    }
+
+    onSubmit(): void {
+        this.formValue.emit(this.cataloguesChanges);
+    }
+
+    onChangeQtys(value) : void {
+        this.cataloguesChanges = value;
     }
 }

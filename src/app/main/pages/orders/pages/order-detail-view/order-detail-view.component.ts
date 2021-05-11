@@ -76,4 +76,8 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
     goBack(): void {
         this.location.back();
     }
+
+    onSubmit(value): void {
+        
+    }
 }
