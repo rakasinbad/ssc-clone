@@ -81,7 +81,7 @@
                 </div>
                 <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && !proposeEdit">
                     <button class="button-order_purpose" mat-button (click)="proposeEdit = true;" [disabled]="
-                        !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name === 'Bayar Sekarang' &&
+                        !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name !== 'Bayar Sekarang' &&
                         (data?.status === 'confirm' || data?.status === 'packing'))
                     ">Purpose</button>
                 </div>
