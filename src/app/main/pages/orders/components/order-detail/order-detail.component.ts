@@ -44,6 +44,9 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     
     @Output('onSubmit')
     formValue: EventEmitter<any>;
+    
+    @Output('onChangeOrderStatus')
+    orderStatus: EventEmitter<string> = new EventEmitter();;
 
     constructor(
         private matDialog: MatDialog,

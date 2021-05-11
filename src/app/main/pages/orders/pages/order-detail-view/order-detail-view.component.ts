@@ -64,7 +64,6 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
             });
 
         const { id } = this.route.snapshot.params;
-
         this.orderFacade.getById(id);
     }
 
@@ -78,6 +77,12 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
     }
 
     onSubmit(value): void {
+    }
         
+    onChangeOrderStatus(status):void {
+        const { id } = this.route.snapshot.params;
+        const orderCode = this.data.orderCode;
+
+        this.orderFacade.changeOrderStatus(id, orderCode, status);
     }
 }
