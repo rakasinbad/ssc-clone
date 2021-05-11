@@ -69,6 +69,16 @@ export const getTotalOverduePayment = createSelector(
     state => state.totalOverdueOrder
 );
 
+export const getTotalWaitingForRefund = createSelector(
+    getTotalStatus,
+    state => state.totalWaitingForRefund
+);
+export const getTotalRefunded = createSelector(
+    getTotalStatus,
+    state => state.totalRefunded
+);
+
+
 // -----------------------------------------------------------------------------------------------------
 // Helper State
 // -----------------------------------------------------------------------------------------------------

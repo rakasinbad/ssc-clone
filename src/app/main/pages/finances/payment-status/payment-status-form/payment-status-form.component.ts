@@ -25,7 +25,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
     paymentStatuses: Array<{ id: string; label: string }>;
-
     isDisabled = true;
     minDate: Date;
     maxDate: Date;
@@ -129,7 +128,7 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                 if (hasAccess) {
                     const payload = {
                         statusPayment,
-                        paidTime: moment(paidDate).toISOString()
+                        paidTime: moment(paidDate).format('YYYY-MM-DD')
                     };
 
                     if (!statusPayment) {
