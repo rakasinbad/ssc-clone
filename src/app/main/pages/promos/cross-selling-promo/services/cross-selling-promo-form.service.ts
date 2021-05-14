@@ -166,12 +166,13 @@ export class CrossSellingPromoFormService {
                                 'pattern'
                             ),
                         }),
-                        // max length 25 character
+                        // max length 20 character
                         RxwebValidators.maxLength({
-                            value: 25,
+                            value: 20,
                             message: this.errorMessageService.getErrorMessageNonState(
                                 'default',
-                                'pattern'
+                                'max_length',
+                                20
                             ),
                         }),
                     ],

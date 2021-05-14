@@ -550,7 +550,7 @@ export class VoucherGeneralInformationComponent
         this.tmp['imageUrl'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.fb.group({
-            id: [null],
+            id: [''],
             voucherAllocationType: [
                 VoucherAllocation.NONE ||
                     // VoucherAllocation.PROMOBUDGET ||
@@ -575,6 +575,10 @@ export class VoucherGeneralInformationComponent
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:20,
+                        message: 'Max input is 20 character'
+                    })
                 ],
             ],
             voucherType: [
@@ -763,6 +767,8 @@ export class VoucherGeneralInformationComponent
                 ],
             ],
         });
+
+        this.form.updateValueAndValidity();
     }
 
     private initFormCheck(): void {
@@ -805,6 +811,8 @@ export class VoucherGeneralInformationComponent
                         return 'INVALID';
                     } else if (rawValue.imageUrl == null) {
                         return 'INVALID';
+                    } else if (rawValue.imageUrl) {
+                        return 'VALID';
                     } else {
                         return status;
                     }
@@ -837,7 +845,7 @@ export class VoucherGeneralInformationComponent
                     return this.form.getRawValue();
                 }),
                 tap((value) =>
-                    HelperService.debug(
+                       HelperService.debug(
                         '[AFTER MAP] SUPPLIER VOUCHER GENERAL INFORMATION FORM VALUE CHANGED',
                         value
                     )
@@ -847,6 +855,17 @@ export class VoucherGeneralInformationComponent
             .subscribe((value) => {
                 this.formValueChange.emit(value);
             });
+    }
+
+    public findInvalidControls() {
+        const invalid = [];
+        const controls = this.form.controls;
+        for (const name in controls) {
+            if (controls[name].invalid) {
+                invalid.push(name);
+            }
+        }
+        console.log("INVALID ->", invalid);
     }
 
     getFormError(form: any): string {
