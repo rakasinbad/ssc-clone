@@ -21,7 +21,7 @@
                     type="button"
                     mat-button
                     class="btn-cancel-status sinbad-black-fg ml-8"
-                    *ngIf="data?.status !== 'cancel'"
+                    *ngIf="data?.status !== 'cancel' && data?.status !== 'done' && data?.status !== 'delivered'"
                     (click)="orderStatus.emit('cancel')"
                 >
                     Cancel
