@@ -401,8 +401,8 @@ export class OrderEffects {
                     { id: string; change: string }
                 >(ChangeConfirmationComponent, {
                     data: {
-                        title: `Set ${title}`,
-                        message: `Are you sure want to ${status} <strong>${orderCode}</strong> status ?`,
+                        title: `Set as ${title}`,
+                        message: `Are you sure want to change <strong>${orderCode}</strong> status ?`,
                         id: id,
                         change: status
                     },

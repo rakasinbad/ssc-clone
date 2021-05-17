@@ -1,6 +1,10 @@
 app-order-status-info{
     .box-container{
         .box-container__title{
+            .mat-button[disabled] {
+                background-color: rgb(128 128 128) !important;
+            }
+
             .btn-cancel-status{
                 border: 2px solid rgb(141, 141, 141);
             }
@@ -43,7 +47,7 @@ app-order-status-info{
                         display: inherit;
                     }
                 }
-            }        
+            }
         }
     }
 
