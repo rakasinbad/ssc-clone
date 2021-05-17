@@ -865,7 +865,6 @@ export class VoucherGeneralInformationComponent
                 invalid.push(name);
             }
         }
-        console.log("INVALID ->", invalid);
     }
 
     getFormError(form: any): string {
