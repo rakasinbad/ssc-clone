@@ -33,6 +33,12 @@ export const locale = {
                 },
                 WAITING_FOR_PAYMENT: {
                     TITLE: 'Waiting for Payment'
+                },
+                WAITING_FOR_REFUND: {
+                    TITLE: 'Waiting for Refund'
+                },
+                REFUNDED: {
+                    TITLE: 'Refunded'
                 }
             }
         }

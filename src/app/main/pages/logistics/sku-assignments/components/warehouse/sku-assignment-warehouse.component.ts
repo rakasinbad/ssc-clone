@@ -1,61 +1,61 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
+    OnDestroy,
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { environment } from 'environments/environment';
-import { SkuAssignmentsActions, SkuAssignmentsWarehouseActions } from '../../store/actions';
-import { FormControl } from '@angular/forms';
-import { Observable, Subject, merge } from 'rxjs';
-import { DomSanitizer } from '@angular/platform-browser';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { takeUntil, flatMap } from 'rxjs/operators';
-import { UiActions } from 'app/shared/store/actions';
-import { SelectionModel } from '@angular/cdk/collections';
-import { SkuAssignmentsWarehouse } from '../../models/sku-assignments-warehouse.model';
-import * as SkuAssignmentsWarehouseSelectors from '../../store/selectors/sku-assignments-warehouse.selectors';
-import { FeatureState as skuAssignmentCoreState } from '../../store/reducers';
+import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { merge, Observable, Subject } from 'rxjs';
+import { filter, flatMap, takeUntil } from 'rxjs/operators';
 import { Warehouse } from '../../../warehouse-coverages/models/warehouse-coverage.model';
+import { SkuAssignmentsWarehouse } from '../../models/sku-assignments-warehouse.model';
+import { SkuAssignmentsActions, SkuAssignmentsWarehouseActions } from '../../store/actions';
+import { FeatureState as skuAssignmentCoreState } from '../../store/reducers';
+import * as SkuAssignmentsWarehouseSelectors from '../../store/selectors/sku-assignments-warehouse.selectors';
 
 @Component({
     selector: 'app-sku-assignments-warehouse',
     templateUrl: './sku-assignment-warehouse.component.html',
     styleUrls: ['./sku-assignment-warehouse.component.scss'],
     host: {
-        class: 'content-card mx-16 sinbad-black-10-border'
+        class: 'content-card mx-16 sinbad-black-10-border',
     },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SkuAssignmentWarehouseComponent implements OnInit {
+export class SkuAssignmentWarehouseComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
-
-    activeTab: string = 'all';
-
-    search: FormControl;
 
     displayedColumns = [
         // 'checkbox',
         'wh-id',
         'wh-name',
         'total-sku',
-        'actions'
+        'actions',
     ];
 
+    activeTab: string = 'all';
+    search: FormControl;
     selection: SelectionModel<SkuAssignmentsWarehouse>;
+    pageSize: number;
 
-    dataSource$: Observable<Array<SkuAssignmentsWarehouse>>;
+    dataSource$: Observable<SkuAssignmentsWarehouse[]>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -68,7 +68,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    private _unSubs$: Subject<void> = new Subject<void>();
+    private _unSubs$: Subject<void> = new Subject();
 
     constructor(
         private route: ActivatedRoute,
@@ -78,41 +78,111 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
         private SkuAssignmentsStore: NgRxStore<skuAssignmentCoreState>
     ) {}
 
-    onChangePage($event: PageEvent): void {}
+    onChangePage(ev: PageEvent): void {
+        this.router.navigate(['.'], {
+            relativeTo: this.route,
+            queryParams: { limit: ev.pageSize, page_index: ev.pageIndex },
+            queryParamsHandling: 'merge',
+        });
+    }
 
     ngOnInit(): void {
-        this._unSubs$ = new Subject();
-        this.paginator.pageSize = this.defaultPageSize;
+        // this.paginator.pageSize = this.defaultPageSize;
+        this.pageSize = this.defaultPageSize;
+        this.paginator.pageSize = this.pageSize;
         this.selection = new SelectionModel<SkuAssignmentsWarehouse>(true, []);
 
-        this._initTable();
-
-        this.SkuAssignmentsStore.select(
-            SkuAssignmentsWarehouseSelectors.getSearchValue
-        ).pipe(takeUntil(this._unSubs$))
-        .subscribe(
-            val => {
+        this.SkuAssignmentsStore.select(SkuAssignmentsWarehouseSelectors.getSearchValue)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe((val) => {
                 this._initTable(val);
-            }
-        );
+            });
 
         this.dataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.selectAll
         ).pipe(takeUntil(this._unSubs$));
+
         this.totalDataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.getTotalItem
         ).pipe(takeUntil(this._unSubs$));
+
         this.isLoading$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.getLoadingState
         ).pipe(takeUntil(this._unSubs$));
 
         this.updatePrivileges();
+
+        this.route.queryParams
+            .pipe(
+                filter((params) => {
+                    const { limit, page_index: pageIndex } = params;
+
+                    HelperService.debug(
+                        '[SkuAssignmentWarehouseComponent] ngOnInit queryParamMap filter',
+                        {
+                            params,
+                            hasParams:
+                                typeof limit !== 'undefined' && typeof pageIndex !== 'undefined',
+                            paginator: this.paginator,
+                        }
+                    );
+
+                    if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                        return true;
+                    } else {
+                        this._onRefreshTable();
+                        return false;
+                    }
+                }),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe({
+                next: ({ limit, page_index: pageIndex, tab }) => {
+                    HelperService.debug(
+                        '[SkuAssignmentWarehouseComponent] ngOnInit queryParams subscribe',
+                        {
+                            limit,
+                            pageIndex,
+                        }
+                    );
+
+                    if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                        this.paginator.pageSize = +limit;
+                        this.paginator.pageIndex = +pageIndex;
+                    }
+
+                    if (typeof tab !== 'undefined') {
+                        this.activeTab = tab;
+                    }
+
+                    this._initTable();
+                },
+            });
+    }
+
+    ngAfterViewInit(): void {
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
+
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => {
+                HelperService.debug('[SkuAssignmentWarehouseComponent] ngAfterViewInit merge');
+                this.table.nativeElement.scrollTop = 0;
+                this._initTable();
+            });
+    }
+
+    ngOnDestroy(): void {
+        this._unSubs$.next();
+        this._unSubs$.complete();
     }
 
     onSkuAssignmentDetail(row: SkuAssignmentsWarehouse): void {
         this.SkuAssignmentsStore.dispatch(
             SkuAssignmentsActions.selectWarehouse({
-                payload: (row as Warehouse)
+                payload: row as Warehouse,
             })
         );
 
@@ -122,26 +192,11 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     onEditSkuAssignment(item: Warehouse): void {
         this.SkuAssignmentsStore.dispatch(
             SkuAssignmentsActions.selectWarehouse({
-                payload: (item as Warehouse)
+                payload: item as Warehouse,
             })
         );
 
         this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
-    }
-
-    ngAfterViewInit(): void {
-        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-        // Add 'implements AfterViewInit' to the class.
-
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this._initTable();
-            });
     }
 
     clickTab(action: 'all' | 'assigned-to-sku' | 'not-assigned-to-sku'): void {
@@ -164,13 +219,17 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
                 return;
         }
 
-        this._initTable();
+        this.router.navigate(['.'], {
+            relativeTo: this.route,
+            queryParams: { tab: this.activeTab, limit: null, page_index: null },
+            queryParamsHandling: 'merge',
+        });
     }
 
     loadTab(activeTab): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
         };
 
         data['paginate'] = true;
@@ -191,14 +250,19 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource$.pipe(flatMap(v => v), takeUntil(this._unSubs$)).forEach(row => this.selection.select(row));
+            : this.dataSource$
+                  .pipe(
+                      flatMap((v) => v),
+                      takeUntil(this._unSubs$)
+                  )
+                  .forEach((row) => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
         const numSelected = this.selection.selected.length;
         const numRows = this.paginator.length;
 
-        console.log('IS ALL SELECTED', numSelected, numRows);
+        HelperService.debug('IS ALL SELECTED', { numSelected, numRows });
 
         return numSelected === numRows;
     }
@@ -210,7 +274,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
         switch (action) {
             case 'active':
-                console.log('Set Active', this.selection.selected);
+                HelperService.debug('Set Active', this.selection.selected);
                 break;
 
             default:
@@ -218,27 +282,11 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
         }
     }
 
-    /**
-     *
-     * Initialize current page
-     * @private
-     * @param {LifecyclePlatform} [lifeCycle]
-     * @memberof SkuAssignmentsWarehousesComponent
-     */
-    private _initPage(lifeCycle?: LifecyclePlatform): void {
-        // Set breadcrumbs
-        // this.SkuAssignmentsStore.dispatch(
-        //     UiActions.createBreadcrumb({
-        //         payload: this._breadCrumbs
-        //     })
-        // );
-    }
-
     private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
-                limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                limit: this.paginator.pageSize || this.pageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -258,20 +306,23 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
             this.SkuAssignmentsStore.dispatch(
                 SkuAssignmentsWarehouseActions.fetchSkuAssignmentsWarehouseRequest({
-                    payload: data
+                    payload: data,
                 })
             );
         }
     }
 
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
+        this.paginator.pageIndex = 0;
+        this.paginator.pageSize = this.defaultPageSize;
         this._initTable();
     }
 
     private updatePrivileges(): void {
         this.ngxPermissionsService
             .hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE'])
-            .then(result => {
+            .then((result) => {
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
@@ -279,14 +330,14 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
                         'wh-id',
                         'wh-name',
                         'total-sku',
-                        'actions'
+                        'actions',
                     ];
                 } else {
                     this.displayedColumns = [
                         // 'checkbox',
                         'wh-id',
                         'wh-name',
-                        'total-sku'
+                        'total-sku',
                     ];
                 }
             });
