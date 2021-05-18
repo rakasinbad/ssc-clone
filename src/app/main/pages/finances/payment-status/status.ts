@@ -24,35 +24,6 @@ export const statusPayment: Array<FuseNavigation> = [
             store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
         }
     },
-    // {
-    //     id: 'temporary-paid',
-    //     title: 'Temporary Paid',
-    //     translate: 'STATUS.PAYMENT.TEMPORARY_PAID.TITLE',
-    //     type: 'item',
-    //     function: store => {
-    //         store.dispatch(UiActions.setCustomToolbarActive({ payload: 'temporary-paid' }));
-    //     }
-    // },
-    {
-        id: 'paid',
-        title: 'Paid (-)',
-        // translate: 'STATUS.PAYMENT.PAID.TITLE',
-        type: 'item',
-        function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'paid' }));
-            store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
-        }
-    },
-    {
-        id: 'overdue',
-        title: 'Overdue (-)',
-        // translate: 'STATUS.PAYMENT.OVERDUE.TITLE',
-        type: 'item',
-        function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'overdue' }));
-            store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
-        }
-    },
     {
         id: 'd-7',
         title: 'D-7 (-)',
@@ -83,6 +54,53 @@ export const statusPayment: Array<FuseNavigation> = [
             store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
         }
     },
+    // {
+    //     id: 'temporary-paid',
+    //     title: 'Temporary Paid',
+    //     translate: 'STATUS.PAYMENT.TEMPORARY_PAID.TITLE',
+    //     type: 'item',
+    //     function: store => {
+    //         store.dispatch(UiActions.setCustomToolbarActive({ payload: 'temporary-paid' }));
+    //     }
+    // },
+    {
+        id: 'overdue',
+        title: 'Overdue (-)',
+        // translate: 'STATUS.PAYMENT.OVERDUE.TITLE',
+        type: 'item',
+        function: store => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'overdue' }));
+            store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+        }
+    },
+    {
+        id: 'paid',
+        title: 'Paid (-)',
+        // translate: 'STATUS.PAYMENT.PAID.TITLE',
+        type: 'item',
+        function: store => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'paid' }));
+            store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+        }
+    },
+    {
+        id: 'waiting_for_refund',
+        title: 'Waiting for Refund (-)',
+        type: 'item',
+        function: store => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'waiting_for_refund' }));
+            store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+        }
+    },
+    {
+        id: 'refunded',
+        title: 'Refunded (-)',
+        type: 'item',
+        function: store => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'refunded' }));
+            store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+        }
+    },
     {
         id: 'payment_failed',
         title: 'Cancel (-)',
@@ -92,5 +110,5 @@ export const statusPayment: Array<FuseNavigation> = [
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'payment_failed' }));
             store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
         }
-    }
+    },
 ];

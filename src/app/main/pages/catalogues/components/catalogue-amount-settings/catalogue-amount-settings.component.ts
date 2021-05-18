@@ -185,6 +185,10 @@ export class CatalogueAmountSettingsComponent
                     }
                 }
 
+                HelperService.debug('[PREPARE EDIT] FORM PATCHVALUE', {
+                    catalogue,
+                });
+
                 /** Penetapan nilai pada form. */
                 this.form.patchValue(
                     {
@@ -305,7 +309,7 @@ export class CatalogueAmountSettingsComponent
             .subscribe((value) => {
                 const isMaximum = this.form.get('productCount.isMaximum').value;
 
-                /* HelperService.debug(
+                HelperService.debug(
                     '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
                     {
                         value,
@@ -313,10 +317,10 @@ export class CatalogueAmountSettingsComponent
                         isMaximum,
                         maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
                     }
-                ); */
+                );
 
                 if (isMaximum) {
-                    this.form.get('productCount.maxQtyValue').reset();
+                    // this.form.get('productCount.maxQtyValue').reset();
                     this.form.get('productCount.maxQtyValue').setValidators([
                         RxwebValidators.required({
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -345,6 +349,7 @@ export class CatalogueAmountSettingsComponent
                     this.form
                         .get('productCount.maxQtyValue')
                         .updateValueAndValidity({ onlySelf: true });
+                    this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
                 }
 
                 this.formValue$.next();
@@ -402,7 +407,7 @@ export class CatalogueAmountSettingsComponent
     }
 
     onChangeMaxOrderQty(ev: MatCheckboxChange): void {
-        // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+        HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
 
         this.form.get('productCount.maxQtyValue').reset();
 

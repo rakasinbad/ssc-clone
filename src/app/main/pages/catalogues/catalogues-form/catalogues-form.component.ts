@@ -337,9 +337,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         const catalogueData: any = {
             // PRODUCT INFORMATION
             externalId: formValues.productInfo.externalId,
-            name:
-                String(formValues.productInfo.name).charAt(0).toUpperCase() +
-                String(formValues.productInfo.name).slice(1),
+            name: formValues.productInfo.name,
+            // name:
+            //     String(formValues.productInfo.name).charAt(0).toUpperCase() +
+            //     String(formValues.productInfo.name).slice(1),
             description: formValues.productInfo.description,
             information: formValues.productInfo.information,
             detail: formValues.productInfo.information,

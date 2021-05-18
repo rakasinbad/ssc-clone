@@ -1,37 +1,35 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
+    ElementRef,
+    OnDestroy,
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ChangeDetectorRef,
-    OnDestroy,
-    ElementRef,
-    AfterViewInit
 } from '@angular/core';
-import { MatPaginator, MatSort, MatRadioChange, MatTabChangeEvent } from '@angular/material';
-import { Router } from '@angular/router';
+import { MatPaginator, MatRadioChange, MatSort, PageEvent } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { Observable, Subject, merge, of } from 'rxjs';
-import { UiSelectors } from 'app/shared/store/selectors';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { UiActions, WarehouseActions } from 'app/shared/store/actions';
-import { environment } from 'environments/environment';
-
-import * as fromWarehouseCoverages from './store/reducers';
-import { tap, takeUntil, map, switchMap } from 'rxjs/operators';
-import { Warehouse } from '../warehouses/models';
 import { SelectedLocation } from 'app/shared/components/geolocation/models/selected-location.model';
-import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
+import { NoticeService } from 'app/shared/helpers';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { UiActions, WarehouseActions } from 'app/shared/store/actions';
+import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
+import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { merge, Observable, of, Subject } from 'rxjs';
+import { filter, switchMap, takeUntil } from 'rxjs/operators';
+import { Warehouse } from '../warehouses/models';
 import { NotCoveredWarehouse } from './models/not-covered-warehouse.model';
 import { WarehouseCoverage } from './models/warehouse-coverage.model';
-import { WarehouseCoverageSelectors } from './store/selectors';
 import { WarehouseCoverageActions } from './store/actions';
-import { NoticeService } from 'app/shared/helpers';
-import { NgxPermissionsService } from 'ngx-permissions';
+import * as fromWarehouseCoverages from './store/reducers';
+import { WarehouseCoverageSelectors } from './store/selectors';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -39,14 +37,13 @@ import { NgxPermissionsService } from 'ngx-permissions';
     styleUrls: ['./warehouse-coverages.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
-    displayedColumns: Array<string> = [
-        'province', 'city', 'district', 'urban', 'actions'
-    ];
+
+    displayedColumns: Array<string> = ['province', 'city', 'district', 'urban', 'actions'];
 
     // tslint:disable-next-line: no-inferrable-types
     isFilterApplied: boolean = false;
@@ -69,13 +66,13 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Warehouse Coverage'
+            label: 'Warehouse Coverage',
         },
         search: {
-            active: false
+            active: false,
         },
         add: {
-            permissions: ['WH.C.CREATE']
+            permissions: ['WH.C.CREATE'],
         },
         // export: {
         //     permissions: ['SRM.JP.EXPORT'],
@@ -88,6 +85,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         //     pageType: 'journey-plans'
         // }
     };
+    pageSize: number;
 
     // ViewChild untuk tabel.
     @ViewChild('table', { read: ElementRef, static: true })
@@ -103,40 +101,35 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Logistics'
+            title: 'Logistics',
         },
         {
             title: 'Warehouse Coverage',
-            active: true
-        }
+            active: true,
+        },
     ];
 
     constructor(
         private cdRef: ChangeDetectorRef,
         private router: Router,
+        private route: ActivatedRoute,
         private store: Store<fromWarehouseCoverages.FeatureState>,
         private notice$: NoticeService,
-        private ngxPermissions: NgxPermissionsService,
+        private ngxPermissions: NgxPermissionsService
     ) {
-        this.isLoading$ = this.store.select(
-            WarehouseCoverageSelectors.getIsLoading
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.isLoading$ = this.store
+            .select(WarehouseCoverageSelectors.getIsLoading)
+            .pipe(takeUntil(this.subs$));
 
-        this.warehouses$ = this.store.select(
-            WarehouseSelectors.selectAll
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.warehouses$ = this.store
+            .select(WarehouseSelectors.selectAll)
+            .pipe(takeUntil(this.subs$));
 
-        this.coverages$ = this.store.select(
-            WarehouseCoverageSelectors.selectAll
-        ).pipe(
-            switchMap(coverages => {
+        this.coverages$ = this.store.select(WarehouseCoverageSelectors.selectAll).pipe(
+            switchMap((coverages) => {
                 if (this.selectedViewBy === 'area') {
                     return of(coverages as Array<WarehouseCoverage>);
                 } else {
@@ -146,11 +139,9 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
             takeUntil(this.subs$)
         );
 
-        this.totalCoverages$ = this.store.select(
-            WarehouseCoverageSelectors.getTotalItem
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalCoverages$ = this.store
+            .select(WarehouseCoverageSelectors.getTotalItem)
+            .pipe(takeUntil(this.subs$));
     }
 
     private debug(label: string, data: any = {}): void {
@@ -165,9 +156,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
     }
 
     private truncateTable(): void {
-        this.store.dispatch(
-            WarehouseCoverageActions.truncateWarehouseCoverages()
-        );
+        this.store.dispatch(WarehouseCoverageActions.truncateWarehouseCoverages());
     }
 
     private onRefreshTable(): void {
@@ -175,8 +164,8 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         if (this.paginator) {
             // Menyiapkan query parameter yang akan dikirim ke server.
             const data: IQueryParams = {
-                limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                limit: this.paginator.pageSize || this.pageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             // Menyalakan pagination.
@@ -195,7 +184,6 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
                 data['district'] = this.selectedLocation.district;
                 data['urban'] = this.selectedLocation.urban.urban;
             }
-
 
             // if (this.sort.direction) {
             //     // Menentukan sort direction tabel.
@@ -234,6 +222,13 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         }
     }
 
+    resetTable(): void {
+        this.table.nativeElement.scrollTop = 0;
+        this.paginator.pageIndex = 0;
+        this.paginator.pageSize = this.defaultPageSize;
+        this.onRefreshTable();
+    }
+
     onApplyFilter(): void {
         if (this.selectedViewBy === 'warehouse') {
             this.isFilterApplied = true;
@@ -251,49 +246,64 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
     }
 
     ngOnInit(): void {
-
-        this.ngxPermissions
-            .hasPermission(['WH.C.UPDATE'])
-            .then(result => {
-                // Jika ada permission-nya.
-                if (result) {
-                    this.displayedColumns = [
-                        'province', 'city', 'district', 'urban', 'actions'
-                    ];
-                } else {
-                    this.displayedColumns = [
-                        'province', 'city', 'district', 'urban'
-                    ];
-                }
-            });
+        this.ngxPermissions.hasPermission(['WH.C.UPDATE']).then((result) => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = ['province', 'city', 'district', 'urban', 'actions'];
+            } else {
+                this.displayedColumns = ['province', 'city', 'district', 'urban'];
+            }
+        });
 
         // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
-                payload: this._breadCrumbs
+                payload: this._breadCrumbs,
             })
         );
 
         this.store.dispatch(
             WarehouseActions.fetchWarehouseRequest({
                 payload: {
-                    paginate: false
-                }
+                    paginate: false,
+                },
             })
         );
+
+        this.route.queryParams
+            .pipe(
+                filter((params) => {
+                    const { limit, page_index: pageIndex } = params;
+
+                    if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                        return true;
+                    } else {
+                        this.resetTable();
+                        return false;
+                    }
+                }),
+                takeUntil(this.subs$)
+            )
+            .subscribe({
+                next: ({ limit, page_index: pageIndex }) => {
+                    if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                        this.paginator.pageSize = +limit;
+                        this.paginator.pageIndex = +pageIndex;
+                    }
+
+                    this.onRefreshTable();
+                },
+            });
     }
 
     ngAfterViewInit(): void {
         // Melakukan merge Observable pada perubahan sortir dan halaman tabel.
-        merge(
-            this.sort.sortChange,
-            this.paginator.page
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(() => {
-            this.truncateTable();
-            this.onRefreshTable();
-        });
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => {
+                this.truncateTable();
+                this.onRefreshTable();
+            });
     }
 
     ngOnDestroy(): void {
@@ -307,12 +317,16 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         if (item instanceof WarehouseCoverage) {
             this.store.dispatch(
                 WarehouseCoverageActions.selectWarehouse({
-                    payload: (item as WarehouseCoverage).warehouseId
+                    payload: (item as WarehouseCoverage).warehouseId,
                 })
             );
         }
 
-        this.router.navigate(['/pages/logistics/warehouse-coverages/' + (item as WarehouseCoverage).warehouseId + '/edit']);
+        this.router.navigate([
+            '/pages/logistics/warehouse-coverages/' +
+                (item as WarehouseCoverage).warehouseId +
+                '/edit',
+        ]);
     }
 
     onSelectedLocation($event: SelectedLocation): void {
@@ -348,17 +362,22 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
 
         if (this.selectedLocation) {
             const { province, city, district, urban } = this.selectedLocation;
+
             if (province && city && district && urban) {
                 this.onRefreshTable();
             } else {
                 this.isFilterApplied = true;
             }
         } else {
-            this.notice$.open('Please fulfill the warehouse\'s location to view the coverages', 'info', {
-                horizontalPosition: 'right',
-                verticalPosition: 'bottom',
-                duration: 5000
-            });
+            this.notice$.open(
+                "Please fulfill the warehouse's location to view the coverages",
+                'info',
+                {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'bottom',
+                    duration: 5000,
+                }
+            );
         }
 
         this.cdRef.markForCheck();
@@ -369,24 +388,16 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         this.isFilterApplied = true;
 
         if (this.selectedViewBy === 'area') {
-            this.displayedColumns = [
-                'wh-name', 'province', 'city', 'district', 'urban'
-            ];
+            this.displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
         } else if (this.selectedViewBy === 'warehouse') {
-            this.ngxPermissions
-                .hasPermission(['WH.C.UPDATE'])
-                .then(result => {
-                    // Jika ada permission-nya.
-                    if (result) {
-                        this.displayedColumns = [
-                            'province', 'city', 'district', 'urban', 'actions'
-                        ];
-                    } else {
-                        this.displayedColumns = [
-                            'province', 'city', 'district', 'urban'
-                        ];
-                    }
-                });
+            this.ngxPermissions.hasPermission(['WH.C.UPDATE']).then((result) => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = ['province', 'city', 'district', 'urban', 'actions'];
+                } else {
+                    this.displayedColumns = ['province', 'city', 'district', 'urban'];
+                }
+            });
         }
 
         this.truncateTable();
@@ -395,6 +406,14 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
 
     onClickAdd(): void {
         this.router.navigateByUrl('/pages/logistics/warehouse-coverages/new');
+    }
+
+    onChangePage(ev: PageEvent): void {
+        this.router.navigate(['.'], {
+            relativeTo: this.route,
+            queryParams: { limit: ev.pageSize, page_index: ev.pageIndex },
+            queryParamsHandling: 'merge',
+        });
     }
 
     clickTabViewBy(action: string): void {

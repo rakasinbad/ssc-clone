@@ -3,7 +3,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -19,6 +19,7 @@ import { Warehouse } from '../models';
 import { WarehouseActions } from '../store/actions';
 import * as fromWarehouses from '../store/reducers';
 import { WarehouseSelectors } from '../store/selectors';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-warehouse-detail',
@@ -26,7 +27,7 @@ import { WarehouseSelectors } from '../store/selectors';
     styleUrls: ['./warehouse-detail.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehouseDetailComponent implements OnInit, OnDestroy {
     warehouse$: Observable<Warehouse>;
@@ -34,20 +35,21 @@ export class WarehouseDetailComponent implements OnInit, OnDestroy {
 
     private _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Warehouse'
+            title: 'Warehouse',
         },
         {
-            title: 'Warehouse List'
+            title: 'Warehouse List',
         },
         {
-            title: 'Warehouse Detail'
-        }
+            title: 'Warehouse Detail',
+        },
     ];
 
     constructor(
+        private location: Location,
         private route: ActivatedRoute,
         private store: Store<fromWarehouses.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
@@ -78,6 +80,10 @@ export class WarehouseDetailComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    goBack(): void {
+        this.location.back();
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
@@ -98,7 +104,7 @@ export class WarehouseDetailComponent implements OnInit, OnDestroy {
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
+                        payload: this._breadCrumbs,
                     })
                 );
 
