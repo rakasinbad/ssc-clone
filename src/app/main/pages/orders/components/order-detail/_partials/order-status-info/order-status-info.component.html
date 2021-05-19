@@ -202,6 +202,33 @@
                         <div
                             class="step"
                             [class.check]="check(4, data?.status)"
+                            [class.active]="data?.status === 'pending_partial'"
+                            fxLayout="column"
+                            fxFlex
+                        >
+                            <div class="indicator" fxLayout="column">
+                                <div class="circle">
+                                    <mat-icon class="s-14" *ngIf="check(4, data?.status)">check</mat-icon>
+                                </div>
+                            </div>
+
+                            <div class="v-line"></div>
+
+                            <div class="content" fxFlex="90">
+                                <div class="label">Pending Partial</div>
+
+                                <!-- Sementara tidak dipakai dulu. Khawatir desain berubah sewaktu-waktu -->
+                                <!-- <div class="time line-height-12">
+                                        <small>
+                                            {{ (getOrderLogTime('pending_supplier') | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                                        </small>
+                                    </div> -->
+                            </div>
+                        </div>
+
+                        <div
+                            class="step"
+                            [class.check]="check(4, data?.status)"
                             [class.active]="data?.status === 'pending_supplier'"
                             fxLayout="column"
                             fxFlex

@@ -518,11 +518,13 @@ export class OrderEffects {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
-                    
-                    this.store.dispatch(OrderActions.fetchOrderRequest({ payload: String(resp.id) }));
+
+                    return resp;
                 }),
-            ),
-        { dispatch: false }
+                map(({id}) => {
+                    return OrderActions.fetchOrderRequest({ payload: String(id) });
+                })
+            )
     );
 
     // -----------------------------------------------------------------------------------------------------
@@ -997,6 +999,125 @@ export class OrderEffects {
                         horizontalPosition: 'right'
                     });
                 })
+            ),
+        { dispatch: false }
+    );
+
+    confirmChangeOrder$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.confirmChangeOrder),
+            map(action => action.payload),
+            exhaustMap(({id, body}) => {
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: any }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: `Change Order Line`,
+                        message: `Are you sure want to change the value?`,
+                        id,
+                        change: body
+                    },
+                    disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {                
+                if (!!id && !!change) {
+                    return OrderActions.updateOrderRequest({
+                        payload: { id: id, body: change }
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })    
+        )
+    );
+
+    updateOrderRequest$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.updateOrderRequest),
+            map(action => action.payload),
+            switchMap(({body, id}) => {
+                return this._$orderApi.patchOrderPartial(body, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST UPDATE ORDER PARTIAL]`, {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return OrderActions.updateOrderSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...body,
+                                    updatedAt: resp.updatedAt
+                                }
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.updateOrderFailure({
+                                payload: { id: 'updateOrderFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+
+    updateOrderSuccess$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.updateOrderSuccess),
+            map(action => action.payload),
+            tap(resp => {
+                this._$log.generateGroup('[REQUEST UPDATE ORDER PARTIAL SUCCESS]', {
+                    response: {
+                        type: 'log',
+                        value: resp
+                    }
+                });
+
+                this._$notice.open('Update order partial berhasil', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+                
+                this.store.dispatch(OrderActions.fetchOrderRequest({ payload: String(resp.id) }));
+            }),
+            map(({id}) => {
+                return OrderActions.fetchOrderRequest({ payload: String(id) });
+            })
+        )
+    );
+
+    updateOrderFailure$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.updateOrderFailure),
+            map(action => action.payload),
+            tap(resp => {
+                this._$log.generateGroup('[REQUEST UPDATE ORDER FAILURE]', {
+                    response: {
+                        type: 'log',
+                        value: resp
+                    }
+                });
+    
+                this._$notice.open('Update order gagal', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
             ),
         { dispatch: false }
     );

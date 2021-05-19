@@ -44,9 +44,11 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     
     @Output('onSubmit')
     formValue: EventEmitter<any>;
-    
+
     @Output('onChangeOrderStatus')
-    orderStatus: EventEmitter<string> = new EventEmitter();;
+    orderStatus: EventEmitter<string> = new EventEmitter();
+
+    submitable: boolean;
 
     constructor(
         private matDialog: MatDialog,
@@ -228,23 +230,30 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     onSelectedTab(value) : void {
         switch (value) {
             case 2:
-                this.type = "delivered"
+                this.type = "delivered";
                 break;
             case 1:
-                this.type = "dispatched"
+                this.type = "dispatched";
                 break;
             case 0:
             default:
-                this.type = "original"
+                this.type = "original";
                 break;
         }
+        this.proposeEdit = false;
     }
 
     onSubmit(): void {
+        this.proposeEdit = false;
         this.formValue.emit(this.cataloguesChanges);
     }
 
     onChangeQtys(value) : void {
         this.cataloguesChanges = value;
+    }
+
+    onChangeOrderLine(submitable) : void {
+        console.log(!this.proposeEdit || this.submitable);
+        this.submitable = submitable;
     }
 }

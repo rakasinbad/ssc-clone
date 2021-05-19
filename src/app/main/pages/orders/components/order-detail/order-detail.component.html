@@ -69,8 +69,8 @@
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab [label]="'Original'"></mat-tab>
-            <mat-tab [label]="'Dispatched'" [disabled]="!data?.invoicedParcelModified"></mat-tab>
-            <mat-tab [label]="'Delivered'" [disabled]="!data?.deliveredParcelFinalPrice"></mat-tab>
+            <mat-tab [label]="'Proposed'" [disabled]="!data?.invoicedOrderModified"></mat-tab>
+            <mat-tab [label]="'Delivered'" [disabled]="!data?.deliveredOrderModified"></mat-tab>
         </mat-tab-group>
 
         <!-- ORDER LINE -->
@@ -81,19 +81,19 @@
                 </div>
                 <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && !proposeEdit">
                     <button class="button-order_purpose sinbad-black-80" mat-button (click)="proposeEdit = true;" [disabled]="
-                        !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name === 'Bayar Sekarang' &&
+                        !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name !== 'Bayar Sekarang' &&
                         (data?.status === 'confirm' || data?.status === 'packing'))
                     ">Purpose</button>
                 </div>
 
                 <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && proposeEdit">
                     <button style="border: 2px solid #52575C;" mat-button (click)="proposeEdit = false;" [disabled]="!proposeEdit">Cancel</button>
-                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!proposeEdit">Submit</button>
+                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!proposeEdit || submitable">Submit</button>
                 </div>
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit" (formValue)="onChangeQtys($event)"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit" (formValue)="onChangeQtys($event)" (onChange)="onChangeOrderLine($event)"></app-oms-order-line>
         </div>
         <!-- / ORDER LINE -->
 

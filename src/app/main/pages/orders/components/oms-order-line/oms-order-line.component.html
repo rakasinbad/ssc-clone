@@ -51,9 +51,9 @@ novalidate
                             >
                                 <input
                                     matInput
-                                    type="number"
                                     step="1"
-                                    formControlName="qtyChange"
+                                    mask="separator"
+                                    formControlName="invoicedQty"
                                     autocomplete="off"
                                 />
                             </mat-form-field>
@@ -106,17 +106,38 @@ novalidate
         <!-- Discount Price Column -->
         <ng-container matColumnDef="discount-price">
             <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+            <mat-cell *matCellDef="let row; index as i">
                 <ng-container [ngSwitch]="type">
-                    <p class="text-word-break" *ngSwitchCase="'delivered'">
-                        {{ (row?.deliveredCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                    </p>    
-                    <p class="text-word-break" *ngSwitchCase="'dispatched'">
-                        {{ (row?.invoicedCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                    </p>    
-                    <p class="text-word-break" *ngSwitchDefault>
-                        {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                    </p>
+                    <ng-container *ngSwitchCase="'delivered'">
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.deliveredCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                        </p>        
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'dispatched'">
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.invoicedCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                        </p>                                
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                        </p>
+                        <ng-template #edit>
+                            <mat-form-field
+                                appearance="outline"
+                                class="w-50-p text-center"
+                                [formGroupName]="i"
+                            >
+                                <input
+                                    matInput
+                                    step="1"
+                                    formControlName="cataloguePromo"
+                                    prefix="Rp" mask="separator"
+                                    autocomplete="off"
+                                />
+                            </mat-form-field>
+                        </ng-template>
+                    </ng-container>
                 </ng-container>
             </mat-cell>
         </ng-container>

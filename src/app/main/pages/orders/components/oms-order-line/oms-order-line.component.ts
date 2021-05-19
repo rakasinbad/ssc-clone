@@ -58,6 +58,10 @@ export class OmsOrderLineComponent implements OnInit {
     @Output('formValue')
     formValue: EventEmitter<any>;
 
+    @Output('onChange')
+    submitable: EventEmitter<boolean>;
+
+
     form: FormGroup;
 
     private _unSubs$: Subject<any> = new Subject();
@@ -68,6 +72,7 @@ export class OmsOrderLineComponent implements OnInit {
         private errorMessageSvc: ErrorMessageService
     ) {
         this.formValue = new EventEmitter();
+        this.submitable = new EventEmitter();
     }
 
     get catalogues(): FormArray {
@@ -91,30 +96,60 @@ export class OmsOrderLineComponent implements OnInit {
 
         this.form.valueChanges.pipe(
             takeUntil(this._unSubs$)
-        ).subscribe((result) => {
-            this.formValue.emit(result);
+        ).subscribe(() => {
+            this.submitable.emit(this.form.invalid);
+            this.formValue.emit(this.form.getRawValue());
         });
+
+        this.formValue.emit(this.form.getRawValue());
     }
 
-    setForm(v) : void {
+    setForm(v) : void {        
         const row = this.formBuilder.group({
             orderBrandCatalogueId: v.id,
-            qtyChange: [
-                { value: v.qty, disabled: false },
+            invoicedQty: [
+                v.qty,
                 [
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
                     }),
                     RxwebValidators.numeric({
                         acceptValue: NumericValueType.PositiveNumber,
                         allowDecimal: false,
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'min_number',
+                            { minValue: 1 }
+                        ),
+                    }),
                 ],
-            ]
+            ],
+            cataloguePromo: [
+                v.cataloguePromo,
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: false,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 0,
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'min_number',
+                            { minValue: 0 }
+                        ),
+                    }),
+                ],
+            ],
         });
-
 
         this.catalogues.push(row);
     }
