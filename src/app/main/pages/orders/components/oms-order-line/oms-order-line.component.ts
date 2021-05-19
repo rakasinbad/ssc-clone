@@ -79,11 +79,16 @@ export class OmsOrderLineComponent implements OnInit {
         return this.form.get('catalogues') as FormArray;
     }
 
+    get bonusCatalogues(): FormArray {
+        return this.form.get('bonusCatalogues') as FormArray;
+    }
+
     ngOnInit(): void {
         this._getOrderBrandCatalogue(this.orderLineType);
 
         this.form = this.formBuilder.group({
             catalogues: this.formBuilder.array([]),
+            bonusCatalogues: this.formBuilder.array([]),
         });
 
         this.dataSource.data$.pipe(

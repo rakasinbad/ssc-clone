@@ -78,8 +78,6 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
 
     onSubmit(value): void {
         const { id } = this.route.snapshot.params;
-        
-        value.bonusCatalogues = [];
         this.orderFacade.changeCataloguesQty(id, value);
     }
         

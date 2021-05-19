@@ -253,7 +253,6 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     }
 
     onChangeOrderLine(submitable) : void {
-        console.log(!this.proposeEdit || this.submitable);
         this.submitable = submitable;
     }
 }
