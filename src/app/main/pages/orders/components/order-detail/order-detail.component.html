@@ -9,35 +9,53 @@
             </div>
         </div>
     
-        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
-            <!-- DOCUMENT ORDER -->
-            <app-document-order-info
-                [data]="data"
-                [loading]="loading"
-                fxLayout="column"
-                fxLayoutGap="16px"
-                fxFlex="70"
-            ></app-document-order-info>
-            <!-- / DOCUMENT ORDER -->
-    
-            <!-- DELIVERY STATUS -->
-            <app-delivery-status-info
-                [data]="data"
-                [loading]="loading"
-                fxLayout="column"
-                fxLayoutGap="16px"
-                fxFlex
-            ></app-delivery-status-info>
-            <!-- / DELIVERY STATUS -->
-        </div>
-    
         <!-- ORDER STATUS -->
         <app-order-status-info
             [data]="data"
             [loading]="loading"
             fxLayout="column"
             fxLayoutGap="20px"
+            (onChangeOrderStatus)="orderStatus.emit($event)"
         ></app-order-status-info>
+        <!-- / ORDER STATUS -->  
+
+        <app-document-order-info
+            [data]="data"
+            [loading]="loading"
+            fxLayout="column"
+            fxLayoutGap="16px"
+        ></app-document-order-info>
+
+
+        <!-- <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100"> -->
+            <!-- DOCUMENT ORDER -->
+            <!-- <app-document-order-info
+                [data]="data"
+                [loading]="loading"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex="70"
+            ></app-document-order-info> -->
+            <!-- / DOCUMENT ORDER -->
+    
+            <!-- DELIVERY STATUS -->
+            <!-- <app-delivery-status-info
+                [data]="data"
+                [loading]="loading"
+                fxLayout="column"
+                fxLayoutGap="16px"
+                fxFlex
+            ></app-delivery-status-info> -->
+            <!-- / DELIVERY STATUS -->
+        <!-- </div> -->
+    
+        <!-- ORDER STATUS -->
+        <!-- <app-order-status-info
+            [data]="data"
+            [loading]="loading"
+            fxLayout="column"
+            fxLayoutGap="20px"
+        ></app-order-status-info> -->
         <!-- / ORDER STATUS -->    
     </div>
 
@@ -57,12 +75,20 @@
 
         <!-- ORDER LINE -->
         <div class="box-container" fxLayout="column" fxLayoutGap="16px">
-            <div class="box-container__title">
-                <span class="mat-headline m-0"> Order Line </span>
+            <div class="box-container__title" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
+                <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
+                    <span class="mat-headline m-0"> Order Line </span>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && !proposeEdit">
+                    <button class="button-order_propose" mat-button (click)="proposeEdit = true;" [disabled]="
+                        !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name !== 'Bayar Sekarang' &&
+                        (data?.status === 'confirm' || data?.status === 'packing'))
+                    ">Propose</button>
+                </div>
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit"></app-oms-order-line>
         </div>
         <!-- / ORDER LINE -->
 

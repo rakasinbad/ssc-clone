@@ -374,29 +374,24 @@ export class OrderEffects {
         this.actions$.pipe(
             ofType(OrderActions.confirmChangeStatusOrder),
             map(action => action.payload),
-            exhaustMap(params => {
+            exhaustMap(({id, orderCode, status}) => {
                 let title: string;
-                let body: string;
 
-                switch (params.status) {
-                    case 'confirm':
-                        title = 'Packed';
-                        body = 'packing';
+                switch (status) {
+                    case 'cancel':
+                        title = 'Cancel';
                         break;
-
                     case 'packing':
-                        title = 'Shipped';
-                        body = 'shipping';
+                        title = 'Packed';
                         break;
-
                     case 'shipping':
-                        title = 'Delivered';
-                        body = 'delivered';
+                        title = 'Shipped';
                         break;
-
                     case 'delivered':
+                        title = 'Delivered';
+                        break;
+                    case 'done':
                         title = 'Done';
-                        body = 'done';
                         break;
                 }
 
@@ -406,10 +401,10 @@ export class OrderEffects {
                     { id: string; change: string }
                 >(ChangeConfirmationComponent, {
                     data: {
-                        title: `Set ${title}`,
-                        message: `Are you sure want to change <strong>${params.orderCode}</strong> status ?`,
-                        id: params.id,
-                        change: body
+                        title: `Set as ${title}`,
+                        message: `Are you sure want to change <strong>${orderCode}</strong> status ?`,
+                        id: id,
+                        change: status
                     },
                     disableClose: true
                 });
@@ -523,7 +518,9 @@ export class OrderEffects {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
-                })
+                    
+                    this.store.dispatch(OrderActions.fetchOrderRequest({ payload: String(resp.id) }));
+                }),
             ),
         { dispatch: false }
     );

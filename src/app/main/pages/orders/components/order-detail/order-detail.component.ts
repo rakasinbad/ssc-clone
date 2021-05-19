@@ -1,9 +1,11 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
     OnDestroy,
     OnInit,
+    Output,
     ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -35,7 +37,11 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
 
     private _unSubs$: Subject<any> = new Subject();
 
-    type: string;
+    type: string = 'original';
+    proposeEdit: boolean = false;
+
+    @Output('onChangeOrderStatus')
+    orderStatus: EventEmitter<string> = new EventEmitter();;
 
     constructor(
         private matDialog: MatDialog,
