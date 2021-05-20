@@ -50,6 +50,18 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
+    allPayment: number;
+    waitingPayment: number;
+    d7Payment: number;
+    d3Payment: number;
+    d0Payment: number;
+    overduePayment: number;
+    paidPayment: number;
+    waitingRefundPayment: number;
+    refundedPayment: number;
+    failPayment: number;
+    selectedTab: string;
+
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -78,7 +90,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     search: FormControl = new FormControl('');
-    filterStatus = '';
     formConfig = {
         status: {
             label: 'Payment Status',
@@ -224,6 +235,58 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         return localStorage.getItem('filter.payment.status') || '';
     }
 
+    onSelectedTab(index: number): void {
+        switch (index) {
+            case 1:
+                this.selectedTab = 'waiting_for_payment';
+                this._onRefreshTable();
+                break;
+
+            case 2:
+                this.selectedTab = 'd-7';
+                this._onRefreshTable();
+                break;
+
+            case 3:
+                this.selectedTab = 'd-3';
+                this._onRefreshTable();
+                break;
+
+            case 4:
+                this.selectedTab = 'd-0';
+                this._onRefreshTable();
+                break;
+
+            case 5:
+                this.selectedTab = 'overdue';
+                this._onRefreshTable();
+                break;
+
+            case 6:
+                this.selectedTab = 'paid';
+                this._onRefreshTable();
+                break;
+
+            case 7:
+                this.selectedTab = 'waiting_for_refund';
+                this._onRefreshTable();
+                break;
+
+            case 8:
+                this.selectedTab = 'refunded';
+                this._onRefreshTable();
+                break;
+            case 9:
+                this.selectedTab = 'payment_failed';
+                this._onRefreshTable();
+                break;
+            default:
+                this.selectedTab = '';
+                this._onRefreshTable();
+                break;
+        }
+    }
+
     agingDate(date): any {
         return date < 0 ? '-' : date;
     }
@@ -280,14 +343,14 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                     moment.isMoment(payload.start) && payload.start
                         ? (payload.start as moment.Moment).format('YYYY-MM-DD')
                         : payload.start
-                        ? moment(payload.start).format('YYYY-MM-DD')
-                        : null,
+                            ? moment(payload.start).format('YYYY-MM-DD')
+                            : null,
                 dateLte:
                     moment.isMoment(payload.end) && payload.end
                         ? (payload.end as moment.Moment).format('YYYY-MM-DD')
                         : payload.end
-                        ? moment(payload.end).format('YYYY-MM-DD')
-                        : null
+                            ? moment(payload.end).format('YYYY-MM-DD')
+                            : null
             };
 
             this.store.dispatch(PaymentStatusActions.exportRequest({ payload: body }));
@@ -330,7 +393,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     onRemoveSearchPaymentStatus(): void {
         // localStorage.removeItem('filter.payment.status');
         this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
-        // this.filterStatus = '';
     }
 
     onTrackBy(index: number, item: any): string {
@@ -397,19 +459,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                         payload: 'all-status'
                     })
                 );
-
-                // Register to navigation [FuseNavigation]
-                this.store.dispatch(
-                    UiActions.registerNavigation({
-                        payload: {
-                            key: 'customNavigation',
-                            navigation: this.statusPayment
-                        }
-                    })
-                );
-
-                // Show custom toolbar
-                this.store.dispatch(UiActions.showCustomToolbar());
 
                 this.sort.sortChange
                     .pipe(takeUntil(this._unSubs$))
@@ -501,94 +550,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
                 this._initStatusPayment();
 
-                combineLatest([
-                    this.store.select(PaymentStatusSelectors.getTotalAllPayment),
-                    this.store.select(PaymentStatusSelectors.getTotalWaitingPayment),
-                    this.store.select(PaymentStatusSelectors.getTotalD7Payment),
-                    this.store.select(PaymentStatusSelectors.getTotalD3Payment),
-                    this.store.select(PaymentStatusSelectors.getTotalD0Payment),
-                    this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
-                    this.store.select(PaymentStatusSelectors.getTotalFailPayment),
-                    this.store.select(PaymentStatusSelectors.getTotalOverduePayment)
-                ])
-                    .pipe(takeUntil(this._unSubs$))
-                    .subscribe(
-                        ([
-                            allPayment,
-                            waitingPayment,
-                            d7Payment,
-                            d3Payment,
-                            d0Payment,
-                            paidPayment,
-                            failPayment,
-                            overduePayment
-                        ]) => {
-                            if (typeof allPayment !== 'undefined') {
-                                this._updateStatus(
-                                    'all-status',
-                                    { title: `All (${allPayment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof waitingPayment !== 'undefined') {
-                                this._updateStatus(
-                                    'waiting_for_payment',
-                                    { title: `Waiting for Payment (${waitingPayment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof d7Payment !== 'undefined') {
-                                this._updateStatus(
-                                    'd-7',
-                                    { title: `D-7 (${d7Payment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof d3Payment !== 'undefined') {
-                                this._updateStatus(
-                                    'd-3',
-                                    { title: `D-3 (${d3Payment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof d0Payment !== 'undefined') {
-                                this._updateStatus(
-                                    'd-0',
-                                    { title: `D-0 (${d0Payment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof paidPayment !== 'undefined') {
-                                this._updateStatus(
-                                    'paid',
-                                    { title: `Paid (${paidPayment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof failPayment !== 'undefined') {
-                                this._updateStatus(
-                                    'payment_failed',
-                                    { title: `Cancel (${failPayment})` },
-                                    'customNavigation'
-                                );
-                            }
-
-                            if (typeof overduePayment !== 'undefined') {
-                                this._updateStatus(
-                                    'overdue',
-                                    { title: `Overdue (${overduePayment})` },
-                                    'customNavigation'
-                                );
-                            }
-                        }
-                    );
-
                 this._initTable();
 
                 this.store
@@ -604,13 +565,13 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
                         if (v !== 'all-status') {
                             localStorage.setItem('filter.payment.status', v);
-                            this.filterStatus = v;
+                            this.selectedTab = v;
                         } else {
                             localStorage.removeItem('filter.payment.status');
-                            this.filterStatus = '';
+                            this.selectedTab = '';
                         }
 
-                        if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
+                        if (this.selectedTab || (currFilter && currFilter !== this.selectedTab)) {
                             this.store.dispatch(
                                 PaymentStatusActions.filterStatusPayment({ payload: v })
                             );
@@ -660,41 +621,43 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        if (this.filterStatus) {
+        if (this.selectedTab) {
             if (
-                this.filterStatus === 'waiting_for_payment' ||
-                this.filterStatus === 'paid' ||
-                this.filterStatus === 'overdue' ||
-                this.filterStatus === 'payment_failed'
+                this.selectedTab === 'waiting_for_payment' ||
+                this.selectedTab === 'paid' ||
+                this.selectedTab === 'overdue' ||
+                this.selectedTab === 'payment_failed' ||
+                this.selectedTab === 'waiting_for_refund' ||
+                this.selectedTab === 'refunded'
             ) {
                 if (data['search'] && data['search'].length > 0) {
                     data['search'].push({
                         fieldName: 'statusPayment',
-                        keyword: this.filterStatus.replace(/-/g, ' ')
+                        keyword: this.selectedTab.replace(/-/g, ' ')
                     });
                 } else {
                     data['search'] = [
                         {
                             fieldName: 'statusPayment',
-                            keyword: this.filterStatus.replace(/-/g, ' ')
+                            keyword: this.selectedTab.replace(/-/g, ' ')
                         }
                     ];
                 }
             } else if (
-                this.filterStatus === 'd-7' ||
-                this.filterStatus === 'd-3' ||
-                this.filterStatus === 'd-0'
+                this.selectedTab === 'd-7' ||
+                this.selectedTab === 'd-3' ||
+                this.selectedTab === 'd-0'
             ) {
                 if (data['search'] && data['search'].length > 0) {
                     data['search'].push({
                         fieldName: 'dueDay',
-                        keyword: String(this.filterStatus).split('-')[1]
+                        keyword: String(this.selectedTab).split('-')[1]
                     });
                 } else {
                     data['search'] = [
                         {
                             fieldName: 'dueDay',
-                            keyword: String(this.filterStatus).split('-')[1]
+                            keyword: String(this.selectedTab).split('-')[1]
                         }
                     ];
                 }
@@ -706,11 +669,52 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
     private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
+
+        this.store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
         this._initTable();
     }
 
     private _initStatusPayment(): void {
         this.store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+        
+        combineLatest([
+            this.store.select(PaymentStatusSelectors.getTotalAllPayment),
+            this.store.select(PaymentStatusSelectors.getTotalWaitingPayment),
+            this.store.select(PaymentStatusSelectors.getTotalD7Payment),
+            this.store.select(PaymentStatusSelectors.getTotalD3Payment),
+            this.store.select(PaymentStatusSelectors.getTotalD0Payment),
+            this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
+            this.store.select(PaymentStatusSelectors.getTotalFailPayment),
+            this.store.select(PaymentStatusSelectors.getTotalOverduePayment),
+            this.store.select(PaymentStatusSelectors.getTotalWaitingForRefund),
+            this.store.select(PaymentStatusSelectors.getTotalRefunded)
+        ])
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(
+                ([
+                    allPayment,
+                    waitingPayment,
+                    d7Payment,
+                    d3Payment,
+                    d0Payment,
+                    paidPayment,
+                    failPayment,
+                    overduePayment,
+                    waitingRefundPayment,
+                    refundedPayment
+                ]) => {
+                    this.allPayment = + allPayment;
+                    this.waitingPayment = + waitingPayment;
+                    this.d7Payment = + d7Payment;
+                    this.d3Payment = + d3Payment;
+                    this.d0Payment = + d0Payment;
+                    this.paidPayment = + paidPayment;
+                    this.failPayment = + failPayment;
+                    this.overduePayment = + overduePayment;
+                    this.waitingRefundPayment = + waitingRefundPayment;
+                    this.refundedPayment = + refundedPayment;
+                }
+            );
     }
 
     private _updateStatus(id: string, properties: Partial<FuseNavigation>, key?: string): void {
