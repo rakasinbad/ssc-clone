@@ -39,33 +39,38 @@ export class OrderStatusInfoComponent {
                     return true;
                 }
                 return false;
-            case 'pending_supplier':
+            case 'pending_partial':
                 if (index < 4) {
                     return true;
                 }
                 return false;
-            case 'packing':
+            case 'pending_supplier':
                 if (index < 5) {
                     return true;
                 }
                 return false;
-            case 'shipping':
+            case 'packing':
                 if (index < 6) {
                     return true;
                 }
                 return false;
-            case 'delivered':
+            case 'shipping':
                 if (index < 7) {
                     return true;
                 }
                 return false;
-            case 'done':
+            case 'delivered':
                 if (index < 8) {
                     return true;
                 }
                 return false;
-            case 'cancel':
+            case 'done':
                 if (index < 9) {
+                    return true;
+                }
+                return false;
+            case 'cancel':
+                if (index < 10) {
                     return true;
                 }
                 return false;

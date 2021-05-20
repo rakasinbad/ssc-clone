@@ -62,6 +62,7 @@ const orderReducer = createReducer(
     on(
         OrderActions.updateCancelStatusRequest,
         OrderActions.updateStatusOrderRequest,
+        OrderActions.updateOrderRequest,
         OrderActions.fetchOrderRequest,
         OrderActions.fetchOrdersRequest,
         OrderActions.exportRequest,
@@ -74,6 +75,7 @@ const orderReducer = createReducer(
     on(
         OrderActions.updateCancelStatusFailure,
         OrderActions.updateStatusOrderFailure,
+        OrderActions.updateOrderFailure,
         OrderActions.fetchCalculateOrdersFailure,
         OrderActions.fetchOrderFailure,
         OrderActions.fetchOrdersFailure,
@@ -174,6 +176,12 @@ const orderReducer = createReducer(
         isLoading: false,
         orders: adapterOrder.updateOne(payload, state.orders),
         errors: adapterError.removeOne('updateStatusOrderFailure', state.errors),
+    })),
+    on(OrderActions.updateOrderSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        orders: adapterOrder.updateOne(payload, state.orders),
+        errors: adapterError.removeOne('updateOrderFailure', state.errors),
     })),
     on(OrderActions.filterOrder, (state, { payload }) => ({
         ...state,

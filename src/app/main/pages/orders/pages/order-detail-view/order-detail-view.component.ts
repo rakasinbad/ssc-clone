@@ -76,6 +76,11 @@ export class OrderDetailViewComponent implements OnInit, OnDestroy {
         this.location.back();
     }
 
+    onSubmit(value): void {
+        const { id } = this.route.snapshot.params;
+        this.orderFacade.changeCataloguesQty(id, value);
+    }
+        
     onChangeOrderStatus(status):void {
         const { id } = this.route.snapshot.params;
         const orderCode = this.data.orderCode;

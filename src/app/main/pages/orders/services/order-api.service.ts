@@ -25,6 +25,7 @@ export class OrderApiService {
      */
     private readonly _endpoint = '/order-parcels';
     private readonly _endpointPayment = '/payment/v1/order/parcel';
+    private readonly _endpointPartialOrder = '/partial-order';
 
     private readonly _listEndpoint = '/payment/v1/order/oms';
 
@@ -80,6 +81,11 @@ export class OrderApiService {
 
     patchCustom<T>(body: T, id: string): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch(`${this._url}/${id}`, body);
+    }
+
+    patchOrderPartial(body: any, id: string) : Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointPartialOrder);
         return this.http.patch(`${this._url}/${id}`, body);
     }
 }
