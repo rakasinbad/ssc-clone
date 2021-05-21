@@ -67,9 +67,17 @@ novalidate
         <ng-container matColumnDef="unit-price">
             <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p class="text-word-break">
-                    {{ (row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                </p>
+                <ng-container [ngSwitch]="type">
+                    <p class="text-word-break" *ngSwitchCase="'delivered'">
+                        {{ (row?.deliveredGrossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                    </p>    
+                    <p class="text-word-break" *ngSwitchCase="'dispatched'">
+                        {{ (row?.invoicedGrossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                    </p>    
+                    <p class="text-word-break" *ngSwitchDefault>
+                        {{ (row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                    </p>    
+                </ng-container>
             </mat-cell>
         </ng-container>
 
@@ -80,14 +88,14 @@ novalidate
                 <ng-container [ngSwitch]="type">
                     <p class="text-word-break" *ngSwitchCase="'delivered'">
                         {{
-                            (row?.grossPrice
+                            (row?.deliveredGrossPrice
                                 | calculateGrossPrice: true:row?.deliveredQty:row?.deliveredCataloguePromo
                                 | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                         }}
                     </p>    
                     <p class="text-word-break" *ngSwitchCase="'dispatched'">
                         {{
-                            (row?.grossPrice
+                            (row?.invoicedGrossPrice
                                 | calculateGrossPrice: true:row?.invoicedQty:row?.invoicedCataloguePromo
                                 | price: 'full':'IDR':'narrow':'1.2-2') || '-'
                         }}
