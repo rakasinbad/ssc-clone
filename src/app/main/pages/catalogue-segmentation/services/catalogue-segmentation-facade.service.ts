@@ -155,7 +155,7 @@ export class CatalogueSegmentationFacadeService {
 
     resetCancelBtn(): void {
         this.store.dispatch(FormActions.resetClickCancelButton());
-        this.store.dispatch(FormActions.resetCancelButtonAction());
+        // this.store.dispatch(FormActions.resetCancelButtonAction());
     }
 
     resetFormStatus(): void {

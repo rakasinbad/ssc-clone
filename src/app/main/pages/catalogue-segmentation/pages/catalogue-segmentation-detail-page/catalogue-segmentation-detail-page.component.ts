@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FormMode } from 'app/shared/models';
-import { IBreadcrumbs } from 'app/shared/models/global.model';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { filter, map, takeUntil, tap } from 'rxjs/operators';
 import { CatalogueSegmentation } from '../../models';
 import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from '../../services';
 
@@ -16,6 +16,8 @@ import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from
 })
 export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestroy {
     private isLoadingCatalogueList$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    private unSubs$: Subject<any> = new Subject();
+
     private breadcrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -31,20 +33,47 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             active: true,
         },
     ];
+    private footerConfig: IFooterActionConfig = {
+        progress: {
+            title: {
+                label: 'Skor tambah toko',
+                active: false,
+            },
+            value: {
+                active: false,
+            },
+            active: false,
+        },
+        action: {
+            save: {
+                label: 'Save',
+                active: true,
+            },
+            draft: {
+                label: 'Save Draft',
+                active: false,
+            },
+            cancel: {
+                label: 'Cancel',
+                active: true,
+            },
+        },
+    };
 
     formMode: FormMode;
     catalogueSegmentation: CatalogueSegmentation;
     isLoading: boolean = false;
     isLoadingCombine: boolean = false;
+    selectedIndex: number = 0;
 
     catalogueSegmentation$: Observable<CatalogueSegmentation>;
     isLoading$: Observable<boolean>;
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private catalogueSegmentationService: CatalogueSegmentationService
+        private readonly route: ActivatedRoute,
+        private readonly router: Router,
+        private readonly catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private readonly catalogueSegmentationService: CatalogueSegmentationService
     ) {}
 
     ngOnInit(): void {
@@ -53,6 +82,8 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             this.route,
             this.router
         );
+        this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
+        this.catalogueSegmentationFacade.setCancelButton();
 
         if (this.formMode !== 'view') {
             this.router.navigateByUrl('/pages/catalogue-segmentations', { replaceUrl: true });
@@ -86,11 +117,39 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             }),
             map(({ isLoading }) => isLoading)
         );
+
+        // Handle cancel button action (footer)
+        this.catalogueSegmentationFacade.clickCancelBtn$
+            .pipe(
+                filter((isClick) => !!isClick),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((_) => {
+                this.formMode = 'view';
+                this.onHandleFooter();
+                this.catalogueSegmentationFacade.resetCancelBtn();
+            });
     }
 
     ngOnDestroy(): void {
         this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetState();
+    }
+
+    onEdit(): void {
+        this.formMode = 'edit';
+    }
+
+    onHandleFooter(): void {
+        console.log(`[onHandleFooter] CatalogueSegmentationDetailPageComponent`, {
+            formMode: this.formMode,
+        });
+
+        if (this.formMode === 'edit') {
+            this.catalogueSegmentationFacade.showFooter();
+        } else {
+            this.catalogueSegmentationFacade.hideFooter();
+        }
     }
 
     onSetLoadingCatalogueList(loading: boolean): void {
