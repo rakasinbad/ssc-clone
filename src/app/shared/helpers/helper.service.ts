@@ -188,6 +188,7 @@ export class HelperService {
         },
     ];
 
+    // tslint:disable-next-line:member-ordering
     private static _paymentStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -208,7 +209,7 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
-        },
+        }
     ];
 
     private static readonly _platformSinbad: { id: PlatformSinbad; label: string }[] = [

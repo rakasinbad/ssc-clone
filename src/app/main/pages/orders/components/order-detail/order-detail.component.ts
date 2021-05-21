@@ -40,15 +40,24 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     type: string = 'original';
     proposeEdit: boolean = false;
 
+    cataloguesChanges: any;
+    
+    @Output('onSubmit')
+    formValue: EventEmitter<any>;
+
     @Output('onChangeOrderStatus')
-    orderStatus: EventEmitter<string> = new EventEmitter();;
+    orderStatus: EventEmitter<string> = new EventEmitter();
+
+    submitable: boolean;
 
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService
-    ) {}
+    ) {
+        this.formValue = new EventEmitter();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -221,15 +230,29 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     onSelectedTab(value) : void {
         switch (value) {
             case 2:
-                this.type = "delivered"
+                this.type = "delivered";
                 break;
             case 1:
-                this.type = "dispatched"
+                this.type = "dispatched";
                 break;
             case 0:
             default:
-                this.type = "original"
+                this.type = "original";
                 break;
         }
+        this.proposeEdit = false;
+    }
+
+    onSubmit(): void {
+        this.proposeEdit = false;
+        this.formValue.emit(this.cataloguesChanges);
+    }
+
+    onChangeQtys(value) : void {
+        this.cataloguesChanges = value;
+    }
+
+    onChangeOrderLine(submitable) : void {
+        this.submitable = submitable;
     }
 }

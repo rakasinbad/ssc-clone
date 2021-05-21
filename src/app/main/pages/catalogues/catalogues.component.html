@@ -71,7 +71,7 @@
                             <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
                                     <p class="catalogue-name">
-                                        {{ row?.name | uppercase }}
+                                        {{ row?.name }}
                                     </p>
                                     <!-- <p class="text-truncate" style="color: grey">
                                         SKU Induk:
@@ -410,7 +410,6 @@
             <mat-paginator
                 [fxHide]="(totalDataSource$ | async) === 0"
                 [length]="totalDataSource$ | async"
-                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
                 showFirstLastButtons

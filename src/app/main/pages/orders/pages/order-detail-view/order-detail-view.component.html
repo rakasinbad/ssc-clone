@@ -62,6 +62,7 @@
                     [data]="data"
                     [loading]="loading"
                     fxLayout="column"
+                    (onSubmit)="onSubmit($event)"
                     fxFlex
                     (onChangeOrderStatus)="onChangeOrderStatus($event)"
                 ></app-order-detail>

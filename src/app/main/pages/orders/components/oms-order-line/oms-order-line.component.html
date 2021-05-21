@@ -1,142 +1,175 @@
-<mat-table
-    class="order-line-list sinbad-table"
-    [class.sinbad-table-no-record]="(dataSource.totalDataSource$ | async) === 0"
-    #table
-    [dataSource]="dataSource"
-    matSort
-    [@animateStagger]="{ value: '50' }"
-    fusePerfectScrollbar
+<form
+id="oms-order-line-form"
+name="omsOrderLineForm"
+[formGroup]="form"
+novalidate
 >
-    <!-- Product Column -->
-    <ng-container matColumnDef="product">
-        <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p class="text-word-break">
-                {{ row?.catalogue?.name || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Order Quantity Column -->
-    <ng-container matColumnDef="order-qty">
-        <mat-header-cell *matHeaderCellDef> Order Quantity </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <ng-container [ngSwitch]="type">
-                <ng-container *ngSwitchCase="'delivered'">
-                    <p class="text-word-break" *ngIf="!editable; else edit">
-                        {{ (row?.deliveredQty | number) || '-' }}
-                    </p>
-                </ng-container>
-                <ng-container *ngSwitchCase="'dispatched'">
-                    <p class="text-word-break" *ngIf="!editable; else edit">
-                        {{ (row?.invoicedQty | number) || '-' }}
-                    </p>
-                </ng-container>
-                <ng-container *ngSwitchDefault>
-                    <p class="text-word-break" *ngIf="!editable; else edit">
-                        {{ (row?.qty | number) || '-' }}
-                    </p>
-                    <ng-template #edit>
-                        <mat-form-field
-                            appearance="outline"
-                            class="w-100-p text-center"
-                        >
-                            <input
-                                matInput
-                                [value]="row?.qty | number"
-                            />
-                        </mat-form-field>
-                    </ng-template>
-                </ng-container>
-            </ng-container>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Unit Price Column -->
-    <ng-container matColumnDef="unit-price">
-        <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <ng-container [ngSwitch]="type">
-                <p class="text-word-break" *ngSwitchCase="'delivered'">
-                    {{ (row?.deliveredGrossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                </p>    
-                <p class="text-word-break" *ngSwitchCase="'dispatched'">
-                    {{ (row?.invoicedGrossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                </p>    
-                <p class="text-word-break" *ngSwitchDefault>
-                    {{ (row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                </p>    
-            </ng-container>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Gross Price Column -->
-    <ng-container matColumnDef="gross-price">
-        <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <ng-container [ngSwitch]="type">
-                <p class="text-word-break" *ngSwitchCase="'delivered'">
-                    {{
-                        (row?.deliveredGrossPrice
-                            | calculateGrossPrice: true:row?.deliveredQty:row?.deliveredCataloguePromo
-                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                    }}
-                </p>    
-                <p class="text-word-break" *ngSwitchCase="'dispatched'">
-                    {{
-                        (row?.invoicedGrossPrice
-                            | calculateGrossPrice: true:row?.invoicedQty:row?.invoicedCataloguePromo
-                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                    }}
-                </p>    
-                <p class="text-word-break" *ngSwitchDefault>
-                    {{
-                        (row?.grossPrice
-                            | calculateGrossPrice: true:row?.qty:row?.cataloguePromo
-                            | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                    }}
-                </p>    
-            </ng-container>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Discount Price Column -->
-    <ng-container matColumnDef="discount-price">
-        <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <ng-container [ngSwitch]="type">
-                <p class="text-word-break" *ngSwitchCase="'delivered'">
-                    {{ (row?.deliveredCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                </p>    
-                <p class="text-word-break" *ngSwitchCase="'dispatched'">
-                    {{ (row?.invoicedCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
-                </p>    
-                <p class="text-word-break" *ngSwitchDefault>
-                    {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+    <mat-table
+        class="order-line-list sinbad-table"
+        [class.sinbad-table-no-record]="(dataSource.totalDataSource$ | async) === 0"
+        #table
+        [dataSource]="dataSource"
+        formArrayName="catalogues"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
+    >
+        <!-- Product Column -->
+        <ng-container matColumnDef="product">
+            <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break">
+                    {{ row?.catalogue?.name || '-' }}
                 </p>
-            </ng-container>
-        </mat-cell>
-    </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <!-- Type Column -->
-    <ng-container matColumnDef="type">
-        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p class="text-word-break">
-                {{ row?.type | catalogueType }}
-            </p>
-        </mat-cell>
-    </ng-container>
+        <!-- Order Quantity Column -->
+        <ng-container matColumnDef="order-qty">
+            <mat-header-cell *matHeaderCellDef> Order Quantity </mat-header-cell>
+            <mat-cell *matCellDef="let row; index as i">
+                <ng-container [ngSwitch]="type">
+                    <ng-container *ngSwitchCase="'delivered'">
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.deliveredQty | number) || '-' }}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'dispatched'">
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.invoicedQty | number) || '-' }}
+                        </p>
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.qty | number) || '-' }}
+                        </p>
+                        <ng-template #edit>
+                            <mat-form-field
+                                appearance="outline"
+                                class="w-100-p text-center"
+                                [formGroupName]="i"
+                            >
+                                <input
+                                    matInput
+                                    step="1"
+                                    mask="separator"
+                                    formControlName="invoicedQty"
+                                    autocomplete="off"
+                                />
+                            </mat-form-field>
+                        </ng-template>
+                    </ng-container>
+                </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <!-- No Record Column -->
-    <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="5"> No records found </mat-footer-cell>
-    </ng-container>
+        <!-- Unit Price Column -->
+        <ng-container matColumnDef="unit-price">
+            <mat-header-cell *matHeaderCellDef> Unit Price </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container [ngSwitch]="type">
+                    <p class="text-word-break" *ngSwitchCase="'delivered'">
+                        {{ (row?.deliveredGrossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                    </p>    
+                    <p class="text-word-break" *ngSwitchCase="'dispatched'">
+                        {{ (row?.invoicedGrossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                    </p>    
+                    <p class="text-word-break" *ngSwitchDefault>
+                        {{ (row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                    </p>    
+                </ng-container>
+            </mat-cell>
+        </ng-container>
 
-    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns" class="order-line-list-item"></mat-row>
-    <mat-footer-row
-        *matFooterRowDef="['no-record']"
-        [fxShow]="(dataSource.totalDataSource$ | async) === 0"
-    ></mat-footer-row>
-</mat-table>
+        <!-- Gross Price Column -->
+        <ng-container matColumnDef="gross-price">
+            <mat-header-cell *matHeaderCellDef> Gross Price </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container [ngSwitch]="type">
+                    <p class="text-word-break" *ngSwitchCase="'delivered'">
+                        {{
+                            (row?.deliveredGrossPrice
+                                | calculateGrossPrice: true:row?.deliveredQty:row?.deliveredCataloguePromo
+                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                        }}
+                    </p>    
+                    <p class="text-word-break" *ngSwitchCase="'dispatched'">
+                        {{
+                            (row?.invoicedGrossPrice
+                                | calculateGrossPrice: true:row?.invoicedQty:row?.invoicedCataloguePromo
+                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                        }}
+                    </p>    
+                    <p class="text-word-break" *ngSwitchDefault>
+                        {{
+                            (row?.grossPrice
+                                | calculateGrossPrice: true:row?.qty:row?.cataloguePromo
+                                | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                        }}
+                    </p>    
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Discount Price Column -->
+        <ng-container matColumnDef="discount-price">
+            <mat-header-cell *matHeaderCellDef> Discount Price </mat-header-cell>
+            <mat-cell *matCellDef="let row; index as i">
+                <ng-container [ngSwitch]="type">
+                    <ng-container *ngSwitchCase="'delivered'">
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.deliveredCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                        </p>        
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'dispatched'">
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.invoicedCataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                        </p>                                
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                        <p class="text-word-break" *ngIf="!editable; else edit">
+                            {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
+                        </p>
+                        <ng-template #edit>
+                            <mat-form-field
+                                appearance="outline"
+                                class="w-50-p text-center"
+                                [formGroupName]="i"
+                            >
+                                <input
+                                    matInput
+                                    step="1"
+                                    formControlName="cataloguePromo"
+                                    prefix="Rp" mask="separator"
+                                    autocomplete="off"
+                                />
+                            </mat-form-field>
+                        </ng-template>
+                    </ng-container>
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+            <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break">
+                    {{ row?.type | catalogueType }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- No Record Column -->
+        <ng-container matColumnDef="no-record">
+            <mat-footer-cell *matFooterCellDef colspan="5"> No records found </mat-footer-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns" class="order-line-list-item"></mat-row>
+        <mat-footer-row
+            *matFooterRowDef="['no-record']"
+            [fxShow]="(dataSource.totalDataSource$ | async) === 0"
+        ></mat-footer-row>
+    </mat-table>
+</form>
