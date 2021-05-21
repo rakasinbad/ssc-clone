@@ -58,7 +58,7 @@ export class CatalogueSegmentationListComponent
         'store-group',
         'store-channel',
         'store-cluster',
-        'status',
+        // 'status',
         'actions',
     ];
 
@@ -140,10 +140,10 @@ export class CatalogueSegmentationListComponent
                     'store-group',
                     'store-channel',
                     'store-cluster',
-                    'status',
+                    // 'status',
                     'actions',
                 ];
-            
+
             } else {
                 this.displayedColumns = [
                     'segmentation-name',
@@ -152,9 +152,9 @@ export class CatalogueSegmentationListComponent
                     'store-group',
                     'store-channel',
                     'store-cluster',
-                    'status'
+                    // 'status'
                 ];
-            
+
             }
         });
 

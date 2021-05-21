@@ -1,0 +1,17 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+    <sinbad-card-header
+        [config]="cardHeaderConfig"
+        (onSearchChanged)="keyword = $event"
+    ></sinbad-card-header>
+
+    <app-catalogue-list
+        [keyword]="keyword"
+        [formMode]="formMode"
+        [segmentationId]="item?.id"
+        (loading)="onLoadingCatalogueList($event)"
+        [(clickResetSelection)]="isResetAllCatalogue"
+        [(clickSelectAllCatalogue)]="isSelectAllCatalogue"
+        [(clickUnassignAllSelection)]="clickUnassignAllSelection"
+        (showBatchActions)="onUpdateBatchActions($event)"
+    ></app-catalogue-list>
+</div>
