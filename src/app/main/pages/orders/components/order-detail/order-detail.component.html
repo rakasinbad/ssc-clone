@@ -88,12 +88,12 @@
 
                 <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && proposeEdit">
                     <button style="border: 2px solid #52575C;" mat-button (click)="proposeEdit = false;" [disabled]="!proposeEdit">Cancel</button>
-                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!proposeEdit || submitable">Submit</button>
+                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!proposeEdit">Submit</button>
                 </div>
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit" (formValue)="onChangeQtys($event)" (onChange)="onChangeOrderLine($event)"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit" (formValue)="onChangeCatalogues($event)"></app-oms-order-line>
         </div>
         <!-- / ORDER LINE -->
 
@@ -104,7 +104,7 @@
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'bonus'" *ngIf="!loading"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'bonus'" [editable]="proposeEdit" [type]="type" *ngIf="!loading" (formValue)="onChangeBonus($event)"></app-oms-order-line>
         </div>
         <!-- / BONUS SKU -->
 
@@ -114,6 +114,7 @@
             fxLayout="column"
             fxLayoutAlign="start stretch"
             fxLayoutGap="16px"
+            *ngIf="!proposeEdit"
             fxFlex
         >
             <div class="box-container__title">

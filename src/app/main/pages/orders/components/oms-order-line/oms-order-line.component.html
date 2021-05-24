@@ -48,12 +48,27 @@ novalidate
                                 appearance="outline"
                                 class="w-100-p text-center"
                                 [formGroupName]="i"
+                                *ngIf="orderLineType === 'non_bonus'"
                             >
                                 <input
                                     matInput
                                     step="1"
                                     mask="separator"
                                     formControlName="invoicedQty"
+                                    autocomplete="off"
+                                />
+                            </mat-form-field>
+                            <mat-form-field
+                                appearance="outline"
+                                class="w-100-p text-center"
+                                [formGroupName]="i"
+                                *ngIf="orderLineType === 'bonus'"
+                            >
+                                <input
+                                    matInput
+                                    step="1"
+                                    mask="separator"
+                                    formControlName="promoQty"
                                     autocomplete="off"
                                 />
                             </mat-form-field>
@@ -127,7 +142,7 @@ novalidate
                         </p>                                
                     </ng-container>
                     <ng-container *ngSwitchDefault>
-                        <p class="text-word-break" *ngIf="!editable; else edit">
+                        <p class="text-word-break" *ngIf="!editable || orderLineType !== 'non_bonus'; else edit">
                             {{ (row?.cataloguePromo | price: 'full':'IDR':'narrow':'1.2-2') || '-' }}
                         </p>
                         <ng-template #edit>
@@ -135,6 +150,7 @@ novalidate
                                 appearance="outline"
                                 class="w-50-p text-center"
                                 [formGroupName]="i"
+                                *ngIf="orderLineType === 'non_bonus'"
                             >
                                 <input
                                     matInput

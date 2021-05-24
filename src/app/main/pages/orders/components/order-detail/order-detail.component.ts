@@ -41,6 +41,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     proposeEdit: boolean = false;
 
     cataloguesChanges: any;
+    bonusCatalogues: any;
     
     @Output('onSubmit')
     formValue: EventEmitter<any>;
@@ -48,7 +49,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     @Output('onChangeOrderStatus')
     orderStatus: EventEmitter<string> = new EventEmitter();
 
-    submitable: boolean;
+    submitable: boolean = true;
 
     constructor(
         private matDialog: MatDialog,
@@ -245,11 +246,19 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
 
     onSubmit(): void {
         this.proposeEdit = false;
-        this.formValue.emit(this.cataloguesChanges);
+        this.formValue.emit({
+            status: "pending_partial",
+            catalogues : this.cataloguesChanges || [],
+            bonusCatalogues : this.bonusCatalogues || []
+        });
     }
 
-    onChangeQtys(value) : void {
-        this.cataloguesChanges = value;
+    onChangeCatalogues(value) : void {
+        this.cataloguesChanges = value.catalogues;
+    }
+
+    onChangeBonus(value) : void {
+        this.bonusCatalogues = value.catalogues;
     }
 
     onChangeOrderLine(submitable) : void {

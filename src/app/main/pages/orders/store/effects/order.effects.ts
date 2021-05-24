@@ -1014,8 +1014,8 @@ export class OrderEffects {
                     { id: string; change: any }
                 >(ChangeConfirmationComponent, {
                     data: {
-                        title: `Change Order Line`,
-                        message: `Are you sure want to change the value?`,
+                        title: `Submit Partial Offer?`,
+                        message: `After clicking submit button you can't change your proposal, Please make sure all the quantity and discount price is correct?`,
                         id,
                         change: body
                     },
@@ -1092,8 +1092,8 @@ export class OrderEffects {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
-                
-                this.store.dispatch(OrderActions.fetchOrderRequest({ payload: String(resp.id) }));
+
+                return resp;
             }),
             map(({id}) => {
                 return OrderActions.fetchOrderRequest({ payload: String(id) });
@@ -1117,9 +1117,13 @@ export class OrderEffects {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
+
+                return resp;
+            }),
+            map(({id}) => {
+                return OrderActions.fetchOrderRequest({ payload: String(id) });
             })
-            ),
-        { dispatch: false }
+        )
     );
 
     /**

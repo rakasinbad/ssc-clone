@@ -88,14 +88,13 @@ export class OmsOrderLineComponent implements OnInit {
 
         this.form = this.formBuilder.group({
             catalogues: this.formBuilder.array([]),
-            bonusCatalogues: this.formBuilder.array([]),
         });
 
         this.dataSource.data$.pipe(
             takeUntil(this._unSubs$)
         ).subscribe((result) => {
             if (!!result) {
-                result.forEach((v) => this.setForm(v))
+                result.forEach((v) => this.setForm(v, this.orderLineType))
             }
         });
 
@@ -109,52 +108,81 @@ export class OmsOrderLineComponent implements OnInit {
         this.formValue.emit(this.form.getRawValue());
     }
 
-    setForm(v) : void {        
-        const row = this.formBuilder.group({
-            orderBrandCatalogueId: v.id,
-            invoicedQty: [
-                v.qty,
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: false,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState(
-                            'default',
-                            'min_number',
-                            { minValue: 1 }
-                        ),
-                    }),
+    setForm(v, type) : void {
+        var row: any;
+        
+        if (type === 'non_bonus') {
+            row = this.formBuilder.group({
+                orderBrandCatalogueId: v.id,
+                invoicedQty: [
+                    v.qty,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        }),
+                        RxwebValidators.numeric({
+                            acceptValue: NumericValueType.PositiveNumber,
+                            allowDecimal: false,
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            ),
+                        }),
+                    ],
                 ],
-            ],
-            cataloguePromo: [
-                v.cataloguePromo,
-                [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: false,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 0,
-                        message: this.errorMessageSvc.getErrorMessageNonState(
-                            'default',
-                            'min_number',
-                            { minValue: 0 }
-                        ),
-                    }),
+                cataloguePromo: [
+                    v.cataloguePromo,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        }),
+                        RxwebValidators.numeric({
+                            acceptValue: NumericValueType.PositiveNumber,
+                            allowDecimal: false,
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 0,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 0 }
+                            ),
+                        }),
+                    ],
                 ],
-            ],
-        });
+            });    
+        } else if(type === 'bonus') {
+            row = this.formBuilder.group({
+                promoOrderBrandCatalogueId: v.id,
+                promoQty: [
+                    v.qty,
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        }),
+                        RxwebValidators.numeric({
+                            acceptValue: NumericValueType.PositiveNumber,
+                            allowDecimal: false,
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            ),
+                        }),
+                    ],
+                ],
+            });    
+        }
 
         this.catalogues.push(row);
     }
