@@ -6,7 +6,12 @@ import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.mode
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
 import { CatalogueSegmentation } from '../../models';
-import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from '../../services';
+import {
+    CatalogueSegmentationFacadeService,
+    CatalogueSegmentationService,
+    CatalogueSegmentationFormService,
+} from '../../services';
+import { FormGroup } from '@angular/forms';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -60,6 +65,7 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
         },
     };
 
+    form: FormGroup;
     formMode: FormMode;
     catalogueSegmentation: CatalogueSegmentation;
     isLoading: boolean = false;
@@ -73,7 +79,8 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
         private readonly route: ActivatedRoute,
         private readonly router: Router,
         private readonly catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private readonly catalogueSegmentationService: CatalogueSegmentationService
+        private readonly catalogueSegmentationService: CatalogueSegmentationService,
+        private readonly catalogueSegmentationFormService: CatalogueSegmentationFormService
     ) {}
 
     ngOnInit(): void {
@@ -82,14 +89,16 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             this.route,
             this.router
         );
-        this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
-        this.catalogueSegmentationFacade.setCancelButton();
 
-        if (this.formMode !== 'view') {
+        if (this.formMode !== 'view' && this.formMode !== 'edit') {
             this.router.navigateByUrl('/pages/catalogue-segmentations', { replaceUrl: true });
         }
 
         this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
+        this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
+        this.catalogueSegmentationFacade.setCancelButton();
+
+        this.form = this.catalogueSegmentationFormService.createForm();
 
         this.catalogueSegmentation$ = this.catalogueSegmentationFacade.catalogueSegmentation$.pipe(
             tap((item) => {
@@ -141,10 +150,6 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     }
 
     onHandleFooter(): void {
-        console.log(`[onHandleFooter] CatalogueSegmentationDetailPageComponent`, {
-            formMode: this.formMode,
-        });
-
         if (this.formMode === 'edit') {
             this.catalogueSegmentationFacade.showFooter();
         } else {

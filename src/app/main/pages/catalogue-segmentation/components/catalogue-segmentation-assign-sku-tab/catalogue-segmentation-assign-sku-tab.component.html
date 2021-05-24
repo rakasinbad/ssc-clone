@@ -2,6 +2,7 @@
     <sinbad-card-header
         [config]="cardHeaderConfig"
         (onSearchChanged)="keyword = $event"
+        (onActionSelected)="onActionSelected($event)"
     ></sinbad-card-header>
 
     <app-catalogue-list

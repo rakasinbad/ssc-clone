@@ -1,9 +1,20 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+    ViewEncapsulation,
+} from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { fuseAnimations } from '@fuse/animations';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { CardHeaderActionConfig } from 'app/shared/components/card-header/models/card-header.model';
 import { FormMode } from 'app/shared/models';
-import { CatalogueSegmentation } from '../../models';
+import { Catalogue, CatalogueSegmentation } from '../../models';
 
 @Component({
     selector: 'app-catalogue-segmentation-assign-sku-tab',
@@ -35,6 +46,9 @@ export class CatalogueSegmentationAssignSkuTabComponent implements OnChanges, On
     keyword: string = null;
 
     @Input()
+    form: FormGroup;
+
+    @Input()
     formMode: FormMode;
 
     @Input()
@@ -62,6 +76,10 @@ export class CatalogueSegmentationAssignSkuTabComponent implements OnChanges, On
     ngOnInit(): void {}
 
     onActionSelected(action: CardHeaderActionConfig): void {
+        if (this.formMode !== 'edit') {
+            return;
+        }
+
         switch (action.id) {
             case 'select-all':
                 this.isSelectAllCatalogue = true;
@@ -77,6 +95,21 @@ export class CatalogueSegmentationAssignSkuTabComponent implements OnChanges, On
 
             default:
                 break;
+        }
+    }
+
+    onCatalogueSelected(ev: Catalogue[] | 'all'): void {
+        const chosenCatalogueCtrl = this.form.get('chosenCatalogue');
+
+        chosenCatalogueCtrl.markAsDirty();
+        chosenCatalogueCtrl.markAsTouched();
+
+        if (!ev.length && ev !== 'all') {
+            chosenCatalogueCtrl.setValue(null);
+        } else {
+            const newCatalogue: string[] | 'all' = ev === 'all' ? ev : ev.map((item) => item.id);
+
+            chosenCatalogueCtrl.setValue(newCatalogue);
         }
     }
 
