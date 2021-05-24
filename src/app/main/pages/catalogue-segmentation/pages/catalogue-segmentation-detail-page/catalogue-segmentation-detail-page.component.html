@@ -98,6 +98,7 @@
                         <ng-template matTabContent>
                             <div class="tab-content p-16 pb-0" fusePerfectScrollbar>
                                 <app-catalogue-segmentation-assign-sku-tab
+                                    [form]="form"
                                     [formMode]="formMode"
                                     (formModeChange)="onHandleFooter()"
                                     [item]="catalogueSegmentation$ | async"

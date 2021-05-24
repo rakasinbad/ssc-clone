@@ -41,6 +41,7 @@ const reducerFn = createReducer(
         CatalogueSegmentationDetailActions.fetchCatalogueSegmentationFailure,
         CatalogueSegmentationFormActions.createCatalogueSegmentationFailure,
         CatalogueSegmentationFormActions.updateCatalogueSegmentationFailure,
+        CatalogueSegmentationFormActions.updateCatalogueSegmentationSuccess,
         (state) => ({
             ...state,
             isLoading: false,
