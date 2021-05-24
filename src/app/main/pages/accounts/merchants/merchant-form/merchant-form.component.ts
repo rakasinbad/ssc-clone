@@ -2899,6 +2899,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.form.get('profileInfo.phoneNumber').disable();
 
+        this.form.get('storeInfo.status').disable();
+
         this.form.patchValue({
             // supplierId: data['supplierId'],
             storeId: data.store.id,

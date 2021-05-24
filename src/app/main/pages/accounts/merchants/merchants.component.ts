@@ -705,25 +705,25 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    onChangeStatus(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
+    // onChangeStatus(item: SupplierStore): void {
+    //     if (!item || !item.id) {
+    //         return;
+    //     }
 
-        const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
+    //     const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
 
-        canChangeStatusStore.then((hasAccess) => {
-            if (hasAccess) {
-                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-                this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
-            } else {
-                this._$notice.open('Sorry, permission denied!', 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right',
-                });
-            }
-        });
-    }
+    //     canChangeStatusStore.then((hasAccess) => {
+    //         if (hasAccess) {
+    //             this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+    //             this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
+    //         } else {
+    //             this._$notice.open('Sorry, permission denied!', 'error', {
+    //                 verticalPosition: 'bottom',
+    //                 horizontalPosition: 'right',
+    //             });
+    //         }
+    //     });
+    // }
 
     onDelete(item: SupplierStore): void {
         if (!item || !item.id) {
