@@ -123,12 +123,6 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             tap(({ isLoadingCatalogueList, isLoading }) => {
                 this.isLoading = isLoading;
                 this.isLoadingCombine = isLoading || isLoadingCatalogueList;
-
-                console.log('ISLOADING', {
-                    isLoadingCatalogueList,
-                    isLoading,
-                    isLoadingCombine: this.isLoadingCombine,
-                });
             }),
             map(({ isLoading }) => isLoading)
         );
@@ -156,10 +150,6 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     }
 
     onHandleFooter(): void {
-        console.log(`[onHandleFooter] CatalogueSegmentationDetailPageComponent`, {
-            formMode: this.formMode,
-        });
-
         if (this.formMode === 'edit') {
             this.catalogueSegmentationFacade.showFooter();
         } else {

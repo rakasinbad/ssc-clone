@@ -37,8 +37,6 @@ export class CatalogueSegmentationInformationTabComponent implements OnChanges, 
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('[ngOnChanges] CatalogueSegmentationInformationTabComponent', { changes });
-
         if (changes['formMode']) {
             if (!changes['formMode'].isFirstChange()) {
                 this.formModeChange.emit();
