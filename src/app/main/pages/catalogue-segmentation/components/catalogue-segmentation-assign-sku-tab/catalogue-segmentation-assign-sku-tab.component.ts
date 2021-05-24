@@ -68,6 +68,16 @@ export class CatalogueSegmentationAssignSkuTabComponent implements OnChanges, On
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['formMode']) {
             if (!changes['formMode'].isFirstChange()) {
+                if (changes['formMode'].currentValue === 'edit') {
+                    this.cardHeaderConfig = {
+                        ...this.cardHeaderConfig,
+                        add: {
+                            label: 'Add Product',
+                            permissions: [],
+                        },
+                    };
+                }
+
                 this.formModeChange.emit();
             }
         }
