@@ -69,8 +69,8 @@
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab [label]="'Original'"></mat-tab>
-            <mat-tab [label]="'Proposed'" [disabled]="!data?.invoicedOrderModified"></mat-tab>
-            <mat-tab [label]="'Delivered'" [disabled]="!data?.deliveredOrderModified"></mat-tab>
+            <mat-tab [label]="'Proposed'" [disabled]="!data?.invoicedParcelModified"></mat-tab>
+            <mat-tab [label]="'Delivered'" [disabled]="!data?.deliveredParcelModified"></mat-tab>
         </mat-tab-group>
 
         <!-- ORDER LINE -->
