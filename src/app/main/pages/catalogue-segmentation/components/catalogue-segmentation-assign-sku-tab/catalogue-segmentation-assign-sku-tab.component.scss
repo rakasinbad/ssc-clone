@@ -1,8 +1,27 @@
 @import 'src/@sinbad/scss/helper';
 
+.available-catalogue-modal {
+    .dialog-content-wrapper {
+        display: flex;
+        flex-direction: column;
+
+        .mat-dialog-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 62.5vh;
+        }
+    }
+}
+
 app-catalogue-segmentation-assign-sku-tab {
     min-height: 100%;
     height: 100%;
+
+    .card-header-assign-sku {
+        button {
+            box-sizing: content-box;
+        }
+    }
 
     .sinbad-store-image {
         overflow: hidden;

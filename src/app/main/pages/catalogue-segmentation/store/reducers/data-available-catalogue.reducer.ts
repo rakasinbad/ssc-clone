@@ -1,18 +1,18 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { Catalogue } from '../../models';
+import { AvailableCatalogue } from '../../models';
 import { AvailableCatalogueActions } from '../actions';
 
 export const dataAvailableCatalogueFeatureKey = 'dataAvailableCatalogue';
 
-export interface State extends EntityState<Catalogue> {
+export interface State extends EntityState<AvailableCatalogue> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
     total: number;
 }
 
-export const adapter = createEntityAdapter<Catalogue>({ selectId: (row) => row.id });
+export const adapter = createEntityAdapter<AvailableCatalogue>({ selectId: (row) => row.id });
 
 export const initialState: State = adapter.getInitialState({
     isLoading: false,

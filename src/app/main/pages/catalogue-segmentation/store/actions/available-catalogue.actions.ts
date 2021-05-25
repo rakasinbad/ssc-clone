@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { FormMode } from 'app/shared/models';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { Catalogue } from '../../models';
+import { AvailableCatalogue } from '../../models';
 
 enum Actions {
     FetchAvailableCataloguesFailure = '[Catalogue Segmentation] Fetch Available Catalogues Failure',
@@ -18,7 +18,7 @@ export const fetchAvailableCataloguesRequest = createAction(
 
 export const fetchAvailableCataloguesSuccess = createAction(
     Actions.FetchAvailableCataloguesSuccess,
-    props<{ data: Catalogue[]; total: number }>()
+    props<{ data: AvailableCatalogue[]; total: number }>()
 );
 
 export const fetchAvailableCataloguesFailure = createAction(
