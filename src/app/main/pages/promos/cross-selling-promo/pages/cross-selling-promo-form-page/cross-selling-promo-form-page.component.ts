@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormStatus } from 'app/shared/models';
 import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
@@ -83,6 +83,13 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         private crossSellingPromoFacade: CrossSellingPromoFacadeService,
         private crossSellingPromoFormService: CrossSellingPromoFormService
     ) {}
+
+    ngOnChanges(changes: SimpleChanges) {
+        console.log('Changes --> ', changes);
+
+        console.log('Group --> ', this.form.get(['groupSetting', 'groups']).value);
+        console.log('Benefit --> ', this.form.get(['benefitSetting']).value)
+    }
 
     ngOnInit() {
         this.crossSellingPromoFacade.createBreadcrumb(this.breadCrumbs);
