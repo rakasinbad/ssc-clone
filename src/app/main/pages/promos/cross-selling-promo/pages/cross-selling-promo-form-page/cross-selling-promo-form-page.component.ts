@@ -84,13 +84,6 @@ export class CrossSellingPromoFormPageComponent implements OnInit, AfterViewInit
         private crossSellingPromoFormService: CrossSellingPromoFormService
     ) {}
 
-    ngOnChanges(changes: SimpleChanges) {
-        console.log('Changes --> ', changes);
-
-        console.log('Group --> ', this.form.get(['groupSetting', 'groups']).value);
-        console.log('Benefit --> ', this.form.get(['benefitSetting']).value)
-    }
-
     ngOnInit() {
         this.crossSellingPromoFacade.createBreadcrumb(this.breadCrumbs);
         this.crossSellingPromoFacade.setFooterConfig(this.footerConfig);
