@@ -5,7 +5,7 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { CatalogueSegmentationComponent } from './catalogue-segmentation.component';
 import { CatalogueSegmentationRoutingModule } from './catalogue-segmentation.routes';
-import { AvailableCatalogueListComponent, CatalogueListComponent, CatalogueSegmentationAssignSkuTabComponent, CatalogueSegmentationDetailComponent, CatalogueSegmentationFormComponent, CatalogueSegmentationInformationTabComponent, CatalogueSegmentationListComponent } from './components';
+import { AvailableCatalogueListComponent, CatalogueListComponent, CatalogueSegmentationAssignSkuTabComponent, CatalogueSegmentationDetailComponent, CatalogueSegmentationFormComponent, CatalogueSegmentationInformationFormComponent, CatalogueSegmentationInformationTabComponent, CatalogueSegmentationInformationViewComponent, CatalogueSegmentationListComponent } from './components';
 import { CatalogueSegmentationDetailPageComponent, CatalogueSegmentationFormPageComponent } from './pages';
 import { CatalogueApiService, CatalogueFacadeService, CatalogueSegmentationApiService, CatalogueSegmentationFacadeService, CatalogueSegmentationFormService, CatalogueSegmentationService } from './services';
 import { CatalogueSegmentationNgrxModule } from './store';
@@ -20,7 +20,9 @@ import { CatalogueSegmentationNgrxModule } from './store';
         CatalogueSegmentationDetailPageComponent,
         CatalogueSegmentationFormComponent,
         CatalogueSegmentationFormPageComponent,
+        CatalogueSegmentationInformationFormComponent,
         CatalogueSegmentationInformationTabComponent,
+        CatalogueSegmentationInformationViewComponent,
         CatalogueSegmentationListComponent,
     ],
     imports: [

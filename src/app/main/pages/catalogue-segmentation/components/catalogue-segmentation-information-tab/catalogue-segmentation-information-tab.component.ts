@@ -1,16 +1,8 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnInit,
-    Output,
-    SimpleChanges,
-    ViewEncapsulation,
-} from '@angular/core';
-import { FormMode } from 'app/shared/models';
-import { CatalogueSegmentation } from '../../models';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { FormMode, FormStatus } from 'app/shared/models';
+import { CatalogueSegmentation, PatchCatalogueSegmentationInfoDto } from '../../models';
+import { CatalogueSegmentationFacadeService } from '../../services';
 
 @Component({
     selector: 'app-catalogue-segmentation-information-tab',
@@ -20,7 +12,8 @@ import { CatalogueSegmentation } from '../../models';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogueSegmentationInformationTabComponent implements OnChanges, OnInit {
-    keyword: string = null;
+    @Input()
+    form: FormGroup;
 
     @Input()
     formMode: FormMode;
@@ -34,7 +27,13 @@ export class CatalogueSegmentationInformationTabComponent implements OnChanges, 
     @Output()
     formModeChange: EventEmitter<void> = new EventEmitter();
 
-    constructor() {}
+    @Output()
+    formStatus: EventEmitter<FormStatus> = new EventEmitter();
+
+    @Output()
+    updateFormValue: EventEmitter<PatchCatalogueSegmentationInfoDto> = new EventEmitter();
+
+    constructor(private readonly catalogueSegmentationFacade: CatalogueSegmentationFacadeService) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['formMode']) {
@@ -45,4 +44,12 @@ export class CatalogueSegmentationInformationTabComponent implements OnChanges, 
     }
 
     ngOnInit(): void {}
+
+    onSetFormStatus(status: FormStatus): void {
+        this.formStatus.emit(status);
+    }
+
+    onUpdateFormValue(payload: PatchCatalogueSegmentationInfoDto): void {
+        this.updateFormValue.emit(payload);
+    }
 }

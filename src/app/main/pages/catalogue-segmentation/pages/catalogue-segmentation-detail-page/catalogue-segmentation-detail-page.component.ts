@@ -1,17 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FormMode } from 'app/shared/models';
+import { FormMode, FormStatus } from 'app/shared/models';
 import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
-import { CatalogueSegmentation } from '../../models';
-import {
-    CatalogueSegmentationFacadeService,
-    CatalogueSegmentationService,
-    CatalogueSegmentationFormService,
-} from '../../services';
-import { FormGroup } from '@angular/forms';
+import { CatalogueSegmentation, PatchCatalogueSegmentationInfoDto } from '../../models';
+import { CatalogueSegmentationFacadeService, CatalogueSegmentationFormService, CatalogueSegmentationService } from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -20,6 +16,7 @@ import { FormGroup } from '@angular/forms';
     encapsulation: ViewEncapsulation.None,
 })
 export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestroy {
+    private formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject('INVALID');
     private isLoadingCatalogueList$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     private unSubs$: Subject<any> = new Subject();
 
@@ -71,6 +68,7 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     isLoading: boolean = false;
     isLoadingCombine: boolean = false;
     selectedIndex: number = 0;
+    updateCatalogueSegmentationInfoFormDto: PatchCatalogueSegmentationInfoDto;
 
     catalogueSegmentation$: Observable<CatalogueSegmentation>;
     isLoading$: Observable<boolean>;
@@ -99,6 +97,9 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
         this.catalogueSegmentationFacade.setCancelButton();
 
         this.form = this.catalogueSegmentationFormService.createForm();
+
+        // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
+        this._setFormStatus();
 
         this.catalogueSegmentation$ = this.catalogueSegmentationFacade.catalogueSegmentation$.pipe(
             tap((item) => {
@@ -138,11 +139,24 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
                 this.onHandleFooter();
                 this.catalogueSegmentationFacade.resetCancelBtn();
             });
+
+        // Handle save button action (footer)
+        this.catalogueSegmentationFacade.clickSaveBtn$
+            .pipe(
+                filter((isClick) => !!isClick),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((_) => {
+                this._onSubmit();
+            });
     }
 
     ngOnDestroy(): void {
         this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetState();
+
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     onEdit(): void {
@@ -150,11 +164,19 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
     }
 
     onHandleFooter(): void {
+        if (this.selectedIndex === 1) {
+            return;
+        }
+
         if (this.formMode === 'edit') {
             this.catalogueSegmentationFacade.showFooter();
         } else {
             this.catalogueSegmentationFacade.hideFooter();
         }
+    }
+
+    onSetFormStatus(status: FormStatus): void {
+        this.formStatus$.next(status);
     }
 
     onSetLoadingCatalogueList(loading: boolean): void {
@@ -163,5 +185,30 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
 
     private _initDetail(id: string): void {
         this.catalogueSegmentationFacade.getById(id);
+    }
+
+    private _onSubmit(): void {
+        if (this.form.invalid) {
+            return;
+        }
+
+        if (this.formMode === 'edit' && this.selectedIndex === 0) {
+            const { id } = this.route.snapshot.params;
+
+            this.catalogueSegmentationFacade.updateCatalogueSegmentationInfo(
+                this.updateCatalogueSegmentationInfoFormDto,
+                id
+            );
+        }
+    }
+
+    private _setFormStatus(): void {
+        this.formStatus$.pipe(takeUntil(this.unSubs$)).subscribe((status) => {
+            if (status === 'VALID') {
+                this.catalogueSegmentationFacade.setFormValid();
+            } else {
+                this.catalogueSegmentationFacade.setFormInvalid();
+            }
+        });
     }
 }

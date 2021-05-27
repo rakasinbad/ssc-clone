@@ -1,13 +1,7 @@
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import {
-    CreateCatalogueSegmentationEffects,
-    FetchCataloguesEffects,
-    FetchCatalogueSegmentationEffects,
-    FetchCatalogueSegmentationsEffects,
-    UnassignedCatalogueEffects,
-} from './effects';
+import { CreateCatalogueSegmentationEffects, FetchCataloguesEffects, FetchCatalogueSegmentationEffects, FetchCatalogueSegmentationsEffects, UnassignedCatalogueEffects, UpdateCatalogueSegmentationEffects } from './effects';
 import { CatalogueSegmentationsEffects } from './effects/catalogue-segmentations.effects';
 import { fromCatalogueSegmentation } from './reducers';
 
@@ -24,6 +18,7 @@ import { fromCatalogueSegmentation } from './reducers';
             FetchCatalogueSegmentationEffects,
             FetchCatalogueSegmentationsEffects,
             UnassignedCatalogueEffects,
+            UpdateCatalogueSegmentationEffects,
         ]),
     ],
 })

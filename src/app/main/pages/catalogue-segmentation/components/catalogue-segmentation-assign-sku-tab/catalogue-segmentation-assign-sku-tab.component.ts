@@ -73,7 +73,7 @@ export class CatalogueSegmentationAssignSkuTabComponent implements OnChanges, On
 
     constructor(
         private readonly cdRef: ChangeDetectorRef,
-        private applyDialogFactoryService: ApplyDialogFactoryService
+        private readonly applyDialogFactoryService: ApplyDialogFactoryService
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {

@@ -80,6 +80,19 @@ export class CatalogueSegmentationApiService {
         return this.http.patch<T>(`${this.url}/${id}`, body);
     }
 
+    patchInfo<T, D>(body: D, id: string, type: 'segmentation' = 'segmentation'): Observable<T> {
+        const newArg = [
+            {
+                key: 'type',
+                value: type,
+            },
+        ];
+
+        const newParams = this.helperService.handleParams(this.url, null, ...newArg);
+
+        return this.http.patch<T>(`${this.url}/${id}`, body, { params: newParams });
+    }
+
     post<T, D>(body: D): Observable<T> {
         return this.http.post<T>(this.url, body);
     }
