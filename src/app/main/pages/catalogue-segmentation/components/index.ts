@@ -1,3 +1,4 @@
+export * from './available-catalogue-list/available-catalogue-list.component';
 export * from './catalogue-list/catalogue-list.component';
 export * from './catalogue-segmentation-assign-sku-tab/catalogue-segmentation-assign-sku-tab.component';
 export * from './catalogue-segmentation-detail/catalogue-segmentation-detail.component';

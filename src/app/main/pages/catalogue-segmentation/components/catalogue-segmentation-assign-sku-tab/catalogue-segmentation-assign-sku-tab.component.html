@@ -1,8 +1,10 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
     <sinbad-card-header
         [config]="cardHeaderConfig"
+        [addPermissions]="addPermissions"
         (onSearchChanged)="keyword = $event"
         (onActionSelected)="onActionSelected($event)"
+        (onClickAdd)="onClickAdd()"
     ></sinbad-card-header>
 
     <app-catalogue-list
@@ -16,3 +18,7 @@
         (showBatchActions)="onUpdateBatchActions($event)"
     ></app-catalogue-list>
 </div>
+
+<ng-template #availableCatalogueModal>
+    <app-available-catalogue-list></app-available-catalogue-list>
+</ng-template>
