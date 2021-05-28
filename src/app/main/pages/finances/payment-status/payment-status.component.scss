@@ -149,12 +149,30 @@ app-payment-status {
             flex: 1 1 10em;
             min-width: 150px;
         }
+        .mat-column-store-order-total {
+            flex: 1 1 10em;
+            min-width: 130px;
+        }
+
+        .mat-column-supplier-delivered-total {
+            flex: 1 1 10em;
+            min-width: 150px;
+        }
+
+        .mat-column-order-status {
+            flex: 0 1 70px;
+            min-width: 100px;
+        }
+
+        .mat-column-paylater-type {
+            flex: 0 1 70px;
+            min-width: 100px;
+        }
 
         .mat-column-account-receivable {
             flex: 1 1 10em;
             min-width: 130px;
         }
-
         .mat-column-status {
             flex: 0 1 70px;
             min-width: 70px;
