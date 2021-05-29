@@ -30,10 +30,12 @@ const reducerFn = createReducer(
     on(
         CatalogueSegmentationActions.fetchCatalogueSegmentationsRequest,
         CatalogueSegmentationFormActions.createCatalogueSegmentationRequest,
+        CatalogueSegmentationFormActions.updateCatalogueSegmentationInfoRequest,
         CatalogueSegmentationFormActions.updateCatalogueSegmentationRequest,
         (state) => ({
             ...state,
             isLoading: true,
+            isRefresh: false,
         })
     ),
     on(
@@ -41,12 +43,18 @@ const reducerFn = createReducer(
         CatalogueSegmentationDetailActions.fetchCatalogueSegmentationFailure,
         CatalogueSegmentationFormActions.createCatalogueSegmentationFailure,
         CatalogueSegmentationFormActions.updateCatalogueSegmentationFailure,
+        CatalogueSegmentationFormActions.updateCatalogueSegmentationInfoFailure,
         CatalogueSegmentationFormActions.updateCatalogueSegmentationSuccess,
         (state) => ({
             ...state,
             isLoading: false,
         })
     ),
+    on(CatalogueSegmentationFormActions.updateCatalogueSegmentationInfoSuccess, (state) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+    })),
     on(CatalogueSegmentationActions.fetchCatalogueSegmentationsSuccess, (state, { data, total }) =>
         adapter.addAll(data, { ...state, isLoading: false, total })
     ),

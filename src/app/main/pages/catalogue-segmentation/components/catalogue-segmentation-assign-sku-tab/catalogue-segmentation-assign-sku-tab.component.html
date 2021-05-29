@@ -1,7 +1,6 @@
 <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
     <sinbad-card-header
         [config]="cardHeaderConfig"
-        [addPermissions]="addPermissions"
         (onSearchChanged)="keyword = $event"
         (onActionSelected)="onActionSelected($event)"
         (onClickAdd)="onClickAdd()"
@@ -16,9 +15,33 @@
         [(clickSelectAllCatalogue)]="isSelectAllCatalogue"
         [(clickUnassignAllSelection)]="clickUnassignAllSelection"
         (showBatchActions)="onUpdateBatchActions($event)"
+        [(triggerRefresh)]="onClickSaveDialog"
     ></app-catalogue-list>
 </div>
 
 <ng-template #availableCatalogueModal>
-    <app-available-catalogue-list></app-available-catalogue-list>
+    <sinbad-card-header
+        [config]="dialogCardHeaderConfig"
+        [cardTitle]="null"
+        (onSearchChanged)="dialogKeyword = $event"
+    >
+        <span fxFlexAlign="center" [style.color]="'#000'" first-top-left>
+            Your Selections ({{ totalSelected }})
+        </span>
+    </sinbad-card-header>
+    <app-available-catalogue-list
+        class="px-16"
+        [keyword]="dialogKeyword"
+        [formMode]="formMode"
+        [segmentationId]="item?.id"
+        (totalSelectedChange)="totalSelected = $event"
+        (changeCatalogue)="selectedNewCatalogue = $event"
+    ></app-available-catalogue-list>
+</ng-template>
+
+<ng-template #alertAssign>
+    <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
+        This change will impact the visibility of the catalogue that are assigned to this
+        segmentation. Are you sure you want to commit to this change?
+    </p>
 </ng-template>

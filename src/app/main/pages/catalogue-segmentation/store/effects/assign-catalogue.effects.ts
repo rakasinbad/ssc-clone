@@ -1,6 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthFacadeService } from 'app/main/pages/core/auth/services';
@@ -10,76 +9,68 @@ import { ErrorHandler } from 'app/shared/models/global.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { CreateCatalogueSegmentationDto } from '../../models';
-import { CatalogueSegmentationApiService, CatalogueSegmentationFacadeService } from '../../services';
+import { AssignCatalogueDto } from '../../models';
+import { CatalogueSegmentationApiService } from '../../services';
 import { CatalogueSegmentationFormActions, CatalogueSegmentationFormFailureActions } from '../actions';
 
 @Injectable()
-export class CreateCatalogueSegmentationEffects {
-    private readonly successMessageDefault = 'Successfully created catalogue segmentation';
+export class AssignCatalogueEffects {
+    private readonly successMessageDefault = 'Successfully assign catalogue';
+    private downloadUrl: string = null;
 
-    createCatalogueSegmentationRequest$ = createEffect(() =>
+    readonly assignCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(CatalogueSegmentationFormActions.createCatalogueSegmentationRequest),
+            ofType(CatalogueSegmentationFormActions.assignCatalogueRequest),
             map((action) => action.payload),
-            withLatestFrom(this.authFacade.getUser$, (body, auth) => ({
+            withLatestFrom(this.authFacade.getUser$, ({ body, id }, auth) => ({
                 body,
+                id,
                 auth,
             })),
-            switchMap(({ body, auth }) => this._processCreateCatalogueSegmentation$(body, auth))
+            switchMap(({ body, id, auth }) => this._processAssignCatalogue$(body, auth, id))
         )
     );
 
-    createCatalogueSegmentationFailure$ = createEffect(
+    readonly assignCatalogueFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(CatalogueSegmentationFormActions.createCatalogueSegmentationFailure),
+                ofType(CatalogueSegmentationFormActions.assignCatalogueFailure),
                 map((action) => action.payload),
                 map((err) => this._handleErrMessage(err)),
                 tap((message) => {
                     this.noticeService.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
+                        data: {
+                            url: this.downloadUrl,
+                        },
                     });
-
-                    // Reset save btn
-                    this.catalogueSegmentationFacade.resetSaveBtn();
                 })
             ),
         { dispatch: false }
     );
 
-    createCatalogueSegmentationSuccess$ = createEffect(
+    readonly assignCatalogueSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(CatalogueSegmentationFormActions.createCatalogueSegmentationSuccess),
+                ofType(CatalogueSegmentationFormActions.assignCatalogueSuccess),
                 map((action) => action.message),
                 tap((message) => {
-                    this.router
-                        .navigateByUrl('/pages/catalogue-segmentations', { replaceUrl: true })
-                        .finally(() => {
-                            this.noticeService.open(
-                                message || this.successMessageDefault,
-                                'success',
-                                {
-                                    verticalPosition: 'bottom',
-                                    horizontalPosition: 'right',
-                                }
-                            );
-                        });
+                    this.noticeService.open(message || this.successMessageDefault, 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
                 })
             ),
         { dispatch: false }
     );
 
     constructor(
-        private actions$: Actions,
-        private router: Router,
-        private authFacade: AuthFacadeService,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private catalogueSegmentationApi: CatalogueSegmentationApiService,
-        private helperService: HelperService,
-        private noticeService: NoticeService
+        private readonly actions$: Actions,
+        private readonly authFacade: AuthFacadeService,
+        private readonly catalogueSegmentationApi: CatalogueSegmentationApiService,
+        private readonly helperService: HelperService,
+        private readonly noticeService: NoticeService
     ) {}
 
     private _checkUserSupplier(user: User): User {
@@ -105,10 +96,32 @@ export class CreateCatalogueSegmentationEffects {
         }
     }
 
+    private _handleDownloadUrl(err: ErrorHandler | HttpErrorResponse | object): void {
+        err = {
+            ...err,
+            error: {
+                ...err['error'],
+                data: {
+                    ...err['error'].data,
+                },
+            },
+        };
+
+        if (err && err['error'] && err['error'].data) {
+            const downloadUrl = err['error'].data.url || err['error'].data.downloadUrl || null;
+
+            if (downloadUrl) {
+                this.downloadUrl = downloadUrl;
+            }
+        }
+    }
+
     private _sendErrorToState$(
         err: ErrorHandler | HttpErrorResponse | object,
         dispatchTo: CatalogueSegmentationFormFailureActions
     ): Observable<AnyAction> {
+        this._handleDownloadUrl(err);
+
         if (err instanceof ErrorHandler) {
             return of(
                 CatalogueSegmentationFormActions[dispatchTo]({
@@ -138,48 +151,38 @@ export class CreateCatalogueSegmentationEffects {
         );
     }
 
-    private _createCatalogueSegmentationRequest$(
+    private _patchCatalogueSegmentationRequest$(
         user: User,
-        body: CreateCatalogueSegmentationDto
+        body: AssignCatalogueDto,
+        id: string
     ): Observable<AnyAction> {
-        const newBody: CreateCatalogueSegmentationDto = {
-            ...body,
-        };
-
-        const { supplierId } = user.userSupplier;
-
-        if (supplierId) {
-            newBody['supplierId'] = supplierId;
-        }
-
         return this.catalogueSegmentationApi
-            .post<{ message: string }, CreateCatalogueSegmentationDto>(newBody)
+            .patch<{ message: string }, AssignCatalogueDto>(body, id)
             .pipe(
                 map(({ message = null }) =>
-                    CatalogueSegmentationFormActions.createCatalogueSegmentationSuccess({ message })
+                    CatalogueSegmentationFormActions.assignCatalogueSuccess({ message })
                 ),
-                catchError((err) =>
-                    this._sendErrorToState$(err, 'createCatalogueSegmentationFailure')
-                )
+                catchError((err) => this._sendErrorToState$(err, 'assignCatalogueFailure'))
             );
     }
 
-    private _processCreateCatalogueSegmentation$(
-        body: CreateCatalogueSegmentationDto,
-        auth: Auth
+    private _processAssignCatalogue$(
+        body: AssignCatalogueDto,
+        auth: Auth,
+        id: string
     ): Observable<AnyAction> {
         if (!auth) {
             return this.helperService.decodeUserToken().pipe(
                 map((user) => this._checkUserSupplier(user)),
                 retry(3),
-                switchMap((user) => this._createCatalogueSegmentationRequest$(user, body))
+                switchMap((user) => this._patchCatalogueSegmentationRequest$(user, body, id))
             );
         }
 
         return of(auth.user).pipe(
             map((user) => this._checkUserSupplier(user)),
             retry(3),
-            switchMap((user) => this._createCatalogueSegmentationRequest$(user, body))
+            switchMap((user) => this._patchCatalogueSegmentationRequest$(user, body, id))
         );
     }
 }

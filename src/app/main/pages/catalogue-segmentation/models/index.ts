@@ -1,3 +1,4 @@
+export * from './assign-catalogue.model';
 export * from './available-catalogue.model';
 export * from './catalogue-segmentation-filter.model';
 export * from './catalogue-segmentation-form.model';

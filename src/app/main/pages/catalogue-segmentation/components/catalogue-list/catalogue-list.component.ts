@@ -1,20 +1,4 @@
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-    TemplateRef,
-    ViewChild,
-    ViewEncapsulation,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, TemplateRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatCheckbox, MatCheckboxChange, MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
@@ -62,6 +46,12 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
 
     @Input()
     segmentationId: string;
+
+    @Input()
+    triggerRefresh: boolean;
+
+    @Output()
+    triggerRefreshChange: EventEmitter<boolean> = new EventEmitter();
 
     @Input()
     clickSelectAllCatalogue: boolean;
@@ -119,6 +109,16 @@ export class CatalogueListComponent implements OnChanges, OnInit, AfterViewInit,
         if (changes['keyword']) {
             if (!changes['keyword'].isFirstChange()) {
                 this._initTable();
+            }
+        }
+
+        if (changes['triggerRefresh']) {
+            if (
+                !changes['triggerRefresh'].isFirstChange() &&
+                changes['triggerRefresh'].currentValue === true
+            ) {
+                this._initTable();
+                this.triggerRefreshChange.emit(false);
             }
         }
 

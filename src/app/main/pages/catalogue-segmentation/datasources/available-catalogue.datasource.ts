@@ -1,5 +1,4 @@
 import { DataSource } from '@angular/cdk/collections';
-import { FormMode } from 'app/shared/models';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -16,8 +15,8 @@ export class AvailableCatalogueDataSource implements DataSource<AvailableCatalog
 
     constructor(private availableCatalogueFacade: AvailableCatalogueFacadeService) {}
 
-    getWithQuery(params: IQueryParams, formMode: FormMode = 'add', id?: string): void {
-        this.availableCatalogueFacade.getWithQuery(params, formMode, id);
+    getWithQuery(params: IQueryParams, id?: string): void {
+        this.availableCatalogueFacade.getWithQuery(params, id);
     }
 
     collections$(): Observable<AvailableCatalogue[]> {
