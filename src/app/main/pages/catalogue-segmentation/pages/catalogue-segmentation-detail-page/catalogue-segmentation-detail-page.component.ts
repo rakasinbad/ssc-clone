@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FormMode, FormStatus } from 'app/shared/models';
@@ -7,7 +8,11 @@ import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.mode
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
 import { CatalogueSegmentation, PatchCatalogueSegmentationInfoDto } from '../../models';
-import { CatalogueSegmentationFacadeService, CatalogueSegmentationFormService, CatalogueSegmentationService } from '../../services';
+import {
+    CatalogueSegmentationFacadeService,
+    CatalogueSegmentationFormService,
+    CatalogueSegmentationService,
+} from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -124,6 +129,12 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             tap(({ isLoadingCatalogueList, isLoading }) => {
                 this.isLoading = isLoading;
                 this.isLoadingCombine = isLoading || isLoadingCatalogueList;
+
+                console.log('combineLatest', {
+                    isLoadingCombine: this.isLoadingCombine,
+                    isLoadingCatalogueList,
+                    isLoading,
+                });
             }),
             map(({ isLoading }) => isLoading)
         );
@@ -157,6 +168,14 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
 
         this.unSubs$.next();
         this.unSubs$.complete();
+    }
+
+    onChangeTab(ev: MatTabChangeEvent): void {
+        if (ev.index === 1) {
+            this.formMode = 'edit';
+        } else {
+            this.formMode = 'view';
+        }
     }
 
     onEdit(): void {
@@ -194,6 +213,8 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
 
         if (this.formMode === 'edit' && this.selectedIndex === 0) {
             const { id } = this.route.snapshot.params;
+
+            this.catalogueSegmentationFacade.hideFooter();
 
             this.catalogueSegmentationFacade.updateCatalogueSegmentationInfo(
                 this.updateCatalogueSegmentationInfoFormDto,

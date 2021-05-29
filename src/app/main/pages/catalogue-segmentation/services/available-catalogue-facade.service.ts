@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { FormMode } from 'app/shared/models';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 import { AvailableCatalogue } from '../models';
@@ -26,12 +25,12 @@ export class AvailableCatalogueFacadeService {
         DataAvailableCatalogueSelectors.selectTotalItem
     );
 
-    constructor(private store: Store<fromCatalogueSegmentation.FeatureState>) {}
+    constructor(private readonly store: Store<fromCatalogueSegmentation.FeatureState>) {}
 
-    getWithQuery(params: IQueryParams, formMode: FormMode = 'add', id?: string): void {
+    getWithQuery(params: IQueryParams, id?: string): void {
         this.store.dispatch(
             AvailableCatalogueActions.fetchAvailableCataloguesRequest({
-                payload: { params, formMode, id },
+                payload: { params, id },
             })
         );
     }

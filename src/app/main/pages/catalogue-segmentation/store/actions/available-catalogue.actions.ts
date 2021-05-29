@@ -13,7 +13,7 @@ enum Actions {
 
 export const fetchAvailableCataloguesRequest = createAction(
     Actions.FetchAvailableCataloguesRequest,
-    props<{ payload: { params: IQueryParams; formMode?: FormMode; id?: string } }>()
+    props<{ payload: { params: IQueryParams; id?: string } }>()
 );
 
 export const fetchAvailableCataloguesSuccess = createAction(

@@ -1,33 +1,14 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-    ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { fuseAnimations } from '@fuse/animations';
-import {
-    StoreSegmentationChannel,
-    StoreSegmentationCluster,
-    StoreSegmentationGroup,
-} from 'app/main/pages/catalogues/models';
+import { StoreSegmentationChannel, StoreSegmentationCluster, StoreSegmentationGroup } from 'app/main/pages/catalogues/models';
 import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { FormMode, FormStatus } from 'app/shared/models';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import {
-    CatalogueSegmentation,
-    CatalogueSegmentationFormDto,
-    PatchCatalogueSegmentationInfoDto,
-} from '../../../models';
+import { CatalogueSegmentation, CatalogueSegmentationFormDto, PatchCatalogueSegmentationInfoDto } from '../../../models';
 
 @Component({
     selector: 'app-catalogue-segmentation-information-form',
@@ -47,6 +28,9 @@ export class CatalogueSegmentationInformationFormComponent implements OnChanges,
     @Input()
     item: CatalogueSegmentation;
 
+    @Input()
+    isLoading: boolean;
+
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
 
@@ -58,8 +42,6 @@ export class CatalogueSegmentationInformationFormComponent implements OnChanges,
     constructor() {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('ngOnChanges', { changes });
-
         if (changes['item']) {
             if (changes['item'].currentValue && this.formMode === 'edit') {
                 this._setEditForm(changes['item'].currentValue);
@@ -70,7 +52,6 @@ export class CatalogueSegmentationInformationFormComponent implements OnChanges,
     ngOnInit(): void {
         this.form.statusChanges.pipe(takeUntil(this.unSubs$)).subscribe({
             next: (status: FormStatus) => {
-                console.log('statusChanges', { status });
                 if (status === 'VALID') {
                     this._handleFormValue();
                 }
@@ -223,39 +204,37 @@ export class CatalogueSegmentationInformationFormComponent implements OnChanges,
         const channelIds =
             chosenStoreChannel && chosenStoreChannel.length
                 ? chosenStoreChannel.map((item) => item.id)
-                : null;
+                : [];
 
         // Store Cluster
         const clusterIds =
             chosenStoreCluster && chosenStoreCluster.length
                 ? chosenStoreCluster.map((item) => item.id)
-                : null;
+                : [];
 
         // Store Group
         const groupIds =
             chosenStoreGroup && chosenStoreGroup.length
                 ? chosenStoreGroup.map((item) => item.id)
-                : null;
+                : [];
 
         // Store Type
         const typeIds =
-            chosenStoreType && chosenStoreType.length
-                ? chosenStoreType.map((item) => item.id)
-                : null;
+            chosenStoreType && chosenStoreType.length ? chosenStoreType.map((item) => item.id) : [];
 
         // Warehouse
         const warehouseIds =
-            chosenWarehouse && chosenWarehouse.length && chosenWarehouse.map((item) => item.id);
+            chosenWarehouse && chosenWarehouse.length ? chosenWarehouse.map((item) => item.id) : [];
 
         // Segmentation Name
         const name = segmentationName && segmentationName.trim();
 
         if (this.formMode === 'edit') {
-            const payload: PatchCatalogueSegmentationInfoDto = {
+            const payload: any = {
                 channelIds,
                 clusterIds,
                 groupIds,
-                name,
+                names: name,
                 typeIds,
                 warehouseIds,
             };

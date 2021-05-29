@@ -6,7 +6,7 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
-import { CatalogueSegmentation, CreateCatalogueSegmentationDto, PatchCatalogueSegmentationDto, PatchCatalogueSegmentationInfoDto } from '../models';
+import { AssignCatalogueDto, CatalogueSegmentation, CreateCatalogueSegmentationDto, PatchCatalogueSegmentationDto, PatchCatalogueSegmentationInfoDto } from '../models';
 import { CatalogueSegmentationActions, CatalogueSegmentationDetailActions, CatalogueSegmentationFormActions } from '../store/actions';
 import { fromCatalogueSegmentation } from '../store/reducers';
 import { DataCatalogueSegmentationSelectors } from '../store/selectors';
@@ -63,6 +63,12 @@ export class CatalogueSegmentationFacadeService {
             CatalogueSegmentationFormActions.updateCatalogueSegmentationInfoRequest({
                 payload: { body, id },
             })
+        );
+    }
+
+    assignCatalogue(body: AssignCatalogueDto, id: string): void {
+        this.store.dispatch(
+            CatalogueSegmentationFormActions.assignCatalogueRequest({ payload: { body, id } })
         );
     }
 

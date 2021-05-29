@@ -35,6 +35,14 @@
                     {{ form.get('segmentationName').value | errorMessage: form:'segmentationName' }}
                 </mat-error>
             </mat-form-field>
+
+            <ngx-skeleton-loader
+                fxFlex="50"
+                fxFill
+                style="position: absolute; left: calc(12% + 16px)"
+                [theme]="{ 'margin-bottom': '-5px', 'margin-top': '4px', height: '43px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / SEGMENTATION NAME FIELD -->
 
@@ -74,6 +82,14 @@
                     {{ form.get('chosenWarehouse').value | errorMessage: form:'chosenWarehouse' }}
                 </div>
             </select-warehouses>
+
+            <ngx-skeleton-loader
+                fxFlex="50"
+                fxFill
+                style="position: absolute; left: calc(12% + 16px)"
+                [theme]="{ 'margin-bottom': '-5px', 'margin-top': '4px', height: '43px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / WAREHOUSE FIELD -->
 
@@ -113,6 +129,14 @@
                     {{ form.get('chosenStoreType').value | errorMessage: form:'chosenStoreType' }}
                 </div>
             </select-store-segmentation>
+
+            <ngx-skeleton-loader
+                fxFlex="50"
+                fxFill
+                style="position: absolute; left: calc(12% + 16px)"
+                [theme]="{ 'margin-bottom': '-5px', 'margin-top': '4px', height: '43px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / STORE TYPE FIELD -->
 
@@ -152,6 +176,14 @@
                     {{ form.get('chosenStoreGroup').value | errorMessage: form:'chosenStoreGroup' }}
                 </div>
             </select-store-segmentation>
+
+            <ngx-skeleton-loader
+                fxFlex="50"
+                fxFill
+                style="position: absolute; left: calc(12% + 16px)"
+                [theme]="{ 'margin-bottom': '-5px', 'margin-top': '4px', height: '43px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / STORE GROUP FIELD -->
 
@@ -194,6 +226,14 @@
                     }}
                 </div>
             </select-store-segmentation>
+
+            <ngx-skeleton-loader
+                fxFlex="50"
+                fxFill
+                style="position: absolute; left: calc(12% + 16px)"
+                [theme]="{ 'margin-bottom': '-5px', 'margin-top': '4px', height: '43px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / STORE CHANNEL FIELD -->
 
@@ -236,6 +276,14 @@
                     }}
                 </div>
             </select-store-segmentation>
+
+            <ngx-skeleton-loader
+                fxFlex="50"
+                fxFill
+                style="position: absolute; left: calc(12% + 16px)"
+                [theme]="{ 'margin-bottom': '-5px', 'margin-top': '4px', height: '43px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / STORE CLUSTER FIELD -->
     </div>

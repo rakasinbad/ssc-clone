@@ -2,7 +2,7 @@
     class="available-catalogue-list sinbad-table sinbad-table__hover"
     [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
     #table
-    [dataSource]="testData"
+    [dataSource]="dataSource"
     matSort
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
@@ -18,24 +18,21 @@
     <!-- Checkbox Column -->
     <ng-container matColumnDef="checkbox">
         <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox></mat-checkbox>
-            <!-- <mat-checkbox
+            <mat-checkbox
                 #headCheckbox
                 (change)="onAllRowsSelected($event)"
                 [(ngModel)]="isHeadChecked"
                 [(indeterminate)]="isHeadIndeterminate"
                 disableRipple
-            ></mat-checkbox> -->
-            <!-- <mat-checkbox [disabled]="true"></mat-checkbox> -->
+            ></mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <mat-checkbox></mat-checkbox>
-            <!-- <mat-checkbox
+            <mat-checkbox
                 (click)="$event.stopPropagation()"
                 (change)="$event ? onRowSelected($event, row) : null"
                 [checked]="selectedCatalogue.isAvailable(row.id)"
                 disableRipple
-            ></mat-checkbox> -->
+            ></mat-checkbox>
         </mat-cell>
     </ng-container>
 
@@ -73,11 +70,9 @@
     <!-- / Type Column -->
 
     <!-- No Record Column -->
-    <!-- <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef [attr.colspan]="formMode === 'view' ? 5 : 7">
-            No records found
-        </mat-footer-cell>
-    </ng-container> -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef [attr.colspan]="4"> No records found </mat-footer-cell>
+    </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-row
@@ -85,10 +80,10 @@
         class="available-catalogue-list__item"
         [class.highlight-row]="selectedId === row.id"
     ></mat-row>
-    <!-- <mat-footer-row
+    <mat-footer-row
         *matFooterRowDef="['no-record']"
         [fxShow]="!isLoading && totalItem === 0"
-    ></mat-footer-row> -->
+    ></mat-footer-row>
 </mat-table>
 
 <div class="loader-content" *ngIf="isLoading && (!totalItem || totalItem)">
@@ -102,3 +97,10 @@
     [pageSizeOptions]="defaultPageOpts"
     showFirstLastButtons
 ></mat-paginator>
+
+<ng-template #alertAssign>
+    <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
+        This change will impact the visibility of the catalogue that are assigned to this
+        segmentation. Are you sure you want to commit to this change?
+    </p>
+</ng-template>
