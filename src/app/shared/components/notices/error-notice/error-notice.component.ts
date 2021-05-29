@@ -5,7 +5,7 @@ import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material';
     selector: 'app-error-notice',
     template: `
         <div fxLayout="row">
-            <ng-container *ngIf="data && data?.url; else default">
+            <ng-container *ngIf="data && (data?.url || data?.downloadUrl); else default">
                 <div fxFlexAlign="center" class="mr-4">
                     <mat-icon>info</mat-icon>
                 </div>

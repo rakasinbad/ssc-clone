@@ -38,12 +38,6 @@ export class NoticeService {
                     : [`panel-${status}`],
         };
 
-        console.log('CONFIG', {
-            config,
-            configCustom,
-            data: { ...(configCustom ? configCustom.data : []) },
-        });
-
         switch (status) {
             case 'error':
                 return this.matSnackBar.openFromComponent(ErrorNoticeComponent, config);

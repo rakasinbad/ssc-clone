@@ -8,11 +8,7 @@ import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.mode
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
 import { CatalogueSegmentation, PatchCatalogueSegmentationInfoDto } from '../../models';
-import {
-    CatalogueSegmentationFacadeService,
-    CatalogueSegmentationFormService,
-    CatalogueSegmentationService,
-} from '../../services';
+import { CatalogueSegmentationFacadeService, CatalogueSegmentationFormService, CatalogueSegmentationService } from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -129,12 +125,6 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             tap(({ isLoadingCatalogueList, isLoading }) => {
                 this.isLoading = isLoading;
                 this.isLoadingCombine = isLoading || isLoadingCatalogueList;
-
-                console.log('combineLatest', {
-                    isLoadingCombine: this.isLoadingCombine,
-                    isLoadingCatalogueList,
-                    isLoading,
-                });
             }),
             map(({ isLoading }) => isLoading)
         );

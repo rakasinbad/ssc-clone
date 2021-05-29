@@ -1,15 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthFacadeService } from 'app/main/pages/core/auth/services';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { AnyAction } from 'app/shared/models/actions.model';
-import { ErrorHandler } from 'app/shared/models/global.model';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
-import { delay, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AvailableCatalogue } from '../../models';
 import { AvailableCatalogueApiService } from '../../services';
 import { AvailableCatalogueActions, AvailableCatalogueFailureActions } from './../actions';
@@ -25,14 +26,13 @@ export class FetchAvailableCataloguesEffects {
                 id,
                 auth,
             })),
-            delay(1000),
             switchMap(({ params, id, auth }) =>
                 this._processFetchAvailableCatalogues$(params, auth, id)
             )
         )
     );
 
-    fetchCataloguesFailure$ = createEffect(
+    readonly fetchAvailableCataloguesFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(AvailableCatalogueActions.fetchAvailableCataloguesFailure),
@@ -127,49 +127,23 @@ export class FetchAvailableCataloguesEffects {
             newParams['supplierId'] = supplierId;
         }
 
-        const newResp = {
-            data: [
-                {
-                    id: '1',
-                    name: 'SKU 1',
-                    supplierId: '1',
-                    type: 'regular',
-                },
-                {
-                    id: '2',
-                    name: 'SKU 2',
-                    supplierId: '1',
-                    type: 'regular',
-                },
-                {
-                    id: '2',
-                    name: 'SKU 3',
-                    supplierId: '1',
-                    type: 'regular',
-                },
-            ].map((item) => new AvailableCatalogue(item)),
-            total: 3,
-        };
+        return this.availableCatalogueApi
+            .getById<PaginateResponse<AvailableCatalogue>>(id, newParams)
+            .pipe(
+                catchOffline(),
+                map((resp) => {
+                    const newResp = {
+                        data:
+                            resp && resp.data.length
+                                ? resp.data.map((item) => new AvailableCatalogue(item))
+                                : [],
+                        total: resp.total,
+                    };
 
-        return of(AvailableCatalogueActions.fetchAvailableCataloguesSuccess(newResp));
-
-        // return this.availableCatalogueApi
-        //     .getById<PaginateResponse<AvailableCatalogue>>(id, newParams)
-        //     .pipe(
-        //         catchOffline(),
-        //         map((resp) => {
-        //             const newResp = {
-        //                 data:
-        //                     resp && resp.data.length
-        //                         ? resp.data.map((item) => new AvailableCatalogue(item))
-        //                         : [],
-        //                 total: resp.total,
-        //             };
-
-        //             return AvailableCatalogueActions.fetchAvailableCataloguesSuccess(newResp);
-        //         }),
-        //         catchError((err) => this._sendErrorToState$(err, 'fetchAvailableCataloguesFailure'))
-        //     );
+                    return AvailableCatalogueActions.fetchAvailableCataloguesSuccess(newResp);
+                }),
+                catchError((err) => this._sendErrorToState$(err, 'fetchAvailableCataloguesFailure'))
+            );
     }
 
     private _processFetchAvailableCatalogues$(

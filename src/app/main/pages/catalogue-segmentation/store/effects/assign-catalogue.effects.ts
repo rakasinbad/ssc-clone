@@ -11,10 +11,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AssignCatalogueDto } from '../../models';
 import { CatalogueSegmentationApiService } from '../../services';
-import {
-    CatalogueSegmentationFormActions,
-    CatalogueSegmentationFormFailureActions,
-} from '../actions';
+import { CatalogueSegmentationFormActions, CatalogueSegmentationFormFailureActions } from '../actions';
 
 @Injectable()
 export class AssignCatalogueEffects {
@@ -44,6 +41,9 @@ export class AssignCatalogueEffects {
                     this.noticeService.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
+                        data: {
+                            url: this.downloadUrl,
+                        },
                     });
                 })
             ),
@@ -87,7 +87,6 @@ export class AssignCatalogueEffects {
     }
 
     private _handleErrMessage(resp: ErrorHandler): string {
-        console.log('ASSIGN_SKU ERR HANDLER', { resp });
         if (typeof resp.errors === 'string') {
             return resp.errors;
         } else if (resp.errors.error && resp.errors.error.message) {
@@ -97,10 +96,32 @@ export class AssignCatalogueEffects {
         }
     }
 
+    private _handleDownloadUrl(err: ErrorHandler | HttpErrorResponse | object): void {
+        err = {
+            ...err,
+            error: {
+                ...err['error'],
+                data: {
+                    ...err['error'].data,
+                },
+            },
+        };
+
+        if (err && err['error'] && err['error'].data) {
+            const downloadUrl = err['error'].data.url || err['error'].data.downloadUrl || null;
+
+            if (downloadUrl) {
+                this.downloadUrl = downloadUrl;
+            }
+        }
+    }
+
     private _sendErrorToState$(
         err: ErrorHandler | HttpErrorResponse | object,
         dispatchTo: CatalogueSegmentationFormFailureActions
     ): Observable<AnyAction> {
+        this._handleDownloadUrl(err);
+
         if (err instanceof ErrorHandler) {
             return of(
                 CatalogueSegmentationFormActions[dispatchTo]({

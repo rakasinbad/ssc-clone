@@ -102,8 +102,6 @@ export class AvailableCatalogueListComponent
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log('CHANGES POP UP', { changes });
-
         if (changes['keyword']) {
             if (!changes['keyword'].isFirstChange()) {
                 this._initTable();
@@ -167,8 +165,6 @@ export class AvailableCatalogueListComponent
     }
 
     onAllRowsSelected(ev: MatCheckboxChange): void {
-        console.log('onAllRowsSelected', { ev });
-
         if (this.isHeadChecked) {
             this.selectedCatalogue.upsert(this.collections);
         } else {

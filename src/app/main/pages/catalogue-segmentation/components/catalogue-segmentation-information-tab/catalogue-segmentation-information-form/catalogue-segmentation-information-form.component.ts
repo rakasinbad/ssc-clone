@@ -234,7 +234,7 @@ export class CatalogueSegmentationInformationFormComponent implements OnChanges,
                 channelIds,
                 clusterIds,
                 groupIds,
-                names: name,
+                name,
                 typeIds,
                 warehouseIds,
             };
