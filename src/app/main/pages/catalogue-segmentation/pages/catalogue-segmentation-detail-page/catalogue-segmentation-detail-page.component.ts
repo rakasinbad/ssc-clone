@@ -8,7 +8,11 @@ import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.mode
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
 import { CatalogueSegmentation, PatchCatalogueSegmentationInfoDto } from '../../models';
-import { CatalogueSegmentationFacadeService, CatalogueSegmentationFormService, CatalogueSegmentationService } from '../../services';
+import {
+    CatalogueSegmentationFacadeService,
+    CatalogueSegmentationFormService,
+    CatalogueSegmentationService,
+} from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -149,6 +153,22 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             )
             .subscribe((_) => {
                 this._onSubmit();
+            });
+
+        // Handle refresh
+        this.catalogueSegmentationFacade.isRefresh$
+            .pipe(
+                filter((isRefresh) => !!isRefresh),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe({
+                next: (data) => {
+                    this.formMode = 'view';
+                    this.onHandleFooter();
+                    this.catalogueSegmentationFacade.resetCancelBtn();
+                    const { id } = this.route.snapshot.params;
+                    this._initDetail(id);
+                },
             });
     }
 
