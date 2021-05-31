@@ -2816,6 +2816,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (invoiceGroups) {
                     this.restoreInvoiceGroups(invoiceGroups);
                 }
+                this.form.get('storeInfo.status').disable();
+                this.form.get('storeInfo.status').patchValue('active');
             } else if (this.pageType === 'edit') {
                 if (data && invoiceGroups) {
                     this.disableStoreInformationForm();
@@ -3153,7 +3155,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 phoneNo: body.storeInfo.phoneNumber,
                 image: body.storeInfo.photo,
                 numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                status: body.storeInfo.status || 'inactive',
+                status: body.storeInfo.status || 'active',
                 vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
                 approvalStatus: body.storeInfo.approvalStatus ? body.storeInfo.approvalStatus : 'guest',
                 urbanId: urban.id,
