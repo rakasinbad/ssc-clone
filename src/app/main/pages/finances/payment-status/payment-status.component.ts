@@ -114,24 +114,22 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     };
     total: number;
     displayedColumns = [
-        'order-reference',
         'order-code',
+        'order-reference',
         'store-name',
+        'owner-name',
         'store-order-total',
         'supplier-delivered-total',
         'order-status',
-        'account-receivable',
         'status',
-        // 'source',
         'payment-type',
         'paylater-type',
         'payment-method',
         'order-date',
         'due-date',
         'paid-on',
-        'aging-day',
         'd',
-        // 'proof-of-payment-status',
+        'aging-day',
         'actions'
     ];
     importBtnConfig: IButtonImportConfig = {
@@ -478,13 +476,13 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 canUpdate.then(hasAccess => {
                     if (hasAccess) {
                         this.displayedColumns = [
-                            'order-reference',
                             'order-code',
+                            'order-reference',
                             'store-name',
+                            'owner-name',
                             'store-order-total',
                             'supplier-delivered-total',
                             'order-status',
-                            'account-receivable',
                             'status',
                             'payment-type',
                             'paylater-type',
@@ -492,19 +490,18 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                             'order-date',
                             'due-date',
                             'paid-on',
-                            'aging-day',
                             'd',
-                            'actions'
+                            'aging-day',
                         ];
                     } else {
                         this.displayedColumns = [
-                            'order-reference',
                             'order-code',
+                            'order-reference',
                             'store-name',
+                            'owner-name',
                             'store-order-total',
                             'supplier-delivered-total',
                             'order-status',
-                            'account-receivable',
                             'status',
                             'payment-type',
                             'paylater-type',
@@ -512,8 +509,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                             'order-date',
                             'due-date',
                             'paid-on',
+                            'd',
                             'aging-day',
-                            'd'
                         ];
                     }
                 });
