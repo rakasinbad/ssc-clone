@@ -142,10 +142,14 @@ app-payment-status {
 
         .mat-column-order-code {
             flex: 0 1 10em;
-            min-width: 125px;
+            min-width: 140px;
         }
 
         .mat-column-store-name {
+            flex: 1 1 10em;
+            min-width: 150px;
+        }
+        .mat-column-owner-name {
             flex: 1 1 10em;
             min-width: 150px;
         }
@@ -175,7 +179,7 @@ app-payment-status {
         }
         .mat-column-status {
             flex: 0 1 70px;
-            min-width: 70px;
+            min-width: 100px;
         }
 
         .mat-column-payment-type {
