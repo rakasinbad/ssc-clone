@@ -40,16 +40,6 @@
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
-                <!-- Order Reference Column -->
-                <ng-container matColumnDef="order-reference">
-                    <mat-header-cell *matHeaderCellDef> Order Reference </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p class="text-word-break-break-word">
-                            {{ row?.orderRef || '-' }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
                 <!-- Order Code Column -->
                 <ng-container matColumnDef="order-code">
                     <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
@@ -60,12 +50,32 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Order Reference Column -->
+                <ng-container matColumnDef="order-reference">
+                    <mat-header-cell *matHeaderCellDef> Order Reference </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.orderRef || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Store Name Column -->
                 <ng-container matColumnDef="store-name">
                     <mat-header-cell *matHeaderCellDef> Store Name </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.store?.name || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Owner Name Column -->
+                <ng-container matColumnDef="owner-name">
+                    <mat-header-cell *matHeaderCellDef> Owner Name </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ row?.store?.userStores[0].user.fullName || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -98,8 +108,8 @@
                     </mat-cell>
                 </ng-container>
 
-                 <!-- Order Status Column -->
-                 <ng-container matColumnDef="order-status">
+                <!-- Order Status Column -->
+                <ng-container matColumnDef="order-status">
                     <mat-header-cell *matHeaderCellDef> Order Status </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p
@@ -115,37 +125,25 @@
                                     Pending Payment
                                 </ng-container>
 
-                                <ng-container *ngSwitchCase="'confirm'">
-                                   New Order
-                                </ng-container>
+                                <ng-container *ngSwitchCase="'confirm'"> New Order </ng-container>
 
                                 <ng-container *ngSwitchCase="'pending_supplier'">
                                     Pending Supplier
-                                 </ng-container>
+                                </ng-container>
 
-                                 <ng-container *ngSwitchCase="'packing'">
-                                    Packed
-                                  </ng-container>
+                                <ng-container *ngSwitchCase="'packing'"> Packed </ng-container>
 
-                                 <ng-container *ngSwitchCase="'shipping'">
-                                   Shipped
-                                 </ng-container>
+                                <ng-container *ngSwitchCase="'shipping'"> Shipped </ng-container>
 
-                                 <ng-container *ngSwitchCase="'delivered'">
-                                    Delivered
-                                  </ng-container>
+                                <ng-container *ngSwitchCase="'delivered'"> Delivered </ng-container>
 
-                                  <ng-container *ngSwitchCase="'done'">
-                                   Done
-                                  </ng-container>
+                                <ng-container *ngSwitchCase="'done'"> Done </ng-container>
 
-                                  <ng-container *ngSwitchCase="'cancel'">
-                                    Cancel
-                                  </ng-container>
+                                <ng-container *ngSwitchCase="'cancel'"> Cancel </ng-container>
 
-                                  <ng-container *ngSwitchCase="'pending_partial'">
+                                <ng-container *ngSwitchCase="'pending_partial'">
                                     Pending Partial
-                                  </ng-container>
+                                </ng-container>
 
                                 <ng-container *ngSwitchDefault>
                                     {{ (row?.status | titlecase) || '-' }}
@@ -155,24 +153,9 @@
                     </mat-cell>
                 </ng-container>
 
-
-                <!-- Account Receivable Column -->
-                <ng-container matColumnDef="account-receivable">
-                    <mat-header-cell *matHeaderCellDef> Account Receivable </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p class="price text-word-break-break-word">
-                            {{
-                                +row?.billing.amount > 0
-                                    ? (+row?.billing.amount | price: 'full') || '-'
-                                    : row?.billing.amount
-                            }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
-                    <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Payment Status </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p
                             [attr.data-content]="safeValue(row?.statusPayment)"
@@ -243,7 +226,7 @@
 
                 <!-- Order Date Column -->
                 <ng-container matColumnDef="order-date">
-                    <mat-header-cell *matHeaderCellDef> Date Order </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Order Date </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
@@ -267,7 +250,7 @@
 
                 <!-- Paid On Column -->
                 <ng-container matColumnDef="paid-on">
-                    <mat-header-cell *matHeaderCellDef> Paid On </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> Payment Date </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word" *ngIf="row?.statusPayment === 'paid'">
                             {{ (row?.paidTime | date: 'dd MMM yyyy') || '-' }}
@@ -275,16 +258,6 @@
 
                         <p class="text-word-break-break-word" *ngIf="row?.statusPayment !== 'paid'">
                             -
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Aging Day Column -->
-                <ng-container matColumnDef="aging-day">
-                    <mat-header-cell *matHeaderCellDef> Aging Day </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p class="text-word-break-break-word">
-                            {{ agingDate(row?.agingDay) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -297,6 +270,16 @@
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
                             {{ row?.dueDay || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Aging Day Column -->
+                <ng-container matColumnDef="aging-day">
+                    <mat-header-cell *matHeaderCellDef> Aging </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-word-break-break-word">
+                            {{ agingDate(row?.agingDay) }}
                         </p>
                     </mat-cell>
                 </ng-container>
