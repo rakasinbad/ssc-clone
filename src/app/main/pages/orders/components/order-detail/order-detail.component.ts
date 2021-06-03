@@ -265,11 +265,6 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     }
 
     onPropose() : void {
-        console.log({
-            orderLine : this.orderLineSubmitable,
-            bonus : this.bonusSubmitable
-        });
-        
         this.store.dispatch(OrderActions.onEdit());
         this.getEditCondition();
     }
