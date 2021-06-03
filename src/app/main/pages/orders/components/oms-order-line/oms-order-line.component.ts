@@ -105,7 +105,8 @@ export class OmsOrderLineComponent implements OnInit {
             this.formValue.emit(this.form.getRawValue());
         });
 
-        this.formValue.emit(this.form.getRawValue());
+        this.submitable.emit(this.form.invalid);
+        this.formValue.emit(this.form.getRawValue());        
     }
 
     setForm(v, type) : void {

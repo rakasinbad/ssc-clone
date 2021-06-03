@@ -79,21 +79,21 @@
                 <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex="100">
                     <span class="mat-headline m-0"> Order Line </span>
                 </div>
-                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && !proposeEdit">
-                    <button class="button-order_propose" mat-button (click)="proposeEdit = true;" [disabled]="
+                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && !(onEditValue | async)">
+                    <button class="button-order_propose" mat-button (click)="onPropose()" [disabled]="
                         !(data?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType?.name !== 'Bayar Sekarang' &&
                         (data?.status === 'confirm' || data?.status === 'packing'))
                     ">Propose</button>
                 </div>
 
-                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && proposeEdit">
-                    <button style="border: 2px solid #52575C;" mat-button (click)="proposeEdit = false;" [disabled]="!proposeEdit">Cancel</button>
-                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!proposeEdit">Submit</button>
+                <div fxLayout="row" fxLayoutAlign="end stretch" fxLayoutGap="16px" fxFlex="100" *ngIf="type === 'original' && (onEditValue | async)">
+                    <button style="border: 2px solid #52575C;" mat-button (click)="onCancel()" [disabled]="!(onEditValue | async)">Cancel</button>
+                    <button class="button-order_purpose sinbad-black-80" mat-button (click)="onSubmit()" [disabled]="!(onEditValue | async) || orderLineSubmitable || bonusSubmitable">Submit</button>
                 </div>
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="proposeEdit" (formValue)="onChangeCatalogues($event)"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'non_bonus'" *ngIf="!loading" [type]="type" [editable]="(onEditValue | async)" (formValue)="onChangeCatalogues($event)" (onChange)="onValidateOrderLine($event)"></app-oms-order-line>
         </div>
         <!-- / ORDER LINE -->
 
@@ -104,7 +104,7 @@
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'bonus'" [editable]="proposeEdit" [type]="type" *ngIf="!loading" (formValue)="onChangeBonus($event)"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'bonus'" [editable]="(onEditValue | async)" *ngIf="!loading" (formValue)="onChangeBonus($event)"  (onChange)="onValidateBonus($event)"></app-oms-order-line>
         </div>
         <!-- / BONUS SKU -->
 
@@ -114,7 +114,7 @@
             fxLayout="column"
             fxLayoutAlign="start stretch"
             fxLayoutGap="16px"
-            *ngIf="!proposeEdit"
+            *ngIf="!(onEditValue | async)"
             fxFlex
         >
             <div class="box-container__title">

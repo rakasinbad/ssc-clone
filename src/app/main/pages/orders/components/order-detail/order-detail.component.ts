@@ -19,6 +19,7 @@ import { takeUntil } from 'rxjs/operators';
 import { OrderQtyFormComponent } from '../../order-qty-form/order-qty-form.component';
 import { OrderActions } from '../../store/actions';
 import { fromOrder } from '../../store/reducers';
+import { OrderSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-order-detail',
@@ -36,12 +37,6 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     loading: boolean;
 
     private _unSubs$: Subject<any> = new Subject();
-
-    type: string = 'original';
-    proposeEdit: boolean = false;
-
-    cataloguesChanges: any;
-    bonusCatalogues: any;
     
     @Output('onSubmit')
     formValue: EventEmitter<any>;
@@ -49,7 +44,14 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     @Output('onChangeOrderStatus')
     orderStatus: EventEmitter<string> = new EventEmitter();
 
-    submitable: boolean = true;
+    type: string = 'original';
+    onEditValue: any;
+
+    cataloguesChanges: any;
+    bonusCatalogues: any;
+
+    orderLineSubmitable: boolean = true;
+    bonusSubmitable: boolean = true;
 
     constructor(
         private matDialog: MatDialog,
@@ -203,6 +205,10 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             });
     }
 
+    getEditCondition() : void {
+        this.onEditValue = this.store.select(OrderSelectors.getEditCondition);
+    }
+
     safeValue(item: any): any {
         return item ? item : '-';
     }
@@ -241,16 +247,31 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
                 this.type = "original";
                 break;
         }
-        this.proposeEdit = false;
+
+        this.store.dispatch(OrderActions.onEditFinished());
     }
 
     onSubmit(): void {
-        this.proposeEdit = false;
         this.formValue.emit({
             status: "pending_partial",
             catalogues : this.cataloguesChanges || [],
             bonusCatalogues : this.bonusCatalogues || []
         });
+    }
+
+    onCancel() : void {
+        this.store.dispatch(OrderActions.onEditFinished());
+        this.getEditCondition();
+    }
+
+    onPropose() : void {
+        console.log({
+            orderLine : this.orderLineSubmitable,
+            bonus : this.bonusSubmitable
+        });
+        
+        this.store.dispatch(OrderActions.onEdit());
+        this.getEditCondition();
     }
 
     onChangeCatalogues(value) : void {
@@ -261,7 +282,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         this.bonusCatalogues = value.catalogues;
     }
 
-    onChangeOrderLine(submitable) : void {
-        this.submitable = submitable;
+    onValidateOrderLine(submitable) : void {
+        this.orderLineSubmitable = submitable;
     }
+
+    onValidateBonus(submitable) : void {
+        this.bonusSubmitable = submitable;
+    }
+
 }

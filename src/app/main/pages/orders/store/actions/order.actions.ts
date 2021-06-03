@@ -228,3 +228,6 @@ export const filterShippedOrder = createAction('[Orders Page] Filter Shipped Ord
 export const filterReceivedOrder = createAction('[Orders Page] Filter Received Order');
 export const filterCompletedOrder = createAction('[Orders Page] Filter Completed Order');
 
+export const onEdit = createAction('[Orders Page] On Edit Value');
+export const onEditFinished = createAction('[Orders Page] On Finished Edit Value');
+

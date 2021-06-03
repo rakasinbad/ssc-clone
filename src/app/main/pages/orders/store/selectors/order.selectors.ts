@@ -98,3 +98,5 @@ export const getIsRefresh = createSelector(getOrderState, (state) => state.isRef
 
 export const getIsLoading = createSelector(getOrderState, (state) => state.isLoading);
 
+export const getEditCondition = createSelector(getOrderState, (state) => state.isEdit);
+
