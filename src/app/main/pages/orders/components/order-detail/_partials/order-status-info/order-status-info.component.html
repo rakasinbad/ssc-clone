@@ -21,7 +21,7 @@
                     type="button"
                     mat-button
                     class="btn-cancel-status sinbad-black-fg ml-8"
-                    *ngIf="data?.status !== 'cancel' && data?.status !== 'done' && data?.status !== 'delivered'"
+                    *ngIf="data?.status === 'confirm' || data?.status === 'pending_payment'"
                     (click)="orderStatus.emit('cancel')"
                 >
                     Cancel
@@ -32,7 +32,7 @@
                         mat-button
                         class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
                         *ngSwitchCase="'confirm'"
-                        (click)="orderStatus.emit('packing')"
+                        (click)="orderStatus.emit('confirm')"
                     >
                         Mark as Packed
                     </button>
@@ -41,7 +41,7 @@
                         mat-button
                         class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
                         *ngSwitchCase="'packing'"
-                        (click)="orderStatus.emit('shipping')"
+                        (click)="orderStatus.emit('packing')"
                     >
                         Mark as Shipped
                     </button>
@@ -50,7 +50,7 @@
                         mat-button
                         class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
                         *ngSwitchCase="'shipping'"
-                        (click)="orderStatus.emit('delivered')"
+                        (click)="orderStatus.emit('shipping')"
                     >
                         Mark as Delivered
                     </button>
@@ -59,7 +59,7 @@
                         mat-button
                         class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
                         *ngSwitchCase="'delivered'"
-                        (click)="orderStatus.emit('done')"
+                        (click)="orderStatus.emit('delivered')"
                     >
                         Mark as Done
                     </button>

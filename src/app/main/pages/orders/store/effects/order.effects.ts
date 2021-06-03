@@ -376,21 +376,27 @@ export class OrderEffects {
             map(action => action.payload),
             exhaustMap(({id, orderCode, status}) => {
                 let title: string;
+                let body: string;
 
                 switch (status) {
                     case 'cancel':
+                        body = "cancel";
                         title = 'Cancel';
                         break;
-                    case 'packing':
+                    case "confirm":
+                        body = "packing";
                         title = 'Packed';
                         break;
-                    case 'shipping':
+                    case "packing":
+                        body = "shipping";
                         title = 'Shipped';
                         break;
-                    case 'delivered':
+                    case "shipping":
+                        body = "delivered";
                         title = 'Delivered';
                         break;
-                    case 'done':
+                    case "delivered":
+                        body = "done";
                         title = 'Done';
                         break;
                 }
@@ -404,7 +410,7 @@ export class OrderEffects {
                         title: `Set as ${title}`,
                         message: `Are you sure want to change <strong>${orderCode}</strong> status ?`,
                         id: id,
-                        change: status
+                        change: body
                     },
                     disableClose: true
                 });

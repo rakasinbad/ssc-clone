@@ -386,7 +386,8 @@
                                     row?.status !== 'done' &&
                                     row?.status !== 'cancel' &&
                                     row?.status !== 'checkout' &&
-                                    row?.status !== 'pending'
+                                    row?.status !== 'pending' &&
+                                    row?.status !== 'pending_partial'
                                 "
                                 (click)="$event.stopPropagation()"
                             >
