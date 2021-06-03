@@ -134,6 +134,14 @@ export class OmsOrderLineComponent implements OnInit {
                                 { minValue: 1 }
                             ),
                         }),
+                        RxwebValidators.maxNumber({
+                            value: 999999,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'max_number',
+                                { maxValue: 999999 }
+                            ),
+                        }),
                     ],
                 ],
                 cataloguePromo: [
@@ -153,6 +161,14 @@ export class OmsOrderLineComponent implements OnInit {
                                 'default',
                                 'min_number',
                                 { minValue: 0 }
+                            ),
+                        }),
+                        RxwebValidators.maxNumber({
+                            value: 99999999,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'max_number',
+                                { maxValue: 99999999 }
                             ),
                         }),
                     ],
@@ -178,6 +194,14 @@ export class OmsOrderLineComponent implements OnInit {
                                 'default',
                                 'min_number',
                                 { minValue: 1 }
+                            ),
+                        }),
+                        RxwebValidators.maxNumber({
+                            value: 999999,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'max_number',
+                                { maxValue: 999999 }
                             ),
                         }),
                     ],
