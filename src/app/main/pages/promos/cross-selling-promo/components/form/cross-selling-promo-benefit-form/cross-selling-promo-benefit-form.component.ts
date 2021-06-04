@@ -10,7 +10,7 @@ import {
     ViewEncapsulation,
     SimpleChanges
 } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { AsyncValidatorFn, FormGroup, ValidationErrors } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
@@ -19,8 +19,8 @@ import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { FormMode, FormStatus } from 'app/shared/models';
 import { BenefitType, BenefitMultiType } from 'app/shared/models/benefit-type.model';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, of, Subject } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
 import { BenefitFormDto } from '../../../models';
 import { CrossSellingPromoFormService } from '../../../services';
 
@@ -62,7 +62,7 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
     formValue: EventEmitter<BenefitFormDto> = new EventEmitter();
 
     selectFaktur: string;
-    public idSelectSegment: string;
+    public groups: FormGroup;
     statusMulti: boolean = false;
 
     constructor(
@@ -103,7 +103,8 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
             this.selectFaktur = changes['fakturId'].currentValue;
         }
         if (changes['getGroup']) {
-            this.idSelectSegment = changes['getGroup'].currentValue;
+            this.groups = changes['getGroup'].currentValue;
+            this.form.get('benefitRebate').updateValueAndValidity();
         }
     }
 
@@ -343,6 +344,8 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
                 message: this.errorMessageService.getErrorMessageNonState('default', 'pattern'),
             }),
         ]);
+
+        this.form.get('benefitRebate').setAsyncValidators(this.checkRebate());
         this.form.get('benefitRebate').updateValueAndValidity();
     }
 
@@ -375,6 +378,77 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
             }),
         ]);
         this.form.get('benefitDiscount').updateValueAndValidity();
+    }
+
+    checkRebate(): AsyncValidatorFn {
+        const check = () => {
+            if (this.groups['groups'].length === 0) {
+                return null;
+            }
+
+            const firstValue = this.groups['groups'][0];
+            const secondValue = this.groups['groups'][1];
+
+            if (firstValue['conditionBase'] === 'value' && secondValue['conditionBase'] === 'value') {
+                const firstConditionValue = +firstValue['conditionValue'];
+                const secondConditionValue = +secondValue['conditionValue'];
+                const cashRebate = +this.form.get('benefitRebate').value;
+
+                if (firstConditionValue > secondConditionValue) {
+                    
+                    if(cashRebate >= secondConditionValue) {
+                        return {
+                            lessThan: {
+                                message: `This field must less than ${secondConditionValue}`
+                            }
+                        };
+                    }
+                } else if (firstConditionValue < secondConditionValue)  {
+                    
+                    if (cashRebate >= firstConditionValue) {
+                        return {
+                            lessThan: {
+                                message: `This field must less than ${firstConditionValue}`
+                            }
+                        };
+                    } 
+                } else {
+                    return {
+                        lessThan: {
+                            message: `This field must less than ${secondConditionValue}`
+                        }
+                    };
+                }
+            } else if (firstValue['conditionBase'] === 'value' && secondValue['conditionBase'] !== 'value') {
+                const firstConditionValue = +firstValue['conditionValue'];
+                const cashRebate = +this.form.get('benefitRebate').value;
+
+                if(cashRebate >= firstConditionValue) {
+                        return {
+                            lessThan: {
+                                message: `This field must less than ${firstConditionValue}`
+                            }
+                        };
+                }
+            } else if (firstValue['conditionBase'] !== 'value' && secondValue['conditionBase'] === 'value') {
+                const secondConditionValue = +secondValue['conditionValue'];
+                const cashRebate = +this.form.get('benefitRebate').value;
+
+                if(cashRebate >= secondConditionValue) {
+                        return {
+                            lessThan: {
+                                message: `This field must less than ${secondConditionValue}`
+                            }
+                        };
+                }
+            }
+
+            return null;
+        };
+
+        return (): Observable<ValidationErrors | null> => {
+            return of(check()).pipe(first());
+        };
     }
 
     private _clearBenefitDiscountValidation() {
