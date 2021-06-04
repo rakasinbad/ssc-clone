@@ -6,16 +6,8 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { Observable } from 'rxjs';
 import { CatalogueSegmentationModule } from '../catalogue-segmentation.module';
-import {
-    CatalogueSegmentation,
-    CreateCatalogueSegmentationDto,
-    PatchCatalogueSegmentationDto,
-} from '../models';
-import {
-    CatalogueSegmentationActions,
-    CatalogueSegmentationDetailActions,
-    CatalogueSegmentationFormActions,
-} from '../store/actions';
+import { AssignCatalogueDto, CatalogueSegmentation, CreateCatalogueSegmentationDto, PatchCatalogueSegmentationDto, PatchCatalogueSegmentationInfoDto } from '../models';
+import { CatalogueSegmentationActions, CatalogueSegmentationDetailActions, CatalogueSegmentationFormActions } from '../store/actions';
 import { fromCatalogueSegmentation } from '../store/reducers';
 import { DataCatalogueSegmentationSelectors } from '../store/selectors';
 import { NoticeService } from './../../../../shared/helpers/notice.service';
@@ -47,9 +39,9 @@ export class CatalogueSegmentationFacadeService {
     );
 
     constructor(
-        private store: Store<fromCatalogueSegmentation.FeatureState>,
-        private dataService: CatalogueSegmentationApiService,
-        private _notice: NoticeService
+        private readonly store: Store<fromCatalogueSegmentation.FeatureState>,
+        private readonly dataService: CatalogueSegmentationApiService,
+        private readonly _notice: NoticeService
     ) {}
 
     createCatalogueSegmentation(body: CreateCatalogueSegmentationDto): void {
@@ -63,6 +55,20 @@ export class CatalogueSegmentationFacadeService {
             CatalogueSegmentationFormActions.updateCatalogueSegmentationRequest({
                 payload: { body, id },
             })
+        );
+    }
+
+    updateCatalogueSegmentationInfo(body: PatchCatalogueSegmentationInfoDto, id: string): void {
+        this.store.dispatch(
+            CatalogueSegmentationFormActions.updateCatalogueSegmentationInfoRequest({
+                payload: { body, id },
+            })
+        );
+    }
+
+    assignCatalogue(body: AssignCatalogueDto, id: string): void {
+        this.store.dispatch(
+            CatalogueSegmentationFormActions.assignCatalogueRequest({ payload: { body, id } })
         );
     }
 
@@ -155,7 +161,7 @@ export class CatalogueSegmentationFacadeService {
 
     resetCancelBtn(): void {
         this.store.dispatch(FormActions.resetClickCancelButton());
-        this.store.dispatch(FormActions.resetCancelButtonAction());
+        // this.store.dispatch(FormActions.resetCancelButtonAction());
     }
 
     resetFormStatus(): void {
@@ -170,5 +176,13 @@ export class CatalogueSegmentationFacadeService {
         this.resetCancelBtn();
         this.resetFormStatus();
         this.resetSaveBtn();
+    }
+
+    enableSaveBtn(): void {
+        this.store.dispatch(FormActions.enableSaveButton());
+    }
+
+    disableSaveBtn(): void {
+        this.store.dispatch(FormActions.disableSaveButton());
     }
 }

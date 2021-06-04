@@ -57,7 +57,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     dialog: ApplyDialogService<MultipleSelectionComponent>;
     // UNtuk keperluan limit entity.
     // tslint:disable-next-line: no-inferrable-types
-    limit: number = 15;
+    limit: number = 200;
     // Untuk menyimpan search.
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
@@ -152,7 +152,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         id: subjectValue
                     }, disableClose: true
                 });
-        
+
                 return dialogRef.afterClosed().pipe(
                     tap(value => {
                         if (value === 'clear-all') {
@@ -207,14 +207,14 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
-                
+
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
                 newQuery['segment'] = 'warehouse';
                 if (this.segmentBases == 'all') {
-                    if (this.typePromo === 'flexiCombo') { 
+                    if (this.typePromo === 'flexiCombo') {
                         delete newQuery['$skip'];
-                        delete newQuery['$limit'];  
+                        delete newQuery['$limit'];
                         if (this.typeTrigger == 'sku' && this.catalogueIdSelect !== undefined
                                 && this.brandIdSelect == undefined && this.fakturIdSelect == undefined) {
                                 newQuery['catalogueId'] = this.catalogueIdSelect;
@@ -224,7 +224,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                                 .pipe(
                                     tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                                 );
-                            
+
                         } else if (this.typeTrigger == 'brand' && this.brandIdSelect !== undefined) {
                                 newQuery['brandId'] = this.brandIdSelect;
                                 // Melakukan request data warehouse.
@@ -233,7 +233,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                                 .pipe(
                                     tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                                 );
-                            
+
                         } else if (this.typeTrigger == 'faktur' && this.fakturIdSelect !== undefined) {
                             newQuery['fakturId'] = this.fakturIdSelect;
                              // Melakukan request data warehouse.
@@ -318,7 +318,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                     // Menyimpan nilai yang baru tadi ke dalam subject.
                     this.rawAvailableEntities$.next(newRawAvailableEntities);
                     this.availableEntities$.next(newAvailableEntities);
-    
+
                     // Menyimpan total entities yang baru.
                     if (Array.isArray(response)) {
                         this.totalEntities$.next((response as Array<Entity>).length);
@@ -340,7 +340,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
             }
         });
     }
-// 
+//
     private initEntity(): void {
         // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
@@ -408,7 +408,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                     limit: this.limit,
                     skip: 0
                 };
-        
+
                 this.search = value;
                 queryParams['search'] = [
                     {
@@ -416,7 +416,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                         keyword: value
                     }
                 ];
-        
+
                 this.requestEntity(queryParams);
             });
         }
@@ -462,7 +462,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
 
             this.tempEntity = selected;
             this.initialSelection = selected;
-            
+
             this.dialog = this.applyDialogFactory$.open({
                 title: 'Select Warehouse',
                 template: this.selectStoreType,
@@ -538,14 +538,14 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     private updateFormView(): void {
         setTimeout(() => {
             const formValue: Array<Selection> = this.entityFormValue.value;
-            
+
             if (formValue.length === 0) {
                 this.entityFormView.setValue('');
             } else {
                 const firstselection = formValue[0].label;
                 const remainLength = formValue.length - 1;
                 const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
-        
+
                 this.entityFormView.setValue(viewValue);
             }
         });
@@ -610,7 +610,7 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 this.requestEntity(params);
             }
         // }
-       
+
 
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {

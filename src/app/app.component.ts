@@ -1,14 +1,6 @@
 import { Platform } from '@angular/cdk/platform';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import {
-    ApplicationRef,
-    ChangeDetectionStrategy,
-    Component,
-    Inject,
-    OnDestroy,
-    OnInit,
-    PLATFORM_ID,
-} from '@angular/core';
+import { ApplicationRef, ChangeDetectionStrategy, Component, Inject, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { MatSnackBarConfig } from '@angular/material';
 import { SwUpdate } from '@angular/service-worker';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
@@ -29,11 +21,9 @@ import * as LogRocket from 'logrocket';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
-
 import { IAuth } from './main/pages/core/auth/models';
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
-import { statusOrder } from './main/pages/orders/status';
 import { NavigationService, NoticeService } from './shared/helpers';
 import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
@@ -50,9 +40,9 @@ if (environment.logRocketId) {
             },
             responseSanitizer: (response) => {
                 if (response.body) {
-                    if (((response.body as unknown) as IAuth).token) {
+                    if ((response.body as unknown as IAuth).token) {
                         // Menghapus token dari body response.
-                        ((response.body as unknown) as IAuth).token = null;
+                        (response.body as unknown as IAuth).token = null;
                     }
                 }
 
@@ -243,9 +233,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
         if (this.swUpdate.isEnabled) {
             this.swUpdate.available.pipe(takeUntil(this._unsubscribeAll)).subscribe((update) => {
-                console.groupCollapsed('SW Update');
-                console.log(update);
-                console.groupEnd();
+                if (isDevMode()) {
+                    console.groupCollapsed('SW Update');
+                    console.log(update);
+                    console.groupEnd();
+                }
 
                 // if (confirm('New version available. Load New Version?')) {
                 //     window.location.reload();
@@ -331,9 +323,11 @@ export class AppComponent implements OnInit, OnDestroy {
     private onReload(): void {
         if (this.swUpdate.isEnabled) {
             this.swUpdate.activated.pipe(takeUntil(this._unsubscribeAll)).subscribe((update) => {
-                console.groupCollapsed('SW Activated');
-                console.log(update);
-                console.groupEnd();
+                if (isDevMode()) {
+                    console.groupCollapsed('SW Activated');
+                    console.log(update);
+                    console.groupEnd();
+                }
 
                 document.location.reload();
             });
