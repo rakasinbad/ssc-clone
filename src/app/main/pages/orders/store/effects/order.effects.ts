@@ -1021,7 +1021,7 @@ export class OrderEffects {
                 >(ChangeConfirmationComponent, {
                     data: {
                         title: `Submit Partial Offer?`,
-                        message: `After clicking submit button you can't change your proposal, Please make sure all the quantity and discount price is correct?`,
+                        message: `After clicking submit button you can't change your proposal, <br/> Please make sure all the quantity and discount price is correct?`,
                         id,
                         change: body
                     },

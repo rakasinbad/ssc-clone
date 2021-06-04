@@ -98,7 +98,7 @@ export class OmsOrderLineComponent implements OnInit {
             }
         });
 
-        this.form.valueChanges.pipe(
+        this.form.statusChanges.pipe(
             takeUntil(this._unSubs$)
         ).subscribe(() => {
             this.submitable.emit(this.form.invalid);
