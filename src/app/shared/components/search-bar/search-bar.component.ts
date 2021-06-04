@@ -28,6 +28,11 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:no-input-rename
     @Input('placeholder') placeholder: string;
 
+    // Untuk meletakkan placeholder.
+    // tslint:disable-next-line:no-input-rename
+    @Input('value') value: string;
+
+
     // Untuk mengubah debounceTime.
     // tslint:disable-next-line:no-input-rename
     @Input('threshold') threshold: number;
@@ -48,6 +53,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         if (!this.threshold) {
             this.threshold = 500;
         }
+
+        this.search.setValue(this.value);
 
         this.search.valueChanges
             .pipe(debounceTime(this.threshold), takeUntil(this.subs$))

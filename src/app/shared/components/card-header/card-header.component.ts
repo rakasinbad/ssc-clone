@@ -84,6 +84,9 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // Untuk menentukan placeholder pada "search".
     // tslint:disable-next-line:no-input-rename
     @Input('searchPlaceholder') searchPlaceholder = 'Search';
+    // Untuk menentukan value pada "search".
+    // tslint:disable-next-line:no-input-rename
+    @Input('searchValue') searchValue: string;
     // Untuk menentukan placeholder pada "search".
     // tslint:disable-next-line:no-output-rename
     @Output('onSearchChanged') searchChanged: EventEmitter<string> = new EventEmitter<string>();
@@ -224,6 +227,8 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.search) {
                     // Memeriksa konfigurasi placeholder-nya search.
                     this.searchPlaceholder = this.config.search.placeholder || 'Search';
+
+                    this.searchValue = this.config.search.value || null;
 
                     // Memeriksa konfigurasi aktifnya fitur search.
                     this.isSearchActive = !!this.config.search.active;
