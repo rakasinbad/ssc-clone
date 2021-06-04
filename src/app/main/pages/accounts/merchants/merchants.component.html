@@ -275,34 +275,6 @@
                                     <span>Deactivate</span>
                                 </button> -->
 
-                                <!-- <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        [attr.aria-label]="
-                                            row?.status === 'active' ? 'inactive' : 'active'
-                                        "
-                                        (click)="onChangeStatus(row)"
-                                    >
-                                        <mat-icon>
-                                            {{
-                                                row?.status === 'active'
-                                                    ? 'archive'
-                                                    : 'check_circle_outline'
-                                            }}
-                                        </mat-icon>
-                                        <span>
-                                            {{
-                                                (row?.status === 'active'
-                                                    ? 'ACTION.INACTIVE'
-                                                    : 'ACTION.ACTIVE'
-                                                ) | translate
-                                            }}
-                                        </span>
-                                    </button>
-                                </ng-template> -->
-
                                 <ng-container
                                     *ngIf="row?.outerStore?.approvalStatus as approvalStatus"
                                 >
