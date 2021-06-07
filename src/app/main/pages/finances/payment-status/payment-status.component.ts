@@ -492,6 +492,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                             'paid-on',
                             'd',
                             'aging-day',
+                            'actions'
                         ];
                     } else {
                         this.displayedColumns = [
