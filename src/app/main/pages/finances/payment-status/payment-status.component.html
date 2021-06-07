@@ -4,26 +4,27 @@
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
-    <mat-tab-group
-    color="accent"
-    style="border-radius: 4px;"
-    class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
-    animationDuration="0ms"
-    (selectedIndexChange)="onSelectedTab($event)"
->
-    <mat-tab [label]="'All (' + allPayment + ')'"></mat-tab>
-    <mat-tab [label]="'Waiting for Payment (' + waitingPayment + ')'"></mat-tab>
-    <mat-tab [label]="'D-7 (' + d7Payment + ')'"></mat-tab>
-    <mat-tab [label]="'D-3 (' + d3Payment + ')'"></mat-tab>
-    <mat-tab [label]="'D-0 (' + d0Payment + ')'"></mat-tab>
-    <mat-tab [label]="'Overdue (' + overduePayment + ')'"></mat-tab>
-    <mat-tab [label]="'Paid (' + paidPayment + ')'"></mat-tab>
-    <mat-tab [label]="'Waiting for Refund (' + waitingRefundPayment + ')'"></mat-tab>
-    <mat-tab [label]="'Refunded (' + refundedPayment + ')'"></mat-tab>
-    <mat-tab [label]="'Cancel (' + failPayment + ')'"></mat-tab>
-</mat-tab-group>
     <!-- CENTER -->
     <div class="center p-8">
+
+        <mat-tab-group
+            color="accent"
+            style="border-radius: 4px;"
+            class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab [label]="'All (' + allPayment + ')'"></mat-tab>
+            <mat-tab [label]="'Waiting for Payment (' + waitingPayment + ')'"></mat-tab>
+            <mat-tab [label]="'D-7 (' + d7Payment + ')'"></mat-tab>
+            <mat-tab [label]="'D-3 (' + d3Payment + ')'"></mat-tab>
+            <mat-tab [label]="'D-0 (' + d0Payment + ')'"></mat-tab>
+            <mat-tab [label]="'Overdue (' + overduePayment + ')'"></mat-tab>
+            <mat-tab [label]="'Paid (' + paidPayment + ')'"></mat-tab>
+            <mat-tab [label]="'Waiting for Refund (' + waitingRefundPayment + ')'"></mat-tab>
+            <mat-tab [label]="'Refunded (' + refundedPayment + ')'"></mat-tab>
+            <mat-tab [label]="'Cancel (' + failPayment + ')'"></mat-tab>
+        </mat-tab-group>
         <!-- CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
