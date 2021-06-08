@@ -292,7 +292,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling' ) {
-                        addedAvailableEntities = (response as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                        addedAvailableEntities = (response as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeId, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
@@ -303,7 +303,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 } else {
                     addedRawAvailableEntities = response.data;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling') {
-                        addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                        addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeId, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
