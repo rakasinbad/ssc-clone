@@ -2752,6 +2752,10 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                         allowWhiteSpace: true,
                         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
+                    RxwebValidators.maxLength({
+                        value:20,
+                        message: 'Max input is 20 character'
+                    })
                     // RxwebValidators.alpha({
                     //     allowWhiteSpace: true,
                     //     message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),

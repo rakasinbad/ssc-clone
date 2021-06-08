@@ -493,7 +493,11 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="isViewMode()"
                 >
-                    {{ (form.get('platform').value | titlecase) || '-' }}
+                    {{ (
+                            form.get('platform').value === 'sinbad_app' 
+                            ? 'Sinbad Red' : 'Sinbad White'  | titlecase
+                        ) || '-' 
+                    }}
                 </span>
             </div>
             <!-- / PLATFORM -->

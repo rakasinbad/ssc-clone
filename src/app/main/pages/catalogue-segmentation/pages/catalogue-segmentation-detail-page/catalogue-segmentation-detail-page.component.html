@@ -37,23 +37,26 @@
                 </div>
             </div>
             <!-- / APP TITLE -->
-            
-            <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
-                <button
-                    type="button"
-                    mat-raised-button
-                    class="accent-fg"
-                    [routerLink]="['../', 'edit']"
-                    *ngIf="!isLoadingCombine"
-                >
-                    <span>Edit</span>
-                </button>
-            </ng-template>
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoadingCombine"
-            ></ngx-skeleton-loader>
+            <ng-container *ngIf="formMode === 'view'">
+                <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                    <!-- [routerLink]="['../', 'edit']" -->
+                    <button
+                        type="button"
+                        mat-raised-button
+                        class="accent-fg"
+                        (click)="onEdit()"
+                        *ngIf="!isLoadingCombine"
+                    >
+                        <span>Edit</span>
+                    </button>
+                </ng-template>
+
+                <ngx-skeleton-loader
+                    [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoadingCombine"
+                ></ngx-skeleton-loader>
+            </ng-container>
         </div>
         <!-- / HEADER -->
 
@@ -61,16 +64,58 @@
         <div class="content-card">
             <!-- CONTENT -->
             <div class="content">
-                <mat-tab-group color="accent" fxLayout="column" fxFlex>
-                    <mat-tab label="Catalogue Segmentation">
+                <mat-tab-group
+                    animationDuration="0ms"
+                    [(selectedIndex)]="selectedIndex"
+                    (selectedTabChange)="onChangeTab($event)"
+                    color="accent"
+                    fxLayout="column"
+                    fxFlex
+                >
+                    <mat-tab
+                        label="Segmentation Information"
+                        [disabled]="
+                            selectedIndex === 1 ? null : selectedIndex !== 0 && formMode === 'edit'
+                        "
+                    >
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
-                                <app-catalogue-segmentation-detail
+                            <div class="tab-content p-16 pb-0" fusePerfectScrollbar>
+                                <!-- <app-catalogue-segmentation-detail
                                     [formMode]="formMode"
                                     [item]="catalogueSegmentation$ | async"
                                     [isLoading]="isLoading$ | async"
                                     (loadingCatalogueList)="onSetLoadingCatalogueList($event)"
-                                ></app-catalogue-segmentation-detail>
+                                ></app-catalogue-segmentation-detail> -->
+
+                                <app-catalogue-segmentation-information-tab
+                                    [form]="form"
+                                    [formMode]="formMode"
+                                    (formModeChange)="onHandleFooter()"
+                                    [item]="catalogueSegmentation$ | async"
+                                    [isLoading]="isLoading$ | async"
+                                    (formStatus)="onSetFormStatus($event)"
+                                    (updateFormValue)="
+                                        updateCatalogueSegmentationInfoFormDto = $event
+                                    "
+                                ></app-catalogue-segmentation-information-tab>
+                            </div>
+                        </ng-template>
+                    </mat-tab>
+
+                    <mat-tab
+                        label="Assign SKU"
+                        [disabled]="selectedIndex !== 1 && formMode === 'edit'"
+                    >
+                        <ng-template matTabContent>
+                            <div class="tab-content p-16 pb-0" fusePerfectScrollbar>
+                                <app-catalogue-segmentation-assign-sku-tab
+                                    [form]="form"
+                                    [formMode]="formMode"
+                                    (formModeChange)="onHandleFooter()"
+                                    [item]="catalogueSegmentation$ | async"
+                                    [isLoading]="isLoading$ | async"
+                                    (loadingCatalogueList)="onSetLoadingCatalogueList($event)"
+                                ></app-catalogue-segmentation-assign-sku-tab>
                             </div>
                         </ng-template>
                     </mat-tab>

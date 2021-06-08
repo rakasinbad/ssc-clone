@@ -35,6 +35,7 @@ export class CrossSellingDetailGnComponent implements OnInit, OnDestroy {
     skpId: string;
     promoDetail = [];
     skpName: string;
+    platform: string = 'All';
 
     constructor(private matDialog: MatDialog, private store: Store<fromCrossSellingPromos.FeatureState>,
         private _$helperService: HelperService, 
@@ -62,6 +63,12 @@ export class CrossSellingDetailGnComponent implements OnInit, OnDestroy {
                         this.skpName = res['name'];
                         this.cdRef.markForCheck();
                     });
+                }
+
+                if (val.platform === 'sinbad_app') {
+                    this.platform = 'Sinbad Red';
+                } else if (val.platform === 'agent_app') {
+                    this.platform = 'Sinbad White';
                 }
             }
             

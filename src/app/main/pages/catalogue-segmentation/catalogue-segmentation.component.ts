@@ -39,13 +39,13 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
 
     filterConfig: SinbadFilterConfig = {
         by: {
-            status: {
+            /* status: {
                 title: 'Status',
                 sources: [
                     { id: 'active', label: 'Active', checked: false },
                     { id: 'inactive', label: 'Inactive', checked: false },
                 ],
-            },
+            }, */
             warehouse: null,
             segmentType: {
                 title: 'Type',
@@ -89,7 +89,7 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
         // Form for the filter
         this.form = this.fb.group({
             search: null,
-            status: null,
+            // status: null,
             segmentChannel: null,
             segmentCluster: null,
             segmentGroup: null,
@@ -146,7 +146,7 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
         this.globalFilterDto = {};
 
         const {
-            status,
+            // status,
             segmentChannel,
             segmentCluster,
             segmentGroup,
@@ -157,22 +157,20 @@ export class CatalogueSegmentationComponent implements OnInit, OnDestroy {
         const configStatus = this.filterConfig.by['status'];
         const totalStatusSource =
             configStatus && configStatus.sources && configStatus.sources.length;
-        const newStatus = this.catalogueSegmentationService.prepareStatusValue(
+        /* const newStatus = this.catalogueSegmentationService.prepareStatusValue(
             status,
             totalStatusSource
-        );
-        const channelId = this.catalogueSegmentationService.prepareSegmentChannelValue(
-            segmentChannel
-        );
-        const clusterId = this.catalogueSegmentationService.prepareSegmentClusterValue(
-            segmentCluster
-        );
+        ); */
+        const channelId =
+            this.catalogueSegmentationService.prepareSegmentChannelValue(segmentChannel);
+        const clusterId =
+            this.catalogueSegmentationService.prepareSegmentClusterValue(segmentCluster);
         const groupId = this.catalogueSegmentationService.prepareSegmentGroupValue(segmentGroup);
         const typeId = this.catalogueSegmentationService.prepareSegmentGroupValue(segmentType);
         const warehouseId = this.catalogueSegmentationService.prepareWarehouseValue(warehouse);
 
         this.globalFilterDto = {
-            status: newStatus,
+            // status: newStatus,
         };
 
         // Handle filter segment channel

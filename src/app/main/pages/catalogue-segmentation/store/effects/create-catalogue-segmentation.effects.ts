@@ -11,14 +11,8 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { CreateCatalogueSegmentationDto } from '../../models';
-import {
-    CatalogueSegmentationApiService,
-    CatalogueSegmentationFacadeService,
-} from '../../services';
-import {
-    CatalogueSegmentationFormActions,
-    CatalogueSegmentationFormFailureActions,
-} from '../actions';
+import { CatalogueSegmentationApiService, CatalogueSegmentationFacadeService } from '../../services';
+import { CatalogueSegmentationFormActions, CatalogueSegmentationFormFailureActions } from '../actions';
 
 @Injectable()
 export class CreateCatalogueSegmentationEffects {

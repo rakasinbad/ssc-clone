@@ -1,0 +1,28 @@
+<div fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+    <div class="box-vertical" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+        <div class="pb-16">
+            <span class="mat-headline"> Segmentation Information </span>
+        </div>
+
+        <app-catalogue-segmentation-information-form
+            *ngIf="formMode === 'edit'"
+            [form]="form"
+            [formMode]="formMode"
+            [item]="item"
+            [isLoading]="isLoading"
+            (formStatus)="onSetFormStatus($event)"
+            (updateFormValue)="onUpdateFormValue($event)"
+        ></app-catalogue-segmentation-information-form>
+
+        <app-catalogue-segmentation-information-view
+            *ngIf="formMode === 'view'"
+            class="form-field"
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="16px"
+            fxFlex
+            [item]="item"
+            [isLoading]="isLoading"
+        ></app-catalogue-segmentation-information-view>
+    </div>
+</div>
