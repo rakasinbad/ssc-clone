@@ -5,34 +5,24 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { CatalogueSegmentationComponent } from './catalogue-segmentation.component';
 import { CatalogueSegmentationRoutingModule } from './catalogue-segmentation.routes';
-import {
-    CatalogueListComponent,
-    CatalogueSegmentationDetailComponent,
-    CatalogueSegmentationFormComponent,
-    CatalogueSegmentationListComponent,
-} from './components';
-import {
-    CatalogueSegmentationDetailPageComponent,
-    CatalogueSegmentationFormPageComponent,
-} from './pages';
-import {
-    CatalogueApiService,
-    CatalogueFacadeService,
-    CatalogueSegmentationApiService,
-    CatalogueSegmentationFacadeService,
-    CatalogueSegmentationFormService,
-    CatalogueSegmentationService,
-} from './services';
+import { AvailableCatalogueListComponent, CatalogueListComponent, CatalogueSegmentationAssignSkuTabComponent, CatalogueSegmentationDetailComponent, CatalogueSegmentationFormComponent, CatalogueSegmentationInformationFormComponent, CatalogueSegmentationInformationTabComponent, CatalogueSegmentationInformationViewComponent, CatalogueSegmentationListComponent } from './components';
+import { CatalogueSegmentationDetailPageComponent, CatalogueSegmentationFormPageComponent } from './pages';
+import { CatalogueApiService, CatalogueFacadeService, CatalogueSegmentationApiService, CatalogueSegmentationFacadeService, CatalogueSegmentationFormService, CatalogueSegmentationService } from './services';
 import { CatalogueSegmentationNgrxModule } from './store';
 
 @NgModule({
     declarations: [
+        AvailableCatalogueListComponent,
         CatalogueListComponent,
+        CatalogueSegmentationAssignSkuTabComponent,
         CatalogueSegmentationComponent,
         CatalogueSegmentationDetailComponent,
         CatalogueSegmentationDetailPageComponent,
         CatalogueSegmentationFormComponent,
         CatalogueSegmentationFormPageComponent,
+        CatalogueSegmentationInformationFormComponent,
+        CatalogueSegmentationInformationTabComponent,
+        CatalogueSegmentationInformationViewComponent,
         CatalogueSegmentationListComponent,
     ],
     imports: [

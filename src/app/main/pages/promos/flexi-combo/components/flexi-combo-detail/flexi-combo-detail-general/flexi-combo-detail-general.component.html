@@ -85,7 +85,7 @@
 
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
-                {{ ((flexiCombo$ | async)?.platform | titlecase) || '-' }}
+                {{ platform || '-' }}
             </ng-container>
 
             <ngx-skeleton-loader
