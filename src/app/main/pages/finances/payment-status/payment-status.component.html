@@ -86,9 +86,9 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price text-word-break-break-word">
                             {{
-                                +row?.billing.totalPayment > 0
-                                    ? (+row?.billing.totalPayment | price: 'full') || '-'
-                                    : row?.billing.totalPayment
+                                +row?.parcelFinalPrice > 0
+                                    ? (+row?.parcelFinalPrice | price: 'full') || '-'
+                                    : row?.parcelFinalPrice
                             }}
                         </p>
                     </mat-cell>
