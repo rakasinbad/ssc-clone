@@ -31,7 +31,7 @@ type Navbar = (
   'voucher' | 'promo-hierarchy' | 'survey' | 'survey-manage' | 'survey-response' | 'skp'
 )[];
 
-type Toolbar = ('Informasi Supplier' | 'Pengaturan akun' | 'Internal' | '*')[]
+type Toolbar = ('Supplier Information' | 'Account Settings' | 'Internal' | '*')[]
 
 export interface Rule {
     role : string,

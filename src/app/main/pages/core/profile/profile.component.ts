@@ -76,7 +76,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                         //   translate: 'BREADCRUMBS.ORDER_MANAGEMENTS'
                     },
                     {
-                        title: 'Informasi Supplier',
+                        title: 'Supplier Information',
                         //   translate: 'BREADCRUMBS.ORDER_DETAILS',
                         active: true
                     }
