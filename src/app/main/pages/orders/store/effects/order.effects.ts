@@ -1066,12 +1066,11 @@ export class OrderEffects {
                             }
                         });
                     }),
-                    catchError(err =>
-                        of(
-                            OrderActions.updateOrderFailure({
-                                payload: { id: 'updateOrderFailure', errors: err }
-                            })
-                        )
+                    catchError(err => of(
+                        OrderActions.updateOrderFailure({
+                            payload: { id: id, errors: err }
+                        })
+                    )
                     ),
                     finalize(() => {
                         this.store.dispatch(UiActions.resetHighlightRow());
@@ -1119,7 +1118,7 @@ export class OrderEffects {
                     }
                 });
     
-                this._$notice.open('Update order gagal', 'error', {
+                this._$notice.open('Update Order Gagal', 'error', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
