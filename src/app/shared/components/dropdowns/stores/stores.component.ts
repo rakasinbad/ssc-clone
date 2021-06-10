@@ -308,6 +308,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
+
                 } else {
                     addedRawAvailableEntities = response.data;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
@@ -330,8 +331,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         for (const entity of (response.data as Array<Entity>)) {
                             this.upsertEntity(entity);
                         }
-                    }
-                    
+                    } 
                 }
 
                 // Mengambil nilai dari subject sebelumnya.
