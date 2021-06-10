@@ -79,10 +79,6 @@ export class OmsOrderLineComponent implements OnInit {
         return this.form.get('catalogues') as FormArray;
     }
 
-    get bonusCatalogues(): FormArray {
-        return this.form.get('bonusCatalogues') as FormArray;
-    }
-
     ngOnInit(): void {
         this._getOrderBrandCatalogue(this.orderLineType);
 
