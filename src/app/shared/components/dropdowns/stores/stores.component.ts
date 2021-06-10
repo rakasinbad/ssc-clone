@@ -25,7 +25,7 @@ import { MultipleSelectionService } from 'app/shared/components/multiple-selecti
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IMassUpload, MassUploadResponse, IMassUploadData } from './models/supplier-store.model';
+import { IMassUploadData } from './models/supplier-store.model';
 import { ImportMassUpload } from './store/actions';
 import { ImportMassUploadSelectors } from './store/selectors';
 import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
@@ -305,7 +305,6 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         }
                     }
                     
-
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
