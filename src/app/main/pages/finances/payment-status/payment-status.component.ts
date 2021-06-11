@@ -9,6 +9,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -47,7 +48,7 @@ import { PaymentStatusSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageSize = this.route.snapshot.queryParams.limit || 25;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     allPayment: number;
@@ -174,7 +175,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         public translate: TranslateService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        private route: ActivatedRoute
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -540,6 +542,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
+                this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
+
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
