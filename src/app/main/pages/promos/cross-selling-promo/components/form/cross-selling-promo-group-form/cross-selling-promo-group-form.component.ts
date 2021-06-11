@@ -203,6 +203,8 @@ export class CrossSellingPromoGroupFormComponent implements OnInit, OnChanges, O
             this.errorCatalogueSegment = true;
         } else {
             this.errorCatalogueSegment = false;
+            this.form.get(['groups', 0, 'invoiceGroup']).setValue(null);
+            this.form.get(['groups', 1, 'invoiceGroup']).setValue(null);
             this.catalogueSegmentSelected = value;
             this.segmentationSelectId.emit(value['id']);
             let params = {};
