@@ -9,6 +9,9 @@ import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile.component';
 import { ProfileEffects } from './store/effects';
 import { fromProfile } from './store/reducers';
+import { CompanyInformationComponent } from './components/company-information/company-information.component';
+import { CompanyAddressComponent } from './components/company-address/company-address.component';
+import { LegalInformationComponent } from './components/legal-information/legal-information.component';
 
 /**
  *
@@ -17,7 +20,7 @@ import { fromProfile } from './store/reducers';
  * @class ProfileModule
  */
 @NgModule({
-    declarations: [ProfileComponent],
+    declarations: [ProfileComponent, CompanyInformationComponent, CompanyAddressComponent, LegalInformationComponent],
     imports: [
         ProfileRoutingModule,
         SharedModule,

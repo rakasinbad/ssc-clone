@@ -1,0 +1,103 @@
+<div class="p-16 sinbad-content">
+
+    <!-- TITLE -->
+    <div class="font-size-18 text-semibold">
+        Legal Information
+    </div>
+
+    <div
+        class="mt-40"
+        fxLayout="row"
+        fxLayoutGap="26px"
+        fxLayoutAlign="start stretch"
+    >
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="42px"
+            fxFlex
+        >
+            <div
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="26px"
+                fxFlex
+            >
+                <!-- NPWP -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        NPWP
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.legalInfo?.taxNo || '-' }}
+                    </p>
+                </div>
+                <!-- / NPWP -->
+
+                <!-- Bank Name -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Bank Name
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.legalInfo?.bank?.name || '-' }}
+                    </p>
+                </div>
+                <!-- / Bank Name -->
+
+                <!-- Bank Account -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Bank Account
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.legalInfo?.bank?.accountNo || '-' }}
+                    </p>
+                </div>
+                <!-- / Bank Account -->
+
+                <!-- Account Name -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Account Name
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.legalInfo?.bank?.accountName || '-' }}
+                    </p>
+                </div>
+                <!-- / Account Name -->
+
+                <!-- Branch Name -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Branch Name
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.legalInfo?.bank?.branchName || '-' }}
+                    </p>
+                </div>
+                <!-- / Branch Name -->
+                
+                <!-- Official Document -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Official Document
+                    </p>
+
+                    <ng-container *ngIf="(profile$ | async)?.legalInfo?.officialDocument && officialDocument; else noDocument;">
+                        <a class="font-size-14 field-value" href="javascript:;" (click)="onDownload(officialDocument)">
+                            Download
+                        </a>
+                    </ng-container>
+
+                    <ng-template #noDocument>
+                        <p class="font-size-14 field-value">-</p>             
+                    </ng-template>
+
+                   
+                </div>
+                <!-- / Official Document -->
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,199 @@
+<div class="p-16 sinbad-content">
+    <!-- TITLE -->
+    <div class="font-size-18 text-semibold">
+        Company Information
+    </div>
+    <!-- TITLE -->
+
+    <!-- COMPANY IMAGE -->
+    <div
+        fxLayout="row"
+        fxLayoutGap="26px"
+        fxLayoutAlign="start stretch"
+    >
+        <div class="img-container" *ngIf="(profile$ | async)?.companyInfo?.imageUrl; else noCompanyImage;">
+            <img
+                [src]="(profile$ | async)?.companyInfo?.imageUrl"
+                (click)="openPreviewPhoto()"
+                alt="Supplier Image"
+                class="fit-image"
+                style="cursor: pointer; border-radius: 8px"
+            />
+        </div>
+
+        <ng-template #noCompanyImage>
+            <div class="img-container">
+                <img
+                    src="https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/store-images/dummy_store.svg"
+                    alt="Supplier Image"
+                    class="fit-image"
+                    style="cursor: pointer;"
+                />
+            </div>                
+        </ng-template>
+    </div>
+    <!-- COMPANY IMAGE -->
+
+    <div
+        class="mt-40"
+        fxLayout="row"
+        fxLayoutGap="26px"
+        fxLayoutAlign="start stretch"
+    >
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="42px"
+            fxFlex
+        >
+            <div
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="26px"
+                fxFlex
+            >
+                <!-- Company Name -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        <ng-container *ngIf="isEdit"><span class="red-500-fg">*</span></ng-container>
+                        Company Name
+                    </p>
+
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <input matInput name="name" formControlName="name" />
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.name || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Company Name -->
+
+                <!-- Description -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Description
+                    </p>
+                    
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <input matInput name="description" formControlName="description" />
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.description || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Description -->
+
+                <!-- Country -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Country
+                    </p>
+
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <input matInput name="country" formControlName="country" disabled/>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.country || 'Indonesia' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Country -->
+
+                <!-- Business Type -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        <ng-container *ngIf="isEdit"><span class="red-500-fg">*</span></ng-container>
+                        Business Type
+                    </p>
+
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <mat-select formControlName="businessType" placeholder="Choose Business Type">
+                            <mat-option value="supplier">Supplier</mat-option>
+                            <mat-option value="ditributor">Distributor</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.businessType || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Business Type -->
+
+                <!-- Business Entity -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        <ng-container *ngIf="isEdit"><span class="red-500-fg">*</span></ng-container>
+                        Business Entity
+                    </p>
+
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <mat-select formControlName="businessEntity" placeholder="Choose Business Entity">
+                            <mat-option value="CV">CV</mat-option>
+                            <mat-option value="PT">PT</mat-option>
+                            <mat-option value="Tbk">Tbk</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.businessEntity || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Business Entity -->
+                
+                <!-- Since -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Since
+                    </p>
+                    
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <input matInput name="since" formControlName="since"/>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.since || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Since -->
+
+                <!-- Number of Employee -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Number of Employee
+                    </p>
+
+                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                        <input matInput name="numberOfEmployee" formControlName="numberOfEmployee"/>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.companyInfo?.numberOfEmployee || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Number of Employee -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #previewPhoto>
+    <div class="px-8 pb-20" style="display: block; margin-left: auto; margin-right: auto;">
+        <img [src]="selectedPhoto" style="width: 100%; height: 100%; object-fit: cover;"/>
+    </div>
+</ng-template>
