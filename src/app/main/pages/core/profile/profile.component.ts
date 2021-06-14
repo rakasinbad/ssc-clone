@@ -37,6 +37,7 @@ import { ProfileSelectors } from './store/selectors';
 export class ProfileComponent implements OnInit, OnDestroy {
     form: FormGroup;
     isEdit: boolean;
+    section: string = "company-info";
 
     profile$: Observable<any>;
     provinces$: Observable<Array<Province>>;
@@ -146,11 +147,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     onEdit(isEdit: boolean): void {
         this.isEdit = isEdit ? false : true;
-
-        if (this.isEdit) {
-            this.handleForm();
-            this.form.markAsPristine();
-        }
     }
 
     onOpenChange(ev: boolean, field: string): void {
@@ -193,6 +189,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
             default:
                 break;
+        }
+    }
+
+    onSelectedTab(index: number): void {
+        this.isEdit = false;
+        switch (index) {
+            case 0: this.section = 'company-info'; break;
+            case 1: this.section = 'address'; break;
+            case 2: this.section = 'legal-info'; break;
         }
     }
 
