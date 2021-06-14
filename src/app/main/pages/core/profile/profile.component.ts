@@ -147,11 +147,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     onEdit(isEdit: boolean): void {
         this.isEdit = isEdit ? false : true;
-
-        // if (this.isEdit) {
-        //     this.handleForm();
-        //     this.form.markAsPristine();
-        // }
     }
 
     onOpenChange(ev: boolean, field: string): void {
