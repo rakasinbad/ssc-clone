@@ -70,7 +70,7 @@ export class OrderApiService {
     }
 
     findById(id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointPayment);
+        this._url = this._$helper.handleApiRouter(this._endpointPartialOrder);
         return this.http.get(`${this._url}/${id}`);
     }
 

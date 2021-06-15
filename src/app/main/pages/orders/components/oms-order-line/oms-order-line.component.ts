@@ -169,11 +169,11 @@ export class OmsOrderLineComponent implements OnInit {
                             message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern'),
                         }),
                         RxwebValidators.minNumber({
-                            value: 1,
+                            value: 0,
                             message: this.errorMessageSvc.getErrorMessageNonState(
                                 'default',
                                 'min_number',
-                                { minValue: 1 }
+                                { minValue: 0 }
                             ),
                         }),
                     ],
