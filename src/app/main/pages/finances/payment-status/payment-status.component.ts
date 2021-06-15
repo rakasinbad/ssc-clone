@@ -8,7 +8,7 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
@@ -21,7 +21,7 @@ import { IButtonImportConfig } from 'app/shared/components/import-advanced/model
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ButtonDesignType } from 'app/shared/models/button.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { IQueryParams, IQuerySearchParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -38,6 +38,10 @@ import { statusPayment } from './status';
 import { PaymentStatusActions } from './store/actions';
 import { fromPaymentStatus } from './store/reducers';
 import { PaymentStatusSelectors } from './store/selectors';
+import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
+import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models';
+import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services';
+import { isMoment } from 'moment';
 
 @Component({
     selector: 'app-payment-status',
@@ -50,6 +54,7 @@ import { PaymentStatusSelectors } from './store/selectors';
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = this.route.snapshot.queryParams.limit || 25;
     readonly defaultPageOpts = environment.pageSizeTable;
+    private formFilter: FormGroup;
 
     allPayment: number;
     waitingPayment: number;
@@ -78,6 +83,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         add: {
             // permissions: ['INVENTORY.ISI.CREATE'],
         },
+        filter: {
+            permissions: [],
+            onClick: () => {this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();}
+        },
         export: {
             permissions: ['FINANCE.PS.EXPORT'],
             useAdvanced: true,
@@ -88,6 +97,48 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             useAdvanced: true,
             pageType: 'payments'
         }
+    };
+
+    filterConfig: SinbadFilterConfig = {
+        by: {
+            date: {
+                title: 'Order Date',
+                sources: null
+            },
+            paymentDueDate: {
+                title: 'Payment Due Date',
+                sources: null
+            },
+            paymentDate: {
+                title: 'Payment Date',
+                sources: null
+            },
+            storeOrderTotal: {
+                title: 'Store Order Total',
+                sources: null
+            },
+            supplierDeliveredTotal: {
+                title: 'Supplier Delivered Total',
+                sources: null
+            },
+            paymentType: {
+                title: 'Payment Type',
+                sources: this._$helper.paymentType()
+            },
+            payLaterType: {
+                title: 'Pay Later Type',
+                sources: this._$helper.payLaterType()
+            },
+            orderStatus: {
+                title: 'Order Status',
+                sources: this._$helper.orderStatus()
+            },
+            paymentStatus: {
+                title: 'Payment Status',
+                sources: this._$helper.paymentStatus()
+            }
+        },
+        showFilter: true
     };
 
     search: FormControl = new FormControl('');
@@ -152,6 +203,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
     invoiceFetching$: Observable<boolean>;
+    globalFilterDto: IQuerySearchParams[];
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -168,6 +220,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private fb: FormBuilder,
         private matDialog: MatDialog,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromPaymentStatus.FeatureState>,
@@ -175,7 +228,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private fuseSidebarService: FuseSidebarService,
+        private sinbadFilterService: SinbadFilterService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -211,6 +266,49 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.formFilter = this.fb.group({
+            startDate: null, // order date
+            endDate: null, // order date
+            startPaymentDueDate: null,
+            endPaymentDueDate: null,
+            startPaymentDate: null,
+            endPaymentDate: null,
+            minStoreOrderTotal: null,
+            maxStoreOrderTotal: null,
+            minSupplierDeliveredTotal: null,
+            maxSupplierDeliveredTotal: null,
+            paymentType: null,
+            payLaterType: null,
+            orderStatus: null,
+            paymentStatus: null
+        });
+
+        this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.formFilter });
+
+        // Handle action in filter
+        this.sinbadFilterService
+            .getClickAction$()
+            .pipe(
+                filter((action) => action === 'reset' || action === 'submit'),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe((action) => {
+                if (action === 'reset') {
+                    this.formFilter.reset();
+                    this.globalFilterDto = null;
+                } else {
+                    this.applyFilter();
+                }
+
+                this._onRefreshTable();
+
+                HelperService.debug('[OrdesComponent] ngOnInit getClickAction$()', {
+                    form: this.formFilter,
+                    filterConfig: this.filterConfig,
+                });
+            });
+
         this.invoiceFetching$ = this.store.select(PaymentStatusSelectors.getInvoiceLoading);
         this._initPage();
     }
@@ -529,6 +627,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 // Reset payment statuses state
                 this.store.dispatch(PaymentStatusActions.resetPaymentStatuses());
 
+                this.sinbadFilterService.resetConfig();
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
@@ -668,6 +768,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
+        if (this.globalFilterDto) { 
+            data['search'] = data['search'] ? [...data['search'], ...this.globalFilterDto] : [...this.globalFilterDto];
+        }
+
         this.store.dispatch(PaymentStatusActions.fetchPaymentStatusesRequest({ payload: data }));
     }
 
@@ -732,4 +836,189 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             })
         );
     }
+
+    private applyFilter(): void {
+        this.globalFilterDto = null;
+        var data: IQuerySearchParams[] = [];
+
+        const {
+            startDate,
+            endDate,
+            startPaymentDueDate,
+            endPaymentDueDate,
+            startPaymentDate,
+            endPaymentDate,
+            minStoreOrderTotal,
+            maxStoreOrderTotal,
+            minSupplierDeliveredTotal,
+            maxSupplierDeliveredTotal,
+            paymentType,
+            payLaterType,
+            orderStatus,
+            paymentStatus,
+        } = this.formFilter.value;
+
+        const nStartDate = startDate && isMoment(startDate) ? startDate.format('YYYY-MM-DD') : null;
+        const nEndDate = endDate && isMoment(endDate) ? endDate.format('YYYY-MM-DD') : null;
+        const nStartPaymentDueDate = startPaymentDueDate && isMoment(startPaymentDueDate) ? startPaymentDueDate.format('YYYY-MM-DD') : null;
+        const nEndPaymentDueDate = endPaymentDueDate && isMoment(endPaymentDueDate) ? endPaymentDueDate.format('YYYY-MM-DD') : null;
+        const nStartPaymentDate = startPaymentDate && isMoment(startPaymentDate) ? startPaymentDate.format('YYYY-MM-DD') : null;
+        const nEndPaymentDate = endPaymentDate && isMoment(endPaymentDate) ? endPaymentDate.format('YYYY-MM-DD') : null;
+
+        const nPaymentType = paymentType && paymentType.length > 0 ? paymentType.filter((v) => v) : [];
+        const nPayLaterType = payLaterType && payLaterType.length > 0 ? payLaterType.filter((v) => v) : [];
+        const nOrderStatus = orderStatus && orderStatus.length > 0 ? orderStatus.filter((v) => v) : [];
+        const nPaymentStatus = paymentStatus && paymentStatus.length > 0 ? paymentStatus.filter((v) => v) : [];
+
+        if (!!nStartDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'startOrderDate',
+                    keyword: nStartDate,
+                }
+            ];
+        }
+
+        if (!!nEndDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'endOrderDate',
+                    keyword: nEndDate,
+                }
+            ];
+        }
+
+        if (!!nStartPaymentDueDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'startPaymentDueDate',
+                    keyword: nStartPaymentDueDate,
+                }
+            ];
+        }
+
+        if (!!nEndPaymentDueDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'endPaymentDueDate',
+                    keyword: nEndPaymentDueDate,
+                }
+            ];
+        }
+
+        if (!!nStartPaymentDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'startPaymentDate',
+                    keyword: nStartPaymentDate,
+                }
+            ];
+        }
+
+        if (!!nEndPaymentDate) {
+            data = [
+                ...data,
+                {
+                    fieldName: 'endPaymentDate',
+                    keyword: nEndPaymentDate,
+                }
+            ];
+        }
+
+        if(!!minStoreOrderTotal){
+            data = [
+                ...data,
+                {
+                    fieldName: 'minStoreOrderTotal',
+                    keyword: minStoreOrderTotal,
+                }
+            ];
+        }
+
+        if(!!maxStoreOrderTotal){
+            data = [
+                ...data,
+                {
+                    fieldName: 'maxStoreOrderTotal',
+                    keyword: maxStoreOrderTotal,
+                }
+            ];
+        }
+        
+        if(!!minSupplierDeliveredTotal){
+            data = [
+                ...data,
+                {
+                    fieldName: 'minSupplierDeliveredTotal',
+                    keyword: minSupplierDeliveredTotal,
+                }
+            ];
+        }
+
+        if(!!maxSupplierDeliveredTotal){
+            data = [
+                ...data,
+                {
+                    fieldName: 'maxSupplierDeliveredTotal',
+                    keyword: maxSupplierDeliveredTotal,
+                }
+            ];
+        }
+
+        if(!!nPaymentType && !!nPaymentType.length){
+            for (const value of nPaymentType) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'paymentTypes[]',
+                        keyword: value.id,
+                    }
+                ];    
+            }
+        }
+
+        if(!!nPayLaterType && !!nPayLaterType.length){
+            for (const value of nPayLaterType) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'payLaterTypes[]',
+                        keyword: value.id,
+                    }
+                ];    
+            }
+        }
+
+        if(!!nOrderStatus && !!nOrderStatus.length){
+            for (const value of nOrderStatus) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'statuses[]',
+                        keyword: value,
+                    }
+                ];    
+            }
+        }
+
+        if(!!nPaymentStatus && !!nPaymentStatus.length){
+            for (const value of nPaymentStatus) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'paymentStatuses[]',
+                        keyword: value,
+                    }
+                ];
+            }
+        }
+
+        this.globalFilterDto = data;
+    }
+
 }

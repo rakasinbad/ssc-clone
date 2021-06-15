@@ -29,6 +29,8 @@ import { TriggerBase } from '../models/trigger-base.model';
 import { PromoHierarchyLayer, PromoHierarchyGroup } from '../models/promo-hierarchy.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
+import { EPaymentType } from '../models/payment-type.model';
+import { EPayLaterType } from '../models/pay-later.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -209,6 +211,32 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
+        }
+    ];
+
+    private static _paymentTypes: Array<{ id: string; label: string }> = [
+        {
+            id: EPaymentType.PAY_LATER,
+            label: 'Bayar Nanti',
+        },
+        {
+            id: EPaymentType.PAY_NOW,
+            label: 'Bayar Sekarang',
+        },
+        {
+            id: EPaymentType.COD,
+            label: 'Bayar di Tempat',
+        }
+    ];
+
+    private static _payLaterTypes: Array<{ id: string; label: string }> = [
+        {
+            id: EPayLaterType.SUPPLIER,
+            label: 'Supplier',
+        },
+        {
+            id: EPayLaterType.SUPPLIER_KUR_CLICK_ACC,
+            label: 'Supplier with KUR KlickACC',
         }
     ];
 
@@ -1070,6 +1098,14 @@ export class HelperService {
 
     paymentStatus(): { id: string; label: string }[] {
         return HelperService._paymentStatuses;
+    }
+
+    paymentType(): { id: string; label: string }[] {
+        return HelperService._paymentTypes;
+    }
+
+    payLaterType(): { id: string; label: string }[] {
+        return HelperService._payLaterTypes;
     }
 
     platformSinbad(): { id: PlatformSinbad; label: string }[] {

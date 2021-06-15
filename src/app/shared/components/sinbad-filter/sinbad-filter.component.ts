@@ -8,7 +8,7 @@ import { shareReplay, tap } from 'rxjs/operators';
 import { Warehouse } from '../dropdowns/single-warehouse/models';
 import { SingleWarehouseDropdownService } from '../dropdowns/single-warehouse/services';
 import { SinbadAutocompleteSource } from '../sinbad-autocomplete/models';
-import { DefaultCheckbox, SinbadFilterConfig } from './models';
+import { DefaultCheckbox, SinbadFilterConfig, TFilterResetCheckbox } from './models';
 import { SinbadFilterService } from './services';
 
 @Component({
@@ -36,8 +36,14 @@ export class SinbadFilterComponent implements OnInit {
     filterSubBrand: boolean = false;
     filterFaktur: boolean = false;
     filterbasePrice: boolean = false;
+    filterStoreOrderTotal: boolean = false;
+    filterSupplierDeliveredTotal: boolean = false;
     filterWarehouse: boolean = false;
     filterDate: boolean = false;
+    filterPaymentDate: boolean = false;
+    filterPaymentDueDate: boolean = false;
+    filterPaymentType: boolean = false;
+    filterPayLaterType: boolean = false;
     filterOrderStatus: boolean = false;
     filterPaymentStatus: boolean = false;
 
@@ -48,6 +54,8 @@ export class SinbadFilterComponent implements OnInit {
     sourceOrderStatus: any[] = [];
     sourcePaymentStatus: any[] = [];
     sourceSuppliers: any[] = [];
+    sourcePaymentType: DefaultCheckbox[] = [];
+    sourcePayLaterType: DefaultCheckbox[] = [];
 
     maxDate = new Date();
 
@@ -94,6 +102,14 @@ export class SinbadFilterComponent implements OnInit {
                             this.filterbasePrice = true;
                         }
 
+                        if (typeof config.by['storeOrderTotal'] !== 'undefined') {
+                            this.filterStoreOrderTotal = true;
+                        }
+
+                        if (typeof config.by['supplierDeliveredTotal'] !== 'undefined') {
+                            this.filterSupplierDeliveredTotal = true;
+                        }
+
                         if (typeof config.by['segmentChannel'] !== 'undefined') {
                             this.filterSegmentChannel = true;
                         }
@@ -116,6 +132,28 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['date'] !== 'undefined') {
                             this.filterDate = true;
+                        }
+
+                        if (typeof config.by['paymentDueDate'] !== 'undefined') {
+                            this.filterPaymentDueDate = true;
+                        }
+
+                        if (typeof config.by['paymentDate'] !== 'undefined') {
+                            this.filterPaymentDate = true;
+                        }
+
+                        if (typeof config.by['paymentType'] !== 'undefined') {
+                            this.filterPaymentType = true;
+                            if (config.by['paymentType'].sources) {
+                                this.sourcePaymentType = [...config.by['paymentType'].sources];
+                            }
+                        }
+
+                        if (typeof config.by['payLaterType'] !== 'undefined') {
+                            this.filterPayLaterType = true;
+                            if (config.by['payLaterType'].sources) {
+                                this.sourcePayLaterType = [...config.by['payLaterType'].sources];
+                            }
                         }
 
                         if (typeof config.by['orderStatus'] !== 'undefined') {
@@ -156,6 +194,7 @@ export class SinbadFilterComponent implements OnInit {
         this.resetFaktur = true;
         this._resetSegment();
         this._resetStatus();
+        this._resetCheckbox(['sourcePaymentType', 'sourcePayLaterType']);
         this.singleWarehouseService.selectWarehouse(null);
         this.sinbadFilterService.setClickAction('reset');
     }
@@ -175,6 +214,30 @@ export class SinbadFilterComponent implements OnInit {
         });
 
         this.form.get('status').setValue(sourceSelected);
+    }
+    
+    onChangePaymentType(ev: MatCheckboxChange): void {
+        const sourceSelected = this.sourcePaymentType.filter((item) => item.checked);
+
+        HelperService.debug('[SinbadFilterComponent] onChangePaymentType', {
+            sourcePaymentType: this.sourcePaymentType,
+            sourceSelected,
+            ev,
+        });
+
+        this.form.get('paymentType').setValue(sourceSelected);
+    }
+    
+    onChangePayLaterType(ev: MatCheckboxChange): void {
+        const sourceSelected = this.sourcePayLaterType.filter((item) => item.checked);
+
+        HelperService.debug('[SinbadFilterComponent] onChangePayLaterType', {
+            sourcePayLaterType: this.sourcePayLaterType,
+            sourceSelected,
+            ev,
+        });
+
+        this.form.get('payLaterType').setValue(sourceSelected);
     }
 
     onSelectedBrand(value: SinbadAutocompleteSource | SinbadAutocompleteSource[]): void {
@@ -221,12 +284,38 @@ export class SinbadFilterComponent implements OnInit {
         return item.id || index;
     }
 
+    trackByPaymentType(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
+    }
+
+    trackByPayLaterType(index: number, item: any): string {
+        if (!item) {
+            return null;
+        }
+
+        return item.id || index;
+    }
+
     private _resetStatus(): void {
         this.sourceStatus = this.sourceStatus.map(({ id, label }) => ({
             id,
             label,
             checked: false,
         }));
+    }
+
+    private _resetCheckbox(sources: TFilterResetCheckbox[]): void {
+        sources.forEach((source: any) => {
+            this[source] = this[source].map(({ id, label }) => ({
+                id,
+                label,
+                checked: false,
+            }));
+        });
     }
 
     private _resetSegment(): void {
