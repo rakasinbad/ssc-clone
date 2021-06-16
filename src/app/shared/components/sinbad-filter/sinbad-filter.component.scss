@@ -7,14 +7,21 @@ app-sinbad-filter {
     width: 280px;
     min-width: 280px;
     max-width: 280px;
+    max-height: 90%;
     z-index: 99;
 
     .mat-slide-toggle-content {
         flex: 1;
     }
 
-    .sinbad__filter-title {
+    .sinbad__filter-header-title {
         font-size: 18px;
+        font-weight: 700;
+        color: sinbad-color('black', '100');
+    }
+
+    .sinbad__filter-title {
+        font-size: 16px;
         font-weight: 600;
         color: sinbad-color('black', '100');
     }
@@ -43,13 +50,16 @@ app-sinbad-filter {
     .sinbad__filter-checkbox {
         display: flex;
         flex-flow: column wrap;
-        height: 105px;
-        min-height: 105px;
+        // height: 105px;
+        // min-height: 105px;
+        width: 100%;
+        height: auto;
         max-height: 105px;
         margin: -5px;
+        margin-bottom: 5px;
 
         > * {
-            flex: 1 1 20px;
+            // flex: 1 1 20px;
             margin: 5px;
         }
 
@@ -62,7 +72,10 @@ app-sinbad-filter {
     }
 
     .sinbad__filter-action--wrapper {
+        position: fixed;
+        bottom: 0;
         margin-top: auto;
+        width: 100%;
     }
 
     .sinbad__filter-action--item {
@@ -79,6 +92,10 @@ app-sinbad-filter {
             position: relative;
             color: sinbad-color('black', '60');
         }
+    }
+
+    .mat-expansion-panel-body {
+        padding: 0 24px 0;
     }
 }
 
