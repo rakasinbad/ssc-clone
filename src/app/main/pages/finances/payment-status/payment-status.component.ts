@@ -42,6 +42,7 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models';
 import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services';
 import { isMoment } from 'moment';
+import { cloneDeep } from 'lodash';
 
 @Component({
     selector: 'app-payment-status',
@@ -99,6 +100,11 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     };
 
+    private sourcesPaymentType = cloneDeep(this._$helper.paymentType());
+    private sourcesPayLaterType = cloneDeep(this._$helper.payLaterType());
+    private sourcesOrderStatus = cloneDeep(this._$helper.orderStatus());
+    private sourcesPaymentStatus = cloneDeep(this._$helper.paymentStatus());
+
     filterConfig: SinbadFilterConfig = {
         by: {
             date: {
@@ -123,19 +129,19 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             },
             paymentType: {
                 title: 'Payment Type',
-                sources: this._$helper.paymentType()
+                sources: this.sourcesPaymentType
             },
             payLaterType: {
                 title: 'Pay Later Type',
-                sources: this._$helper.payLaterType()
+                sources: this.sourcesPayLaterType
             },
             orderStatus: {
                 title: 'Order Status',
-                sources: this._$helper.orderStatus()
+                sources: this.sourcesOrderStatus
             },
             paymentStatus: {
                 title: 'Payment Status',
-                sources: this._$helper.paymentStatus()
+                sources: this.sourcesPaymentStatus
             }
         },
         showFilter: true
@@ -294,6 +300,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 takeUntil(this._unSubs$)
             )
             .subscribe((action) => {
+
+                console.log('this._$helper.paymentStatus():', this._$helper.paymentStatus())
+
                 if (action === 'reset') {
                     this.formFilter.reset();
                     this.globalFilterDto = null;
@@ -336,6 +345,12 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onSelectedTab(index: number): void {
+        this.filterConfig.by.paymentStatus.sources = [];
+        this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.formFilter });
+        this.globalFilterDto = null;
+        this.search.reset();
+        this.formFilter.reset();
+
         switch (index) {
             case 1:
                 this.selectedTab = 'waiting_for_payment';
@@ -637,6 +652,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.paginator.pageSize = this.defaultPageSize;
                 this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
 
+                // this.applyFilter();
+                
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
