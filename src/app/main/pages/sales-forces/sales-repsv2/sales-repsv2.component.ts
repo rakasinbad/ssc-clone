@@ -25,7 +25,7 @@ export class SrTargetComponent implements OnInit {
             title: 'Sales Management',
         },
         {
-            title: 'Sales Rep V2',
+            title: 'Sales Rep',
             keepCase: true,
         },
     ];

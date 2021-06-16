@@ -1,12 +1,18 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FormMode } from 'app/shared/models';
-import { IBreadcrumbs } from 'app/shared/models/global.model';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { CatalogueSegmentation } from '../../models';
-import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from '../../services';
+import { FormMode, FormStatus } from 'app/shared/models';
+import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { filter, map, takeUntil, tap } from 'rxjs/operators';
+import { CatalogueSegmentation, PatchCatalogueSegmentationInfoDto } from '../../models';
+import {
+    CatalogueSegmentationFacadeService,
+    CatalogueSegmentationFormService,
+    CatalogueSegmentationService,
+} from '../../services';
 
 @Component({
     templateUrl: './catalogue-segmentation-detail-page.component.html',
@@ -15,7 +21,10 @@ import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from
     encapsulation: ViewEncapsulation.None,
 })
 export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestroy {
+    private formStatus$: BehaviorSubject<FormStatus> = new BehaviorSubject('INVALID');
     private isLoadingCatalogueList$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    private unSubs$: Subject<any> = new Subject();
+
     private breadcrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -31,20 +40,50 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             active: true,
         },
     ];
+    private footerConfig: IFooterActionConfig = {
+        progress: {
+            title: {
+                label: 'Skor tambah toko',
+                active: false,
+            },
+            value: {
+                active: false,
+            },
+            active: false,
+        },
+        action: {
+            save: {
+                label: 'Save',
+                active: true,
+            },
+            draft: {
+                label: 'Save Draft',
+                active: false,
+            },
+            cancel: {
+                label: 'Cancel',
+                active: true,
+            },
+        },
+    };
 
+    form: FormGroup;
     formMode: FormMode;
     catalogueSegmentation: CatalogueSegmentation;
     isLoading: boolean = false;
     isLoadingCombine: boolean = false;
+    selectedIndex: number = 0;
+    updateCatalogueSegmentationInfoFormDto: PatchCatalogueSegmentationInfoDto;
 
     catalogueSegmentation$: Observable<CatalogueSegmentation>;
     isLoading$: Observable<boolean>;
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private catalogueSegmentationService: CatalogueSegmentationService
+        private readonly route: ActivatedRoute,
+        private readonly router: Router,
+        private readonly catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private readonly catalogueSegmentationService: CatalogueSegmentationService,
+        private readonly catalogueSegmentationFormService: CatalogueSegmentationFormService
     ) {}
 
     ngOnInit(): void {
@@ -54,11 +93,18 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             this.router
         );
 
-        if (this.formMode !== 'view') {
+        if (this.formMode !== 'view' && this.formMode !== 'edit') {
             this.router.navigateByUrl('/pages/catalogue-segmentations', { replaceUrl: true });
         }
 
         this.catalogueSegmentationFacade.createBreadcrumb(this.breadcrumbs);
+        this.catalogueSegmentationFacade.setFooterConfig(this.footerConfig);
+        this.catalogueSegmentationFacade.setCancelButton();
+
+        this.form = this.catalogueSegmentationFormService.createForm();
+
+        // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
+        this._setFormStatus();
 
         this.catalogueSegmentation$ = this.catalogueSegmentationFacade.catalogueSegmentation$.pipe(
             tap((item) => {
@@ -86,11 +132,80 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
             }),
             map(({ isLoading }) => isLoading)
         );
+
+        // Handle cancel button action (footer)
+        this.catalogueSegmentationFacade.clickCancelBtn$
+            .pipe(
+                filter((isClick) => !!isClick),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((_) => {
+                this.formMode = 'view';
+                this.onHandleFooter();
+                this.catalogueSegmentationFacade.resetCancelBtn();
+            });
+
+        // Handle save button action (footer)
+        this.catalogueSegmentationFacade.clickSaveBtn$
+            .pipe(
+                filter((isClick) => !!isClick),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((_) => {
+                this._onSubmit();
+            });
+
+        // Handle refresh
+        this.catalogueSegmentationFacade.isRefresh$
+            .pipe(
+                filter((isRefresh) => !!isRefresh),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe({
+                next: (data) => {
+                    this.formMode = 'view';
+                    this.onHandleFooter();
+                    this.catalogueSegmentationFacade.resetCancelBtn();
+                    const { id } = this.route.snapshot.params;
+                    this._initDetail(id);
+                },
+            });
     }
 
     ngOnDestroy(): void {
         this.catalogueSegmentationFacade.clearBreadcrumb();
         this.catalogueSegmentationFacade.resetState();
+
+        this.unSubs$.next();
+        this.unSubs$.complete();
+    }
+
+    onChangeTab(ev: MatTabChangeEvent): void {
+        if (ev.index === 1) {
+            this.formMode = 'edit';
+        } else {
+            this.formMode = 'view';
+        }
+    }
+
+    onEdit(): void {
+        this.formMode = 'edit';
+    }
+
+    onHandleFooter(): void {
+        if (this.selectedIndex === 1) {
+            return;
+        }
+
+        if (this.formMode === 'edit') {
+            this.catalogueSegmentationFacade.showFooter();
+        } else {
+            this.catalogueSegmentationFacade.hideFooter();
+        }
+    }
+
+    onSetFormStatus(status: FormStatus): void {
+        this.formStatus$.next(status);
     }
 
     onSetLoadingCatalogueList(loading: boolean): void {
@@ -99,5 +214,32 @@ export class CatalogueSegmentationDetailPageComponent implements OnInit, OnDestr
 
     private _initDetail(id: string): void {
         this.catalogueSegmentationFacade.getById(id);
+    }
+
+    private _onSubmit(): void {
+        if (this.form.invalid) {
+            return;
+        }
+
+        if (this.formMode === 'edit' && this.selectedIndex === 0) {
+            const { id } = this.route.snapshot.params;
+
+            this.catalogueSegmentationFacade.hideFooter();
+
+            this.catalogueSegmentationFacade.updateCatalogueSegmentationInfo(
+                this.updateCatalogueSegmentationInfoFormDto,
+                id
+            );
+        }
+    }
+
+    private _setFormStatus(): void {
+        this.formStatus$.pipe(takeUntil(this.unSubs$)).subscribe((status) => {
+            if (status === 'VALID') {
+                this.catalogueSegmentationFacade.setFormValid();
+            } else {
+                this.catalogueSegmentationFacade.setFormInvalid();
+            }
+        });
     }
 }

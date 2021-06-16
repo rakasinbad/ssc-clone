@@ -1,18 +1,6 @@
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
-    ViewEncapsulation,
-} from '@angular/core';
-import { MatPaginator, MatSort } from '@angular/material';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -33,7 +21,8 @@ import { CatalogueSegmentationFacadeService, CatalogueSegmentationService } from
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CatalogueSegmentationListComponent
-    implements OnChanges, OnInit, AfterViewInit, OnDestroy {
+    implements OnChanges, OnInit, AfterViewInit, OnDestroy
+{
     private breadcrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -58,7 +47,7 @@ export class CatalogueSegmentationListComponent
         'store-group',
         'store-channel',
         'store-cluster',
-        'status',
+        // 'status',
         'actions',
     ];
 
@@ -82,10 +71,12 @@ export class CatalogueSegmentationListComponent
     sort: MatSort;
 
     constructor(
-        private cdRef: ChangeDetectorRef,
-        private catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
-        private catalogueSegmentationService: CatalogueSegmentationService,
-        private ngxPermissions: NgxPermissionsService,
+        private readonly cdRef: ChangeDetectorRef,
+        private readonly router: Router,
+        private readonly route: ActivatedRoute,
+        private readonly catalogueSegmentationFacade: CatalogueSegmentationFacadeService,
+        private readonly catalogueSegmentationService: CatalogueSegmentationService,
+        private readonly ngxPermissions: NgxPermissionsService
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -128,10 +119,10 @@ export class CatalogueSegmentationListComponent
 
         const canDoActions = this.ngxPermissions.hasPermission([
             'CATALOGUE.UPDATE',
-            'CATALOGUE.DELETE'
+            'CATALOGUE.DELETE',
         ]);
 
-        canDoActions.then(hasAccess => {
+        canDoActions.then((hasAccess) => {
             if (hasAccess) {
                 this.displayedColumns = [
                     'segmentation-name',
@@ -140,10 +131,9 @@ export class CatalogueSegmentationListComponent
                     'store-group',
                     'store-channel',
                     'store-cluster',
-                    'status',
+                    // 'status',
                     'actions',
                 ];
-            
             } else {
                 this.displayedColumns = [
                     'segmentation-name',
@@ -152,9 +142,8 @@ export class CatalogueSegmentationListComponent
                     'store-group',
                     'store-channel',
                     'store-cluster',
-                    'status'
+                    // 'status'
                 ];
-            
             }
         });
 
@@ -179,6 +168,13 @@ export class CatalogueSegmentationListComponent
 
         this.unSubs$.next();
         this.unSubs$.complete();
+    }
+
+    onChangePage(ev: PageEvent): void {
+        this.router.navigate(['.'], {
+            relativeTo: this.route,
+            queryParams: { limit: ev.pageSize, page_index: ev.pageIndex },
+        });
     }
 
     onTrackCatalogueSegmentation(index: number, item: CatalogueSegmentation): string {

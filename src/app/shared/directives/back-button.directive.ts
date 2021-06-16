@@ -6,7 +6,7 @@ export class BackButtonDirective {
     constructor(private location: Location) {}
 
     @HostListener('click')
-    onClick() {
+    onClick(): void {
         this.location.back();
     }
 }

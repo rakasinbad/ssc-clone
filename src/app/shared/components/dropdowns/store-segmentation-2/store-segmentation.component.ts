@@ -33,7 +33,7 @@ import { HashTable } from 'app/shared/models/hashtable.model';
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-    
+
     // Form
     entityForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
@@ -55,7 +55,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     dialog: ApplyDialogService<MultipleSelectionComponent>;
     // UNtuk keperluan limit entity.
     // tslint:disable-next-line: no-inferrable-types
-    limit: number = 15;
+    limit: number = 200;
     // Untuk menyimpan search.
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
@@ -451,7 +451,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                         description: null,
                                         status: null,
                                     }));
-    
+
                                     for (const entity of (groupValue as Array<Entity>)) {
                                         this.upsertEntity(entity);
                                     }
@@ -470,7 +470,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                                         description: null,
                                         status: null,
                                     }));
-    
+
                                     for (const entity of (channelValue as Array<Entity>)) {
                                         this.upsertEntity(entity);
                                     }
