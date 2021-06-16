@@ -1113,7 +1113,7 @@ export class OrderEffects {
                     }
                 });
     
-                this._$notice.open('Update Order Gagal', 'error', {
+                this._$notice.open(resp.errors.error.message, 'error', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
