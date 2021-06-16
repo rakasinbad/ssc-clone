@@ -120,7 +120,7 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-            when { expression { SINBAD_ENV != "production" || SINBAD_ENV != "demo" } }
+            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" } }
             steps{
                 script{
                     def scannerHome = tool 'SonarQubeScanner';
