@@ -637,16 +637,17 @@ export class OrderEffects {
                 return this._$orderApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
+                        const payload = {
+                            data : resp
+                        }
                         this._$log.generateGroup('[RESPONSE REQUEST FETCH ORDER]', {
                             response: {
                                 type: 'log',
-                                value: resp
+                                value: payload
                             }
                         });
 
-                        return OrderActions.fetchOrderSuccess({
-                            payload: resp
-                        });
+                        return OrderActions.fetchOrderSuccess({ payload });
                     }),
                     catchError(err =>
                         of(
