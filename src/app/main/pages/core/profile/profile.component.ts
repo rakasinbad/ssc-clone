@@ -5,7 +5,7 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
@@ -15,8 +15,9 @@ import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
 import { Province, Urban } from 'app/shared/models/location.model';
-import { DropdownActions, UiActions } from 'app/shared/store/actions';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { DropdownActions, UiActions, FormActions } from 'app/shared/store/actions';
+import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
+import { FormStatus } from 'app/shared/models/global.model';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil, tap } from 'rxjs/operators';
 
@@ -32,12 +33,12 @@ import { ProfileSelectors } from './store/selectors';
     styleUrls: ['./profile.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent implements OnInit, OnDestroy {
     form: FormGroup;
     isEdit: boolean;
-    section: string = "company-info";
+    section: string = 'companyInfo';
 
     profile$: Observable<any>;
     provinces$: Observable<Array<Province>>;
@@ -69,21 +70,56 @@ export class ProfileComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home'
+                        title: 'Home',
                         // translate: 'BREADCRUMBS.HOME'
                     },
                     {
-                        title: 'My Account'
+                        title: 'My Account',
                         //   translate: 'BREADCRUMBS.ORDER_MANAGEMENTS'
                     },
                     {
                         title: 'Supplier Information',
                         //   translate: 'BREADCRUMBS.ORDER_DETAILS',
-                        active: true
-                    }
-                ]
+                        active: true,
+                    },
+                ],
             })
         );
+
+        this.store.dispatch(
+            UiActions.setFooterActionConfig({
+                payload: {
+                    progress: {
+                        title: {
+                            label: 'Supplier Information',
+                            active: true,
+                        },
+                        value: {
+                            active: false,
+                        },
+                        active: false,
+                    },
+                    action: {
+                        save: {
+                            label: 'Save',
+                            active: true,
+                        },
+                        draft: {
+                            label: 'Save Draft',
+                            active: false,
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            active: true,
+                        },
+                    },
+                },
+            })
+        );
+
+        this.store.dispatch(FormActions.resetFormStatus());
+        this.store.dispatch(FormActions.setFormStatusInvalid());
+        this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -99,7 +135,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
         // Get selector profile
         this.profile$ = this.store.select(ProfileSelectors.getProfile).pipe(
-            tap(data => {
+            tap((data) => {
                 this._profile = data;
             })
         );
@@ -117,14 +153,44 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.initForm();
     }
 
+    ngAfterViewInit(): void {
+        // Memeriksa kejadian ketika adanya penekanan pada tombol "cancel".
+        this.store
+            .select(FormSelectors.getIsClickCancelButton)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe((isClick) => {
+                if (isClick) {
+                    this.isEdit = false;
+
+                    this.store.dispatch(UiActions.hideFooterAction());
+                    this.store.dispatch(FormActions.resetClickCancelButton());
+                    this.store.dispatch(FormActions.resetClickSaveButton());
+                }
+            });
+
+        // Memeriksa kejadian ketika adanya penekanan pada tombol "save".
+        this.store
+            .select(FormSelectors.getIsClickSaveButton)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe((isClick) => {
+                if (isClick) {
+                    this.isEdit = false;
+
+                    this.store.dispatch(UiActions.hideFooterAction());
+                    this.store.dispatch(FormActions.resetClickCancelButton());
+                    this.store.dispatch(FormActions.resetClickSaveButton());
+                }
+            });
+    }
+
     ngOnDestroy(): void {
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
-
-        this.store.dispatch(UiActions.resetBreadcrumb());
-
         this._unSubs$.next();
         this._unSubs$.complete();
+
+        this.store.dispatch(UiActions.resetBreadcrumb());
+        this.store.dispatch(UiActions.hideFooterAction());
+        this.store.dispatch(UiActions.hideCustomToolbar());
+        this.store.dispatch(FormActions.resetFormStatus());
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -147,6 +213,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     onEdit(isEdit: boolean): void {
         this.isEdit = isEdit ? false : true;
+
+        if (isEdit) {
+            this.store.dispatch(UiActions.hideFooterAction());
+        } else {
+            this.store.dispatch(UiActions.showFooterAction());
+        }
+
+        this.store.dispatch(FormActions.setFormStatusInvalid());
+        this.store.dispatch(FormActions.resetClickCancelButton());
+    }
+
+    onFormStatusChanged(value: FormStatus): void {
+        if (this.isEdit) {
+            if (value === 'VALID') {
+                this.store.dispatch(FormActions.setFormStatusValid());
+            } else {
+                this.store.dispatch(FormActions.setFormStatusInvalid());
+            }
+        }
     }
 
     onOpenChange(ev: boolean, field: string): void {
@@ -195,9 +280,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
     onSelectedTab(index: number): void {
         this.isEdit = false;
         switch (index) {
-            case 0: this.section = 'company-info'; break;
-            case 1: this.section = 'address'; break;
-            case 2: this.section = 'legal-info'; break;
+            case 0:
+                this.section = 'companyInfo';
+                break;
+            case 1:
+                this.section = 'address';
+                break;
+            case 2:
+                this.section = 'legalInfo';
+                break;
         }
     }
 
@@ -220,8 +311,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.cities$ = this.store
                         .select(DropdownSelectors.getCityDropdownState, { provinceId })
                         .pipe(
-                            filter(v => v && v.length > 0),
-                            tap(_ => {
+                            filter((v) => v && v.length > 0),
+                            tap((_) => {
                                 this.form.get('city').enable();
                             })
                         );
@@ -240,11 +331,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
                     this.districts$ = this.store
                         .select(DropdownSelectors.getDistrictDropdownState, {
                             provinceId,
-                            city
+                            city,
                         })
                         .pipe(
-                            filter(v => v && v.length > 0),
-                            tap(_ => {
+                            filter((v) => v && v.length > 0),
+                            tap((_) => {
                                 this.form.get('district').enable();
                             })
                         );
@@ -265,11 +356,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
                         .select(DropdownSelectors.getUrbanDropdownState, {
                             provinceId,
                             city,
-                            district
+                            district,
                         })
                         .pipe(
-                            filter(v => v && v.length > 0),
-                            tap(_ => {
+                            filter((v) => v && v.length > 0),
+                            tap((_) => {
                                 this.form.get('urban').enable();
                             })
                         );
@@ -292,13 +383,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
                             provinceId,
                             city,
                             district,
-                            urbanId
+                            urbanId,
                         })
                         .pipe(
-                            filter(v => !!v),
+                            filter((v) => !!v),
                             takeUntil(this._unSubs$)
                         )
-                        .subscribe(postcode => {
+                        .subscribe((postcode) => {
                             this.form.get('postcode').setValue(postcode);
                         });
                 }
@@ -320,7 +411,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             const payload = {
                 urbanId: body.urban,
                 address: body.notes,
-                taxNo: body.taxNo
+                taxNo: body.taxNo,
             };
 
             if (!body.urban) {
@@ -334,7 +425,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             if (Object.keys(payload).length > 0) {
                 this.store.dispatch(
                     ProfileActions.updateProfileRequest({
-                        payload: { body: payload, id: this._profile.id }
+                        payload: { body: payload, id: this._profile.id },
                     })
                 );
 
@@ -353,83 +444,83 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             city: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             district: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             urban: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             postcode: [
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.minLength({
                         value: 5,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxLength({
                         value: 5,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             notes: [
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
             taxNo: [
                 '',
                 [
                     RxwebValidators.minLength({
                         value: 15,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                     RxwebValidators.maxLength({
                         value: 15,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
-            ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
+            ],
         });
 
         this.store
             .select(ProfileSelectors.getProfile)
             .pipe(
-                filter(v => !!v),
+                filter((v) => !!v),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(data => {
+            .subscribe((data) => {
                 this.initUpdateForm(data);
             });
     }
@@ -455,9 +546,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
             }
         }
 
-        if (data.taxNo){
+        if (data.taxNo) {
             this.form.get('taxNo').setValue(data.taxNo);
-        }else{
+        } else {
             this.form.get('taxNo').setValue('"00000000000000"');
         }
     }
@@ -521,10 +612,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
             this.store
                 .select(DropdownSelectors.getProvinceDropdownState)
                 .pipe(
-                    filter(v => v && v.length > 0),
+                    filter((v) => v && v.length > 0),
                     takeUntil(this._unSubs$)
                 )
-                .subscribe(_ => {
+                .subscribe((_) => {
                     this.populateCity(
                         provinceId,
                         currentCity,
@@ -546,8 +637,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.cities$ = this.store
             .select(DropdownSelectors.getCityDropdownState, { provinceId })
             .pipe(
-                filter(v => v && v.length > 0),
-                tap(_ => {
+                filter((v) => v && v.length > 0),
+                tap((_) => {
                     this.form.get('city').enable();
 
                     if (currentCity) {
@@ -579,11 +670,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.districts$ = this.store
             .select(DropdownSelectors.getDistrictDropdownState, {
                 provinceId,
-                city
+                city,
             })
             .pipe(
-                filter(v => v && v.length > 0),
-                tap(_ => {
+                filter((v) => v && v.length > 0),
+                tap((_) => {
                     this.form.get('district').enable();
 
                     if (currentDistrict) {
@@ -616,11 +707,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
             .select(DropdownSelectors.getUrbanDropdownState, {
                 provinceId,
                 city,
-                district
+                district,
             })
             .pipe(
-                filter(v => v && v.length > 0),
-                tap(_ => {
+                filter((v) => v && v.length > 0),
+                tap((_) => {
                     this.form.get('urban').enable();
 
                     if (currentUrban) {
@@ -654,13 +745,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 provinceId,
                 city,
                 district,
-                urbanId
+                urbanId,
             })
             .pipe(
-                filter(v => !!v),
+                filter((v) => !!v),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(postcode => {
+            .subscribe((postcode) => {
                 if (currentPostcode) {
                     this.form.get('postcode').setValue(currentPostcode);
                 } else if (postcode) {

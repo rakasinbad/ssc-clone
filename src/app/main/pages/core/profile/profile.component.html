@@ -37,74 +37,46 @@
                 >
                     <span>EDIT</span>
                 </button>
-
-                <button
-                    type="button"
-                    mat-raised-button
-                    class="accent-fg"
-                    (click)="onEdit(isEdit)"
-                    *ngIf="isEdit"
-                >
-                    <span>BATAL</span>
-                </button>
-
-                <button
-                    type="submit"
-                    mat-raised-button
-                    class="accent-fg"
-                    [disabled]="form.invalid || form.pristine"
-                    form="profile-form"
-                    *ngIf="isEdit"
-                >
-                    <span>SAVE</span>
-                </button>
             </div>
-
-            <!-- <button mat-raised-button
-                    class="save-product-button"
-                    [disabled]="productForm.invalid"
-                    *ngIf="pageType ==='new'" (click)="addProduct()">
-                <span>ADD</span>
-            </button>
-
-            <button mat-raised-button
-                    class="save-product-button"
-                    [disabled]="productForm.invalid || productForm.pristine"
-                    *ngIf="pageType ==='edit'" (click)="saveProduct()">
-                <span>SAVE</span>
-            </button> -->
         </div>
         <!-- / HEADER -->
 
         <!-- CONTENT -->
         <mat-tab-group
-            color="accent" style="border-radius: 4px;"
+            color="accent"
+            style="border-radius: 4px"
             class="sinbad-white sinbad-mat-tab-group has-border mat-tab-header-px-12"
             animationDuration="0ms"
             dynamicHeight="true"
             (selectedIndexChange)="onSelectedTab($event)"
             fusePerfectScrollbar
         >
-            <mat-tab label="Company Information">
+            <mat-tab label="Company Information" [disabled]="isEdit">
                 <ng-template matTabContent>
-                    <company-information-component [isEdit]="isEdit && section === 'company-info'"></company-information-component>
+                    <company-information-component
+                        [isEdit]="isEdit && section === 'companyInfo'"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></company-information-component>
                 </ng-template>
             </mat-tab>
 
-            <mat-tab label="Address">
+            <mat-tab label="Address" [disabled]="isEdit">
                 <ng-template matTabContent>
-                    <company-address-component></company-address-component>
+                    <company-address-component
+                        [isEdit]="isEdit && section === 'address'"
+                    ></company-address-component>
                 </ng-template>
             </mat-tab>
 
-            <mat-tab label="Legal Information">
+            <mat-tab label="Legal Information" [disabled]="isEdit">
                 <ng-template matTabContent>
-                    <legal-information-component></legal-information-component>
+                    <legal-information-component
+                        [isEdit]="isEdit && section === 'legalInfo'"
+                    ></legal-information-component>
                 </ng-template>
             </mat-tab>
         </mat-tab-group>
         <!-- / CONTENT -->
-
     </div>
     <!-- / CENTER -->
 </div>

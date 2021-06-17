@@ -1,66 +1,163 @@
 <div class="p-16 sinbad-content">
     <!-- TITLE -->
-    <div class="font-size-18 text-semibold">
-        Company Information
-    </div>
+    <div class="font-size-18 text-semibold">Company Information</div>
     <!-- TITLE -->
-
-    <!-- COMPANY IMAGE -->
-    <div
-        fxLayout="row"
-        fxLayoutGap="26px"
-        fxLayoutAlign="start stretch"
-    >
-        <div class="img-container" *ngIf="(profile$ | async)?.companyInfo?.imageUrl; else noCompanyImage;">
-            <img
-                [src]="(profile$ | async)?.companyInfo?.imageUrl"
-                (click)="openPreviewPhoto()"
-                alt="Supplier Image"
-                class="fit-image"
-                style="cursor: pointer; border-radius: 8px"
-            />
-        </div>
-
-        <ng-template #noCompanyImage>
-            <div class="img-container">
-                <img
-                    src="https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/store-images/dummy_store.svg"
-                    alt="Supplier Image"
-                    class="fit-image"
-                    style="cursor: pointer;"
-                />
-            </div>                
-        </ng-template>
-    </div>
-    <!-- COMPANY IMAGE -->
-
-    <div
-        class="mt-24"
-        fxLayout="row"
-        fxLayoutGap="26px"
-        fxLayoutAlign="start stretch"
-    >
-        <div
-            fxLayout="column"
-            fxLayoutAlign="start stretch"
-            fxLayoutGap="42px"
-            fxFlex
-        >
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form [formGroup]="form" class="w-100-p" novalidate>
             <div
+                class="mt-12"
                 fxLayout="column"
+                [fxLayoutGap]="isEdit ? '20px' : '31px'"
                 fxLayoutAlign="start stretch"
-                fxLayoutGap="26px"
-                fxFlex
             >
+                <!-- Supplier Image -->
+                <ng-container *ngIf="isEdit; else viewModeImage">
+                    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                        <p
+                            class="font-size-14 field-label"
+                            [class.mat-error]="isEdit && hasError(form.get('companyInfo.imageUrl'))"
+                            [fxFlex]="labelFlex"
+                        >
+                            Supplier Image
+                        </p>
+
+                        <div
+                            appearance="outline"
+                            fxFlex="80"
+                            fxLayout="row"
+                            fxLayoutGap="10px"
+                            fxLayoutAlign="start start"
+                        >
+                            <div fxLayout="column" fxLayoutAlign="start stretch">
+                                <input
+                                    hidden
+                                    #photos
+                                    type="file"
+                                    accept=".jpg, .jpeg, .png"
+                                    (change)="onFileBrowse($event)"
+                                    autocomplete="off"
+                                    (click)="photos.value = null"
+                                />
+                                <ng-container
+                                    *ngIf="
+                                        !form.get('companyInfo.imageUrl').value && isEdit;
+                                        else hasPhoto
+                                    "
+                                >
+                                    <div class="img-container">
+                                        <button
+                                            (click)="photos.click()"
+                                            mat-stroked-button
+                                            class="red-fg fit-image"
+                                        >
+                                            <mat-icon>add_circle</mat-icon>
+                                            <p
+                                                [class.mat-error]="
+                                                    hasError(form.get('companyInfo.imageUrl'))
+                                                "
+                                                class="field-description"
+                                            >
+                                                Add Picture
+                                            </p>
+                                        </button>
+                                    </div>
+                                </ng-container>
+                                <ng-template #hasPhoto>
+                                    <div
+                                        class="img-container"
+                                        fxLayout="row"
+                                        fxLayoutAlign="space-between start"
+                                        *ngIf="form.get('companyInfo.imageUrl').value"
+                                    >
+                                        <img
+                                            class="fit-image"
+                                            [src]="form.get('companyInfo.imageUrl').value"
+                                            style="border-radius: 8px"
+                                        />
+                                        <button
+                                            class="red-fg"
+                                            mat-icon-button
+                                            style="bottom: 26px; right: 22px"
+                                            (click)="onAbortUploadPhoto(photos)"
+                                            *ngIf="isEdit"
+                                        >
+                                            <mat-icon>remove_circle</mat-icon>
+                                        </button>
+                                    </div>
+                                </ng-template>
+                                <div fxLayout="column" fxLayoutAlign="space-between">
+                                    <p
+                                        [class.mat-error]="
+                                            hasError(form.get('companyInfo.imageUrl'))
+                                        "
+                                        class="field-description mt-4"
+                                    >
+                                        Support file JPG or PNG with max file 1MB
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <ng-template #viewModeImage>
+                    <div fxLayout="row" fxLayoutGap="26px" fxLayoutAlign="start stretch" #viewMode>
+                        <div
+                            class="img-container"
+                            *ngIf="(profile$ | async)?.companyInfo?.imageUrl; else noCompanyImage"
+                        >
+                            <img
+                                [src]="(profile$ | async)?.companyInfo?.imageUrl"
+                                (click)="openPreviewPhoto()"
+                                alt="Supplier Image"
+                                class="fit-image"
+                                style="cursor: pointer; border-radius: 8px"
+                            />
+                        </div>
+
+                        <ng-template #noCompanyImage>
+                            <div class="img-container">
+                                <img
+                                    src="https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/store-images/dummy_store.svg"
+                                    alt="Supplier Image"
+                                    class="fit-image"
+                                    style="cursor: pointer"
+                                />
+                            </div>
+                        </ng-template>
+                    </div>
+                </ng-template>
+                <!-- Supplier Image -->
+
                 <!-- Company Name -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
-                        <ng-container *ngIf="isEdit"><span class="red-500-fg">*</span></ng-container>
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('companyInfo.name'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container *ngIf="isEdit"
+                            ><span class="red-500-fg">*</span></ng-container
+                        >
                         Company Name
                     </p>
 
-                    <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        *ngIf="isEdit"
+                        [class.mat-error]="isEdit && hasError(form.get('companyInfo.name'))"
+                    >
                         <input matInput name="name" formControlName="name" />
+                        <mat-error *ngIf="hasError(form.get('companyInfo.name'))">
+                            {{ getFormError(form.get('companyInfo.name')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -72,13 +169,31 @@
                 <!-- / Company Name -->
 
                 <!-- Description -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('companyInfo.description'))"
+                        [fxFlex]="labelFlex"
+                    >
                         Description
                     </p>
-                    
+
                     <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
-                        <input matInput name="description" formControlName="description" />
+                        <textarea
+                            matInput
+                            name="description"
+                            formControlName="description"
+                            rows="3"
+                        ></textarea>
+                        <mat-error *ngIf="hasError(form.get('companyInfo.description'))">
+                            {{ getFormError(form.get('companyInfo.description')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -90,13 +205,26 @@
                 <!-- / Description -->
 
                 <!-- Country -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('companyInfo.country'))"
+                        [fxFlex]="labelFlex"
+                    >
                         Country
                     </p>
 
                     <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
-                        <input matInput name="country" formControlName="country" disabled/>
+                        <input matInput name="country" formControlName="country" />
+                        <mat-error *ngIf="hasError(form.get('companyInfo.country'))">
+                            {{ getFormError(form.get('companyInfo.country')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -108,17 +236,35 @@
                 <!-- / Country -->
 
                 <!-- Business Type -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
-                        <ng-container *ngIf="isEdit"><span class="red-500-fg">*</span></ng-container>
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('companyInfo.businessType'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container *ngIf="isEdit"
+                            ><span class="red-500-fg">*</span></ng-container
+                        >
                         Business Type
                     </p>
 
                     <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
-                        <mat-select formControlName="businessType" placeholder="Choose Business Type">
+                        <mat-select
+                            formControlName="businessType"
+                            placeholder="Choose Business Type"
+                        >
                             <mat-option value="supplier">Supplier</mat-option>
-                            <mat-option value="ditributor">Distributor</mat-option>
+                            <mat-option value="distributor">Distributor</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="hasError(form.get('companyInfo.businessType'))">
+                            {{ getFormError(form.get('companyInfo.businessType')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -130,18 +276,38 @@
                 <!-- / Business Type -->
 
                 <!-- Business Entity -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
-                        <ng-container *ngIf="isEdit"><span class="red-500-fg">*</span></ng-container>
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('companyInfo.businessEntity'))
+                        "
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container *ngIf="isEdit"
+                            ><span class="red-500-fg">*</span></ng-container
+                        >
                         Business Entity
                     </p>
 
                     <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
-                        <mat-select formControlName="businessEntity" placeholder="Choose Business Entity">
+                        <mat-select
+                            formControlName="businessEntity"
+                            placeholder="Choose Business Entity"
+                        >
                             <mat-option value="CV">CV</mat-option>
                             <mat-option value="PT">PT</mat-option>
                             <mat-option value="Tbk">Tbk</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="hasError(form.get('companyInfo.businessEntity'))">
+                            {{ getFormError(form.get('companyInfo.businessEntity')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -151,15 +317,28 @@
                     </ng-container>
                 </div>
                 <!-- / Business Entity -->
-                
+
                 <!-- Since -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('companyInfo.since'))"
+                        [fxFlex]="labelFlex"
+                    >
                         Since
                     </p>
-                    
+
                     <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
-                        <input matInput name="since" formControlName="since"/>
+                        <input matInput name="since" formControlName="since" />
+                        <mat-error *ngIf="hasError(form.get('companyInfo.since'))">
+                            {{ getFormError(form.get('companyInfo.since')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -171,13 +350,32 @@
                 <!-- / Since -->
 
                 <!-- Number of Employee -->
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
-                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="companyInfo"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('companyInfo.numberOfEmployee'))
+                        "
+                        [fxFlex]="labelFlex"
+                    >
                         Number of Employee
                     </p>
 
                     <mat-form-field appearance="outline" fxFlex="50" *ngIf="isEdit">
-                        <input matInput name="numberOfEmployee" formControlName="numberOfEmployee"/>
+                        <input
+                            matInput
+                            name="numberOfEmployee"
+                            formControlName="numberOfEmployee"
+                        />
+                        <mat-error *ngIf="hasError(form.get('companyInfo.numberOfEmployee'))">
+                            {{ getFormError(form.get('companyInfo.numberOfEmployee')) }}
+                        </mat-error>
                     </mat-form-field>
 
                     <ng-container *ngIf="!isEdit">
@@ -188,12 +386,12 @@
                 </div>
                 <!-- / Number of Employee -->
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
 <ng-template #previewPhoto>
-    <div class="px-8 pb-20" style="display: block; margin-left: auto; margin-right: auto;">
-        <img [src]="selectedPhoto" style="width: 100%; height: 100%; object-fit: cover;"/>
+    <div class="px-8 pb-20" style="display: block; margin-left: auto; margin-right: auto">
+        <img [src]="selectedPhoto" style="width: 100%; height: 100%; object-fit: cover" />
     </div>
 </ng-template>
