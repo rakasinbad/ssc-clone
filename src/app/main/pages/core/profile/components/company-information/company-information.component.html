@@ -2,7 +2,7 @@
     <!-- TITLE -->
     <div class="font-size-18 text-semibold">Company Information</div>
     <!-- TITLE -->
-    <div class="p-16 pt-0 pb-40 line-height-1.75">
+    <div class="pt-0 pb-40 line-height-1.75">
         <form [formGroup]="form" class="w-100-p" novalidate>
             <div
                 class="mt-12"
@@ -92,7 +92,7 @@
                                         "
                                         class="field-description mt-4"
                                     >
-                                        Support file JPG or PNG with max file 1MB
+                                        Support file JPG, JPEG, or PNG with max file 1MB
                                     </p>
                                 </div>
                             </div>
@@ -269,7 +269,7 @@
 
                     <ng-container *ngIf="!isEdit">
                         <p class="font-size-14 field-value">
-                            {{ (profile$ | async)?.companyInfo?.businessType || '-' }}
+                            {{ capitalizeLetter((profile$ | async)?.companyInfo?.businessType) }}
                         </p>
                     </ng-container>
                 </div>
