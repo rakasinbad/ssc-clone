@@ -93,7 +93,7 @@ export class CompanyInformationComponent implements OnInit {
             )
             .subscribe((payload) => {
                 if (payload && payload.companyInfo) {
-                    this.selectedPhoto = payload.companyInfo.imageUrl;
+                    this.selectedPhoto = payload.companyInfo.imageLogoUrl;
                     this.profileID = payload.id;
                 }
             });
@@ -115,7 +115,7 @@ export class CompanyInformationComponent implements OnInit {
     private initForm(): void {
         this.form = this.fb.group({
             companyInfo: this.fb.group({
-                imageUrl: [
+                imageLogoUrl: [
                     null,
                     [
                         RxwebValidators.fileSize({
@@ -248,7 +248,7 @@ export class CompanyInformationComponent implements OnInit {
         if (data) {
             this.form.patchValue({
                 companyInfo: {
-                    imageUrl: data.imageUrl,
+                    imageLogoUrl: data.imageLogoUrl,
                     name: data.name,
                     description: data.description,
                     country: data.country || 'Indonesia',
@@ -361,7 +361,7 @@ export class CompanyInformationComponent implements OnInit {
     onAbortUploadPhoto($event: HTMLInputElement): void {
         $event.value = '';
 
-        this.form.get('companyInfo.imageUrl').patchValue(null);
+        this.form.get('companyInfo.imageLogoUrl').patchValue(null);
         this.cdRef.markForCheck();
     }
 
@@ -372,13 +372,13 @@ export class CompanyInformationComponent implements OnInit {
         if (inputEl.files && inputEl.files.length > 0) {
             const file = inputEl.files[0];
             if (file.size > maxSize) {
-                this.form.get('companyInfo.imageUrl').setErrors({
+                this.form.get('companyInfo.imageLogoUrl').setErrors({
                     maxSize: {
                         message: 'This field must be less than or equal 1 MB',
                     },
                 });
             } else {
-                const formPhoto = this.form.get('companyInfo.imageUrl');
+                const formPhoto = this.form.get('companyInfo.imageLogoUrl');
                 const fileReader = new FileReader();
 
                 fileReader.onload = () => {
@@ -399,7 +399,7 @@ export class CompanyInformationComponent implements OnInit {
         this.store.dispatch(ProfileActions.setLoading({ payload: true }));
 
         const body = this.form.value;
-        const formImage = body.companyInfo.imageUrl;
+        const formImage = body.companyInfo.imageLogoUrl;
         const oldImage = this.selectedPhoto;
 
         if (formImage && formImage != oldImage) {
@@ -418,7 +418,7 @@ export class CompanyInformationComponent implements OnInit {
                             .upload(photoPayload.image, photoPayload.type, photoPayload.oldLink)
                             .pipe(
                                 tap((response) => {
-                                    body['companyInfo'].imageUrl = response.url;
+                                    body['companyInfo'].imageLogoUrl = response.url;
                                 }),
                                 catchError((err) => {
                                     this.store.dispatch(
@@ -467,6 +467,21 @@ export class CompanyInformationComponent implements OnInit {
     }
 
     onPatchProfile(payload: CompanyInformation): void {
+        const body = { ...payload };
+
+        if (!body.companyInfo.imageLogoUrl) {
+            body.companyInfo.imageLogoUrl = null;
+        }
+        if (!body.companyInfo.description) {
+            body.companyInfo.description = null;
+        }
+        if (!body.companyInfo.since) {
+            body.companyInfo.since = null;
+        }
+        if (!body.companyInfo.numberOfEmployee) {
+            body.companyInfo.numberOfEmployee = null;
+        }
+
         if (Object.keys(payload).length > 0) {
             this.store.dispatch(
                 ProfileActions.updateProfileRequest({

@@ -15,7 +15,7 @@
                     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
                         <p
                             class="font-size-14 field-label"
-                            [class.mat-error]="isEdit && hasError(form.get('companyInfo.imageUrl'))"
+                            [class.mat-error]="isEdit && hasError(form.get('companyInfo.imageLogoUrl'))"
                             [fxFlex]="labelFlex"
                         >
                             Supplier Image
@@ -40,7 +40,7 @@
                                 />
                                 <ng-container
                                     *ngIf="
-                                        !form.get('companyInfo.imageUrl').value && isEdit;
+                                        !form.get('companyInfo.imageLogoUrl').value && isEdit;
                                         else hasPhoto
                                     "
                                 >
@@ -53,7 +53,7 @@
                                             <mat-icon>add_circle</mat-icon>
                                             <p
                                                 [class.mat-error]="
-                                                    hasError(form.get('companyInfo.imageUrl'))
+                                                    hasError(form.get('companyInfo.imageLogoUrl'))
                                                 "
                                                 class="field-description"
                                             >
@@ -67,11 +67,11 @@
                                         class="img-container"
                                         fxLayout="row"
                                         fxLayoutAlign="space-between start"
-                                        *ngIf="form.get('companyInfo.imageUrl').value"
+                                        *ngIf="form.get('companyInfo.imageLogoUrl').value"
                                     >
                                         <img
                                             class="fit-image"
-                                            [src]="form.get('companyInfo.imageUrl').value"
+                                            [src]="form.get('companyInfo.imageLogoUrl').value"
                                             style="border-radius: 8px"
                                         />
                                         <button
@@ -88,7 +88,7 @@
                                 <div fxLayout="column" fxLayoutAlign="space-between">
                                     <p
                                         [class.mat-error]="
-                                            hasError(form.get('companyInfo.imageUrl'))
+                                            hasError(form.get('companyInfo.imageLogoUrl'))
                                         "
                                         class="field-description mt-4"
                                     >
@@ -104,10 +104,10 @@
                     <div fxLayout="row" fxLayoutGap="26px" fxLayoutAlign="start stretch" #viewMode>
                         <div
                             class="img-container"
-                            *ngIf="(profile$ | async)?.companyInfo?.imageUrl; else noCompanyImage"
+                            *ngIf="(profile$ | async)?.companyInfo?.imageLogoUrl; else noCompanyImage"
                         >
                             <img
-                                [src]="(profile$ | async)?.companyInfo?.imageUrl"
+                                [src]="(profile$ | async)?.companyInfo?.imageLogoUrl"
                                 (click)="openPreviewPhoto()"
                                 alt="Supplier Image"
                                 class="fit-image"
