@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { ProfileSelectors } from '../../store/selectors';
@@ -11,6 +11,8 @@ import { fromProfile } from '../../store/reducers';
   encapsulation: ViewEncapsulation.None,
 })
 export class CompanyAddressComponent implements OnInit {
+
+  @Input() isEdit: boolean;
 
   // tslint:disable-next-line: no-inferrable-types
   labelFlex: string = '20';

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -12,6 +12,8 @@ import { fromProfile } from '../../store/reducers';
   encapsulation: ViewEncapsulation.None,
 })
 export class LegalInformationComponent implements OnInit {
+  
+  @Input() isEdit: boolean;
 
   // tslint:disable-next-line: no-inferrable-types
   labelFlex: string = '20';
