@@ -1,6 +1,6 @@
 export interface ICompanyInformation {
-    companyInformation: {
-        imageUrl: string;
+    companyInfo: {
+        imageLogoUrl: string;
         name: string;
         description: string;
         country: string;
@@ -12,8 +12,8 @@ export interface ICompanyInformation {
 }
 
 export class CompanyInformation implements ICompanyInformation {
-    companyInformation: {
-        imageUrl: string;
+    companyInfo: {
+        imageLogoUrl: string;
         name: string;
         description: string;
         country: string;
@@ -24,8 +24,8 @@ export class CompanyInformation implements ICompanyInformation {
     };
 
     constructor(data: ICompanyInformation) {
-        const { companyInformation } = data;
+        const { companyInfo } = data;
 
-        this.companyInformation = companyInformation;
+        this.companyInfo = companyInfo;
     }
 }
