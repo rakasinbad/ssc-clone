@@ -374,7 +374,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     {
                         title: `Reject (${item.outerStore.name})`,
                         template: this.reject,
-                        isApplyEnabled: true,
+                        isApplyEnabled: false,
                     },
                     {
                         disableClose: true,
@@ -385,6 +385,19 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         panelClass: 'dialog-container-no-padding',
                     }
                 );
+
+                this.rejectForm.valueChanges
+                    .pipe(
+                        tap((value) => {
+                            if(value.reason !== ''){
+                                this.dialogRejectForm.enableApply()
+                            } else {
+                                this.dialogRejectForm.disableApply()
+                            }
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe();
 
                 this.dialogRejectForm.closed$.subscribe({
                     next: (value: TNullable<string>) => {

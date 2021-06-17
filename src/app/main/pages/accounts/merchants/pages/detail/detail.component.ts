@@ -143,7 +143,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
 
         if (value.outerStore.rejectedFields.imageUrl) {
-            rejectedFields.push('Picture (Toko)');
+            rejectedFields.push('Foto Toko');
         }
 
         if (value.outerStore.rejectedFields.mobilePhoneNo) {
@@ -151,11 +151,11 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
 
         if (value.outerStore.rejectedFields.name) {
-            rejectedFields.push('Store Name');
+            rejectedFields.push('Nama Toko');
         }
 
         if (value.outerStore.rejectedFields.phoneNo) {
-            rejectedFields.push('Store Phone Number');
+            rejectedFields.push('Nomor Handphone');
         }
 
         if (value.outerStore.rejectedFields.selfieImageUrl) {
