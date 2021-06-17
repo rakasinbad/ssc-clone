@@ -112,6 +112,17 @@ export class CompanyInformationComponent implements OnInit {
         }
     }
 
+    ngAfterViewInit(): void {
+        this.store
+            .select(FormSelectors.getIsClickSaveButton)
+            .pipe(takeUntil(this.unSubs$))
+            .subscribe((isClick) => {
+                if (isClick) {
+                    this.onSubmit();
+                }
+            });
+    }
+
     private initForm(): void {
         this.form = this.fb.group({
             companyInfo: this.fb.group({
@@ -477,14 +488,10 @@ export class CompanyInformationComponent implements OnInit {
         }
     }
 
-    ngAfterViewInit(): void {
-        this.store
-            .select(FormSelectors.getIsClickSaveButton)
-            .pipe(takeUntil(this.unSubs$))
-            .subscribe((isClick) => {
-                if (isClick) {
-                    this.onSubmit();
-                }
-            });
+    capitalizeLetter(payload: string): string {
+        if (payload) {
+            return payload.charAt(0).toUpperCase() + payload.slice(1);
+        }
+        return '-';
     }
 }
