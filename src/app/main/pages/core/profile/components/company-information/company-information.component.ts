@@ -186,12 +186,6 @@ export class CompanyInformationComponent implements OnInit {
                 since: [
                     null,
                     [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            ),
-                        }),
                         RxwebValidators.numeric({
                             acceptValue: NumericValueType.PositiveNumber,
                             allowDecimal: false,
@@ -219,12 +213,6 @@ export class CompanyInformationComponent implements OnInit {
                 numberOfEmployee: [
                     null,
                     [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            ),
-                        }),
                         RxwebValidators.numeric({
                             acceptValue: NumericValueType.PositiveNumber,
                             allowDecimal: false,
@@ -260,8 +248,6 @@ export class CompanyInformationComponent implements OnInit {
             });
         }
 
-        // this.form.updateValueAndValidity();
-        // this.form.markAsDirty({ onlySelf: false });
         this.form.markAllAsTouched();
         this.form.markAsPristine();
     }
@@ -485,7 +471,7 @@ export class CompanyInformationComponent implements OnInit {
         if (Object.keys(payload).length > 0) {
             this.store.dispatch(
                 ProfileActions.updateProfileRequest({
-                    payload: { body: payload, id: this.profileID },
+                    payload: { body: body, id: this.profileID },
                 })
             );
         }
