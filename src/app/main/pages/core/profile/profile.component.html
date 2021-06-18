@@ -72,6 +72,7 @@
                 <ng-template matTabContent>
                     <legal-information-component
                         [isEdit]="isEdit && section === 'legalInfo'"
+                        (formStatusChange)="onFormStatusChanged($event)"
                     ></legal-information-component>
                 </ng-template>
             </mat-tab>

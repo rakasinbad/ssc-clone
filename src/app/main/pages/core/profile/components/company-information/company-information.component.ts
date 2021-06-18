@@ -117,7 +117,7 @@ export class CompanyInformationComponent implements OnInit {
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(takeUntil(this.unSubs$))
             .subscribe((isClick) => {
-                if (isClick) {
+                if (this.isEdit && isClick) {
                     this.onSubmit();
                 }
             });
