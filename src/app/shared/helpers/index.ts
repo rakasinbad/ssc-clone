@@ -12,6 +12,7 @@ export * from './window.service';
 export * from './calculate-order-api.service';
 export * from './cluster-api.service';
 export * from './district-api.service';
+export * from './document-upload-api.service';
 export * from './download-api.service';
 export * from './export-log-api.service';
 export * from './export-service-api.service';
