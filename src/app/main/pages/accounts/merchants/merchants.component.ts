@@ -483,7 +483,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 approvalStatus: 'rejected',
                                 supplierStores: this.selected
                                     .toArray()
-                                    .map((selected) => ({ id: selected.id })),
+                                    .map((selected) => ({ supplierStoreId: selected.id })),
                                 rejection: {
                                     reasons: formValue.reason,
                                     rejectedFields: {
