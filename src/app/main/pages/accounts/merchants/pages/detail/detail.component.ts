@@ -131,15 +131,15 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
         
         if (value.outerStore.rejectedFields.fullName) {
-            rejectedFields.push('Owner Store Name');
+            rejectedFields.push('Nama Pemilik Toko');
         }
 
         if (value.outerStore.rejectedFields.idImageUrl) {
-            rejectedFields.push('Picture (Owner KTP)');
+            rejectedFields.push('Foto KTP');
         }
 
         if (value.outerStore.rejectedFields.idNo) {
-            rejectedFields.push('KTP Number');
+            rejectedFields.push('Nomor KTP');
         }
 
         if (value.outerStore.rejectedFields.imageUrl) {
@@ -147,7 +147,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
 
         if (value.outerStore.rejectedFields.mobilePhoneNo) {
-            rejectedFields.push('Store Phone Number');
+            rejectedFields.push('Nomor Telepon Toko');
         }
 
         if (value.outerStore.rejectedFields.name) {
@@ -159,7 +159,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
 
         if (value.outerStore.rejectedFields.selfieImageUrl) {
-            rejectedFields.push('Picture (Selfie with KTP)');
+            rejectedFields.push('Foto Selfie');
         }
 
         if (value.outerStore.rejectedFields.taxImageUrl) {
