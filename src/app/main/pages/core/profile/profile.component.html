@@ -62,9 +62,15 @@
 
             <mat-tab label="Address" [disabled]="isEdit">
                 <ng-template matTabContent>
-                    <company-address-component
-                        [isEdit]="isEdit && section === 'address'"
-                    ></company-address-component>
+                    <div *ngIf="isEdit && section === 'address'; else addressViewMode">
+                        <company-address-form-component
+                            (formStatusChange)="onFormStatusChanged($event)"
+                            [isEdit]="isEdit && section === 'address'"
+                        ></company-address-form-component>
+                    </div>
+                    <ng-template #addressViewMode>
+                        <company-address-component></company-address-component>
+                    </ng-template>
                 </ng-template>
             </mat-tab>
 
