@@ -14,7 +14,7 @@ import {
 import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { Observable, Subject, fromEvent } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 import {
     debounceTime,
@@ -692,7 +692,6 @@ export class CompanyAddressFormComponent implements OnInit, AfterViewInit, OnDes
     }
 
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
-        console.warn('event', event);
         const province: Province = event.option.value;
 
         if (!province) {

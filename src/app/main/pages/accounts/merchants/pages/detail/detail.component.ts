@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, forkJoin } from 'rxjs';
@@ -40,6 +41,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private location: Location,
         // private cdRef: ChangeDetectorRef,
         private store: NgRxStore<fromMerchant.FeatureState>,
         private segmentation: StoreSegmentationTypesApiService,
@@ -252,5 +254,9 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         this.subs$.complete();
 
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+    }
+
+    goBack(): void {
+        this.location.back();
     }
 }

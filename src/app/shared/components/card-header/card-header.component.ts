@@ -84,6 +84,9 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // Untuk menentukan placeholder pada "search".
     // tslint:disable-next-line:no-input-rename
     @Input('searchPlaceholder') searchPlaceholder = 'Search';
+    // Untuk menentukan init value pada "search".
+    // tslint:disable-next-line:no-input-rename
+    @Input('searchInitValue') searchInitValue = '';
     // Untuk menentukan placeholder pada "search".
     // tslint:disable-next-line:no-output-rename
     @Output('onSearchChanged') searchChanged: EventEmitter<string> = new EventEmitter<string>();
@@ -238,6 +241,11 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                     // Memeriksa konfigurasi penggunaan border pada "Search".
                     if (this.config.search.useBorder) {
                         this.searchUseBorder = this.config.search.useBorder;
+                    }
+
+                    // Memeriksa konfigurasi value awal pada "Search"
+                    if (this.config.search.initValue) {
+                        this.searchInitValue = this.config.search.initValue;
                     }
                 }
 

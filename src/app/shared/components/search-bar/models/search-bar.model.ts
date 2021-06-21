@@ -3,4 +3,5 @@ export interface ISearchBarConfiguration {
     placeholder?: string;
     threshold?: number;
     changed?(value: string): void;
+    initValue?: string;
 }

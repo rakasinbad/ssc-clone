@@ -7,6 +7,7 @@ import {
     EventEmitter,
     SimpleChanges,
     ChangeDetectorRef,
+    OnDestroy,
 } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
@@ -42,7 +43,7 @@ type TmpFiles = 'file';
     styleUrls: ['./legal-information.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class LegalInformationComponent implements OnInit {
+export class LegalInformationComponent implements OnInit, OnDestroy {
     @Input() isEdit: boolean;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
@@ -65,7 +66,7 @@ export class LegalInformationComponent implements OnInit {
         private store: Store<fromProfile.FeatureState>,
         private errorMessage$: ErrorMessageService,
         private _document$: DocumentUploadApiService,
-        private _$helper: HelperService
+        private _$helper: HelperService,
     ) {}
 
     ngOnInit() {
@@ -110,6 +111,11 @@ export class LegalInformationComponent implements OnInit {
                     this.onSubmit();
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     private initForm(): void {
