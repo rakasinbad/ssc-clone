@@ -28,14 +28,15 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // Untuk meletakkan placeholder.
     // tslint:disable-next-line:no-input-rename
     @Input('placeholder') placeholder: string;
+    
+    // Untuk meletakkan placeholder.
+    // tslint:disable-next-line:no-input-rename
+    @Input('value') value: string;
+
 
     // Untuk mengubah debounceTime.
     // tslint:disable-next-line:no-input-rename
     @Input('threshold') threshold: number;
-
-    // Untuk mengubah init value search.
-    // tslint:disable-next-line:no-input-rename
-    @Input('searchInitValue') searchInitValue: string;
 
     // Untuk mengirim event ketika teks telah berubah.
     // tslint:disable-next-line:no-output-rename
@@ -54,6 +55,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
             this.threshold = 500;
         }
 
+        this.search.setValue(this.value);
+
         this.search.valueChanges
             .pipe(debounceTime(this.threshold), takeUntil(this.subs$))
             .subscribe((value) => this.changed.emit(value));
@@ -65,8 +68,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes.searchInitValue) {
-            this.search.patchValue(this.searchInitValue);
+        if (changes.value) {
+            this.search.setValue(this.value);
         }
     }
 
