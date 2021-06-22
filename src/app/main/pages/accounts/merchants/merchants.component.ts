@@ -152,7 +152,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedSupplierStore: SupplierStore;
     selectedIds: Array<number> = [];
     selection: SelectionModel<SupplierStore>;
-    search: FormControl = new FormControl('');
+    firstOne: boolean = true;
+    search: FormControl = new FormControl(null);
     formConfig = {
         status: {
             label: 'Store List Status',
@@ -358,8 +359,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
-
         const qParam = {
             limit: ev.pageSize,
             page: ev.pageIndex + 1,
@@ -1242,6 +1241,20 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         if (v) {
                             localStorage.setItem('filter.store', v);
                         }
+
+                        if (!this.firstOne) {
+                            this.paginator.pageIndex = 0;
+                        }
+
+                        this.cardHeaderConfig = {
+                            ...this.cardHeaderConfig,
+                            search: {
+                                ...this.cardHeaderConfig.search,
+                                value: v
+                            },
+                        };
+
+                        this.firstOne = false;
                         this.changeQueryParam();
                     });
 
@@ -1264,10 +1277,22 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     .pipe(
                         filter((params) => {
                             const { limit, page: pageIndex, status, keyword } = params;
-                            console.warn('params', params)
+
+                            if (keyword) {
+                                this.search.setValue(keyword);
+                                this.cardHeaderConfig = {
+                                    ...this.cardHeaderConfig,
+                                    search: {
+                                        ...this.cardHeaderConfig.search,
+                                        value: keyword
+                                    },
+                                };
+                            }
+
                             if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
                                 return true;
                             } else {
+                                this.storeStatus = '';
                                 this.tabGroup.selectedIndex = 0;
                                 this._onRefreshTable(true);
                                 return false;
@@ -1282,13 +1307,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 this.paginator.pageIndex = pageIndex - 1;
                                 this.storeStatus = status;
 
-                                this.search.patchValue(keyword);
-                                this.cardHeaderConfig = {
-                                    ...this.cardHeaderConfig,
-                                    search : {
-                                        ...this.cardHeaderConfig.search,
-                                        initValue: keyword
-                                    }
+                                if (keyword && this.firstOne) {
+                                    this.firstOne = true
+                                } else {
+                                    this.firstOne = false
                                 }
 
                                 switch (status) {
