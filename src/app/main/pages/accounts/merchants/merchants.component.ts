@@ -18,7 +18,6 @@ import {
     MatSort,
     PageEvent,
     MatTabGroup,
-    MatTabChangeEvent,
 } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -798,9 +797,12 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return salesRep.map((sR) => sR.fullName).join(',<br/>');
     }
 
-    onSelectedTab(ev: MatTabChangeEvent): void {
-        const index = ev.index;
+    onSelectedTab(index: number): void {
         switch (index) {
+            case 0:
+                this.storeStatus = '';
+                this._onRefreshTable(true);
+                break;
             case 1:
                 this.storeStatus = 'verified';
                 this._onRefreshTable(true);
