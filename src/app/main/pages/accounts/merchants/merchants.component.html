@@ -11,7 +11,7 @@
             style="border-radius: 4px"
             class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
             animationDuration="0ms"
-            (focusChange)="onSelectedTab($event)"
+            (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab [label]="'All (' + ((totalStores$ | async) || '-') + ')'"></mat-tab>
             <mat-tab [label]="'Verified (' + ((totalVerified$ | async) || '-') + ')'"></mat-tab>
