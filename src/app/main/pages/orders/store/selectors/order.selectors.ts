@@ -77,14 +77,20 @@ export const getOrderBrandCatalogue = (type: OrderLineType) =>
                 );
             }
         } else if (type === 'bonus') {
-            if (state && state.bonusCatalogues && state.bonusCatalogues.length > 0) {
+            if (state && state.promoList && state.promoList.length > 0) {
                 return (
-                    state.bonusCatalogues.map((v) => ({
-                        id: v.id,
-                        catalogue: { id: v.id, name: v.catalogueName },
+                    state.promoList.map((v) => ({
+                        id: v.orderBrandCatalaguesId,
+                        catalogue: { id: v.orderBrandCatalaguesId, name: v.catalogueName },
                         cataloguePromo: 0,
+                        deliveredCataloguePromo: 0,
+                        invoicedCataloguePromo: 0,
                         grossPrice: 0,
-                        qty: v.catalogueQty,
+                        deliveredGrossPrice: 0,
+                        invoicedGrossPrice: 0,
+                        qty: v.originalPromoQty,
+                        invoicedQty: v.invoicedPromoQty || 0,
+                        deliveredQty: v.deliveredPromoQty || 0,
                         type,
                     })) || []
                 );

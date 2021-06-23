@@ -104,7 +104,7 @@
             </div>
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
-            <app-oms-order-line [orderLineType]="'bonus'" [editable]="(onEditValue | async)" *ngIf="!loading" (formValue)="onChangeBonus($event)"  (onChange)="onValidateBonus($event)"></app-oms-order-line>
+            <app-oms-order-line [orderLineType]="'bonus'" [editable]="(onEditValue | async)" [type]="type" *ngIf="!loading" (formValue)="onChangeBonus($event)"  (onChange)="onValidateBonus($event)"></app-oms-order-line>
         </div>
         <!-- / BONUS SKU -->
 
