@@ -98,11 +98,15 @@ export class OmsOrderLineComponent implements OnInit {
             takeUntil(this._unSubs$)
         ).subscribe(() => {
             this.submitable.emit(this.form.invalid);
+        });
+
+        this.form.valueChanges.pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(() => {
             this.formValue.emit(this.form.getRawValue());
         });
 
         this.submitable.emit(this.form.invalid);
-        this.formValue.emit(this.form.getRawValue());        
     }
 
     setForm(v, type) : void {
