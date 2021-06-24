@@ -1,7 +1,10 @@
 import {
     Component,
     Input,
+    OnChanges,
     OnInit,
+    AfterViewInit,
+    OnDestroy,
     ViewEncapsulation,
     ViewChild,
     TemplateRef,
@@ -47,7 +50,7 @@ import { ProfileActions } from '../../store/actions';
     styleUrls: ['./company-information.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class CompanyInformationComponent implements OnInit {
+export class CompanyInformationComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
     @Input() isEdit: boolean;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
@@ -121,6 +124,11 @@ export class CompanyInformationComponent implements OnInit {
                     this.onSubmit();
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     private initForm(): void {
