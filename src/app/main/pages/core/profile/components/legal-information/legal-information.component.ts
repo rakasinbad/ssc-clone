@@ -1,7 +1,9 @@
 import {
     Component,
     Input,
+    OnChanges,
     OnInit,
+    AfterViewInit,
     ViewEncapsulation,
     Output,
     EventEmitter,
@@ -43,7 +45,7 @@ type TmpFiles = 'file';
     styleUrls: ['./legal-information.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class LegalInformationComponent implements OnInit, OnDestroy {
+export class LegalInformationComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
     @Input() isEdit: boolean;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();

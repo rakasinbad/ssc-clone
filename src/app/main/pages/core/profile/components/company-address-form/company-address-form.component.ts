@@ -6,7 +6,6 @@ import {
     ViewChild,
     Output,
     EventEmitter,
-    SimpleChanges,
     ChangeDetectionStrategy,
     AfterViewInit,
     OnDestroy,
@@ -322,8 +321,6 @@ export class CompanyAddressFormComponent implements OnInit, AfterViewInit, OnDes
             )
             .subscribe();
     }
-
-    ngOnChanges(changes: SimpleChanges): void {}
 
     ngAfterViewInit(): void {
         this.store

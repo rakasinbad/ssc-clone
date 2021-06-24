@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { fromProfile } from '../../store/reducers';
     styleUrls: ['./company-address.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
-export class CompanyAddressComponent implements OnInit {
+export class CompanyAddressComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line: no-inferrable-types
     labelFlex: string = '20';
 
@@ -52,6 +52,11 @@ export class CompanyAddressComponent implements OnInit {
                     this.initSelectedLocation(payload);
                 }
             });
+    }
+
+    ngOnDestroy(): void {
+        this.unSubs$.next();
+        this.unSubs$.complete();
     }
 
     private initProvinces(): void {
@@ -100,10 +105,5 @@ export class CompanyAddressComponent implements OnInit {
                 GeolocationActions.selectDistrict({ payload: data.urban.district })
             );
         }
-    }
-
-    ngOnDestroy(): void {
-        this.unSubs$.next();
-        this.unSubs$.complete();
     }
 }
