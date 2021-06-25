@@ -1,0 +1,17 @@
+@import 'src/@sinbad/scss/helper';
+
+company-address-component {
+
+    p {
+        margin: 0;
+
+        &.field-label {
+            color: sinbad-color('black', '100');
+            font-weight: 600;
+        }
+
+        &.field-value {
+            color: sinbad-color('black', '80');
+        }
+    }
+}
