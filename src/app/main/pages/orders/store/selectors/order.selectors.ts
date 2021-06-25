@@ -80,8 +80,8 @@ export const getOrderBrandCatalogue = (type: OrderLineType) =>
             if (state && state.promoList && state.promoList.length > 0) {
                 return (
                     state.promoList.map((v) => ({
-                        id: v.orderBrandCatalaguesId,
-                        catalogue: { id: v.orderBrandCatalaguesId, name: v.catalogueName },
+                        id: v.promoOrderBrandCatalogueId,
+                        catalogue: { id: v.promoOrderBrandCatalogueId, name: v.catalogueName },
                         cataloguePromo: 0,
                         deliveredCataloguePromo: 0,
                         invoicedCataloguePromo: 0,
