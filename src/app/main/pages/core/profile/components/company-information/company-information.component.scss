@@ -1,0 +1,45 @@
+@import 'src/@sinbad/scss/helper';
+
+company-information-component {
+    .img-container {
+        width: 128px; /*any size*/
+        height: 128px; /*any size*/
+        
+        .fit-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*magic*/
+            border-radius: 8px;
+        }
+    }
+
+    p {
+        margin: 0;
+
+        &.field-label {
+            font-weight: 600;
+        }
+
+        &.field-value {
+            color: sinbad-color('black', '80');
+        }
+
+        &.field-description {
+            color: #A0A4A8;
+            font-size: 12px;
+            margin: 0;
+        }
+    }
+
+    .mat-form-field-infix {
+        border-top: 0.2em solid transparent;
+    }
+    .mat-form-field-wrapper {
+        padding-bottom: 0px !important;
+    }
+
+    .mat-form-field-subscript-wrapper {
+        position: inherit !important;
+    }
+    
+}

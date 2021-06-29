@@ -4,7 +4,7 @@ import { HelperService } from './helper.service';
 import { Observable } from 'rxjs';
 
 // Jenis upload photo yang di-support.
-export type TUploadPhotoType = 'userTax' | 'storeTax' | 'storePhoto' | 'selfie' | 'idCard';
+export type TUploadPhotoType = 'userTax' | 'storeTax' | 'storePhoto' | 'selfie' | 'idCard' | 'supplierPhoto';
 
 export interface UploadPhotoApiPayload {
     image: string;
@@ -27,7 +27,7 @@ export class PhotoUploadApiService {
     private readonly _endpoint = '/upload-user-photo';
     // Jenis upload photo yang di-support.
     private readonly _types: Array<TUploadPhotoType> = [
-        'userTax', 'storeTax', 'storePhoto', 'selfie', 'idCard'
+        'userTax', 'storeTax', 'storePhoto', 'selfie', 'idCard', 'supplierPhoto'
     ];
 
     constructor(

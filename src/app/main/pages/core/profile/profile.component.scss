@@ -2,6 +2,20 @@
 
 app-profile {
     #profile {
+
+        .mat-tab-header-px-12 {
+            .mat-tab-header {
+                margin: 0 12px !important;
+            }
+        }
+    
+        .mat-tab-body-content {
+            display: flex;
+            flex: 1;
+            overflow-y: scroll !important;
+            flex-direction: column;
+        }
+        
         .top-bg {
             @include media-breakpoint('lt-md') {
                 height: 256px;
@@ -78,7 +92,7 @@ app-profile {
             }
 
             .mat-tab-body-content {
-                display: flex;
+                display: block;
             }
 
             .mat-tab-label {

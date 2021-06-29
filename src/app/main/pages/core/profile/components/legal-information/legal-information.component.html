@@ -1,0 +1,292 @@
+<div class="p-24 sinbad-content">
+    <!-- TITLE -->
+    <div class="font-size-18 text-semibold">Legal Information</div>
+    <!-- TITLE -->
+    <div class="pt-0 pb-40 line-height-1.75">
+        <form [formGroup]="form" class="w-100-p" novalidate>
+            <div
+                class="mt-12"
+                fxLayout="column"
+                [fxLayoutGap]="isEdit ? '20px' : '31px'"
+                fxLayoutAlign="start stretch"
+                formGroupName="legalInfo"
+            >
+                <!-- NPWP -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('legalInfo.taxNo'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        NPWP
+                    </p>
+
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        *ngIf="isEdit"
+                        [class.mat-error]="isEdit && hasError(form.get('legalInfo.taxNo'))"
+                    >
+                        <input matInput name="taxNo" formControlName="taxNo" />
+                        <mat-error *ngIf="hasError(form.get('legalInfo.taxNo'))">
+                            {{ getFormError(form.get('legalInfo.taxNo')) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.legalInfo?.taxNo || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / NPWP -->
+
+                <!-- Bank Name -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="bank"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('legalInfo.bank.name'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        Bank Name
+                    </p>
+
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        *ngIf="isEdit"
+                        [class.mat-error]="isEdit && hasError(form.get('legalInfo.bank.name'))"
+                    >
+                        <input matInput name="name" formControlName="name" />
+                        <mat-error *ngIf="hasError(form.get('legalInfo.bank.name'))">
+                            {{ getFormError(form.get('legalInfo.bank.name')) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.legalInfo?.bank?.name || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Bank Name -->
+
+                <!-- Bank Account -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="bank"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="isEdit && hasError(form.get('legalInfo.bank.accountNo'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        Bank Account
+                    </p>
+
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        *ngIf="isEdit"
+                        [class.mat-error]="isEdit && hasError(form.get('legalInfo.bank.accountNo'))"
+                    >
+                        <input matInput name="accountNo" formControlName="accountNo" />
+                        <mat-error *ngIf="hasError(form.get('legalInfo.bank.accountNo'))">
+                            {{ getFormError(form.get('legalInfo.bank.accountNo')) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.legalInfo?.bank?.accountNo || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Bank Account -->
+
+                <!-- Account Name -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="bank"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('legalInfo.bank.accountName'))
+                        "
+                        [fxFlex]="labelFlex"
+                    >
+                        Account Name
+                    </p>
+
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        *ngIf="isEdit"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('legalInfo.bank.accountName'))
+                        "
+                    >
+                        <input matInput name="accountName" formControlName="accountName" />
+                        <mat-error *ngIf="hasError(form.get('legalInfo.bank.accountName'))">
+                            {{ getFormError(form.get('legalInfo.bank.accountName')) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.legalInfo?.bank?.accountName || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Account Name -->
+
+                <!-- Branch Name -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="bank"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('legalInfo.bank.branchName'))
+                        "
+                        [fxFlex]="labelFlex"
+                    >
+                        Branch Name
+                    </p>
+
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        *ngIf="isEdit"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('legalInfo.bank.branchName'))
+                        "
+                    >
+                        <input matInput name="branchName" formControlName="branchName" />
+                        <mat-error *ngIf="hasError(form.get('legalInfo.bank.branchName'))">
+                            {{ getFormError(form.get('legalInfo.bank.branchName')) }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <ng-container *ngIf="!isEdit">
+                        <p class="font-size-14 field-value">
+                            {{ (profile$ | async)?.legalInfo?.bank?.branchName || '-' }}
+                        </p>
+                    </ng-container>
+                </div>
+                <!-- / Branch Name -->
+
+                <!-- Official Document -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="
+                            isEdit && hasError(form.get('legalInfo.officialDocument'))
+                        "
+                        [fxFlex]="labelFlex"
+                    >
+                        Official Document
+                    </p>
+
+                    <ng-container
+                        *ngIf="
+                            (profile$ | async)?.legalInfo?.officialDocument &&
+                                officialDocument &&
+                                !isEdit;
+                            else noDocument
+                        "
+                    >
+                        <a
+                            class="font-size-14 field-value"
+                            href="javascript:;"
+                            (click)="onDownload(officialDocument)"
+                        >
+                            Download
+                        </a>
+                    </ng-container>
+
+                    <ng-template #noDocument>
+                        <p class="font-size-14 field-value" *ngIf="!isEdit">-</p>
+                    </ng-template>
+
+                    <mat-form-field
+                        appearance="outline"
+                        fxFlex="50"
+                        [class.mat-sinbad-field-error]="
+                            isEdit && hasError(form.get('legalInfo.officialDocument'))
+                        "
+                        *ngIf="isEdit"
+                    >
+                        <span style="display: flex">
+                            <input
+                                matInput
+                                [value]="
+                                    tmpFiles.file.value && tmpFiles.file.value.name
+                                        ? tmpFiles.file.value.name
+                                        : 'No file choose'
+                                "
+                                autocomplete="off"
+                                style="color: #a0a4a8"
+                                disabled
+                            />
+                            <mat-icon
+                                fontSize="18px"
+                                (click)="onAbortUploadDocument($event)"
+                                style="cursor: pointer"
+                                *ngIf="isEdit && form.get('legalInfo.officialDocument').value"
+                                >clear</mat-icon
+                            >
+                        </span>
+
+                        <mat-hint
+                            class="mat-error"
+                            *ngIf="hasError(form.get('legalInfo.officialDocument'))"
+                        >
+                            {{ getFormError(form.get('legalInfo.officialDocument')) }}
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <input
+                        #fileUrlPicker
+                        type="file"
+                        class="custom-file"
+                        accept=".pdf"
+                        (click)="fileUrlPicker.value = null"
+                        (change)="fileChangeEvent($event)"
+                        autocomplete="off"
+                        hidden
+                    />
+                    <button
+                        mat-flat-button
+                        type="button"
+                        color="accent"
+                        (click)="fileUrlPicker.click()"
+                        fxFlexAlign="center"
+                        *ngIf="isEdit"
+                        class="upload-button"
+                    >
+                        Upload Your File
+                    </button>
+                </div>
+                <!-- / Official Document -->
+            </div>
+        </form>
+    </div>
+</div>
