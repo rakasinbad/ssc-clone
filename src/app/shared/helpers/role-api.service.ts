@@ -30,7 +30,7 @@ export class RoleApiService {
      * @private
      * @memberof RoleApiService
      */
-    private readonly _endpoint = '/roles?id[$ne]=6';
+    private readonly _endpoint = '/roles?';
 
     /**
      * Creates an instance of RoleApiService.
@@ -53,12 +53,21 @@ export class RoleApiService {
     findAll<T>(supplierId: string, params: IQueryParams): Observable<T> {
         const newArg = supplierId
             ? [
-                {
-                    key: 'supplierId',
-                    value: supplierId
-                }
-            ]
-            : [];
+                  {
+                      key: 'supplierId',
+                      value: supplierId,
+                  },
+                  {
+                      key: 'platform',
+                      value: 'sc',
+                  },
+              ]
+            : [
+                  {
+                      key: 'platform',
+                      value: 'sc',
+                  },
+              ];
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
