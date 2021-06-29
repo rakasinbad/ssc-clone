@@ -310,6 +310,11 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         return item ? item : '-';
     }
 
+    checkStatus = (status: string): boolean => {
+        const arr = ['cancel', 'delivered'];
+        return arr.includes(status);
+    };
+
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
         // this.table.nativeElement.scrollTop = 0;
@@ -542,7 +547,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
-                this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
+                this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page - 1 : 0;
 
                 this.sort.sort({
                     id: 'id',
