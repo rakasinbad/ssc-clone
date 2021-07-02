@@ -102,7 +102,7 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price text-word-break-break-word">
                             {{
-                                checkStatus(row?.status) && row?.deliveredParcelFinalPrice > 0
+                                +row?.deliveredParcelFinalPrice > 0
                                     ? (+row?.deliveredParcelFinalPrice | price: 'full') || '-'
                                     : '-'
                             }}
