@@ -302,8 +302,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             )
             .subscribe((action) => {
 
-                console.log('this._$helper.paymentStatus():', this._$helper.paymentStatus())
-
                 if (action === 'reset') {
                     this.formFilter.reset();
                     this.globalFilterDto = null;
@@ -312,11 +310,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 }
 
                 this._onRefreshTable();
-
-                HelperService.debug('[OrdesComponent] ngOnInit getClickAction$()', {
-                    form: this.formFilter,
-                    filterConfig: this.filterConfig,
-                });
             });
 
         this.invoiceFetching$ = this.store.select(PaymentStatusSelectors.getInvoiceLoading);
@@ -1043,6 +1036,12 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         this.globalFilterDto = data;
+
+        HelperService.debug('[PaymentStatusComponent] on submit filter:', {
+            form: this.formFilter.value,
+            filterConfig: this.filterConfig.form,
+        });
+
     }
 
 }
