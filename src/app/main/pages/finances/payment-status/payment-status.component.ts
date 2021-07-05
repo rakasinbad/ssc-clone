@@ -86,7 +86,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         },
         filter: {
             permissions: [],
-            onClick: () => {this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();}
+            onClick: () => {this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen(); }
         },
         export: {
             permissions: ['FINANCE.PS.EXPORT'],
@@ -650,7 +650,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
-                this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
+                this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page - 1 : 0;
 
                 // this.applyFilter();
                 
@@ -856,7 +856,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
     private applyFilter(): void {
         this.globalFilterDto = null;
-        var data: IQuerySearchParams[] = [];
+        let data: IQuerySearchParams[] = [];
 
         const {
             startDate,
@@ -947,7 +947,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
 
-        if(!!minStoreOrderTotal){
+        if (!!minStoreOrderTotal){
             data = [
                 ...data,
                 {
@@ -957,7 +957,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
 
-        if(!!maxStoreOrderTotal){
+        if (!!maxStoreOrderTotal){
             data = [
                 ...data,
                 {
@@ -967,7 +967,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
         
-        if(!!minSupplierDeliveredTotal){
+        if (!!minSupplierDeliveredTotal){
             data = [
                 ...data,
                 {
@@ -977,7 +977,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
 
-        if(!!maxSupplierDeliveredTotal){
+        if (!!maxSupplierDeliveredTotal){
             data = [
                 ...data,
                 {
@@ -987,7 +987,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
 
-        if(!!nPaymentType && !!nPaymentType.length){
+        if (!!nPaymentType && !!nPaymentType.length){
             for (const value of nPaymentType) {
                 data = [
                     ...data,
@@ -999,7 +999,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        if(!!nPayLaterType && !!nPayLaterType.length){
+        if (!!nPayLaterType && !!nPayLaterType.length){
             for (const value of nPayLaterType) {
                 data = [
                     ...data,
@@ -1011,7 +1011,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        if(!!nOrderStatus && !!nOrderStatus.length){
+        if (!!nOrderStatus && !!nOrderStatus.length){
             for (const value of nOrderStatus) {
                 data = [
                     ...data,
@@ -1023,7 +1023,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        if(!!nPaymentStatus && !!nPaymentStatus.length){
+        if (!!nPaymentStatus && !!nPaymentStatus.length){
             for (const value of nPaymentStatus) {
                 data = [
                     ...data,
