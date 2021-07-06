@@ -42,7 +42,7 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <div fxLayout="column">
+                    <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
@@ -99,7 +99,7 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <div fxLayout="column">
+                    <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
@@ -156,7 +156,7 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <div fxLayout="column">
+                    <div fxLayout="column" class="__matDatepicker">
                         <mat-form-field appearance="outline">
                             <input
                                 matInput
@@ -722,10 +722,10 @@
                 </mat-expansion-panel-header>
 
                 <ng-template matExpansionPanelContent>
-                    <div [class.sinbad__filter-checkbox--container]="sourcePayLaterType.length > 1">
+                    <div [class.sinbad__filter-checkbox--container]="sourcePayLaterType.length > 2">
                         <div
                             class="sinbad__filter-checkbox"
-                            [class.reset]="sourcePayLaterType.length < 2"
+                            [class.reset]="sourcePayLaterType.length < 3"
                         >
                             <mat-checkbox
                                 *ngFor="let payLaterType of sourcePayLaterType; trackBy: trackByPayLaterType"

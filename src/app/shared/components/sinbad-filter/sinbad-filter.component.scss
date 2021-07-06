@@ -1,17 +1,121 @@
 @import 'src/@sinbad/scss/helper';
 
+// Variable
+$panel-width: 280px; 
+
 app-sinbad-filter {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    width: 280px;
-    min-width: 280px;
-    max-width: 280px;
+    width: $panel-width;
     max-height: 90%;
     z-index: 99;
 
+    .mat-list-base {
+        padding-top: 0;
+        margin-top: 10px;
+    }
+
     .mat-slide-toggle-content {
         flex: 1;
+    }
+
+    mat-form-field .mat-form-field-wrapper {
+        padding-bottom: 8px !important;
+        font-size: 12px;
+
+        .mat-form-field-flex {
+            margin: 0;
+            padding: 0 16px;
+            height: 36px;
+
+            .mat-form-field-outline {
+                height: 36px;
+            }
+
+            .mat-form-field-infix {
+                padding-top: 8px !important;
+
+                .mat-select-trigger {
+                    .mat-select-arrow-wrapper {
+                        margin-top: 5px;
+                        margin-right: -5px;
+                    }
+                }
+            }
+
+            .mat-datepicker-toggle {
+                color: #f0444c;
+            }
+        }
+    }
+
+    .mat-form-field-appearance-outline {
+        .mat-form-field-wrapper {
+            margin: 0;
+        }
+
+        .mat-form-field-suffix {
+            top: 2px;
+
+            .text-suffix {
+                top: -5px;
+                position: relative;
+                color: sinbad-color('black', '60');
+            }
+
+            .mat-icon-button {
+                margin-right: -8px
+            }
+        }
+    }
+
+    .__matDatepicker {
+        mat-form-field {
+            .mat-form-field-wrapper {
+                .mat-form-field-flex {
+                    .mat-form-field-infix {
+                        top: -2px;
+                    }
+                }
+            }
+        }
+    }
+
+    .mat-checkbox {
+        font-size: 12px;
+
+        .mat-checkbox-inner-container {
+            height: 12px;
+            width: 12px;
+            margin-right: 10px;
+            margin-top: 5px !important; // wrap multiple checkbox
+        }
+
+        .mat-checkbox-frame {
+            border-color: #A0A4A8;
+            border-width: 1px;
+        }
+
+        .mat-checkbox-layout {
+            white-space: normal !important; // wrap multiple checkbox
+
+            .mat-checkbox-label {
+                margin-top: -0.5px;
+            }
+        }
+
+        .mat-ripple-element {
+            display: none !important;
+        }
+    }
+
+    .mat-expansion-panel-header {
+        padding: 0 20px 0 16px;
+    }
+
+    .mat-expansion-panel-body {
+        padding: 0 16px 16px;
     }
 
     .sinbad__filter-header-title {
@@ -38,10 +142,6 @@ app-sinbad-filter {
         background: inherit;
     }
 
-    .mat-expansion-panel-header {
-        padding: 0 16px;
-    }
-
     .sinbad__filter-checkbox--container {
         overflow-x: auto;
         overflow-y: hidden;
@@ -50,17 +150,15 @@ app-sinbad-filter {
     .sinbad__filter-checkbox {
         display: flex;
         flex-flow: column wrap;
-        // height: 105px;
-        // min-height: 105px;
-        width: 100%;
+        width: 240px;
         height: auto;
-        max-height: 105px;
-        margin: -5px;
-        margin-bottom: 5px;
+        // max-height: 105px;
+        margin: -5px -4px -5px -4px;
 
         > * {
-            // flex: 1 1 20px;
+            flex: 1 1 20px;
             margin: 5px;
+            width: 120px;
         }
 
         &.reset {
@@ -76,6 +174,7 @@ app-sinbad-filter {
         bottom: 0;
         margin-top: auto;
         width: 100%;
+        background: #ffffff;
     }
 
     .sinbad__filter-action--item {
@@ -85,18 +184,6 @@ app-sinbad-filter {
         height: 40px;
     }
 
-    // Custom text suffix
-    .mat-form-field-suffix {
-        .text-suffix {
-            top: -5.5px;
-            position: relative;
-            color: sinbad-color('black', '60');
-        }
-    }
-
-    .mat-expansion-panel-body {
-        padding: 0 24px 0;
-    }
 }
 
 // :host-context(.sinbad-filter) app-sinbad-filter {
