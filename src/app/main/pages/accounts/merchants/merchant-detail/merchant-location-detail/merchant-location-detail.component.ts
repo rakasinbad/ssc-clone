@@ -1003,11 +1003,11 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
             address: body.address
         };
 
-        if (!body.longitude) {
+        if (!body.lng) {
             delete payload.longitude;
         }
 
-        if (!body.latitude) {
+        if (!body.lat) {
             delete payload.latitude;
         }
 
