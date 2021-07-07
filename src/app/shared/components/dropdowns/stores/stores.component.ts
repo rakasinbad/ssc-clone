@@ -25,7 +25,7 @@ import { MultipleSelectionService } from 'app/shared/components/multiple-selecti
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IMassUpload, MassUploadResponse, IMassUploadData } from './models/supplier-store.model';
+import { IMassUploadData } from './models/supplier-store.model';
 import { ImportMassUpload } from './store/actions';
 import { ImportMassUploadSelectors } from './store/selectors';
 import { AlertMassUploadComponent } from './modals/alert-mass-upload/alert-mass-upload.component';
@@ -291,18 +291,19 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 // Menetampan nilai available entities yang akan ditambahkan.
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling' ) {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher' ) {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
-
+                    
                     for (const entity of (response as Array<Entity>)) {
                         this.upsertEntity(entity);
                     }
+
                 } else {
                     addedRawAvailableEntities = response.data;
-                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'voucher' || this.typePromo == 'crossSelling') {
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
@@ -541,9 +542,10 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 dialogRef.afterClosed().subscribe(result => {
                                     if (result == 'yes') { //if click button yes
                                         let fileEntities = [];
+                                        
                                         fileEntities = val.massData.filter(d => !!d)
-                                        .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
-
+                                            .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
+                                        
                                         for (const entity of (fileEntities as Array<Entity>)) {
                                             this.upsertEntity(entity);
                                         }
@@ -567,9 +569,11 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.toggleLoading(false);
                             this.toggleSelectedLoading(false);
                             let fileEntities = [];
+
                             fileEntities = val.massData.filter(d => !!d)
                                 .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
-                            for (const entity of (fileEntities as Array<Entity>)) {
+                            
+                                for (const entity of (fileEntities as Array<Entity>)) {
                                 this.upsertEntity(entity);
                             }
 
