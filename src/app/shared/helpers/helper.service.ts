@@ -493,14 +493,14 @@ export class HelperService {
             id: PromoHierarchyGroup.DISTRIBUTOR,
             label: 'Distributor Promo',
         },
-        {
-            id: PromoHierarchyGroup.SINBAD,
-            label: 'Sinbad Promo',
-        },
-        {
-            id: PromoHierarchyGroup.PAYMENT,
-            label: 'Payment Method Promo',
-        },
+        // {
+        //     id: PromoHierarchyGroup.SINBAD,
+        //     label: 'Sinbad Promo',
+        // },
+        // {
+        //     id: PromoHierarchyGroup.PAYMENT,
+        //     label: 'Payment Method Promo',
+        // },
     ];
 
     private static _host = environment.host;
