@@ -29,8 +29,8 @@ import { TriggerBase } from '../models/trigger-base.model';
 import { PromoHierarchyLayer, PromoHierarchyGroup } from '../models/promo-hierarchy.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
-import { EPaymentType } from '../models/payment-type.model';
-import { EPayLaterType } from '../models/pay-later.model';
+import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
+import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -66,6 +66,17 @@ export class HelperService {
         'minOrderValue',
         'maxOrderValue',
         'web',
+        'startDueDate',
+        'endDueDate',
+        'startPaymentDate',
+        'endPaymentDate',
+        'minStoreOrderTotal',
+        'maxStoreOrderTotal',
+        'minDeliveredTotal',
+        'maxDeliveredTotal',
+        'paymentTypes[]',
+        'paylaterTypes[]',
+        'statusPayments[]',
         'statuses[]',
         'paymentStatuses[]'
     ];
@@ -190,6 +201,41 @@ export class HelperService {
         },
     ];
 
+    private static _orderStatusesV2: Array<{ id: string; label: string }> = [
+        {
+            id: 'confirm',
+            label: 'New Order',
+        },
+        {
+            id: 'packing',
+            label: 'Packed',
+        },
+        {
+            id: 'shipping',
+            label: 'Shipped',
+        },
+        {
+            id: '',
+            label: 'Awaiting to be Verified',
+        },
+        {
+            id: 'delivered',
+            label: 'Delivered',
+        },
+        {
+            id: 'done',
+            label: 'Done',
+        },
+        {
+            id: 'cancel',
+            label: 'Canceled',
+        },
+        {
+            id: '',
+            label: 'Pending Supplier',
+        },
+    ];
+
     // tslint:disable-next-line:member-ordering
     private static _paymentStatuses: Array<{ id: string; label: string }> = [
         {
@@ -214,6 +260,30 @@ export class HelperService {
         }
     ];
 
+    // tslint:disable-next-line:member-ordering
+    private static _paymentStatusesV2: Array<{ id: string; label: string }> = [
+        {
+            id: 'waiting_for_refund',
+            label: 'Waiting for Refund',
+        },
+        {
+            id: 'waiting_for_payment',
+            label: 'Waiting for Payment',
+        },
+        {
+            id: 'paid',
+            label: 'Paid',
+        },
+        {
+            id: 'refunded',
+            label: 'Refunded',
+        },
+        {
+            id: 'payment_failed',
+            label: 'Payment Failed',
+        }
+    ];
+
     private static _paymentTypes: Array<{ id: string; label: string }> = [
         {
             id: EPaymentType.PAY_LATER,
@@ -229,6 +299,21 @@ export class HelperService {
         }
     ];
 
+    private static _paymentTypesV2: Array<{ id: number; label: string }> = [
+        {
+            id: EPaymentTypeV2.PAY_LATER,
+            label: 'Bayar Nanti',
+        },
+        {
+            id: EPaymentTypeV2.PAY_NOW,
+            label: 'Bayar Sekarang',
+        },
+        {
+            id: EPaymentTypeV2.COD,
+            label: 'Bayar di Tempat',
+        }
+    ];
+
     private static _payLaterTypes: Array<{ id: string; label: string }> = [
         {
             id: EPayLaterType.SUPPLIER,
@@ -236,6 +321,17 @@ export class HelperService {
         },
         {
             id: EPayLaterType.SUPPLIER_KUR_CLICK_ACC,
+            label: 'Supplier with KUR KlickACC',
+        }
+    ];
+
+    private static _payLaterTypesV2: Array<{ id: number; label: string }> = [
+        {
+            id: EPayLaterTypeV2.SUPPLIER,
+            label: 'Supplier',
+        },
+        {
+            id: EPayLaterTypeV2.SUPPLIER_KUR_CLICK_ACC,
             label: 'Supplier with KUR KlickACC',
         }
     ];
@@ -1096,16 +1192,32 @@ export class HelperService {
         return HelperService._orderStatuses;
     }
 
+    orderStatusV2(): { id: string; label: string }[] {
+        return HelperService._orderStatusesV2;
+    }
+
     paymentStatus(): { id: string; label: string }[] {
         return HelperService._paymentStatuses;
+    }
+
+    paymentStatusV2(): { id: string; label: string }[] {
+        return HelperService._paymentStatusesV2;
     }
 
     paymentType(): { id: string; label: string }[] {
         return HelperService._paymentTypes;
     }
 
+    paymentTypesV2(): { id: number; label: string }[] {
+        return HelperService._paymentTypesV2;
+    }
+
     payLaterType(): { id: string; label: string }[] {
         return HelperService._payLaterTypes;
+    }
+
+    payLaterTypesV2(): { id: number; label: string }[] {
+        return HelperService._payLaterTypesV2;
     }
 
     platformSinbad(): { id: PlatformSinbad; label: string }[] {

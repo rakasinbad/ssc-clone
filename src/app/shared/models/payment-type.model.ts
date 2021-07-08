@@ -17,6 +17,12 @@ export enum EPaymentType {
     COD = 'cod'
 }
 
+export enum EPaymentTypeV2 {
+    PAY_NOW = 1,
+    PAY_LATER = 2,
+    COD = 3
+}
+
 export class PaymentType extends Timestamp implements IPaymentType {
     constructor(
         public readonly id: NonNullable<string>,

@@ -100,10 +100,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     };
 
-    private sourcesPaymentType = cloneDeep(this._$helper.paymentType());
-    private sourcesPayLaterType = cloneDeep(this._$helper.payLaterType());
-    private sourcesOrderStatus = cloneDeep(this._$helper.orderStatus());
-    private sourcesPaymentStatus = cloneDeep(this._$helper.paymentStatus());
+    private sourcesPaymentType = cloneDeep(this._$helper.paymentTypesV2());
+    private sourcesPayLaterType = cloneDeep(this._$helper.payLaterTypesV2());
+    private sourcesOrderStatus = cloneDeep(this._$helper.orderStatusV2());
+    private sourcesPaymentStatus = cloneDeep(this._$helper.paymentStatusV2());
 
     filterConfig: SinbadFilterConfig = {
         by: {
@@ -489,7 +489,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     }
 
-
     onProofPayment(): void {
         this.matDialog.open(ProofOfPaymentFormComponent, {
             data: {
@@ -652,8 +651,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.paginator.pageSize = this.defaultPageSize;
                 this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page - 1 : 0;
 
-                // this.applyFilter();
-                
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
@@ -855,8 +852,11 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     private applyFilter(): void {
+
+        HelperService.debug('[PaymentStatusComponent] globalFilterDto:', this.globalFilterDto);
+
+        let querySearchParams: IQuerySearchParams[] = [];
         this.globalFilterDto = null;
-        let data: IQuerySearchParams[] = [];
 
         const {
             startDate,
@@ -882,14 +882,17 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         const nStartPaymentDate = startPaymentDate && isMoment(startPaymentDate) ? startPaymentDate.format('YYYY-MM-DD') : null;
         const nEndPaymentDate = endPaymentDate && isMoment(endPaymentDate) ? endPaymentDate.format('YYYY-MM-DD') : null;
 
-        const nPaymentType = paymentType && paymentType.length > 0 ? paymentType.filter((v) => v) : [];
-        const nPayLaterType = payLaterType && payLaterType.length > 0 ? payLaterType.filter((v) => v) : [];
+        // checkbox
+        const nPaymentType = paymentType && paymentType.length > 0 ? paymentType.filter((v) => v.checked === true) : [];
+        const nPayLaterType = payLaterType && payLaterType.length > 0 ? payLaterType.filter((v) => v.checked === true) : [];
+
+        // dropdown - checkbox
         const nOrderStatus = orderStatus && orderStatus.length > 0 ? orderStatus.filter((v) => v) : [];
         const nPaymentStatus = paymentStatus && paymentStatus.length > 0 ? paymentStatus.filter((v) => v) : [];
 
         if (!!nStartDate) {
-            data = [
-                ...data,
+            querySearchParams = [
+                ...querySearchParams,
                 {
                     fieldName: 'startOrderDate',
                     keyword: nStartDate,
@@ -898,8 +901,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         if (!!nEndDate) {
-            data = [
-                ...data,
+            querySearchParams = [
+                ...querySearchParams,
                 {
                     fieldName: 'endOrderDate',
                     keyword: nEndDate,
@@ -908,28 +911,28 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         if (!!nStartPaymentDueDate) {
-            data = [
-                ...data,
+            querySearchParams = [
+                ...querySearchParams,
                 {
-                    fieldName: 'startPaymentDueDate',
+                    fieldName: 'startDueDate',
                     keyword: nStartPaymentDueDate,
                 }
             ];
         }
 
         if (!!nEndPaymentDueDate) {
-            data = [
-                ...data,
+            querySearchParams = [
+                ...querySearchParams,
                 {
-                    fieldName: 'endPaymentDueDate',
+                    fieldName: 'endDueDate',
                     keyword: nEndPaymentDueDate,
                 }
             ];
         }
 
         if (!!nStartPaymentDate) {
-            data = [
-                ...data,
+            querySearchParams = [
+                ...querySearchParams,
                 {
                     fieldName: 'startPaymentDate',
                     keyword: nStartPaymentDate,
@@ -938,8 +941,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         if (!!nEndPaymentDate) {
-            data = [
-                ...data,
+            querySearchParams = [
+                ...querySearchParams,
                 {
                     fieldName: 'endPaymentDate',
                     keyword: nEndPaymentDate,
@@ -947,9 +950,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
 
-        if (!!minStoreOrderTotal){
-            data = [
-                ...data,
+        if (!!minStoreOrderTotal) {
+            querySearchParams = [
+                ...querySearchParams,
                 {
                     fieldName: 'minStoreOrderTotal',
                     keyword: minStoreOrderTotal,
@@ -957,9 +960,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
 
-        if (!!maxStoreOrderTotal){
-            data = [
-                ...data,
+        if (!!maxStoreOrderTotal) {
+            querySearchParams = [
+                ...querySearchParams,
                 {
                     fieldName: 'maxStoreOrderTotal',
                     keyword: maxStoreOrderTotal,
@@ -967,30 +970,30 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             ];
         }
         
-        if (!!minSupplierDeliveredTotal){
-            data = [
-                ...data,
+        if (!!minSupplierDeliveredTotal) {
+            querySearchParams = [
+                ...querySearchParams,
                 {
-                    fieldName: 'minSupplierDeliveredTotal',
+                    fieldName: 'minDeliveredTotal',
                     keyword: minSupplierDeliveredTotal,
                 }
             ];
         }
 
-        if (!!maxSupplierDeliveredTotal){
-            data = [
-                ...data,
+        if (!!maxSupplierDeliveredTotal) {
+            querySearchParams = [
+                ...querySearchParams,
                 {
-                    fieldName: 'maxSupplierDeliveredTotal',
+                    fieldName: 'maxDeliveredTotal',
                     keyword: maxSupplierDeliveredTotal,
                 }
             ];
         }
 
-        if (!!nPaymentType && !!nPaymentType.length){
+        if (!!nPaymentType && !!nPaymentType.length) {
             for (const value of nPaymentType) {
-                data = [
-                    ...data,
+                querySearchParams = [
+                    ...querySearchParams,
                     {
                         fieldName: 'paymentTypes[]',
                         keyword: value.id,
@@ -999,22 +1002,22 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        if (!!nPayLaterType && !!nPayLaterType.length){
+        if (!!nPayLaterType && !!nPayLaterType.length) {
             for (const value of nPayLaterType) {
-                data = [
-                    ...data,
+                querySearchParams = [
+                    ...querySearchParams,
                     {
-                        fieldName: 'payLaterTypes[]',
+                        fieldName: 'paylaterTypes[]',
                         keyword: value.id,
                     }
                 ];    
             }
         }
 
-        if (!!nOrderStatus && !!nOrderStatus.length){
+        if (!!nOrderStatus && !!nOrderStatus.length) {
             for (const value of nOrderStatus) {
-                data = [
-                    ...data,
+                querySearchParams = [
+                    ...querySearchParams,
                     {
                         fieldName: 'statuses[]',
                         keyword: value,
@@ -1023,23 +1026,24 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        if (!!nPaymentStatus && !!nPaymentStatus.length){
+        if (!!nPaymentStatus && !!nPaymentStatus.length) {
             for (const value of nPaymentStatus) {
-                data = [
-                    ...data,
+                querySearchParams = [
+                    ...querySearchParams,
                     {
-                        fieldName: 'paymentStatuses[]',
+                        fieldName: 'statusPayments[]',
                         keyword: value,
                     }
                 ];
             }
         }
 
-        this.globalFilterDto = data;
+        this.globalFilterDto = querySearchParams;
 
+        // DEBUG: REMOVE ME
         HelperService.debug('[PaymentStatusComponent] on submit filter:', {
-            form: this.formFilter.value,
-            filterConfig: this.filterConfig.form,
+            value: this.formFilter.value,
+            globalFilterDto: this.globalFilterDto
         });
 
     }
