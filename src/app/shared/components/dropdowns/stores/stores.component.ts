@@ -8,7 +8,7 @@ import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/he
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of, Subscription } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
-import { SupplierStore as Entity } from './models';
+import { SupplierStore as Entity, SupplierStorePromo as EntityPromo } from './models';
 import { SupplierStoresApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
@@ -240,7 +240,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             newQuery['catalogueId'] = this.catalogueIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .findSegmentPromo<IPaginatedResponse<EntityPromo>>(newQuery)
                             .pipe(
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
@@ -249,7 +249,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             newQuery['brandId'] = this.brandIdSelect;
                             // Melakukan request data  Store Segment.
                             return this.entityApi$
-                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .findSegmentPromo<IPaginatedResponse<EntityPromo>>(newQuery)
                             .pipe(
                                 tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                             );
@@ -258,7 +258,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         newQuery['fakturId'] = this.fakturIdSelect;
                          // Melakukan request data  Store Segment.
                          return this.entityApi$
-                         .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                         .findSegmentPromo<IPaginatedResponse<EntityPromo>>(newQuery)
                          .pipe(
                              tap(response => HelperService.debug('FIND ENTITY flexi', { params: newQuery, response })),
                          );
@@ -272,7 +272,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                         newQuery['catalogueSegmentationId'] = this.idSelectedSegment;
                         // Melakukan request data warehouse.
                         return this.entityApi$
-                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                        .findSegmentPromo<IPaginatedResponse<EntityPromo>>(newQuery)
                         .pipe(
                             tap(response => HelperService.debug('FIND ENTITY Cross Selling', { params: newQuery, response })),
                         );
@@ -292,25 +292,40 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher' ) {
-                        addedAvailableEntities = (response as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                        addedAvailableEntities = (response as Array<EntityPromo>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
                     
-                    for (const entity of (response as Array<Entity>)) {
-                        this.upsertEntity(entity);
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
+                        for(const entity of (response as Array<EntityPromo>)) {
+                            entity['storeName'] =  entity['storeName'] + ' - ' +  entity['storeCode'];
+                            this.upsertEntity(entity);
+                        }
+                    } else {
+                        for (const entity of (response as Array<Entity>)) {
+                            this.upsertEntity(entity);
+                        }
                     }
 
                 } else {
                     addedRawAvailableEntities = response.data;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
-                        addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores' }));
+                        addedAvailableEntities = (response.data as Array<EntityPromo>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
 
-                    for (const entity of (response.data as Array<Entity>)) {
-                        this.upsertEntity(entity);
+                    if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
+                        for(const entity of (response.data as Array<EntityPromo>)) {
+                            entity['storeName'] =  entity['storeName'] + ' - ' +  entity['storeCode'];
+                            this.upsertEntity(entity);
+                        }
+                       
+                    } else {
+                        for (const entity of (response.data as Array<Entity>)) {
+                            this.upsertEntity(entity);
+                        }
                     }
                 }
 

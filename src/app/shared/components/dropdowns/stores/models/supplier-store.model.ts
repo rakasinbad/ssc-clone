@@ -154,6 +154,45 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
 
 export type SupplierStoreOptions = Partial<SupplierStore>;
 
+export class SupplierStorePromo extends Timestamp implements ISupplierStore {
+    constructor(
+        public id: string,
+        public supplierId: string,
+        public storeId: string,
+        public storeName: string,
+        public storeCode: string,
+        public status: TStatus,
+        public store: Merchant,
+        public owner: any,
+        createdAt: string,
+        updatedAt: string,
+        deletedAt: TNullable<string>,
+        public outerStore: any = {}
+    ) {
+        super(createdAt, updatedAt, deletedAt);
+
+        // if (Object.keys(this.outerStore).length > 0) {
+        //     delete this.outerStore.store;
+        // }
+
+        if (store) {
+            this.store = new Merchant(store);
+
+            if (store.owner) {
+                this.owner = this.store.owner;
+            }
+        } else {
+            this.store = null;
+        }
+    }
+
+    static patch(body: SupplierStorePromoOptions): SupplierStorePromoOptions {
+        return body;
+    }
+}
+
+export type SupplierStorePromoOptions = Partial<SupplierStorePromo>;
+
 export interface massUploadModels {
     file: NonNullable<File>;
     type: string;
