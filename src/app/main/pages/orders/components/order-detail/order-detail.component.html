@@ -66,6 +66,7 @@
             style="border-radius: 4px;"
             class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
             animationDuration="0ms"
+            [selectedIndex]="selectedIndex"
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab [label]="'Original'"></mat-tab>
