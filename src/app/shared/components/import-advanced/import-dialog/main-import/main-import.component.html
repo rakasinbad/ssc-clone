@@ -26,11 +26,12 @@
                             >
                                 <ng-container *ngIf="modes$ | async as modes; else noModes">
                                     <mat-select
+                                        id="select__mode"
                                         formControlName="mode"
                                         placeholder="Choose Import Mode"
                                     >
-                                        <mat-option>None</mat-option>
-                                        <mat-option *ngFor="let row of modes" [value]="row?.id">
+                                        <mat-option id="select__mode-none" >None</mat-option>
+                                        <mat-option [id]="'select__mode-' + row.id" *ngFor="let row of modes" [value]="row?.id">
                                             {{ row.label | translate }}
                                         </mat-option>
                                     </mat-select>
@@ -53,6 +54,7 @@
 
                             <ng-container *ngIf="!(isLoading$ | async)">
                                 <button
+                                    id="btn__upload-file"
                                     mat-flat-button
                                     class="single-file-btn ml-16"
                                     color="accent"
@@ -65,6 +67,7 @@
                                 </button>
 
                                 <input
+                                    id="input__file"
                                     type="file"
                                     #filePicker
                                     class="custom-file"
@@ -107,6 +110,7 @@
                         *ngIf="template.sources as sources; noSources"
                     >
                         <a
+                            id="btn__download"
                             href="javascript:;"
                             *ngFor="let source of sources"
                             (click)="onDownload(source)"

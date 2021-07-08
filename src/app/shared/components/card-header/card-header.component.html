@@ -92,6 +92,7 @@
 
             <!-- ADD BUTTON -->
             <button
+                id='btn__add'
                 mat-flat-button
                 *ngIf="addPermissions"
                 [ngClass]="buttonClasses"
@@ -151,6 +152,7 @@
             <ng-template [ngxPermissionsOnly]="exportPermissions">
                 <!-- EXPORT BUTTON -->
                 <button
+                    id='btn__export'
                     mat-stroked-button
                     *ngIf="exportPermissions"
                     color="primary"
@@ -177,6 +179,7 @@
 
                 <ng-template #useSimple>
                     <button
+                        id='btn__import'
                         mat-stroked-button
                         *ngIf="importPermissions"
                         color="primary"
