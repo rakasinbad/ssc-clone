@@ -8,23 +8,23 @@
     <div class="center p-8">
 
         <mat-tab-group
-        color="accent"
-        style="border-radius: 4px"
-        class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
-        animationDuration="0ms"
-        (selectedIndexChange)="onSelectedTab($event)"
-    >
-        <mat-tab [label]="'All (' + allPayment + ')'"></mat-tab>
-        <mat-tab [label]="'Waiting for Payment (' + waitingPayment + ')'"></mat-tab>
-        <mat-tab [label]="'D-7 (' + d7Payment + ')'"></mat-tab>
-        <mat-tab [label]="'D-3 (' + d3Payment + ')'"></mat-tab>
-        <mat-tab [label]="'D-0 (' + d0Payment + ')'"></mat-tab>
-        <mat-tab [label]="'Overdue (' + overduePayment + ')'"></mat-tab>
-        <mat-tab [label]="'Paid (' + paidPayment + ')'"></mat-tab>
-        <mat-tab [label]="'Waiting for Refund (' + waitingRefundPayment + ')'"></mat-tab>
-        <mat-tab [label]="'Refunded (' + refundedPayment + ')'"></mat-tab>
-        <mat-tab [label]="'Cancel (' + failPayment + ')'"></mat-tab>
-    </mat-tab-group>
+            color="accent"
+            style="border-radius: 4px"
+            class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab aria-label="all" [label]="'All (' + allPayment + ')'"></mat-tab>
+            <mat-tab aria-label="waitingForPayment" [label]="'Waiting for Payment (' + waitingPayment + ')'"></mat-tab>
+            <mat-tab aria-label="D7" [label]="'D-7 (' + d7Payment + ')'"></mat-tab>
+            <mat-tab aria-label="D3" [label]="'D-3 (' + d3Payment + ')'"></mat-tab>
+            <mat-tab aria-label="D0" [label]="'D-0 (' + d0Payment + ')'"></mat-tab>
+            <mat-tab aria-label="overdue" [label]="'Overdue (' + overduePayment + ')'"></mat-tab>
+            <mat-tab aria-label="paid" [label]="'Paid (' + paidPayment + ')'"></mat-tab>
+            <mat-tab aria-label="waitingForRefund" [label]="'Waiting for Refund (' + waitingRefundPayment + ')'"></mat-tab>
+            <mat-tab aria-label="refunded" [label]="'Refunded (' + refundedPayment + ')'"></mat-tab>
+            <mat-tab aria-label="cancel" [label]="'Cancel (' + failPayment + ')'"></mat-tab>
+        </mat-tab-group>
 
         <!-- CONTENT CARD -->
         <div class="content-card">
@@ -310,9 +310,10 @@
                     </mat-header-cell> -->
 
                     <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
+                    <mat-cell *matCellDef="let row; let i = index">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
+                                [id]="'btn__actions-' + i"
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"
                                 aria-label="More"
@@ -324,6 +325,7 @@
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['FINANCE.PS.UPDATE']">
                                     <button
+                                        [id]="'btn__update-status-' + i"
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
@@ -341,6 +343,7 @@
                                 </ng-template>
 
                                 <button
+                                    [id]="'btn__view-invoice-' + i"
                                     (click)="onViewInvoice(row.id)"
                                     mat-menu-item
                                     type="button"
