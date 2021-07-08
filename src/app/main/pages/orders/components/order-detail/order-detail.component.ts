@@ -3,9 +3,11 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
     Output,
+    SimpleChanges,
     ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -29,7 +31,7 @@ import { OrderSelectors } from '../../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderDetailComponent implements OnInit, OnDestroy {
+export class OrderDetailComponent implements OnInit, OnDestroy, OnChanges {
     @Input()
     data: any;
 
@@ -49,6 +51,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
 
     cataloguesChanges: any;
     bonusCatalogues: any;
+
+    selectedIndex: number = 0;
 
     orderLineSubmitable: boolean = true;
     bonusSubmitable: boolean = true;
@@ -89,6 +93,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             .subscribe((isRefresh) => {
                 this.initSource();
             }); */
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['data'] && !changes['data'].isFirstChange()) {
+            if(!!changes['data'].currentValue) this.onSelectedTabCondition(changes['data'].currentValue);
+        }
     }
 
     ngOnDestroy(): void {
@@ -249,6 +259,18 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         }
 
         this.store.dispatch(OrderActions.onEditFinished());
+    }
+
+    onSelectedTabCondition(value) : void {
+        if(value.deliveredParcelFinalPrice){
+            this.selectedIndex = 2;
+        } else if (value.invoicedParcelModified) {
+            this.selectedIndex = 1;
+        } else {
+            this.selectedIndex = 0;
+        }
+
+        this.onSelectedTab(this.selectedIndex);
     }
 
     onSubmit(): void {
