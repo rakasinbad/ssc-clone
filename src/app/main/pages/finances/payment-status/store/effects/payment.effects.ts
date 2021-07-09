@@ -192,7 +192,7 @@ export class PaymentEffects {
                         );
 
                         const newResp = {
-                            total: resp.total,
+                            total: resp.meta.total,
                             data: resp.data
                         };
 

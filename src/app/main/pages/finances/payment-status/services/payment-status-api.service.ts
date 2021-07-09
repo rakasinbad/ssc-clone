@@ -53,7 +53,7 @@ export class PaymentStatusApiService {
               ]
             : [];
 
-        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+        const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
     }

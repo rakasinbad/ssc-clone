@@ -987,6 +987,101 @@ export class HelperService {
         return newUrl.join(''); */
     }
 
+    /**
+     * This function is remove dollar in request params:
+     * 
+     * 1. Change params `$limit` to `limit`
+     * 2. Change params `$skip` to `skip`
+     * 
+     * @param url string
+     * @param params IQueryParams
+     * @param args any
+     * @returns HttpParams
+     */
+    handleParamsV2(url: string, params: IQueryParams, ...args): HttpParams {
+        let newParams = new HttpParams();
+
+        if (params) {
+            if (params.isWaitingForPayment) {
+                newParams = newParams.set(
+                    'is_waiting_for_payment',
+                    params.isWaitingForPayment.toString()
+                );
+            }
+            if (params.paginate) {
+                if (!newParams.has('limit')) {
+                    newParams = !params.limit
+                        ? newParams.set('limit', '5')
+                        : newParams.set('limit', params.limit.toString());
+                }
+
+                if (!newParams.has('skip')) {
+                    newParams = !params.skip
+                        ? newParams.set('skip', '0')
+                        : newParams.set('skip', params.skip.toString());
+                }
+            } else {
+                newParams = !params.paginate
+                    ? newParams.set('paginate', 'false')
+                    : newParams.set('paginate', 'true');
+            }
+
+            if (!newParams.has('sort') && !newParams.has('sortby')) {
+                if (params.sort && params.sortBy) {
+                    newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+                }
+            }
+
+            if (params.sort && params.sortBy) {
+                newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+            }
+
+            if (params.search) {
+                if (params.search.length) {
+                    for (const search of params.search) {
+                        if (search.fieldName && this.customParams.includes(search.fieldName)) {
+                            if (search.fieldName === 'statusPayment') {
+                                if (newParams.has('dueDay')) {
+                                    newParams.delete('dueDay');
+                                }
+                            }
+
+                            if (search.fieldName === 'dueDay') {
+                                if (newParams.has('statusPayment')) {
+                                    newParams.delete('statusPayment');
+                                }
+                            }
+
+                            if (search.fieldName.includes('[]')) {
+                                newParams = newParams.append(search.fieldName, `${search.keyword}`);
+                            } else {
+                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                            }
+
+                        } else if (search.fieldName && search.fieldName !== 'id') {
+                            newParams = newParams.append(
+                                `search[${search.fieldName}]`,
+                                `${search.keyword}`
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        if (args && args.length > 0) {
+            args.forEach((arg) => {
+                if (arg.key && arg.key !== 'headers' && arg.value) {
+                    newParams = newParams.append(arg.key, arg.value);
+                } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
+                    newParams = newParams.append(arg.key, '');
+                }
+            });
+        }
+
+        return newParams;
+    }
+
     handleParamsCatalogue(url: string, params: IQueryParams, ...args): HttpParams {
         let newParams = new HttpParams();
 
