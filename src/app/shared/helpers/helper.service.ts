@@ -215,7 +215,7 @@ export class HelperService {
             label: 'Shipped',
         },
         {
-            id: '',
+            id: 'pending',
             label: 'Awaiting to be Verified',
         },
         {
@@ -231,7 +231,7 @@ export class HelperService {
             label: 'Canceled',
         },
         {
-            id: '',
+            id: 'pending_supplier',
             label: 'Pending Supplier',
         },
     ];
