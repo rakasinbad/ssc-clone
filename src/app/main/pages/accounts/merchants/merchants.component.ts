@@ -17,8 +17,9 @@ import {
     MatPaginator,
     MatSort,
     PageEvent,
+    MatTabGroup,
 } from '@angular/material';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -42,7 +43,7 @@ import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, takeUntil, tap, filter } from 'rxjs/operators';
 import { ResendStoreDialogComponent } from './components';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -58,7 +59,7 @@ import { StoreSelectors } from './store/selectors';
     encapsulation: ViewEncapsulation.None,
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = 10;
+    readonly defaultPageSize = this.route.snapshot.queryParams.limit || 10;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     // Untuk menyimpan form reject
@@ -123,7 +124,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             active: true,
             changed: (value: string) => {
                 this.search.setValue(value);
-                setTimeout(() => this._onRefreshTable(true), 100);
             },
         },
         add: {
@@ -151,7 +151,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedSupplierStore: SupplierStore;
     selectedIds: Array<number> = [];
     selection: SelectionModel<SupplierStore>;
-    search: FormControl = new FormControl('');
+    firstOne: boolean = true;
+    search: FormControl = new FormControl(null);
     formConfig = {
         status: {
             label: 'Store List Status',
@@ -253,6 +254,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    @ViewChild(MatTabGroup, { static: true }) tabGroup: MatTabGroup;
+
     @ViewChild('reject', { static: false }) reject: TemplateRef<any>;
     @ViewChild('resendStore', { static: false }) resendStore: TemplateRef<any>;
     @ViewChild('approveStores', { static: false }) approveStores: TemplateRef<any>;
@@ -268,6 +271,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private route: ActivatedRoute,
         private router: Router,
         private ngxPermissions: NgxPermissionsService,
         private ngxRoles: NgxRolesService,
@@ -354,7 +358,17 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
+        const qParam = {
+            limit: ev.pageSize,
+            page: ev.pageIndex + 1,
+        };
+        if (this.storeStatus) {
+            qParam['status'] = this.storeStatus;
+        }
+        if (this.search.value) {
+            qParam['keyword'] = this.search.value;
+        }
+        this.router.navigate(['.'], { relativeTo: this.route, queryParams: qParam });
     }
 
     onRejectStore(item: SupplierStore): void {
@@ -374,7 +388,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     {
                         title: `Reject (${item.outerStore.name})`,
                         template: this.reject,
-                        isApplyEnabled: true,
+                        isApplyEnabled: false,
                     },
                     {
                         disableClose: true,
@@ -385,6 +399,19 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         panelClass: 'dialog-container-no-padding',
                     }
                 );
+
+                this.rejectForm.valueChanges
+                    .pipe(
+                        tap((value) => {
+                            if(value.reason !== ''){
+                                this.dialogRejectForm.enableApply()
+                            } else {
+                                this.dialogRejectForm.disableApply()
+                            }
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe();
 
                 this.dialogRejectForm.closed$.subscribe({
                     next: (value: TNullable<string>) => {
@@ -470,7 +497,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 approvalStatus: 'rejected',
                                 supplierStores: this.selected
                                     .toArray()
-                                    .map((selected) => ({ id: selected.id })),
+                                    .map((selected) => ({ supplierStoreId: selected.id })),
                                 rejection: {
                                     reasons: formValue.reason,
                                     rejectedFields: {
@@ -772,6 +799,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onSelectedTab(index: number): void {
         switch (index) {
+            case 0:
+                this.storeStatus = '';
+                this._onRefreshTable(true);
+                break;
             case 1:
                 this.storeStatus = 'verified';
                 this._onRefreshTable(true);
@@ -797,6 +828,22 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this._onRefreshTable(true);
                 break;
         }
+
+        this.changeQueryParam();
+    }
+
+    changeQueryParam(): void {
+        const qParam = {
+            limit: this.paginator.pageSize,
+            page: this.paginator.pageIndex + 1,
+        };
+        if (this.storeStatus) {
+            qParam['status'] = this.storeStatus;
+        }
+        if (this.search.value) {
+            qParam['keyword'] = this.search.value;
+        }
+        this.router.navigate(['.'], { relativeTo: this.route, queryParams: qParam });
     }
 
     selectSupplierStore(event: MatCheckboxChange, item: SupplierStore): void {
@@ -1034,7 +1081,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // 'store-type',
                 // 'sr-name',
                 'created-date',
-                'updated-date',        
+                'updated-date',
                 'status',
                 'supplier-status',
                 'actions'
@@ -1053,7 +1100,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // 'store-type',
                 // 'sr-name',
                 'created-date',
-                'updated-date',        
+                'updated-date',
                 'status',
                 'supplier-status',
             ];
@@ -1188,7 +1235,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         }
                     });
 
-                this._initTable();
+                // this._initTable();
 
                 this.search.valueChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -1197,7 +1244,20 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                             localStorage.setItem('filter.store', v);
                         }
 
-                        this._onRefreshTable(true);
+                        if (!this.firstOne) {
+                            this.paginator.pageIndex = 0;
+                        }
+
+                        this.cardHeaderConfig = {
+                            ...this.cardHeaderConfig,
+                            search: {
+                                ...this.cardHeaderConfig.search,
+                                value: v
+                            },
+                        };
+
+                        this.firstOne = false;
+                        this.changeQueryParam();
                     });
 
                 this.store
@@ -1213,6 +1273,74 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                             this._updateBatchActions();
                             this._onRefreshTable();
                         }
+                    });
+
+                this.route.queryParams
+                    .pipe(
+                        filter((params) => {
+                            const { limit, page: pageIndex, status, keyword } = params;
+
+                            if (keyword) {
+                                this.search.setValue(keyword);
+                                this.cardHeaderConfig = {
+                                    ...this.cardHeaderConfig,
+                                    search: {
+                                        ...this.cardHeaderConfig.search,
+                                        value: keyword
+                                    },
+                                };
+                            }
+
+                            if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                                return true;
+                            } else {
+                                this.storeStatus = '';
+                                this.tabGroup.selectedIndex = 0;
+                                this._onRefreshTable(true);
+                                return false;
+                            }
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe({
+                        next: ({ limit, page: pageIndex, status, keyword }) => {
+                            if (typeof limit !== 'undefined' && typeof pageIndex !== 'undefined') {
+                                this.paginator.pageSize = limit;
+                                this.paginator.pageIndex = pageIndex - 1;
+                                this.storeStatus = status;
+
+                                if (keyword && this.firstOne) {
+                                    this.firstOne = true
+                                } else {
+                                    this.firstOne = false
+                                }
+
+                                switch (status) {
+                                    case 'verified':
+                                        this.tabGroup.selectedIndex = 1;
+                                        break;
+                                    case 'guest':
+                                        this.tabGroup.selectedIndex = 2;
+                                        break;
+                                    case 'rejected':
+                                        this.tabGroup.selectedIndex = 3;
+                                        break;
+                                    case 'pending':
+                                        this.tabGroup.selectedIndex = 4;
+                                        break;
+                                    case 'updating':
+                                        this.tabGroup.selectedIndex = 5;
+                                        break;
+                                    default:
+                                        this.tabGroup.selectedIndex = 0;
+                                        break;
+                                }
+                                this._initTable();
+                            } else {
+                                this.tabGroup.selectedIndex = 0;
+                                this.paginator.pageSize = this.defaultPageSize;
+                            }
+                        },
                     });
                 break;
         }

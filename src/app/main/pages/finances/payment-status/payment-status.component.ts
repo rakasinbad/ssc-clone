@@ -416,6 +416,11 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         return item ? item : '-';
     }
 
+    checkStatus = (status: string): boolean => {
+        const arr = ['cancel', 'delivered'];
+        return arr.includes(status);
+    };
+
     onChangePage(ev: PageEvent): void {
         this.table.nativeElement.scrollIntoView();
         // this.table.nativeElement.scrollTop = 0;

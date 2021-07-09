@@ -1,0 +1,94 @@
+<div class="p-24 sinbad-content">
+
+    <!-- TITLE -->
+    <div class="font-size-18 text-semibold">
+        Address
+    </div>
+
+    <div
+        class="mt-24"
+        fxLayout="row"
+        fxLayoutGap="26px"
+        fxLayoutAlign="start stretch"
+    >
+        <div
+            fxLayout="column"
+            fxLayoutAlign="start stretch"
+            fxLayoutGap="42px"
+            fxFlex
+        >
+            <div
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                fxLayoutGap="26px"
+                fxFlex
+            >
+                <!-- Province -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Province
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.address?.urban?.province || '-' }}
+                    </p>
+                </div>
+                <!-- / Province -->
+
+                <!-- City -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        City
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.address?.urban?.city || '-' }}
+                    </p>
+                </div>
+                <!-- / City -->
+
+                <!-- District -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        District
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.address?.urban?.district || '-' }}
+                    </p>
+                </div>
+                <!-- / District -->
+
+                <!-- Urban -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Urban
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.address?.urban?.urban || '-' }}
+                    </p>
+                </div>
+                <!-- / Urban -->
+
+                <!-- Postcode -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Postcode
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.address?.urban?.zipCode || '-' }}
+                    </p>
+                </div>
+                <!-- / Postcode -->
+                
+                <!-- Address -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p class="font-size-14 field-label" [fxFlex]="labelFlex">
+                        Address
+                    </p>
+                    <p class="font-size-14 field-value">
+                        {{ (profile$ | async)?.address?.address || '-' }}
+                    </p>
+                </div>
+                <!-- / Address -->
+            </div>
+        </div>
+    </div>
+</div>

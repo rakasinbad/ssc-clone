@@ -41,3 +41,12 @@ export const updateProfileSuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 
 export const resetProfile = createAction('[Profile Page] Reset Profile State');
+
+// -----------------------------------------------------------------------------------------------------
+// Set Loading Actions
+// -----------------------------------------------------------------------------------------------------
+
+export const setLoading = createAction(
+    '[Profile API] Set Loading State',
+    props<{ payload: boolean }>()
+);
