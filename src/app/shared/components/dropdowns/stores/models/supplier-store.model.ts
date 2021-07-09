@@ -227,6 +227,7 @@ export interface IDataMassUpload {
     readonly id: NonNullable<string>;
     storeId: number;
     storeName: string;
+    storeCode: string;
 }
 
 export interface IImportLog extends ITimestamp {
@@ -299,17 +300,20 @@ export class MassUploadResponse {
     readonly id: NonNullable<string>;
     storeId: number;
     storeName: string;
+    storeCode: string;
 
     constructor(data: MassUploadResponse) {
         const {
             id,
             storeId,
-            storeName
+            storeName,
+            storeCode
         } = data;
 
         this.id = id || null;
         this.storeId = storeId;
         this.storeName = storeName;
+        this.storeCode = storeCode;
     }
 }
 

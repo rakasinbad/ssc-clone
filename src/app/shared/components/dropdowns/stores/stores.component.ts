@@ -557,10 +557,14 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                 dialogRef.afterClosed().subscribe(result => {
                                     if (result == 'yes') { //if click button yes
                                         let fileEntities = [];
-                                        
-                                        fileEntities = val.massData.filter(d => !!d)
+                                        if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
+                                            fileEntities = val.massData.filter(d => !!d)
+                                            .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.storeCode}));    
+                                        } else {
+                                            fileEntities = val.massData.filter(d => !!d)
                                             .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
-                                        
+                                        }
+
                                         for (const entity of (fileEntities as Array<Entity>)) {
                                             this.upsertEntity(entity);
                                         }
@@ -585,10 +589,15 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                             this.toggleSelectedLoading(false);
                             let fileEntities = [];
 
-                            fileEntities = val.massData.filter(d => !!d)
+                            if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' ) {
+                                fileEntities = val.massData.filter(d => !!d)
+                                .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.storeCode}));
+                            } else {
+                                fileEntities = val.massData.filter(d => !!d)
                                 .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
-                            
-                                for (const entity of (fileEntities as Array<Entity>)) {
+                            }
+
+                            for (const entity of (fileEntities as Array<Entity>)) {
                                 this.upsertEntity(entity);
                             }
 
