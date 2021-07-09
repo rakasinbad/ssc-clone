@@ -423,6 +423,7 @@
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
+                (page)="onChangePage($event)"
             ></mat-paginator>
 
             <!-- <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">

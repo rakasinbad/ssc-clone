@@ -416,8 +416,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     };
 
     onChangePage(ev: PageEvent): void {
-        this.table.nativeElement.scrollIntoView();
-        // this.table.nativeElement.scrollTop = 0;
+        this.table.nativeElement.scrollTop = 0;
     }
 
     onDelete(item): void {
@@ -710,7 +709,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            skip: this.paginator.pageIndex + 1
         };
 
         data['paginate'] = true;
