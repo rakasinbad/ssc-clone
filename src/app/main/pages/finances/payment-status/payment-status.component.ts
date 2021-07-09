@@ -341,9 +341,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     onSelectedTab(index: number): void {
         this.filterConfig.by.paymentStatus.sources = [];
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.formFilter });
-        this.globalFilterDto = null;
-        this.search.reset();
-        this.formFilter.reset();
 
         switch (index) {
             case 1:
