@@ -154,6 +154,41 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
 
 export type SupplierStoreOptions = Partial<SupplierStore>;
 
+export class SupplierStorePromo extends Timestamp implements ISupplierStore {
+    constructor(
+        public id: string,
+        public supplierId: string,
+        public storeId: string,
+        public storeName: string,
+        public storeCode: string,
+        public status: TStatus,
+        public store: Merchant,
+        public owner: any,
+        createdAt: string,
+        updatedAt: string,
+        deletedAt: TNullable<string>,
+        public outerStore: any = {}
+    ) {
+        super(createdAt, updatedAt, deletedAt);
+
+        if (store) {
+            this.store = new Merchant(store);
+
+            if (store.owner) {
+                this.owner = this.store.owner;
+            }
+        } else {
+            this.store = null;
+        }
+    }
+
+    static patch(body: SupplierStorePromoOptions): SupplierStorePromoOptions {
+        return body;
+    }
+}
+
+export type SupplierStorePromoOptions = Partial<SupplierStorePromo>;
+
 export interface massUploadModels {
     file: NonNullable<File>;
     type: string;
@@ -188,6 +223,7 @@ export interface IDataMassUpload {
     readonly id: NonNullable<string>;
     storeId: number;
     storeName: string;
+    storeCode: string;
 }
 
 export interface IImportLog extends ITimestamp {
@@ -260,17 +296,20 @@ export class MassUploadResponse {
     readonly id: NonNullable<string>;
     storeId: number;
     storeName: string;
+    storeCode: string;
 
     constructor(data: MassUploadResponse) {
         const {
             id,
             storeId,
-            storeName
+            storeName,
+            storeCode
         } = data;
 
         this.id = id || null;
         this.storeId = storeId;
         this.storeName = storeName;
+        this.storeCode = storeCode;
     }
 }
 
