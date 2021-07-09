@@ -339,8 +339,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onSelectedTab(index: number): void {
-        this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.formFilter });
-
         switch (index) {
             case 1:
                 this.selectedTab = 'waiting_for_payment';
@@ -853,9 +851,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     private applyFilter(): void {
-
-        HelperService.debug('[PaymentStatusComponent] globalFilterDto:', this.globalFilterDto);
-
         let querySearchParams: IQuerySearchParams[] = [];
         this.globalFilterDto = null;
 
@@ -1040,13 +1035,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         this.globalFilterDto = querySearchParams;
-
-        // DEBUG: REMOVE ME
-        HelperService.debug('[PaymentStatusComponent] on submit filter:', {
-            value: this.formFilter.value,
-            globalFilterDto: this.globalFilterDto
-        });
-
     }
 
 }
