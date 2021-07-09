@@ -171,10 +171,6 @@ export class SupplierStorePromo extends Timestamp implements ISupplierStore {
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        // if (Object.keys(this.outerStore).length > 0) {
-        //     delete this.outerStore.store;
-        // }
-
         if (store) {
             this.store = new Merchant(store);
 
