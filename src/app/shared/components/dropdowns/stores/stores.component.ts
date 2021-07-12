@@ -292,14 +292,14 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 if (Array.isArray(response)) {
                     addedRawAvailableEntities = response;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher' ) {
-                        addedAvailableEntities = (response as Array<EntityPromo>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores' }));
+                        addedAvailableEntities = (response as Array<EntityPromo>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
                     
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
                         for(const entity of (response as Array<EntityPromo>)) {
-                            entity['storeName'] =  entity['storeName'] + ' - ' +  entity['storeCode'];
+                            entity['storeName'] =  entity['storeName'] + ' - ' +  entity['externalId'];
                             this.upsertEntity(entity);
                         }
                     } else {
@@ -311,14 +311,14 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                 } else {
                     addedRawAvailableEntities = response.data;
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
-                        addedAvailableEntities = (response.data as Array<EntityPromo>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores' }));
+                        addedAvailableEntities = (response.data as Array<EntityPromo>).filter(d => !!d).map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores' }));
                     } else {
                         addedAvailableEntities = (response.data as Array<Entity>).filter(d => !!d.store).map(d => ({ id: d.store.id, label: d.store.name, group: 'supplier-stores' }));
                     }
 
                     if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' || this.typePromo == 'voucher') {
                         for(const entity of (response.data as Array<EntityPromo>)) {
-                            entity['storeName'] =  entity['storeName'] + ' - ' +  entity['storeCode'];
+                            entity['storeName'] =  entity['storeName'] + ' - ' +  entity['externalId'];
                             this.upsertEntity(entity);
                         }
                        
@@ -559,7 +559,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
                                         let fileEntities = [];
                                         if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling') {
                                             fileEntities = val.massData.filter(d => !!d)
-                                            .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.storeCode}));    
+                                            .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.externalId}));    
                                         } else {
                                             fileEntities = val.massData.filter(d => !!d)
                                             .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
@@ -591,7 +591,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
 
                             if (this.typePromo == 'flexiCombo' || this.typePromo == 'crossSelling' ) {
                                 fileEntities = val.massData.filter(d => !!d)
-                                .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.storeCode, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.storeCode}));
+                                .map(d => ({ id: d.storeId, label: d.storeName + ' - ' + d.externalId, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName + ' - ' + d.externalId}));
                             } else {
                                 fileEntities = val.massData.filter(d => !!d)
                                 .map(d => ({ id: d.storeId, label: d.storeName, group: 'supplier-stores', storeId: d.storeId, storeName: d.storeName }));
