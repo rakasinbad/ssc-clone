@@ -29,7 +29,8 @@ export class PaymentStatusApiService {
      */
     private readonly _endpointPatch = '/order-parcels';
     // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
-    private readonly _endpointPayment = '/payment/v1/order/fms';
+    // private readonly _endpointPayment = '/payment/v1/order/fms';
+    private readonly _endpointPayment = '/payment/v1/fms';
 
     /**
      * Creates an instance of PaymentStatusApiService.
@@ -52,8 +53,7 @@ export class PaymentStatusApiService {
               ]
             : [];
 
-
-        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+        const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
     }

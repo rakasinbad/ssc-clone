@@ -192,7 +192,7 @@ export class PaymentEffects {
                         );
 
                         const newResp = {
-                            total: resp.total,
+                            total: resp.meta.total,
                             data: resp.data
                         };
 
@@ -223,7 +223,9 @@ export class PaymentEffects {
                 ofType(PaymentStatusActions.fetchPaymentStatusesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message = resp.errors.error.message || resp.errors.message;
+                    const message = resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
 
                     this._$log.generateGroup(
                         '[REQUEST FETCH PAYMENT STATUSES FAILURE]',
