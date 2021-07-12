@@ -161,6 +161,7 @@ export class SupplierStorePromo extends Timestamp implements ISupplierStore {
         public storeId: string,
         public storeName: string,
         public storeCode: string,
+        public externalId: string,
         public status: TStatus,
         public store: Merchant,
         public owner: any,
@@ -224,6 +225,7 @@ export interface IDataMassUpload {
     storeId: number;
     storeName: string;
     storeCode: string;
+    externalId: string;
 }
 
 export interface IImportLog extends ITimestamp {
@@ -297,19 +299,22 @@ export class MassUploadResponse {
     storeId: number;
     storeName: string;
     storeCode: string;
+    externalId: string;
 
     constructor(data: MassUploadResponse) {
         const {
             id,
             storeId,
             storeName,
-            storeCode
+            storeCode,
+            externalId
         } = data;
 
         this.id = id || null;
         this.storeId = storeId;
         this.storeName = storeName;
         this.storeCode = storeCode;
+        this.externalId = externalId;
     }
 }
 
