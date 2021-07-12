@@ -241,7 +241,7 @@ export class FlexiComboDetailCustomerComponent implements OnInit, OnDestroy {
 
     getStores(value: IPromoStore[]): string {
         if (value && value.length > 0) {
-            const store = value.map((v) => v.store.name + ' - ' + v.store.externalId);
+            const store = value.map((v) => v.store.name);
 
             return store.length > 0 ? store.join(', ') : '-';
         }
