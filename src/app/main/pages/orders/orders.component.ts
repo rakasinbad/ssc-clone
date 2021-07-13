@@ -299,6 +299,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         this.paginator.pageIndex = this.route.snapshot.queryParams.page ? this.route.snapshot.queryParams.page-1 : 0;
 
         if (this.route.snapshot.queryParams.keyword){
+            this.cardHeaderConfig.search.value = this.route.snapshot.queryParams.keyword;
             this.search.setValue(this.route.snapshot.queryParams.keyword);
         }
 
@@ -682,8 +683,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     break;
                 case 'paymentStatuses[]':
                     qParam['paymentStatuses'] = !!qParam['paymentStatuses'] ? `${qParam['paymentStatuses']}~${e.keyword}` : e.keyword;
-                    break;
-                case 'keyword':
                     break;
                 default:
                     qParam[e.fieldName] = !!qParam[e.fieldName] ? `${qParam[e.fieldName]}~${e.keyword}` : e.keyword;
