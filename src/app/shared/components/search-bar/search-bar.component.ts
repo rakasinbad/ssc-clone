@@ -33,7 +33,6 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:no-input-rename
     @Input('value') value: string;
 
-
     // Untuk mengubah debounceTime.
     // tslint:disable-next-line:no-input-rename
     @Input('threshold') threshold: number;
