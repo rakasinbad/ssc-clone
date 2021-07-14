@@ -43,6 +43,7 @@ import { SinbadFilterConfig } from 'app/shared/components/sinbad-filter/models';
 import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services';
 import { isMoment } from 'moment';
 import { cloneDeep } from 'lodash';
+import { EPaymentChannel, EPaymentStatus, EPaymentType } from './models';
 
 @Component({
     selector: 'app-payment-status',
@@ -550,6 +551,46 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 });
             }
         });
+    }
+
+    isShowMenuItemUpdateStatus(item: any): boolean {
+        let result = false;
+
+        switch (item.paymentType.id) {
+            case EPaymentType.PAY_NOW:
+                break;
+            case EPaymentType.PAY_LATER:
+                
+                if (
+                    item.paymentChannel.paymentChannelTypeId === EPaymentChannel.CHANNEL_TUNAI &&
+                    (
+                        item.statusPayment === EPaymentStatus.WAITING_FOR_PAYMENT ||
+                        item.statusPayment === EPaymentStatus.OVERDUE
+                    )
+                ) {
+                    result = true;
+                }
+
+                break;
+            case EPaymentType.PAY_ON_DELIVERY:
+
+                if (
+                    item.paymentChannel.paymentChannelTypeId === EPaymentChannel.CHANNEL_TUNAI &&
+                    (
+                        item.statusPayment === EPaymentStatus.WAITING_FOR_PAYMENT ||
+                        item.statusPayment === EPaymentStatus.OVERDUE
+                    )
+                ) {
+                    result = true;
+                }
+                
+                break;
+            default:
+                console.warn(`[PAYMENT STATUS] Payment Type "${item.paymentType.name}" is unknown`);
+                break;
+        }
+
+        return result;
     }
 
     // -----------------------------------------------------------------------------------------------------
