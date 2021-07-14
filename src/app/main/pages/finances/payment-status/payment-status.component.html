@@ -330,12 +330,7 @@
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="Update Status"
-                                        *ngIf="
-                                            row?.statusPayment !== 'paid' &&
-                                            row.statusPayment !== 'waiting_for_refund' &&
-                                            row.statusPayment !== 'refunded' &&
-                                            row.statusPayment !== 'payment_failed'
-                                        "
+                                        *ngIf="isShowMenuItemUpdateStatus(row)"
                                         (click)="onUpdate(row)"
                                     >
                                         <span>Update Status</span>
