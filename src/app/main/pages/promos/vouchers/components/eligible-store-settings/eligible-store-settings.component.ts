@@ -636,6 +636,16 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         }
     }
 
+    getStores(data) {
+        if (data && data.length > 0) {
+            const store = data.map((v) => v.store.name);
+
+            return store.length > 0 ? store.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
