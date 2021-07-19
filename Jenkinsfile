@@ -146,8 +146,7 @@ pipeline {
         }
         stage('Deployment CANARY') {
             when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
-				stage("Upload to S3") {
-                    steps {
+				steps {
 						script {
 							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
 							withAWS(credentials: "${AWS_CREDENTIAL}") {
@@ -155,12 +154,10 @@ pipeline {
 							}	
 						}
 					}
-				}
-			}
+				}		
 		stage('Deployment PRODUCTION') {
             when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
-				stage("Upload to S3") {
-                    steps {
+                steps {
 						script {
 							s3Download(file: '${WORKSPACE}', bucket: '${CANARY_BUCKET}', path: "${SINBAD_ENV}/${SINBAD_REPO}/*", force: true)
 							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
@@ -170,7 +167,6 @@ pipeline {
 						}
 					}
 				}
-			}
         stage('Automation UI Test') {
             agent {
                 docker { 
