@@ -144,7 +144,7 @@ pipeline {
                 }
             }
         }
-        Stage('Deployment CANARY') {
+        stage('Deployment CANARY') {
             when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
 				stage("Upload to S3") {
                     steps {
@@ -157,7 +157,7 @@ pipeline {
 					}
 				}
 			}
-		Stage('Deployment PRODUCTION') {
+		stage('Deployment PRODUCTION') {
             when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
 				stage("Upload to S3") {
                     steps {
