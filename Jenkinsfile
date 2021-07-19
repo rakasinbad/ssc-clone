@@ -90,6 +90,18 @@ pipeline {
                 }
             }
         }
+        stage('Deployment PRODUCTION') {
+            when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
+                steps {
+						script {
+							s3Download(file: '${WORKSPACE}', bucket: '${CANARY_BUCKET}', path: "${SINBAD_ENV}/${SINBAD_REPO}/*", force: true)
+							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
+							withAWS(credentials: "${AWS_CREDENTIAL}") {
+							s3Upload(bucket:"${TEST_REPO}", workingDir:'${WORKSPACE}', includePathPattern:'**/*');
+							}	
+						}
+					}
+				}
         stage('Download ENV') {
             steps {
                 script{
@@ -155,18 +167,7 @@ pipeline {
 						}
 					}
 				}		
-		stage('Deployment PRODUCTION') {
-            when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
-                steps {
-						script {
-							s3Download(file: '${WORKSPACE}', bucket: '${CANARY_BUCKET}', path: "${SINBAD_ENV}/${SINBAD_REPO}/*", force: true)
-							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
-							withAWS(credentials: "${AWS_CREDENTIAL}") {
-							s3Upload(bucket:"${TEST_REPO}", workingDir:'${WORKSPACE}', includePathPattern:'**/*');
-							}	
-						}
-					}
-				}
+		
         stage('Automation UI Test') {
             agent {
                 docker { 
