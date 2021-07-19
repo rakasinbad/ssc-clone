@@ -34,6 +34,11 @@ pipeline {
             defaultValue: '',
             description: 'Which git source?'
         )
+		choice(
+            name: 'DEPLOY_PRODUCTION?',
+            choices: ['No', 'Yes'],
+            description: 'Deployment to prodution?'
+		)
     }
     environment {
         SINBAD_REPO = 'web-sinbad-seller-center'
@@ -42,6 +47,8 @@ pipeline {
         SINBAD_ENV = "${env.JOB_BASE_NAME}"
         BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
+		CANARY_BUCKET = "ssc-test-02"
+		TEST_REPO	= "ssc-test-01"
     }
     stages {
         stage('Checkout') {
@@ -137,16 +144,33 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
-            steps {
-                script {
-                    sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
-                    withAWS(credentials: "${AWS_CREDENTIAL}") {
-                        s3Upload(bucket:"${BUCKET_UPLOAD}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
-                    }
-                }
-            }
-        }
+        Stage('Deployment CANARY') {
+            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+				stage("Upload to S3") {
+                    steps {
+						script {
+							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
+							withAWS(credentials: "${AWS_CREDENTIAL}") {
+							s3Upload(bucket:"${CANARY_BUCKET}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
+							}	
+						}
+					}
+				}
+			}
+		Stage('Deployment PRODUCTION') {
+            when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
+				stage("Upload to S3") {
+                    steps {
+						script {
+							s3Download(file: '${WORKSPACE}', bucket: '${CANARY_BUCKET}', path: "${SINBAD_ENV}/${SINBAD_REPO}/*", force: true)
+							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
+							withAWS(credentials: "${AWS_CREDENTIAL}") {
+							s3Upload(bucket:"${TEST_REPO}", workingDir:'${WORKSPACE}', includePathPattern:'**/*');
+							}	
+						}
+					}
+				}
+			}
         stage('Automation UI Test') {
             agent {
                 docker { 
