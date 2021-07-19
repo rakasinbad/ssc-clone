@@ -537,7 +537,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                         if (action === 'edit' && payload) {
                             this.store.dispatch(
                                 PaymentStatusActions.updatePaymentStatusRequest({
-                                    payload: { id: item.id, body: payload }
+                                    payload: { id: item.id, body: payload, opts: { header_X_Type: 'payment' } }
                                 })
                             );
                         } else {
