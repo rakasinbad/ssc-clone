@@ -47,8 +47,7 @@ pipeline {
         SINBAD_ENV = "${env.JOB_BASE_NAME}"
         BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
-		CANARY_BUCKET = "ssc-test-02"
-		TEST_REPO	= "ssc-test-01"
+		CANARY_BUCKET = "seller-canary.sinbad.web.id"
     }
     stages {
         stage('Checkout') {
@@ -96,7 +95,7 @@ pipeline {
 						script {
 							s3Download(file: "${WORKSPACE}", bucket: "${CANARY_BUCKET}", force: true)
 							withAWS(credentials: "${AWS_CREDENTIAL}") {
-							s3Upload(bucket:"${TEST_REPO}", workingDir:"${WORKSPACE}", includePathPattern:'**/*');
+							s3Upload(bucket:"${BUCKET_UPLOAD}", workingDir:"${WORKSPACE}", includePathPattern:'**/*');
 							}	
 						}
 					}
