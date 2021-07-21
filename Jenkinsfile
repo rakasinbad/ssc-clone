@@ -102,6 +102,7 @@ pipeline {
 					}
 				}
         stage('Download ENV') {
+			when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
             steps {
                 script{
                     withAWS(credentials: "${AWS_CREDENTIAL}") {
@@ -116,11 +117,13 @@ pipeline {
             }
         }
         stage('Install') {
+		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
             steps {
                 sh "npm ci"
             }
         }
         stage('Build') {
+		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
             steps {
                 script{
                     if (SINBAD_ENV == 'production') {
@@ -138,7 +141,7 @@ pipeline {
             }
         }
         stage('Code Analysis') {
-            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" } }
+            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" && params.DEPLOY_PRODUCTION == "No" } }
             steps{
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
@@ -173,6 +176,8 @@ pipeline {
                         image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
                     }
             }
+		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+
             steps {
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
