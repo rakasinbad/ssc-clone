@@ -1,23 +1,23 @@
 <mat-card>
     <div fxLayout="column">
-        <span class="mat-headline" *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
+        <span class="mat-headline" *ngIf="(store$ | async)?.outerStore || !(isLoading$ | async)">
             {{ (isEdit$ | async) ? 'Edit Store Location' : 'Store Location' }}
         </span>
 
         <ngx-skeleton-loader
-            *ngIf="!(store$ | async)?.store && (isLoading$ | async) && !(isEdit$ | async)"
+            *ngIf="!(store$ | async)?.outerStore && (isLoading$ | async) && !(isEdit$ | async)"
             [theme]="{ width: '150px', height: '40px' }"
         ></ngx-skeleton-loader>
 
         <div
             class="address h4"
-            *ngIf="(store$ | async)?.store?.address && !(isLoading$ | async) && !(isEdit$ | async)"
+            *ngIf="(store$ | async)?.outerStore?.address && !(isLoading$ | async) && !(isEdit$ | async)"
         >
-            {{ (store$ | async)?.store?.address }}
+            {{ (store$ | async)?.outerStore?.address }}
         </div>
 
         <ngx-skeleton-loader
-            *ngIf="!(store$ | async)?.store?.address && (isLoading$ | async)"
+            *ngIf="!(store$ | async)?.outerStore?.address && (isLoading$ | async)"
             [theme]="{ width: '100px' }"
         ></ngx-skeleton-loader>
 
@@ -35,11 +35,11 @@
             [minZoom]="opts.minZoom"
             [maxZoom]="opts.maxZoom"
             [streetViewControl]="false"
-            [latitude]="(store$ | async)?.store?.latitude"
-            [longitude]="(store$ | async)?.store?.longitude"
+            [latitude]="(store$ | async)?.outerStore?.latitude"
+            [longitude]="(store$ | async)?.outerStore?.longitude"
             [fitBounds]="true"
             (boundsChange)="onChangeBound($event)"
-            *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+            *ngIf="(store$ | async)?.outerStore || !(isLoading$ | async)"
         >
             <agm-marker
                 [latitude]="lat"
@@ -53,7 +53,7 @@
         </agm-map>
 
         <ngx-skeleton-loader
-            *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+            *ngIf="!(store$ | async)?.outerStore && (isLoading$ | async)"
             [theme]="{ width: '100%', height: '400px' }"
         ></ngx-skeleton-loader>
 
