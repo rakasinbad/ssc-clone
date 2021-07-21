@@ -158,7 +158,7 @@ pipeline {
             }
         }
         stage('Deployment CANARY') {
-            when { expression { params.DEPLOY_PRODUCTION == "No"} }
+            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production"} }
 				steps {
 						script {
 							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
@@ -168,7 +168,17 @@ pipeline {
 						}
 					}
 				}		
-		
+		stage('Deploy') {
+            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV != "production"} }
+            steps {
+                script {
+                    sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
+                    withAWS(credentials: "${AWS_CREDENTIAL}") {
+                        s3Upload(bucket:"${BUCKET_UPLOAD}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
+                    }
+                }
+            }
+        }
         stage('Automation UI Test') {
             agent {
                 docker { 
