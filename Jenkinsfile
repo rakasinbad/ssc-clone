@@ -102,7 +102,7 @@ pipeline {
 					}
 				}
         stage('Download ENV') {
-			when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+			when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
                 script{
                     withAWS(credentials: "${AWS_CREDENTIAL}") {
@@ -117,13 +117,13 @@ pipeline {
             }
         }
         stage('Install') {
-		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+		when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
                 sh "npm ci"
             }
         }
         stage('Build') {
-		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+		when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
                 script{
                     if (SINBAD_ENV == 'production') {
@@ -141,7 +141,7 @@ pipeline {
             }
         }
         stage('Code Analysis') {
-            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" && params.DEPLOY_PRODUCTION == "No" } }
+			when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps{
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
@@ -159,7 +159,7 @@ pipeline {
             }
         }
         stage('Deployment CANARY') {
-            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+            when { expression { params.DEPLOY_PRODUCTION == "No"} }
 				steps {
 						script {
 							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
