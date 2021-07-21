@@ -48,8 +48,8 @@ export class PaymentEffects {
         this.actions$.pipe(
             ofType(PaymentStatusActions.updatePaymentStatusRequest),
             map(action => action.payload),
-            switchMap(({ id, body }) => {
-                return this._$paymentStatusApi.patch(body, id).pipe(
+            switchMap(({ id, body, opts }) => {
+                return this._$paymentStatusApi.patch(body, id, opts).pipe(
                     map(resp => {
                         this._$log.generateGroup(
                             'RESPONSE REQUEST UPDATE PAYMENT STATUS',
