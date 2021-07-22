@@ -31,6 +31,7 @@
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
+                id='payments-table'
                 class="payments-table sinbad-table mx-12"
                 [class.sinbad-table-no-record]="
                     !(isLoading$ | async) && (totalDataSource$ | async) === 0
@@ -310,7 +311,7 @@
                     </mat-header-cell> -->
 
                     <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-                    <mat-cell *matCellDef="let row; let i = index">
+                    <mat-cell id='actions' *matCellDef="let row; let i = index">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
                                 [id]="'btn__actions-' + i"
@@ -373,9 +374,10 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
                 <mat-row
-                    *matRowDef="let row; columns: displayedColumns"
+                    *matRowDef="let row; let i = index; columns: displayedColumns"
                     class="payment"
                     [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    [id]="'payments-table-row__' + i"
                 ></mat-row>
                 <mat-footer-row
                     *matFooterRowDef="['no-record']"
