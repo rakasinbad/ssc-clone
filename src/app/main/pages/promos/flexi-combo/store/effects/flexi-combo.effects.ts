@@ -805,11 +805,11 @@ export class FlexiComboEffects {
             paginate: false,
         };
 
-        // const { supplierId } = userData.userSupplier;
+        const { supplierId } = userData.userSupplier;
 
-        // if (supplierId) {
-        //     newParams['supplierId'] = supplierId;
-        // }
+        if (supplierId) {
+            newParams['supplierId'] = supplierId;
+        }
 
         if (parameter['splitRequest']) {
             return forkJoin([
