@@ -206,7 +206,11 @@ export class CrossSellingDetailCsComponent implements OnInit {
 
     getStores(value: IPromoStore[]): string {
         if (value && value.length > 0) {
-            const store = value.map((v) => `${v.store.name} - ${v.store['supplierStores'][0]['externalId']}`);
+            const store = value.map((v) => {
+                if (v.store) {
+                    return `${v.store.name} - ${v.store['supplierStores'][0]['externalId']}`
+                }
+            });
 
             return store.length > 0 ? store.join(', ') : '-';
         }
