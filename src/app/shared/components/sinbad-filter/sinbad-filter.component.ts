@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { HelperService } from 'app/shared/helpers';
@@ -68,8 +68,7 @@ export class SinbadFilterComponent implements OnInit {
     constructor(
         private readonly fuseSidebarService: FuseSidebarService,
         private readonly sinbadFilterService: SinbadFilterService,
-        private readonly singleWarehouseService: SingleWarehouseDropdownService,
-        private fb: FormBuilder,
+        private readonly singleWarehouseService: SingleWarehouseDropdownService
     ) {}
 
     ngOnInit(): void {
