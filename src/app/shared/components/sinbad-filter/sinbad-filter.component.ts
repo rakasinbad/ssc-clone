@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { HelperService } from 'app/shared/helpers';
@@ -61,10 +61,15 @@ export class SinbadFilterComponent implements OnInit {
 
     config$: Observable<SinbadFilterConfig>;
 
+    private readonly NUMBER_LIMIT = 9223372036854775808;
+    filterStoreOrderTotalLimitNumber: number;
+    filterSupplierDeliveredTotalLimitNumber: number;
+
     constructor(
         private readonly fuseSidebarService: FuseSidebarService,
         private readonly sinbadFilterService: SinbadFilterService,
-        private readonly singleWarehouseService: SingleWarehouseDropdownService
+        private readonly singleWarehouseService: SingleWarehouseDropdownService,
+        private fb: FormBuilder,
     ) {}
 
     ngOnInit(): void {
@@ -104,10 +109,16 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['storeOrderTotal'] !== 'undefined') {
                             this.filterStoreOrderTotal = true;
+
+                            const limit = config.by['storeOrderTotal'].numberLimitMax || this.NUMBER_LIMIT;
+                            this.filterStoreOrderTotalLimitNumber = limit;
                         }
 
                         if (typeof config.by['supplierDeliveredTotal'] !== 'undefined') {
                             this.filterSupplierDeliveredTotal = true;
+
+                            const limit = config.by['supplierDeliveredTotal'].numberLimitMax || this.NUMBER_LIMIT;
+                            this.filterSupplierDeliveredTotalLimitNumber = limit;
                         }
 
                         if (typeof config.by['segmentChannel'] !== 'undefined') {
