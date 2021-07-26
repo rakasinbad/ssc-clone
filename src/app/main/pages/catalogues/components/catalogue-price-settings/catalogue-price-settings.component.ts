@@ -440,14 +440,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
 
         dialogRef.closed$.subscribe((res) => {
             if (res === 'apply') {
-                const {
-                    channels,
-                    clusters,
-                    groups,
-                    types,
-                    warehouses,
-                    price,
-                } = this.adjustPriceForm.value;
+                const { channels, clusters, groups, types, warehouses, price } =
+                    this.adjustPriceForm.value;
 
                 const channelIds =
                     channels && channels.length ? channels.map((item) => item.id) : [];
@@ -793,14 +787,14 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
         HelperService.debug('[CataloguePriceSettingsComponent] onTaxChange', { ev });
 
         // Get Tax Id
-        const taxId =
+        /* const taxId =
             this.taxes && !!this.taxes.length
                 ? +this.taxes.find((tax) => tax.amount === ev.value).id
                 : null;
 
         if (taxId) {
             this.formValueChange.emit({ catalogueTaxId: taxId } as Catalogue);
-        }
+        } */
     }
 
     onTrackPriceSetting(index: number, item: CataloguePrice): string {
@@ -828,7 +822,51 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 this.formStatusChange.emit(status);
             });
 
-        this.form
+        this.form.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                tap((value) =>
+                    HelperService.debug('[CataloguePriceSettingsComponent] Before MAP', value)
+                ),
+                map((value) => {
+                    // Get Tax Id
+                    const taxId =
+                        this.taxes && !!this.taxes.length
+                            ? +this.taxes.find((tax) => tax.amount === value.tax).id
+                            : null;
+
+                    const formValue = {
+                        retailBuyingPrice: undefined,
+                        discountedRetailBuyingPrice: undefined,
+                        catalogueTaxId: undefined,
+                    };
+
+                    if (taxId) {
+                        formValue.catalogueTaxId = taxId;
+                    }
+
+                    if (typeof value.retailBuyingPrice !== 'undefined') {
+                        formValue.retailBuyingPrice = value.retailBuyingPrice;
+                    }
+
+                    if (typeof value.discountRetailBuyerPrice !== 'undefined') {
+                        formValue.discountedRetailBuyingPrice = value.discountRetailBuyerPrice;
+                    }
+
+                    return formValue;
+                }),
+                tap((value) =>
+                    HelperService.debug('[CataloguePriceSettingsComponent] After MAP', value)
+                ),
+                takeUntil(this.unSubs$)
+            )
+            .subscribe((value) => {
+                HelperService.debug('[CataloguePriceSettingsComponent] Subscribe', value);
+                this.formValueChange.emit(value as Catalogue);
+            });
+
+        /* this.form
             .get('retailBuyingPrice')
             .valueChanges.pipe(
                 distinctUntilChanged(),
@@ -860,7 +898,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
             )
             .subscribe((value) => {
                 this.formValueChange.emit({ discountedRetailBuyingPrice: value } as Catalogue);
-            });
+            }); */
 
         /* this.form
             .get('retailBuyingPrice')
@@ -902,10 +940,10 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                             id: [cataloguePrice.id],
                             price: [
                                 typeof cataloguePrice.price === 'number'
-                                    ? ((String(cataloguePrice.price).replace(
+                                    ? (String(cataloguePrice.price).replace(
                                           '.',
                                           ','
-                                      ) as unknown) as number)
+                                      ) as unknown as number)
                                     : cataloguePrice.price,
                                 {
                                     validators: [
@@ -921,7 +959,10 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                             ],
                             isMaximum: cataloguePrice.isMaximum || false,
                             maxOrderQtyValue: [
-                                { value: cataloguePrice.maxQty, disabled: !cataloguePrice.isMaximum },
+                                {
+                                    value: cataloguePrice.maxQty,
+                                    disabled: !cataloguePrice.isMaximum,
+                                },
                                 { updateOn: 'blur' },
                             ],
                         });
