@@ -689,6 +689,13 @@ export class CrossSellingPromoEffects {
         const newParams: IQueryParams = {
             paginate: false,
         };
+
+        // Hanya mengambil ID supplier saja.
+        const { supplierId } = userData.userSupplier;
+
+        // Memasukkan ID supplier ke dalam parameter.
+        newParams['supplierId'] = supplierId;
+        
         if (parameter['splitRequest']) {
             return forkJoin([
                 this._$crossSellingPromoApi.findById<CrossSelling>(id, newParams).pipe(
