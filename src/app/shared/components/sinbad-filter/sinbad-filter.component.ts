@@ -61,6 +61,10 @@ export class SinbadFilterComponent implements OnInit {
 
     config$: Observable<SinbadFilterConfig>;
 
+    private readonly NUMBER_LIMIT = 9223372036854775808;
+    filterStoreOrderTotalLimitNumber: number;
+    filterSupplierDeliveredTotalLimitNumber: number;
+
     constructor(
         private readonly fuseSidebarService: FuseSidebarService,
         private readonly sinbadFilterService: SinbadFilterService,
@@ -104,10 +108,16 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['storeOrderTotal'] !== 'undefined') {
                             this.filterStoreOrderTotal = true;
+
+                            const limit = config.by['storeOrderTotal'].numberLimitMax || this.NUMBER_LIMIT;
+                            this.filterStoreOrderTotalLimitNumber = limit;
                         }
 
                         if (typeof config.by['supplierDeliveredTotal'] !== 'undefined') {
                             this.filterSupplierDeliveredTotal = true;
+
+                            const limit = config.by['supplierDeliveredTotal'].numberLimitMax || this.NUMBER_LIMIT;
+                            this.filterSupplierDeliveredTotalLimitNumber = limit;
                         }
 
                         if (typeof config.by['segmentChannel'] !== 'undefined') {

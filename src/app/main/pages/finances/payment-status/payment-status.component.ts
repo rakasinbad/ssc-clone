@@ -122,11 +122,13 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             },
             storeOrderTotal: {
                 title: 'Store Order Total',
-                sources: null
+                sources: null,
+                numberLimitMax: 999999999999
             },
             supplierDeliveredTotal: {
                 title: 'Supplier Delivered Total',
-                sources: null
+                sources: null,
+                numberLimitMax: 999999999999
             },
             paymentType: {
                 title: 'Payment Type',
