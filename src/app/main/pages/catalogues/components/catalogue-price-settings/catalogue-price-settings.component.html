@@ -41,7 +41,6 @@
 
                 <mat-radio-group
                     formControlName="tax"
-                    (change)="onTaxChange($event)"
                     *ngIf="formMode | hasFormMode: 'edit'"
                 >
                     <mat-radio-button class="pr-36" *ngFor="let tax of taxes" [value]="tax?.amount">
