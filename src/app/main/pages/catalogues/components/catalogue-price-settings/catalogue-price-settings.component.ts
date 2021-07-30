@@ -1127,14 +1127,15 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, OnDes
                 this.form.patchValue({
                     id: catalogue.id,
                     supplierId: (catalogue.brand as any).supplierId,
-                    retailBuyingPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
+                    retailBuyingPrice: catalogue.retailBuyingPrice
+                        ? String(catalogue.retailBuyingPrice).replace('.', ',')
+                        : null,
                     retailBuyingPriceView: catalogue.retailBuyingPrice,
                     tax: catalogue.catalogueTax.amount,
                     taxView: catalogue.catalogueTax.amount,
-                    discountRetailBuyerPrice: String(catalogue.discountedRetailBuyingPrice).replace(
-                        '.',
-                        ','
-                    ),
+                    discountRetailBuyerPrice: catalogue.discountedRetailBuyingPrice
+                        ? String(catalogue.discountedRetailBuyingPrice).replace('.', ',')
+                        : null,
                     discountRetailBuyerPriceView: catalogue.discountedRetailBuyingPrice,
                 });
 
