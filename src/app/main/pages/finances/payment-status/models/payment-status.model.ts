@@ -26,3 +26,12 @@ export interface IPaymentStatusDemo {
     d: string;
     proofOfPaymentStatus: string;
 }
+
+export enum EPaymentStatus {
+    PAYMENT_FAILED = 'payment_failed',
+    PAID = 'paid',
+    WAITING_FOR_PAYMENT = 'waiting_for_payment',
+    OVERDUE = 'overdue',
+    WAITING_FOR_REFUND = 'waiting_for_refund',
+    REFUNDED = 'refunded'
+}

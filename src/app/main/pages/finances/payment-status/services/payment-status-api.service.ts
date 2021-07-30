@@ -1,8 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { options } from 'numeral';
 import { Observable } from 'rxjs';
+
+export interface IAPIOptions {
+    header_X_Type: string;
+}
 
 /**
  *
@@ -29,7 +34,8 @@ export class PaymentStatusApiService {
      */
     private readonly _endpointPatch = '/order-parcels';
     // private readonly _endpointPayment = '/payment/v1/order/order-parcels';
-    private readonly _endpointPayment = '/payment/v1/order/fms';
+    // private readonly _endpointPayment = '/payment/v1/order/fms';
+    private readonly _endpointPayment = '/payment/v1/fms';
 
     /**
      * Creates an instance of PaymentStatusApiService.
@@ -52,8 +58,7 @@ export class PaymentStatusApiService {
               ]
             : [];
 
-
-        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+        const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
     }
@@ -68,9 +73,17 @@ export class PaymentStatusApiService {
         return this.http.get(`${this._url}/${id}`);
     }
 
-    patch(body: any, id: string): Observable<any> {
+    patch(body: any, id: string, opts?: IAPIOptions): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpointPatch);
 
-        return this.http.patch(`${this._url}/${id}`, body);
+        let headers: HttpHeaders;
+
+        if (opts.header_X_Type) {
+            headers = new HttpHeaders({
+                'X-Type': opts.header_X_Type
+            });
+        }
+        
+        return this.http.patch(`${this._url}/${id}`, body, {headers});
     }
 }
