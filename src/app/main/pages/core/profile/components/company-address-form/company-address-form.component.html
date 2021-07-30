@@ -1,0 +1,332 @@
+<div class="p-24 sinbad-content">
+    <!-- TITLE -->
+    <div class="font-size-18 text-semibold">Address</div>
+    <!-- TITLE -->
+    <div class="pt-0 pb-40 line-height-1.75">
+        <form [formGroup]="form" class="w-100-p" novalidate>
+            <div
+                class="mt-12"
+                fxLayout="column"
+                fxLayoutGap="20px"
+                fxLayoutAlign="start stretch"
+                formGroupName="address"
+            >
+                <!-- Province -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="urban"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="hasError(form.get('address.urban.province'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container><span class="red-500-fg">*</span></ng-container>
+                        Province
+                    </p>
+
+                    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                        <input
+                            #triggerProvince
+                            matInput
+                            autocomplete="new-password"
+                            placeholder="Search Province"
+                            formControlName="province"
+                            [matAutocomplete]="provinceAutoComplete"
+                        />
+                        <mat-autocomplete
+                            #provinceAutoComplete
+                            (optionSelected)="onSelectedProvince($event)"
+                        >
+                            <!-- NONE OPTION -->
+                            <mat-option
+                                *ngIf="
+                                    !(isProvinceLoading$ | async) &&
+                                    !(availableProvinces$ | async).length
+                                "
+                                >(None)</mat-option
+                            >
+                            <!-- / NONE OPTION -->
+
+                            <!-- PROVINCE OPTIONS -->
+                            <mat-option
+                                *ngFor="let province of availableProvinces$ | async"
+                                [value]="province"
+                            >
+                                {{ province?.name }}
+                            </mat-option>
+                            <!-- / PROVINCE OPTIONS -->
+
+                            <!-- LOADING OPTION -->
+                            <mat-option
+                                [disabled]="true"
+                                style="text-align: center; font-style: italic; max-height: 30px"
+                                *ngIf="isProvinceLoading$ | async"
+                            >
+                                Loading ...
+                            </mat-option>
+                            <!-- / LOADING OPTION -->
+                        </mat-autocomplete>
+                        <mat-error *ngIf="hasError(form.get('address.urban.province'))">
+                            {{ getFormError(form.get('address.urban.province')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / Province -->
+
+                <!-- City -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="urban"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="hasError(form.get('address.urban.city'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container><span class="red-500-fg">*</span></ng-container>
+                        City
+                    </p>
+
+                    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                        <input
+                            #triggerCity
+                            matInput
+                            autocomplete="new-password"
+                            placeholder="Search City"
+                            formControlName="city"
+                            [matAutocomplete]="cityAutoComplete"
+                        />
+                        <!-- (opened)="listenCityAutoComplete()" -->
+                        <mat-autocomplete
+                            #cityAutoComplete
+                            (optionSelected)="onSelectedCity($event)"
+                        >
+                            <!-- NONE OPTION -->
+                            <mat-option
+                                *ngIf="
+                                    !(isCityLoading$ | async) && !(availableCities$ | async).length
+                                "
+                                >(None)</mat-option
+                            >
+                            <!-- / NONE OPTION -->
+
+                            <!-- CITY OPTIONS -->
+                            <mat-option
+                                *ngFor="let city of availableCities$ | async"
+                                [value]="city"
+                            >
+                                {{ city }}
+                            </mat-option>
+                            <!-- / CITY OPTIONS -->
+
+                            <!-- LOADING OPTION -->
+                            <mat-option
+                                [disabled]="true"
+                                style="text-align: center; font-style: italic; max-height: 30px"
+                                *ngIf="isCityLoading$ | async"
+                            >
+                                Loading ...
+                            </mat-option>
+                            <!-- / LOADING OPTION -->
+                        </mat-autocomplete>
+                        <mat-error *ngIf="hasError(form.get('address.urban.city'))">
+                            {{ getFormError(form.get('address.urban.city')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / City -->
+
+                <!-- District -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="urban"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="hasError(form.get('address.urban.district'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container><span class="red-500-fg">*</span></ng-container>
+                        District
+                    </p>
+
+                    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                        <input
+                            #triggerDistrict
+                            matInput
+                            autocomplete="new-password"
+                            placeholder="Search District"
+                            formControlName="district"
+                            [matAutocomplete]="districtAutoComplete"
+                        />
+                        <!-- (opened)="listenDistrictAutoComplete()" -->
+                        <mat-autocomplete
+                            #districtAutoComplete
+                            (optionSelected)="onSelectedDistrict($event)"
+                        >
+                            <!-- NONE OPTION -->
+                            <mat-option
+                                *ngIf="
+                                    !(isDistrictLoading$ | async) &&
+                                    !(availableDistricts$ | async).length
+                                "
+                                >(None)</mat-option
+                            >
+                            <!-- / NONE OPTION -->
+
+                            <!-- PROVINCE OPTIONS -->
+                            <mat-option
+                                *ngFor="let district of availableDistricts$ | async"
+                                [value]="district"
+                            >
+                                {{ district }}
+                            </mat-option>
+                            <!-- / PROVINCE OPTIONS -->
+
+                            <!-- LOADING OPTION -->
+                            <mat-option
+                                [disabled]="true"
+                                style="text-align: center; font-style: italic; max-height: 30px"
+                                *ngIf="isDistrictLoading$ | async"
+                            >
+                                Loading ...
+                            </mat-option>
+                            <!-- / LOADING OPTION -->
+                        </mat-autocomplete>
+                        <mat-error *ngIf="hasError(form.get('address.urban.district'))">
+                            {{ getFormError(form.get('address.urban.district')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / District -->
+
+                <!-- Urban -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="urban"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="hasError(form.get('address.urban.urban'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container><span class="red-500-fg">*</span></ng-container>
+                        Urban
+                    </p>
+
+                    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                        <input
+                            #triggerUrban
+                            matInput
+                            autocomplete="new-password"
+                            placeholder="Search Urban"
+                            formControlName="urban"
+                            [matAutocomplete]="urbanAutoComplete"
+                        />
+                        <!-- (opened)="listenUrbanAutoComplete()" -->
+                        <mat-autocomplete
+                            #urbanAutoComplete
+                            (optionSelected)="onSelectedUrban($event)"
+                        >
+                            <!-- NONE OPTION -->
+                            <mat-option
+                                *ngIf="
+                                    !(isUrbanLoading$ | async) && !(availableUrbans$ | async).length
+                                "
+                                >(None)</mat-option
+                            >
+                            <!-- / NONE OPTION -->
+
+                            <!-- URBAN OPTIONS -->
+                            <mat-option
+                                *ngFor="let urban of availableUrbans$ | async"
+                                [value]="urban"
+                            >
+                                {{ urban.urban }}
+                            </mat-option>
+                            <!-- / URBAN OPTIONS -->
+
+                            <!-- LOADING OPTION -->
+                            <mat-option
+                                [disabled]="true"
+                                style="text-align: center; font-style: italic; max-height: 30px"
+                                *ngIf="isUrbanLoading$ | async"
+                            >
+                                Loading ...
+                            </mat-option>
+                            <!-- / LOADING OPTION -->
+                        </mat-autocomplete>
+                        <mat-error *ngIf="hasError(form.get('address.urban.urban'))">
+                            {{ getFormError(form.get('address.urban.urban')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / Urban -->
+
+                <!-- Zipcode -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="16px"
+                    formGroupName="urban"
+                    fxFlex
+                >
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="hasError(form.get('address.urban.zipCode'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container><span class="red-500-fg">*</span></ng-container>
+                        Postcode
+                    </p>
+
+                    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                        <input matInput autocomplete="off" formControlName="zipCode" />
+                        <mat-error *ngIf="hasError(form.get('address.urban.zipCode'))">
+                            {{ getFormError(form.get('address.urban.zipCode')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / Urban -->
+
+                <!-- Address -->
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" fxFlex>
+                    <p
+                        class="font-size-14 field-label"
+                        [class.mat-error]="hasError(form.get('address.address'))"
+                        [fxFlex]="labelFlex"
+                    >
+                        <ng-container><span class="red-500-fg">*</span></ng-container>
+                        Address
+                    </p>
+
+                    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+                        <textarea
+                            matInput
+                            name="address"
+                            formControlName="address"
+                            rows="3"
+                        ></textarea>
+                        <mat-error *ngIf="hasError(form.get('address.address'))">
+                            {{ getFormError(form.get('address.address')) }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- / Address -->
+            </div>
+        </form>
+    </div>
+</div>

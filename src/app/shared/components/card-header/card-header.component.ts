@@ -244,6 +244,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                     if (this.config.search.useBorder) {
                         this.searchUseBorder = this.config.search.useBorder;
                     }
+
                 }
 
                 // Memeriksa konfigurasi "View by".

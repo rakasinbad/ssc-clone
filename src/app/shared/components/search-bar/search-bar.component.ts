@@ -7,6 +7,7 @@ import {
     OnInit,
     Output,
     ViewEncapsulation,
+    SimpleChanges,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -31,7 +32,6 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // Untuk meletakkan placeholder.
     // tslint:disable-next-line:no-input-rename
     @Input('value') value: string;
-
 
     // Untuk mengubah debounceTime.
     // tslint:disable-next-line:no-input-rename
@@ -64,6 +64,12 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.value) {
+            this.search.setValue(this.value);
+        }
     }
 
     reset(): void {

@@ -49,6 +49,10 @@ const profileReducer = createReducer(
         profile: payload,
         errors: adapterError.removeOne('fetchProfileFailure', state.errors)
     })),
+    on(ProfileActions.setLoading, (state, { payload }) => ({
+        ...state,
+        isLoading: payload,
+    })),
     on(ProfileActions.updateProfileSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,

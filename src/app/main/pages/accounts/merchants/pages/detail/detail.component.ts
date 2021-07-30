@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, forkJoin } from 'rxjs';
@@ -40,6 +41,7 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private location: Location,
         // private cdRef: ChangeDetectorRef,
         private store: NgRxStore<fromMerchant.FeatureState>,
         private segmentation: StoreSegmentationTypesApiService,
@@ -131,35 +133,35 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         }
         
         if (value.outerStore.rejectedFields.fullName) {
-            rejectedFields.push('Owner Store Name');
+            rejectedFields.push('Nama Pemilik Toko');
         }
 
         if (value.outerStore.rejectedFields.idImageUrl) {
-            rejectedFields.push('Picture (Owner KTP)');
+            rejectedFields.push('Foto KTP');
         }
 
         if (value.outerStore.rejectedFields.idNo) {
-            rejectedFields.push('KTP Number');
+            rejectedFields.push('Nomor KTP');
         }
 
         if (value.outerStore.rejectedFields.imageUrl) {
-            rejectedFields.push('Picture (Toko)');
+            rejectedFields.push('Foto Toko');
         }
 
         if (value.outerStore.rejectedFields.mobilePhoneNo) {
-            rejectedFields.push('Store Phone Number');
+            rejectedFields.push('Nomor Telepon Toko');
         }
 
         if (value.outerStore.rejectedFields.name) {
-            rejectedFields.push('Store Name');
+            rejectedFields.push('Nama Toko');
         }
 
         if (value.outerStore.rejectedFields.phoneNo) {
-            rejectedFields.push('Store Phone Number');
+            rejectedFields.push('Nomor Handphone');
         }
 
         if (value.outerStore.rejectedFields.selfieImageUrl) {
-            rejectedFields.push('Picture (Selfie with KTP)');
+            rejectedFields.push('Foto Selfie');
         }
 
         if (value.outerStore.rejectedFields.taxImageUrl) {
@@ -252,5 +254,9 @@ export class StoreDetailPageComponent implements OnInit, AfterViewInit, OnDestro
         this.subs$.complete();
 
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+    }
+
+    goBack(): void {
+        this.location.back();
     }
 }

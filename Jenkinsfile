@@ -34,6 +34,11 @@ pipeline {
             defaultValue: '',
             description: 'Which git source?'
         )
+		choice(
+            name: 'DEPLOY_PRODUCTION',
+            choices: ['No', 'Yes'],
+            description: 'Deployment to prodution?'
+		)
     }
     environment {
         SINBAD_REPO = 'web-sinbad-seller-center'
@@ -42,6 +47,7 @@ pipeline {
         SINBAD_ENV = "${env.JOB_BASE_NAME}"
         BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
+		CANARY_BUCKET = "seller-canary.sinbad.web.id"
     }
     stages {
         stage('Checkout') {
@@ -83,7 +89,19 @@ pipeline {
                 }
             }
         }
+        stage('Deployment PRODUCTION') {
+            when { expression { params.DEPLOY_PRODUCTION == "Yes" && SINBAD_ENV == "production" } }
+                steps {
+						script {
+							s3Download(file: "${WORKSPACE}", bucket: "${CANARY_BUCKET}", force: true)
+							withAWS(credentials: "${AWS_CREDENTIAL}") {
+							s3Upload(bucket:"${BUCKET_UPLOAD}", workingDir:"${WORKSPACE}", includePathPattern:'**/*');
+							}	
+						}
+					}
+				}
         stage('Download ENV') {
+			when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
                 script{
                     withAWS(credentials: "${AWS_CREDENTIAL}") {
@@ -98,11 +116,13 @@ pipeline {
             }
         }
         stage('Install') {
+		when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
                 sh "npm ci"
             }
         }
         stage('Build') {
+		when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps {
                 script{
                     if (SINBAD_ENV == 'production') {
@@ -120,7 +140,7 @@ pipeline {
             }
         }
         stage('Code Analysis') {
-            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" } }
+			when { expression { params.DEPLOY_PRODUCTION == "No"} }
             steps{
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
@@ -137,7 +157,19 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deployment CANARY') {
+            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production"} }
+				steps {
+						script {
+							sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
+							withAWS(credentials: "${AWS_CREDENTIAL}") {
+							s3Upload(bucket:"${CANARY_BUCKET}", workingDir:'dist/supplier-center', includePathPattern:'**/*');
+							}	
+						}
+					}
+				}		
+		stage('Deploy') {
+            when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV != "production"} }
             steps {
                 script {
                     sh "echo ${env.GIT_TAG}_${env.GIT_COMMIT_SHORT} > ${WOKRSPACE}/dist/supplier-center/VERSION"
@@ -153,6 +185,8 @@ pipeline {
                         image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
                     }
             }
+		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
+
             steps {
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){

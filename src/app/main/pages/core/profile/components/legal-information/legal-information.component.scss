@@ -1,0 +1,38 @@
+@import 'src/@sinbad/scss/helper';
+
+legal-information-component {
+    p {
+        margin: 0;
+
+        &.field-label {
+            font-weight: 600;
+        }
+
+        &.field-value {
+            color: sinbad-color('black', '80');
+        }
+
+        &.field-description {
+            color: #a0a4a8;
+            font-size: 12px;
+            margin: 0;
+        }
+    }
+
+    .mat-form-field-infix {
+        border-top: 0.2em solid transparent;
+    }
+    .mat-form-field-wrapper {
+        padding-bottom: 0px !important;
+    }
+
+    .upload-button {
+        top: -0.3em;
+        height: 47px;
+        align-self: center;
+    }
+
+    .mat-form-field-subscript-wrapper {
+        position: inherit !important;
+    }
+}
