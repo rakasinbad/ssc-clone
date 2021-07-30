@@ -7,7 +7,7 @@
     <!-- / DIALOG TITLE -->
     
     <!-- DIALOG CLOSE BUTTON -->
-    <button mat-dialog-close mat-icon-button>
+    <button id="btn__close" mat-dialog-close mat-icon-button>
         <mat-icon>close</mat-icon>
     </button>
     <!-- / DIALOG CLOSE BUTTON -->
@@ -17,7 +17,7 @@
 <!-- DIALOG SEARCH WRAPPER -->
 <div class="mb-16" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
     <!-- REFRESH BUTTON -->
-    <button mat-flat-button class="sinbad-orange" (click)="refreshLog()"> Refresh </button>
+    <button id="btn__refresh" mat-flat-button class="sinbad-orange" (click)="refreshLog()"> Refresh </button>
     <!-- / REFRESH BUTTON -->
     <!-- SEARCH -->
     <sinbad-search-bar useBorder="true" threshold="500" (changed)="onSearch($event)"></sinbad-search-bar>
@@ -82,12 +82,12 @@
                 <th mat-header-cell *matHeaderCellDef>
                     Progress
                 </th>
-                <td mat-cell *matCellDef="let row">
+                <td mat-cell *matCellDef="let row; let i = index">
                     <p *ngIf="row?.status !== 'done'; else hasDone;">
                         {{ row?.status === 'on_process' ? 'On Process' : row?.status | titlecase }}
                     </p>
                     <ng-template #hasDone>
-                        <a class="red-fg" [href]="row?.url" target="_blank"> Download </a>
+                        <a [id]="'download__' + i" class="red-fg" [href]="row?.url" target="_blank"> Download </a>
                     </ng-template>
                 </td>
             </ng-container>
