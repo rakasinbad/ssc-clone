@@ -180,6 +180,14 @@ export class HelperService {
             label: 'New Order',
         },
         {
+            id: 'pending_supplier',
+            label: 'Pending Supplier',
+        },
+        {
+            id: 'pending_partial',
+            label: 'Pending Partial',
+        },
+        {
             id: 'packing',
             label: 'Packed',
         },

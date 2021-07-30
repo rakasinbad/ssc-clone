@@ -1,9 +1,13 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
+    OnChanges,
     OnDestroy,
     OnInit,
+    Output,
+    SimpleChanges,
     ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
@@ -17,6 +21,7 @@ import { takeUntil } from 'rxjs/operators';
 import { OrderQtyFormComponent } from '../../order-qty-form/order-qty-form.component';
 import { OrderActions } from '../../store/actions';
 import { fromOrder } from '../../store/reducers';
+import { OrderSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-order-detail',
@@ -26,7 +31,7 @@ import { fromOrder } from '../../store/reducers';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderDetailComponent implements OnInit, OnDestroy {
+export class OrderDetailComponent implements OnInit, OnDestroy, OnChanges {
     @Input()
     data: any;
 
@@ -34,15 +39,32 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     loading: boolean;
 
     private _unSubs$: Subject<any> = new Subject();
+    
+    @Output('onSubmit')
+    formValue: EventEmitter<any>;
 
-    type: string;
+    @Output('onChangeOrderStatus')
+    orderStatus: EventEmitter<string> = new EventEmitter();
+
+    type: string = 'original';
+    onEditValue: any;
+
+    cataloguesChanges: any;
+    bonusCatalogues: any;
+
+    selectedIndex: number = 0;
+
+    orderLineSubmitable: boolean = true;
+    bonusSubmitable: boolean = true;
 
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService
-    ) {}
+    ) {
+        this.formValue = new EventEmitter();
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -71,6 +93,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             .subscribe((isRefresh) => {
                 this.initSource();
             }); */
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['data'] && !changes['data'].isFirstChange()) {
+            if(!!changes['data'].currentValue) this.onSelectedTabCondition(changes['data'].currentValue);
+        }
     }
 
     ngOnDestroy(): void {
@@ -187,6 +215,10 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             });
     }
 
+    getEditCondition() : void {
+        this.onEditValue = this.store.select(OrderSelectors.getEditCondition);
+    }
+
     safeValue(item: any): any {
         return item ? item : '-';
     }
@@ -215,15 +247,64 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     onSelectedTab(value) : void {
         switch (value) {
             case 2:
-                this.type = "delivered"
+                this.type = "delivered";
                 break;
             case 1:
-                this.type = "dispatched"
+                this.type = "dispatched";
                 break;
             case 0:
             default:
-                this.type = "original"
+                this.type = "original";
                 break;
         }
+
+        this.store.dispatch(OrderActions.onEditFinished());
     }
+
+    onSelectedTabCondition(value) : void {
+        if(value.deliveredParcelFinalPrice){
+            this.selectedIndex = 2;
+        } else if (value.invoicedParcelModified) {
+            this.selectedIndex = 1;
+        } else {
+            this.selectedIndex = 0;
+        }
+
+        this.onSelectedTab(this.selectedIndex);
+    }
+
+    onSubmit(): void {
+        this.formValue.emit({
+            status: "pending_partial",
+            catalogues : this.cataloguesChanges || [],
+            bonusCatalogues : this.bonusCatalogues || []
+        });
+    }
+
+    onCancel() : void {
+        this.store.dispatch(OrderActions.onEditFinished());
+        this.getEditCondition();
+    }
+
+    onPropose() : void {
+        this.store.dispatch(OrderActions.onEdit());
+        this.getEditCondition();
+    }
+
+    onChangeCatalogues(value) : void {
+        this.cataloguesChanges = value.catalogues;
+    }
+
+    onChangeBonus(value) : void {
+        this.bonusCatalogues = value.catalogues;
+    }
+
+    onValidateOrderLine(submitable) : void {
+        this.orderLineSubmitable = submitable;
+    }
+
+    onValidateBonus(submitable) : void {
+        this.bonusSubmitable = submitable;
+    }
+
 }

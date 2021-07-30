@@ -766,7 +766,7 @@
                         <mat-form-field appearance="outline" fxFlex>
                             <mat-select [formControl]="form.get('orderStatus')" placeholder="Choose Order Status" multiple>
                                 <mat-option *ngFor="let sources of sourceOrderStatus" [value]="sources?.id">
-                                    {{ sources?.label }}
+                                    {{ sources?.label | titlecase }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
@@ -795,7 +795,7 @@
                         <mat-form-field appearance="outline" fxFlex>
                             <mat-select [formControl]="form.get('paymentStatus')" placeholder="Choose Payment Status" multiple>
                                 <mat-option *ngFor="let sources of sourcePaymentStatus" [value]="sources?.id">
-                                    {{ sources?.label }}
+                                    {{ sources?.label | titlecase }}
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
