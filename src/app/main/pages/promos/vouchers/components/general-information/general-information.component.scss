@@ -25,8 +25,12 @@ voucher-general-information {
         height: 71px;
         border-radius: 5px;
         border: 1px solid rgba(0, 0, 0, 0.12);
+        padding: 10px;
     }
-    
+
+    .mat-chip-list-wrapper .mat-standard-chip, .mat-chip-list-wrapper input.mat-input-element {
+        height: auto;
+    }
 
     .form-box {
         .custom-field {
