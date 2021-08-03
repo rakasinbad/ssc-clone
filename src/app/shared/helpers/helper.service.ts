@@ -29,6 +29,8 @@ import { TriggerBase } from '../models/trigger-base.model';
 import { PromoHierarchyLayer, PromoHierarchyGroup } from '../models/promo-hierarchy.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
+import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
+import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -64,6 +66,17 @@ export class HelperService {
         'minOrderValue',
         'maxOrderValue',
         'web',
+        'startDueDate',
+        'endDueDate',
+        'startPaymentDate',
+        'endPaymentDate',
+        'minStoreOrderTotal',
+        'maxStoreOrderTotal',
+        'minDeliveredTotal',
+        'maxDeliveredTotal',
+        'paymentTypes[]',
+        'paylaterTypes[]',
+        'statusPayments[]',
         'statuses[]',
         'paymentStatuses[]'
     ];
@@ -167,6 +180,14 @@ export class HelperService {
             label: 'New Order',
         },
         {
+            id: 'pending_supplier',
+            label: 'Pending Supplier',
+        },
+        {
+            id: 'pending_partial',
+            label: 'Pending Partial',
+        },
+        {
             id: 'packing',
             label: 'Packed',
         },
@@ -185,6 +206,41 @@ export class HelperService {
         {
             id: 'cancel',
             label: 'Canceled',
+        },
+    ];
+
+    private static _orderStatusesV2: Array<{ id: string; label: string }> = [
+        {
+            id: 'confirm',
+            label: 'New Order',
+        },
+        {
+            id: 'packing',
+            label: 'Packed',
+        },
+        {
+            id: 'shipping',
+            label: 'Shipped',
+        },
+        {
+            id: 'pending',
+            label: 'Awaiting to be Verified',
+        },
+        {
+            id: 'delivered',
+            label: 'Delivered',
+        },
+        {
+            id: 'done',
+            label: 'Done',
+        },
+        {
+            id: 'cancel',
+            label: 'Canceled',
+        },
+        {
+            id: 'pending_supplier',
+            label: 'Pending Supplier',
         },
     ];
 
@@ -209,6 +265,82 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
+        }
+    ];
+
+    // tslint:disable-next-line:member-ordering
+    private static _paymentStatusesV2: Array<{ id: string; label: string }> = [
+        {
+            id: 'waiting_for_refund',
+            label: 'Waiting for Refund',
+        },
+        {
+            id: 'waiting_for_payment',
+            label: 'Waiting for Payment',
+        },
+        {
+            id: 'paid',
+            label: 'Paid',
+        },
+        {
+            id: 'refunded',
+            label: 'Refunded',
+        },
+        {
+            id: 'payment_failed',
+            label: 'Payment Failed',
+        }
+    ];
+
+    private static _paymentTypes: Array<{ id: string; label: string }> = [
+        {
+            id: EPaymentType.PAY_LATER,
+            label: 'Bayar Nanti',
+        },
+        {
+            id: EPaymentType.PAY_NOW,
+            label: 'Bayar Sekarang',
+        },
+        {
+            id: EPaymentType.COD,
+            label: 'Bayar di Tempat',
+        }
+    ];
+
+    private static _paymentTypesV2: Array<{ id: number; label: string }> = [
+        {
+            id: EPaymentTypeV2.PAY_LATER,
+            label: 'Bayar Nanti',
+        },
+        {
+            id: EPaymentTypeV2.PAY_NOW,
+            label: 'Bayar Sekarang',
+        },
+        {
+            id: EPaymentTypeV2.COD,
+            label: 'Bayar di Tempat',
+        }
+    ];
+
+    private static _payLaterTypes: Array<{ id: string; label: string }> = [
+        {
+            id: EPayLaterType.SUPPLIER,
+            label: 'Supplier',
+        },
+        {
+            id: EPayLaterType.SUPPLIER_KUR_CLICK_ACC,
+            label: 'Supplier with KUR KlickACC',
+        }
+    ];
+
+    private static _payLaterTypesV2: Array<{ id: number; label: string }> = [
+        {
+            id: EPayLaterTypeV2.SUPPLIER,
+            label: 'Supplier',
+        },
+        {
+            id: EPayLaterTypeV2.SUPPLIER_KUR_CLICK_ACC,
+            label: 'Supplier with KUR KlickACC',
         }
     ];
 
@@ -863,6 +995,101 @@ export class HelperService {
         return newUrl.join(''); */
     }
 
+    /**
+     * This function is remove dollar in request params:
+     * 
+     * 1. Change params `$limit` to `limit`
+     * 2. Change params `$skip` to `skip`
+     * 
+     * @param url string
+     * @param params IQueryParams
+     * @param args any
+     * @returns HttpParams
+     */
+    handleParamsV2(url: string, params: IQueryParams, ...args): HttpParams {
+        let newParams = new HttpParams();
+
+        if (params) {
+            if (params.isWaitingForPayment) {
+                newParams = newParams.set(
+                    'is_waiting_for_payment',
+                    params.isWaitingForPayment.toString()
+                );
+            }
+            if (params.paginate) {
+                if (!newParams.has('limit')) {
+                    newParams = !params.limit
+                        ? newParams.set('limit', '5')
+                        : newParams.set('limit', params.limit.toString());
+                }
+
+                if (!newParams.has('skip')) {
+                    newParams = !params.skip
+                        ? newParams.set('skip', '0')
+                        : newParams.set('skip', params.skip.toString());
+                }
+            } else {
+                newParams = !params.paginate
+                    ? newParams.set('paginate', 'false')
+                    : newParams.set('paginate', 'true');
+            }
+
+            if (!newParams.has('sort') && !newParams.has('sortby')) {
+                if (params.sort && params.sortBy) {
+                    newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+                }
+            }
+
+            if (params.sort && params.sortBy) {
+                newParams = newParams.set('sort', params.sort).set('sortby', params.sortBy);
+            }
+
+            if (params.search) {
+                if (params.search.length) {
+                    for (const search of params.search) {
+                        if (search.fieldName && this.customParams.includes(search.fieldName)) {
+                            if (search.fieldName === 'statusPayment') {
+                                if (newParams.has('dueDay')) {
+                                    newParams.delete('dueDay');
+                                }
+                            }
+
+                            if (search.fieldName === 'dueDay') {
+                                if (newParams.has('statusPayment')) {
+                                    newParams.delete('statusPayment');
+                                }
+                            }
+
+                            if (search.fieldName.includes('[]')) {
+                                newParams = newParams.append(search.fieldName, `${search.keyword}`);
+                            } else {
+                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                            }
+
+                        } else if (search.fieldName && search.fieldName !== 'id') {
+                            newParams = newParams.append(
+                                `search[${search.fieldName}]`,
+                                `${search.keyword}`
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
+        if (args && args.length > 0) {
+            args.forEach((arg) => {
+                if (arg.key && arg.key !== 'headers' && arg.value) {
+                    newParams = newParams.append(arg.key, arg.value);
+                } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
+                    newParams = newParams.append(arg.key, '');
+                }
+            });
+        }
+
+        return newParams;
+    }
+
     handleParamsCatalogue(url: string, params: IQueryParams, ...args): HttpParams {
         let newParams = new HttpParams();
 
@@ -1068,8 +1295,32 @@ export class HelperService {
         return HelperService._orderStatuses;
     }
 
+    orderStatusV2(): { id: string; label: string }[] {
+        return HelperService._orderStatusesV2;
+    }
+
     paymentStatus(): { id: string; label: string }[] {
         return HelperService._paymentStatuses;
+    }
+
+    paymentStatusV2(): { id: string; label: string }[] {
+        return HelperService._paymentStatusesV2;
+    }
+
+    paymentType(): { id: string; label: string }[] {
+        return HelperService._paymentTypes;
+    }
+
+    paymentTypesV2(): { id: number; label: string }[] {
+        return HelperService._paymentTypesV2;
+    }
+
+    payLaterType(): { id: string; label: string }[] {
+        return HelperService._payLaterTypes;
+    }
+
+    payLaterTypesV2(): { id: number; label: string }[] {
+        return HelperService._payLaterTypesV2;
     }
 
     platformSinbad(): { id: PlatformSinbad; label: string }[] {

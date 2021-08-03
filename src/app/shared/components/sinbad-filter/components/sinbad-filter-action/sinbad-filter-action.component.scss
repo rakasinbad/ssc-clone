@@ -1,6 +1,16 @@
-.sinbad__filter-action--item {
-    width: 118px;
-    min-width: 118px;
-    max-width: 118px;
-    height: 40px;
+app-sinbad-filter-action {
+
+    .sinbad__filter-action--item {
+        width: 118px;
+        min-width: 118px;
+        max-width: 118px;
+        height: 40px;
+    }
+
+    .btn-sinbad-disabled {
+        opacity: 30%;
+        cursor: default;
+        pointer-events: none;
+    }
+
 }

@@ -28,7 +28,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // Untuk meletakkan placeholder.
     // tslint:disable-next-line:no-input-rename
     @Input('placeholder') placeholder: string;
-    
+
     // Untuk meletakkan placeholder.
     // tslint:disable-next-line:no-input-rename
     @Input('value') value: string;

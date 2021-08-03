@@ -166,7 +166,7 @@ export class VoucherGeneralInformationComponent
     selectableVoucherTag = true;
     removableVoucherTag = true;
     addOnBlurVoucherTag = true;
-    readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+    readonly separatorKeysCodes: number[] = [ENTER];
     voucherTerms: VoucherTerms[] = [];
     voucherIns: VoucherIns[] = [];
     voucherTag: VoucherTag[] = [];
