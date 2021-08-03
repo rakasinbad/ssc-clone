@@ -24,6 +24,7 @@
                 <a
                     mat-tab-link
                     *ngFor="let link of links"
+                    [id]="link.id"
                     [routerLink]="[link?.path]"
                     routerLinkActive
                     #rla="routerLinkActive"

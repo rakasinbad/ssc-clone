@@ -850,7 +850,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     map((sources) => {
                         return sources.map((source) => {
                             var label = source.status.replaceAll("_", " ");
-                            label = label.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
                             
                             return {
                                 id: source.status, label: label

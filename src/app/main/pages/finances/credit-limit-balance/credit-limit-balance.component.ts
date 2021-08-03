@@ -34,10 +34,12 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
     search: FormControl = new FormControl('');
     links = [
         {
+            id: 'credit-limit-balance__stores',
             path: 'stores',
             label: 'Store List'
         },
         {
+            id: 'credit-limit-balance__group',
             path: 'group',
             label: 'Set Credit Limit Group'
         }

@@ -1,11 +1,13 @@
 import { FormGroup } from '@angular/forms';
 
 export type SinbadFilterActionType = 'reset' | 'submit';
+export type TFilterResetCheckbox = 'sourcePaymentType'|'sourcePayLaterType';
 
 export interface SinbadFilterBy {
     [key: string]: {
         sources: any[];
         title?: string;
+        numberLimitMax?: number;
     };
 }
 
