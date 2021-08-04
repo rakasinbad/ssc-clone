@@ -506,6 +506,7 @@ export class VoucherGeneralInformationComponent
                 this.form.patchValue({
                     id: voucher.id,
                     externalId: voucher.externalId,
+                    voucherAllocationType: voucher.voucherAllocationType,
                     name: voucher.name,
                     platform: String(voucher.platform).toLowerCase(),
                     voucherType: voucher.voucherType,
