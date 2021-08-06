@@ -47,3 +47,11 @@ export interface IQueryParamsCustomerList {
     search?: IQuerySearchParams[];
     isWaitingForPayment?: boolean;
 }
+
+export interface IQueryParamsVoucherStore {
+    limit?: number;
+    skip?: number;
+    paginate?: boolean;
+    keyword?: string;
+    search?: IQuerySearchParams[];
+}

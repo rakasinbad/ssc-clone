@@ -185,6 +185,26 @@ export const updateStatusOrderSuccess = createAction(
     props<{ payload: Update<any> }>()
 );
 
+export const confirmChangeOrder = createAction(
+    '[Orders Page] Confirm Change Order Result',
+    props<{ payload: { body: any; id: string } }>()
+);
+
+export const updateOrderRequest = createAction(
+    '[Orders API] Update Order Result Request',
+    props<{ payload: { body: any; id: string } }>()
+);
+
+export const updateOrderFailure = createAction(
+    '[Orders API] Update Order Result Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateOrderSuccess = createAction(
+    '[Orders API] Update Order Result Success',
+    props<{ payload: Update<any> }>()
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------
@@ -207,4 +227,7 @@ export const filterToBeShippedOrder = createAction('[Orders Page] Filter To be S
 export const filterShippedOrder = createAction('[Orders Page] Filter Shipped Order');
 export const filterReceivedOrder = createAction('[Orders Page] Filter Received Order');
 export const filterCompletedOrder = createAction('[Orders Page] Filter Completed Order');
+
+export const onEdit = createAction('[Orders Page] On Edit Value');
+export const onEditFinished = createAction('[Orders Page] On Finished Edit Value');
 

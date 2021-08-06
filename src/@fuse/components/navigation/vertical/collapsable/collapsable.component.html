@@ -1,6 +1,7 @@
 <ng-container *ngIf="!hiddenMenu.includes(item.id)">
     <!-- normal collapsable -->
     <a
+        [id]="item.id"
         class="nav-link"
         [ngClass]="item.classes"
         *ngIf="!item.url && !item.function"
@@ -11,6 +12,7 @@
 
     <!-- item.url -->
     <a
+        [id]="item.id"
         class="nav-link"
         [ngClass]="item.classes"
         *ngIf="item.url && !item.externalUrl && !item.function"
@@ -25,6 +27,7 @@
 
     <!-- item.externalUrl -->
     <a
+        [id]="item.id"
         class="nav-link"
         [ngClass]="item.classes"
         *ngIf="item.url && item.externalUrl && !item.function"
@@ -47,6 +50,7 @@
 
     <!-- item.url && item.function -->
     <a
+        [id]="item.id"
         class="nav-link"
         [ngClass]="item.classes"
         *ngIf="item.url && !item.externalUrl && item.function"
@@ -60,6 +64,7 @@
 
     <!-- item.externalUrl && item.function -->
     <a
+        [id]="item.id"
         class="nav-link"
         [ngClass]="item.classes"
         *ngIf="item.url && item.externalUrl && item.function"

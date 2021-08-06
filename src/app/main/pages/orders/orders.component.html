@@ -259,6 +259,10 @@
                                 <ng-container *ngSwitchCase="'done'">
                                     Done
                                 </ng-container>
+                                
+                                <ng-container *ngSwitchCase="'pending_partial'">
+                                    Pending Partial
+                                </ng-container>
 
                                 <ng-container *ngSwitchCase="'pending_supplier'">
                                     Pending Supplier
@@ -382,7 +386,8 @@
                                     row?.status !== 'done' &&
                                     row?.status !== 'cancel' &&
                                     row?.status !== 'checkout' &&
-                                    row?.status !== 'pending'
+                                    row?.status !== 'pending' &&
+                                    row?.status !== 'pending_partial'
                                 "
                                 (click)="$event.stopPropagation()"
                             >
