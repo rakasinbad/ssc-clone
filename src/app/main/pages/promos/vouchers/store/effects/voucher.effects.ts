@@ -22,6 +22,7 @@ import { catchOffline } from '@ngx-pwa/offline';
 import {
     SupplierVoucher,
     SupplierVoucherPayload,
+    SupplierVoucherStore,
     // VoucherCreationPayload
 } from '../../models/voucher.model';
 import { Auth } from 'app/main/pages/core/auth/models';
@@ -91,6 +92,62 @@ export class VoucherEffects {
         () =>
             this.actions$.pipe(
                 ofType(VoucherActions.fetchSupplierVoucherFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.notice$.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    fetchVoucherStoreRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action request Supplier Voucher.
+            ofType(VoucherActions.fetchSupplierVoucherStoreRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map((action) => {
+                console.log("STORE REQUEST ACTION", action)
+                return {id: action.id, payload: action.payload};
+            }),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, authState]: [{id: string, payload: IQueryParamsVoucher}, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, queryParams])),
+                        switchMap<[User, {id: string, payload: IQueryParamsVoucher}], Observable<AnyAction>>(
+                            this.processVoucherStoreRequest
+                        ),
+                        catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, queryParams])),
+                        switchMap<[User, {id: string, payload: IQueryParamsVoucher}], Observable<AnyAction>>(
+                            this.processVoucherStoreRequest
+                        ),
+                        catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    fetchSupplierVoucherStoreFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(VoucherActions.fetchSupplierVoucherStoreFailure),
                 map((action) => action.payload),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
@@ -495,6 +552,48 @@ export class VoucherEffects {
                 }
             }),
             catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherFailure'))
+        );
+    };
+
+    processVoucherStoreRequest = ([userData, queryParams]: [User, {id: string, payload: IQueryParamsVoucher}]): Observable<AnyAction> => {
+        let newQuery: IQueryParamsVoucher = {};
+        
+        // Membentuk parameter query yang baru.
+        newQuery = {
+            ...queryParams.payload,
+        };
+
+        // Hanya mengambil ID supplier saja.
+        const { supplierId } = userData.userSupplier;
+
+        // Memasukkan ID
+        newQuery['id'] = queryParams.id;
+
+        // Memasukkan ID supplier ke dalam parameter.
+        newQuery['supplierId'] = supplierId;
+
+        return this.VoucherApi$.findStore<IPaginatedResponse<SupplierVoucherStore>>(newQuery).pipe(
+            catchOffline(),
+            switchMap((response) => {
+                return of(
+                    VoucherActions.fetchSupplierVoucherStoreSuccess({
+                        payload: {
+                            data: response.data.map(
+                                (item) => {
+                                    const store: SupplierVoucherStore = {
+                                        externalId: item["external_id"],
+                                        storeName: item["name"],
+                                        address: item["address"]
+                                    }
+                                    return new SupplierVoucherStore(store);
+                                }
+                            ),
+                            total: response.total,
+                        },
+                    })
+                );
+            }),
+            catchError((err) => this.sendErrorToState(err, 'fetchSupplierVoucherStoreFailure'))
         );
     };
 
