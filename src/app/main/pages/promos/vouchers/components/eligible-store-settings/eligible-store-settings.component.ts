@@ -655,7 +655,6 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log("CHANGES -->", changes)
         // if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
         //     this.trigger$.next('');
         //     setTimeout(() => {

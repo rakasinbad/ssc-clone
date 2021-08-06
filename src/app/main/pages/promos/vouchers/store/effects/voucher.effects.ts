@@ -111,7 +111,6 @@ export class VoucherEffects {
             ofType(VoucherActions.fetchSupplierVoucherStoreRequest),
             // Hanya mengambil payload-nya saja dari action.
             map((action) => {
-                console.log("STORE REQUEST ACTION", action)
                 return {id: action.id, payload: action.payload};
             }),
             // Mengambil data dari store-nya auth.
