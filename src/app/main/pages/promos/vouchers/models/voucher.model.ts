@@ -248,24 +248,24 @@ export class SupplierVoucher implements ISupplierVoucher {
 
 interface ISupplierVoucherStore {
     externalId: string;
-    storeName: string;
+    name: string;
     address: string;
 }
 
 export class SupplierVoucherStore implements ISupplierVoucherStore  {
     externalId: string;
-    storeName: string;
+    name: string;
     address: string;
 
     constructor(data: ISupplierVoucherStore) {
         const {
             externalId,
-            storeName,
+            name,
             address
         } = data;
 
         this.externalId = externalId;
-        this.storeName = storeName;
+        this.name = name;
         this.address = address;
     }
 

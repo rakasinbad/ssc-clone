@@ -581,9 +581,9 @@ export class VoucherEffects {
                             data: response.data.map(
                                 (item) => {
                                     const store: SupplierVoucherStore = {
-                                        externalId: item["external_id"],
-                                        storeName: item["name"],
-                                        address: item["address"]
+                                        externalId: item.externalId,
+                                        name: item.name,
+                                        address: item.address
                                     }
                                     return new SupplierVoucherStore(store);
                                 }
