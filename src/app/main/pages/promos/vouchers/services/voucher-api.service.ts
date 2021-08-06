@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher, IQueryParamsVoucherStore } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
 
 import { SupplierVoucher } from '../models';
@@ -28,6 +28,7 @@ export class VoucherApiService {
      * @memberof VoucherApiService
      */
     private _url: string;
+    private _storeUrl: string;
 
     /**
      *
@@ -36,6 +37,7 @@ export class VoucherApiService {
      * @memberof VoucherApiService
      */
     private readonly _VoucherEndpoint = '/voucher';
+    private readonly _VoucherStoreEndpoint = '/voucher-store-list';
 
     /**
      * Creates an instance of VoucherApiService.
@@ -45,6 +47,7 @@ export class VoucherApiService {
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
+        this._storeUrl = this._$helper.handleApiRouter(this._VoucherStoreEndpoint);
     }
 
     // find(params: IQueryParams): Observable<Array<Voucher>> {
@@ -154,6 +157,27 @@ export class VoucherApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    findStore<T>(params: IQueryParamsVoucherStore): Observable<T> {
+        const newArgs = [];
+
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_SUPPLIERID');
+        }
+
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        this._storeUrl = this._$helper.handleApiRouter(this._VoucherStoreEndpoint);
+        const newParams = this._$helper.handleParams(this._storeUrl, params, ...newArgs);
+
+        return this.http.get<T>(`${this._storeUrl}/${params['id']}`, { params: newParams });
     }
 
     addVoucher<T, R>(payload: T): Observable<R> {
