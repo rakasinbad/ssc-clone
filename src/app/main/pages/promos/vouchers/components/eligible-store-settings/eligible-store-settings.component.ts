@@ -601,8 +601,8 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     }
 
     ngOnInit(): void {
+        if (this.paginator) this.paginator.pageSize = this.defaultPageSize;
         /** Menyiapkan form. */
-        // this.paginator.pageSize = this.defaultPageSize;
         this.initForm();
 
         this.checkRoute();
@@ -610,7 +610,17 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     }
 
     ngAfterViewInit(): void {
+        if (this.paginator && this.sort) {
+            this.sort.sortChange
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
 
+            merge(this.sort.sortChange, this.paginator.page)
+                .pipe(takeUntil(this.subs$))
+                .subscribe(() => {
+                    this._initTable();
+                });
+        }
     }
 
     _initTable() {
@@ -624,6 +634,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     
             const { id } = this.route.snapshot.params;
     
+            this.store.dispatch(VoucherActions.resetSupplierVoucherStore());
             this.store.dispatch(
                 VoucherActions.fetchSupplierVoucherStoreRequest({
                     id,
@@ -644,6 +655,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        console.log("CHANGES -->", changes)
         // if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
         //     this.trigger$.next('');
         //     setTimeout(() => {
@@ -701,6 +713,10 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     onSearch(ev: string) {
         const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, ev);
         this.search = searchValue;
+        this._initTable();
+    }
+
+    onPageChange(event: any) {
         this._initTable();
     }
 

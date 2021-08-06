@@ -171,6 +171,7 @@
                         [length]="totalDataSource$ | async"
                         [pageSize]="defaultPageSize"
                         [pageSizeOptions]="defaultPageOpts"
+                        (page)="onPageChange($event)"
                         showFirstLastButtons
                     ></mat-paginator>
                 </div>
