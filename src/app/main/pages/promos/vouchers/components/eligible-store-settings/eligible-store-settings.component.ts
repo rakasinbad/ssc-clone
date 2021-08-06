@@ -13,10 +13,11 @@ import {
     Output,
     ViewChild,
     ElementRef,
+    SecurityContext,
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, of, combineLatest, BehaviorSubject, merge } from 'rxjs';
 
 import { FeatureState as VoucherCoreFeatureState } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
@@ -40,13 +41,13 @@ import {
     tap,
 } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { VoucherSelectors } from '../../store/selectors';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { StoreSelectors, VoucherSelectors } from '../../store/selectors';
+import { IQueryParams, IQueryParamsVoucherStore } from 'app/shared/models/query.model';
 import { VoucherApiService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SupplierVoucher } from '../../models';
 import { VoucherActions } from '../../store/actions';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
@@ -62,6 +63,9 @@ import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-seg
 import { SupplierStore } from 'app/shared/components/dropdowns/stores/models/supplier-store.model';
 
 import { Selection } from 'app/shared/components/multiple-selection/models';
+import { SupplierVoucherStore } from '../../models/voucher.model';
+import { environment } from 'environments/environment';
+import { DomSanitizer } from '@angular/platform-browser';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -143,7 +147,33 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     public segmentBases: string = 'store';
     public triggerSelected: string = 'sku';
 
+
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: string;
+
+    displayedColumns = [
+        'external-id',
+        'name',
+        'address'
+    ];
+
+    dataSource$: Observable<Array<SupplierVoucherStore>>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
+
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
+
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
+
     constructor(
+        private readonly sanitizer: DomSanitizer,
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
         private notice$: NoticeService,
@@ -257,6 +287,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
 
                 if (this.formMode === 'view') {
                     this.form.get('segmentationBase').disable({ onlySelf: true, emitEvent: false });
+                    this._initTable();
                 } else {
                     this.form.get('segmentationBase').enable({ onlySelf: true, emitEvent: false });
                 }
@@ -571,6 +602,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
 
     ngOnInit(): void {
         /** Menyiapkan form. */
+        // this.paginator.pageSize = this.defaultPageSize;
         this.initForm();
 
         this.checkRoute();
@@ -578,7 +610,37 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
     }
 
     ngAfterViewInit(): void {
-     
+
+    }
+
+    _initTable() {
+        if (this.paginator) {
+            const params: IQueryParamsVoucherStore = {
+                paginate: true,
+                keyword: this.search || '',
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            };
+    
+            const { id } = this.route.snapshot.params;
+    
+            this.store.dispatch(
+                VoucherActions.fetchSupplierVoucherStoreRequest({
+                    id,
+                    payload: params,
+                })
+            );
+    
+            this.dataSource$ = this.store.select(StoreSelectors.getAllVoucher).pipe(
+                takeUntil(this.subs$)
+            );
+    
+            this.totalDataSource$ = this.store.select(StoreSelectors.getTotalItem);
+    
+            this.isLoading$ = this.store.select(StoreSelectors.getLoadingState).pipe(
+                takeUntil(this.subs$)
+            );
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -593,7 +655,7 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         // }
         this.trigger$.next('');
         this.updateFormView();
-        if (changes['selectedTrigger'].currentValue == null) {
+        if (changes['selectedTrigger'] && changes['selectedTrigger'].currentValue == null) {
         } else {
             if (this.selectedTrigger['base'] == 'sku') {
                 this.form.get('chosenStore').setValue('');
@@ -634,6 +696,12 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
                 }
             }
         }
+    }
+
+    onSearch(ev: string) {
+        const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, ev);
+        this.search = searchValue;
+        this._initTable();
     }
 
     ngOnDestroy(): void {
