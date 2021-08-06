@@ -588,6 +588,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         this.navigationSub$.complete();
 
         this.VoucherStore.dispatch(VoucherActions.deselectSupplierVoucher());
+        this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucherStore());
         this.VoucherStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 }
