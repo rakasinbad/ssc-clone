@@ -72,8 +72,8 @@
                 </select-supplier-stores>
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    <span class="form-value" *ngFor="let data of form.get('chosenStore').value">
-                        {{ (data?.store?.name | uppercase) || '-' }}
+                    <span class="form-value">
+                        {{ getStores(form.get('chosenStore').value) || '-' }}
                     </span>
                 </div>
             </div>

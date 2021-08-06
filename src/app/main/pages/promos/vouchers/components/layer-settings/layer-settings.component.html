@@ -73,7 +73,7 @@
                     [fxFlex]="formFieldLength"
                     *ngIf="formMode !== 'view'"
                 >
-                    <mat-select placeholder="Choose Promo Group" formControlName="promoOwner">
+                    <mat-select placeholder="Choose Promo Owner" formControlName="promoOwner">
                         <mat-option *ngFor="let promoOwner of sinbadPromoOwner" [value]="promoOwner.id">
                             {{ promoOwner.label }}
                         </mat-option>
@@ -93,16 +93,12 @@
                     *ngIf="isViewMode()"
                 >
                     {{ 
-                        form.get('promoOwner').value === 'sinbad-promo'
-                        ? 'Sinbad Promo'
-                        : form.get('promoOwner').value === 'distributor-promo'
+                        form.get('promoOwner').value === 'distributor-promo'
                         ? 'Distributor Promo'
                         : form.get('promoOwner').value === 'principal-promo'
                         ? 'Principal Promo'
                         : form.get('promoOwner').value === 'none'
                         ? 'None'
-                        : form.get('promoOwner').value === 'payment-method-promo'
-                        ? 'Payment Method Promo'
                         : (form.get('promoOwner').value | titlecase) || '-'
                     }}
                 </span>
