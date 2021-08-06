@@ -1,8 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import { SupplierVoucher } from '../../models';
-import { IQueryParamsVoucher } from 'app/shared/models/query.model';
+import { IQueryParamsVoucher, IQueryParamsVoucherStore } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
-import { SupplierVoucherPayload } from '../../models/voucher.model';
+import { SupplierVoucherPayload, SupplierVoucherStore } from '../../models/voucher.model';
 import { EntityPayload } from 'app/shared/models/entity-payload.model';
 // import { VoucherCreationPayload } from '../../models/voucher.model';
 
@@ -10,13 +10,15 @@ export type requestActionNames =
     | 'fetchSupplierVoucherRequest'
     | 'addSupplierVoucherRequest'
     | 'updateSupplierVoucherRequest'
-    | 'removeVoucherRequest';
+    | 'removeVoucherRequest'
+    | 'fetchSupplierVoucherStoreRequest';
 
 export type failureActionNames =
     | 'fetchSupplierVoucherFailure'
     | 'addSupplierVoucherFailure'
     | 'updateSupplierVoucherFailure'
-    | 'removeSupplierVoucherFailure';
+    | 'removeSupplierVoucherFailure'
+    | 'fetchSupplierVoucherStoreFailure';
 
 /**
  * FETCH DATA
@@ -35,6 +37,21 @@ export const fetchSupplierVoucherFailure = createAction(
 export const fetchSupplierVoucherSuccess = createAction(
     '[Promo/SupplierVoucher API] Fetch SupplierVoucher Success',
     props<{ payload: { data: SupplierVoucher | Array<SupplierVoucher>; total?: number } }>()
+);
+
+export const fetchSupplierVoucherStoreRequest = createAction(
+    '[Promo/SupplierVoucher API] Fetch SupplierVoucher Store Request',
+    props<{ id: string, payload: IQueryParamsVoucherStore | string }>()
+);
+
+export const fetchSupplierVoucherStoreFailure = createAction(
+    '[Promo/SupplierVoucher API] Fetch SupplierVoucher Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchSupplierVoucherStoreSuccess = createAction(
+    '[Promo/SupplierVoucher API] Fetch SupplierVoucher Store Success',
+    props<{ payload: { data: Array<SupplierVoucherStore>; total?: number } }>()
 );
 
 /**
@@ -134,6 +151,8 @@ export const deselectSupplierVoucher = createAction('[Promo/SupplierVoucher] Des
  * RESET
  */
 export const resetSupplierVoucher = createAction('[Promo/SupplierVoucher Page] Reset SupplierVoucher State');
+
+export const resetSupplierVoucherStore = createAction('[Promo/SupplierVoucher Page] Reset SupplierVoucher Store State');
 
 export const setRefreshStatus = createAction(
     '[Promo/SupplierVoucher Page] Set Refresh Statuse',

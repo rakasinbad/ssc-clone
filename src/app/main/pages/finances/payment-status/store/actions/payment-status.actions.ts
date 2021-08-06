@@ -2,6 +2,7 @@ import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { IAPIOptions } from '../../services';
 
 import { IPaymentStatusDemo, IStatusPayment } from './../../models';
 
@@ -88,7 +89,7 @@ export const confirmUpdatePaymentStatus = createAction(
 
 export const updatePaymentStatusRequest = createAction(
     '[Payment Statuses API] Update Payment Status Request',
-    props<{ payload: { id: string; body: any } }>()
+    props<{ payload: { id: string; body: any, opts?: IAPIOptions } }>()
 );
 
 export const updatePaymentStatusFailure = createAction(

@@ -246,6 +246,31 @@ export class SupplierVoucher implements ISupplierVoucher {
     }
 }
 
+interface ISupplierVoucherStore {
+    externalId: string;
+    name: string;
+    address: string;
+}
+
+export class SupplierVoucherStore implements ISupplierVoucherStore  {
+    externalId: string;
+    name: string;
+    address: string;
+
+    constructor(data: ISupplierVoucherStore) {
+        const {
+            externalId,
+            name,
+            address
+        } = data;
+
+        this.externalId = externalId;
+        this.name = name;
+        this.address = address;
+    }
+
+}
+
 interface ISupplierVoucherPayload {
     [key: string]: any;
 }

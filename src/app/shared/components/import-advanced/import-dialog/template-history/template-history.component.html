@@ -13,7 +13,7 @@
     </div> -->
 
     <div class="header-wrapper mb-16" fxLayout="row" fxLayoutAlign="start center">
-        <button type="button" mat-flat-button class="sinbad-orange mr-16" (click)="onRefresh()">
+        <button id="btn__refresh" type="button" mat-flat-button class="sinbad-orange mr-16" (click)="onRefresh()">
             Refresh
         </button>
 
@@ -26,6 +26,7 @@
 
     <div fxFlex="90" fusePerfectScrollbar>
         <table
+            id="template-history"
             mat-table
             [dataSource]="dataSource$ | async"
             matSort
@@ -113,8 +114,9 @@
             <!-- Download Column -->
             <ng-container matColumnDef="download">
                 <th mat-header-cell *matHeaderCellDef>Download</th>
-                <td mat-cell *matCellDef="let row">
+                <td mat-cell *matCellDef="let row; let i = index">
                     <a
+                        [id]="'btn__download-' + i"
                         href="javascript:;"
                         *ngIf="row?.status === 'done'"
                         (click)="onDownload(row?.url)"

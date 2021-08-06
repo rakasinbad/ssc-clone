@@ -4,7 +4,7 @@
         <div class="font-weight-500 font-size-20 line-height-20 mt-10">Customer Segmentation Settings</div>
     </div>
 
-    <div class="p-16 pt-0 pb-40 line-height-1.75">
+    <div class="p-16 pt-0 pb-60 line-height-1.75">
         <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
             <!-- *HIDDEN* ID -->
             <input
@@ -42,6 +42,7 @@
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
                 [fxHide]="form.get('segmentationBase').value !== 'direct-store'"
+                *ngIf="!isViewMode()"
             >
                 <label
                     [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
@@ -53,7 +54,6 @@
                 </label>
 
                 <select-supplier-stores
-                    *ngIf="!isViewMode()"
                     [initialSelection]="form.get('chosenStore').value || []"
                     placeholder="Choose Store"
                     [required]="false"
@@ -70,12 +70,112 @@
                         {{ getFormError(form.get('chosenStore')) }}
                     </div>
                 </select-supplier-stores>
+            </div>
+            <div 
+                [ngClass]="formClass"
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('segmentationBase').value !== 'direct-store'"
+                fxLayout="column" 
+            >
+                <!-- <span class="form-value" *ngFor="let data of form.get('chosenStore').value">
+                    {{ (data?.store?.name | uppercase) || '-' }}
+                </span> -->
+                <div>
+                    <div class="pb-28" *ngIf="isViewMode()">
+                        <div class="font-weight-500 font-size-20 line-height-20 mt-10">Stores Selected</div>
+                    </div>
+                    
+                    <div
+                        class="pl-12 pr-12"
+                        fxLayout="row"
+                        fxLayoutGap="24px"
+                        fxLayoutAlign="flex-end flex-end"
+                    >
+                        <!-- LABEL -->
+                        <p fxFlexAlign="center">Find:</p>
+                        <!-- / LABEL -->
+                        <!-- SEARCH -->
+                        <sinbad-search-bar 
+                        style="align-self: center;
+                        box-sizing: border-box;
+                        border: solid 1px lightgray;
+                        border-radius: 4px;
+                        display: flex;"
+                        (changed)="onSearch($event)"
+                        ></sinbad-search-bar>
+                        <!-- / SEARCH -->
+                    </div>
 
-                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    <span class="form-value">
-                        {{ getStores(form.get('chosenStore').value) || '-' }}
-                    </span>
+                    <mat-table
+                        *ngIf="isViewMode()"
+                        class="voucher-store-list-table sinbad-table"
+                        [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                        #table
+                        [dataSource]="dataSource$ | async"
+                        matSort
+                        [@animateStagger]="{ value: '50' }"
+                        fusePerfectScrollbar
+                    >
+                        <!-- External Id Column -->
+                        <ng-container matColumnDef="external-id">
+                            <mat-header-cell *matHeaderCellDef> External ID </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word">{{ row?.externalId || '-' }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word">{{ row?.name || '-' }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Address Column -->
+                        <ng-container matColumnDef="address">
+                            <mat-header-cell *matHeaderCellDef> Address </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word">{{ row?.address || '-' }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- No Record Column -->
+                        <ng-container matColumnDef="no-record">
+                            <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                        <mat-row
+                            *matRowDef="let row; columns: displayedColumns"
+                            class="sinbad-voucher-list-item"
+                        ></mat-row>
+
+                        <mat-footer-row
+                            *matFooterRowDef="['no-record']"
+                            [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                        ></mat-footer-row>
+                    </mat-table>
+
+                    <div
+                        class="loader-content"
+                        *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+                    >
+                        <mat-spinner color="accent"></mat-spinner>
+                    </div>
+
+                    <mat-paginator
+                        [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
+                        [length]="totalDataSource$ | async"
+                        [pageSize]="defaultPageSize"
+                        [pageSizeOptions]="defaultPageOpts"
+                        (page)="onPageChange($event)"
+                        showFirstLastButtons
+                    ></mat-paginator>
                 </div>
+                
             </div>
             <!-- / CHOSEN STORE -->
             <!-- CHOSEN SEGMENTATION -->

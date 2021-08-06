@@ -26,6 +26,9 @@ export class OrderStatusPipe implements PipeTransform {
                 case 'pending_supplier':
                     return 'Pending Supplier';
 
+                case 'pending_partial':
+                    return 'Pending Partial';
+
                 case 'packing':
                     return 'Packed';
 

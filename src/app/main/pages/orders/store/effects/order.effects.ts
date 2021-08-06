@@ -374,29 +374,30 @@ export class OrderEffects {
         this.actions$.pipe(
             ofType(OrderActions.confirmChangeStatusOrder),
             map(action => action.payload),
-            exhaustMap(params => {
+            exhaustMap(({id, orderCode, status}) => {
                 let title: string;
                 let body: string;
 
-                switch (params.status) {
-                    case 'confirm':
+                switch (status) {
+                    case 'cancel':
+                        body = "cancel";
+                        title = 'Cancel';
+                        break;
+                    case "confirm":
+                        body = "packing";
                         title = 'Packed';
-                        body = 'packing';
                         break;
-
-                    case 'packing':
+                    case "packing":
+                        body = "shipping";
                         title = 'Shipped';
-                        body = 'shipping';
                         break;
-
-                    case 'shipping':
+                    case "shipping":
+                        body = "delivered";
                         title = 'Delivered';
-                        body = 'delivered';
                         break;
-
-                    case 'delivered':
+                    case "delivered":
+                        body = "done";
                         title = 'Done';
-                        body = 'done';
                         break;
                 }
 
@@ -406,9 +407,9 @@ export class OrderEffects {
                     { id: string; change: string }
                 >(ChangeConfirmationComponent, {
                     data: {
-                        title: `Set ${title}`,
-                        message: `Are you sure want to change <strong>${params.orderCode}</strong> status ?`,
-                        id: params.id,
+                        title: `Set as ${title}`,
+                        message: `Are you sure want to change <strong>${orderCode}</strong> status ?`,
+                        id: id,
                         change: body
                     },
                     disableClose: true
@@ -523,9 +524,13 @@ export class OrderEffects {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
+
+                    return resp;
+                }),
+                map(({id}) => {
+                    return OrderActions.fetchOrderRequest({ payload: String(id) });
                 })
-            ),
-        { dispatch: false }
+            )
     );
 
     // -----------------------------------------------------------------------------------------------------
@@ -632,16 +637,17 @@ export class OrderEffects {
                 return this._$orderApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
+                        const payload = {
+                            data : resp
+                        }
                         this._$log.generateGroup('[RESPONSE REQUEST FETCH ORDER]', {
                             response: {
                                 type: 'log',
-                                value: resp
+                                value: payload
                             }
                         });
 
-                        return OrderActions.fetchOrderSuccess({
-                            payload: resp
-                        });
+                        return OrderActions.fetchOrderSuccess({ payload });
                     }),
                     catchError(err =>
                         of(
@@ -1002,6 +1008,128 @@ export class OrderEffects {
                 })
             ),
         { dispatch: false }
+    );
+
+    confirmChangeOrder$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.confirmChangeOrder),
+            map(action => action.payload),
+            exhaustMap(({id, body}) => {
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: any }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: `Submit Partial Offer?`,
+                        message: `After clicking submit button you can't change your proposal, <br/> Please make sure all the quantity and discount price is correct?`,
+                        id,
+                        change: body
+                    },
+                    disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {                
+                if (!!id && !!change) {
+                    return OrderActions.updateOrderRequest({
+                        payload: { id: id, body: change }
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })    
+        )
+    );
+
+    updateOrderRequest$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.updateOrderRequest),
+            map(action => action.payload),
+            switchMap(({body, id}) => {
+                return this._$orderApi.patchOrderPartial(body, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST UPDATE ORDER PARTIAL]`, {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return OrderActions.updateOrderSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...body,
+                                    updatedAt: resp.updatedAt
+                                }
+                            }
+                        });
+                    }),
+                    catchError(err => of(
+                        OrderActions.updateOrderFailure({
+                            payload: { id: id, errors: err }
+                        })
+                    )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+
+    updateOrderSuccess$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.updateOrderSuccess),
+            map(action => action.payload),
+            tap(resp => {
+                this._$log.generateGroup('[REQUEST UPDATE ORDER PARTIAL SUCCESS]', {
+                    response: {
+                        type: 'log',
+                        value: resp
+                    }
+                });
+
+                this._$notice.open('Update order partial berhasil', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                return resp;
+            }),
+            map(({id}) => {
+                return OrderActions.fetchOrderRequest({ payload: String(id) });
+            })
+        )
+    );
+
+    updateOrderFailure$ = createEffect(
+        () => this.actions$.pipe(
+            ofType(OrderActions.updateOrderFailure),
+            map(action => action.payload),
+            tap(resp => {
+                this._$log.generateGroup('[REQUEST UPDATE ORDER FAILURE]', {
+                    response: {
+                        type: 'log',
+                        value: resp
+                    }
+                });
+    
+                this._$notice.open(resp.errors.error.message, 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                return resp;
+            }),
+            map(({id}) => {
+                return OrderActions.fetchOrderRequest({ payload: String(id) });
+            })
+        )
     );
 
     /**

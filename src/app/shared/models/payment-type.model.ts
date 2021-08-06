@@ -10,6 +10,19 @@ interface IPaymentType extends ITimestamp {
     status: EStatus;
 }
 
+export enum EPaymentType {
+    ALL_PAY = 'all',
+    PAY_LATER = 'pay_later',
+    PAY_NOW = 'pay_now',
+    COD = 'cod'
+}
+
+export enum EPaymentTypeV2 {
+    PAY_NOW = 1,
+    PAY_LATER = 2,
+    COD = 3
+}
+
 export class PaymentType extends Timestamp implements IPaymentType {
     constructor(
         public readonly id: NonNullable<string>,

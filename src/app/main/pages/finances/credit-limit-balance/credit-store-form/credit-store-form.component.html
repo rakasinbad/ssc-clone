@@ -1,4 +1,4 @@
-<h2 mat-dialog-title *ngIf="data?.title">
+<h2 id="credit-limit-title" mat-dialog-title *ngIf="data?.title">
     {{ data?.title | titlecase }}
 </h2>
 
@@ -28,6 +28,7 @@
             <mat-form-field appearance="outline" fxFlex="80">
                 <!-- <span matPrefix>Rp &nbsp;</span> -->
                 <input
+                    id="input__limit"
                     matInput
                     name="limit"
                     formControlName="limit"
@@ -96,7 +97,7 @@
 
             <mat-form-field appearance="outline" fxFlex="80">
                 <!-- <span matPrefix>Rp &nbsp;</span> -->
-                <input matInput name="top" formControlName="top" suffix=" days" mask="0*" />
+                <input id="input__top" matInput name="top" formControlName="top" suffix=" days" mask="0*" />
 
                 <mat-error
                     *ngIf="
@@ -160,6 +161,7 @@
 <mat-dialog-actions align="end">
     <span fxLayout="row" fxLayoutGap="10px">
         <button
+            id="btn__submit"
             mat-flat-button
             type="submit"
             color="accent"
@@ -168,6 +170,6 @@
         >
             Simpan
         </button>
-        <button mat-stroked-button mat-dialog-close>Batal</button>
+        <button id="btn__close" mat-stroked-button mat-dialog-close>Batal</button>
     </span>
 </mat-dialog-actions>

@@ -128,20 +128,20 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
 
         this.store$ = this.store.select(StoreSelectors.getSelectedStore).pipe(
             tap(data => {
-                if (data && data.store) {
-                    this.form.get('address').setValue(data.store.address);
-                    this.form.get('notes').setValue(data.store.noteAddress);
+                if (data && data.outerStore) {
+                    this.form.get('address').setValue(data.outerStore.address);
+                    this.form.get('notes').setValue(data.outerStore.noteAddress);
 
-                    if (data.store.urban) {
-                        this._onSearchDistrict(data.store.urban.district);
+                    if (data.outerStore.urban) {
+                        this._onSearchDistrict(data.outerStore.urban.district);
 
-                        this.form.get('district').setValue(data.store.urban);
-                        this.form.get('urban').setValue(data.store.urban);
-                        this.form.get('postcode').setValue(data.store.urban.zipCode);
+                        this.form.get('district').setValue(data.outerStore.urban);
+                        this.form.get('urban').setValue(data.outerStore.urban);
+                        this.form.get('postcode').setValue(data.outerStore.urban.zipCode);
                     }
 
-                    this.lat = data.store.latitude;
-                    this.lng = data.store.longitude;
+                    this.lat = data.outerStore.latitude;
+                    this.lng = data.outerStore.longitude;
 
                     this.form.markAsPristine();
 
@@ -484,20 +484,20 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
                 .subscribe(data => {
                     console.log(data);
 
-                    if (data && data.store) {
-                        this.form.get('address').setValue(data.store.address);
-                        this.form.get('notes').setValue(data.store.noteAddress);
+                    if (data && data.outerStore) {
+                        this.form.get('address').setValue(data.outerStore.address);
+                        this.form.get('notes').setValue(data.outerStore.noteAddress);
 
-                        if (data.store.urban) {
-                            this._onSearchDistrict(data.store.urban.district);
+                        if (data.outerStore.urban) {
+                            this._onSearchDistrict(data.outerStore.urban.district);
 
-                            this.form.get('district').setValue(data.store.urban);
-                            this.form.get('urban').setValue(data.store.urban);
-                            this.form.get('postcode').setValue(data.store.urban.zipCode);
+                            this.form.get('district').setValue(data.outerStore.urban);
+                            this.form.get('urban').setValue(data.outerStore.urban);
+                            this.form.get('postcode').setValue(data.outerStore.urban.zipCode);
                         }
 
-                        this.lat = data.store.latitude;
-                        this.lng = data.store.longitude;
+                        this.lat = data.outerStore.latitude;
+                        this.lng = data.outerStore.longitude;
 
                         this.form.markAsPristine();
 
@@ -1003,11 +1003,11 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
             address: body.address
         };
 
-        if (!body.longitude) {
+        if (!body.lng) {
             delete payload.longitude;
         }
 
-        if (!body.latitude) {
+        if (!body.lat) {
             delete payload.latitude;
         }
 

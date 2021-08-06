@@ -2,7 +2,7 @@
     <mat-toolbar class="m-0" [ngClass]="cssToolbar">
         <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
             <span class="title dialog-title">{{ dialogTitle }}</span>
-            <button type="button" mat-icon-button aria-label="Close Dialog" (click)="onClose()">
+            <button id="btn__close" type="button" mat-icon-button aria-label="Close Dialog" (click)="onClose()">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-toolbar-row>
@@ -14,6 +14,7 @@
                 *ngFor="let tab of tabs; let idx = index"
                 [label]="tab.label"
                 [disabled]="tab.disabled"
+                [aria-label]="tab.id"
             >
                 <ng-template matTabContent>
                     <div class="tab-content p-16">

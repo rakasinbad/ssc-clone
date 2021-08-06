@@ -4,6 +4,7 @@
 
 <!-- THE CONTENT -->
 <mat-table
+    id="stores-table"
     class="stores-table sinbad-table mx-12"
     [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
@@ -176,6 +177,7 @@
         <mat-cell *matCellDef="let row">
             <div fxFlex="row" fxLayoutAlign="end center">
                 <button
+                    id='btn__actions'
                     mat-icon-button
                     [matMenuTriggerFor]="moreMenu"
                     aria-label="More"
@@ -187,6 +189,7 @@
                 <mat-menu #moreMenu="matMenu">
                     <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.SL.UPDATE']">
                         <button
+                            id='btn__edit'
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
@@ -198,6 +201,7 @@
                         </button>
 
                         <button
+                            id='btn__freeze-balance'
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
@@ -213,6 +217,7 @@
                         </button>
 
                         <button
+                            id='btn__credit-limit'
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"

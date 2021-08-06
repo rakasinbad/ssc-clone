@@ -32,9 +32,12 @@
         type="button"
         mat-flat-button
         [color]="color"
-        [ngClass]="class ? class + ' sinbad__filter-action--item' : 'sinbad__filter-action--item'"
+        [ngClass]="[
+            class ? class + ' sinbad__filter-action--item' : 'sinbad__filter-action--item', 
+            (_isSubmitDisabled$ | async) ? ' btn-sinbad-disabled' : ''
+        ]"
         (click)="onClickSubmit()"
-    >
+        >
         {{ title }}
     </button>
 </ng-template>
