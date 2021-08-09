@@ -80,7 +80,7 @@ voucher-eligible-store-settings {
             }
         }
 
-        .mat-header-row,
+        // .mat-header-row,
         .mat-row {
             background: white;
             min-width: fit-content;
@@ -88,7 +88,9 @@ voucher-eligible-store-settings {
         }
 
         .mat-header-row {
-            background: rgba(0, 0, 0, 0.12);
+            background: lightgray;
+            min-width: fit-content;
+            width: 100%;
         }
 
         .mat-row {
