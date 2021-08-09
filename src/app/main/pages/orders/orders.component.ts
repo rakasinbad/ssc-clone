@@ -118,6 +118,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             paymentStatus: {
                 title: 'Payment Status',
                 sources: null,
+            },
+            warehouse: {
+                title: 'Warehouse',
+                sources: null,
+            },
+            orderSource: {
+                title: 'Order Source',
+                sources: null,
             }
         },
         showFilter: true,
@@ -141,6 +149,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         // 'deliveredOn',
         // 'actual-amount-delivered',
         'delivered-date',
+        'order-source',
         'actions',
     ];
     importBtnConfig: IButtonImportConfig = {
@@ -309,7 +318,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             minAmount: this.route.snapshot.queryParams.minOrderValue,
             maxAmount: this.route.snapshot.queryParams.maxOrderValue,
             orderStatus: this.route.snapshot.queryParams['statuses'] ? this.route.snapshot.queryParams['statuses'].split("~") : null,
-            paymentStatus: this.route.snapshot.queryParams['paymentStatuses'] ? this.route.snapshot.queryParams['paymentStatuses'].split("~") : null
+            paymentStatus: this.route.snapshot.queryParams['paymentStatuses'] ? this.route.snapshot.queryParams['paymentStatuses'].split("~") : null,
+            sources: this.route.snapshot.queryParams['sources'] ? this.route.snapshot.queryParams['sources'].split("~") : null,
+            warehouses: this.route.snapshot.queryParams['warehouses'] ? this.route.snapshot.queryParams['warehouses'].split("~") : null
         });
 
         this.applyFilter();
@@ -530,6 +541,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
                             'delivered-date',
+                            'order-source',
                             'actions',
                         ];
                     } else {
@@ -549,6 +561,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
                             'delivered-date',
+                            'order-source',
                         ];
                     }
                 });
