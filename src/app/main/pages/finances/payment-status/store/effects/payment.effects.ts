@@ -299,13 +299,13 @@ export class PaymentEffects {
                 }
 
                 return this._$calculateOrderApi
-                    .getStatusOrders<IStatusPayment>('payment', supplierId)
+                    .getCalculateOrder<IStatusPayment>(supplierId)
                     .pipe(
                         catchOffline(),
                         retry(3),
                         map(resp => {
                             return PaymentStatusActions.fetchCalculateOrdersByPaymentSuccess({
-                                payload: resp
+                                payload: resp['data']
                             });
                         }),
                         catchError(err =>
