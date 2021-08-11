@@ -78,7 +78,9 @@ export class HelperService {
         'paylaterTypes[]',
         'statusPayments[]',
         'statuses[]',
-        'paymentStatuses[]'
+        'paymentStatuses[]',
+        'warehouses[]',
+        'sources[]',
     ];
 
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
