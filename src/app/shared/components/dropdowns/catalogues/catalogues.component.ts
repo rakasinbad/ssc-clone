@@ -727,7 +727,12 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 this.availableEntities$.next([]);
                 this.rawAvailableEntities$.next([]);
                 this.entityFormValue.setValue([]);
-    
+
+                if (!this.disabled) {
+                    this.entityForm.enable();
+                }
+                this.entityForm.reset();
+                
                 const params: IQueryParams = {
                     paginate: true,
                     limit: this.limit,

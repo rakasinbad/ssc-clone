@@ -34,16 +34,12 @@
         <div class="info" fxFlex="100">
             <ng-container *ngIf="!(isLoading$ | async)">
                 {{ 
-                    (crossSellingPromo$ | async)?.promoOwner  === 'sinbad-promo'
-                    ? 'Sinbad Promo'
-                    : (crossSellingPromo$ | async)?.promoOwner  === 'distributor-promo'
+                    (crossSellingPromo$ | async)?.promoOwner  === 'distributor-promo'
                     ? 'Distributor Promo'
                     : (crossSellingPromo$ | async)?.promoOwner  === 'principal-promo'
                     ? 'Principal Promo'
                     : (crossSellingPromo$ | async)?.promoOwner  === 'none'
                     ? 'None'
-                    : (crossSellingPromo$ | async)?.promoOwner === 'payment-method-promo'
-                    ? 'Payment Method Promo'
                     : ((crossSellingPromo$ | async)?.promoOwner | titlecase) || '-'
                     
             }}

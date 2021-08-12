@@ -709,6 +709,20 @@ export class VoucherEligibleStoreSettingsComponent implements OnInit, AfterViewI
         }
     }
 
+    getStores(data) {
+        if (data && data.length > 0) {
+            const store = data.map((data) => {
+                if (data.store) {
+                    return `${data.store.name} - ${data.store['supplierStores'][0]['externalId']}`
+                }
+            });
+
+            return store.length > 0 ? store.join(', ') : '-';
+        }
+
+        return '-';
+    }
+    
     onSearch(ev: string) {
         const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, ev);
         this.search = searchValue;

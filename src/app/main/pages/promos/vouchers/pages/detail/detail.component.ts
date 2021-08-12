@@ -173,6 +173,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 const {
                     id,
                     externalId,
+                    voucherAllocationType,
                     name,
                     platform,
                     maxCollectionPerStore,
@@ -190,6 +191,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.formValue = {
                     id,
                     externalId,
+                    voucherAllocationType,
                     name,
                     platform,
                     maxCollectionPerStore,
