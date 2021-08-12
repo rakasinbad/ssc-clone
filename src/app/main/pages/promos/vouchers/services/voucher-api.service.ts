@@ -120,7 +120,8 @@ export class VoucherApiService {
     find<T>(params: IQueryParamsVoucher): Observable<T> {
         if (params['id']) {
             this._url = this._$helper.handleApiRouter(this._VoucherEndpoint);
-            return this.http.get<T>(`${this._url}/${params['id']}`);
+
+            return this.http.get<T>(`${this._url}/${params['id']}?supplierId=${params['supplierId']}`);
         }
 
         const newArgs = [];

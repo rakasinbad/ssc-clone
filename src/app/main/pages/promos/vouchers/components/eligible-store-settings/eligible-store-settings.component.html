@@ -91,6 +91,7 @@
                         fxLayout="row"
                         fxLayoutGap="24px"
                         fxLayoutAlign="flex-end flex-end"
+                        *ngIf="isViewMode()"
                     >
                         <!-- LABEL -->
                         <p fxFlexAlign="center">Find:</p>
@@ -167,7 +168,7 @@
                     </div>
 
                     <mat-paginator
-                        [fxHide]="(isLoading$ | async) || (totalDataSource$ | async) === 0"
+                        [fxHide]="isViewMode() ? ((isLoading$ | async) || (totalDataSource$ | async) === 0) : true"
                         [length]="totalDataSource$ | async"
                         [pageSize]="defaultPageSize"
                         [pageSizeOptions]="defaultPageOpts"

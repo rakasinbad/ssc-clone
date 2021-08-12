@@ -54,6 +54,7 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
 
     @Input() fakturId: string;
     @Input() getGroup: FormGroup;
+    @Input() getSegmentation: FormGroup;
 
     @Output()
     formStatus: EventEmitter<FormStatus> = new EventEmitter();
@@ -64,6 +65,7 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
     selectFaktur: string;
     public groups: FormGroup;
     statusMulti: boolean = false;
+    public idSelectSegment: string = null;
 
     constructor(
         private crossSellingPromoFormService: CrossSellingPromoFormService,
@@ -100,11 +102,20 @@ export class CrossSellingPromoBenefitFormComponent implements OnInit, OnChanges,
         }
 
         if (changes['fakturId']) {
+            this.form.get('benefitCatalogueId').setValue(null);
+            this.form.get('benefitCatalogueId').updateValueAndValidity();
             this.selectFaktur = changes['fakturId'].currentValue;
         }
+
         if (changes['getGroup']) {
             this.groups = changes['getGroup'].currentValue;
             this.form.get('benefitRebate').updateValueAndValidity();
+        }
+
+        if (changes['getSegmentation']) {
+            if (this.getSegmentation !== null) {
+                this.idSelectSegment = changes['getSegmentation'].currentValue;
+            }
         }
     }
 

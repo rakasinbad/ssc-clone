@@ -5,7 +5,7 @@
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
-            <div class="label-info">
+            <div class="label-info" *ngIf="!isHidden">
                 <mat-icon class="label-info__icon s-24" svgIcon="sinbad-info"></mat-icon>
                 <p class="label-info__text">{{ labelInfo }}</p>
             </div>
