@@ -25,7 +25,7 @@ export class JourneyPlanV2Component implements OnInit {
             title: 'Sales Management',
         },
         {
-            title: 'Journey Plans V2',
+            title: 'Journey Plans',
             keepCase: true,
         },
     ];
