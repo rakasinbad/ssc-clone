@@ -24,6 +24,7 @@ import { MomentModule } from 'ngx-moment';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
 import * as numeral from 'numeral';
+import { AngularFireModule } from '@angular/fire';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -43,6 +44,7 @@ import { SharedModule } from './shared/shared.module';
 
 
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 numeral.register('locale', 'id-sinbad', {
     delimiters: {
@@ -140,7 +142,9 @@ registerLocaleData(localId, 'id');
         // App modules
         LayoutModule,
 
-        NgMultiSelectDropDownModule.forRoot()
+        NgMultiSelectDropDownModule.forRoot(),
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFireDatabaseModule
     ],
     providers: [
         AppService,

@@ -12,6 +12,7 @@ import { DEFAULT_INTERRUPTSOURCES, Idle } from '@ng-idle/core';
 import { Keepalive } from '@ng-idle/keepalive';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { ReactiveFormConfig } from '@rxweb/reactive-form-validators';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
@@ -27,6 +28,7 @@ import { AuthSelectors } from './main/pages/core/auth/store/selectors';
 import { NavigationService, NoticeService } from './shared/helpers';
 import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
+import { Router } from '@angular/router';
 
 if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
@@ -88,7 +90,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private _translateService: TranslateService,
         private _platform: Platform,
         private _$navigation: NavigationService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        private angularFireDatabase : AngularFireDatabase,
+        private router : Router
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -114,6 +118,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // Use a language
         this._translateService.use('id');
+
+        // CHECK MAINTENANCE
+        this.angularFireDatabase.object('/maintenance').valueChanges().subscribe((res:any) => {
+            if(res.ssc) {
+                this.router.navigate(['/pages/errors/maintenance'],{skipLocationChange:true});
+            }
+        });
 
         // Move to lifecycle AuthEffect
         if (isPlatformBrowser(this.platformId)) {

@@ -18,6 +18,10 @@ const routes: Routes = [
             {
                 path: '403',
                 loadChildren: () => import('./403/error-403.module').then(m => m.Error403Module)
+            },
+            {
+                path: 'maintenance',
+                loadChildren: () => import('./maintenance/error-maintenance.module').then(m => m.ErrorMaintenanceModule)
             }
         ]
     }
