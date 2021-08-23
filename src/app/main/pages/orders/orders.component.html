@@ -352,6 +352,18 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Order Source Column -->
+                <ng-container matColumnDef="order-source">
+                    <mat-header-cell *matHeaderCellDef>
+                        Order Source
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.order?.source) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Active Column -->
                 <!-- <ng-container matColumnDef="active">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
