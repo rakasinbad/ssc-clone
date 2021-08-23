@@ -136,7 +136,7 @@
                 <input
                     matInput
                     [matDatepicker]="dpPaidDate"
-                    [min]="onCheckMinDate(data?.item?.createdAt)"
+                    [min]="onCheckMinDate(data?.item?.deliveredDate)"
                     [max]="maxDate"
                     formControlName="paidDate"
                 />

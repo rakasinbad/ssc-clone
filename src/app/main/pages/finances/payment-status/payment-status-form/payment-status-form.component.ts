@@ -53,7 +53,7 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
         this.minDate = moment(this.data.item.createdAt).toDate();
         this.maxDate = moment().toDate();
-
+        
         if (this.data.id === 'new') {
             this.pageType = 'new';
         } else {
@@ -97,21 +97,24 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         return item ? item : '-';
     }
 
-    onCheckMinDate(orderDate: string): Date {
-        if (!orderDate) {
+    onCheckMinDate(deliveredDate: string): Date {
+        if (!deliveredDate) {
             return;
         }
 
-        const passDate = moment()
-            .subtract(5, 'days')
-            .toDate();
-        const momentOrderDate = moment(orderDate);
+        const passDate = moment(deliveredDate).toDate();
+        return passDate;
 
-        if (momentOrderDate.isSameOrAfter(passDate)) {
-            return momentOrderDate.toDate();
-        } else {
-            return passDate;
-        }
+        // const passDate = moment()
+        //     .subtract(5, 'days')
+        //     .toDate();
+        // const momentOrderDate = moment(orderDate);
+
+        // if (momentOrderDate.isSameOrAfter(passDate)) {
+        //     return momentOrderDate.toDate();
+        // } else {
+        //     return passDate;
+        // }
     }
 
     onSubmit(action: string): void {
