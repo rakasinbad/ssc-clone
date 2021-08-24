@@ -1,8 +1,5 @@
 import { NgModule } from '@angular/core';
 import { FuseSharedModule } from '@fuse/shared.module';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-import { AngularFireModule } from '@angular/fire';
-import { environment } from '../../../../../environments/environment';
 
 import { ErrorsRoutingModule } from './errors-routing.module';
 import { ErrorsComponent } from './errors.component';
@@ -11,9 +8,7 @@ import { ErrorsComponent } from './errors.component';
     declarations: [ErrorsComponent],
     imports: [
         ErrorsRoutingModule, 
-        FuseSharedModule,
-        AngularFireModule.initializeApp(environment.firebase),
-        AngularFireDatabaseModule
+        FuseSharedModule
     ]
 })
 export class ErrorsModule {}

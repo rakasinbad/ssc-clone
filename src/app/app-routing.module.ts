@@ -23,6 +23,10 @@ const routes: Routes = [
         loadChildren: () => import('./main/pages/core/auth/auth.module').then((m) => m.AuthModule),
     },
     {
+        path: 'errors',
+        loadChildren: () => import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
+    },
+    {
         path: 'profile',
         loadChildren: () =>
             import('./main/pages/core/profile/profile.module').then((m) => m.ProfileModule),

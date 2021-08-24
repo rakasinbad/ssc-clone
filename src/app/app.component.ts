@@ -122,7 +122,9 @@ export class AppComponent implements OnInit, OnDestroy {
         // CHECK MAINTENANCE
         this.angularFireDatabase.object('/maintenance').valueChanges().subscribe((res:any) => {
             if(res.ssc) {
-                this.router.navigate(['/pages/errors/maintenance'],{skipLocationChange:true});
+                this.router.navigate(['/errors/maintenance'],{skipLocationChange:true});
+            } else {
+                this.router.navigate(['/pages/account/stores']);
             }
         });
 
