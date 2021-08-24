@@ -34,8 +34,8 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { combineLatest, merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, map, switchMap, takeUntil, withLatestFrom, tap, catchError } from 'rxjs/operators';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { OrderStatusFacadeService } from './services/order-status-facade.service';
@@ -46,6 +46,10 @@ import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
 import { isMoment } from 'moment';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { AuthSelectors } from '../core/auth/store/selectors';
+import { Warehouse } from './models';
+import { WarehousesApiService } from './services';
 
 @Component({
     selector: 'app-orders',
@@ -118,6 +122,17 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             paymentStatus: {
                 title: 'Payment Status',
                 sources: null,
+            },
+            warehouses: {
+                title: 'Warehouse',
+                sources: null,
+            },
+            orderSource: {
+                title: 'Order Source',
+                sources: [
+                    { id: 'agent-app', label: 'Agent', checked: false },
+                    { id: 'mobile', label: 'Mobile', checked: false },
+                ],
             }
         },
         showFilter: true,
@@ -141,6 +156,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         // 'deliveredOn',
         // 'actual-amount-delivered',
         'delivered-date',
+        'order-source',
         'actions',
     ];
     importBtnConfig: IButtonImportConfig = {
@@ -189,7 +205,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private sinbadFilterService: SinbadFilterService
+        private sinbadFilterService: SinbadFilterService,
+        private warehousesApiService: WarehousesApiService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -243,7 +260,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             minAmount: null,
             maxAmount: null,
             orderStatus: null,
-            paymentStatus: null
+            paymentStatus: null,
+            warehouses: null,
+            orderSource: null
         });
 
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
@@ -309,7 +328,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             minAmount: this.route.snapshot.queryParams.minOrderValue,
             maxAmount: this.route.snapshot.queryParams.maxOrderValue,
             orderStatus: this.route.snapshot.queryParams['statuses'] ? this.route.snapshot.queryParams['statuses'].split("~") : null,
-            paymentStatus: this.route.snapshot.queryParams['paymentStatuses'] ? this.route.snapshot.queryParams['paymentStatuses'].split("~") : null
+            paymentStatus: this.route.snapshot.queryParams['paymentStatuses'] ? this.route.snapshot.queryParams['paymentStatuses'].split("~") : null,
+            warehouses: this.route.snapshot.queryParams['warehouses'] ? this.route.snapshot.queryParams['warehouses'].split("~") : null,
+            orderSource: this.route.snapshot.queryParams['sources'] ? this.route.snapshot.queryParams['sources'].split("~") : null,
         });
 
         this.applyFilter();
@@ -530,6 +551,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
                             'delivered-date',
+                            'order-source',
                             'actions',
                         ];
                     } else {
@@ -549,6 +571,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
                             'delivered-date',
+                            'order-source',
                         ];
                     }
                 });
@@ -684,6 +707,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 case 'paymentStatuses[]':
                     qParam['paymentStatuses'] = !!qParam['paymentStatuses'] ? `${qParam['paymentStatuses']}~${e.keyword}` : e.keyword;
                     break;
+                case 'warehouses[]':
+                    qParam['warehouses'] = !!qParam['warehouses'] ? `${qParam['warehouses']}~${e.keyword}` : e.keyword;
+                    break;
+                case 'sources[]':
+                    qParam['sources'] = !!qParam['sources'] ? `${qParam['sources']}~${e.keyword}` : e.keyword;
+                    break;
                 default:
                     qParam[e.fieldName] = !!qParam[e.fieldName] ? `${qParam[e.fieldName]}~${e.keyword}` : e.keyword;
                     break;
@@ -703,7 +732,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             minAmount,
             maxAmount,
             orderStatus,
-            paymentStatus
+            paymentStatus,
+            warehouses,
+            orderSource
         } = this.form.value;
 
         const nStartDate = startDate && isMoment(startDate) ? startDate.format('YYYY-MM-DD') : null;
@@ -711,6 +742,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
 
         const newOrderStatus = orderStatus && orderStatus.length > 0 ? orderStatus.filter((v) => v) : [];
         const newPaymentStatus = paymentStatus && paymentStatus.length > 0 ? paymentStatus.filter((v) => v) : [];
+        const newWarehouses = warehouses && warehouses.length > 0 ? warehouses.filter((v) => v) : [];
+        const newOrderSource = orderSource && orderSource.length > 0 ? orderSource.filter((v) => v) : [];
 
         if (!!nStartDate) {
             data = [
@@ -776,6 +809,30 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             }
         }
 
+        if(!!newWarehouses && !!newWarehouses.length){
+            for (const value of newWarehouses) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'warehouses[]',
+                        keyword: value,
+                    }
+                ];
+            }
+        }
+
+        if(!!newOrderSource && !!newOrderSource.length){
+            for (const value of newOrderSource) {
+                data = [
+                    ...data,
+                    {
+                        fieldName: 'sources[]',
+                        keyword: value,
+                    }
+                ];
+            }
+        }
+
         this.globalFilterDto = data;
     }
 
@@ -830,6 +887,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     filterSource(): void {
         this.orderStatusFacade.getWithQuery({ search: [{ fieldName: 'web', keyword: 'true' }] });
         this.paymentStatusFacade.getWithQuery();
+        this.requestWarehouses({ paginate: false });
 
         this.orderStatusFacade.collections$
                 .pipe(
@@ -862,5 +920,33 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     this.filterConfig.by.paymentStatus.sources = paymentStatus;
                     this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
                 });
+    }
+
+    private requestWarehouses(params: IQueryParams): void {
+        of(null)
+        .pipe(
+            withLatestFrom<any, UserSupplier>(
+                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            ),
+            tap(x => console.log('GET USER SUPPLIER FROM STATE', x)),
+            switchMap<[null, UserSupplier], Observable<any>>(([_, userSupplier]) => {
+                if (!userSupplier) {
+                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                }
+
+                const { supplierId } = userSupplier;
+                
+                return this.warehousesApiService.getWithQuery({
+                    ...params,
+                    search: [{ fieldName: 'supplierId', keyword: supplierId }]
+                })
+            }),
+            catchError(err => { throw err; }),
+        )
+        .subscribe((warehouses: Warehouse[]) => {
+            this.filterConfig.by.warehouses.sources = warehouses
+                .map(warehouse => ({ id: warehouse.id, label: `${warehouse.code} - ${warehouse.name}` }));
+            this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
+        });
     }
 }
