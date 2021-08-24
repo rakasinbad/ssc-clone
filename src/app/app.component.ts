@@ -124,7 +124,7 @@ export class AppComponent implements OnInit, OnDestroy {
             if(res.ssc) {
                 this.router.navigate(['/errors/maintenance'],{skipLocationChange:true});
             } else {
-                this.router.navigate(['/pages/account/stores']);
+                this.router.navigate(['/auth/login']);
             }
         });
 
