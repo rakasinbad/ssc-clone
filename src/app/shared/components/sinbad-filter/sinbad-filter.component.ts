@@ -46,6 +46,8 @@ export class SinbadFilterComponent implements OnInit {
     filterPayLaterType: boolean = false;
     filterOrderStatus: boolean = false;
     filterPaymentStatus: boolean = false;
+    filterWarehouses: boolean = false;
+    filterOrderSource: boolean = false;
 
     selectedSuppliers: any[] = [];
 
@@ -56,6 +58,8 @@ export class SinbadFilterComponent implements OnInit {
     sourceSuppliers: any[] = [];
     sourcePaymentType: DefaultCheckbox[] = [];
     sourcePayLaterType: DefaultCheckbox[] = [];
+    sourceWarehouses: any[] = [];
+    sourceOrderSource: any[] = [];
 
     maxDate = new Date();
 
@@ -177,6 +181,20 @@ export class SinbadFilterComponent implements OnInit {
                             this.filterPaymentStatus = true;
                             if (config.by['paymentStatus'].sources) {
                                 this.sourcePaymentStatus = [...config.by['paymentStatus'].sources];
+                            }
+                        }
+
+                        if (typeof config.by['warehouses'] !== 'undefined') {
+                            this.filterWarehouses = true;
+                            if (config.by['warehouses'].sources) {
+                                this.sourceWarehouses = [...config.by['warehouses'].sources];
+                            }
+                        }
+
+                        if (typeof config.by['orderSource'] !== 'undefined') {
+                            this.filterOrderSource = true;
+                            if (config.by['orderSource'].sources) {
+                                this.sourceOrderSource = [...config.by['orderSource'].sources];
                             }
                         }
 
