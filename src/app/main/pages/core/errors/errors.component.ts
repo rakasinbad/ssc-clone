@@ -15,8 +15,8 @@ export class ErrorsComponent implements OnInit {
     ) {
         // CHECK MAINTENANCE
         this.angularFireDatabase.object('/maintenance').valueChanges().subscribe((res:any) => {
-            if(res.ssc) {
-                this.router.navigate(['/pages/errors/maintenance'],{skipLocationChange:true});
+            if(!res.ssc) {
+                this.router.navigate(['/pages/account']);
             }
         });
     }
