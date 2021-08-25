@@ -130,9 +130,10 @@ export class AppComponent implements OnInit, OnDestroy {
             } else {
                 if(this.firstReload) {
                     this.firstReload = false;
+                    this.router.navigate(['/auth/login']);
                 } else {
                     window.location.reload();
-                    this.router.navigate(['/auth/login']);   
+                    this.router.navigate(['/auth/login']);
                 }
             }
         });
