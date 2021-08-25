@@ -22,6 +22,7 @@ import * as LogRocket from 'logrocket';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { IAuth } from './main/pages/core/auth/models';
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
@@ -68,6 +69,7 @@ export class AppComponent implements OnInit, OnDestroy {
     fuseConfig: any;
     navigation: any;
     statusOrder: any;
+    firstReload = true;
 
     // Private
     private _unsubscribeAll: Subject<any>;
@@ -92,7 +94,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private _$navigation: NavigationService,
         private _$notice: NoticeService,
         private angularFireDatabase : AngularFireDatabase,
-        private router : Router
+        private router : Router,
+        private dialog: MatDialog
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -122,9 +125,15 @@ export class AppComponent implements OnInit, OnDestroy {
         // CHECK MAINTENANCE
         this.angularFireDatabase.object('/maintenance').valueChanges().subscribe((res:any) => {
             if(res.ssc) {
+                this.dialog.closeAll();
                 this.router.navigate(['/errors/maintenance'],{skipLocationChange:true});
             } else {
-                this.router.navigate(['/auth/login']);
+                if(this.firstReload) {
+                    this.firstReload = false;
+                } else {
+                    window.location.reload();
+                    this.router.navigate(['/auth/login']);   
+                }
             }
         });
 

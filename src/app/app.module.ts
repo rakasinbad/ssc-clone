@@ -25,6 +25,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
 import * as numeral from 'numeral';
 import { AngularFireModule } from '@angular/fire';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -91,6 +92,7 @@ registerLocaleData(localId, 'id');
 
         // Material
         MaterialModule,
+        MatDialogModule,
 
         // Icon
         IconModule,
