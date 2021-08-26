@@ -1,5 +1,5 @@
 import { Platform } from '@angular/cdk/platform';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser, Location } from '@angular/common';
 import { ApplicationRef, ChangeDetectionStrategy, Component, Inject, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { MatSnackBarConfig } from '@angular/material';
 import { SwUpdate } from '@angular/service-worker';
@@ -30,6 +30,7 @@ import { NavigationService, NoticeService } from './shared/helpers';
 import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
 import { Router } from '@angular/router';
+import { AuthService } from './main/pages/core/auth/auth.service';
 
 if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
@@ -69,7 +70,6 @@ export class AppComponent implements OnInit, OnDestroy {
     fuseConfig: any;
     navigation: any;
     statusOrder: any;
-    firstReload = true;
 
     // Private
     private _unsubscribeAll: Subject<any>;
@@ -95,7 +95,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private _$notice: NoticeService,
         private angularFireDatabase : AngularFireDatabase,
         private router : Router,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private location: Location,
+        private auth: AuthService
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -128,12 +130,10 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.dialog.closeAll();
                 this.router.navigate(['/errors/maintenance'],{skipLocationChange:true});
             } else {
-                if(this.firstReload) {
-                    this.firstReload = false;
-                    this.router.navigate(['/auth/login']);
+                if(!this.auth.redirectUrl) {
+                    this.router.navigate(['auth/login']);
                 } else {
-                    window.location.reload();
-                    this.router.navigate(['/auth/login']);
+                    this.router.navigate([this.auth.redirectUrl]);
                 }
             }
         });
