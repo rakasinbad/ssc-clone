@@ -1,0 +1,33 @@
+<div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- CENTER -->
+    <div class="center p-8">
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <div style="display: flex;justify-content: space-between;">
+                <div>
+                    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+                </div>
+                <div style="display: flex;">
+                    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+                        <mat-menu #menu="matMenu">
+                        <button mat-menu-item>Item 1</button>
+                        <button mat-menu-item>Item 2</button>
+                        </mat-menu>
+
+                    <div>Kolom Input</div>
+                </div>
+            </div>
+            
+
+            <!-- <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection> -->
+            <!-- <app-list-promo-hierarchy
+                class="mx-16"
+                [selectedStatus]="section"
+                [searchValue]="search"
+                [viewByPromo]="selectedViewBy"
+            ></app-list-promo-hierarchy> -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
