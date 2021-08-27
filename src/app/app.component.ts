@@ -31,6 +31,7 @@ import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
 import { Router } from '@angular/router';
 import { AuthService } from './main/pages/core/auth/auth.service';
+import { MaintenanceDialogComponent } from './maintenance-dialog.component';
 
 if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
@@ -127,14 +128,9 @@ export class AppComponent implements OnInit, OnDestroy {
         // CHECK MAINTENANCE
         this.angularFireDatabase.object('/maintenance').valueChanges().subscribe((res:any) => {
             if(res.ssc) {
-                this.dialog.closeAll();
-                this.router.navigate(['/errors/maintenance'],{skipLocationChange:true});
+                this.dialog.open(MaintenanceDialogComponent,{minHeight:'100vh',minWidth:'100%'});
             } else {
-                if(!this.auth.redirectUrl) {
-                    this.router.navigate(['auth/login']);
-                } else {
-                    this.router.navigate([this.auth.redirectUrl]);
-                }
+                this.dialog.closeAll();
             }
         });
 

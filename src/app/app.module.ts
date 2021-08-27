@@ -46,6 +46,7 @@ import { SharedModule } from './shared/shared.module';
 
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { MaintenanceDialogComponent } from './maintenance-dialog.component';
 
 numeral.register('locale', 'id-sinbad', {
     delimiters: {
@@ -75,7 +76,8 @@ numeral.locale('id-sinbad');
 registerLocaleData(localId, 'id');
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, MaintenanceDialogComponent],
+    entryComponents: [MaintenanceDialogComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
