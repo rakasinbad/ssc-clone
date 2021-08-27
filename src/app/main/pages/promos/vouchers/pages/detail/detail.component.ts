@@ -173,6 +173,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 const {
                     id,
                     externalId,
+                    voucherAllocationType,
                     name,
                     platform,
                     maxCollectionPerStore,
@@ -190,6 +191,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.formValue = {
                     id,
                     externalId,
+                    voucherAllocationType,
                     name,
                     platform,
                     maxCollectionPerStore,
@@ -588,6 +590,7 @@ export class VoucherDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         this.navigationSub$.complete();
 
         this.VoucherStore.dispatch(VoucherActions.deselectSupplierVoucher());
+        this.VoucherStore.dispatch(VoucherActions.resetSupplierVoucherStore());
         this.VoucherStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 }

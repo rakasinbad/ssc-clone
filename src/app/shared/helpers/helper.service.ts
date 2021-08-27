@@ -78,7 +78,9 @@ export class HelperService {
         'paylaterTypes[]',
         'statusPayments[]',
         'statuses[]',
-        'paymentStatuses[]'
+        'paymentStatuses[]',
+        'warehouses[]',
+        'sources[]',
     ];
 
     private static readonly _benefitType: { id: BenefitType; label: string }[] = [
@@ -624,14 +626,6 @@ export class HelperService {
         {
             id: PromoHierarchyGroup.DISTRIBUTOR,
             label: 'Distributor Promo',
-        },
-        {
-            id: PromoHierarchyGroup.SINBAD,
-            label: 'Sinbad Promo',
-        },
-        {
-            id: PromoHierarchyGroup.PAYMENT,
-            label: 'Payment Method Promo',
         },
     ];
 
