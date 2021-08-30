@@ -2,255 +2,303 @@ import { TNullable } from 'app/shared/models/global.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 type PromoHierarchyStatus = 'active' | 'inactive';
+type ApprovalTypeStatus = 'approved' | 'pending' | 'reject';
 
-interface IPromoHierarchy {
-    id: string;
-    name: string;
-    promoAllocation: string;
-    promoBudget: number;
-    planBudget: number;
-    promoSlot: number;
-    planSlot: number;
-    promoType: string;
-    promoSellerId: string;
-    promoOwner: string;
-    layer: number;
-    status: PromoHierarchyStatus;
-    triggerBase: string;
-    conditionBase: string;
-    conditionQty: string;
-    conditionValue: string;
-    benefitType: string;
-    benefitQty: number;
-    benefitDiscount: number;
-    benefitSku: Array<any>;
-    triggerCatalogues: Array<any>;
-    benefitRebate: number;
-    benefitMaxRebate: number;
-    promoConditionCatalogues: IPromoConditionCatalogues[];
-    layerInformation: IPromoLayerInformation[];
-    // TODO: Under development because need more in-depth structure.
+export interface ICalculateCollectionStatusPayment {
+    status: string;
+    title: string;
+    detail: string;
+    total: number;
 }
 
-export class PromoHierarchy {
-    // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
+interface IFinanceCollectionStatus {
     id: string;
-    name: string;
-    promoSellerId: string;
-    promoAllocation: string;
-    promoBudget: number;
-    planSlot: number;
-    planBudget: number;
-    promoSlot: number;
-    promoType: string;
-    status: PromoHierarchyStatus;
-    layer: number;
-    promoLayer: number;
-    promoOwner: string;
-    triggerBase: string;
-    conditionBase: string;
-    conditionQty: string;
-    conditionValue: string;
-    benefitType: string;
-    benefitQty: number;
-    benefitDiscount: number;
-    benefitSku: Array<any>;
-    triggerCatalogues: Array<any>;
-    benefitRebate: number;
-    benefitMaxRebate: number;
-    promoConditionCatalogues: IPromoConditionCatalogues[];
-    layerInformation: IPromoLayerInformation[];
-    // TODO: Under development because need more in-depth structure.
+    supplierId: string;
+    supplierName: string;
+    collectionCode: string;
+    collectionMethodName: string;
+    referenceCode: string;
+    totalAmount: number;
+    createdAt: string;
+    invalidDate: string; //NonNullable<string>
+    approvalStatus: string;
+    salesmanName: string;
+    storeExternalId: string;
+    storeName: string;
+    orderCode: Array<any>;
+    orderRef: Array<any>;
+    reason: string;
+}
 
-    constructor(data: PromoHierarchy) {
+interface userModels {
+    id: number;
+    fullName: string;
+}
+
+interface principalModels {
+    id: number;
+    externalId: string;
+}
+
+interface stampModels {
+    id: number;
+    nominal: number;
+}
+
+interface financeCollectionMethod {
+    id: number;
+    collectionCode: string;
+    collectionRef: string;
+    amount: number;
+    balance: number;
+    approvalStatus: string;
+    createdAt: string;
+    user: userModels;
+}
+
+interface orderParcelModels {
+    id: number;
+    orderCode: string;
+    orderDueDate: string;
+    paymentStatus: string;
+    orderRef: string;
+    deliveredParcelFinalPriceBuyer: string;
+    order: orderModels;
+}
+
+interface orderModels {
+    id: number;
+    store: storeModels;
+}
+
+interface storeModels {
+    id: number;
+    name: string;
+}
+
+interface billingModels {
+    id: number;
+    orderParcel: orderParcelModels;
+}
+
+interface IFinanceBillingStatus {
+    id: string;
+    stampNominal: number;
+    reason: string;
+    paidByCollectionMethod: number;
+    paidAmount: number;
+    billingPaymentCode: string;
+    createdAt: string;
+    approvalStatus: string;
+    paymentCollectionMethod: financeCollectionMethod;
+    principal: principalModels;
+    stamp: stampModels;
+    billing: billingModels;
+}
+
+export class CollectionStatus {
+    id: string;
+    supplierId: string;
+    supplierName: string;
+    collectionCode: string;
+    collectionMethodName: string;
+    referenceCode: string;
+    totalAmount: number;
+    createdAt: string;
+    invalidDate: string; //NonNullable<string>
+    approvalStatus: string;
+    salesmanName: string;
+    storeExternalId: string;
+    storeName: string;
+    orderCode: Array<any>;
+    orderRef: Array<any>;
+    reason: string;
+
+    constructor(data: IFinanceCollectionStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            name,
-            promoAllocation,
-            promoBudget,
-            promoSlot,
-            planBudget,
-            planSlot,
-            promoType,
-            promoSellerId,
-            promoOwner,
-            layer,
-            promoLayer,
-            status,
-            triggerBase,
-            conditionBase,
-            conditionQty,
-            conditionValue,
-            benefitType,
-            benefitQty,
-            benefitDiscount,
-            benefitSku,
-            triggerCatalogues,
-            benefitRebate,
-            benefitMaxRebate,
-            promoConditionCatalogues,
-            layerInformation
+            supplierId,
+            supplierName,
+            collectionCode,
+            collectionMethodName,
+            referenceCode,
+            totalAmount,
+            createdAt,
+            invalidDate,
+            approvalStatus,
+            salesmanName,
+            storeExternalId,
+            storeName,
+            orderCode,
+            orderRef,
+            reason,
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.name = name;
-        this.promoAllocation = promoAllocation || null;
-        this.promoType = promoType || null;
-        this.promoBudget = promoBudget || null;
-        this.promoSlot = promoSlot || null;
-        this.planBudget = planBudget || null;
-        this.planSlot = planSlot || null;
-        this.promoSellerId = promoSellerId;
-        this.promoOwner = promoOwner || null;
-        this.layer = layer || 0;
-        this.promoLayer = promoLayer || 0;
-        this.status = status;
-        this.triggerBase = triggerBase || null;
-        this.conditionBase = conditionBase;
-        this.conditionQty = conditionQty || null;
-        this.conditionValue = conditionValue || null;
-        this.benefitType = benefitType;
-        this.benefitQty = benefitQty || null;
-        this.benefitDiscount = benefitDiscount || null;
-        this.benefitSku = benefitSku || null;
-        this.triggerCatalogues = triggerCatalogues || [];
-        this.benefitRebate = benefitRebate || null;
-        this.benefitMaxRebate = benefitMaxRebate || null;
-        
-        if (typeof promoConditionCatalogues !== 'undefined') {
-            this.promoConditionCatalogues = promoConditionCatalogues;
-        }
-
-        if (typeof layerInformation !== 'undefined') {
-            this.layerInformation = layerInformation;
-        }
+        this.supplierId = supplierId;
+        this.supplierName = supplierName;
+        this.collectionCode = collectionCode;
+        this.collectionMethodName = collectionMethodName;
+        this.referenceCode = referenceCode;
+        this.totalAmount = totalAmount;
+        this.createdAt = createdAt;
+        this.invalidDate = invalidDate || null;
+        this.approvalStatus = approvalStatus;
+        this.salesmanName = salesmanName;
+        this.storeExternalId = storeExternalId;
+        this.storeName = storeName;
+        this.orderCode = orderCode;
+        this.orderRef = orderRef;
+        this.reason = reason;
     }
 }
 
-interface IPromoHierarchyPayload {
-    [key: string]: any;
-}
-
-export class PromoHierarchyPayload implements IPromoHierarchyPayload {
-    [key: string]: any;
-}
-
-export interface IPromoConditionCatalogues {
-    readonly id: NonNullable<string>;
-    crossSellingGroup: string;
-    conditionValue: number;
-    conditionBase: string;
-    fakturName: string;
-    crossSellingGroupRelation: string;
-    conditionQty: string;
-    choosenSku: Array<any>;
-}
-
-export interface IPromoLayerInformation {
-    readonly id: NonNullable<string>;
-    layer0: number;
-    layer1: number;
-    layer2: number;
-    layer3: number;
-    layer4: number;
-}
-
-export class PromoHierarchyDetail {
-    // Meletakkan atribut ke dalam class sesuai dengan implement interface-nya.
+export class BillingStatus {
     id: string;
-    name: string;
-    promoSellerId: string;
-    promoAllocation: string;
-    promoBudget: number;
-    planSlot: number;
-    planBudget: number;
-    promoSlot: number;
-    promoType: string;
-    status: PromoHierarchyStatus;
-    layer: number;
-    promoLayer: number;
-    promoOwner: string;
-    triggerBase: string;
-    conditionBase: string;
-    conditionQty: string;
-    conditionValue: string;
-    benefitType: string;
-    benefitQty: number;
-    benefitDiscount: number;
-    benefitSku: Array<any>;
-    triggerCatalogues: Array<any>;
-    benefitRebate: number;
-    benefitMaxRebate: number;
-    promoConditionCatalogues: IPromoConditionCatalogues[];
-    layerInformation: IPromoLayerInformation[];
-    // TODO: Under development because need more in-depth structure.
+    stampNominal: number;
+    reason: string;
+    paidByCollectionMethod: number;
+    paidAmount: number;
+    billingPaymentCode: string;
+    createdAt: string;
+    approvalStatus: string;
+    paymentCollectionMethod: financeCollectionMethod;
+    principal: principalModels;
+    stamp: stampModels;
+    billing: billingModels;
 
-    constructor(data: PromoHierarchyDetail) {
+    constructor(data: IFinanceBillingStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            name,
-            promoAllocation,
-            promoBudget,
-            promoSlot,
-            planBudget,
-            planSlot,
-            promoType,
-            promoSellerId,
-            promoOwner,
-            layer,
-            promoLayer,
-            status,
-            triggerBase,
-            conditionBase,
-            conditionQty,
-            conditionValue,
-            benefitType,
-            benefitQty,
-            benefitDiscount,
-            benefitSku,
-            triggerCatalogues,
-            benefitRebate,
-            benefitMaxRebate,
-            promoConditionCatalogues,
-            layerInformation
+            stampNominal,
+            reason,
+            paidByCollectionMethod,
+            paidAmount,
+            billingPaymentCode,
+            createdAt,
+            approvalStatus,
+            paymentCollectionMethod,
+            principal,
+            stamp,
+            billing,
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.name = name;
-        this.promoAllocation = promoAllocation || null;
-        this.promoType = promoType || null;
-        this.promoBudget = promoBudget || null;
-        this.promoSlot = promoSlot || null;
-        this.planBudget = planBudget || null;
-        this.planSlot = planSlot || null;
-        this.promoSellerId = promoSellerId;
-        this.promoOwner = promoOwner || null;
-        this.layer = layer || 0;
-        this.promoLayer = promoLayer || 0;
-        this.status = status;
-        this.triggerBase = triggerBase;
-        this.conditionBase = conditionBase;
-        this.conditionQty = conditionQty || null;
-        this.conditionValue = conditionValue || null;
-        this.benefitType = benefitType;
-        this.benefitQty = benefitQty || null;
-        this.benefitDiscount = benefitDiscount || null;
-        this.benefitSku = benefitSku || null;
-        this.triggerCatalogues = triggerCatalogues || [];
-        this.benefitRebate = benefitRebate || null;
-        this.benefitMaxRebate = benefitMaxRebate || null;
-        
-        if (typeof promoConditionCatalogues !== 'undefined') {
-            this.promoConditionCatalogues = promoConditionCatalogues;
-        }
-
-        if (typeof layerInformation !== 'undefined') {
-            this.layerInformation = layerInformation;
-        }
+        this.stampNominal = stampNominal;
+        this.reason = reason;
+        this.paidByCollectionMethod = paidByCollectionMethod;
+        this.paidAmount = paidAmount;
+        this.billingPaymentCode = billingPaymentCode;
+        this.createdAt = createdAt;
+        this.approvalStatus = approvalStatus;
+        this.paymentCollectionMethod = paymentCollectionMethod;
+        this.principal = principal;
+        this.stamp = stamp;
+        this.billing = billing;
     }
 }
 
+interface IFinanceCollectionPayload {
+    [key: string]: any;
+}
+
+export class FinanceCollectionPayload implements IFinanceCollectionPayload {
+    [key: string]: any;
+}
+
+interface IFinanceBillingPayload {
+    [key: string]: any;
+}
+
+export class FinanceBillingPayload implements IFinanceBillingPayload {
+    [key: string]: any;
+}
+
+export interface paymentCollectionMethodModels {
+    collectionCode: string;
+    collectionRefNo: string;
+    amount: number;
+    stamp: stampDetailModels;
+    totalAmount: number;
+    usedAmount: number;
+    collectionDate: string;
+    paymentCollectionType: paymentCollectionTypeModels;
+    bankFrom: bankFromModels;
+    date: string;
+    dueDate: string;
+    approvalStatus: string;
+    reason: string;
+    user: userDetailModels;
+}
+
+export interface stampDetailModels {
+    id: number;
+    name: string;
+    nominal: number;
+}
+
+export interface paymentCollectionTypeModels {
+    id: number;
+    name: string;
+    code: string;
+}
+
+export interface bankFromModels {
+    id: number;
+    name: string;
+    displayName: string;
+}
+
+export interface userDetailModels {
+    id: number;
+    name: string;
+}
+
+export interface billingPaymentModels {
+    externalId: number;
+    storeName: string;
+    orderCode: string;
+    orderRef: string;
+    totalAmount: number;
+    dueDate: string;
+    paymentStatus: string;
+    salesRepName: string;
+    billingCode: string;
+    billingAmount: number;
+    stampNominal: number;
+    totalBillingAmount: number;
+    billingDate: string;
+    approvalStatus: string;
+    reason: string;
+}
+
+interface IFinanceDetailCollection {
+    id: string;
+    paymentCollectionMethod: paymentCollectionMethodModels;
+    billingPayment: billingPaymentModels[];
+}
+
+export class FinanceDetailCollection {
+    id: string;
+    paymentCollectionMethod: paymentCollectionMethodModels;
+    billingPayment: billingPaymentModels[];
+
+    constructor(data: IFinanceDetailCollection) {
+        // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
+        const {
+            id,
+            paymentCollectionMethod,
+            billingPayment
+        } = data;
+
+        // Memasukkan nilai ke dalam object dari parameter-nya constructor.
+        this.id = id;
+        this.paymentCollectionMethod = paymentCollectionMethod;
+        this.billingPayment = billingPayment;
+
+    }
+}

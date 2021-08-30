@@ -1,5 +1,5 @@
-import * as PromoHierarchyActions from './collection.actions';
+import * as CollectionActions from './collection.actions';
 
-type PromoHierarchyFailureAction = PromoHierarchyActions.FailureActions;
+type CollectionFailureAction = CollectionActions.FailureActions;
 
-export { PromoHierarchyFailureAction, PromoHierarchyActions };
+export { CollectionFailureAction, CollectionActions };

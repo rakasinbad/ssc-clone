@@ -1,26 +1,47 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { CollectionStatus, FinanceDetailCollection } from '../../models';
+import { BillingStatus, FinanceDetailCollection } from '../../models';
 import { CollectionActions } from '../actions';
 
 // Keyname for reducer
-export const featureKey = 'collectionStatus';
+export const featureKey = 'billingStatus';
 
-export interface State extends EntityState<CollectionStatus> {
+export interface State extends EntityState<BillingStatus> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
     total: number;
 }
 
-// Adapter for CollectionStatus state
-export const adapter = createEntityAdapter<CollectionStatus>({
+export interface StateDetail extends EntityState<FinanceDetailCollection> {
+    isLoading: boolean;
+    isRefresh: boolean;
+    selectedId: string;
+    total: number;
+}
+
+// Adapter for Billing state
+export const adapter = createEntityAdapter<BillingStatus>({
     selectId: (row) => row.id,
 });
 
+// Adapter for Detail state
+export const adapterDetail = createEntityAdapter<FinanceDetailCollection>({
+    selectId: (row) => row.id,
+});
+
+
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
+    isLoading: false,
+    isRefresh: undefined,
+    selectedId: null,
+    total: 0,
+});
+
+// Initialize state
+export const initialStateDetail: StateDetail = adapterDetail.getInitialState<Omit<StateDetail, 'ids' | 'entities'>>({
     isLoading: false,
     isRefresh: undefined,
     selectedId: null,
@@ -31,8 +52,7 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 export const reducer = createReducer(
     initialState,
     on(
-        CollectionActions.fetchCalculateCollectionStatusRequest,
-        CollectionActions.fetchCollectionStatusRequest,
+        CollectionActions.fetchBillingStatusRequest,
         CollectionActions.updateCollectionStatusRequest,
         (state) => ({
             ...state,
@@ -41,16 +61,14 @@ export const reducer = createReducer(
     ),
     on(
         CollectionActions.fetchBillingStatusFailure,
-        CollectionActions.fetchCalculateCollectionStatusFailure,
+        CollectionActions.updateCollectionStatusFailure,
+        CollectionActions.fetchCollectionDetailFailure,
         (state) => ({
             ...state,
             isLoading: false,
         })
     ),
-    on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
-    ),
-    on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
+    on(CollectionActions.fetchBillingStatusSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
     on(CollectionActions.setRefreshStatus, (state, { payload }) => ({

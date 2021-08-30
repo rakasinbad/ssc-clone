@@ -1,21 +1,21 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { CollectionStatus, FinanceDetailCollection } from '../../models';
+import { FinanceDetailCollection } from '../../models';
 import { CollectionActions } from '../actions';
 
 // Keyname for reducer
-export const featureKey = 'collectionStatus';
+export const featureKey = 'collectionTypeStatus';
 
-export interface State extends EntityState<CollectionStatus> {
+export interface State extends EntityState<FinanceDetailCollection> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
     total: number;
 }
 
-// Adapter for CollectionStatus state
-export const adapter = createEntityAdapter<CollectionStatus>({
+// Adapter for Detail state
+export const adapter = createEntityAdapter<FinanceDetailCollection>({
     selectId: (row) => row.id,
 });
 
@@ -32,26 +32,25 @@ export const reducer = createReducer(
     initialState,
     on(
         CollectionActions.fetchCalculateCollectionStatusRequest,
-        CollectionActions.fetchCollectionStatusRequest,
-        CollectionActions.updateCollectionStatusRequest,
         (state) => ({
             ...state,
             isLoading: true,
         })
     ),
     on(
-        CollectionActions.fetchBillingStatusFailure,
         CollectionActions.fetchCalculateCollectionStatusFailure,
         (state) => ({
             ...state,
             isLoading: false,
         })
     ),
-    on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
-    ),
-    on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    on(CollectionActions.fetchCollectionDetailRequest, (state, { payload }) => ({
+        ...state,
+        isLoading: true,
+        selectedId: payload.id,
+    })),
+    on(CollectionActions.fetchCollectionDetailSuccess, (state, { payload }) =>
+        adapter.addOne(payload, { ...state, isLoading: false })
     ),
     on(CollectionActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
