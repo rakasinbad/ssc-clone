@@ -1,14 +1,14 @@
 export interface IStatusPayment {
-    totalOrder: string;
-    totalWaitingForPaymentOrder: string;
-    totalD7PaymentOrder: string;
-    totalD3PaymentOrder: string;
-    totalD0PaymentOrder: string;
-    totalPaidOrder: string;
-    totalPaymentFailedOrder: string;
-    totalOverdueOrder: string;
-    totalWaitingForRefund: string;
-    totalRefunded: string;
+    totalOrder: number;
+    totalWaitingForPaymentOrder: number;
+    totalD7PaymentOrder: number;
+    totalD3PaymentOrder: number;
+    totalD0PaymentOrder: number;
+    totalPaidOrder: number;
+    totalPaymentFailedOrder: number;
+    totalOverdueOrder: number;
+    totalWaitingForRefund: number;
+    totalRefunded: number;
 }
 
 export interface IPaymentStatusDemo {
