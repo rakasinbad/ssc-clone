@@ -805,6 +805,64 @@
         </mat-list>
         <!-- / PAYMENT STATUS -->
 
+        <!-- ORDER WAREHOUSES -->
+        <mat-list *ngIf="filterWarehouses">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.warehouses?.title as warehousesTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ warehousesTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div fxLayout="column" class="custom-field">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <mat-select [formControl]="form.get('warehouses')" placeholder="Choose Warehouse" multiple>
+                                <mat-option *ngFor="let sources of sourceWarehouses" [value]="sources?.id">
+                                    {{ sources?.label | titlecase }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / ORDER WAREHOUSES -->
+
+        <!-- ORDER SOURCE -->
+        <mat-list *ngIf="filterOrderSource">
+            <mat-expansion-panel
+                class="sinbad__expansion-panel--filter mat-elevation-z0"
+                [expanded]="showPanel"
+            >
+                <mat-expansion-panel-header
+                    *ngIf="(config$ | async)?.by?.orderSource?.title as orderSourceTitle"
+                >
+                    <mat-panel-title class="sinbad__filter-title">
+                        {{ orderSourceTitle }}
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <ng-template matExpansionPanelContent>
+                    <div fxLayout="column" class="custom-field">
+                        <mat-form-field appearance="outline" fxFlex>
+                            <mat-select [formControl]="form.get('orderSource')" placeholder="Choose Source" multiple>
+                                <mat-option *ngFor="let sources of sourceOrderSource" [value]="sources?.id">
+                                    {{ sources?.label | titlecase }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </ng-template>
+            </mat-expansion-panel>
+        </mat-list>
+        <!-- / BASE PRICE -->
+
         <!-- SUPPLIER -->
         <!-- <mat-list *ngIf="sourceSuppliers && sourceSuppliers.length > 0">
             <mat-expansion-panel

@@ -43,16 +43,16 @@ const initialPaymentStatus = adapterPaymentStatus.getInitialState({
     selectedPaymentStatusId: null,
     total: 0,
     totalStatus: {
-        totalOrder: '0',
-        totalWaitingForPaymentOrder: '0',
-        totalD7PaymentOrder: '0',
-        totalD3PaymentOrder: '0',
-        totalD0PaymentOrder: '0',
-        totalPaidOrder: '0',
-        totalPaymentFailedOrder: '0',
-        totalOverdueOrder: '0',
-        totalWaitingForRefund: '0',
-        totalRefunded: '0'
+        totalOrder: 0,
+        totalWaitingForPaymentOrder: 0,
+        totalD7PaymentOrder: 0,
+        totalD3PaymentOrder: 0,
+        totalD0PaymentOrder: 0,
+        totalPaidOrder: 0,
+        totalPaymentFailedOrder: 0,
+        totalOverdueOrder: 0,
+        totalWaitingForRefund: 0,
+        totalRefunded: 0
     }
 });
 
