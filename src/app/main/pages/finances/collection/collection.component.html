@@ -30,37 +30,32 @@
                     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
                 </div>
                 <div class="search" style="display: flex">
-                    <button class="button-menu" mat-button [matMenuTriggerFor]="menu">
-                        Search By
-                    </button>
-                    <mat-menu #menu="matMenu">
-                        <button mat-menu-item>Supplier Name</button>
-                        <button mat-menu-item>External ID</button>
-                        <button mat-menu-item>Store Name</button>
-                        <button mat-menu-item>Order Code</button>
-                        <button mat-menu-item>Order Date</button>
-                        <button mat-menu-item>Sales Rep Name</button>
-                        <button mat-menu-item>Collection Code</button>
-                        <button mat-menu-item>Collection Billing Code</button>
-                        <button mat-menu-item>Collection Rep No</button>
-                    </mat-menu>
-
-                    <form class="input">
-                        <mat-form-field appearance="outline" fxFlex="70">
-                            <input type="text" matInput placeholder="Search" />
-                            <mat-icon matSuffix>search</mat-icon>
-                        </mat-form-field>
-                    </form>
+                    <div >
+                        <form >
+                            <mat-form-field appearance="outline" class="button-menu">
+                                <mat-select
+                                    placeholder="Search By"
+                                >
+                                    <mat-option *ngFor="let row of searchByList" [value]="row.id" >
+                                        {{ row.label }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    
+                    <div >
+                        <form class="input">
+                            <mat-form-field appearance="outline" fxFlex="70">
+                                <input type="text" matInput placeholder="Search" />
+                                <mat-icon matSuffix>search</mat-icon>
+                            </mat-form-field>
+                        </form>
+                    </div>
                 </div>
             </div>
 
             <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>
-            <!-- <app-list-promo-hierarchy
-                class="mx-16"
-                [selectedStatus]="section"
-                [searchValue]="search"
-                [viewByPromo]="selectedViewBy"
-            ></app-list-promo-hierarchy> -->
         </div>
         <!-- / CONTENT CARD -->
     </div>

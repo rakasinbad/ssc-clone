@@ -20,34 +20,28 @@ export class CollectionApiService {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
     }
 
-    getCollectionStatusType(params: IQueryParams, supplierId?: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(
-            this._endpointCollection + '/available-collection-status'
-        );
-        const newArg = [];
+    getCollectionStatusType<T>(type: string, supplierId?: string): Observable<T> {
+      const newArg =
+          supplierId && type
+              ? [
+                    {
+                        key: 'supplierId',
+                        value: supplierId
+                    },
+                    {
+                        key: 'type',
+                        value: type
+                    }
+                ]
+              : [];
 
-        if (params['supplierId']) {
-            newArg.push({
-                key: 'supplierId',
-                value: params['supplierId'],
-            });
-        }
+      const newParams = this._$helper.handleParams(this._url + '/available-collection-status', null, ...newArg);
 
-        if (params['type']) {
-            newArg.push({
-                key: 'type',
-                value: params['type'],
-            });
-        }
-
-        const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
-
-        return this.http.get(this._url, { params: newParams });
-        // {{base_url}}/collection/v1/available-collection-status?type=101&supplierId=1
-    }
+      return this.http.get<T>(this._url, { params: newParams });
+  }
 
     findAllCollection(params: IQueryParams, supplierId?: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection);
+        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/web/payment-method');
         const newArg = supplierId
             ? [
                   {
@@ -56,6 +50,10 @@ export class CollectionApiService {
                   },
               ]
             : [];
+
+            // approvalStatus=approved
+            // searchBy=supplierName&keyword=Tigaraksa
+            // searchBy=supplierName&keyword=Tigaraksa&approvalStatus=approved
 
         const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
 

@@ -40,8 +40,9 @@ export const reducer = createReducer(
         })
     ),
     on(
-        CollectionActions.fetchBillingStatusFailure,
+        CollectionActions.fetchCollectionStatusFailure,
         CollectionActions.fetchCalculateCollectionStatusFailure,
+        CollectionActions.updateCollectionStatusFailure,
         (state) => ({
             ...state,
             isLoading: false,
@@ -50,9 +51,9 @@ export const reducer = createReducer(
     on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
-    on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
-    ),
+    // on(CollectionActions.fetchCalculateCollectionStatusSuccess, (state, { payload }) =>
+    //     adapter.addAll(payload.data, { ...state, isLoading: false})
+    // ),
     on(CollectionActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
         needRefresh: payload,

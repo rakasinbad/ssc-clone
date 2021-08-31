@@ -5,6 +5,7 @@ type PromoHierarchyStatus = 'active' | 'inactive';
 type ApprovalTypeStatus = 'approved' | 'pending' | 'reject';
 
 export interface ICalculateCollectionStatusPayment {
+    readonly id: NonNullable<string>;
     status: string;
     title: string;
     detail: string;

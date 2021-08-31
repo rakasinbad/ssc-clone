@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -8,6 +8,8 @@ import { UiActions } from 'app/shared/store/actions';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { FeatureState as CollectionCoreState } from './store/reducers';
+import { SearchByList } from 'app/shared/models/search-by.model';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 
 @Component({
   selector: 'app-collection',
@@ -27,6 +29,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
   waitingApproval: number = 1;
   approvedCollection: number = 1;
   rejectedCollection: number = 1;
+  selectedValue: string;
+  searchByList = this._$helperService.searchByList();
 
   // Untuk menentukan konfigurasi card header.
   cardHeaderConfig: ICardHeaderConfiguration = {
@@ -56,6 +60,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
       private CollectionStore: NgRxStore<CollectionCoreState>,
       private fuseNavigation$: FuseNavigationService,
       private fuseTranslationLoader$: FuseTranslationLoaderService,
+      private _$helperService: HelperService,
   ) {
       // Memuat terjemahan.
       this.fuseTranslationLoader$.loadTranslations(indonesian, english);
@@ -130,6 +135,10 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // this.onSelectedTab(0);
+  }
+
+  ngAfterViewInit(): void {
+    console.log('selectedValue=>')
   }
 
   ngOnDestroy(): void {
