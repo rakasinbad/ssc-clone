@@ -6,6 +6,9 @@ import { ErrorsComponent } from './errors.component';
 
 @NgModule({
     declarations: [ErrorsComponent],
-    imports: [ErrorsRoutingModule, FuseSharedModule]
+    imports: [
+        ErrorsRoutingModule, 
+        FuseSharedModule
+    ]
 })
 export class ErrorsModule {}

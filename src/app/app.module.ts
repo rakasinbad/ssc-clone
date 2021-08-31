@@ -1,10 +1,10 @@
-import 'hammerjs';
-
 import { AgmCoreModule } from '@agm/core';
 import { getCurrencySymbol, registerLocaleData } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localId from '@angular/common/locales/id';
 import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -17,14 +17,15 @@ import { StorageModule } from '@ngx-pwa/local-storage';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import 'hammerjs';
 import { intersectionObserverPreset, LazyLoadImageModule } from 'ng-lazyload-image';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgxMaskModule } from 'ngx-mask';
 import { MomentModule } from 'ngx-moment';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
 import * as numeral from 'numeral';
-
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppStoreModule } from './app-store.module';
@@ -34,6 +35,7 @@ import { FakeDbService } from './fake-db/fake-db.service';
 import { fuseConfig } from './fuse-config';
 import { LayoutModule } from './layout/layout.module';
 import { AuthInterceptor } from './main/pages/core/auth/auth.interceptor';
+import { MaintenanceDialogModule } from './shared/components/dialogs/maintenance-dialog/maintenance-dialog.module';
 import { WINDOW_PROVIDERS } from './shared/helpers';
 import { IconModule } from './shared/icon.module';
 import { HttpConfigInterceptor } from './shared/interceptors/http-config.interceptor';
@@ -41,21 +43,18 @@ import { HttpErrorInterceptor } from './shared/interceptors/http-error.intercept
 import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
 
-
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
-
 numeral.register('locale', 'id-sinbad', {
     delimiters: {
         thousands: '.',
-        decimal: ','
+        decimal: ',',
     },
     abbreviations: {
         thousand: 'ribu',
         million: 'juta',
         billion: 'miliar',
-        trillion: 'triliun'
+        trillion: 'triliun',
     },
-    ordinal: _ => {
+    ordinal: (_) => {
         // http://mylanguages.org/indonesian_numbers.php
         // The oridnals work by adding a prefix "ke" to the number except for when the value is 1.
         // That is a special case value of "Pertama".
@@ -63,8 +62,8 @@ numeral.register('locale', 'id-sinbad', {
         return '.';
     },
     currency: {
-        symbol: getCurrencySymbol('IDR', 'narrow')
-    }
+        symbol: getCurrencySymbol('IDR', 'narrow'),
+    },
 });
 
 numeral.locale('id-sinbad');
@@ -84,11 +83,12 @@ registerLocaleData(localId, 'id');
             ? []
             : InMemoryWebApiModule.forRoot(FakeDbService, {
                   delay: 0,
-                  passThruUnknownUrl: true
+                  passThruUnknownUrl: true,
               }),
 
         // Material
         MaterialModule,
+        MaintenanceDialogModule,
 
         // Icon
         IconModule,
@@ -107,7 +107,7 @@ registerLocaleData(localId, 'id');
 
         AgmCoreModule.forRoot({
             apiKey: 'AIzaSyCysXfZnhUFnXQ_PGPqPEdeF2mGDl8Hs14',
-            libraries: ['geometry', 'places']
+            libraries: ['geometry', 'places'],
         }),
 
         QuillModule.forRoot(),
@@ -125,7 +125,7 @@ registerLocaleData(localId, 'id');
                 ? 'sellercenter_'
                 : environment.staging
                 ? 'sellercenter_stg_'
-                : 'sellercenter_dev_'
+                : 'sellercenter_dev_',
         }),
 
         MomentModule,
@@ -140,7 +140,9 @@ registerLocaleData(localId, 'id');
         // App modules
         LayoutModule,
 
-        NgMultiSelectDropDownModule.forRoot()
+        NgMultiSelectDropDownModule.forRoot(),
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFireDatabaseModule,
     ],
     providers: [
         AppService,
@@ -149,8 +151,8 @@ registerLocaleData(localId, 'id');
         { provide: APP_INITIALIZER, useFactory: initPrivileges, deps: [AppService], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true },
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
 })
 export class AppModule {}

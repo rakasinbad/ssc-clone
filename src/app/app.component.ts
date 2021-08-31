@@ -1,7 +1,18 @@
 import { Platform } from '@angular/cdk/platform';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { ApplicationRef, ChangeDetectionStrategy, Component, Inject, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import {
+    ApplicationRef,
+    ChangeDetectionStrategy,
+    Component,
+    Inject,
+    isDevMode,
+    OnDestroy,
+    OnInit,
+    PLATFORM_ID,
+} from '@angular/core';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { MatSnackBarConfig } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { SwUpdate } from '@angular/service-worker';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
@@ -24,6 +35,7 @@ import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 import { IAuth } from './main/pages/core/auth/models';
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
+import { MaintenanceDialogComponent } from './shared/components/dialogs/maintenance-dialog/maintenance-dialog.component';
 import { NavigationService, NoticeService } from './shared/helpers';
 import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
@@ -88,7 +100,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private _translateService: TranslateService,
         private _platform: Platform,
         private _$navigation: NavigationService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        private angularFireDatabase: AngularFireDatabase,
+        private dialog: MatDialog
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -114,6 +128,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // Use a language
         this._translateService.use('id');
+
+        // CHECK MAINTENANCE
+        this.angularFireDatabase
+            .object('/maintenance')
+            .valueChanges()
+            .subscribe((res: any) => {
+                if (res.ssc) {
+                    this.dialog.open(MaintenanceDialogComponent, {
+                        minHeight: '100vh',
+                        minWidth: '100%',
+                    });
+                } else {
+                    this.dialog.closeAll();
+                }
+            });
 
         // Move to lifecycle AuthEffect
         if (isPlatformBrowser(this.platformId)) {

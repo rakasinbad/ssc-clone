@@ -78,7 +78,12 @@
                     <mat-header-cell *matHeaderCellDef> Owner Name </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-word-break-break-word">
-                            {{ row?.store?.userStores[0].user.fullName || '-' }}
+                            <ng-container *ngIf="row?.store?.userStores !== null; else otherName">
+                                {{ row?.store?.userStores[0].user.fullName || '-' }}
+                            </ng-container>
+                            <ng-template #otherName>
+                                -
+                            </ng-template>
                         </p>
                     </mat-cell>
                 </ng-container>
