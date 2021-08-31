@@ -7,7 +7,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 import { UiActions } from 'app/shared/store/actions';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-// import { FeatureState as CollectionCoreState } from './store/reducers';
+import { FeatureState as CollectionCoreState } from './store/reducers';
 
 @Component({
   selector: 'app-collection',
@@ -23,6 +23,10 @@ export class CollectionComponent implements OnInit, OnDestroy {
   selectedViewBy: string = 'cStatus';
   labelInfo: string = '';
   isHidden: boolean = false;
+  allPayment: number = 2;
+  waitingApproval: number = 1;
+  approvedCollection: number = 1;
+  rejectedCollection: number = 1;
 
   // Untuk menentukan konfigurasi card header.
   cardHeaderConfig: ICardHeaderConfiguration = {
@@ -49,31 +53,31 @@ export class CollectionComponent implements OnInit, OnDestroy {
   private subs$: Subject<void> = new Subject<void>();
 
   constructor(
-      // private CollectionStore: NgRxStore<CollectionCoreState>,
+      private CollectionStore: NgRxStore<CollectionCoreState>,
       private fuseNavigation$: FuseNavigationService,
       private fuseTranslationLoader$: FuseTranslationLoaderService,
   ) {
       // Memuat terjemahan.
       this.fuseTranslationLoader$.loadTranslations(indonesian, english);
 
-      // Memuat breadcrumb.
-      // this.CollectionStore.dispatch(
-      //     UiActions.createBreadcrumb({
-      //         payload: [
-      //             {
-      //                 title: 'Home',
-      //             },
-      //             {
-      //                 title: 'Finance',
-      //             },
-      //             {
-      //                 title: 'Collection',
-      //                 active: true,
-      //                 keepCase: true,
-      //             },
-      //         ],
-      //     })
-      // );
+    //   Memuat breadcrumb.
+      this.CollectionStore.dispatch(
+          UiActions.createBreadcrumb({
+              payload: [
+                  {
+                      title: 'Home',
+                  },
+                  {
+                      title: 'Finance',
+                  },
+                  {
+                      title: 'Collection',
+                      active: true,
+                      keepCase: true,
+                  },
+              ],
+          })
+      );
   }
 
   clickTabViewBy(action: string): void {
@@ -82,21 +86,18 @@ export class CollectionComponent implements OnInit, OnDestroy {
       }
 
       switch (action) {
-          case 'all':
+          case 'cStatus':
               this.selectedViewBy = action;
               break;
-          case 'flexi':
+          case 'bStatus':
               this.selectedViewBy = action;
-          case 'cross':
-              this.selectedViewBy = action;
-              break;
-          case 'voucher':
-              this.selectedViewBy = action;
-              break;
-  
           default:
               return;
       }
+  }
+
+  onSelectedTab(index): void {
+      console.log(index);
   }
 
   // onSelectedTab(index: number): void {

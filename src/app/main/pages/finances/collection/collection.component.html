@@ -1,25 +1,60 @@
 <div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CENTER -->
     <div class="center p-8">
+        <mat-tab-group
+            color="accent"
+            style="border-radius: 4px"
+            class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab aria-label="all" [label]="'All (' + allPayment + ')'"></mat-tab>
+            <mat-tab
+                aria-label="waitingForApproval"
+                [label]="'Waiting for Approval (' + waitingApproval + ')'"
+            ></mat-tab>
+            <mat-tab
+                aria-label="approved"
+                [label]="'Approved (' + approvedCollection + ')'"
+            ></mat-tab>
+            <mat-tab
+                aria-label="rejected"
+                [label]="'Rejected (' + rejectedCollection + ')'"
+            ></mat-tab>
+        </mat-tab-group>
+
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <div style="display: flex;justify-content: space-between;">
+            <div style="display: flex; justify-content: space-between">
                 <div>
                     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
                 </div>
-                <div style="display: flex;">
-                    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
-                        <mat-menu #menu="matMenu">
-                        <button mat-menu-item>Item 1</button>
-                        <button mat-menu-item>Item 2</button>
-                        </mat-menu>
+                <div class="search" style="display: flex">
+                    <button class="button-menu" mat-button [matMenuTriggerFor]="menu">
+                        Search By
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item>Supplier Name</button>
+                        <button mat-menu-item>External ID</button>
+                        <button mat-menu-item>Store Name</button>
+                        <button mat-menu-item>Order Code</button>
+                        <button mat-menu-item>Order Date</button>
+                        <button mat-menu-item>Sales Rep Name</button>
+                        <button mat-menu-item>Collection Code</button>
+                        <button mat-menu-item>Collection Billing Code</button>
+                        <button mat-menu-item>Collection Rep No</button>
+                    </mat-menu>
 
-                    <div>Kolom Input</div>
+                    <form class="input">
+                        <mat-form-field appearance="outline" fxFlex="70">
+                            <input type="text" matInput placeholder="Search" />
+                            <mat-icon matSuffix>search</mat-icon>
+                        </mat-form-field>
+                    </form>
                 </div>
             </div>
-            
 
-            <!-- <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection> -->
+            <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>
             <!-- <app-list-promo-hierarchy
                 class="mx-16"
                 [selectedStatus]="section"

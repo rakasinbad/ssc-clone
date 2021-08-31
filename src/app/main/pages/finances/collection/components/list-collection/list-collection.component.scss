@@ -1,0 +1,129 @@
+@import 'src/@fuse/scss/fuse';
+
+app-list-collection {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    overflow: auto !important; 
+
+    .collection-list-table, .billing-list-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        min-height: 40px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .sinbad-promo-hierarchy-list-item {
+            position: relative;
+            cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+        }
+
+        .mat-column-id {
+            flex: 0 1 84px;
+        }
+
+        .mat-column-promo-seller-id {
+            // flex: 0 0 110px;
+            min-width: 110px;
+        }
+        .mat-column-promo-name {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+        .mat-column-allocation-value {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-promo-allocation {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-promo-type {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-promo-group {
+            flex: 0 1 150px;
+            min-width: 150px;
+        }
+
+        .mat-column-status {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 5em;
+            justify-content: center;
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
+    }
+}
+
+mat-menu-panel {
+    min-height: 52px;
+}
