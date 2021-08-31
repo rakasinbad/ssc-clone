@@ -1,7 +1,18 @@
 import { Platform } from '@angular/cdk/platform';
-import { DOCUMENT, isPlatformBrowser, Location } from '@angular/common';
-import { ApplicationRef, ChangeDetectionStrategy, Component, Inject, isDevMode, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import {
+    ApplicationRef,
+    ChangeDetectionStrategy,
+    Component,
+    Inject,
+    isDevMode,
+    OnDestroy,
+    OnInit,
+    PLATFORM_ID,
+} from '@angular/core';
+import { AngularFireDatabase } from '@angular/fire/database';
 import { MatSnackBarConfig } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { SwUpdate } from '@angular/service-worker';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
@@ -12,7 +23,6 @@ import { DEFAULT_INTERRUPTSOURCES, Idle } from '@ng-idle/core';
 import { Keepalive } from '@ng-idle/keepalive';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { AngularFireDatabase } from '@angular/fire/database';
 import { ReactiveFormConfig } from '@rxweb/reactive-form-validators';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
@@ -22,16 +32,13 @@ import * as LogRocket from 'logrocket';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { IAuth } from './main/pages/core/auth/models';
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
+import { MaintenanceDialogComponent } from './shared/components/dialogs/maintenance-dialog/maintenance-dialog.component';
 import { NavigationService, NoticeService } from './shared/helpers';
 import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
-import { Router } from '@angular/router';
-import { AuthService } from './main/pages/core/auth/auth.service';
-import { MaintenanceDialogComponent } from './maintenance-dialog.component';
 
 if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
@@ -94,11 +101,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private _platform: Platform,
         private _$navigation: NavigationService,
         private _$notice: NoticeService,
-        private angularFireDatabase : AngularFireDatabase,
-        private router : Router,
-        private dialog: MatDialog,
-        private location: Location,
-        private auth: AuthService
+        private angularFireDatabase: AngularFireDatabase,
+        private dialog: MatDialog
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -126,13 +130,19 @@ export class AppComponent implements OnInit, OnDestroy {
         this._translateService.use('id');
 
         // CHECK MAINTENANCE
-        this.angularFireDatabase.object('/maintenance').valueChanges().subscribe((res:any) => {
-            if(res.ssc) {
-                this.dialog.open(MaintenanceDialogComponent,{minHeight:'100vh',minWidth:'100%'});
-            } else {
-                this.dialog.closeAll();
-            }
-        });
+        this.angularFireDatabase
+            .object('/maintenance')
+            .valueChanges()
+            .subscribe((res: any) => {
+                if (res.ssc) {
+                    this.dialog.open(MaintenanceDialogComponent, {
+                        minHeight: '100vh',
+                        minWidth: '100%',
+                    });
+                } else {
+                    this.dialog.closeAll();
+                }
+            });
 
         // Move to lifecycle AuthEffect
         if (isPlatformBrowser(this.platformId)) {

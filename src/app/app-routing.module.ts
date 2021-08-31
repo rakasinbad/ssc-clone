@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { getRoleByRouter } from 'app/shared/helpers';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
 import { RoleGuard } from './main/pages/core/auth/role.guard';
-import { getRoleByRouter } from 'app/shared/helpers';
 
 const routes: Routes = [
     {
@@ -23,10 +23,6 @@ const routes: Routes = [
         loadChildren: () => import('./main/pages/core/auth/auth.module').then((m) => m.AuthModule),
     },
     {
-        path: 'errors',
-        loadChildren: () => import('./main/pages/core/errors/errors.module').then((m) => m.ErrorsModule),
-    },
-    {
         path: 'profile',
         loadChildren: () =>
             import('./main/pages/core/profile/profile.module').then((m) => m.ProfileModule),
@@ -40,7 +36,7 @@ const routes: Routes = [
                         replaceUrl: true,
                         skipLocationChange: true,
                     },
-                },    
+                },
             },
         },
     },
@@ -337,10 +333,7 @@ const routes: Routes = [
             },
             {
                 path: 'skp',
-                loadChildren: () =>
-                    import('./main/pages/skp/skp.module').then(
-                        (m) => m.SkpModule
-                    ),
+                loadChildren: () => import('./main/pages/skp/skp.module').then((m) => m.SkpModule),
                 canLoad: [AuthGuard],
                 // data: {
                 //     permissions: {
@@ -358,7 +351,7 @@ const routes: Routes = [
             {
                 path: 'landing',
                 canActivate: [AuthGuard, RoleGuard],
-                children: []
+                children: [],
             },
             {
                 path: '',

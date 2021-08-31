@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { ErrorsComponent } from './errors.component';
 
 const routes: Routes = [
@@ -9,26 +8,22 @@ const routes: Routes = [
         children: [
             {
                 path: '',
-                component: ErrorsComponent
+                component: ErrorsComponent,
             },
             {
                 path: '404',
-                loadChildren: () => import('./404/error-404.module').then(m => m.Error404Module)
+                loadChildren: () => import('./404/error-404.module').then((m) => m.Error404Module),
             },
             {
                 path: '403',
-                loadChildren: () => import('./403/error-403.module').then(m => m.Error403Module)
+                loadChildren: () => import('./403/error-403.module').then((m) => m.Error403Module),
             },
-            {
-                path: 'maintenance',
-                loadChildren: () => import('./maintenance/error-maintenance.module').then(m => m.ErrorMaintenanceModule)
-            }
-        ]
-    }
+        ],
+    },
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class ErrorsRoutingModule {}
