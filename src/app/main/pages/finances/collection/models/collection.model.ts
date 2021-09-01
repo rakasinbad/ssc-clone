@@ -80,6 +80,7 @@ interface storeModels {
 interface billingModels {
     id: number;
     orderParcel: orderParcelModels;
+    status: string;
 }
 
 interface IFinanceBillingStatus {

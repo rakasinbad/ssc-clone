@@ -18,7 +18,6 @@ import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/he
 })
 export class CollectionComponent implements OnInit, OnDestroy {
   // Untuk penanda tab mana yang sedang aktif.
-  // section: 'layer0' | 'layer1' | 'layer2' | 'layer3' | 'layer4' = 'layer0';
 
   // tslint:disable-next-line: no-inferrable-types
   search: string = '';
@@ -138,7 +137,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    console.log('selectedValue=>')
+    // console.log('selectedValue=>')
   }
 
   ngOnDestroy(): void {

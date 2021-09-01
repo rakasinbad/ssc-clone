@@ -120,6 +120,7 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
             },
             billing: {
                 id: 123,
+                status: 'waiting',
                 orderParcel: {
                     id: 34,
                     orderCode: 'snbd42323',
@@ -169,6 +170,7 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
             },
             billing: {
                 id: 123,
+                status: 'waiting',
                 orderParcel: {
                     id: 34,
                     orderCode: 'snbd42323',
@@ -219,6 +221,7 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
         'finance-collection-date',
         'finance-collection-status',
         'finance-billing-code',
+        'finance-bill-amount',
         'finance-materai',
         'finance-total-bill-amount',
         'finance-bill-date',

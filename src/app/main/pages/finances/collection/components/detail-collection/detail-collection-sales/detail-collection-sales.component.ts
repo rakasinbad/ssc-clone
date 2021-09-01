@@ -1,5 +1,6 @@
 import {
   Component,
+  Input,
   OnInit,
   ChangeDetectionStrategy,
   OnDestroy,
@@ -30,6 +31,7 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailCollectionSalesComponent implements OnInit {
+  @Input() detailData;
 
   constructor() { }
 

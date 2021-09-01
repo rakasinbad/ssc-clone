@@ -15,7 +15,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            Mandiri
+            {{detailData[0].paymentCollectionMethod.bankFrom.displayName || '-'}}
         </div>
     </div>
 
@@ -30,7 +30,8 @@
         </div>
 
         <div class="info" fxFlex="100">
-            20 Mei 2021
+            {{(detailData[0].paymentCollectionMethod.date | date: 'dd
+            MMM yyyy') || '-'}}
         </div>
     </div>
 
@@ -41,11 +42,12 @@
         fxLayoutGap="15px"
     >
         <div class="label" fxFlexAlign="center" fxFlex="20">
-            Due Date
+           Due Date
         </div>
 
         <div class="info" fxFlex="100">
-            21 Jun 2021
+            {{(detailData[0].paymentCollectionMethod.dueDate | date: 'dd
+            MMM yyyy') || '-'}}
         </div>
     </div>
 
@@ -60,7 +62,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            -
+            {{detailData[0].paymentCollectionMethod.approvalReason || '-'}}
         </div>
     </div>
 </div>
@@ -83,8 +85,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            123456
-           
+            {{detailData[0].paymentCollectionMethod.salesmanCode || '-'}}
         </div>
     </div>
 
@@ -99,7 +100,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            Anggie
+            {{detailData[0].paymentCollectionMethod.salesmanName || '-'}}
         </div>
     </div>
 </div>

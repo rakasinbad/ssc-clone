@@ -33,10 +33,10 @@
             <!-- CONTENT -->
             <div class="content">
                 <div class="tab-content p-16">
-                    <app-detail-collection-info></app-detail-collection-info>
+                    <app-detail-collection-info [detailData]="detailCollection"></app-detail-collection-info>
                 </div>
                 <div class="tab-content p-16">
-                    <app-detail-collection-sales></app-detail-collection-sales>
+                    <app-detail-collection-sales [detailData]="detailCollection"></app-detail-collection-sales>
                 </div>
             </div>
             <br />
@@ -50,9 +50,12 @@
         <div class="content-card">
             <!-- CONTENT -->
             <div class="content">
-                <div class="tab-content p-16">
-                    <app-detail-collection-table></app-detail-collection-table>
+                <div class="mat-tab-body-content ng-trigger">
+                    <div class="tab-content p-16">
+                        <app-detail-collection-table [detailData]="detailCollection"></app-detail-collection-table>
+                    </div>
                 </div>
+                
             </div>
             <!-- / CONTENT -->
         </div>

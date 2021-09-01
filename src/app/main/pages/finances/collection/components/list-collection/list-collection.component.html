@@ -248,7 +248,7 @@
         <ng-container matColumnDef="finance-total-amount">
             <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormat(row?.paidAmount)}}</p>
+                <p style="word-break: break-word">{{numberFormatFromString(row?.billing.orderParcel.deliveredParcelFinalPriceBuyer)}}</p>
             </mat-cell>
         </ng-container>
 
@@ -337,11 +337,19 @@
             </mat-cell>
         </ng-container>
 
+         <!-- Billing Amount Column -->
+         <ng-container matColumnDef="finance-bill-amount">
+            <mat-header-cell *matHeaderCellDef> Billing Amount</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word">{{numberFormat(row?.paidByCollectionMethod)}}</p>
+            </mat-cell>
+        </ng-container>
+
         <!-- Materai Column -->
         <ng-container matColumnDef="finance-materai">
             <mat-header-cell *matHeaderCellDef> Materai </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormat(row?.paymentCollectionMethod.stamp.nominal)}}</p>
+                <p style="word-break: break-word">{{numberFormat(row?.stampNominal)}}</p>
             </mat-cell>
         </ng-container>
 
@@ -349,7 +357,7 @@
         <ng-container matColumnDef="finance-total-bill-amount">
             <mat-header-cell *matHeaderCellDef> Total Billing Amount</mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormatFromString(row?.billing.orderParcel.deliveredParcelFinalPriceBuyer)}}</p>
+                <p style="word-break: break-word">{{numberFormat(row?.paidAmount)}}</p>
             </mat-cell>
         </ng-container>
 
@@ -366,11 +374,11 @@
             <mat-header-cell *matHeaderCellDef> Billing Status</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word">
-                    {{row?.billing.orderParcel.paymentStatus === 'pending' ? 'Pending'
-                    : row?.billing.orderParcel.paymentStatus === 'waiting_for_payment' ? 'Waiting'
-                    : row?.billing.orderParcel.paymentStatus === 'approved' ? 'Approved'
-                    : row?.billing.orderParcel.paymentStatus === 'rejected' ? 'Rejected'
-                    : (row?.billing.orderParcel.paymentStatus | titlecase) || '-'
+                    {{row?.billing.status === 'pending' ? 'Pending'
+                    : row?.billing.status === 'waiting' ? 'Waiting'
+                    : row?.billing.status === 'approved' ? 'Approved'
+                    : row?.billing.status === 'rejected' ? 'Rejected'
+                    : (row?.billing.status | titlecase) || '-'
                     }}
                 </p>
             </mat-cell>

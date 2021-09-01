@@ -32,135 +32,136 @@ import { ActivatedRoute } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DetailCollectionTableComponent implements OnInit {
+    @Input() detailData;
     public totalDataSourceBilling: number;
-
+    public dataTable = [];
     public dataSourceBilling = [
-      {
-          id: 25,
-          stampNominal: 3000,
-          reason: 'males bayar',
-          paidByCollectionMethod: 5000000,
-          paidAmount: 50003000,
-          billingPaymentCode: 'bpdf323233',
-          createdAt: '2021-03-04 02:01:56',
-          approvalStatus: 'pending',
-          paymentCollectionMethod: {
-              id: 232,
-              collectionCode: 'csf3232',
-              collectionRef: 'csf3232',
-              amount: 50000000,
-              balance: 300000,
-              approvalStatus: 'pending',
-              createdAt: '2021-03-04 02:01:56',
-              user: {
-                  id: 1,
-                  fullName: 'ansor',
-              },
-              principal: {
-                  id: 3,
-                  externalId: '10302291',
-              },
-              stamp: {
-                  id: 2,
-                  nominal: 3000,
-              },
-          },
-          billing: {
-              id: 123,
-              orderParcel: {
-                  id: 34,
-                  orderCode: 'snbd42323',
-                  orderDueDate: '2021-03-04 02:01:56',
-                  paymentStatus: 'waiting_for_payment',
-                  orderRef: 'asfasd',
-                  deliveredParcelFinalPriceBuyer: '400000',
-                  order: {
-                      id: 2,
-                      store: {
-                          id: 32,
-                          name: 'store123',
-                      },
-                  },
-              },
-          },
-      },
-      {
-          id: 26,
-          stampNominal: 3000,
-          reason: 'males bayar',
-          paidByCollectionMethod: 5000000,
-          paidAmount: 50003000,
-          billingPaymentCode: 'bpdf323233',
-          createdAt: '2021-03-04 02:01:56',
-          approvalStatus: 'pending',
-          paymentCollectionMethod: {
-              id: 232,
-              collectionCode: 'csf3232',
-              collectionRef: 'csf3232',
-              amount: 50000000,
-              balance: 300000,
-              approvalStatus: 'pending',
-              createdAt: '2021-03-04 02:01:56',
-              user: {
-                  id: 1,
-                  fullName: 'ansor',
-              },
-              principal: {
-                  id: 3,
-                  externalId: '10302291',
-              },
-              stamp: {
-                  id: 2,
-                  nominal: 3000,
-              },
-          },
-          billing: {
-              id: 123,
-              orderParcel: {
-                  id: 34,
-                  orderCode: 'snbd42323',
-                  orderDueDate: '2021-03-04 02:01:56',
-                  paymentStatus: 'waiting_for_payment',
-                  orderRef: 'asfasd',
-                  deliveredParcelFinalPriceBuyer: '400000',
-                  order: {
-                      id: 2,
-                      store: {
-                          id: 32,
-                          name: 'store123',
-                      },
-                  },
-              },
-          },
-      },
-  ];
+        {
+            id: 25,
+            stampNominal: 3000,
+            reason: 'males bayar',
+            paidByCollectionMethod: 5000000,
+            paidAmount: 50003000,
+            billingPaymentCode: 'bpdf323233',
+            createdAt: '2021-03-04 02:01:56',
+            approvalStatus: 'pending',
+            paymentCollectionMethod: {
+                id: 232,
+                collectionCode: 'csf3232',
+                collectionRef: 'csf3232',
+                amount: 50000000,
+                balance: 300000,
+                approvalStatus: 'pending',
+                createdAt: '2021-03-04 02:01:56',
+                user: {
+                    id: 1,
+                    fullName: 'ansor',
+                },
+                principal: {
+                    id: 3,
+                    externalId: '10302291',
+                },
+                stamp: {
+                    id: 2,
+                    nominal: 3000,
+                },
+            },
+            billing: {
+                id: 123,
+                status: 'waiting',
+                orderParcel: {
+                    id: 34,
+                    orderCode: 'snbd42323',
+                    orderDueDate: '2021-03-04 02:01:56',
+                    paymentStatus: 'waiting_for_payment',
+                    orderRef: 'asfasd',
+                    deliveredParcelFinalPriceBuyer: '400000',
+                    order: {
+                        id: 2,
+                        store: {
+                            id: 32,
+                            name: 'store123',
+                        },
+                    },
+                },
+            },
+        },
+        {
+            id: 26,
+            stampNominal: 3000,
+            reason: 'males bayar',
+            paidByCollectionMethod: 5000000,
+            paidAmount: 50003000,
+            billingPaymentCode: 'bpdf323233',
+            createdAt: '2021-03-04 02:01:56',
+            approvalStatus: 'pending',
+            paymentCollectionMethod: {
+                id: 232,
+                collectionCode: 'csf3232',
+                collectionRef: 'csf3232',
+                amount: 50000000,
+                balance: 300000,
+                approvalStatus: 'pending',
+                createdAt: '2021-03-04 02:01:56',
+                user: {
+                    id: 1,
+                    fullName: 'ansor',
+                },
+                principal: {
+                    id: 3,
+                    externalId: '10302291',
+                },
+                stamp: {
+                    id: 2,
+                    nominal: 3000,
+                },
+            },
+            billing: {
+                id: 123,
+                status: 'waiting',
+                orderParcel: {
+                    id: 34,
+                    orderCode: 'snbd42323',
+                    orderDueDate: '2021-03-04 02:01:56',
+                    paymentStatus: 'waiting_for_payment',
+                    orderRef: 'asfasd',
+                    deliveredParcelFinalPriceBuyer: '400000',
+                    order: {
+                        id: 2,
+                        store: {
+                            id: 32,
+                            name: 'store123',
+                        },
+                    },
+                },
+            },
+        },
+    ];
 
     displayedColumnsBilling = [
-      'finance-external-id',
-      'finance-store-name',
-      'finance-order-code',
-      'finance-order-ref',
-      'finance-total-amount',
-      'finance-order-due-date',
-      'finance-payment-status',
-      'finance-sales-rep',
-      'finance-collect-code',
-      'finance-collection-ref',
-      'finance-collection-amount',
-      'finance-collection-date',
-      'finance-collection-status',
-      'finance-billing-code',
-      'finance-materai',
-      'finance-total-bill-amount',
-      'finance-bill-date',
-      'finance-bill-status',
-      'finance-reason',
-  ];
+        'finance-external-id',
+        'finance-store-name',
+        'finance-order-code',
+        'finance-order-ref',
+        'finance-total-amount',
+        'finance-order-due-date',
+        'finance-payment-status',
+        'finance-sales-rep',
+        'finance-billing-code',
+        'finance-bill-amount',
+        'finance-materai',
+        'finance-total-bill-amount',
+        'finance-bill-date',
+        'finance-bill-status',
+        'finance-reason',
+    ];
 
     constructor() {}
 
     ngOnInit() {
-        this.totalDataSourceBilling = this.dataSourceBilling.length;
+      this.dataTable = this.detailData[0].billingPayment;
+      console.log('isi datatable->', this.dataTable)
+        this.totalDataSourceBilling = this.dataTable.length;
     }
 
     getOrderCode(value): string {

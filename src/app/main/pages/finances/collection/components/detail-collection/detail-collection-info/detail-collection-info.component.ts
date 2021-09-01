@@ -5,6 +5,7 @@ import {
     OnDestroy,
     ChangeDetectorRef,
     ViewEncapsulation,
+    Input,
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -30,10 +31,25 @@ import { Router } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailCollectionInfoComponent implements OnInit, OnDestroy {
+  @Input() detailData;
+
     constructor() {}
 
-    ngOnInit() {}
+    ngOnInit() {
+      console.log('isi detail data info->', this.detailData)
+    }
 
+    numberFormat(num) {
+      if (num) {
+          return num
+              .toFixed(2)
+              .replace('.', ',')
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+      }
+
+      return '-';
+  }
+  
     ngOnDestroy(): void {
   }
 }

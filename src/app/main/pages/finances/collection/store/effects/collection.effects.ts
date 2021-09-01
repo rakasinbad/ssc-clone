@@ -233,7 +233,11 @@ export class PaymentEffects {
      { dispatch: false }
  );
 
-    //Calculate for tab type diatas
+    /**
+     *
+     * [REQUEST] Calculate for tab type diatas
+     * @memberof CollectionEffects
+     */
     fetchCalculateCollectionStatusRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchCalculateCollectionStatusRequest),
@@ -306,6 +310,11 @@ export class PaymentEffects {
         )
     );
 
+     /**
+     *
+     * [REQUEST - FAILURE] Calculate for tab type diatas
+     * @memberof CollectionEffects
+     */
     fetchCalculateCollectionStatusFailure$ = createEffect(
         () =>
             this.actions$.pipe(
