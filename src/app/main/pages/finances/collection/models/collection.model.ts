@@ -221,20 +221,26 @@ export class FinanceBillingPayload implements IFinanceBillingPayload {
 }
 
 export interface paymentCollectionMethodModels {
+    id: number;
+    refNo: string;
     collectionCode: string;
-    collectionRefNo: string;
+    collectionRef: string;
     amount: number;
     stamp: stampDetailModels;
     totalAmount: number;
     usedAmount: number;
-    collectionDate: string;
+    createdDate: string;
     paymentCollectionType: paymentCollectionTypeModels;
     bankFrom: bankFromModels;
+    bankToAccount: string;
     date: string;
     dueDate: string;
     approvalStatus: string;
-    reason: string;
-    user: userDetailModels;
+    balance: number;
+    approvalReason: string;
+    suplierResponse: supplierResponModels;
+    salesRepCode: string;
+    salesRepName: string;
 }
 
 export interface stampDetailModels {
@@ -252,30 +258,34 @@ export interface paymentCollectionTypeModels {
 export interface bankFromModels {
     id: number;
     name: string;
+    code: string;
     displayName: string;
 }
 
-export interface userDetailModels {
+export interface supplierResponModels {
     id: number;
+    supplierId: number;
+    storeId: number;
+    StoreExternalId: string;
     name: string;
 }
 
 export interface billingPaymentModels {
-    externalId: number;
+    storeExternalId: number;
     storeName: string;
     orderCode: string;
     orderRef: string;
     totalAmount: number;
     dueDate: string;
-    paymentStatus: string;
+    statusPayment: string;
     salesRepName: string;
-    billingCode: string;
+    billingPaymentCode: string;
     billingAmount: number;
     stampNominal: number;
     totalBillingAmount: number;
-    billingDate: string;
+    createdAt: string;
     approvalStatus: string;
-    reason: string;
+    approvalReason: string;
 }
 
 interface IFinanceDetailCollection {
