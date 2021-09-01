@@ -29,14 +29,15 @@
                 <div>
                     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
                 </div>
-                <div class="search" style="display: flex">
-                    <div >
-                        <form >
-                            <mat-form-field appearance="outline" class="button-menu">
+                <div class="search" style="display: flex; margin-top: 30px; margin-bottom: 30px;">
+                    <div style="height: 35px;">
+                        <form style="height: 35px;" >
+                            <mat-form-field appearance="outline" style="height: 35px;">
                                 <mat-select
                                     placeholder="Search By"
+                                    style="max-height: 35px;"
                                 >
-                                    <mat-option *ngFor="let row of searchByList" [value]="row.id" >
+                                    <mat-option *ngFor="let row of searchByList" [value]="row.id" style="height: 35px;" >
                                         {{ row.label }}
                                     </mat-option>
                                 </mat-select>

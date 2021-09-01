@@ -13,12 +13,13 @@ import { DetailCollectionComponent } from './components/detail-collection/detail
 import { ListCollectionComponent } from './components/list-collection/list-collection.component';
 import { DetailCollectionTableComponent } from './components/detail-collection/detail-collection-table/detail-collection-table.component';
 import { DetailCollectionInfoComponent } from './components/detail-collection/detail-collection-info/detail-collection-info.component';
+import { DetailCollectionSalesComponent } from './components/detail-collection/detail-collection-sales/detail-collection-sales.component';
 
 @NgModule({
   declarations: [
     CollectionComponent, 
     DetailCollectionComponent, 
-    ListCollectionComponent, DetailCollectionTableComponent, DetailCollectionInfoComponent],
+    ListCollectionComponent, DetailCollectionTableComponent, DetailCollectionInfoComponent, DetailCollectionSalesComponent],
     
   imports: [
     CommonModule,
