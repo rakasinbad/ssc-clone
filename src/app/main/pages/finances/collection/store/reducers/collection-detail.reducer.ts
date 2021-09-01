@@ -5,7 +5,7 @@ import { FinanceDetailCollection } from '../../models';
 import { CollectionActions } from '../actions';
 
 // Keyname for reducer
-export const featureKey = 'collectionTypeStatus';
+export const featureKey = 'collectionDetailStatus';
 
 export interface State extends EntityState<FinanceDetailCollection> {
     isLoading: boolean;

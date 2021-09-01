@@ -29,31 +29,33 @@
                 <div>
                     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
                 </div>
-                <div class="search" style="display: flex; margin-top: 30px; margin-bottom: 30px;">
-                    <div style="height: 35px;">
-                        <form style="height: 35px;" >
-                            <mat-form-field appearance="outline" style="height: 35px;">
-                                <mat-select
-                                    placeholder="Search By"
-                                    style="max-height: 35px;"
-                                >
-                                    <mat-option *ngFor="let row of searchByList" [value]="row.id" style="height: 35px;" >
+                <!-- <div style="display: flex; margin-top: 30px; margin-bottom: 30px;"> -->
+                <div>
+                    <div fxLayout="row" fxLayoutAlign="start stretch" style="height: 25px; margin-top: 30px; margin-bottom: 30px">
+                        <form fxFlex>
+                            <mat-form-field appearance="outline" style="padding-right: 10px">
+                                <mat-select placeholder="Search By" style="height: 30px;">
+                                    <mat-option *ngFor="let row of searchByList" [value]="row.id">
                                         {{ row.label }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
-                        </form>
-                    </div>
-                    
-                    <div style="height: 35px;">
-                        <form class="input" style="height: 35px;">
-                            <mat-form-field appearance="outline" fxFlex="70" style="height: 35px;">
-                                <input type="text" matInput placeholder="Search" style="height: 35px;"/>
+    
+                            <mat-form-field appearance="outline" fxFlex="70" style="margin-right: 17px;">
+                                <input type="text" matInput placeholder="Search" style="height: 30px;" />
                                 <mat-icon matSuffix>search</mat-icon>
                             </mat-form-field>
                         </form>
                     </div>
                 </div>
+                
+
+                <!-- <div style="height: 35px; margin-bottom: 30px;"> -->
+                <!-- <form class="input" style="height: 35px;"> -->
+
+                <!-- </form> -->
+                <!-- </div> -->
+                <!-- </div> -->
             </div>
 
             <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>

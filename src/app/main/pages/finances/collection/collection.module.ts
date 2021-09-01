@@ -7,6 +7,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 import { CollectionRoutingModule } from './collection-routing.module';
+import { CollectionNgrxModule } from './store/collection-ngrx.module';
 
 import { CollectionComponent } from './collection.component';
 import { DetailCollectionComponent } from './components/detail-collection/detail-collection.component';
@@ -30,6 +31,9 @@ import { DetailCollectionSalesComponent } from './components/detail-collection/d
     SharedComponentsModule,
     RxReactiveFormsModule,
     NgxPermissionsModule.forChild(),
+
+     // Ngrx Store
+     CollectionNgrxModule
 
   ]
 })

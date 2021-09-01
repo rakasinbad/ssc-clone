@@ -41,7 +41,7 @@ export class CollectionApiService {
   }
 
     findAllCollection(params: IQueryParams, supplierId?: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/web/payment-method');
+        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/web/payment-methods');
         const newArg = supplierId
             ? [
                   {
@@ -76,12 +76,19 @@ export class CollectionApiService {
         return this.http.get(this._url, { params: newParams });
     }
 
-    findById(id: string, type = 'order'): Observable<any> {
-        if (type === 'invoice') {
-            this._url = this._$helper.handleApiRouter('/payment/v1/invoice');
-        } else {
-            this._url = this._$helper.handleApiRouter(this._endpointCollection);
-        }
+    // findById(id: string, type = 'order'): Observable<any> {
+    //     if (type === 'invoice') {
+    //         this._url = this._$helper.handleApiRouter('/payment/v1/invoice');
+    //     } else {
+    //         this._url = this._$helper.handleApiRouter(this._endpointCollection);
+    //     }
+    //     return this.http.get(`${this._url}/${id}`);
+    // }
+
+   //get data detail
+    findById(id): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/web/payment-methods');
+
         return this.http.get(`${this._url}/${id}`);
     }
 

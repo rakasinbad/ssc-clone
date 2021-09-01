@@ -12,7 +12,7 @@ import {
     DownloadApiService,
     LogService,
     NoticeService,
-    UploadApiService
+    UploadApiService,
 } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
@@ -24,19 +24,19 @@ import {
     retry,
     switchMap,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
 import { CollectionApiService } from '../../services';
 import { CollectionActions } from '../actions';
-import { ICalculateCollectionStatusPayment } from '../../models'
+import { ICalculateCollectionStatusPayment } from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
 import { OrderActions } from '../../../../orders/store/actions';
 
 @Injectable()
-export class PaymentEffects {
+export class CollectionEffects {
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
@@ -49,47 +49,47 @@ export class PaymentEffects {
     fetchCollectionListStatusesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchCollectionStatusRequest),
-            map(action => action.payload),
+            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([payload, { supplierId }]) => {
                 if (!supplierId) {
                     return of(
                         CollectionActions.fetchCollectionStatusFailure({
-                            payload: { id: 'fetchCollectionStatusFailure', errors: 'Not Found!' }
+                            payload: { id: 'fetchCollectionStatusFailure', errors: 'Not Found!' },
                         })
                     );
                 }
 
                 return this._$collectionStatusApi.findAllCollection(payload, supplierId).pipe(
                     catchOffline(),
-                    map(resp => {
+                    map((resp) => {
                         this._$log.generateGroup(
                             'RESPONSE REQUEST FETCH COLLECTION LIST STATUSES',
                             {
                                 payload: {
                                     type: 'log',
-                                    value: payload
+                                    value: payload,
                                 },
                                 response: {
                                     type: 'log',
-                                    value: resp
-                                }
-                            },
+                                    value: resp,
+                                },
+                            }
                         );
 
                         const newResp = {
                             total: resp.meta.total,
-                            data: resp.data
+                            data: resp.data,
                         };
 
                         return CollectionActions.fetchCollectionStatusSuccess({
-                            payload: newResp
+                            payload: newResp,
                         });
                     }),
-                    catchError(err =>
+                    catchError((err) =>
                         of(
                             CollectionActions.fetchCollectionStatusFailure({
-                                payload: { id: 'fetchCollectionStatusFailure', errors: err }
+                                payload: { id: 'fetchCollectionStatusFailure', errors: err },
                             })
                         )
                     )
@@ -103,34 +103,35 @@ export class PaymentEffects {
      * [REQUEST - FAILURE] Collection List Statuses
      * @memberof CollectionEffects
      */
-     fetchCollectionStatusFailure$ = createEffect(
+    fetchCollectionStatusFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(CollectionActions.fetchCollectionStatusFailure),
-                map(action => action.payload),
-                tap(resp => {
-                    const message = resp.errors.error && resp.errors.error.message
-                                    ? resp.errors.error.message
-                                    : resp.errors.message;
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message =
+                        resp.errors.error && resp.errors.error.message
+                            ? resp.errors.error.message
+                            : resp.errors.message;
 
                     this._$log.generateGroup(
                         '[REQUEST FETCH COLLECTION LIST STATUS FAILURE]',
                         {
                             response: {
                                 type: 'log',
-                                value: resp
+                                value: resp,
                             },
                             message: {
                                 type: 'log',
-                                value: message
-                            }
+                                value: message,
+                            },
                         },
                         'groupCollapsed'
                     );
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -142,96 +143,94 @@ export class PaymentEffects {
      * [REQUEST] Billing List Statuses
      * @memberof CollectionEffects
      */
-     fetchBillingListStatusesRequest$ = createEffect(() =>
-     this.actions$.pipe(
-         ofType(CollectionActions.fetchBillingStatusRequest),
-         map(action => action.payload),
-         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-         switchMap(([payload, { supplierId }]) => {
-             if (!supplierId) {
-                 return of(
-                     CollectionActions.fetchBillingStatusFailure({
-                         payload: { id: 'fetchBillingStatusFailure', errors: 'Not Found!' }
-                     })
-                 );
-             }
+    fetchBillingListStatusesRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CollectionActions.fetchBillingStatusRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        CollectionActions.fetchBillingStatusFailure({
+                            payload: { id: 'fetchBillingStatusFailure', errors: 'Not Found!' },
+                        })
+                    );
+                }
 
-             return this._$collectionStatusApi.findAllBilling(payload, supplierId).pipe(
-                 catchOffline(),
-                 map(resp => {
-                     this._$log.generateGroup(
-                         'RESPONSE REQUEST FETCH BILLING LIST STATUSES',
-                         {
-                             payload: {
-                                 type: 'log',
-                                 value: payload
-                             },
-                             response: {
-                                 type: 'log',
-                                 value: resp
-                             }
-                         },
-                     );
+                return this._$collectionStatusApi.findAllBilling(payload, supplierId).pipe(
+                    catchOffline(),
+                    map((resp) => {
+                        this._$log.generateGroup('RESPONSE REQUEST FETCH BILLING LIST STATUSES', {
+                            payload: {
+                                type: 'log',
+                                value: payload,
+                            },
+                            response: {
+                                type: 'log',
+                                value: resp,
+                            },
+                        });
 
-                     const newResp = {
-                         total: resp.meta.total,
-                         data: resp.data
-                     };
+                        const newResp = {
+                            total: resp.meta.total,
+                            data: resp.data,
+                        };
 
-                     return CollectionActions.fetchBillingStatusSuccess({
-                         payload: newResp
-                     });
-                 }),
-                 catchError(err =>
-                     of(
-                         CollectionActions.fetchBillingStatusFailure({
-                             payload: { id: 'fetchBillingStatusFailure', errors: err }
-                         })
-                     )
-                 )
-             );
-         })
-     )
- );
+                        return CollectionActions.fetchBillingStatusSuccess({
+                            payload: newResp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            CollectionActions.fetchBillingStatusFailure({
+                                payload: { id: 'fetchBillingStatusFailure', errors: err },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
 
- /**
-  *
-  * [REQUEST - FAILURE] Billing List Statuses
-  * @memberof CollectionEffects
-  */
-  fetchBillingStatusFailure$ = createEffect(
-     () =>
-         this.actions$.pipe(
-             ofType(CollectionActions.fetchBillingStatusFailure),
-             map(action => action.payload),
-             tap(resp => {
-                 const message = resp.errors.error && resp.errors.error.message
-                                 ? resp.errors.error.message
-                                 : resp.errors.message;
+    /**
+     *
+     * [REQUEST - FAILURE] Billing List Statuses
+     * @memberof CollectionEffects
+     */
+    fetchBillingStatusFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CollectionActions.fetchBillingStatusFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message =
+                        resp.errors.error && resp.errors.error.message
+                            ? resp.errors.error.message
+                            : resp.errors.message;
 
-                 this._$log.generateGroup(
-                     '[REQUEST FETCH BILLING LIST STATUS FAILURE]',
-                     {
-                         response: {
-                             type: 'log',
-                             value: resp
-                         },
-                         message: {
-                             type: 'log',
-                             value: message
-                         }
-                     },
-                     'groupCollapsed'
-                 );
+                    this._$log.generateGroup(
+                        '[REQUEST FETCH BILLING LIST STATUS FAILURE]',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp,
+                            },
+                            message: {
+                                type: 'log',
+                                value: message,
+                            },
+                        },
+                        'groupCollapsed'
+                    );
 
-                 this._$notice.open(message, 'error', {
-                     verticalPosition: 'bottom',
-                     horizontalPosition: 'right'
-                 });
-             })
-         ),
-     { dispatch: false }
- );
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
 
     /**
      *
@@ -247,7 +246,7 @@ export class PaymentEffects {
                     return this.storage
                         .get('user')
                         .toPromise()
-                        .then(user => (user ? [params, user] : [params, null]));
+                        .then((user) => (user ? [params, user] : [params, null]));
                 }
 
                 const { supplierId } = userSupplier;
@@ -260,8 +259,8 @@ export class PaymentEffects {
                         CollectionActions.fetchCalculateCollectionStatusFailure({
                             payload: {
                                 id: 'fetchCalculateCollectionStatusFailure',
-                                errors: 'Not Found!'
-                            }
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
@@ -279,29 +278,32 @@ export class PaymentEffects {
                         CollectionActions.fetchCalculateCollectionStatusFailure({
                             payload: {
                                 id: 'fetchCalculateCollectionStatusFailure',
-                                errors: 'Not Found!'
-                            }
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
 
                 return this._$collectionStatusApi
-                    .getCollectionStatusType<ICalculateCollectionStatusPayment>('payment', supplierId)
+                    .getCollectionStatusType<ICalculateCollectionStatusPayment>(
+                        'payment',
+                        supplierId
+                    )
                     .pipe(
                         catchOffline(),
                         retry(3),
-                        map(resp => {
+                        map((resp) => {
                             return CollectionActions.fetchCalculateCollectionStatusSuccess({
-                                payload: resp
+                                payload: resp,
                             });
                         }),
-                        catchError(err =>
+                        catchError((err) =>
                             of(
                                 CollectionActions.fetchCalculateCollectionStatusFailure({
                                     payload: {
                                         id: 'fetchCalculateCollectionStatusFailure',
-                                        errors: err
-                                    }
+                                        errors: err,
+                                    },
                                 })
                             )
                         )
@@ -310,7 +312,7 @@ export class PaymentEffects {
         )
     );
 
-     /**
+    /**
      *
      * [REQUEST - FAILURE] Calculate for tab type diatas
      * @memberof CollectionEffects
@@ -319,8 +321,8 @@ export class PaymentEffects {
         () =>
             this.actions$.pipe(
                 ofType(CollectionActions.fetchCalculateCollectionStatusFailure),
-                map(action => action.payload),
-                tap(resp => {
+                map((action) => action.payload),
+                tap((resp) => {
                     const message =
                         typeof resp.errors === 'string'
                             ? resp.errors
@@ -328,7 +330,74 @@ export class PaymentEffects {
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST] Detail Collection
+     * @memberof CollectionEffects
+     */
+    fetchDetailRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CollectionActions.fetchCollectionDetailRequest),
+            map((action) => action.payload),
+            switchMap((id) => {
+                return this._$collectionStatusApi.findById(id).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        return CollectionActions.fetchCollectionDetailSuccess({
+                            payload: resp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            CollectionActions.fetchCollectionDetailFailure({
+                                payload: {
+                                    id: 'fetchCollectionDetailFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchCollectionDetailFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CollectionActions.fetchCollectionDetailFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map((r) => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -343,7 +412,6 @@ export class PaymentEffects {
         private store: Store<collectionStatus.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
-        private _$collectionStatusApi: CollectionApiService,
-    ) {
-    }
+        private _$collectionStatusApi: CollectionApiService
+    ) {}
 }

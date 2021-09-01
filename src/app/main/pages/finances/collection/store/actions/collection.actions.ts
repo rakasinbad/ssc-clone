@@ -68,7 +68,7 @@ export const fetchBillingStatusSuccess = createAction(
 
 export const fetchCollectionDetailRequest = createAction(
     '[Collection API] Fetch Detail Collection Request',
-    props<{ payload: { id: string, parameter?: IQueryParams } }>()
+    props<{ payload: { id: string } }>()
 );
 
 export const fetchCollectionDetailFailure = createAction(

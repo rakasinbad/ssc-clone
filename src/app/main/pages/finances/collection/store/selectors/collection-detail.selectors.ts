@@ -1,17 +1,15 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromCollectionCore from '../reducers';
-import * as fromCollection from '../reducers/collection.reducer';
-import * as fromBilling from '../reducers/billing.reducer';
+import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
 
-
-export const getCollectionStatusCoreState = createFeatureSelector<
+export const getCollectionDetailCoreState = createFeatureSelector<
     fromCollectionCore.FeatureState,
     fromCollectionCore.State
 >(fromCollectionCore.featureKey);
 
-export const getCollectionStatusEntitiesState = createSelector(
-    getCollectionStatusCoreState,
-    (state) => state.collectionStatus
+export const getCollectionDetailEntitiesState = createSelector(
+    getCollectionDetailCoreState,
+    (state) => state.collectionDetailStatus
 );
 
 export const {
@@ -19,12 +17,12 @@ export const {
     selectEntities,
     selectIds,
     selectTotal,
-} = fromCollection.adapter.getSelectors(getCollectionStatusEntitiesState);
+} = fromCollectionDetail.adapter.getSelectors(getCollectionDetailEntitiesState);
 
-export const getTotalItem = createSelector(getCollectionStatusEntitiesState, (state) => state.total);
+export const getTotalItem = createSelector(getCollectionDetailEntitiesState, (state) => state.total);
 
 export const getSelectedId = createSelector(
-    getCollectionStatusEntitiesState,
+    getCollectionDetailEntitiesState,
     (state) => state.selectedId
 );
 
@@ -35,6 +33,6 @@ export const getSelectedItem = createSelector(
 );
 
 export const getLoadingState = createSelector(
-    getCollectionStatusEntitiesState,
+    getCollectionDetailEntitiesState,
     (state) => state.isLoading
 );
