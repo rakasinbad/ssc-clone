@@ -25,7 +25,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
   labelInfo: string = '';
   isHidden: boolean = false;
   allPayment: number = 2;
-  waitingApproval: number = 1;
+  waiting: number = 1;
   approvedCollection: number = 1;
   rejectedCollection: number = 1;
   selectedValue: string;

@@ -247,7 +247,7 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
     openDetailCollectionStatus(data) {
         // localStorage.setItem('detail collection', data);
 
-        console.log('detail collection', data);
+        // console.log('detail collection', data);
     }
 
     getOrderCode(value): string {

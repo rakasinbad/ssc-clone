@@ -10,8 +10,8 @@
         >
             <mat-tab aria-label="all" [label]="'All (' + allPayment + ')'"></mat-tab>
             <mat-tab
-                aria-label="waitingForApproval"
-                [label]="'Waiting for Approval (' + waitingApproval + ')'"
+                aria-label="waiting"
+                [label]="'Waiting (' + waiting + ')'"
             ></mat-tab>
             <mat-tab
                 aria-label="approved"
@@ -49,13 +49,6 @@
                     </div>
                 </div>
                 
-
-                <!-- <div style="height: 35px; margin-bottom: 30px;"> -->
-                <!-- <form class="input" style="height: 35px;"> -->
-
-                <!-- </form> -->
-                <!-- </div> -->
-                <!-- </div> -->
             </div>
 
             <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>

@@ -13,15 +13,15 @@ import {
     ChangeDetectorRef,
     SecurityContext,
 } from '@angular/core';
-import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
-import { Observable, Subject, merge } from 'rxjs';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { DomSanitizer } from '@angular/platform-browser';
-import { takeUntil, flatMap, filter } from 'rxjs/operators';
-import { environment } from 'environments/environment';
-import { ActivatedRoute } from '@angular/router';
+// import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+// import { Observable, Subject, merge } from 'rxjs';
+// import { NgxPermissionsService } from 'ngx-permissions';
+// import { IQueryParams } from 'app/shared/models/query.model';
+// import { DomSanitizer } from '@angular/platform-browser';
+// import { takeUntil, flatMap, filter } from 'rxjs/operators';
+// import { environment } from 'environments/environment';
+// import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-detail-collection-table',
