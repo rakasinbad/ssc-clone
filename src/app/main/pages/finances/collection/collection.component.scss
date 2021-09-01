@@ -1,6 +1,9 @@
 @import 'src/@fuse/scss/fuse';
 
-.search {
+.search-search {
+    .mat-form-field-infix {
+        height: 0;
+    }
     // .button-menu {
     //     height: 35px;
     //     width: 100%;

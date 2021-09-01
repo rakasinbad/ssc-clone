@@ -9,10 +9,7 @@
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <mat-tab aria-label="all" [label]="'All (' + allPayment + ')'"></mat-tab>
-            <mat-tab
-                aria-label="waiting"
-                [label]="'Waiting (' + waiting + ')'"
-            ></mat-tab>
+            <mat-tab aria-label="waiting" [label]="'Waiting (' + waiting + ')'"></mat-tab>
             <mat-tab
                 aria-label="approved"
                 [label]="'Approved (' + approvedCollection + ')'"
@@ -31,24 +28,51 @@
                 </div>
                 <!-- <div style="display: flex; margin-top: 30px; margin-bottom: 30px;"> -->
                 <div>
-                    <div fxLayout="row" fxLayoutAlign="start stretch" style="height: 25px; margin-top: 30px; margin-bottom: 30px">
+                    <div
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        style="height: 25px; margin-top: 30px; margin-bottom: 30px"
+                    >
                         <form fxFlex>
-                            <mat-form-field appearance="outline" style="padding-right: 10px">
-                                <mat-select placeholder="Search By" style="height: 30px;">
+                            <mat-form-field
+                                appearance="outline"
+                                style="padding-right: 10px; min-height: 31px"
+                            >
+                                <mat-select
+                                    placeholder="Search By"
+                                    style="
+                                        min-height: 20px;
+                                        margin-top: -13px;
+                                        margin-bottom: -10px;
+                                    "
+                                >
                                     <mat-option *ngFor="let row of searchByList" [value]="row.id">
                                         {{ row.label }}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
-    
-                            <mat-form-field appearance="outline" fxFlex="70" style="margin-right: 17px;">
-                                <input type="text" matInput placeholder="Search" style="height: 30px;" />
-                                <mat-icon matSuffix>search</mat-icon>
+
+                            <mat-form-field
+                                class="input-search"
+                                appearance="outline"
+                                fxFlex="70"
+                                style="padding-right: 17px; min-height: 31px"
+                            >
+                                <input
+                                    type="text"
+                                    matInput
+                                    placeholder="Search"
+                                    style="position: fixed; margin-top: -13px"
+                                />
+                                <mat-icon
+                                    matSuffix
+                                    style="position: fixed; margin: -36px -36px -36px -20px"
+                                    >search</mat-icon
+                                >
                             </mat-form-field>
                         </form>
                     </div>
                 </div>
-                
             </div>
 
             <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>
