@@ -124,6 +124,13 @@ export const navigation: IFuseNavigation[] = [
                 privilages: 'FINANCE.PS.READ',
                 url: '/pages/finances/payment-status',
             },
+            {
+                id: 'collection',
+                title: 'Collection',
+                type: 'item',
+                privilages: 'FINANCE.PS.READ',
+                url: '/pages/finances/collection',
+            },
         ],
     },
     {

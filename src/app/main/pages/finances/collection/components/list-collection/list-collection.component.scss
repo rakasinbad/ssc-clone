@@ -1,0 +1,227 @@
+@import 'src/@fuse/scss/fuse';
+
+app-list-collection {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    overflow: auto !important;
+
+    .collection-list-table, .billing-list-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        min-height: 40px;
+        max-height: 350px;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+            max-height: 350px;
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .sinbad-collection-list-item, .sinbad-billing-list-item {
+            position: relative;
+            // cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+        }
+
+        .mat-column-id {
+            flex: 0 1 84px;
+        }
+
+        .mat-column-image {
+            flex: 0 1 84px;
+
+            .product-image {
+                width: 52px;
+                height: 52px;
+                border: 1px solid rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        .mat-column-finance-collection-code {
+            flex: 0 1 180px;
+            min-width: 180px;
+
+        }
+
+        .mat-column-finance-collection-method {
+            flex: 0 1 110px;
+            min-width: 110px;
+
+        }
+
+        .mat-column-finance-collection-ref {
+            flex: 0 0 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-collection-amount {
+            flex: 0 1 180px;
+            min-width: 180px;
+
+        }
+
+        .mat-column-finance-collection-date {
+            // flex: 0 1 240px;
+            flex: 0 1 110px;
+            min-width: 110px;
+
+        }
+
+        .mat-column-finance-collection-due-date {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-finance-collection-status {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-sales-rep {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-finance-external-id {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-store-name {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-order-code {
+            flex: 0 1 200px;
+            min-width: 200px;
+        }
+
+        .mat-column-finance-order-ref {
+            flex: 0 1 200px;
+            min-width: 200px;
+        }
+
+        .mat-column-finance-reason {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-total-amount {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+        
+        .mat-column-finance-order-due-date {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-payment-status {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+        
+        .mat-column-finance-collect-code {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-billing-code {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-materai {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-bill-amount {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-finance-total-bill-amount {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-finance-bill-date {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-bill-status {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 7em;
+            justify-content: center;
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
+    }
+}
+
+mat-menu-panel {
+    min-height: 52px;
+}

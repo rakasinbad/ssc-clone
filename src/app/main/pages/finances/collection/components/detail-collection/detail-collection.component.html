@@ -1,0 +1,65 @@
+<div id="collection-detail" class="page-layout carded fullwidth tabbed inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16" (click)="onClickBack()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        <!-- {{ (collectionStatus$ | async)?.name }} -->
+                        1234567890
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD Detail-->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <div class="tab-content p-16">
+                    <app-detail-collection-info [detailData]="detailCollection"></app-detail-collection-info>
+                </div>
+                <div class="tab-content p-16">
+                    <app-detail-collection-sales [detailData]="detailCollection"></app-detail-collection-sales>
+                </div>
+            </div>
+            <br />
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD Detail-->
+
+        <br />
+
+        <!-- CONTENT CARD Table -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                    <div class="tab-content p-16">
+                        <app-detail-collection-table [detailData]="detailCollection"></app-detail-collection-table>
+                    </div>
+                
+            </div>
+            <!-- / CONTENT -->
+        </div>
+
+        <br />
+        <!-- / CONTENT CARD Table-->
+    </div>
+    <!-- / CENTER -->
+</div>

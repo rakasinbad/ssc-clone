@@ -1,0 +1,83 @@
+<div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- CENTER -->
+    <div class="center p-8">
+        <mat-tab-group
+            color="accent"
+            style="border-radius: 4px"
+            class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+            animationDuration="0ms"
+            (selectedIndexChange)="onSelectedTab($event)"
+        >
+            <mat-tab aria-label="all" [label]="'All (' + allPayment + ')'"></mat-tab>
+            <mat-tab aria-label="waiting" [label]="'Waiting (' + waiting + ')'"></mat-tab>
+            <mat-tab
+                aria-label="approved"
+                [label]="'Approved (' + approvedCollection + ')'"
+            ></mat-tab>
+            <mat-tab
+                aria-label="rejected"
+                [label]="'Rejected (' + rejectedCollection + ')'"
+            ></mat-tab>
+        </mat-tab-group>
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <div style="display: flex; justify-content: space-between">
+                <div>
+                    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+                </div>
+                <!-- <div style="display: flex; margin-top: 30px; margin-bottom: 30px;"> -->
+                <div>
+                    <div
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        style="height: 25px; margin-top: 30px; margin-bottom: 30px"
+                    >
+                        <form fxFlex>
+                            <mat-form-field
+                                appearance="outline"
+                                style="padding-right: 10px; min-height: 31px"
+                            >
+                                <mat-select
+                                    placeholder="Search By"
+                                    style="
+                                        min-height: 20px;
+                                        margin-top: -13px;
+                                        margin-bottom: -10px;
+                                    "
+                                >
+                                    <mat-option *ngFor="let row of searchByList" [value]="row.id">
+                                        {{ row.label }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field
+                                class="input-search"
+                                appearance="outline"
+                                fxFlex="70"
+                                style="padding-right: 17px; min-height: 31px"
+                            >
+                                <input
+                                    type="text"
+                                    matInput
+                                    placeholder="Search"
+                                    style="position: fixed; margin-top: -13px"
+                                />
+                                <mat-icon
+                                    matSuffix
+                                    style="position: fixed; margin: -36px -36px -36px -20px"
+                                    >search</mat-icon
+                                >
+                            </mat-form-field>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

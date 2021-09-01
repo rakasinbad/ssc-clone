@@ -31,6 +31,7 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
 import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
+import { SearchByList } from '../models/search-by.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -626,6 +627,48 @@ export class HelperService {
         {
             id: PromoHierarchyGroup.DISTRIBUTOR,
             label: 'Distributor Promo',
+        },
+    ];
+
+    private static readonly _searchByList: {
+        id: SearchByList;
+        label: string;
+    }[] = [
+        {
+            id: SearchByList.SUPP_NAME,
+            label: 'Supplier Name',
+        },
+        {
+            id: SearchByList.STORE_EXT_ID,
+            label: 'External Id',
+        },
+        {
+            id: SearchByList.STORE_NAME,
+            label: 'Store Name',
+        },
+        {
+            id: SearchByList.ORDER_CODE,
+            label: 'Order Code',
+        },
+        {
+            id: SearchByList.ORDER_REF,
+            label: 'Order Date',
+        },
+        {
+            id: SearchByList.SALES_REP_NAME,
+            label: 'Sales Rep Name',
+        },
+        {
+            id: SearchByList.COL_CODE,
+            label: 'Collection Code',
+        },
+        {
+            id: SearchByList.BILL_PAYM_CODE,
+            label: 'Collection Billing Code',
+        },
+        {
+            id: SearchByList.REF_CODE,
+            label: 'Collection Ref No',
         },
     ];
 
@@ -1370,6 +1413,10 @@ export class HelperService {
 
     promoHierarchyGroup(): { id: PromoHierarchyGroup; label: string }[] {
         return HelperService._promoHierarchyGroup;
+    }
+
+    searchByList(): { id: SearchByList; label: string }[] {
+        return HelperService._searchByList;
     }
 
     stockType(): { id: boolean; label: string }[] {
