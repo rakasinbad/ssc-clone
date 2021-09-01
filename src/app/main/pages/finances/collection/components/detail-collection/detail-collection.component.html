@@ -19,8 +19,8 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                            <!-- {{ (collectionStatus$ | async)?.name }} -->
-                            1234567890
+                        <!-- {{ (collectionStatus$ | async)?.name }} -->
+                        1234567890
                     </div>
                 </div>
             </div>
@@ -39,6 +39,7 @@
                     <app-detail-collection-sales></app-detail-collection-sales>
                 </div>
             </div>
+            <br />
             <!-- / CONTENT -->
         </div>
         <!-- / CONTENT CARD Detail-->
@@ -48,7 +49,11 @@
         <!-- CONTENT CARD Table -->
         <div class="content-card">
             <!-- CONTENT -->
-            <div class="content">Untuk Table</div>
+            <div class="content">
+                <div class="tab-content p-16">
+                    <app-detail-collection-table></app-detail-collection-table>
+                </div>
+            </div>
             <!-- / CONTENT -->
         </div>
         <!-- / CONTENT CARD Table-->
