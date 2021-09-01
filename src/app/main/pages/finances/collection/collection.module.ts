@@ -11,12 +11,14 @@ import { CollectionRoutingModule } from './collection-routing.module';
 import { CollectionComponent } from './collection.component';
 import { DetailCollectionComponent } from './components/detail-collection/detail-collection.component';
 import { ListCollectionComponent } from './components/list-collection/list-collection.component';
+import { DetailCollectionTableComponent } from './components/detail-collection/detail-collection-table/detail-collection-table.component';
+import { DetailCollectionInfoComponent } from './components/detail-collection/detail-collection-info/detail-collection-info.component';
 
 @NgModule({
   declarations: [
     CollectionComponent, 
     DetailCollectionComponent, 
-    ListCollectionComponent],
+    ListCollectionComponent, DetailCollectionTableComponent, DetailCollectionInfoComponent],
     
   imports: [
     CommonModule,

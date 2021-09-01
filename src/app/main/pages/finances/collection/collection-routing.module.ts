@@ -10,30 +10,47 @@ import { NgxPermissionsGuard } from 'ngx-permissions';
 // Auth Guard Core Libraries.
 import { AuthGuard } from '../../core/auth/auth.guard';
 
-import {CollectionComponent} from './collection.component';
+import { CollectionComponent } from './collection.component';
+import { DetailCollectionComponent } from './components/detail-collection/detail-collection.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: CollectionComponent,
-    canActivate: [AuthGuard, NgxPermissionsGuard],
-    data: {
-        permissions: {
-            only: ['FINANCE.PS.READ'],
-            redirectTo: {
-                navigationCommands: ['/pages/errors/403'],
-                navigationExtras: {
-                    replaceUrl: true,
-                    skipLocationChange: true,
+    {
+        path: '',
+        component: CollectionComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['FINANCE.PS.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
                 },
             },
         },
     },
-},
+    {
+        path: ':id/detail',
+        component: DetailCollectionComponent,
+        data: {
+            permissions: {
+                only: ['FINANCE.PS.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
 })
-export class CollectionRoutingModule { }
+export class CollectionRoutingModule {}

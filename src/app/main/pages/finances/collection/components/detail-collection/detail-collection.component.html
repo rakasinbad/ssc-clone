@@ -1,1 +1,157 @@
-<p>detail-collection works!</p>
+<div id="collection-detail" class="page-layout carded fullwidth tabbed inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16" (click)="onClickBack()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                            <!-- {{ (promoHierarchy$ | async)?.name }} -->
+                            1234567890
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD Detail-->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <div class="p-16">
+                    <app-detail-collection-info></app-detail-collection-info>
+                </div>
+
+                <!-- <div class="content">
+                    <div>
+                        <div>
+                            <div class="pb-16">
+                                <span class="mat-headline"> Collection Details </span>
+                            </div>
+
+                            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                                <div
+                                    class="custom-field info-field"
+                                    fxLayout="row"
+                                    fxLayoutAlign="start center"
+                                    fxLayoutGap="15px"
+                                >
+                                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                                        Collection Code
+                                    </div>
+
+                                    <div class="info" fxFlex="100">
+                                        123456
+                                        
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="custom-field info-field"
+                                    fxLayout="row"
+                                    fxLayoutAlign="start center"
+                                    fxLayoutGap="15px"
+                                >
+                                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                                        Collection Status
+                                    </div>
+
+                                    <div class="info" fxFlex="100">
+                                        Approved
+                                       
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="custom-field info-field"
+                                    fxLayout="row"
+                                    fxLayoutAlign="start center"
+                                    fxLayoutGap="15px"
+                                >
+                                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                                        Collection Method
+                                    </div>
+
+                                    <div class="info" fxFlex="100">
+                                        Cheque
+                                      
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div>
+                            <div class="pb-16">
+                                <span class="mat-headline"> Sales Rep Information </span>
+                            </div>
+
+                            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                                <div
+                                    class="custom-field info-field"
+                                    fxLayout="row"
+                                    fxLayoutAlign="start center"
+                                    fxLayoutGap="15px"
+                                >
+                                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                                        Sales Rep ID
+                                    </div>
+
+                                    <div class="info" fxFlex="100">
+                                        123456
+                                       
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="custom-field info-field"
+                                    fxLayout="row"
+                                    fxLayoutAlign="start center"
+                                    fxLayoutGap="15px"
+                                >
+                                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                                        Sales Rep Name
+                                    </div>
+
+                                    <div class="info" fxFlex="100">
+                                        Anggie
+                                      
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                Untuk Detail
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD Detail-->
+
+        <br />
+
+        <!-- CONTENT CARD Table -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">Untuk Table</div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD Table-->
+    </div>
+    <!-- / CENTER -->
+</div>

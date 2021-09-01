@@ -1,0 +1,60 @@
+<div class="pb-16">
+    <span class="mat-headline"> Collection Information </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Collection Code</div>
+
+        <div class="info" fxFlex="100">
+            123456
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Collection Status</div>
+
+        <div class="info" fxFlex="100">
+            Approved
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                    {{ (promoHierarchy$ | async)?.name || '-' }}
+                </ng-container>
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">Collection Method</div>
+
+        <div class="info" fxFlex="100">
+            Cheque
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                    {{ ((promoHierarchy$ | async)?.status | titlecase) || '-' }}
+                </ng-container>
+    
+                <ngx-skeleton-loader
+                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                    *ngIf="isLoading$ | async"
+                ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+    <!-- </div> -->
+</div>
