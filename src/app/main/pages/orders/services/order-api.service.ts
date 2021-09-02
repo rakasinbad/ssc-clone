@@ -27,7 +27,7 @@ export class OrderApiService {
     private readonly _endpointPayment = '/payment/v1/order/parcel';
     private readonly _endpointPartialOrder = '/partial-order';
 
-    private readonly _listEndpoint = '/payment/v1/order/oms';
+    private readonly _listEndpoint = '/order-view/ssc';
 
     /**
      * Creates an instance of OrderApiService.
