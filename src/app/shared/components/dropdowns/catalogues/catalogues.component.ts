@@ -218,7 +218,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 // Membentuk query baru.
                 const newQuery: IQueryParams = { ... params };
 
-                if (this.typeCatalogue == 'crossSelling') {
+                if (this.typeCatalogue == 'crossSelling' && typeof this.segmentationSelectId === 'string') {
                     if (this.fakturIdSelect !== null) {
                         // Jika user tidak ada data supplier.
                         if (!userSupplier) {
@@ -235,10 +235,10 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                         newQuery['segment']= 'catalogue';
                         // Melakukan request data segment catalogue.
                         return this.entityApi$
-                        .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
-                        .pipe(
-                            tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
-                        );
+                            .findSegmentPromo<IPaginatedResponse<Entity>>(newQuery)
+                            .pipe(
+                                tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
+                            );
                     }
                     
                 } else {
