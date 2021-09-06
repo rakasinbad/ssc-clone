@@ -197,7 +197,7 @@ pipeline {
        stage('init Invalidation'){
       steps{
         // sh 'brew install jq'
-          echo ${DOMAIN_URL}
+          echo "${DOMAIN_URL}"
       }
     }//stage
        stage('run Invalidation'){
