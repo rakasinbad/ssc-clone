@@ -6,6 +6,7 @@ import {
   OnDestroy,
   ChangeDetectorRef,
   ViewEncapsulation,
+  AfterContentInit,
 } from '@angular/core';
 import Viewer from 'viewerjs';
 // import { fuseAnimations } from '@fuse/animations';
@@ -31,7 +32,7 @@ import Viewer from 'viewerjs';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DetailCollectionSalesComponent implements OnInit {
+export class DetailCollectionSalesComponent implements OnInit, AfterContentInit {
   @Input() detailData;
 
   viewer: Viewer;
