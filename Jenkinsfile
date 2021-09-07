@@ -12,6 +12,20 @@ def getBucketS3(env) {
     }
 }
 
+def getDomainURL(env) {
+    if (env == 'production') {
+        return 'seller.sinbad.web.id'
+    } else if (env == 'demo') {
+        return 'seller-demo.sinbad.web.id'
+    } else if(env == 'sandbox') {
+        return 'seller-sandbox.sinbad.web.id'
+    } else if(env == 'staging') {
+        return 'seller-stg.sinbad.web.id'
+    } else {
+        return 'seller-dev.sinbad.web.id'
+    }
+}
+
 pipeline {
     agent {
         node {
@@ -48,6 +62,7 @@ pipeline {
         BUCKET_UPLOAD = getBucketS3(SINBAD_ENV)
         WOKRSPACE = "${env.WORKSPACE}"
 		CANARY_BUCKET = "seller-canary.sinbad.web.id"
+        DOMAIN_URL = getDomainURL(SINBAD_ENV)
     }
     stages {
         stage('Checkout') {
@@ -179,6 +194,39 @@ pipeline {
                 }
             }
         }
+       stage('init Invalidation'){
+      steps{
+        // sh 'brew install jq'
+          echo "${DOMAIN_URL}"
+      }
+    }//stage
+       stage('run Invalidation'){
+      steps{
+        script{
+            cmd = "aws cloudfront list-distributions | jq '.DistributionList.Items[]|[ .Id, .Status, .Origins.Items[0].DomainName, .Aliases.Items[0] ] | @tsv ' -r"
+            def list = sh(script: cmd, returnStdout: true)
+            echo list 
+
+            writeFile file: 'cloudfront_list.txt', text: list 
+            if(params.domain){
+              // get distribution id
+              get_cmd = """grep ${DOMAIN_URL} 'cloudfront_list.txt' | awk '{print \$1}' | tr -d '\\n' """
+              DISTRIBUTION_ID = sh(script: get_cmd, returnStdout: true)
+              println "$DISTRIBUTION_ID"
+
+              // create invalidation id
+              create_cmd = """aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" | jq -r .Invalidation.Id"""
+              echo create_cmd
+              INVALIDATION_ID = sh(script: create_cmd, returnStdout: true)
+              println "$INVALIDATION_ID"
+
+              // invalidate distribution and wait for finish
+              wait_cmd = """aws cloudfront wait invalidation-completed --distribution-id ${DISTRIBUTION_ID} --id ${INVALIDATION_ID}"""
+              sh(wait_cmd)
+            }
+        }//script 
+      }//steps
+    }//stage
         stage('Automation UI Test') {
             agent {
                 docker { 
