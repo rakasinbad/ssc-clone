@@ -32,7 +32,7 @@ import Viewer from 'viewerjs';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DetailCollectionSalesComponent implements OnInit, AfterContentInit {
+export class DetailCollectionSalesComponent implements OnInit {
   @Input() detailData;
 
   viewer: Viewer;
@@ -40,18 +40,19 @@ export class DetailCollectionSalesComponent implements OnInit, AfterContentInit 
   constructor() { }
 
   ngOnInit() {
-  }
-
-  ngAfterContentInit() {
     this.initViewerImage();
   }
 
   initViewerImage = () => {
-    this.viewer = new Viewer(document.getElementById('imgCollectionPhoto'), {
-      inline: false,
-      // viewed: () => {
-      //   viewer.zoomTo(1);
-      // },
+    const fileName = this.detailData[0].paymentCollectionMethod.image;
+    const imgSrc = 'data:image/jpeg;base64,' + fileName;
+
+    const imgEl = document.createElement('img');
+    imgEl.src = imgSrc;
+    imgEl.alt = 'Collection Photo'; 
+
+    this.viewer = new Viewer(imgEl, {
+      inline: false
     });
   }
 

@@ -41,13 +41,7 @@
         <div class="info" fxFlex="100">
             <ng-container
                 *ngIf="detailData.length > 0 && detailData[0]?.paymentCollectionMethod?.image; else collPhotoNoData">
-                <a href="javascript:void(0)"
-                    (click)="onClickViewImage()">View Photo</a>
-                <div>
-                    <img style="display: none;" id="imgCollectionPhoto"
-                        src="{{ 'data:image/jpeg;base64,' + detailData[0].paymentCollectionMethod?.image }}"
-                        alt="Collection Photo" />
-                </div>
+                <a style="color: #2097F6;" href="javascript:void(0)" (click)="onClickViewImage()">View Photo</a>
             </ng-container>
             <ng-template #collPhotoNoData>
                 -
