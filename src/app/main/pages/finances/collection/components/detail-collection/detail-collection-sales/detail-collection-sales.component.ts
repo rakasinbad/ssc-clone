@@ -7,6 +7,7 @@ import {
   ChangeDetectorRef,
   ViewEncapsulation,
 } from '@angular/core';
+import Viewer from 'viewerjs';
 // import { fuseAnimations } from '@fuse/animations';
 // import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 // import { Store } from '@ngrx/store';
@@ -33,9 +34,28 @@ import {
 export class DetailCollectionSalesComponent implements OnInit {
   @Input() detailData;
 
+  viewer: Viewer;
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  ngAfterContentInit() {
+    this.initViewerImage();
+  }
+
+  initViewerImage = () => {
+    this.viewer = new Viewer(document.getElementById('imgCollectionPhoto'), {
+      inline: false,
+      // viewed: () => {
+      //   viewer.zoomTo(1);
+      // },
+    });
+  }
+
+  // View an image.
+  onClickViewImage = () => {
+    this.viewer.show();
+  }
 }

@@ -1,16 +1,10 @@
-
 <div class="pb-16">
     <span class="mat-headline"> Collection Details </span>
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Bank From
         </div>
 
@@ -19,13 +13,8 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Issue Date
         </div>
 
@@ -35,14 +24,9 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
-           Due Date
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
+            Due Date
         </div>
 
         <div class="info" fxFlex="100">
@@ -51,14 +35,29 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
-           Reason
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">Collection Photo</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container
+                *ngIf="detailData.length > 0 && detailData[0]?.paymentCollectionMethod?.image; else collPhotoNoData">
+                <a href="javascript:void(0)"
+                    (click)="onClickViewImage()">View Photo</a>
+                <div>
+                    <img style="display: none;" id="imgCollectionPhoto"
+                        src="{{ 'data:image/jpeg;base64,' + detailData[0].paymentCollectionMethod?.image }}"
+                        alt="Collection Photo" />
+                </div>
+            </ng-container>
+            <ng-template #collPhotoNoData>
+                -
+            </ng-template>
+        </div>
+    </div>
+
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
+            Reason
         </div>
 
         <div class="info" fxFlex="100">
@@ -74,13 +73,8 @@
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Sales Rep ID
         </div>
 
@@ -89,13 +83,8 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Sales Rep Name
         </div>
 
