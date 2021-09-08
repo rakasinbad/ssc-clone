@@ -217,6 +217,9 @@ export class OrderDetailComponent implements OnInit, OnDestroy, OnChanges {
 
     getEditCondition() : void {
         this.onEditValue = this.store.select(OrderSelectors.getEditCondition);
+        if (this.data.bonusCatalogues && this.data.bonusCatalogues.length === 0) {
+            this.bonusSubmitable = false;
+        }
     }
 
     safeValue(item: any): any {
