@@ -29,11 +29,12 @@ import {
 
 import { CollectionApiService } from '../../services';
 import { CollectionActions } from '../actions';
-import { ICalculateCollectionStatusPayment } from '../../models';
+import { CalculateCollectionStatusPayment } from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
 import { OrderActions } from '../../../../orders/store/actions';
+import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 
 @Injectable()
 export class CollectionEffects {
@@ -97,6 +98,37 @@ export class CollectionEffects {
             })
         )
     );
+
+    // processPromoHierarchyRequest = ([userData, params]: [
+    //     User,
+    //     IQueryParams
+    // ]): Observable<AnyAction> => {
+    //     const newParams = {
+    //         ...params,
+    //     };
+    //     const { supplierId } = userData.userSupplier;
+
+    //     if (supplierId) {
+    //         newParams['supplierId'] = supplierId;
+    //     }
+    //     return this.collectionStatusApi$.find<IPaginatedResponse<PromoHierarchy>>(newParams).pipe(
+    //         catchOffline(),
+    //         map((resp) => {
+    //             const newResp = {
+    //                 data:
+    //                     (resp && resp.data.length > 0
+    //                         ? resp.data.map((v) => new PromoHierarchy(v))
+    //                         : []) || [],
+    //                 total: resp.total,
+    //             };
+
+    //             return CollectionActions.fetchPromoHierarchySuccess({
+    //                 payload: newResp,
+    //             });
+    //         }),
+    //         catchError((err) => this.sendErrorToState(err, 'fetchCollectionStatusFailure'))
+    //     );
+    // };
 
     /**
      *
@@ -250,10 +282,13 @@ export class CollectionEffects {
                 }
 
                 const { supplierId } = userSupplier;
+                // console.log('isi params->', params)
 
                 return of([params, supplierId]);
             }),
-            switchMap(([_, data]: [any, string | Auth]) => {
+            switchMap(([params, data]: [any, string | Auth]) => {
+                console.log('isi data->', data);
+                console.log('params map->', params);
                 if (!data) {
                     return of(
                         CollectionActions.fetchCalculateCollectionStatusFailure({
@@ -273,6 +308,8 @@ export class CollectionEffects {
                     supplierId = (data as Auth).user.userSuppliers[0].supplierId;
                 }
 
+                let typeValue = params.payload.type;
+
                 if (!supplierId) {
                     return of(
                         CollectionActions.fetchCalculateCollectionStatusFailure({
@@ -285,16 +322,26 @@ export class CollectionEffects {
                 }
 
                 return this._$collectionStatusApi
-                    .getCollectionStatusType<ICalculateCollectionStatusPayment>(
-                        'payment',
+                    .getCollectionStatusType<IPaginatedResponse<CalculateCollectionStatusPayment>>(
+                        typeValue,
                         supplierId
                     )
                     .pipe(
                         catchOffline(),
-                        retry(3),
+                        retry(1),
                         map((resp) => {
+                            const newResp = {
+                                data:
+                                    (resp && resp.data.length > 0
+                                        ? resp.data.map(
+                                              (v) => new CalculateCollectionStatusPayment(v)
+                                          )
+                                        : []) || [],
+                            };
+
+                            console.log('resp effect->', resp);
                             return CollectionActions.fetchCalculateCollectionStatusSuccess({
-                                payload: resp,
+                                payload: newResp,
                             });
                         }),
                         catchError((err) =>

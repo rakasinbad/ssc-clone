@@ -20,7 +20,7 @@ export class CollectionApiService {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
     }
 
-    getCollectionStatusType<T>(type: string, supplierId?: string): Observable<T> {
+    getCollectionStatusType<T>(type: number, supplierId?: string): Observable<T> {
       const newArg =
           supplierId && type
               ? [
@@ -35,9 +35,9 @@ export class CollectionApiService {
                 ]
               : [];
 
-      const newParams = this._$helper.handleParams(this._url + '/available-collection-status', null, ...newArg);
+      const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-      return this.http.get<T>(this._url, { params: newParams });
+      return this.http.get<T>(this._url+ '/available-collection-status', { params: newParams });
   }
 
     findAllCollection(params: IQueryParams, supplierId?: string): Observable<any> {

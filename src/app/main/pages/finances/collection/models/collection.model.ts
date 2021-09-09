@@ -4,12 +4,29 @@ import { ITimestamp } from 'app/shared/models/timestamp.model';
 type PromoHierarchyStatus = 'active' | 'inactive';
 type ApprovalTypeStatus = 'approved' | 'pending' | 'reject';
 
-export interface ICalculateCollectionStatusPayment {
+interface ICalculateCollectionStatusPayment {
     readonly id: NonNullable<string>;
     status: string;
     title: string;
     detail: string;
     total: number;
+}
+
+export class CalculateCollectionStatusPayment {
+    readonly id: NonNullable<string>;
+    status: string;
+    title: string;
+    detail: string;
+    total: number;
+
+    constructor(data: ICalculateCollectionStatusPayment) {
+        const {id, status, title, detail, total } = data;
+        this.id = id || null;
+        this.status = status;
+        this.title = title;
+        this.detail = detail;
+        this.total = total;
+    }
 }
 
 interface IFinanceCollectionStatus {
