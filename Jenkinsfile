@@ -228,13 +228,12 @@ pipeline {
       }//steps
     }//stage
         stage('Automation UI Test') {
+            when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" && params.DEPLOY_PRODUCTION == "No" } }
             agent {
                 docker { 
                         image 'public.ecr.aws/f0u5l3r6/sdet-testcafe:latest'
                     }
             }
-		when { expression { params.DEPLOY_PRODUCTION == "No" && SINBAD_ENV == "production" } }
-
             steps {
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
