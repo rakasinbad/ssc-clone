@@ -50,11 +50,11 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
 
     public dataSource = [
         {
-            id: 501,
+            id: 133,
             supplierId: 'GGSTR000000203',
             supplierName: 'Tiga Raksa1',
             collectionCode: 'C00201202108000018',
-            collectionMethodName: 'Tunai',
+            collectionMethodName: 'Cek',
             referenceCode: '',
             totalAmount: 800000,
             createdAt: '2021-08-12 13:46:56',

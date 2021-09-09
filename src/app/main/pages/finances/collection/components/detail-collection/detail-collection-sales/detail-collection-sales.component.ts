@@ -1,14 +1,19 @@
 import {
-  Component,
-  Input,
-  OnInit,
-  ChangeDetectionStrategy,
-  OnDestroy,
-  ChangeDetectorRef,
-  ViewEncapsulation,
-  AfterContentInit,
+    Component,
+    Input,
+    OnInit,
+    ChangeDetectionStrategy,
+    OnDestroy,
+    ChangeDetectorRef,
+    ViewEncapsulation,
+    AfterContentInit,
 } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
 import Viewer from 'viewerjs';
+import { CollectionActions } from '../../../store/actions';
+import * as fromCollectionPhoto from '../../../store/reducers';
+import { CollectionDetailSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
 // import { fuseAnimations } from '@fuse/animations';
 // import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 // import { Store } from '@ngrx/store';
@@ -26,38 +31,57 @@ import Viewer from 'viewerjs';
 // import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-detail-collection-sales',
-  templateUrl: './detail-collection-sales.component.html',
-  styleUrls: ['./detail-collection-sales.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-detail-collection-sales',
+    templateUrl: './detail-collection-sales.component.html',
+    styleUrls: ['./detail-collection-sales.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DetailCollectionSalesComponent implements OnInit {
-  @Input() detailData;
+export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
+    @Input() detailData: any;
 
-  viewer: Viewer;
+    private collectionPhoto: string;
+    private subs: Subscription = new Subscription();
+    private collectionPhoto$: Observable<any>;
+    private viewer: Viewer;
 
-  constructor() { }
+    constructor(private store: Store<fromCollectionPhoto.FeatureState>) {}
 
-  ngOnInit() {
-    this.initViewerImage();
-  }
+    ngOnInit() {
+        this.store.dispatch(
+            CollectionActions.fetchCollectionPhotoRequest({
+                payload: { id: this.detailData[0].id },
+            })
+        );
+        this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
+        const sub = this.collectionPhoto$
+            .subscribe((value: string) => {
+                this.initViewerImage(value);
+            })
+            .unsubscribe();
+        // this.subs.add(sub);
+    }
 
-  initViewerImage = () => {
-    const fileName = this.detailData[0].paymentCollectionMethod.image;
-    const imgSrc = 'data:image/jpeg;base64,' + fileName;
+    initViewerImage = (image: string) => {
+        const imgSrc = 'data:image/jpeg;base64,' + image;
 
-    const imgEl = document.createElement('img');
-    imgEl.src = imgSrc;
-    imgEl.alt = 'Collection Photo'; 
+        const imgEl = document.createElement('img');
+        imgEl.src = imgSrc;
+        imgEl.alt = 'Collection Photo';
 
-    this.viewer = new Viewer(imgEl, {
-      inline: false
-    });
-  }
+        this.viewer = new Viewer(imgEl, {
+            inline: false,
+        });
+    };
 
-  // View an image.
-  onClickViewImage = () => {
-    this.viewer.show();
-  }
+    // View an image.
+    onClickViewImage = () => {
+        this.viewer.show();
+    };
+
+    ngOnDestroy(): void {
+        if (!this.subs.closed) {
+            // this.subs.unsubscribe();
+        }
+    }
 }

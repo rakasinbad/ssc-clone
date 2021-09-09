@@ -51,7 +51,7 @@ export class DetailCollectionComponent implements OnInit {
 
     public detailCollection = [
         {
-            id: 197,
+            id: 133,
             paymentCollectionMethod: {
                 id: 380,
                 refNo: 'tyo333',

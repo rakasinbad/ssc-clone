@@ -404,6 +404,73 @@ export class CollectionEffects {
         { dispatch: false }
     );
 
+    /**
+     *
+     * [REQUEST] Collection Photo
+     * @memberof CollectionEffects
+     */
+    fetchCollectionPhotoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CollectionActions.fetchCollectionPhotoRequest),
+            map((action) => action.payload),
+            switchMap((payload) => {
+                return this._$collectionStatusApi.findCollectionPhotoById(payload.id).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map((resp) => {
+                        return CollectionActions.fetchCollectionPhotoSuccess({
+                            payload: resp
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            CollectionActions.fetchCollectionPhotoFailure({
+                                payload: {
+                                    id: 'fetchCollectionPhotoFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchCollectionPhotoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CollectionActions.fetchCollectionPhotoFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map((r) => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
