@@ -8,16 +8,11 @@
             animationDuration="0ms"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-            <mat-tab aria-label="all" [label]="'All (' + allPayment + ')'"></mat-tab>
-            <mat-tab aria-label="waiting" [label]="'Waiting (' + waiting + ')'"></mat-tab>
-            <mat-tab
-                aria-label="approved"
-                [label]="'Approved (' + approvedCollection + ')'"
-            ></mat-tab>
-            <mat-tab
-                aria-label="rejected"
-                [label]="'Rejected (' + rejectedCollection + ')'"
-            ></mat-tab>
+        <ng-container *ngFor="let user of dataSource$ | async">
+            <mat-tab 
+            aria-label="all" [label]="(user.title || '-') + ' (' + (user.total || 0) + ')'"></mat-tab>
+        </ng-container>
+           
         </mat-tab-group>
 
         <!-- CONTENT CARD -->
@@ -45,6 +40,7 @@
                                         margin-top: -13px;
                                         margin-bottom: -10px;
                                     "
+                                    (selectionChange)="onSearchByChange($event)"
                                 >
                                     <mat-option *ngFor="let row of searchByList" [value]="row.id">
                                         {{ row.label }}
@@ -62,6 +58,7 @@
                                     type="text"
                                     matInput
                                     placeholder="Search"
+                                    (keyup)="keyUpKeyword($event)"
                                     style="position: fixed; margin-top: -13px"
                                 />
                                 <mat-icon
@@ -75,7 +72,13 @@
                 </div>
             </div>
 
-            <app-list-collection class="mx-16" [viewByPromo]="selectedViewBy"></app-list-collection>
+            <ng-container *ngIf="selectedViewBy =='cStatus'">
+                <app-list-collection class="mx-16" [approvalStatus]="approvalStatusType" [viewByType]="selectedViewBy" [searchBy]="searchByValue" [searchValue]="search"></app-list-collection>
+            </ng-container>
+
+            <ng-container *ngIf="selectedViewBy =='bStatus'">
+                <app-list-billing class="mx-16" [approvalStatus]="approvalStatusType" [viewByType]="selectedViewBy" [searchBy]="searchByValue" [searchValue]="search"></app-list-billing>
+            </ng-container>
         </div>
         <!-- / CONTENT CARD -->
     </div>

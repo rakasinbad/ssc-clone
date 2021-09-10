@@ -1,26 +1,41 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-
+import * as fromCollectionTypeCore from '../reducers';
 import * as fromCollectionType from '../reducers/collection-type.reducer';
-import { getOrderState } from '../../../../orders/store/selectors/order.selectors';
 
-export const getPaymentStatusState = createFeatureSelector<fromCollectionType.State>(
-    fromCollectionType.featureKey
+
+export const getCollectionTypeCoreState = createFeatureSelector<
+    fromCollectionTypeCore.FeatureState,
+    fromCollectionTypeCore.State
+>(fromCollectionTypeCore.featureKey);
+
+export const getCollectionTypeEntitiesState = createSelector(
+    getCollectionTypeCoreState,
+    (state) => state.collectionTypes
 );
 
-// -----------------------------------------------------------------------------------------------------
-// Calculate Collection Type
-// -----------------------------------------------------------------------------------------------------
+export const {
+    selectAll,
+    selectEntities,
+    selectIds,
+    selectTotal,
+} = fromCollectionType.adapter.getSelectors(getCollectionTypeEntitiesState);
 
-export const getCollectionType = createSelector(
-    getPaymentStatusState,
-    state => state.paymentStatuses.dataCollectionType
+export const getTotalItem = createSelector(getCollectionTypeEntitiesState, (state) => state.total);
+
+export const getSelectedId = createSelector(
+    getCollectionTypeEntitiesState,
+    (state) => state.selectedId
 );
 
-// -----------------------------------------------------------------------------------------------------
-// Helper State
-// -----------------------------------------------------------------------------------------------------
+export const getSelectedItem = createSelector(
+    selectEntities,
+    getSelectedId,
+    (entities, id) => entities[id]
+);
 
-export const getIsRefresh = createSelector(getPaymentStatusState, state => state.isRefresh);
+export const getLoadingState = createSelector(
+    getCollectionTypeEntitiesState,
+    (state) => state.isLoading
+);
 
-export const getIsLoading = createSelector(getPaymentStatusState, state => state.isLoading);
-
+export const getCalculateData = createSelector(getCollectionTypeEntitiesState, (state) => state.calculateData);

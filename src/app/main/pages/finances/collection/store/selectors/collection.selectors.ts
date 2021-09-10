@@ -1,8 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromCollectionCore from '../reducers';
 import * as fromCollection from '../reducers/collection.reducer';
-import * as fromBilling from '../reducers/billing.reducer';
-
 
 export const getCollectionStatusCoreState = createFeatureSelector<
     fromCollectionCore.FeatureState,

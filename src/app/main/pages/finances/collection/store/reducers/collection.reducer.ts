@@ -31,7 +31,6 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 export const reducer = createReducer(
     initialState,
     on(
-        CollectionActions.fetchCalculateCollectionStatusRequest,
         CollectionActions.fetchCollectionStatusRequest,
         CollectionActions.updateCollectionStatusRequest,
         (state) => ({
@@ -41,7 +40,6 @@ export const reducer = createReducer(
     ),
     on(
         CollectionActions.fetchCollectionStatusFailure,
-        CollectionActions.fetchCalculateCollectionStatusFailure,
         CollectionActions.updateCollectionStatusFailure,
         (state) => ({
             ...state,
@@ -51,9 +49,6 @@ export const reducer = createReducer(
     on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
-    // on(CollectionActions.fetchCalculateCollectionStatusSuccess, (state, { payload }) =>
-    //     adapter.addAll(payload.data, { ...state, isLoading: false})
-    // ),
     on(CollectionActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
         needRefresh: payload,

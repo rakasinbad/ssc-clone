@@ -4,14 +4,15 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { Update } from '@ngrx/entity';
 
 import { CollectionStatus, BillingStatus, FinanceCollectionPayload, 
-    FinanceBillingPayload, FinanceDetailCollection, ICalculateCollectionStatusPayment, ICollectionPhoto } from '../../models';
+    FinanceBillingPayload, FinanceDetailCollection, CalculateCollectionStatusPayment, ICollectionPhoto } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Calculate Collection Status by Payment
 // -----------------------------------------------------------------------------------------------------
 
 export const fetchCalculateCollectionStatusRequest = createAction(
-    '[Calculate Collection API] Fetch Calculate Collection Status Request'
+    '[Calculate Collection API] Fetch Calculate Collection Status Request',
+    props<{ payload: { parameter?: IQueryParams }}>()
 );
 
 export const fetchCalculateCollectionStatusFailure = createAction(
@@ -21,7 +22,7 @@ export const fetchCalculateCollectionStatusFailure = createAction(
 
 export const fetchCalculateCollectionStatusSuccess = createAction(
     '[Calculate Collection API] Fetch Calculate Collection Status Success',
-    props<{ payload: ICalculateCollectionStatusPayment }>()
+    props<{ payload: { data: CalculateCollectionStatusPayment[]}}>()
 );
 
 // -----------------------------------------------------------------------------------------------------
