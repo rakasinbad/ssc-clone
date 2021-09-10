@@ -21,7 +21,18 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { DomSanitizer } from '@angular/platform-browser';
 import { takeUntil, flatMap, filter } from 'rxjs/operators';
 import { environment } from 'environments/environment';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Store as NgRxStore } from '@ngrx/store';
+import { CollectionActions } from '../../store/actions';
+import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material';
+import { SelectionModel } from '@angular/cdk/collections';
+import { FeatureState as CollectionCoreState } from '../../store/reducers';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { HelperService } from 'app/shared/helpers';
+import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
+import { CollectionStatus } from '../../models';
+import { CollectionSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-list-collection',
@@ -31,9 +42,12 @@ import { ActivatedRoute } from '@angular/router';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ListCollectionComponent implements OnInit, AfterViewInit {
+export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -41,7 +55,16 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
-    @Input() viewByPromo: string = 'cStatus';
+    @Input() viewByType: string = 'cStatus';
+    @Input() searchValue: string = '';
+
+    search: FormControl = new FormControl();
+    selection: SelectionModel<CollectionStatus>;
+    dataSource$: Observable<Array<CollectionStatus>>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
+
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     public totalLength: number = 10;
     public size: number = 5;
@@ -229,25 +252,192 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
         'finance-reason',
     ];
 
-    constructor(private route: ActivatedRoute) {}
+    constructor(
+        private domSanitizer: DomSanitizer,
+        private matDialog: MatDialog,
+        private cdRef: ChangeDetectorRef,
+        private router: Router,
+        private ngxPermissionsService: NgxPermissionsService,
+        private CollectionStore: NgRxStore<CollectionCoreState>
+    ) {}
 
     ngOnInit() {
         // this.table.nativeElement.scrollTop = 0;
+        this.table.nativeElement.scrollTop = 0;
+        this.paginator.pageIndex = 0;
 
-        this.totalDataSource = this.dataSource.length;
-        this.size = 5;
-        this.totalDataSourceBilling = this.dataSourceBilling.length;
+        // let params = {};
+        // params['skip'] = 0;
+        // params['limit'] = 10;
+        // params['searchBy'] = '';
+        // params['keyword'] = '';
+        // params['approvalStatus'] = '';
+        // params['supplierId'] = '';
+        // this.CollectionStore.dispatch(CollectionActions.fetchCollectionStatusRequest({
+        //     payload: params
+        // }))
+        // this.CollectionStore.select(CollectionSelectors.selectAll);
 
-        // this.paginator.pageSize = this.defaultPageSize;
-        // this.paginator.pageIndex = 0;
+        // this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
+
+        // this.totalDataSource = this.dataSource.length;
+        // this.size = 5;
+        // this.totalDataSourceBilling = this.dataSourceBilling.length;
+
+        this._initTable();
+        this.paginator.pageSize = this.defaultPageSize;
+        this.selection = new SelectionModel<CollectionStatus>(true, []);
+        this._initPage();
     }
 
-    ngAfterViewInit(): void {}
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this._initPage(LifecyclePlatform.AfterViewInit);
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+        // Add '${implements OnChanges}' to the class.
+
+        if (changes['searchValue']) {
+            if (!changes['searchValue'].isFirstChange()) {
+                this.search.setValue(changes['searchValue'].currentValue);
+                setTimeout(() => this._initTable());
+            }
+        }
+
+        // if (changes['selectedStatus']) {
+        //     if (!changes['selectedStatus'].isFirstChange()) {
+        //         this.selectedStatus = changes['selectedStatus'].currentValue;
+        //         setTimeout(() => this._initTable());
+        //     }
+        // }
+
+        if (changes['viewByType']) {
+            if (!changes['viewByType'].isFirstChange()) {
+                this.viewByType = changes['viewByType'].currentValue;
+                setTimeout(() => this._initTable());
+            }
+        }
+
+        this.cdRef.detectChanges();
+    }
+
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
+    }
+
+    onChangePage(ev: PageEvent): void {
+        this.table.nativeElement.scrollIntoView();
+
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex,
+        };
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+        }
+
+        this.table.nativeElement.scrollTop = 0;
+    }
+
+    openDetailPage(row: any): void {
+        let itemPromoHierarchy = { type: row.promoType };
+        localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
+    }
+
+    isAllSelected(): boolean {
+        const numSelected = this.selection.selected.length;
+        const numRows = this.paginator.length;
+
+        HelperService.debug('IS ALL SELECTED', { numSelected, numRows });
+
+        return numSelected === numRows;
+    }
 
     openDetailCollectionStatus(data) {
         // localStorage.setItem('detail collection', data);
-
         // console.log('detail collection', data);
+    }
+
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this.table.nativeElement.scrollTop = 0;
+                        this._initTable();
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset core state Collection Action
+                this.CollectionStore.dispatch(CollectionActions.clearState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+
+                this.selection = new SelectionModel<any>(true, []);
+
+                this.dataSource$ = this.CollectionStore.select(
+                    CollectionSelectors.selectAll
+                );
+                this.totalDataSource$ = this.CollectionStore.select(
+                    CollectionSelectors.getTotalItem
+                );
+                this.isLoading$ = this.CollectionStore.select(
+                    CollectionSelectors.getLoadingState
+                );
+
+                this._initTable();
+                break;
+        }
+    }
+
+    private _initTable(): void {
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+            };
+
+            data['paginate'] = true;
+
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            data['paginate'] = true;
+            data['keyword'] = query;
+            if (data['keyword'] !== null) {
+                data['skip'] = 0;
+            }
+            data['type'] = this.viewByType;
+
+            this.CollectionStore.dispatch(
+                CollectionActions.fetchCollectionStatusRequest({
+                    payload: data,
+                })
+            );
+        }
     }
 
     getOrderCode(value): string {
@@ -274,22 +464,24 @@ export class ListCollectionComponent implements OnInit, AfterViewInit {
 
     numberFormat(num) {
         if (num) {
-            return num.toFixed(2)
-            .replace('.', ',')
-            .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+            return num
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
-        
-        return '-'
+
+        return '-';
     }
 
     numberFormatFromString(num) {
         let value = parseInt(num);
         if (num) {
-            return value.toFixed(2)
-            .replace('.', ',')
-            .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+            return value
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
-        
-        return '-'
+
+        return '-';
     }
 }

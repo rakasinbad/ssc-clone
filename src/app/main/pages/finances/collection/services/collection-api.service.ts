@@ -21,43 +21,68 @@ export class CollectionApiService {
     }
 
     getCollectionStatusType<T>(type: number, supplierId?: string): Observable<T> {
-      const newArg =
-          supplierId && type
-              ? [
-                    {
-                        key: 'supplierId',
-                        value: supplierId
-                    },
-                    {
-                        key: 'type',
-                        value: type
-                    }
-                ]
-              : [];
+        const newArg =
+            supplierId && type
+                ? [
+                      {
+                          key: 'supplierId',
+                          value: supplierId,
+                      },
+                      {
+                          key: 'type',
+                          value: type,
+                      },
+                  ]
+                : [];
 
-      const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-      return this.http.get<T>(this._url+ '/available-collection-status', { params: newParams });
-  }
+        return this.http.get<T>(this._url + '/available-collection-status', { params: newParams });
+    }
 
-    findAllCollection(params: IQueryParams, supplierId?: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/web/payment-methods');
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId,
-                  },
-              ]
-            : [];
+    findAllCollection<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/web/payment-methods'
+        );
+        console.log('masuk sini iqueryparams->', params);
+        const newArg = [];
 
-            // approvalStatus=approved
-            // searchBy=supplierName&keyword=Tigaraksa
-            // searchBy=supplierName&keyword=Tigaraksa&approvalStatus=approved
+        if (!supplierId && !supplierId) {
+            throw new Error('ERR_COLLECTION_REQUIRED_SUPPLIERID');
+        }
 
-        const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
+        if (supplierId && !supplierId) {
+            newArg.push({ key: 'supplierId', value: supplierId });
+        }
 
-        return this.http.get(this._url, { params: newParams });
+        if (params['keyword']) {
+            newArg.push({ key: 'keyword', value: params['payload']['keyword'] });
+        }
+
+        if (params['skip']) {
+            newArg.push({ key: 'skip', value: params['payload']['skip'] });
+        }
+
+        if (params['limit']) {
+            newArg.push({ key: 'limit', value: params['payload']['limit'] });
+        }
+
+        if (params['searchBy']) {
+            newArg.push({ key: 'searchBy', value: params['payload']['searchBy'] });
+        }
+
+        if (params['approvalStatus']) {
+            newArg.push({ key: 'approvalStatus', value: params['payload']['approvalStatus'] });
+        }
+
+        // approvalStatus=approved
+        // searchBy=supplierName&keyword=Tigaraksa
+        // searchBy=supplierName&keyword=Tigaraksa&approvalStatus=approved
+
+        console.log('newArg->', newArg)
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+
+        return this.http.get<T>(this._url, { params: newParams });
     }
 
     findAllBilling(params: IQueryParams, supplierId?: string): Observable<any> {
@@ -85,9 +110,11 @@ export class CollectionApiService {
     //     return this.http.get(`${this._url}/${id}`);
     // }
 
-   //get data detail
+    //get data detail
     findById(id): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/web/payment-methods');
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/web/payment-methods'
+        );
 
         return this.http.get(`${this._url}/${id}`);
     }

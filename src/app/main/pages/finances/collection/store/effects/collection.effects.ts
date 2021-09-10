@@ -29,7 +29,7 @@ import {
 
 import { CollectionApiService } from '../../services';
 import { CollectionActions } from '../actions';
-import { CalculateCollectionStatusPayment } from '../../models';
+import { CalculateCollectionStatusPayment, CollectionStatus } from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
@@ -47,42 +47,126 @@ export class CollectionEffects {
      * [REQUEST] Collection List Statuses
      * @memberof CollectionEffects
      */
-    fetchCollectionListStatusesRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(CollectionActions.fetchCollectionStatusRequest),
-            map((action) => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([payload, { supplierId }]) => {
-                if (!supplierId) {
-                    return of(
-                        CollectionActions.fetchCollectionStatusFailure({
-                            payload: { id: 'fetchCollectionStatusFailure', errors: 'Not Found!' },
-                        })
-                    );
-                }
+    //  fetchCollectionStatusRequest$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(CollectionActions.fetchCollectionStatusRequest),
+    //         map((action) => action.payload),
+    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+    //         switchMap(([payload, { supplierId }]) => {
+    //             if (!supplierId) {
+    //                 return of(
+    //                     CollectionActions.fetchCollectionStatusFailure({
+    //                         payload: { id: 'fetchCollectionStatusFailure', errors: 'Not Found!' },
+    //                     })
+    //                 );
+    //             }
+    //             console.log('isi payload')
+    //             return this._$collectionStatusApi.findAllCollection(payload, supplierId).pipe(
+    //                 catchOffline(),
+    //                 map((resp) => {
+    //                     this._$log.generateGroup(
+    //                         'RESPONSE REQUEST FETCH COLLECTION LIST STATUSES',
+    //                         {
+    //                             payload: {
+    //                                 type: 'log',
+    //                                 value: payload,
+    //                             },
+    //                             response: {
+    //                                 type: 'log',
+    //                                 value: resp,
+    //                             },
+    //                         }
+    //                     );
 
-                return this._$collectionStatusApi.findAllCollection(payload, supplierId).pipe(
+    //                     const newResp = {
+    //                         total: resp.meta.total,
+    //                         data: resp.data,
+    //                     };
+
+    //                     return CollectionActions.fetchCollectionStatusSuccess({
+    //                         payload: newResp,
+    //                     });
+    //                 }),
+    //                 catchError((err) =>
+    //                     of(
+    //                         CollectionActions.fetchCollectionStatusFailure({
+    //                             payload: { id: 'fetchCollectionStatusFailure', errors: err },
+    //                         })
+    //                     )
+    //                 )
+    //             );
+    //         })
+    //     )
+    // );
+
+    fetchCollectionStatusRequest$ = createEffect(() =>
+    this.actions$.pipe(
+        ofType(CollectionActions.fetchCollectionStatusRequest),
+        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+        exhaustMap(([params, userSupplier]) => {
+            if (!userSupplier) {
+                return this.storage
+                    .get('user')
+                    .toPromise()
+                    .then((user) => (user ? [params, user] : [params, null]));
+            }
+
+            const { supplierId } = userSupplier;
+            return of([params, supplierId]);
+        }),
+        switchMap(([params, data]: [any, string | Auth]) => {
+            console.log('isi data col status->', data);
+            console.log('params map status->', params);
+            if (!data) {
+                return of(
+                    CollectionActions.fetchCollectionStatusFailure({
+                        payload: {
+                            id: 'fetchCollectionStatusFailure',
+                            errors: 'Not Found!',
+                        },
+                    })
+                );
+            }
+
+            let supplierId;
+
+            if (typeof data === 'string') {
+                supplierId = data;
+            } else {
+                supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+            }
+
+            if (!supplierId) {
+                return of(
+                    CollectionActions.fetchCollectionStatusFailure({
+                        payload: {
+                            id: 'fetchCollectionStatusFailure',
+                            errors: 'Not Found!',
+                        },
+                    })
+                );
+            }
+
+            return this._$collectionStatusApi
+                .findAllCollection<IPaginatedResponse<CollectionStatus>>(
+                    params,
+                    supplierId
+                )
+                .pipe(
                     catchOffline(),
+                    retry(3),
                     map((resp) => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST FETCH COLLECTION LIST STATUSES',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: payload,
-                                },
-                                response: {
-                                    type: 'log',
-                                    value: resp,
-                                },
-                            }
-                        );
-
                         const newResp = {
-                            total: resp.meta.total,
-                            data: resp.data,
+                            data:
+                                (resp && resp.data.length > 0
+                                    ? resp.data.map(
+                                          (v) => new CollectionStatus(v)
+                                      )
+                                    : []) || [],
+                            total: resp.total
                         };
 
+                        console.log('resp effect->', resp);
                         return CollectionActions.fetchCollectionStatusSuccess({
                             payload: newResp,
                         });
@@ -90,45 +174,17 @@ export class CollectionEffects {
                     catchError((err) =>
                         of(
                             CollectionActions.fetchCollectionStatusFailure({
-                                payload: { id: 'fetchCollectionStatusFailure', errors: err },
+                                payload: {
+                                    id: 'fetchCollectionStatusFailure',
+                                    errors: err,
+                                },
                             })
                         )
                     )
                 );
-            })
-        )
-    );
-
-    // processPromoHierarchyRequest = ([userData, params]: [
-    //     User,
-    //     IQueryParams
-    // ]): Observable<AnyAction> => {
-    //     const newParams = {
-    //         ...params,
-    //     };
-    //     const { supplierId } = userData.userSupplier;
-
-    //     if (supplierId) {
-    //         newParams['supplierId'] = supplierId;
-    //     }
-    //     return this.collectionStatusApi$.find<IPaginatedResponse<PromoHierarchy>>(newParams).pipe(
-    //         catchOffline(),
-    //         map((resp) => {
-    //             const newResp = {
-    //                 data:
-    //                     (resp && resp.data.length > 0
-    //                         ? resp.data.map((v) => new PromoHierarchy(v))
-    //                         : []) || [],
-    //                 total: resp.total,
-    //             };
-
-    //             return CollectionActions.fetchPromoHierarchySuccess({
-    //                 payload: newResp,
-    //             });
-    //         }),
-    //         catchError((err) => this.sendErrorToState(err, 'fetchCollectionStatusFailure'))
-    //     );
-    // };
+        })
+    )
+);
 
     /**
      *
@@ -328,7 +384,6 @@ export class CollectionEffects {
                     )
                     .pipe(
                         catchOffline(),
-                        retry(1),
                         map((resp) => {
                             const newResp = {
                                 data:

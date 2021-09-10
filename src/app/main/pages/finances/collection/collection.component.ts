@@ -15,7 +15,7 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { CollectionSelectors, CollectionType } from './store/selectors';
 import { combineLatest, merge, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, map } from 'rxjs/operators';
-import { CalculateCollectionStatusPayment } from './models';
+import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
 
 @Component({
     selector: 'app-collection',
@@ -139,19 +139,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
                 payload: parameter,
             })
         );
+        
+        this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
+
         this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
 
-        this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
-        this.dataSource$.pipe(takeUntil(this._unSubs$)).subscribe((value) => {
-            console.log('isi value->', value);
-            // this.form.get('supplierId').patchValue(supplierId);
-        });
-
-        console.log('this.datasource->', this.dataSource$);
-
-        // this.subs = this.dataSource$.subscribe(res => {
-        //     console.log('isi res->', res)
-        // })
         this.cdRef.detectChanges();
     }
 
