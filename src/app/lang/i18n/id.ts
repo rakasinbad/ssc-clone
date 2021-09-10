@@ -80,6 +80,7 @@ export const globalIdLang = {
         ALPHA_NUM_PATTERN: '{{ fieldName }} field may only contain letters and numbers.',
         BETWEEN_GT_NUMBER: '{{ fieldName }} field must be > {{ minValue }} and <= {{ maxValue }}.',
         BETWEEN_LT_NUMBER: '{{ fieldName }} field must be >= {{ minValue }} and < {{ maxValue }}.',
+        BETWEEN_LTE_NUMBER: '{{ fieldName }} field must be >= {{ minValue }} and <= {{ maxValue }}.',
         BETWEEN_NUMBER: '{{ fieldName }} field must be between {{ minValue }} and {{ maxValue }}.',
         CONFIRM: '{{ fieldName }} field does not match the {{ fieldNameCompare }} field.',
         CONFIRM_UNKNOWN: '{{ fieldName }} field does not match the other fields.',

@@ -1637,6 +1637,47 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
             if (benefitTypeCtrl.value === BenefitType.QTY) {
                 limitNumber = +prevConditionValue.value + 1;
 
+                // conditionValueCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.digit({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                //     }),
+                //     RxwebValidators.minNumber({
+                //         value: limitNumber,
+                //         message: this._$errorMessage.getErrorMessageNonState(
+                //             'default',
+                //             'gt_number',
+                //             {
+                //                 minValue: +prevConditionValue.value,
+                //             }
+                //         ),
+                //     }),
+                    
+                // ]);
+            }
+            // else {
+                // conditionValueCtrl.setValidators([
+                //     RxwebValidators.required({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                //     }),
+                //     RxwebValidators.digit({
+                //         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                //     }),
+                //     RxwebValidators.minNumber({
+                //         value: limitNumber,
+                //         message: this._$errorMessage.getErrorMessageNonState(
+                //             'default',
+                //             'gt_number',
+                //             {
+                //                 maxValue: +prevConditionValue.value,
+                //             }
+                //         ),
+                //     }),
+                // ]);
+            // }
+
                 conditionValueCtrl.setValidators([
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -1656,26 +1697,6 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     }),
                     
                 ]);
-            } else {
-                conditionValueCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
-                    }),
-                    RxwebValidators.maxNumber({
-                        value: limitNumber,
-                        message: this._$errorMessage.getErrorMessageNonState(
-                            'default',
-                            'lt_number',
-                            {
-                                maxValue: +prevConditionValue.value,
-                            }
-                        ),
-                    }),
-                ]);
-            }
         } else {
             conditionValueCtrl.clearValidators();
         }
@@ -3780,15 +3801,15 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     maxLimit = conditionValueVal;
                 }
 
-                if (discountVal < minLimit || discountVal >= maxLimit) {
+                if (discountVal < maxLimit || discountVal > 100) {
                     return {
                         range: {
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
-                                'range_lt_number',
+                                'range_lte_number',
                                 {
-                                    minValue: 0,
-                                    maxValue: maxLimit,
+                                    minValue: maxLimit,
+                                    maxValue: 100,
                                 }
                             ),
                         },
@@ -3908,22 +3929,22 @@ export class FlexiComboFormComponent implements OnInit, AfterViewInit, OnDestroy
                     limitNumber = conditionValueVal;
                 }
 
-                if (rebateVal >= limitNumber) {
-                    return {
-                        lte: {
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'lt_number',
-                                {
-                                    maxValue: limitNumber,
-                                }
-                            ),
-                        },
-                        maxVal: limitNumber,
-                    };
-                }
+                // if (rebateVal <= limitNumber) {
+                //     return {
+                //         lte: {
+                //             message: this._$errorMessage.getErrorMessageNonState(
+                //                 'default',
+                //                 'gt_number',
+                //                 {
+                //                     minValue: limitNumber,
+                //                 }
+                //             ),
+                //         },
+                //         maxVal: limitNumber,
+                //     };
+                // }
 
-                return null;
+                // return null;
             }
 
             if (rebateVal <= limitNumber) {
