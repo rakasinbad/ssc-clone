@@ -38,8 +38,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
     searchByList = this._$helperService.searchByList();
     selectedTab: string;
     subs: Subscription;
-    searchByValue: string;
-
+    searchByValue: string = 'supplierName';
+    approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
 
@@ -117,7 +117,13 @@ export class CollectionComponent implements OnInit, OnDestroy {
         console.log('isi event->', event.value);
     }
 
+    keyUpKeyword(event: any) {
+        this.search = event.target.value;
+        console.log('isi keyword keyup->', event.target.value)
+    }
+
     onSelectedTab(index): void {
+        this.approvalStatusType = index;
         console.log(index);
     }
 

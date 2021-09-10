@@ -95,14 +95,16 @@ export class CollectionEffects {
                     );
                 }
 
-                const newParams = {
-                    // ...params,
-                };
+                console.log('isi params collection->', params)
+
+                const newParams = {};
 
                 if (supplierId) {
                     newParams['supplierId'] = supplierId;
                     newParams['limit'] = params.payload.limit;
                     newParams['skip'] = params.payload.skip;
+                    newParams['approvalStatus'] = params.payload.approvalStatus;
+                    newParams['searchBy'] = params.payload.searchBy;
                     newParams['keyword'] = params.payload.keyword;
                 }
 
@@ -233,14 +235,14 @@ export class CollectionEffects {
                     );
                 }
 
-                const newParams = {
-                    // ...params,
-                };
+                const newParams = {};
 
                 if (supplierId) {
                     newParams['supplierId'] = supplierId;
                     newParams['limit'] = params.payload.limit;
                     newParams['skip'] = params.payload.skip;
+                    newParams['approvalStatus'] = params.payload.approvalStatus;
+                    newParams['searchBy'] = params.payload.searchBy;
                     newParams['keyword'] = params.payload.keyword;
                 }
 

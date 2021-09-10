@@ -41,7 +41,9 @@ export class CollectionApiService {
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<T>(this._urlCalculate + '/available-collection-status', { params: newParams });
+        return this.http.get<T>(this._urlCalculate + '/available-collection-status', {
+            params: newParams,
+        });
     }
 
     findAllCollection<T>(params: IQueryParams, supplierId?: string): Observable<T> {
@@ -59,10 +61,6 @@ export class CollectionApiService {
             newArg.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
-        if (params['keyword']) {
-            newArg.push({ key: 'keyword', value: params['keyword'] });
-        }
-
         if (params['skip'] > 0) {
             newArg.push({ key: 'skip', value: params.skip });
         }
@@ -75,17 +73,17 @@ export class CollectionApiService {
             newArg.push({ key: 'limit', value: params.limit });
         }
 
-        if (params['searchBy']) {
+        if (params['keyword'] !== '') {
+            newArg.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if (params['searchBy'] && params['keyword'] !== '') {
             newArg.push({ key: 'searchBy', value: params['searchBy'] });
         }
 
-        if (params['approvalStatus']) {
+        if (params['approvalStatus'] !== 'all') {
             newArg.push({ key: 'approvalStatus', value: params['approvalStatus'] });
         }
-
-        // approvalStatus=approved
-        // searchBy=supplierName&keyword=Tigaraksa
-        // searchBy=supplierName&keyword=Tigaraksa&approvalStatus=approved
 
         const newParams = this._$helper.handleParams(this._urlCollectionStatus, params, ...newArg);
         delete newParams['paginate'];
@@ -100,15 +98,11 @@ export class CollectionApiService {
         const newArg = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {
-            throw new Error('ERR_COLLECTION_REQUIRED_SUPPLIERID');
+            throw new Error('ERR_BILLING_REQUIRED_SUPPLIERID');
         }
 
         if (params['supplierId'] && !params['noSupplierId']) {
             newArg.push({ key: 'supplierId', value: params['supplierId'] });
-        }
-
-        if (params['keyword']) {
-            newArg.push({ key: 'keyword', value: params['keyword'] });
         }
 
         if (params['skip'] > 0) {
@@ -123,11 +117,15 @@ export class CollectionApiService {
             newArg.push({ key: 'limit', value: params.limit });
         }
 
-        if (params['searchBy']) {
+        if (params['keyword'] !== '') {
+            newArg.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if (params['searchBy'] && params['keyword'] !== '') {
             newArg.push({ key: 'searchBy', value: params['searchBy'] });
         }
 
-        if (params['approvalStatus']) {
+        if (params['approvalStatus'] !== 'all') {
             newArg.push({ key: 'approvalStatus', value: params['approvalStatus'] });
         }
 

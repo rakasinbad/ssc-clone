@@ -65,23 +65,27 @@ interface stampModels {
 
 interface financeCollectionMethod {
     id: number;
-    collectionCode: string;
-    collectionRef: string;
     amount: number;
-    balance: number;
     approvalStatus: string;
+    balance: number;
+    collectionCode: string;
     createdAt: string;
+    paymentCollectionTypeName: string;
+    refNo: string;
     user: userModels;
+    store: storeModels;
+    supplier: supplierBilling;
+    supplierStore: supplierStoreBilling;
+    stampNominal: number;
 }
 
 interface orderParcelModels {
     id: number;
+    deliveredParcelFinalPriceBuyer: number;
+    dueDate: string;
     orderCode: string;
-    orderDueDate: string;
-    paymentStatus: string;
     orderRef: string;
-    deliveredParcelFinalPriceBuyer: string;
-    order: orderModels;
+    statusPayment: string;
 }
 
 interface orderModels {
@@ -97,22 +101,19 @@ interface storeModels {
 interface billingModels {
     id: number;
     orderParcel: orderParcelModels;
-    status: string;
 }
 
 interface IFinanceBillingStatus {
-    id: string;
-    stampNominal: number;
-    reason: string;
-    paidByCollectionMethod: number;
-    paidAmount: number;
+    id: number;
+    approvalReason: string;
+    approvalStatus: string;
+    billing: billingModels;
     billingPaymentCode: string;
     createdAt: string;
-    approvalStatus: string;
+    paidAmount: number;
+    paidByCollectionMethod: number;
     paymentCollectionMethod: financeCollectionMethod;
-    principal: principalModels;
-    stamp: stampModels;
-    billing: billingModels;
+    stampNominal: number;
 }
 
 export class CollectionStatus {
@@ -175,48 +176,42 @@ export class CollectionStatus {
 }
 
 export class BillingStatus {
-    id: string;
-    stampNominal: number;
-    reason: string;
-    paidByCollectionMethod: number;
-    paidAmount: number;
+    id: number;
+    approvalReason: string;
+    approvalStatus: string;
+    billing: billingModels;
     billingPaymentCode: string;
     createdAt: string;
-    approvalStatus: string;
+    paidAmount: number;
+    paidByCollectionMethod: number;
     paymentCollectionMethod: financeCollectionMethod;
-    principal: principalModels;
-    stamp: stampModels;
-    billing: billingModels;
+    stampNominal: number;
 
     constructor(data: IFinanceBillingStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
             stampNominal,
-            reason,
             paidByCollectionMethod,
             paidAmount,
             billingPaymentCode,
             createdAt,
             approvalStatus,
+            approvalReason,
             paymentCollectionMethod,
-            principal,
-            stamp,
             billing,
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
         this.stampNominal = stampNominal;
-        this.reason = reason;
+        this.approvalReason = approvalReason;
         this.paidByCollectionMethod = paidByCollectionMethod;
         this.paidAmount = paidAmount;
         this.billingPaymentCode = billingPaymentCode;
         this.createdAt = createdAt;
         this.approvalStatus = approvalStatus;
         this.paymentCollectionMethod = paymentCollectionMethod;
-        this.principal = principal;
-        this.stamp = stamp;
         this.billing = billing;
     }
 }
@@ -285,6 +280,16 @@ export interface supplierResponModels {
     storeId: number;
     StoreExternalId: string;
     name: string;
+}
+
+export interface supplierBilling {
+    id: number;
+    name: string;
+}
+
+export interface supplierStoreBilling {
+    id: number;
+    externalId: number;
 }
 
 export interface billingPaymentModels {

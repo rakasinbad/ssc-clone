@@ -56,7 +56,9 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     paginator: MatPaginator;
 
     @Input() viewByType: string = 'bStatus';
+    @Input() searchBy: string = 'supplierName';
     @Input() searchValue: string = '';
+    @Input() approvalStatus: number = 0;
 
     search: FormControl = new FormControl();
     selection: SelectionModel<BillingStatus>;
@@ -65,169 +67,6 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void> = new Subject<void>();
-
-    public totalLength: number = 10;
-    public size: number = 5;
-    public totalDataSource: number;
-    public totalDataSourceBilling: number;
-
-    public dataSource = [
-        {
-            id: 501,
-            supplierId: 'GGSTR000000203',
-            supplierName: 'Tiga Raksa1',
-            collectionCode: 'C00201202108000018',
-            collectionMethodName: 'Tunai',
-            referenceCode: '',
-            totalAmount: 800000,
-            createdAt: '2021-08-12 13:46:56',
-            invalidDate: null,
-            approvalStatus: 'approved',
-            salesmanName: 'Test Owner1',
-            storeExternalId: '101001010',
-            storeName: 'Test Owner Store1',
-            orderCode: ['SNB0010100011', 'SNB0010100012', 'SNB0010100013'],
-            orderRef: ['A0010100011', 'A0010100022', 'A0010100033'],
-            reason: null,
-        },
-        {
-            id: 502,
-            supplierId: 'GGSTR000000203',
-            supplierName: 'Tiga Raksa2',
-            collectionCode: 'C00201202108000018',
-            collectionMethodName: 'Tunai',
-            referenceCode: '',
-            totalAmount: 800000,
-            createdAt: '2021-08-12 13:46:56',
-            invalidDate: null,
-            approvalStatus: 'approved',
-            salesmanName: 'Test Owner2',
-            storeExternalId: '101001010',
-            storeName: 'Test Owner Store2',
-            orderCode: ['SNB0010100011', 'SNB0010100012', 'SNB0010100013'],
-            orderRef: ['A0010100011', 'A0010100022', 'A0010100033'],
-            reason: null,
-        },
-    ];
-
-    public dataSourceBilling = [
-        {
-            id: 25,
-            stampNominal: 3000,
-            reason: 'males bayar',
-            paidByCollectionMethod: 5000000,
-            paidAmount: 50003000,
-            billingPaymentCode: 'bpdf323233',
-            createdAt: '2021-03-04 02:01:56',
-            approvalStatus: 'pending',
-            paymentCollectionMethod: {
-                id: 232,
-                collectionCode: 'csf3232',
-                collectionRef: 'csf3232',
-                amount: 50000000,
-                balance: 300000,
-                approvalStatus: 'pending',
-                createdAt: '2021-03-04 02:01:56',
-                user: {
-                    id: 1,
-                    fullName: 'ansor',
-                },
-                principal: {
-                    id: 3,
-                    externalId: '10302291',
-                },
-                stamp: {
-                    id: 2,
-                    nominal: 3000,
-                },
-            },
-            billing: {
-                id: 123,
-                status: 'waiting',
-                orderParcel: {
-                    id: 34,
-                    orderCode: 'snbd42323',
-                    orderDueDate: '2021-03-04 02:01:56',
-                    paymentStatus: 'waiting_for_payment',
-                    orderRef: 'asfasd',
-                    deliveredParcelFinalPriceBuyer: '400000',
-                    order: {
-                        id: 2,
-                        store: {
-                            id: 32,
-                            name: 'store123',
-                        },
-                    },
-                },
-            },
-        },
-        {
-            id: 26,
-            stampNominal: 3000,
-            reason: 'males bayar',
-            paidByCollectionMethod: 5000000,
-            paidAmount: 50003000,
-            billingPaymentCode: 'bpdf323233',
-            createdAt: '2021-03-04 02:01:56',
-            approvalStatus: 'pending',
-            paymentCollectionMethod: {
-                id: 232,
-                collectionCode: 'csf3232',
-                collectionRef: 'csf3232',
-                amount: 50000000,
-                balance: 300000,
-                approvalStatus: 'pending',
-                createdAt: '2021-03-04 02:01:56',
-                user: {
-                    id: 1,
-                    fullName: 'ansor',
-                },
-                principal: {
-                    id: 3,
-                    externalId: '10302291',
-                },
-                stamp: {
-                    id: 2,
-                    nominal: 3000,
-                },
-            },
-            billing: {
-                id: 123,
-                status: 'waiting',
-                orderParcel: {
-                    id: 34,
-                    orderCode: 'snbd42323',
-                    orderDueDate: '2021-03-04 02:01:56',
-                    paymentStatus: 'waiting_for_payment',
-                    orderRef: 'asfasd',
-                    deliveredParcelFinalPriceBuyer: '400000',
-                    order: {
-                        id: 2,
-                        store: {
-                            id: 32,
-                            name: 'store123',
-                        },
-                    },
-                },
-            },
-        },
-    ];
-
-    displayedColumnsCollection = [
-        'finance-collection-code',
-        'finance-collection-method',
-        'finance-collection-ref',
-        'finance-collection-amount',
-        'finance-collection-date',
-        'finance-collection-due-date',
-        'finance-collection-status',
-        'finance-sales-rep',
-        'finance-external-id',
-        'finance-store-name',
-        'finance-order-code',
-        'finance-order-ref',
-        'finance-reason',
-    ];
 
     displayedColumnsBilling = [
         'finance-external-id',
@@ -288,12 +127,19 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
             }
         }
 
-        // if (changes['selectedStatus']) {
-        //     if (!changes['selectedStatus'].isFirstChange()) {
-        //         this.selectedStatus = changes['selectedStatus'].currentValue;
-        //         setTimeout(() => this._initTable());
-        //     }
-        // }
+        if (changes['approvalStatus']) {
+            if (!changes['approvalStatus'].isFirstChange()) {
+                this.approvalStatus = changes['approvalStatus'].currentValue;
+                setTimeout(() => this._initTable());
+            }
+        }
+
+        if (changes['searchBy']) {
+            if (!changes['searchBy'].isFirstChange()) {
+                this.searchBy = changes['searchBy'].currentValue;
+                setTimeout(() => this._initTable());
+            }
+        }
 
         if (changes['viewByType']) {
             if (!changes['viewByType'].isFirstChange()) {
@@ -317,7 +163,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
         const data: IQueryParams = {
             limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex,
+            skip: this.paginator.pageIndex + 1,
         };
 
         if (this.sort.direction) {
@@ -375,9 +221,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 this.selection = new SelectionModel<any>(true, []);
 
                 this.dataSource$ = this.BillingStore.select(BillingSelectors.selectAll);
-                this.totalDataSource$ = this.BillingStore.select(
-                    BillingSelectors.getTotalItem
-                );
+                this.totalDataSource$ = this.BillingStore.select(BillingSelectors.getTotalItem);
                 this.isLoading$ = this.BillingStore.select(BillingSelectors.getLoadingState);
 
                 this._initTable();
@@ -399,13 +243,34 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 data['sortBy'] = this.sort.active;
             }
 
-            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.searchValue);
 
             data['paginate'] = true;
             data['keyword'] = query;
             if (data['keyword'] !== null) {
                 data['skip'] = 0;
             }
+
+            data['type'] = this.viewByType;
+            data['searchBy'] = this.searchBy;
+
+            switch (this.approvalStatus) {
+                case 0:
+                    data['approvalStatus'] = 'all';
+                    break;
+                case 1:
+                    data['approvalStatus'] = 'pending';
+                    break;
+                case 2:
+                    data['approvalStatus'] = 'approved';
+                    break;
+                case 3:
+                    data['approvalStatus'] = 'rejected';
+                    break;
+                default:
+                    break;
+            }
+
             data['type'] = this.viewByType;
             this.BillingStore.dispatch(
                 CollectionActions.fetchBillingStatusRequest({
@@ -458,5 +323,17 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
         }
 
         return '-';
+    }
+
+    totalAmountFormat(num) {
+        let value = parseInt(num);
+        if (num) {
+            return value
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        return '0';
     }
 }
