@@ -31,7 +31,7 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 export const reducer = createReducer(
     initialState,
     on(
-        CollectionActions.fetchCalculateCollectionStatusRequest,
+        CollectionActions.fetchCollectionDetailRequest,
         (state) => ({
             ...state,
             isLoading: true,

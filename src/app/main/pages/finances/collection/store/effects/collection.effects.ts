@@ -47,144 +47,100 @@ export class CollectionEffects {
      * [REQUEST] Collection List Statuses
      * @memberof CollectionEffects
      */
-    //  fetchCollectionStatusRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(CollectionActions.fetchCollectionStatusRequest),
-    //         map((action) => action.payload),
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         switchMap(([payload, { supplierId }]) => {
-    //             if (!supplierId) {
-    //                 return of(
-    //                     CollectionActions.fetchCollectionStatusFailure({
-    //                         payload: { id: 'fetchCollectionStatusFailure', errors: 'Not Found!' },
-    //                     })
-    //                 );
-    //             }
-    //             console.log('isi payload')
-    //             return this._$collectionStatusApi.findAllCollection(payload, supplierId).pipe(
-    //                 catchOffline(),
-    //                 map((resp) => {
-    //                     this._$log.generateGroup(
-    //                         'RESPONSE REQUEST FETCH COLLECTION LIST STATUSES',
-    //                         {
-    //                             payload: {
-    //                                 type: 'log',
-    //                                 value: payload,
-    //                             },
-    //                             response: {
-    //                                 type: 'log',
-    //                                 value: resp,
-    //                             },
-    //                         }
-    //                     );
-
-    //                     const newResp = {
-    //                         total: resp.meta.total,
-    //                         data: resp.data,
-    //                     };
-
-    //                     return CollectionActions.fetchCollectionStatusSuccess({
-    //                         payload: newResp,
-    //                     });
-    //                 }),
-    //                 catchError((err) =>
-    //                     of(
-    //                         CollectionActions.fetchCollectionStatusFailure({
-    //                             payload: { id: 'fetchCollectionStatusFailure', errors: err },
-    //                         })
-    //                     )
-    //                 )
-    //             );
-    //         })
-    //     )
-    // );
-
     fetchCollectionStatusRequest$ = createEffect(() =>
-    this.actions$.pipe(
-        ofType(CollectionActions.fetchCollectionStatusRequest),
-        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-        exhaustMap(([params, userSupplier]) => {
-            if (!userSupplier) {
-                return this.storage
-                    .get('user')
-                    .toPromise()
-                    .then((user) => (user ? [params, user] : [params, null]));
-            }
+        this.actions$.pipe(
+            ofType(CollectionActions.fetchCollectionStatusRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then((user) => (user ? [params, user] : [params, null]));
+                }
 
-            const { supplierId } = userSupplier;
-            return of([params, supplierId]);
-        }),
-        switchMap(([params, data]: [any, string | Auth]) => {
-            console.log('isi data col status->', data);
-            console.log('params map status->', params);
-            if (!data) {
-                return of(
-                    CollectionActions.fetchCollectionStatusFailure({
-                        payload: {
-                            id: 'fetchCollectionStatusFailure',
-                            errors: 'Not Found!',
-                        },
-                    })
-                );
-            }
+                const { supplierId } = userSupplier;
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [any, string | Auth]) => {
+                console.log('isi data col status->', data);
+                console.log('params map status->', params);
+                if (!data) {
+                    return of(
+                        CollectionActions.fetchCollectionStatusFailure({
+                            payload: {
+                                id: 'fetchCollectionStatusFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
 
-            let supplierId;
+                let supplierId;
 
-            if (typeof data === 'string') {
-                supplierId = data;
-            } else {
-                supplierId = (data as Auth).user.userSuppliers[0].supplierId;
-            }
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
 
-            if (!supplierId) {
-                return of(
-                    CollectionActions.fetchCollectionStatusFailure({
-                        payload: {
-                            id: 'fetchCollectionStatusFailure',
-                            errors: 'Not Found!',
-                        },
-                    })
-                );
-            }
+                if (!supplierId) {
+                    return of(
+                        CollectionActions.fetchCollectionStatusFailure({
+                            payload: {
+                                id: 'fetchCollectionStatusFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
 
-            return this._$collectionStatusApi
-                .findAllCollection<IPaginatedResponse<CollectionStatus>>(
-                    params,
-                    supplierId
-                )
-                .pipe(
-                    catchOffline(),
-                    retry(3),
-                    map((resp) => {
-                        const newResp = {
-                            data:
-                                (resp && resp.data.length > 0
-                                    ? resp.data.map(
-                                          (v) => new CollectionStatus(v)
-                                      )
-                                    : []) || [],
-                            total: resp.total
-                        };
+                const newParams = {
+                    // ...params,
+                };
+        
+                if (supplierId) {
+                    newParams['supplierId'] = supplierId;
+                    newParams['limit'] = params.payload.limit;
+                    newParams['skip'] = params.payload.skip;
+                    newParams['keyword'] = params.payload.keyword;
+                }
 
-                        console.log('resp effect->', resp);
-                        return CollectionActions.fetchCollectionStatusSuccess({
-                            payload: newResp,
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            CollectionActions.fetchCollectionStatusFailure({
-                                payload: {
-                                    id: 'fetchCollectionStatusFailure',
-                                    errors: err,
-                                },
-                            })
+                console.log('newParams->', newParams)
+                return this._$collectionStatusApi
+                    .findAllCollection<IPaginatedResponse<CollectionStatus>>(newParams, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map((resp) => {
+                            console.log('isi respon balikan status->', resp)
+                            const newResp = {
+                                data:
+                                    (resp && resp.data.length > 0
+                                        ? resp.data.map((v) => new CollectionStatus(v))
+                                        : []) || [],
+                                total: resp['meta']['total'],
+                            };
+
+                            console.log('resp effect->', resp);
+                            return CollectionActions.fetchCollectionStatusSuccess({
+                                payload: newResp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                CollectionActions.fetchCollectionStatusFailure({
+                                    payload: {
+                                        id: 'fetchCollectionStatusFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
                         )
-                    )
-                );
-        })
-    )
-);
+                    );
+            })
+        )
+    );
 
     /**
      *
@@ -384,6 +340,7 @@ export class CollectionEffects {
                     )
                     .pipe(
                         catchOffline(),
+                        // retry(3),
                         map((resp) => {
                             const newResp = {
                                 data:

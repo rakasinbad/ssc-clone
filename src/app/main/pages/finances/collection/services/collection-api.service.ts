@@ -14,10 +14,12 @@ export interface IAPIOptions {
 })
 export class CollectionApiService {
     private _url: string;
-    private readonly _endpointCollection = '/collection/v1';
+    private _urlCalculate: string;
 
+    private readonly _endpointCollection = '/collection/v1';
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
+        this._urlCalculate = this._$helper.handleApiRouter(this._endpointCollection);
     }
 
     getCollectionStatusType<T>(type: number, supplierId?: string): Observable<T> {
@@ -36,8 +38,8 @@ export class CollectionApiService {
                 : [];
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
-
-        return this.http.get<T>(this._url + '/available-collection-status', { params: newParams });
+        
+        return this.http.get<T>(this._urlCalculate + '/available-collection-status', { params: newParams });
     }
 
     findAllCollection<T>(params: IQueryParams, supplierId?: string): Observable<T> {
@@ -56,15 +58,19 @@ export class CollectionApiService {
         }
 
         if (params['keyword']) {
-            newArg.push({ key: 'keyword', value: params['payload']['keyword'] });
+            newArg.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['skip']) {
-            newArg.push({ key: 'skip', value: params['payload']['skip'] });
+        if (params['skip'] > 0) {
+            newArg.push({ key: 'skip', value: params.skip });
+        }
+
+        if (params['skip'] == 0) {
+            newArg.push({ key: 'skip', value: '0' });
         }
 
         if (params['limit']) {
-            newArg.push({ key: 'limit', value: params['payload']['limit'] });
+            newArg.push({ key: 'limit', value: params.limit });
         }
 
         if (params['searchBy']) {
