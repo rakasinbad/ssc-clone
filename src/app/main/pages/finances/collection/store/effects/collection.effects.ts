@@ -63,8 +63,6 @@ export class CollectionEffects {
                 return of([params, supplierId]);
             }),
             switchMap(([params, data]: [any, string | Auth]) => {
-                console.log('isi data col status->', data);
-                console.log('params map status->', params);
                 if (!data) {
                     return of(
                         CollectionActions.fetchCollectionStatusFailure({
@@ -95,8 +93,6 @@ export class CollectionEffects {
                     );
                 }
 
-                console.log('isi params collection->', params)
-
                 const newParams = {};
 
                 if (supplierId) {
@@ -108,13 +104,11 @@ export class CollectionEffects {
                     newParams['keyword'] = params.payload.keyword;
                 }
 
-                console.log('newParams->', newParams);
                 return this._$collectionStatusApi
                     .findAllCollection<IPaginatedResponse<CollectionStatus>>(newParams, supplierId)
                     .pipe(
                         catchOffline(),
                         map((resp) => {
-                            console.log('isi respon balikan status->', resp);
                             const newResp = {
                                 data:
                                     (resp && resp.data.length > 0
@@ -123,7 +117,6 @@ export class CollectionEffects {
                                 total: resp['meta']['total'],
                             };
 
-                            console.log('resp effect->', resp);
                             return CollectionActions.fetchCollectionStatusSuccess({
                                 payload: newResp,
                             });
@@ -246,13 +239,11 @@ export class CollectionEffects {
                     newParams['keyword'] = params.payload.keyword;
                 }
 
-                console.log('newParams->', newParams);
                 return this._$collectionStatusApi
                     .findAllBilling<IPaginatedResponse<BillingStatus>>(newParams, supplierId)
                     .pipe(
                         catchOffline(),
                         map((resp) => {
-                            console.log('isi respon balikan bill->', resp);
                             const newResp = {
                                 data:
                                     (resp && resp.data.length > 0
@@ -261,7 +252,6 @@ export class CollectionEffects {
                                 total: resp['meta']['total'],
                             };
 
-                            console.log('resp effect bill->', resp);
                             return CollectionActions.fetchBillingStatusSuccess({
                                 payload: newResp,
                             });
@@ -339,13 +329,10 @@ export class CollectionEffects {
                 }
 
                 const { supplierId } = userSupplier;
-                // console.log('isi params->', params)
 
                 return of([params, supplierId]);
             }),
             switchMap(([params, data]: [any, string | Auth]) => {
-                console.log('isi data->', data);
-                console.log('params map->', params);
                 if (!data) {
                     return of(
                         CollectionActions.fetchCalculateCollectionStatusFailure({
@@ -396,7 +383,6 @@ export class CollectionEffects {
                                         : []) || [],
                             };
 
-                            console.log('resp effect->', resp);
                             return CollectionActions.fetchCalculateCollectionStatusSuccess({
                                 payload: newResp,
                             });

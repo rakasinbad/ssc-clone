@@ -114,17 +114,14 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
     onSearchByChange(event) {
         this.searchByValue = event.value;
-        console.log('isi event->', event.value);
     }
 
     keyUpKeyword(event: any) {
         this.search = event.target.value;
-        console.log('isi keyword keyup->', event.target.value)
     }
 
     onSelectedTab(index): void {
         this.approvalStatusType = index;
-        console.log(index);
     }
 
     ngOnInit(): void {
@@ -132,14 +129,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        // console.log('selectedValue=>')
     }
 
     getDataTab(index): void {
-        console.log('index->', index);
         let parameter = {};
         parameter['type'] = index;
-        console.log('parameter-=>', parameter)
         this.CollectionStore.dispatch(
             CollectionActions.fetchCalculateCollectionStatusRequest({
                 payload: parameter,

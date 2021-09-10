@@ -50,7 +50,6 @@ export class CollectionApiService {
         this._urlCollectionStatus = this._$helper.handleApiRouter(
             this._endpointCollection + '/web/payment-methods'
         );
-        console.log('iqueryparams col->', params);
         const newArg = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {
@@ -94,7 +93,6 @@ export class CollectionApiService {
         this._urlBillingStatus = this._$helper.handleApiRouter(
             this._endpointCollection + '/web/payment-billings'
         );
-        console.log('iqueryparams bill->', params);
         const newArg = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {

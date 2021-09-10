@@ -189,7 +189,6 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
     openDetailCollectionStatus(data) {
         // localStorage.setItem('detail collection', data);
-        // console.log('detail collection', data);
     }
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
