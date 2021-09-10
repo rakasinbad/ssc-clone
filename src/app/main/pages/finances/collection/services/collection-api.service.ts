@@ -15,6 +15,8 @@ export interface IAPIOptions {
 export class CollectionApiService {
     private _url: string;
     private _urlCalculate: string;
+    private _urlCollectionStatus: string;
+    private _urlBillingStatus: string;
 
     private readonly _endpointCollection = '/collection/v1';
     constructor(private http: HttpClient, private _$helper: HelperService) {
@@ -38,23 +40,23 @@ export class CollectionApiService {
                 : [];
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
-        
+
         return this.http.get<T>(this._urlCalculate + '/available-collection-status', { params: newParams });
     }
 
     findAllCollection<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        this._url = this._$helper.handleApiRouter(
+        this._urlCollectionStatus = this._$helper.handleApiRouter(
             this._endpointCollection + '/web/payment-methods'
         );
-        console.log('masuk sini iqueryparams->', params);
+        console.log('iqueryparams col->', params);
         const newArg = [];
 
-        if (!supplierId && !supplierId) {
+        if (!params['supplierId'] && !params['noSupplierId']) {
             throw new Error('ERR_COLLECTION_REQUIRED_SUPPLIERID');
         }
 
-        if (supplierId && !supplierId) {
-            newArg.push({ key: 'supplierId', value: supplierId });
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArg.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
         if (params['keyword']) {
@@ -74,47 +76,66 @@ export class CollectionApiService {
         }
 
         if (params['searchBy']) {
-            newArg.push({ key: 'searchBy', value: params['payload']['searchBy'] });
+            newArg.push({ key: 'searchBy', value: params['searchBy'] });
         }
 
         if (params['approvalStatus']) {
-            newArg.push({ key: 'approvalStatus', value: params['payload']['approvalStatus'] });
+            newArg.push({ key: 'approvalStatus', value: params['approvalStatus'] });
         }
 
         // approvalStatus=approved
         // searchBy=supplierName&keyword=Tigaraksa
         // searchBy=supplierName&keyword=Tigaraksa&approvalStatus=approved
 
-        console.log('newArg->', newArg)
-        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
-
-        return this.http.get<T>(this._url, { params: newParams });
+        const newParams = this._$helper.handleParams(this._urlCollectionStatus, params, ...newArg);
+        delete newParams['paginate'];
+        return this.http.get<T>(this._urlCollectionStatus, { params: newParams });
     }
 
-    findAllBilling(params: IQueryParams, supplierId?: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection);
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId,
-                  },
-              ]
-            : [];
+    findAllBilling<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        this._urlBillingStatus = this._$helper.handleApiRouter(
+            this._endpointCollection + '/web/payment-billings'
+        );
+        console.log('iqueryparams bill->', params);
+        const newArg = [];
 
-        const newParams = this._$helper.handleParamsV2(this._url, params, ...newArg);
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_COLLECTION_REQUIRED_SUPPLIERID');
+        }
 
-        return this.http.get(this._url, { params: newParams });
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArg.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+
+        if (params['keyword']) {
+            newArg.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if (params['skip'] > 0) {
+            newArg.push({ key: 'skip', value: params.skip });
+        }
+
+        if (params['skip'] == 0) {
+            newArg.push({ key: 'skip', value: '0' });
+        }
+
+        if (params['limit']) {
+            newArg.push({ key: 'limit', value: params.limit });
+        }
+
+        if (params['searchBy']) {
+            newArg.push({ key: 'searchBy', value: params['searchBy'] });
+        }
+
+        if (params['approvalStatus']) {
+            newArg.push({ key: 'approvalStatus', value: params['approvalStatus'] });
+        }
+
+        const newParams = this._$helper.handleParams(this._urlBillingStatus, params, ...newArg);
+        delete newParams['paginate'];
+
+        return this.http.get<T>(this._urlBillingStatus, { params: newParams });
     }
-
-    // findById(id: string, type = 'order'): Observable<any> {
-    //     if (type === 'invoice') {
-    //         this._url = this._$helper.handleApiRouter('/payment/v1/invoice');
-    //     } else {
-    //         this._url = this._$helper.handleApiRouter(this._endpointCollection);
-    //     }
-    //     return this.http.get(`${this._url}/${id}`);
-    // }
 
     //get data detail
     findById(id): Observable<any> {

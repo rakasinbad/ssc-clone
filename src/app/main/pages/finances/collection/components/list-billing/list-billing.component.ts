@@ -27,22 +27,22 @@ import { CollectionActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { FeatureState as CollectionCoreState } from '../../store/reducers';
+import { FeatureState as BillingCoreState } from '../../store/reducers';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { HelperService } from 'app/shared/helpers';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { CollectionStatus } from '../../models';
-import { CollectionSelectors } from '../../store/selectors';
+import { BillingStatus, CollectionStatus } from '../../models';
+import { BillingSelectors, CollectionSelectors } from '../../store/selectors';
 
 @Component({
-    selector: 'app-list-collection',
-    templateUrl: './list-collection.component.html',
-    styleUrls: ['./list-collection.component.scss'],
+    selector: 'app-list-billing',
+    templateUrl: './list-billing.component.html',
+    styleUrls: ['./list-billing.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit {
+export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -55,12 +55,12 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
-    @Input() viewByType: string = 'cStatus';
+    @Input() viewByType: string = 'bStatus';
     @Input() searchValue: string = '';
 
     search: FormControl = new FormControl();
-    selection: SelectionModel<CollectionStatus>;
-    dataSource$: Observable<Array<CollectionStatus>>;
+    selection: SelectionModel<BillingStatus>;
+    dataSource$: Observable<Array<BillingStatus>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -258,7 +258,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         private cdRef: ChangeDetectorRef,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        private CollectionStore: NgRxStore<CollectionCoreState>
+        private BillingStore: NgRxStore<BillingCoreState>
     ) {}
 
     ngOnInit() {
@@ -266,7 +266,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         this.paginator.pageIndex = 0;
         this._initTable();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<CollectionStatus>(true, []);
+        this.selection = new SelectionModel<BillingStatus>(true, []);
         this._initPage();
     }
 
@@ -363,7 +363,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
             case LifecyclePlatform.OnDestroy:
                 // Reset core state Collection Action
-                this.CollectionStore.dispatch(CollectionActions.clearState());
+                this.BillingStore.dispatch(CollectionActions.clearState());
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -374,15 +374,11 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
                 this.selection = new SelectionModel<any>(true, []);
 
-                this.dataSource$ = this.CollectionStore.select(
-                    CollectionSelectors.selectAll
+                this.dataSource$ = this.BillingStore.select(BillingSelectors.selectAll);
+                this.totalDataSource$ = this.BillingStore.select(
+                    BillingSelectors.getTotalItem
                 );
-                this.totalDataSource$ = this.CollectionStore.select(
-                    CollectionSelectors.getTotalItem
-                );
-                this.isLoading$ = this.CollectionStore.select(
-                    CollectionSelectors.getLoadingState
-                );
+                this.isLoading$ = this.BillingStore.select(BillingSelectors.getLoadingState);
 
                 this._initTable();
                 break;
@@ -411,8 +407,8 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                 data['skip'] = 0;
             }
             data['type'] = this.viewByType;
-            this.CollectionStore.dispatch(
-                CollectionActions.fetchCollectionStatusRequest({
+            this.BillingStore.dispatch(
+                CollectionActions.fetchBillingStatusRequest({
                     payload: data,
                 })
             );

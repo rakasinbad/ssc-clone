@@ -71,7 +71,13 @@
                 </div>
             </div>
 
-            <app-list-collection class="mx-16" [viewByType]="selectedViewBy"></app-list-collection>
+            <ng-container *ngIf="selectedViewBy =='cStatus'">
+                <app-list-collection class="mx-16" [viewByType]="selectedViewBy"></app-list-collection>
+            </ng-container>
+
+            <ng-container *ngIf="selectedViewBy =='bStatus'">
+                <app-list-billing class="mx-16" [viewByType]="selectedViewBy"></app-list-billing>
+            </ng-container>
         </div>
         <!-- / CONTENT CARD -->
     </div>

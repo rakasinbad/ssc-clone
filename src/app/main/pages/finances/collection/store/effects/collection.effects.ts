@@ -29,7 +29,7 @@ import {
 
 import { CollectionApiService } from '../../services';
 import { CollectionActions } from '../actions';
-import { CalculateCollectionStatusPayment, CollectionStatus } from '../../models';
+import { BillingStatus, CalculateCollectionStatusPayment, CollectionStatus } from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
@@ -98,7 +98,7 @@ export class CollectionEffects {
                 const newParams = {
                     // ...params,
                 };
-        
+
                 if (supplierId) {
                     newParams['supplierId'] = supplierId;
                     newParams['limit'] = params.payload.limit;
@@ -106,14 +106,13 @@ export class CollectionEffects {
                     newParams['keyword'] = params.payload.keyword;
                 }
 
-                console.log('newParams->', newParams)
+                console.log('newParams->', newParams);
                 return this._$collectionStatusApi
                     .findAllCollection<IPaginatedResponse<CollectionStatus>>(newParams, supplierId)
                     .pipe(
                         catchOffline(),
-                        retry(3),
                         map((resp) => {
-                            console.log('isi respon balikan status->', resp)
+                            console.log('isi respon balikan status->', resp);
                             const newResp = {
                                 data:
                                     (resp && resp.data.length > 0
@@ -187,51 +186,95 @@ export class CollectionEffects {
      * [REQUEST] Billing List Statuses
      * @memberof CollectionEffects
      */
-    fetchBillingListStatusesRequest$ = createEffect(() =>
+
+    fetchBillingStatusRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchBillingStatusRequest),
-            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([payload, { supplierId }]) => {
-                if (!supplierId) {
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then((user) => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [any, string | Auth]) => {
+                if (!data) {
                     return of(
                         CollectionActions.fetchBillingStatusFailure({
-                            payload: { id: 'fetchBillingStatusFailure', errors: 'Not Found!' },
+                            payload: {
+                                id: 'fetchBillingStatusFailure',
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
 
-                return this._$collectionStatusApi.findAllBilling(payload, supplierId).pipe(
-                    catchOffline(),
-                    map((resp) => {
-                        this._$log.generateGroup('RESPONSE REQUEST FETCH BILLING LIST STATUSES', {
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        CollectionActions.fetchBillingStatusFailure({
                             payload: {
-                                type: 'log',
-                                value: payload,
+                                id: 'fetchBillingStatusFailure',
+                                errors: 'Not Found!',
                             },
-                            response: {
-                                type: 'log',
-                                value: resp,
-                            },
-                        });
+                        })
+                    );
+                }
 
-                        const newResp = {
-                            total: resp.meta.total,
-                            data: resp.data,
-                        };
+                const newParams = {
+                    // ...params,
+                };
 
-                        return CollectionActions.fetchBillingStatusSuccess({
-                            payload: newResp,
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            CollectionActions.fetchBillingStatusFailure({
-                                payload: { id: 'fetchBillingStatusFailure', errors: err },
-                            })
+                if (supplierId) {
+                    newParams['supplierId'] = supplierId;
+                    newParams['limit'] = params.payload.limit;
+                    newParams['skip'] = params.payload.skip;
+                    newParams['keyword'] = params.payload.keyword;
+                }
+
+                console.log('newParams->', newParams);
+                return this._$collectionStatusApi
+                    .findAllBilling<IPaginatedResponse<BillingStatus>>(newParams, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            console.log('isi respon balikan bill->', resp);
+                            const newResp = {
+                                data:
+                                    (resp && resp.data.length > 0
+                                        ? resp.data.map((v) => new BillingStatus(v))
+                                        : []) || [],
+                                total: resp['meta']['total'],
+                            };
+
+                            console.log('resp effect bill->', resp);
+                            return CollectionActions.fetchBillingStatusSuccess({
+                                payload: newResp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                CollectionActions.fetchBillingStatusFailure({
+                                    payload: {
+                                        id: 'fetchBillingStatusFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );

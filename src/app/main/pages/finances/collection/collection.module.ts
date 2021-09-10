@@ -15,26 +15,31 @@ import { ListCollectionComponent } from './components/list-collection/list-colle
 import { DetailCollectionTableComponent } from './components/detail-collection/detail-collection-table/detail-collection-table.component';
 import { DetailCollectionInfoComponent } from './components/detail-collection/detail-collection-info/detail-collection-info.component';
 import { DetailCollectionSalesComponent } from './components/detail-collection/detail-collection-sales/detail-collection-sales.component';
+import { ListBillingComponent } from './components/list-billing/list-billing.component';
 
 @NgModule({
-  declarations: [
-    CollectionComponent, 
-    DetailCollectionComponent, 
-    ListCollectionComponent, DetailCollectionTableComponent, DetailCollectionInfoComponent, DetailCollectionSalesComponent],
-    
-  imports: [
-    CommonModule,
-    CollectionRoutingModule,
+    declarations: [
+        CollectionComponent,
+        DetailCollectionComponent,
+        ListCollectionComponent,
+        DetailCollectionTableComponent,
+        DetailCollectionInfoComponent,
+        DetailCollectionSalesComponent,
+        ListBillingComponent,
+    ],
 
-    SharedModule,
-    MaterialModule,
-    SharedComponentsModule,
-    RxReactiveFormsModule,
-    NgxPermissionsModule.forChild(),
+    imports: [
+        CommonModule,
+        CollectionRoutingModule,
 
-     // Ngrx Store
-     CollectionNgrxModule
+        SharedModule,
+        MaterialModule,
+        SharedComponentsModule,
+        RxReactiveFormsModule,
+        NgxPermissionsModule.forChild(),
 
-  ]
+        // Ngrx Store
+        CollectionNgrxModule,
+    ],
 })
-export class CollectionModule { }
+export class CollectionModule {}
