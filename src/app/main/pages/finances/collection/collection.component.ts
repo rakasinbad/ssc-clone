@@ -99,14 +99,17 @@ export class CollectionComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const COLLECTION_STATUS = 101;
+        const COLLECTION_BILLING = 201;
+
         switch (action) {
             case 'cStatus':
                 this.selectedViewBy = action;
-                this.getDataTab(101);
+                this.getDataTab(COLLECTION_STATUS);
                 break;
             case 'bStatus':
                 this.selectedViewBy = action;
-                this.getDataTab(201);
+                this.getDataTab(COLLECTION_BILLING);
             default:
                 return;
         }
@@ -128,8 +131,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
         // this.onSelectedTab(0);
     }
 
-    ngAfterViewInit(): void {
-    }
+    ngAfterViewInit(): void {}
 
     getDataTab(index): void {
         let parameter = {};
@@ -139,7 +141,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
                 payload: parameter,
             })
         );
-        
+
         this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
 
         this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
