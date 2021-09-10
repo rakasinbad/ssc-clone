@@ -1,50 +1,51 @@
 app-order-status-info{
     .box-container{
-        .box-container__title{
-            .mat-button[disabled] {
-                background-color: rgb(128 128 128) !important;
-            }
+        .mat-button[disabled] {
+            background-color: rgb(128 128 128) !important;
+        }
 
-            .btn-cancel-status{
-                border: 2px solid rgb(141, 141, 141);
-            }
+        .btn-cancel-status{
+            border: 2px solid rgb(141, 141, 141);
+        }
 
-            .order-status-content{
-                margin-top: 2px;
-            }
-            .cancel-reason{
-                cursor: help;
-                position: relative;
-                &>mat-icon{
-                    margin-left: -9px;
-                    margin-top: 9px;
-                    color: #f0444c;
-                }
-                .cancel-reason-content-wrap{
-                    display: none;
-                    z-index: 2;
-                    left: 0;
-                    bottom: -20px;
-                    position: absolute;
-                    &>mat-icon{
-                        color: rgb(53, 55, 62);
-                        transform: rotate(225deg);
-                    }
-                    .cancel-reason-content{
-                        left: -5px;
-                        top: 8px;
-                        border-radius: 5px;
-                        background-color: rgb(53, 55, 62);
-                        color: white;
-                        padding: 10px;
-                        max-width: 200px;
-                        width: max-content;
-                        position: absolute;
+        .progress-bar {
+            .content {
+                .bar-left-wrapper {
+                    margin-right: 3px;
+                    .bar-left {
+                        width: 100px;
+                        height: 0;
+                        border-top: 10px solid #f0444c;
+                        border-right: 3px solid transparent;
+                        margin-right: 1px;
                     }
                 }
-                &:hover{
-                    .cancel-reason-content-wrap{
-                        display: inherit;
+
+                .bar-center-wrapper {
+                    margin-right: 3px;
+                    margin-left: 3px;
+                    .bar-center {
+                        width: 100px;
+                        height: 0;
+                        transform: skewX(-15deg);
+                        border-bottom: 10px solid #cacccf;
+                        &.active {
+                            border-bottom: 10px solid #f0444c;
+                        }
+                    }
+                }
+
+                .bar-right-wrapper {
+                    margin-left: 3px;
+                    .bar-right {
+                        width: 100px;
+                        height: 0;
+                        border-bottom: 10px solid #cacccf;
+                        border-left: 3px solid transparent;
+                        margin-left: 1px;
+                        &.active {
+                            border-bottom: 10px solid #f0444c;
+                        }
                     }
                 }
             }
@@ -190,6 +191,59 @@ app-order-status-info{
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    .final-status {
+        font-weight: bold;
+    }
+
+    .log-info {
+        .status {
+            position: relative;
+            top: 0;
+            margin-top: 0px;
+            padding-top: 0px;
+
+            .timeline-indicator-wrap{
+                width: auto;
+                height: 100%;
+                position: relative;
+                top: 0;
+                margin-top: 0px;
+                padding-top: 0px;
+
+                .timeline-indicator{
+                    width: auto;
+                    height: auto;
+                    margin-top: 0px;
+                    padding-top: 0px;
+                    z-index: 1;
+                }
+
+                .s-line {
+                    height: 100%;
+                    overflow: hidden;
+                    margin-top: 10%;
+                    width: 2px;
+                    background-color: #f0444c;
+                    position: absolute;
+                }
+            }
+
+            .timeline-label-wrap {
+                font-weight: 500;
+
+                .timeline-desc{
+                    font-size: 14px;
+                    // font-weight: 500;
+                }
+
+                .timeline-time{
+                    font-size: 12px;
+                    // font-weight: 500;
                 }
             }
         }
