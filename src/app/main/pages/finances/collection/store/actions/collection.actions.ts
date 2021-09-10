@@ -4,7 +4,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { Update } from '@ngrx/entity';
 
 import { CollectionStatus, BillingStatus, FinanceCollectionPayload, 
-    FinanceBillingPayload, FinanceDetailCollection, ICalculateCollectionStatusPayment } from '../../models';
+    FinanceBillingPayload, FinanceDetailCollection, ICalculateCollectionStatusPayment, ICollectionPhoto } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Calculate Collection Status by Payment
@@ -82,6 +82,27 @@ export const fetchCollectionDetailSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// Fetch Collection Photo
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchCollectionPhotoRequest = createAction(
+    '[Collection API] Fetch Collection Photo Request',
+    props<{ payload: { id: number }}>()
+);
+
+export const fetchCollectionPhotoFailure = createAction(
+    '[Collection API] Fetch Collection Photo Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchCollectionPhotoSuccess = createAction(
+    '[Collection API] Fetch Collection Photo Success',
+    props<{ payload: { data: ICollectionPhoto } }>()
+);
+
+export const clearCollectionPhoto = createAction('[Collection Page] Reset Collection Photo State');
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - CHANGE UPDATE COLLECTION] Collection
 // -----------------------------------------------------------------------------------------------------
 
@@ -112,4 +133,5 @@ export type FailureActions =
     | 'fetchCollectionStatusFailure'
     | 'fetchBillingStatusFailure'
     | 'fetchCollectionDetailFailure'
-    | 'updateCollectionStatusFailure'
+    | 'fetchCollectionPhotoFailure'
+    | 'updateCollectionStatusFailure';

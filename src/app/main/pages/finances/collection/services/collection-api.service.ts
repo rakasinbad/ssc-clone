@@ -91,6 +91,13 @@ export class CollectionApiService {
 
         return this.http.get(`${this._url}/${id}`);
     }
+    
+    // get data collection photo by id
+    findCollectionPhotoById(id: number): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/payment-method/images');
+
+        return this.http.get(`${this._url}/${id}`);
+    }
 
     patch(body: any, id: string, opts?: IAPIOptions): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);

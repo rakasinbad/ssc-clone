@@ -21,7 +21,6 @@ import {
     exhaustMap,
     finalize,
     map,
-    retry,
     switchMap,
     tap,
     withLatestFrom,
@@ -291,7 +290,6 @@ export class CollectionEffects {
                     )
                     .pipe(
                         catchOffline(),
-                        retry(3),
                         map((resp) => {
                             return CollectionActions.fetchCalculateCollectionStatusSuccess({
                                 payload: resp,
@@ -349,7 +347,6 @@ export class CollectionEffects {
             switchMap((id) => {
                 return this._$collectionStatusApi.findById(id).pipe(
                     catchOffline(),
-                    retry(3),
                     map((resp) => {
                         return CollectionActions.fetchCollectionDetailSuccess({
                             payload: resp,
@@ -374,6 +371,72 @@ export class CollectionEffects {
         () =>
             this.actions$.pipe(
                 ofType(CollectionActions.fetchCollectionDetailFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map((r) => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST] Collection Photo
+     * @memberof CollectionEffects
+     */
+    fetchCollectionPhotoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CollectionActions.fetchCollectionPhotoRequest),
+            map((action) => action.payload),
+            switchMap((payload) => {
+                return this._$collectionStatusApi.findCollectionPhotoById(payload.id).pipe(
+                    catchOffline(),
+                    map((resp) => {
+                        return CollectionActions.fetchCollectionPhotoSuccess({
+                            payload: resp
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            CollectionActions.fetchCollectionPhotoFailure({
+                                payload: {
+                                    id: 'fetchCollectionPhotoFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchCollectionPhotoFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CollectionActions.fetchCollectionPhotoFailure),
                 map((action) => action.payload),
                 tap((resp) => {
                     let message;

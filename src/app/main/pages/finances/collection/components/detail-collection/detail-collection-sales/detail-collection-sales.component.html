@@ -1,16 +1,10 @@
-
 <div class="pb-16">
     <span class="mat-headline"> Collection Details </span>
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Bank From
         </div>
 
@@ -19,46 +13,49 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Issue Date
         </div>
 
         <div class="info" fxFlex="100">
-            {{(detailData[0].paymentCollectionMethod.date | date: 'dd
-            MMM yyyy') || '-'}}
+            {{(detailData[0].paymentCollectionMethod.date | date: 'dd MMM yyyy') || '-'}}
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
-           Due Date
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
+            Due Date
         </div>
 
         <div class="info" fxFlex="100">
-            {{(detailData[0].paymentCollectionMethod.dueDate | date: 'dd
-            MMM yyyy') || '-'}}
+            {{(detailData[0].paymentCollectionMethod.dueDate | date: 'dd MMM yyyy') || '-'}}
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
-           Reason
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">Collection Photo</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="collectionId; else collPhotoNoData">
+                <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <a style="color: #2097F6;" href="javascript:void(0)" (click)="onClickViewImage()">
+                        View Photo
+                    </a>
+                </ng-container>
+                <ng-template #loadingSpin>
+                    <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
+                </ng-template>
+            </ng-container>
+            <ng-template #collPhotoNoData>
+                -
+            </ng-template>
+        </div>
+    </div>
+
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
+            Reason
         </div>
 
         <div class="info" fxFlex="100">
@@ -74,13 +71,8 @@
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Sales Rep ID
         </div>
 
@@ -89,13 +81,8 @@
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="20">
+    <div class="custom-field info-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="label" fxFlexAlign="center" fxFlex="30">
             Sales Rep Name
         </div>
 
