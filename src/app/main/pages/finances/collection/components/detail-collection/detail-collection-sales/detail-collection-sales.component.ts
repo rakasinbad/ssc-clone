@@ -4,12 +4,10 @@ import {
     OnInit,
     ChangeDetectionStrategy,
     OnDestroy,
-    ChangeDetectorRef,
     ViewEncapsulation,
-    AfterContentInit,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import Viewer from 'viewerjs';
 import { CollectionActions } from '../../../store/actions';
 import * as fromCollectionPhoto from '../../../store/reducers';
@@ -40,48 +38,59 @@ import { CollectionDetailSelectors, CollectionPhotoSelectors } from '../../../st
 export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     @Input() detailData: any;
 
-    private collectionPhoto: string;
     private subs: Subscription = new Subscription();
     private collectionPhoto$: Observable<any>;
-    private viewer: Viewer;
+
+    collectionId: number;
+    isLoadingPhoto$: Observable<boolean>;
 
     constructor(private store: Store<fromCollectionPhoto.FeatureState>) {}
 
     ngOnInit() {
-        this.store.dispatch(
-            CollectionActions.fetchCollectionPhotoRequest({
-                payload: { id: this.detailData[0].id },
-            })
-        );
+        this.collectionId = this.detailData[0].id;
         this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
-        const sub = this.collectionPhoto$
-            .subscribe((value: string) => {
-                this.initViewerImage(value);
-            })
-            .unsubscribe();
-        // this.subs.add(sub);
+        const sub = this.collectionPhoto$.subscribe({
+            next: (resp) => {
+                if (resp) {
+                    this.initViewerImage(resp);
+                }
+            },
+        });
+        this.subs.add(sub);
+
+        this.isLoadingPhoto$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
     }
 
-    initViewerImage = (image: string) => {
+    initViewerImage = (image: string): void => {
         const imgSrc = 'data:image/jpeg;base64,' + image;
 
         const imgEl = document.createElement('img');
         imgEl.src = imgSrc;
         imgEl.alt = 'Collection Photo';
 
-        this.viewer = new Viewer(imgEl, {
+        const viewer = new Viewer(imgEl, {
             inline: false,
         });
+        viewer.show();
     };
 
-    // View an image.
-    onClickViewImage = () => {
-        this.viewer.show();
+    onClickViewImage = (): void => {
+        this.clearCollectionPhotoState();
+        this.store.dispatch(
+            CollectionActions.fetchCollectionPhotoRequest({
+                payload: { id: this.collectionId },
+            })
+        );
     };
 
     ngOnDestroy(): void {
         if (!this.subs.closed) {
-            // this.subs.unsubscribe();
+            this.subs.unsubscribe();
         }
+        this.clearCollectionPhotoState();
     }
+
+    clearCollectionPhotoState = (): void => {
+        this.store.dispatch(CollectionActions.clearCollectionPhoto());
+    };
 }

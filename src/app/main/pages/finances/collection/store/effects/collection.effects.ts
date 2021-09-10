@@ -21,7 +21,6 @@ import {
     exhaustMap,
     finalize,
     map,
-    retry,
     switchMap,
     tap,
     withLatestFrom,
@@ -291,7 +290,6 @@ export class CollectionEffects {
                     )
                     .pipe(
                         catchOffline(),
-                        retry(3),
                         map((resp) => {
                             return CollectionActions.fetchCalculateCollectionStatusSuccess({
                                 payload: resp,
@@ -349,7 +347,6 @@ export class CollectionEffects {
             switchMap((id) => {
                 return this._$collectionStatusApi.findById(id).pipe(
                     catchOffline(),
-                    retry(3),
                     map((resp) => {
                         return CollectionActions.fetchCollectionDetailSuccess({
                             payload: resp,
@@ -416,7 +413,6 @@ export class CollectionEffects {
             switchMap((payload) => {
                 return this._$collectionStatusApi.findCollectionPhotoById(payload.id).pipe(
                     catchOffline(),
-                    retry(3),
                     map((resp) => {
                         return CollectionActions.fetchCollectionPhotoSuccess({
                             payload: resp

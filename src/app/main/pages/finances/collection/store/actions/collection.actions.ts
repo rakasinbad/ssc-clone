@@ -100,6 +100,8 @@ export const fetchCollectionPhotoSuccess = createAction(
     props<{ payload: { data: ICollectionPhoto } }>()
 );
 
+export const clearCollectionPhoto = createAction('[Collection Page] Reset Collection Photo State');
+
 // -----------------------------------------------------------------------------------------------------
 // [CRUD - CHANGE UPDATE COLLECTION] Collection
 // -----------------------------------------------------------------------------------------------------

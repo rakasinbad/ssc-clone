@@ -15,13 +15,13 @@ export interface State extends EntityState<CollectionPhoto> {
 
 // Adapter for Collection Photo state
 export const adapter = createEntityAdapter<CollectionPhoto>({
-    selectId: (row) => row.id,
+    // selectId: (row) => row.id,
 });
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
-    image: ''
+    image: '',
 });
 
 // Create the reducer.
@@ -43,5 +43,5 @@ export const reducer = createReducer(
     on(CollectionActions.fetchCollectionPhotoSuccess, (state, { payload }) =>
         adapter.addOne(payload.data, { ...state, isLoading: false, image: payload.data.image })
     ),
-    on(CollectionActions.clearState, () => initialState)
+    on(CollectionActions.clearState, CollectionActions.clearCollectionPhoto, () => initialState)
 );

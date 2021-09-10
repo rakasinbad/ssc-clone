@@ -19,8 +19,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{(detailData[0].paymentCollectionMethod.date | date: 'dd
-            MMM yyyy') || '-'}}
+            {{(detailData[0].paymentCollectionMethod.date | date: 'dd MMM yyyy') || '-'}}
         </div>
     </div>
 
@@ -30,8 +29,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{(detailData[0].paymentCollectionMethod.dueDate | date: 'dd
-            MMM yyyy') || '-'}}
+            {{(detailData[0].paymentCollectionMethod.dueDate | date: 'dd MMM yyyy') || '-'}}
         </div>
     </div>
 
@@ -39,9 +37,15 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Photo</div>
 
         <div class="info" fxFlex="100">
-            <ng-container
-                *ngIf="detailData.length > 0 && detailData[0]?.paymentCollectionMethod?.image; else collPhotoNoData">
-                <a style="color: #2097F6;" href="javascript:void(0)" (click)="onClickViewImage()">View Photo</a>
+            <ng-container *ngIf="collectionId; else collPhotoNoData">
+                <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <a style="color: #2097F6;" href="javascript:void(0)" (click)="onClickViewImage()">
+                        View Photo
+                    </a>
+                </ng-container>
+                <ng-template #loadingSpin>
+                    <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
+                </ng-template>
             </ng-container>
             <ng-template #collPhotoNoData>
                 -
