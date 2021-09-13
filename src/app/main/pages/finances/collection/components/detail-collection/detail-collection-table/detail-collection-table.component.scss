@@ -6,7 +6,7 @@ app-detail-collection-table {
     flex-direction: column !important;
     overflow: auto !important;
 
-    .collection-detail-list-table, .billing-list-table {
+    .billing-list-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;

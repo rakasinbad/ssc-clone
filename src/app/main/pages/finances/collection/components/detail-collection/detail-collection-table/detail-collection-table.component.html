@@ -3,162 +3,190 @@
 </div>
 
 <mat-table
-        class="billing-list-table sinbad-table"
-        [class.sinbad-table-no-record]="totalDataSourceBilling === 0"
-        #table
-        [dataSource]="dataTable"
-        matSort
-        [@animateStagger]="{ value: '50' }"
-        fusePerfectScrollbar
-    >
-        <!-- External Id Column -->
-        <ng-container matColumnDef="finance-external-id">
-            <mat-header-cell *matHeaderCellDef> External Id </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.storeExternalId || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    class="billing-list-table sinbad-table"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSourceBilling) === 0"
+    #table
+    [dataSource]="dataTable"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- External Id Column -->
+    <ng-container matColumnDef="finance-external-id">
+        <mat-header-cell *matHeaderCellDef> External Id </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.storeExternalId|| '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Store Name Column -->
-        <ng-container matColumnDef="finance-store-name">
-            <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.storeName || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Store Name Column -->
+    <ng-container matColumnDef="finance-store-name">
+        <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.storeName || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Order Code Column -->
-        <ng-container matColumnDef="finance-order-code">
-            <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.orderCode || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Order Code Column -->
+    <ng-container matColumnDef="finance-order-code">
+        <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.orderCode || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Order Ref Column -->
-        <ng-container matColumnDef="finance-order-ref">
-            <mat-header-cell *matHeaderCellDef> Order Ref </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.orderRef || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Order Ref Column -->
+    <ng-container matColumnDef="finance-order-ref">
+        <mat-header-cell *matHeaderCellDef> Order Ref </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.orderRef || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Total Amount Column -->
-        <ng-container matColumnDef="finance-total-amount">
-            <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormat(row?.totalAmount)}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Total Amount Column -->
+    <ng-container matColumnDef="finance-total-amount">
+        <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ totalAmountFormat(row?.totalAmount) }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Order Due Date Column -->
-        <ng-container matColumnDef="finance-order-due-date">
-            <mat-header-cell *matHeaderCellDef> Order Due Date </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{(row?.dueDate | date: 'dd MMM yyyy') || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Order Due Date Column -->
+    <ng-container matColumnDef="finance-order-due-date">
+        <mat-header-cell *matHeaderCellDef> Order Due Date </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ (row?.dueDate | date: 'dd MMM yyyy') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Payment Status Column -->
-        <ng-container matColumnDef="finance-payment-status">
-            <mat-header-cell *matHeaderCellDef> Payment Status </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">
-                    {{row?.statusPayment === 'paid' ? 'Paid'
-                    : row?.statusPayment === 'waiting_for_payment' ? 'Waiting For Payment'
-                    : row?.statusPayment === 'overdue' ? 'Overdue'
-                    : (row?.statusPayment | titlecase) || '-'
-                    }}
-                </p>
-            </mat-cell>
-        </ng-container>
+    <!-- Payment Status Column -->
+    <ng-container matColumnDef="finance-payment-status">
+        <mat-header-cell *matHeaderCellDef> Payment Status </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ statusLabel(row?.statusPayment) }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Sales Rep Column -->
-        <ng-container matColumnDef="finance-sales-rep">
-            <mat-header-cell *matHeaderCellDef> Sales Rep </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.salesmanName || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Sales Rep Column -->
+    <ng-container matColumnDef="finance-sales-rep">
+        <mat-header-cell *matHeaderCellDef> Sales Rep </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.salesRepName || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Billing Code Column -->
-        <ng-container matColumnDef="finance-billing-code">
-            <mat-header-cell *matHeaderCellDef> Billing Code </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.billingPaymentCode || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Billing Code Column -->
+    <ng-container matColumnDef="finance-billing-code">
+        <mat-header-cell *matHeaderCellDef> Billing Code </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.billingPaymentCode || '-' }}</p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Total Billing Amount Column -->
-        <ng-container matColumnDef="finance-bill-amount">
-            <mat-header-cell *matHeaderCellDef> Billing Amount</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormat(row?.billingAmount)}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Billing Amount Column -->
+    <ng-container matColumnDef="finance-bill-amount">
+        <mat-header-cell *matHeaderCellDef> Billing Amount</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ numberFormat(row?.billingAmount) }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Materai Column -->
-        <ng-container matColumnDef="finance-materai">
-            <mat-header-cell *matHeaderCellDef> Materai </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormat(row?.stampNominal)}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Materai Column -->
+    <ng-container matColumnDef="finance-materai">
+        <mat-header-cell *matHeaderCellDef> Materai </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ numberFormat(row?.stampNominal) }}</p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Total Billing Amount Column -->
-        <ng-container matColumnDef="finance-total-bill-amount">
-            <mat-header-cell *matHeaderCellDef> Total Billing Amount</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{numberFormat(row?.totalBillingAmount)}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Total Billing Amount Column -->
+    <ng-container matColumnDef="finance-total-bill-amount">
+        <mat-header-cell *matHeaderCellDef> Total Billing Amount</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ numberFormat(row?.totalBillingAmount) }}</p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Billing Date Column -->
-        <ng-container matColumnDef="finance-bill-date">
-            <mat-header-cell *matHeaderCellDef> Billing Date</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{(row?.createdAt | date: 'dd MMM yyyy') || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Billing Date Column -->
+    <ng-container matColumnDef="finance-bill-date">
+        <mat-header-cell *matHeaderCellDef> Billing Date</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Billing Status Column -->
-        <ng-container matColumnDef="finance-bill-status">
-            <mat-header-cell *matHeaderCellDef> Billing Status</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">
-                    {{row?.approvalStatus === 'pending' ? 'Pending'
-                    : row?.approvalStatus === 'waiting' ? 'Waiting'
-                    : row?.approvalStatus === 'approved' ? 'Approved'
-                    : row?.approvalStatus === 'rejected' ? 'Rejected'
-                    : (row?.approvalStatus | titlecase) || '-'
-                    }}
-                </p>
-            </mat-cell>
-        </ng-container>
+    <!-- Billing Status Column -->
+    <ng-container matColumnDef="finance-bill-status">
+        <mat-header-cell *matHeaderCellDef> Billing Status</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ statusLabel(row?.approvalStatus) }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Reason Column -->
-        <ng-container matColumnDef="finance-reason">
-            <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word">{{row?.approvalReason || '-'}}</p>
-            </mat-cell>
-        </ng-container>
+    <!-- Reason Column -->
+    <ng-container matColumnDef="finance-reason">
+        <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">{{ row?.approvalReason || '-' }}</p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- No Record Column -->
-        <ng-container matColumnDef="no-record">
-            <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
-        </ng-container>
+    <!-- No Record Column -->
+    <ng-container matColumnDef="no-record">
+        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+    </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumnsBilling; sticky: true"></mat-header-row>
+    <mat-header-row *matHeaderRowDef="displayedColumnsBilling; sticky: true"></mat-header-row>
 
-        <mat-row
-            *matRowDef="let row; columns: displayedColumnsBilling"
-            class="sinbad-billing-list-item"
-        ></mat-row>
+    <mat-row
+        *matRowDef="let row; columns: displayedColumnsBilling"
+        class="sinbad-billing-list-item"
+    ></mat-row>
 
-        <mat-footer-row
-            *matFooterRowDef="['no-record']"
-            [fxShow]="!totalDataSourceBilling === 0"
-        ></mat-footer-row>
-    </mat-table>
-    <br/>
+    <mat-footer-row
+        *matFooterRowDef="['no-record']"
+        [fxShow]="!(isLoading$ | async) && (totalDataSourceBilling) === 0"
+    ></mat-footer-row>
+</mat-table>
+
+<!-- <div
+    class="loader-content"
+    *ngIf="(isLoading$ | async) && (!(totalDataSourceBilling) || (totalDataSourceBilling ))"
+>
+    <mat-spinner color="accent"></mat-spinner>
+</div> -->
+
+<!-- <mat-paginator
+    [disabled]="
+        ((isLoading$ | async) && !(totalDataSourceBilling ) ||
+        (!(isLoading$ | async) && (totalDataSourceBilling ) === 0)
+    "
+    [length]="totalDataSourceBilling"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons
+></mat-paginator> -->
+
+<br />
