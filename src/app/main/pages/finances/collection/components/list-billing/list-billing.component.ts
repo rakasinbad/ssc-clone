@@ -33,6 +33,7 @@ import { HelperService } from 'app/shared/helpers';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { BillingStatus, CollectionStatus } from '../../models';
 import { BillingSelectors, CollectionSelectors } from '../../store/selectors';
+import { StatusPaymentBase } from 'app/shared/models/payment-status.model';
 
 @Component({
     selector: 'app-list-billing',
@@ -334,5 +335,34 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
         }
 
         return '0';
+    }
+
+    statusLabel(status) {
+        switch (status) {
+            case StatusPaymentBase.APPROVED:
+                return 'Approve';
+                break;
+            case StatusPaymentBase.PENDING:
+                return 'Pending';
+                break;
+            case StatusPaymentBase.OVERDUE:
+                return 'Overdue';
+                break;
+            case StatusPaymentBase.REJECTED:
+                return 'Rejected';
+                break;
+            case StatusPaymentBase.WAITING:
+                return 'Waiting';
+                break;
+            case StatusPaymentBase.PAYMENT_FAILED:
+                return 'Failed';
+                break;
+            case StatusPaymentBase.WAITING_FOR_PAYMENT:
+                return 'Waiting For Payment';
+                break;
+            default:
+                return '-';
+                break;
+        }
     }
 }

@@ -70,17 +70,7 @@
         <mat-header-cell *matHeaderCellDef> Payment Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{
-                    row?.billing.orderParcel.statusPayment === 'paid'
-                        ? 'Paid'
-                        : row?.billing.orderParcel.statusPayment === 'waiting_for_payment'
-                        ? 'Waiting For Payment'
-                        : row?.billing.orderParcel.statusPayment === 'overdue'
-                        ? 'Overdue'
-                        : row?.billing.orderParcel.statusPayment === 'payment_failed'
-                        ? 'Failed'
-                        : (row?.billing.orderParcel.statusPayment | titlecase) || '-'
-                }}
+                {{ statusLabel(row?.billing.orderParcel.statusPayment) }}
             </p>
         </mat-cell>
     </ng-container>
@@ -140,17 +130,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{
-                    row?.paymentCollectionMethod.approvalStatus === 'pending'
-                        ? 'Pending'
-                        : row?.paymentCollectionMethod.approvalStatus === 'waiting'
-                        ? 'Waiting'
-                        : row?.paymentCollectionMethod.approvalStatus === 'approved'
-                        ? 'Approved'
-                        : row?.paymentCollectionMethod.approvalStatus === 'rejected'
-                        ? 'Rejected'
-                        : (row?.paymentCollectionMethod.approvalStatus | titlecase) || '-'
-                }}
+                {{ statusLabel(row?.paymentCollectionMethod.approvalStatus) }}
             </p>
         </mat-cell>
     </ng-container>
@@ -204,17 +184,7 @@
         <mat-header-cell *matHeaderCellDef> Billing Status</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{
-                    row?.approvalStatus === 'pending'
-                        ? 'Pending'
-                        : row?.approvalStatus === 'waiting'
-                        ? 'Waiting'
-                        : row?.approvalStatus === 'approved'
-                        ? 'Approved'
-                        : row?.approvalStatus === 'rejected'
-                        ? 'Rejected'
-                        : (row?.approvalStatus | titlecase) || '-'
-                }}
+                {{ statusLabel(row?.approvalStatus) }}
             </p>
         </mat-cell>
     </ng-container>

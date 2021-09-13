@@ -123,49 +123,6 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Actions Column -->
-    <!-- <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <div fxFlex="row" fxLayoutAlign="end center">
-                <button
-                    mat-icon-button
-                    [matMenuTriggerFor]="moreMenu"
-                    aria-label="More"
-                    (click)="$event.stopPropagation()"
-                >
-                    <mat-icon class="secondary-text">more_vert</mat-icon>
-                </button>
-
-                <mat-menu #moreMenu="matMenu">
-                    <ng-template [ngxPermissionsOnly]="['PRM.PH.UPDATE']">
-                        <button
-                            type="button"
-                            mat-menu-item
-                            class="sinbad-mat-menu-item"
-                            aria-label="Settings"
-                            (click)="settingCollection(row)"
-                        >
-                            <mat-icon>settings</mat-icon>
-                            <span>Set</span>
-                        </button>
-                        <button
-                            type="button"
-                            mat-menu-item
-                            class="sinbad-mat-menu-item"
-                            aria-label="Detail"
-                            (click)="openDetailPage(row)"
-                            [routerLink]="[row?.id, 'detail']"
-                        >
-                            <mat-icon>remove_red_eye</mat-icon>
-                            <span>Detail</span>
-                        </button>
-                    </ng-template>
-                </mat-menu>
-            </div>
-        </mat-cell>
-    </ng-container> -->
-
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
         <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
