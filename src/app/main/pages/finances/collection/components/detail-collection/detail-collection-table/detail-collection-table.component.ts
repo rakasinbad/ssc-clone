@@ -67,11 +67,9 @@ export class DetailCollectionTableComponent implements OnInit, OnDestroy {
 
         this.subs = this.detailCollection$.subscribe((res) => {
             if (res != undefined) {
-                console.log('res->', res);
                 let dataBilling = [];
                 this.dataTable = res['data']['billingPayments'];
                 this.totalDataSourceBilling = dataBilling.length;
-                console.log('isi res dan total->', this.dataTable, this.totalDataSourceBilling);
             }
         });
     }
