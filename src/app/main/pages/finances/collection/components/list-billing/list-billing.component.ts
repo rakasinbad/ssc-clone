@@ -33,7 +33,7 @@ import { HelperService } from 'app/shared/helpers';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { BillingStatus, CollectionStatus } from '../../models';
 import { BillingSelectors, CollectionSelectors } from '../../store/selectors';
-import { StatusPaymentBase } from 'app/shared/models/payment-status.model';
+import * as StatusPaymentLabel from '../../constants';
 
 @Component({
     selector: 'app-list-billing',
@@ -339,26 +339,29 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
     statusLabel(status) {
         switch (status) {
-            case StatusPaymentBase.APPROVED:
-                return 'Approve';
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
                 break;
-            case StatusPaymentBase.PENDING:
-                return 'Pending';
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_PENDING_LABEL;
                 break;
-            case StatusPaymentBase.OVERDUE:
-                return 'Overdue';
+            case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
+                return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
                 break;
-            case StatusPaymentBase.REJECTED:
-                return 'Rejected';
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
                 break;
-            case StatusPaymentBase.WAITING:
-                return 'Waiting';
+            case StatusPaymentLabel.VALUE_WAITING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
                 break;
-            case StatusPaymentBase.PAYMENT_FAILED:
-                return 'Failed';
+            case StatusPaymentLabel.VALUE_PAYMENT_FAILED_LABEL:
+                return StatusPaymentLabel.STATUS_PAYMENT_FAILED_LABEL;
                 break;
-            case StatusPaymentBase.WAITING_FOR_PAYMENT:
-                return 'Waiting For Payment';
+            case StatusPaymentLabel.VALUE_WAITING_PAYMENT_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_PAYMENT_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAID_LABEL:
+                return StatusPaymentLabel.STATUS_PAID_LABEL;
                 break;
             default:
                 return '-';
