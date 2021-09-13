@@ -27,22 +27,23 @@ import { CollectionActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-import { FeatureState as CollectionCoreState } from '../../store/reducers';
+import { FeatureState as BillingCoreState } from '../../store/reducers';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { HelperService } from 'app/shared/helpers';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { CollectionStatus } from '../../models';
-import { CollectionSelectors } from '../../store/selectors';
+import { BillingStatus, CollectionStatus } from '../../models';
+import { BillingSelectors, CollectionSelectors } from '../../store/selectors';
+import * as StatusPaymentLabel from '../../constants';
 
 @Component({
-    selector: 'app-list-collection',
-    templateUrl: './list-collection.component.html',
-    styleUrls: ['./list-collection.component.scss'],
+    selector: 'app-list-billing',
+    templateUrl: './list-billing.component.html',
+    styleUrls: ['./list-billing.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit {
+export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -55,37 +56,39 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
-    @Input() viewByType: string = 'cStatus';
+    @Input() viewByType: string = 'bStatus';
     @Input() searchBy: string = 'supplierName';
     @Input() searchValue: string = '';
     @Input() approvalStatus: number = 0;
 
     search: FormControl = new FormControl();
-    selection: SelectionModel<CollectionStatus>;
-    dataSource$: Observable<Array<CollectionStatus>>;
+    selection: SelectionModel<BillingStatus>;
+    dataSource$: Observable<Array<BillingStatus>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
-    public totalLength: number = 10;
-    public size: number = 5;
-    public totalDataSource: number;
-    public totalDataSourceBilling: number;
-
-    displayedColumnsCollection = [
-        'finance-collection-code',
-        'finance-collection-method',
-        'finance-collection-ref',
-        'finance-collection-amount',
-        'finance-collection-date',
-        'finance-collection-due-date',
-        'finance-collection-status',
-        'finance-sales-rep',
+    displayedColumnsBilling = [
         'finance-external-id',
         'finance-store-name',
         'finance-order-code',
         'finance-order-ref',
+        'finance-total-amount',
+        'finance-order-due-date',
+        'finance-payment-status',
+        'finance-sales-rep',
+        'finance-collect-code',
+        'finance-collection-ref',
+        'finance-collection-amount',
+        'finance-collection-date',
+        'finance-collection-status',
+        'finance-billing-code',
+        'finance-bill-amount',
+        'finance-materai',
+        'finance-total-bill-amount',
+        'finance-bill-date',
+        'finance-bill-status',
         'finance-reason',
     ];
 
@@ -95,7 +98,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         private cdRef: ChangeDetectorRef,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        private CollectionStore: NgRxStore<CollectionCoreState>
+        private BillingStore: NgRxStore<BillingCoreState>
     ) {}
 
     ngOnInit() {
@@ -103,7 +106,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         this.paginator.pageIndex = 0;
         this._initTable();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<CollectionStatus>(true, []);
+        this.selection = new SelectionModel<BillingStatus>(true, []);
         this._initPage();
     }
 
@@ -161,7 +164,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
         const data: IQueryParams = {
             limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex,
+            skip: this.paginator.pageIndex + 1,
         };
 
         if (this.sort.direction) {
@@ -206,7 +209,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
             case LifecyclePlatform.OnDestroy:
                 // Reset core state Collection Action
-                this.CollectionStore.dispatch(CollectionActions.clearState());
+                this.BillingStore.dispatch(CollectionActions.clearState());
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -217,11 +220,9 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
                 this.selection = new SelectionModel<any>(true, []);
 
-                this.dataSource$ = this.CollectionStore.select(CollectionSelectors.selectAll);
-                this.totalDataSource$ = this.CollectionStore.select(
-                    CollectionSelectors.getTotalItem
-                );
-                this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
+                this.dataSource$ = this.BillingStore.select(BillingSelectors.selectAll);
+                this.totalDataSource$ = this.BillingStore.select(BillingSelectors.getTotalItem);
+                this.isLoading$ = this.BillingStore.select(BillingSelectors.getLoadingState);
 
                 this._initTable();
                 break;
@@ -232,7 +233,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageIndex + 1,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -270,8 +271,9 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                     break;
             }
 
-            this.CollectionStore.dispatch(
-                CollectionActions.fetchCollectionStatusRequest({
+            data['type'] = this.viewByType;
+            this.BillingStore.dispatch(
+                CollectionActions.fetchBillingStatusRequest({
                     payload: data,
                 })
             );
@@ -321,5 +323,49 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         }
 
         return '-';
+    }
+
+    totalAmountFormat(num) {
+        let value = parseInt(num);
+        if (num) {
+            return value
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        return '0';
+    }
+
+    statusLabel(status) {
+        switch (status) {
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_PENDING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
+                return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAYMENT_FAILED_LABEL:
+                return StatusPaymentLabel.STATUS_PAYMENT_FAILED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_PAYMENT_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_PAYMENT_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAID_LABEL:
+                return StatusPaymentLabel.STATUS_PAID_LABEL;
+                break;
+            default:
+                return '-';
+                break;
+        }
     }
 }

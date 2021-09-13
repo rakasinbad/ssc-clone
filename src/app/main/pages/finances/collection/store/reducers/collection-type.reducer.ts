@@ -1,108 +1,57 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models/global.model';
-import * as fromRoot from 'app/store/app.reducer';
+import { createReducer, on } from '@ngrx/store';
 
-import { ICalculateCollectionStatusPayment } from '../../models';
+import { CalculateCollectionStatusPayment } from '../../models';
 import { CollectionActions } from '../actions';
 
+// Keyname for reducer
 export const featureKey = 'collectionTypes';
 
-interface CollectionTypeState extends EntityState<any> {
-    selectedCollectionStatusId: string | number;
-    total: number;
-    dataCollectionType: ICalculateCollectionStatusPayment;
-}
-
-interface ErrorState extends EntityState<IErrorHandler> {}
-
-export interface State {
-    isRefresh?: boolean;
+export interface State extends EntityState<CalculateCollectionStatusPayment> {
     isLoading: boolean;
-    source: TSource;
-    paymentStatuses: CollectionTypeState;
-    errors: ErrorState;
+    isRefresh: boolean;
     selectedId: string;
+    total: number;
+    calculateData: CalculateCollectionStatusPayment[];
 }
 
-export interface FeatureState extends fromRoot.State {
-    [featureKey]: State | undefined;
-}
-
-const adapter = createEntityAdapter<any>({
-    selectId: paymentStatus => paymentStatus.id
+// Adapter for collectionTypes state
+export const adapter = createEntityAdapter<CalculateCollectionStatusPayment>({
+    selectId: (row) => row.id,
 });
-const initialCollectionType = adapter.getInitialState({
-    selectedCollectionStatusId: null,
+
+// Initialize state
+export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
+    isLoading: false,
+    isRefresh: undefined,
+    selectedId: null,
     total: 0,
-    dataCollectionType: {
-        id: null,
-        status: '',
-        title: '',
-        detail: '',
-        total: 0
-    },
-    isLoading: false,
-    isRefresh: undefined,
-    selectedId: null,
+    calculateData: []
 });
 
-const adapterError = createEntityAdapter<IErrorHandler>();
-const initialErrorState = adapterError.getInitialState();
-
-export const initialState: State = {
-    isLoading: false,
-    source: 'fetch',
-    paymentStatuses: initialCollectionType,
-    errors: initialErrorState,
-    isRefresh: undefined,
-    selectedId: null,
-
-};
-
-const reducers = createReducer(
+// Create the reducer.
+export const reducer = createReducer(
     initialState,
     on(
         CollectionActions.fetchCalculateCollectionStatusRequest,
-        state => ({
+        (state) => ({
             ...state,
-            isLoading: true
+            isLoading: true,
         })
     ),
     on(
         CollectionActions.fetchCalculateCollectionStatusFailure,
-        (state, { payload }) => ({
+        (state) => ({
             ...state,
             isLoading: false,
-            isRefresh: undefined,
-            errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
-    on(CollectionActions.fetchCalculateCollectionStatusSuccess, (state, { payload }) => ({
-        ...state,
-        paymentStatuses: {
-            ...state.paymentStatuses,
-            dataCollectionType: payload
-        },
-        errors: adapterError.removeOne('fetchCalculateCollectionStatusFailure', state.errors)
-    })),
+    on(CollectionActions.fetchCalculateCollectionStatusSuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, calculateData: payload.data})
+    ),
     on(CollectionActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
         needRefresh: payload,
     })),
     on(CollectionActions.clearState, () => initialState)
-    
 );
-
-export function reducer(state: State | undefined, action: Action): State {
-    return reducers(state, action);
-}
-
-const getPaymentStatusesState = (state: State) => state.paymentStatuses;
-
-export const {
-    selectAll: selectAllPaymentStatus,
-    selectEntities: selectPaymentStatusEntities,
-    selectIds: selectPaymentStatusIds,
-    selectTotal: selectPaymentStatusTotal
-} = adapter.getSelectors(getPaymentStatusesState);

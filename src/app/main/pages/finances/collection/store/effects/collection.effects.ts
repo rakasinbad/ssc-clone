@@ -28,11 +28,12 @@ import {
 
 import { CollectionApiService } from '../../services';
 import { CollectionActions } from '../actions';
-import { ICalculateCollectionStatusPayment } from '../../models';
+import { BillingStatus, CalculateCollectionStatusPayment, CollectionStatus } from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
 import { OrderActions } from '../../../../orders/store/actions';
+import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 
 @Injectable()
 export class CollectionEffects {
@@ -45,54 +46,91 @@ export class CollectionEffects {
      * [REQUEST] Collection List Statuses
      * @memberof CollectionEffects
      */
-    fetchCollectionListStatusesRequest$ = createEffect(() =>
+    fetchCollectionStatusRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchCollectionStatusRequest),
-            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([payload, { supplierId }]) => {
-                if (!supplierId) {
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then((user) => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [any, string | Auth]) => {
+                if (!data) {
                     return of(
                         CollectionActions.fetchCollectionStatusFailure({
-                            payload: { id: 'fetchCollectionStatusFailure', errors: 'Not Found!' },
+                            payload: {
+                                id: 'fetchCollectionStatusFailure',
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
 
-                return this._$collectionStatusApi.findAllCollection(payload, supplierId).pipe(
-                    catchOffline(),
-                    map((resp) => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST FETCH COLLECTION LIST STATUSES',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: payload,
-                                },
-                                response: {
-                                    type: 'log',
-                                    value: resp,
-                                },
-                            }
-                        );
+                let supplierId;
 
-                        const newResp = {
-                            total: resp.meta.total,
-                            data: resp.data,
-                        };
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
 
-                        return CollectionActions.fetchCollectionStatusSuccess({
-                            payload: newResp,
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            CollectionActions.fetchCollectionStatusFailure({
-                                payload: { id: 'fetchCollectionStatusFailure', errors: err },
-                            })
+                if (!supplierId) {
+                    return of(
+                        CollectionActions.fetchCollectionStatusFailure({
+                            payload: {
+                                id: 'fetchCollectionStatusFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
+
+                const newParams = {};
+
+                if (supplierId) {
+                    newParams['supplierId'] = supplierId;
+                    newParams['limit'] = params.payload.limit;
+                    newParams['skip'] = params.payload.skip;
+                    newParams['approvalStatus'] = params.payload.approvalStatus;
+                    newParams['searchBy'] = params.payload.searchBy;
+                    newParams['keyword'] = params.payload.keyword;
+                }
+
+                return this._$collectionStatusApi
+                    .findAllCollection<IPaginatedResponse<CollectionStatus>>(newParams, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            const newResp = {
+                                data:
+                                    (resp && resp.data.length > 0
+                                        ? resp.data.map((v) => new CollectionStatus(v))
+                                        : []) || [],
+                                total: resp['meta']['total'],
+                            };
+
+                            return CollectionActions.fetchCollectionStatusSuccess({
+                                payload: newResp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                CollectionActions.fetchCollectionStatusFailure({
+                                    payload: {
+                                        id: 'fetchCollectionStatusFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );
@@ -142,51 +180,92 @@ export class CollectionEffects {
      * [REQUEST] Billing List Statuses
      * @memberof CollectionEffects
      */
-    fetchBillingListStatusesRequest$ = createEffect(() =>
+
+    fetchBillingStatusRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchBillingStatusRequest),
-            map((action) => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([payload, { supplierId }]) => {
-                if (!supplierId) {
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then((user) => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [any, string | Auth]) => {
+                if (!data) {
                     return of(
                         CollectionActions.fetchBillingStatusFailure({
-                            payload: { id: 'fetchBillingStatusFailure', errors: 'Not Found!' },
+                            payload: {
+                                id: 'fetchBillingStatusFailure',
+                                errors: 'Not Found!',
+                            },
                         })
                     );
                 }
 
-                return this._$collectionStatusApi.findAllBilling(payload, supplierId).pipe(
-                    catchOffline(),
-                    map((resp) => {
-                        this._$log.generateGroup('RESPONSE REQUEST FETCH BILLING LIST STATUSES', {
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        CollectionActions.fetchBillingStatusFailure({
                             payload: {
-                                type: 'log',
-                                value: payload,
+                                id: 'fetchBillingStatusFailure',
+                                errors: 'Not Found!',
                             },
-                            response: {
-                                type: 'log',
-                                value: resp,
-                            },
-                        });
+                        })
+                    );
+                }
 
-                        const newResp = {
-                            total: resp.meta.total,
-                            data: resp.data,
-                        };
+                const newParams = {};
 
-                        return CollectionActions.fetchBillingStatusSuccess({
-                            payload: newResp,
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            CollectionActions.fetchBillingStatusFailure({
-                                payload: { id: 'fetchBillingStatusFailure', errors: err },
-                            })
+                if (supplierId) {
+                    newParams['supplierId'] = supplierId;
+                    newParams['limit'] = params.payload.limit;
+                    newParams['skip'] = params.payload.skip;
+                    newParams['approvalStatus'] = params.payload.approvalStatus;
+                    newParams['searchBy'] = params.payload.searchBy;
+                    newParams['keyword'] = params.payload.keyword;
+                }
+
+                return this._$collectionStatusApi
+                    .findAllBilling<IPaginatedResponse<BillingStatus>>(newParams, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            const newResp = {
+                                data:
+                                    (resp && resp.data.length > 0
+                                        ? resp.data.map((v) => new BillingStatus(v))
+                                        : []) || [],
+                                total: resp['meta']['total'],
+                            };
+
+                            return CollectionActions.fetchBillingStatusSuccess({
+                                payload: newResp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                CollectionActions.fetchBillingStatusFailure({
+                                    payload: {
+                                        id: 'fetchBillingStatusFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );
@@ -252,7 +331,7 @@ export class CollectionEffects {
 
                 return of([params, supplierId]);
             }),
-            switchMap(([_, data]: [any, string | Auth]) => {
+            switchMap(([params, data]: [any, string | Auth]) => {
                 if (!data) {
                     return of(
                         CollectionActions.fetchCalculateCollectionStatusFailure({
@@ -272,6 +351,8 @@ export class CollectionEffects {
                     supplierId = (data as Auth).user.userSuppliers[0].supplierId;
                 }
 
+                let typeValue = params.payload.type;
+
                 if (!supplierId) {
                     return of(
                         CollectionActions.fetchCalculateCollectionStatusFailure({
@@ -284,15 +365,24 @@ export class CollectionEffects {
                 }
 
                 return this._$collectionStatusApi
-                    .getCollectionStatusType<ICalculateCollectionStatusPayment>(
-                        'payment',
+                    .getCollectionStatusType<IPaginatedResponse<CalculateCollectionStatusPayment>>(
+                        typeValue,
                         supplierId
                     )
                     .pipe(
                         catchOffline(),
                         map((resp) => {
+                            const newResp = {
+                                data:
+                                    (resp && resp.data.length > 0
+                                        ? resp.data.map(
+                                              (v) => new CalculateCollectionStatusPayment(v)
+                                          )
+                                        : []) || [],
+                            };
+
                             return CollectionActions.fetchCalculateCollectionStatusSuccess({
-                                payload: resp,
+                                payload: newResp,
                             });
                         }),
                         catchError((err) =>

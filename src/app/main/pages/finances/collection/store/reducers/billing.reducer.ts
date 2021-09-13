@@ -53,7 +53,7 @@ export const reducer = createReducer(
     initialState,
     on(
         CollectionActions.fetchBillingStatusRequest,
-        CollectionActions.updateCollectionStatusRequest,
+        // CollectionActions.updateCollectionStatusRequest,
         (state) => ({
             ...state,
             isLoading: true,
@@ -61,8 +61,7 @@ export const reducer = createReducer(
     ),
     on(
         CollectionActions.fetchBillingStatusFailure,
-        CollectionActions.updateCollectionStatusFailure,
-        CollectionActions.fetchCollectionDetailFailure,
+        // CollectionActions.updateCollectionStatusFailure,
         (state) => ({
             ...state,
             isLoading: false,
