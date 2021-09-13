@@ -430,7 +430,7 @@ export class CollectionEffects {
      * [REQUEST] Detail Collection
      * @memberof CollectionEffects
      */
-    fetchDetailRequest$ = createEffect(() =>
+     fetchCollectionDetailRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchCollectionDetailRequest),
             map((action) => action.payload),

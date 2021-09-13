@@ -135,6 +135,7 @@ export class CollectionApiService {
 
     //get data detail
     findById(id): Observable<any> {
+        console.log('isi id find id detail->', id)
         this._url = this._$helper.handleApiRouter(
             this._endpointCollection + '/web/payment-methods'
         );
