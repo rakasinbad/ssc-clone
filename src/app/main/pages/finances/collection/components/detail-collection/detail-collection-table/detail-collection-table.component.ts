@@ -1,27 +1,21 @@
 import {
-    ChangeDetectionStrategy,
     Component,
     OnInit,
-    ViewChild,
-    ViewEncapsulation,
-    ElementRef,
-    AfterViewInit,
+    ChangeDetectionStrategy,
     OnDestroy,
-    Input,
-    SimpleChanges,
-    OnChanges,
     ChangeDetectorRef,
-    SecurityContext,
+    ViewEncapsulation,
+    Input,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { FinanceDetailCollection } from '../../../models';
+import * as collectionStatus from '../../../store/reducers';
+import { CollectionDetailSelectors } from '../../../store/selectors';
+import * as StatusPaymentLabel from '../../../constants';
 import { fuseAnimations } from '@fuse/animations';
-// import { MatPaginator, MatSort, PageEvent } from '@angular/material';
-// import { Observable, Subject, merge } from 'rxjs';
-// import { NgxPermissionsService } from 'ngx-permissions';
-// import { IQueryParams } from 'app/shared/models/query.model';
-// import { DomSanitizer } from '@angular/platform-browser';
-// import { takeUntil, flatMap, filter } from 'rxjs/operators';
-// import { environment } from 'environments/environment';
-// import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-detail-collection-table',
@@ -31,11 +25,15 @@ import { fuseAnimations } from '@fuse/animations';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class DetailCollectionTableComponent implements OnInit {
-    @Input() detailData;
-    public totalDataSourceBilling: number;
+export class DetailCollectionTableComponent implements OnInit, OnDestroy {
+    public totalDataSourceBilling: number = 0;
     public dataTable = [];
-   
+    detailCollection$: Observable<FinanceDetailCollection>;
+    isLoading$: Observable<boolean>;
+    public subs: Subscription;
+
+    // private _unSubs$: Subject<void> = new Subject<void>();
+
     displayedColumnsBilling = [
         'finance-external-id',
         'finance-store-name',
@@ -54,12 +52,25 @@ export class DetailCollectionTableComponent implements OnInit {
         'finance-reason',
     ];
 
-    constructor() {}
+    constructor(
+        private store: Store<collectionStatus.FeatureState>,
+        private cdRef: ChangeDetectorRef,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit() {
-      this.dataTable = this.detailData[0].billingPayment;
-      // console.log('isi datatable->', this.dataTable)
-        this.totalDataSourceBilling = this.dataTable.length;
+        this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
+        this.isLoading$ = this.store.select(CollectionDetailSelectors.getLoadingState);
+
+        this.subs = this.detailCollection$.subscribe((res) => {
+            if (res != undefined) {
+                let dataBilling = [];
+                this.dataTable = res['data']['billingPayments'];
+                this.totalDataSourceBilling = dataBilling.length;
+            } else {
+                this.dataTable = [];
+            }
+        });
     }
 
     getOrderCode(value): string {
@@ -105,5 +116,53 @@ export class DetailCollectionTableComponent implements OnInit {
         }
 
         return '-';
+    }
+
+    totalAmountFormat(num) {
+        let value = parseInt(num);
+        if (num) {
+            return value
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        return '0';
+    }
+
+    statusLabel(status) {
+        switch (status) {
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_PENDING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
+                return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAYMENT_FAILED_LABEL:
+                return StatusPaymentLabel.STATUS_PAYMENT_FAILED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_PAYMENT_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_PAYMENT_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAID_LABEL:
+                return StatusPaymentLabel.STATUS_PAID_LABEL;
+                break;
+            default:
+                return '-';
+                break;
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
     }
 }

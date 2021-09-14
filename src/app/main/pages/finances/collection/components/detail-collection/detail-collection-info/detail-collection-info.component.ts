@@ -7,21 +7,14 @@ import {
     ViewEncapsulation,
     Input,
 } from '@angular/core';
-// import { fuseAnimations } from '@fuse/animations';
-// import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-// import { Store } from '@ngrx/store';
-// import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
-// import { UiActions } from 'app/shared/store/actions';
-// import { Observable } from 'rxjs';
-
-// import { locale as english } from '../../../i18n/en';
-// import { locale as indonesian } from '../../../i18n/id';
-// import { FinanceDetailCollection } from '../../../models';
-// import { CollectionActions } from '../../../store/actions';
-// import * as collectionStatus from '../../../store/reducers';
-// import { CollectionSelectors } from '../../../store/selectors';
-// import { IQueryParams } from 'app/shared/models/query.model';
-// import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { FinanceDetailCollection } from '../../../models';
+import * as collectionStatus from '../../../store/reducers';
+import { CollectionDetailSelectors } from '../../../store/selectors';
+import * as StatusPaymentLabel from '../../../constants';
 
 @Component({
     selector: 'app-detail-collection-info',
@@ -31,25 +24,72 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailCollectionInfoComponent implements OnInit, OnDestroy {
-  @Input() detailData;
+    detailCollection$: Observable<FinanceDetailCollection>;
+    isLoading$: Observable<boolean>;
+    public subs: Subscription;
+    public idDetail: number;
 
-    constructor() {}
+    constructor(
+        private store: Store<collectionStatus.FeatureState>,
+    ) {}
 
     ngOnInit() {
-      console.log('isi detail data info->', this.detailData)
+        this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
     }
 
     numberFormat(num) {
-      if (num) {
-          return num
-              .toFixed(2)
-              .replace('.', ',')
-              .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-      }
+        if (num) {
+            return num
+                .toFixed(2)
+                .replace(',', '.')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        }
 
-      return '-';
-  }
-  
-    ngOnDestroy(): void {
-  }
+        return '-';
+    }
+
+    numberMateraiFormat(num) {
+        if (num) {
+            return num
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        return '0.00';
+    }
+
+    statusLabel(status) {
+        switch (status) {
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_PENDING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
+                return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAYMENT_FAILED_LABEL:
+                return StatusPaymentLabel.STATUS_PAYMENT_FAILED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_PAYMENT_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_PAYMENT_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAID_LABEL:
+                return StatusPaymentLabel.STATUS_PAID_LABEL;
+                break;
+            default:
+                return '-';
+                break;
+        }
+    }
+
+    ngOnDestroy(): void {}
 }

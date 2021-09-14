@@ -12,7 +12,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Code</div>
 
         <div class="info" fxFlex="100">
-            {{ detailData[0].paymentCollectionMethod.collectionCode || '-' }}
+            {{ (detailCollection$ | async)?.data.paymentCollectionMethod.collectionCode || '-' }}
         </div>
     </div>
 
@@ -25,7 +25,10 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Status</div>
 
         <div class="info" fxFlex="100">
-            {{ (detailData[0].paymentCollectionMethod.approvalStatus | titlecase) || '-' }}
+            {{
+                ((detailCollection$ | async)?.data.paymentCollectionMethod.approvalStatus
+                    | titlecase) || '-'
+            }}
         </div>
     </div>
 
@@ -38,7 +41,9 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Method</div>
 
         <div class="info" fxFlex="100">
-            {{ detailData[0].paymentCollectionMethod.paymentCollectionType.name }}
+            {{
+                (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.name
+            }}
         </div>
     </div>
 
@@ -51,7 +56,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Ref No</div>
 
         <div class="info" fxFlex="100">
-            {{ detailData[0].paymentCollectionMethod.collectionRef || '-' }}
+            {{ (detailCollection$ | async)?.data.paymentCollectionMethod.collectionRef || '-' }}
         </div>
     </div>
 
@@ -64,22 +69,33 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Amount</div>
 
         <div class="info" fxFlex="100">
-            {{ numberFormat(detailData[0].paymentCollectionMethod.amount) }}
+            {{ numberFormat((detailCollection$ | async)?.data.paymentCollectionMethod.amount) }}
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
+    <ng-container
+        *ngIf="
+            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == 2 ||
+            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == 3
+        "
     >
-        <div class="label" fxFlexAlign="center" fxFlex="30">Materai</div>
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="30">Materai</div>
 
-        <div class="info" fxFlex="100">
-            {{ numberFormat(detailData[0].paymentCollectionMethod.stamp.nominal) }}
+            <div class="info" fxFlex="100">
+                {{
+                    numberMateraiFormat(
+                        (detailCollection$ | async)?.data.paymentCollectionMethod.stamp.nominal
+                    )
+                }}
+            </div>
         </div>
-    </div>
+    </ng-container>
 
     <div
         class="custom-field info-field"
@@ -90,7 +106,9 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Total Amount</div>
 
         <div class="info" fxFlex="100">
-            {{ numberFormat(detailData[0].paymentCollectionMethod.totalAmount) }}
+            {{
+                numberFormat((detailCollection$ | async)?.data.paymentCollectionMethod.totalAmount)
+            }}
         </div>
     </div>
 
@@ -103,7 +121,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection User Amount</div>
 
         <div class="info" fxFlex="100">
-            {{ numberFormat(detailData[0].paymentCollectionMethod.usedAmount) }}
+            {{ numberFormat((detailCollection$ | async)?.data.paymentCollectionMethod.usedAmount) }}
         </div>
     </div>
 
@@ -117,9 +135,8 @@
 
         <div class="info" fxFlex="100">
             {{
-                (detailData[0].paymentCollectionMethod.createdDate
-                    | date: 'dd
-            MMM yyyy') || '-'
+                ((detailCollection$ | async)?.data.paymentCollectionMethod.createdDate
+                    | date: 'dd MMM yyyy') || '-'
             }}
         </div>
     </div>
