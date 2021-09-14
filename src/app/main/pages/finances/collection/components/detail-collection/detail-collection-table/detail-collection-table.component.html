@@ -4,7 +4,7 @@
 
 <mat-table
     class="billing-list-table sinbad-table"
-    [class.sinbad-table-no-record]="(totalDataSourceBilling) === 0"
+    [class.sinbad-table-no-record]="(dataTable.length === 0)"
     #table
     [dataSource]="dataTable"
     matSort
