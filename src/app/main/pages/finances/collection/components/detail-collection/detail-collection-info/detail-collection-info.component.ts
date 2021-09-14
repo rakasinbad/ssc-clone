@@ -8,14 +8,12 @@ import {
     Input,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { FinanceDetailCollection } from '../../../models';
 import * as collectionStatus from '../../../store/reducers';
 import { CollectionDetailSelectors } from '../../../store/selectors';
-import { Router } from '@angular/router';
 import * as StatusPaymentLabel from '../../../constants';
 
 @Component({
@@ -31,12 +29,8 @@ export class DetailCollectionInfoComponent implements OnInit, OnDestroy {
     public subs: Subscription;
     public idDetail: number;
 
-    @Input() detailData;
-
     constructor(
         private store: Store<collectionStatus.FeatureState>,
-        private cdRef: ChangeDetectorRef,
-        private route: ActivatedRoute
     ) {}
 
     ngOnInit() {

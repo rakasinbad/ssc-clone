@@ -3,53 +3,59 @@
 </div>
 
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
+    <ng-container
+        *ngIf="
+            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id !== 1
+        "
     >
-        <div class="label" fxFlexAlign="center" fxFlex="30">Bank From</div>
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="30">Bank From</div>
 
-        <div class="info" fxFlex="100">
-            {{
-                (detailCollection$ | async)?.data.paymentCollectionMethod.bankFrom.displayName ||
-                    '-'
-            }}
+            <div class="info" fxFlex="100">
+                {{
+                    (detailCollection$ | async)?.data.paymentCollectionMethod.bankFrom
+                        .displayName || '-'
+                }}
+            </div>
         </div>
-    </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="30">Issue Date</div>
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="30">Issue Date</div>
 
-        <div class="info" fxFlex="100">
-            {{
-                ((detailCollection$ | async)?.data.paymentCollectionMethod.date
-                    | date: 'dd MMM yyyy') || '-'
-            }}
+            <div class="info" fxFlex="100">
+                {{
+                    ((detailCollection$ | async)?.data.paymentCollectionMethod.date
+                        | date: 'dd MMM yyyy') || '-'
+                }}
+            </div>
         </div>
-    </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="30">Due Date</div>
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="30">Due Date</div>
 
-        <div class="info" fxFlex="100">
-            {{
-                ((detailCollection$ | async)?.data.paymentCollectionMethod.dueDate
-                    | date: 'dd MMM yyyy') || '-'
-            }}
+            <div class="info" fxFlex="100">
+                {{
+                    ((detailCollection$ | async)?.data.paymentCollectionMethod.dueDate
+                        | date: 'dd MMM yyyy') || '-'
+                }}
+            </div>
         </div>
-    </div>
+    </ng-container>
 
     <div
         class="custom-field info-field"

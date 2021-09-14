@@ -8,17 +8,14 @@ import {
     ChangeDetectorRef,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import Viewer from 'viewerjs';
 import { CollectionActions } from '../../../store/actions';
 import * as fromCollectionPhoto from '../../../store/reducers';
 import { CollectionDetailSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
 import { ActivatedRoute } from '@angular/router';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { FinanceDetailCollection } from '../../../models';
 import * as collectionStatus from '../../../store/reducers';
-import { Router } from '@angular/router';
-import * as StatusPaymentLabel from '../../../constants';
 
 @Component({
     selector: 'app-detail-collection-sales',
@@ -28,8 +25,6 @@ import * as StatusPaymentLabel from '../../../constants';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
-    @Input() detailData;
-
     detailCollection$: Observable<FinanceDetailCollection>;
     isLoading$: Observable<boolean>;
     public idDetail: number;
@@ -40,15 +35,13 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     isLoadingPhoto$: Observable<boolean>;
 
     constructor(private store: Store<fromCollectionPhoto.FeatureState>, 
-        private storeDetail: Store<collectionStatus.FeatureState>,
-        private cdRef: ChangeDetectorRef,
         private route: ActivatedRoute) {}
 
     ngOnInit() {
-        this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         const { id } = this.route.snapshot.params;
-        
+        this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         this.collectionId = id;
+       
         this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
         const sub = this.collectionPhoto$.subscribe({
             next: (resp) => {

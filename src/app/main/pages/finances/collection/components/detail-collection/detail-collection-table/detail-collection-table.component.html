@@ -4,7 +4,7 @@
 
 <mat-table
     class="billing-list-table sinbad-table"
-    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSourceBilling) === 0"
+    [class.sinbad-table-no-record]="(totalDataSourceBilling) === 0"
     #table
     [dataSource]="dataTable"
     matSort
@@ -167,26 +167,8 @@
 
     <mat-footer-row
         *matFooterRowDef="['no-record']"
-        [fxShow]="!(isLoading$ | async) && (totalDataSourceBilling) === 0"
+        [fxShow]="!(isLoading$ | async) && (dataTable.length === 0)"
     ></mat-footer-row>
 </mat-table>
-
-<!-- <div
-    class="loader-content"
-    *ngIf="(isLoading$ | async) && (!(totalDataSourceBilling) || (totalDataSourceBilling ))"
->
-    <mat-spinner color="accent"></mat-spinner>
-</div> -->
-
-<!-- <mat-paginator
-    [disabled]="
-        ((isLoading$ | async) && !(totalDataSourceBilling ) ||
-        (!(isLoading$ | async) && (totalDataSourceBilling ) === 0)
-    "
-    [length]="totalDataSourceBilling"
-    [pageSize]="defaultPageSize"
-    [pageSizeOptions]="defaultPageOpts"
-    showFirstLastButtons
-></mat-paginator> -->
 
 <br />

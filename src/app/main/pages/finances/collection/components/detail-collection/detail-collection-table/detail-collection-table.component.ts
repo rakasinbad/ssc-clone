@@ -8,27 +8,24 @@ import {
     Input,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { FinanceDetailCollection } from '../../../models';
 import * as collectionStatus from '../../../store/reducers';
 import { CollectionDetailSelectors } from '../../../store/selectors';
-import { Router } from '@angular/router';
-import { BillingStatus, CollectionStatus } from '../../../models';
-import { BillingSelectors, CollectionSelectors } from '../../../store/selectors';
 import * as StatusPaymentLabel from '../../../constants';
+import { fuseAnimations } from '@fuse/animations';
 
 @Component({
     selector: 'app-detail-collection-table',
     templateUrl: './detail-collection-table.component.html',
     styleUrls: ['./detail-collection-table.component.scss'],
+    animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DetailCollectionTableComponent implements OnInit, OnDestroy {
-    @Input() detailData;
     public totalDataSourceBilling: number = 0;
     public dataTable = [];
     detailCollection$: Observable<FinanceDetailCollection>;
@@ -70,6 +67,8 @@ export class DetailCollectionTableComponent implements OnInit, OnDestroy {
                 let dataBilling = [];
                 this.dataTable = res['data']['billingPayments'];
                 this.totalDataSourceBilling = dataBilling.length;
+            } else {
+                this.dataTable = [];
             }
         });
     }
