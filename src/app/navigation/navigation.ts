@@ -128,7 +128,7 @@ export const navigation: IFuseNavigation[] = [
                 id: 'collection',
                 title: 'Collection',
                 type: 'item',
-                privilages: 'FINANCE.PS.READ',
+                privilages: 'FINANCE.CL.READ',
                 url: '/pages/finances/collection',
             },
         ],

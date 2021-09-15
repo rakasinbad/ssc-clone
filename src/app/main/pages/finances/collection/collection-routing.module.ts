@@ -20,7 +20,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['FINANCE.PS.READ'],
+                only: ['FINANCE.CL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
@@ -36,7 +36,7 @@ const routes: Routes = [
         component: DetailCollectionComponent,
         data: {
             permissions: {
-                only: ['FINANCE.PS.READ'],
+                only: ['FINANCE.CL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
