@@ -242,11 +242,9 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                 data['sortBy'] = this.sort.active;
             }
 
-            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.searchValue);
-
             data['paginate'] = true;
-            data['keyword'] = query;
-            if (data['keyword'] !== null) {
+            data['keyword'] = this.searchValue;
+            if (data['keyword'] !== '') {
                 data['skip'] = 0;
             }
 

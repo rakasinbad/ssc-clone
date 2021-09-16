@@ -233,7 +233,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+                skip: this.paginator.pageIndex + 1,
             };
 
             data['paginate'] = true;
@@ -243,11 +243,10 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 data['sortBy'] = this.sort.active;
             }
 
-            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.searchValue);
-
             data['paginate'] = true;
-            data['keyword'] = query;
-            if (data['keyword'] !== null) {
+            data['keyword'] = this.searchValue;
+
+            if (data['keyword'] != '') {
                 data['skip'] = 0;
             }
 
