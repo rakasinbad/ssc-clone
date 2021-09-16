@@ -174,7 +174,7 @@
         <mat-header-cell *matHeaderCellDef> Billing Date</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.billing.createdAt | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
