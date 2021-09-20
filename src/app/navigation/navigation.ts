@@ -245,6 +245,12 @@ export const navigation: IFuseNavigation[] = [
                 type: 'item',
                 url: '/pages/sales-force/workday-setting',
             },
+            {
+                id: 'activity-setting',
+                title: 'Activity Setting',
+                type: 'item',
+                url: '/pages/sales-force/activity-setting',
+            },
         ],
     },
     {
