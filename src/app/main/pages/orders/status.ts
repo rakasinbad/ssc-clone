@@ -45,6 +45,15 @@ export const statusOrder: Array<FuseNavigation> = [
         },
     },
     {
+        id: 'pending_partial',
+        title: 'Pending Partial (-)',
+        type: 'item',
+        function: (store) => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'pending_partial' }));
+            store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+        },
+    },
+    {
         id: 'packing',
         title: 'Packed (-)',
         // title: 'Packing',

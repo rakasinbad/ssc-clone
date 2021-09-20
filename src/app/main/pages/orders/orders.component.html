@@ -76,6 +76,7 @@
             <mat-tab [label]="'All (' + allOrder + ')'"></mat-tab>
             <mat-tab [label]="'Pending (' + pendingOrder + ')'"></mat-tab>
             <mat-tab [label]="'Pending Payment (' + pendingPayment + ')'"></mat-tab>
+            <mat-tab [label]="'Pending Partial (' + pendingPartial + ')'"></mat-tab>
             <mat-tab [label]="'New Order (' + newOrder + ')'"></mat-tab>
             <mat-tab [label]="'Packed (' + packedOrder + ')'"></mat-tab>
             <mat-tab [label]="'Shipped (' + shippedOrder + ')'"></mat-tab>
@@ -259,7 +260,7 @@
                                 <ng-container *ngSwitchCase="'done'">
                                     Done
                                 </ng-container>
-                                
+
                                 <ng-container *ngSwitchCase="'pending_partial'">
                                     Pending Partial
                                 </ng-container>
@@ -278,7 +279,7 @@
                             </ng-container>
                         </p>
                     </mat-cell>
-                </ng-container>                
+                </ng-container>
 
                 <!-- Warehouse Column -->
                 <ng-container matColumnDef="payment-status">

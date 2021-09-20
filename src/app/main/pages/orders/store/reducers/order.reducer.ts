@@ -44,7 +44,8 @@ const initialOrderState = adapterOrder.getInitialState({
         totalCompletedOrder: '0',
         totalPendingOrder: '0',
         totalCanceledOrder: '0',
-        totalPendingPaymentOrder: '0'
+        totalPendingPaymentOrder: '0',
+        totalPendingPartialOrder: '0'
     }
 });
 

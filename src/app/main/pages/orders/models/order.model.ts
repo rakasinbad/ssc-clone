@@ -8,4 +8,5 @@ export interface IStatusOMS {
     totalPendingOrder: string;
     totalCanceledOrder: string;
     totalPendingPaymentOrder: string;
+    totalPendingPartialOrder: string;
 }

@@ -62,7 +62,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     readonly defaultPageSize = this.route.snapshot.queryParams.limit || 25;
     readonly defaultPageOpts = environment.pageSizeTable;
     private form: FormGroup;
-    
+
     allOrder: number;
     newOrder: number;
     packedOrder: number;
@@ -72,6 +72,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     pendingOrder: number;
     canceledOrder: number;
     pendingPayment: number;
+    pendingPartial: number;
     selectedTab: string;
 
     // Untuk menentukan konfigurasi card header.
@@ -109,7 +110,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         by: {
             date: {
                 title: 'Order Date',
-                sources: null,            
+                sources: null,
             },
             basePrice: {
                 title: 'Order Value',
@@ -266,7 +267,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         });
 
         this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
-        
+
         // Handle action in filter
         this.sinbadFilterService
             .getClickAction$()
@@ -291,7 +292,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             });
 
         this.filterSource();
-        
+
         this._initPage();
     }
 
@@ -362,26 +363,30 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 break;
 
             case 3:
-                this.selectedTab = 'confirm';
+                this.selectedTab = 'pending_partial';
                 break;
 
             case 4:
-                this.selectedTab = 'packing';
+                this.selectedTab = 'confirm';
                 break;
 
             case 5:
-                this.selectedTab = 'shipping';
+                this.selectedTab = 'packing';
                 break;
 
             case 6:
-                this.selectedTab = 'delivered';
+                this.selectedTab = 'shipping';
                 break;
 
             case 7:
-                this.selectedTab = 'done';
+                this.selectedTab = 'delivered';
                 break;
 
             case 8:
+                this.selectedTab = 'done';
+                break;
+
+            case 9:
                 this.selectedTab = 'cancel';
                 break;
 
@@ -793,7 +798,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                         fieldName: 'statuses[]',
                         keyword: value,
                     }
-                ];    
+                ];
             }
         }
 
@@ -856,6 +861,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             this.store.select(OrderSelectors.getTotalPendingOrder),
             this.store.select(OrderSelectors.getTotalCanceledOrder),
             this.store.select(OrderSelectors.getTotalPendingPayment),
+            this.store.select(OrderSelectors.getTotalPendingPartialOrder),
         ])
             .pipe(takeUntil(this._unSubs$))
             .subscribe(
@@ -869,6 +875,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     pendingOrder,
                     canceledOrder,
                     pendingPayment,
+                    pendingPartial
                 ]) => {
                     this.allOrder = +allOrder;
                     this.newOrder = +newOrder;
@@ -879,6 +886,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     this.pendingOrder = +pendingOrder;
                     this.canceledOrder = +canceledOrder;
                     this.pendingPayment = +pendingPayment;
+                    this.pendingPartial = +pendingPartial;
                     // this.cdRef.markForCheck();
                 }
             );
@@ -901,14 +909,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                     this.filterConfig.by.orderStatus.sources = orderStatus;
                     this.sinbadFilterService.setConfig({ ...this.filterConfig, form: this.form });
                 });
-                
+
         this.paymentStatusFacade.collections$
                 .pipe(
                     filter((sources) => sources && sources.length > 0),
                     map((sources) => {
                         return sources.map((source) => {
                             var label = source.status.replaceAll("_", " ");
-                            
+
                             return {
                                 id: source.status, label: label
                             }
@@ -935,7 +943,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 }
 
                 const { supplierId } = userSupplier;
-                
+
                 return this.warehousesApiService.getWithQuery({
                     ...params,
                     search: [{ fieldName: 'supplierId', keyword: supplierId }]
