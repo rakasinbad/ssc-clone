@@ -23,6 +23,7 @@ export class CalculateOrderApiService {
      */
     private _url: string;
     private _urlCalculate: string;
+    private _urlCalculateOrderView: string;
 
     /**
      *
@@ -31,7 +32,8 @@ export class CalculateOrderApiService {
      * @memberof CalculateOrderApiService
      */
     private readonly _endpoint = '/calculate-orders';
-    private readonly _endpointCalculate = '/payment/v1/calculate-order-payments'
+    private readonly _endpointCalculate = '/payment/v1/calculate-order-payments';
+    private readonly _endpointCalculateOrderView = '/order-view/calculate-orders';
 
     /**
      * Creates an instance of CalculateOrderApiService.
@@ -42,6 +44,7 @@ export class CalculateOrderApiService {
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         this._urlCalculate = this._$helper.handleApiRouter(this._endpointCalculate);
+        this._urlCalculateOrderView = this._$helper.handleApiRouter(this._endpointCalculateOrderView);
     }
 
     /**
@@ -97,4 +100,29 @@ export class CalculateOrderApiService {
 
         return this.http.get<T>(this._urlCalculate, { params: newParams });
     }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {string} [supplierId]
+     * @returns {Observable<T>}
+     * @memberof CalculateOrderApiService
+     */
+    getCalculateOrderView<T>(supplierId?: string): Observable<T> {
+        const newArg =
+            supplierId
+                ? [
+                    {
+                        key: 'supplierId',
+                        value: supplierId
+                    },
+                ]
+                : [];
+
+        const newParams = this._$helper.handleParams(this._urlCalculateOrderView, null, ...newArg);
+
+        return this.http.get<T>(this._urlCalculateOrderView, { params: newParams });
+    }
+
 }
