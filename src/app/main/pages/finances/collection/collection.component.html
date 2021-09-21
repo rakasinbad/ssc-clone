@@ -8,11 +8,13 @@
             animationDuration="0ms"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-        <ng-container *ngFor="let user of dataSource$ | async">
-            <mat-tab 
-            aria-label="all" [label]="(user.title || '-') + ' (' + (user.total || 0) + ')'"></mat-tab>
-        </ng-container>
-           
+            <ng-container *ngFor="let user of dataSource$ | async">
+                <mat-tab
+                    class="collection-tab"
+                    aria-label="all"
+                    [label]="(user.title || '-') + ' (' + (user.total || 0) + ')'"
+                ></mat-tab>
+            </ng-container>
         </mat-tab-group>
 
         <!-- CONTENT CARD -->
@@ -23,6 +25,7 @@
                 </div>
                 <div>
                     <div
+                        class="search-section"
                         fxLayout="row"
                         fxLayoutAlign="start stretch"
                         style="height: 25px; margin-top: 30px; margin-bottom: 30px"
@@ -33,13 +36,15 @@
                                 style="padding-right: 10px; min-height: 31px"
                             >
                                 <mat-select
-                                    placeholder="Search By"
                                     style="
                                         min-height: 20px;
                                         margin-top: -13px;
                                         margin-bottom: -10px;
+                                        font-size: 14px;
+                                        line-height: 18px;
                                     "
-                                    (selectionChange)="onSearchByChange($event)"
+                                    [(value)]="searchByValue"
+                                    (change)="onSearchByChange($event)"
                                 >
                                     <mat-option *ngFor="let row of searchByList" [value]="row.id">
                                         {{ row.label }}
@@ -48,7 +53,7 @@
                             </mat-form-field>
 
                             <mat-form-field
-                                class="input-search"
+                                class="search-section__value"
                                 appearance="outline"
                                 fxFlex="70"
                                 style="padding-right: 17px; min-height: 31px"
@@ -58,7 +63,12 @@
                                     matInput
                                     placeholder="Search"
                                     (keyup)="keyUpKeyword($event)"
-                                    style="position: fixed; margin-top: -13px"
+                                    style="
+                                        position: fixed;
+                                        margin-top: -13px;
+                                        font-size: 14px;
+                                        line-height: 18px;
+                                    "
                                 />
                                 <mat-icon
                                     matSuffix
@@ -71,12 +81,25 @@
                 </div>
             </div>
 
-            <ng-container *ngIf="selectedViewBy =='cStatus'">
-                <app-list-collection class="mx-16" [approvalStatus]="approvalStatusType" [viewByType]="selectedViewBy" [searchBy]="searchByValue" [searchValue]="search"></app-list-collection>
+            <br />
+            <ng-container *ngIf="selectedViewBy == 'cStatus'">
+                <app-list-collection
+                    class="mx-16"
+                    [approvalStatus]="approvalStatusType"
+                    [viewByType]="selectedViewBy"
+                    [searchBy]="searchByValue"
+                    [searchValue]="search"
+                ></app-list-collection>
             </ng-container>
 
-            <ng-container *ngIf="selectedViewBy =='bStatus'">
-                <app-list-billing class="mx-16" [approvalStatus]="approvalStatusType" [viewByType]="selectedViewBy" [searchBy]="searchByValue" [searchValue]="search"></app-list-billing>
+            <ng-container *ngIf="selectedViewBy == 'bStatus'">
+                <app-list-billing
+                    class="mx-16"
+                    [approvalStatus]="approvalStatusType"
+                    [viewByType]="selectedViewBy"
+                    [searchBy]="searchByValue"
+                    [searchValue]="search"
+                ></app-list-billing>
             </ng-container>
         </div>
         <!-- / CONTENT CARD -->

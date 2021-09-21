@@ -199,7 +199,7 @@
 
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef colspan="8"> {{labelNoRecord}} </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumnsBilling; sticky: true"></mat-header-row>
@@ -207,8 +207,6 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumnsBilling"
         class="sinbad-billing-list-item"
-        [routerLink]="[row?.id, 'detail']"
-        (click)="openDetailCollectionStatus(row)"
     ></mat-row>
 
     <mat-footer-row

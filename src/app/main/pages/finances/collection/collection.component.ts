@@ -7,14 +7,10 @@ import { UiActions } from 'app/shared/store/actions';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { FeatureState as CollectionCoreState } from './store/reducers';
-import { SearchByList } from 'app/shared/models/search-by.model';
-import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { HelperService } from 'app/shared/helpers';
 import { CollectionActions } from './store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
 import { CollectionSelectors, CollectionType } from './store/selectors';
-import { combineLatest, merge, Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, map } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
 
 @Component({
@@ -38,10 +34,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
     searchByList = this._$helperService.searchByList();
     selectedTab: string;
     subs: Subscription;
-    searchByValue: string = 'supplierName';
+    searchByValue: string = this.searchByList[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
+    selectedList = this.searchByList[0].id;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -115,8 +112,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
         }
     }
 
-    onSearchByChange(event) {
-        this.searchByValue = event.value;
+    onSearchByChange(event: string) {
+        this.searchByValue = event;
     }
 
     keyUpKeyword(event: any) {
@@ -127,11 +124,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
         this.approvalStatusType = index;
     }
 
-    ngOnInit(): void {
-        // this.onSelectedTab(0);
-    }
-
-    ngAfterViewInit(): void {}
+    ngOnInit(): void {}
 
     getDataTab(index): void {
         let parameter = {};
@@ -153,6 +146,5 @@ export class CollectionComponent implements OnInit, OnDestroy {
         this.subs$.next();
         this.subs$.complete();
         this.fuseNavigation$.unregister('customNavigation');
-        //   this.subs.unsubscribe();
     }
 }
