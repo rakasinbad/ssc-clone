@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, OnChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -7,14 +7,10 @@ import { UiActions } from 'app/shared/store/actions';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { FeatureState as CollectionCoreState } from './store/reducers';
-import { SearchByList } from 'app/shared/models/search-by.model';
-import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { HelperService } from 'app/shared/helpers';
 import { CollectionActions } from './store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
 import { CollectionSelectors, CollectionType } from './store/selectors';
-import { combineLatest, merge, Observable, Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, map } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
 
 @Component({
@@ -22,7 +18,7 @@ import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
     templateUrl: './collection.component.html',
     styleUrls: ['./collection.component.scss'],
 })
-export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
+export class CollectionComponent implements OnInit, OnDestroy {
     // Untuk penanda tab mana yang sedang aktif.
 
     // tslint:disable-next-line: no-inferrable-types
@@ -130,14 +126,6 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
 
     ngOnInit(): void {}
 
-    ngAfterViewInit(): void {}
-
-    ngOnChanges(): void {}
-
-    onClickSubmit(value) {
-        console.log('isi value submit->', value);
-    }
-
     getDataTab(index): void {
         let parameter = {};
         parameter['type'] = index;
@@ -158,6 +146,5 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
         this.subs$.next();
         this.subs$.complete();
         this.fuseNavigation$.unregister('customNavigation');
-        //   this.subs.unsubscribe();
     }
 }
