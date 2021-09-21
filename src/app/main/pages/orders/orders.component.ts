@@ -34,7 +34,7 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import { merge, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap, takeUntil, withLatestFrom, tap, catchError } from 'rxjs/operators';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -63,16 +63,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     readonly defaultPageOpts = environment.pageSizeTable;
     private form: FormGroup;
 
-    allOrder: number;
-    newOrder: number;
-    packedOrder: number;
-    shippedOrder: number;
-    deliveredOrder: number;
-    completedOrder: number;
-    pendingOrder: number;
-    canceledOrder: number;
-    pendingPayment: number;
-    pendingPartial: number;
+    allOrder: Observable<number>;
+    newOrder: Observable<number>;
+    packedOrder: Observable<number>;
+    shippedOrder: Observable<number>;
+    deliveredOrder: Observable<number>;
+    completedOrder: Observable<number>;
+    pendingOrder: Observable<number>;
+    canceledOrder: Observable<number>;
+    pendingPayment: Observable<number>;
+    pendingPartial: Observable<number>;
     selectedTab: string;
 
     // Untuk menentukan konfigurasi card header.
@@ -851,46 +851,20 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
     private _initStatusOrder(): void {
         this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
 
-        combineLatest([
-            this.store.select(OrderSelectors.getTotalAllOrder),
-            this.store.select(OrderSelectors.getTotalNewOrder),
-            this.store.select(OrderSelectors.getTotalPackedOrder),
-            this.store.select(OrderSelectors.getTotalShippedOrder),
-            this.store.select(OrderSelectors.getTotalDeliveredOrder),
-            this.store.select(OrderSelectors.getTotalCompletedOrder),
-            this.store.select(OrderSelectors.getTotalPendingOrder),
-            this.store.select(OrderSelectors.getTotalCanceledOrder),
-            this.store.select(OrderSelectors.getTotalPendingPayment),
-            this.store.select(OrderSelectors.getTotalPendingPartialOrder),
-        ])
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(
-                ([
-                    allOrder,
-                    newOrder,
-                    packedOrder,
-                    shippedOrder,
-                    deliveredOrder,
-                    completedOrder,
-                    pendingOrder,
-                    canceledOrder,
-                    pendingPayment,
-                    pendingPartial
-                ]) => {
-                    this.allOrder = +allOrder;
-                    this.newOrder = +newOrder;
-                    this.packedOrder = +packedOrder;
-                    this.shippedOrder = +shippedOrder;
-                    this.deliveredOrder = +deliveredOrder;
-                    this.completedOrder = +completedOrder;
-                    this.pendingOrder = +pendingOrder;
-                    this.canceledOrder = +canceledOrder;
-                    this.pendingPayment = +pendingPayment;
-                    this.pendingPartial = +pendingPartial;
-                    // this.cdRef.markForCheck();
-                }
-            );
+        this.allOrder = this.store.select(OrderSelectors.getTotalAllOrder);
+        this.newOrder = this.store.select(OrderSelectors.getTotalNewOrder);
+        this.packedOrder = this.store.select(OrderSelectors.getTotalPackedOrder);
+        this.shippedOrder = this.store.select(OrderSelectors.getTotalShippedOrder);
+        this.deliveredOrder = this.store.select(OrderSelectors.getTotalDeliveredOrder);
+        this.completedOrder = this.store.select(OrderSelectors.getTotalCompletedOrder);
+        this.pendingOrder = this.store.select(OrderSelectors.getTotalPendingOrder);
+        this.canceledOrder = this.store.select(OrderSelectors.getTotalCanceledOrder);
+        this.pendingPayment = this.store.select(OrderSelectors.getTotalPendingPayment);
+        this.pendingPartial = this.store.select(OrderSelectors.getTotalPendingPartialOrder);
+
     }
+
+
 
     filterSource(): void {
         this.orderStatusFacade.getWithQuery({ search: [{ fieldName: 'web', keyword: 'true' }] });
