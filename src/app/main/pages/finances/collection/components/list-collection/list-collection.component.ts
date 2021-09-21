@@ -24,7 +24,7 @@ import { environment } from 'environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store as NgRxStore } from '@ngrx/store';
 import { CollectionActions } from '../../store/actions';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as CollectionCoreState } from '../../store/reducers';
@@ -54,6 +54,8 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
+    @Input()
+    form: FormGroup;
 
     @Input() viewByType: string = 'cStatus';
     @Input() searchBy: string = 'supplierName';
@@ -72,6 +74,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     public size: number = 5;
     public totalDataSource: number;
     public totalDataSourceBilling: number;
+    public labelNoRecord = 'No data available';
 
     displayedColumnsCollection = [
         'finance-collection-code',
@@ -246,7 +249,12 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
             data['keyword'] = this.searchValue;
             if (data['keyword'] !== '') {
                 data['skip'] = 0;
+                this.labelNoRecord = 'No search found'
+            } else {
+                this.labelNoRecord = 'No data available';
             }
+
+            console.log('form->', this.form)
 
             data['type'] = this.viewByType;
             data['searchBy'] = this.searchBy;

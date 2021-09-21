@@ -66,6 +66,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     dataSource$: Observable<Array<BillingStatus>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+    public labelNoRecord = 'No data available';
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
@@ -248,6 +249,9 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
             if (data['keyword'] != '') {
                 data['skip'] = 0;
+                this.labelNoRecord = 'No search found';
+            } else {
+                this.labelNoRecord = 'No data available';
             }
 
             data['type'] = this.viewByType;

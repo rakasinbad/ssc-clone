@@ -635,10 +635,6 @@ export class HelperService {
         label: string;
     }[] = [
         {
-            id: SearchByList.SUPP_NAME,
-            label: 'Supplier Name',
-        },
-        {
             id: SearchByList.STORE_EXT_ID,
             label: 'External Id',
         },
@@ -649,10 +645,6 @@ export class HelperService {
         {
             id: SearchByList.ORDER_CODE,
             label: 'Order Code',
-        },
-        {
-            id: SearchByList.ORDER_REF,
-            label: 'Order Date',
         },
         {
             id: SearchByList.SALES_REP_NAME,

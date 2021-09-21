@@ -1,9 +1,7 @@
 export enum SearchByList {
-    SUPP_NAME = 'supplierName',
     STORE_EXT_ID = 'storeExternalId',
     STORE_NAME = 'storeName',
     ORDER_CODE = 'orderCode',
-    ORDER_REF = 'orderRef',
     SALES_REP_NAME = 'salesmanName',
     COL_CODE = 'collectionCode',
     BILL_PAYM_CODE = 'billingPaymentCode',

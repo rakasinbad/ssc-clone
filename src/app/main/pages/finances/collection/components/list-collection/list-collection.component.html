@@ -125,7 +125,7 @@
 
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef colspan="8">{{labelNoRecord}}</mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumnsCollection; sticky: true"></mat-header-row>
