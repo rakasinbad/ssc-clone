@@ -73,15 +73,16 @@
             animationDuration="0ms"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-            <mat-tab [label]="'All (' + allOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Pending (' + pendingOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Pending Payment (' + pendingPayment + ')'"></mat-tab>
-            <mat-tab [label]="'New Order (' + newOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Packed (' + packedOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Shipped (' + shippedOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Delivered (' + deliveredOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Done (' + completedOrder + ')'"></mat-tab>
-            <mat-tab [label]="'Canceled (' + canceledOrder + ')'"></mat-tab>
+            <mat-tab [label]="'All (' + (allOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Pending (' + (pendingOrder | async)+ ')'"></mat-tab>
+            <mat-tab [label]="'Pending Payment (' + (pendingPayment | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Pending Partial (' + (pendingPartial | async) + ')'"></mat-tab>
+            <mat-tab [label]="'New Order (' + (newOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Packed (' + (packedOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Shipped (' + (shippedOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Delivered (' + (deliveredOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Done (' + (completedOrder | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Canceled (' + (canceledOrder | async) + ')'"></mat-tab>
         </mat-tab-group>
 
         <!-- CONTENT CARD [class.mt-8]="!filterStatus || filterStatus === 'all-status'" -->
@@ -259,7 +260,7 @@
                                 <ng-container *ngSwitchCase="'done'">
                                     Done
                                 </ng-container>
-                                
+
                                 <ng-container *ngSwitchCase="'pending_partial'">
                                     Pending Partial
                                 </ng-container>
@@ -278,7 +279,7 @@
                             </ng-container>
                         </p>
                     </mat-cell>
-                </ng-container>                
+                </ng-container>
 
                 <!-- Warehouse Column -->
                 <ng-container matColumnDef="payment-status">

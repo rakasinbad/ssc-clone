@@ -34,6 +34,11 @@ export const getTotalPendingPayment = createSelector(
     (state) => state.totalPendingPaymentOrder
 );
 
+export const getTotalPendingPartialOrder = createSelector(
+    getTotalStatus,
+    (state) => state.totalPendingPartialOrder
+);
+
 export const getTotalNewOrder = createSelector(getTotalStatus, (state) => state.totalNewOrder);
 
 export const getTotalPackedOrder = createSelector(
