@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -7,15 +7,17 @@ import { UiActions } from 'app/shared/store/actions';
 import * as fromRoot from 'app/store/app.reducer';
 import { environment } from 'environments/environment';
 import { BehaviorSubject } from 'rxjs';
+import { Router, NavigationEnd, } from "@angular/router";
 
 @Component({
     selector: 'app-Activity-setting',
     templateUrl: './activity-setting.component.html',
     styleUrls: ['./activity-setting.component.scss'],
 })
-export class ActivitySettingComponent implements OnInit {
+export class ActivitySettingComponent implements OnInit, OnDestroy {
     url$: BehaviorSubject<SafeResourceUrl> = new BehaviorSubject<SafeResourceUrl>('');
     isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+    navigationSubscription;     
 
     private readonly breadcrumbs: IBreadcrumbs[] = [
         {
@@ -32,23 +34,46 @@ export class ActivitySettingComponent implements OnInit {
     constructor(
         private domSanitizer: DomSanitizer,
         private store: Store<fromRoot.State>,
-        private storage: StorageMap
-    ) {}
+        private storage: StorageMap,
+        private router: Router
+    ) {
+        this.navigationSubscription = this.router.events.subscribe((e: any) => {
+            // If it is a NavigationEnd event re-initalise the component
+            if (e instanceof NavigationEnd) {
+                this.onLoadIframe()
+            }
+        });
+    }
 
     ngOnInit(): void {
         this.store.dispatch(UiActions.createBreadcrumb({ payload: this.breadcrumbs }));
 
-        // this.storage.get('user').subscribe((data: any) => {
-        //     const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        //         `${environment.microSiteHost}/salessetting?token=${data.token}`
-        //     );
+        this.onLoadIframe()
+    }
 
-        //     this.url$.next(safeUrl);
-        // });
+    ngOnDestroy(): void {
+        this.url$.next('');
+        this.url$.complete();
+
         this.isLoading$.next(false);
+        this.isLoading$.complete();
+
+        if (this.navigationSubscription) {
+            this.navigationSubscription.unsubscribe();
+        }
     }
 
     onLoad(): void {
         this.isLoading$.next(false);
+    }
+
+    onLoadIframe(): void {
+        this.storage.get('user').subscribe((data: any) => {
+            const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
+                `${environment.microSiteHost}/salesmanagement/activitysetting?token=${data.token}`
+            );
+
+            this.url$.next(safeUrl);
+        });
     }
 }
