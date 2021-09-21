@@ -36,15 +36,16 @@ const initialOrderState = adapterOrder.getInitialState({
     selectedOrderId: null,
     total: 0,
     totalStatus: {
-        totalOrder: '0',
-        totalNewOrder: '0',
-        totalPackedOrder: '0',
-        totalShippedOrder: '0',
-        totalDeliveredOrder: '0',
-        totalCompletedOrder: '0',
-        totalPendingOrder: '0',
-        totalCanceledOrder: '0',
-        totalPendingPaymentOrder: '0'
+        totalOrder: 0,
+        totalNewOrder: 0,
+        totalPackedOrder: 0,
+        totalShippedOrder: 0,
+        totalDeliveredOrder: 0,
+        totalCompletedOrder: 0,
+        totalPendingOrder: 0,
+        totalCanceledOrder: 0,
+        totalPendingPaymentOrder: 0,
+        totalPendingPartialOrder: 0
     }
 });
 
