@@ -250,11 +250,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
             if (data['keyword'] !== '') {
                 data['skip'] = 0;
                 this.labelNoRecord = 'No search found'
-            } else {
-                this.labelNoRecord = 'No data available';
             }
-
-            console.log('form->', this.form)
 
             data['type'] = this.viewByType;
             data['searchBy'] = this.searchBy;
