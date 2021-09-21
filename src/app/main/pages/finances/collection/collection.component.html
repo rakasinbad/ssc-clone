@@ -36,7 +36,6 @@
                                 style="padding-right: 10px; min-height: 31px"
                             >
                                 <mat-select
-                                    placeholder="Search By"
                                     style="
                                         min-height: 20px;
                                         margin-top: -13px;
@@ -44,7 +43,8 @@
                                         font-size: 14px;
                                         line-height: 18px;
                                     "
-                                    (selectionChange)="onSearchByChange($event)"
+                                    [(value)]="searchByValue"
+                                    (change)="onSearchByChange($event)"
                                 >
                                     <mat-option *ngFor="let row of searchByList" [value]="row.id">
                                         {{ row.label }}

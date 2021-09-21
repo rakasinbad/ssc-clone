@@ -16,7 +16,6 @@ import { CollectionSelectors, CollectionType } from './store/selectors';
 import { combineLatest, merge, Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, map } from 'rxjs/operators';
 import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-collection',
@@ -39,11 +38,11 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
     searchByList = this._$helperService.searchByList();
     selectedTab: string;
     subs: Subscription;
-    searchByValue: any = 'storeExternalId';
+    searchByValue: string = this.searchByList[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
-    searchByFormGroup: FormGroup;
+    selectedList = this.searchByList[0].id;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -71,7 +70,6 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
         private _$helperService: HelperService,
-        private fb: FormBuilder,
         private cdRef: ChangeDetectorRef
     ) {
         // Memuat terjemahan.
@@ -118,8 +116,8 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
         }
     }
 
-    onSearchByChange(event) {
-        this.searchByValue = event.value;
+    onSearchByChange(event: string) {
+        this.searchByValue = event;
     }
 
     keyUpKeyword(event: any) {
@@ -130,29 +128,14 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
         this.approvalStatusType = index;
     }
 
-    ngOnInit(): void {
-        this.searchByFormGroup = this.fb.group({
-            searchByFormGroup: ['storeExternalId'],
-        });
+    ngOnInit(): void {}
 
-        const toSelect = this.searchByList.find((c) => c.id == 'storeExternalId');
-        this.searchByFormGroup.get('searchByFormGroup').setValue(toSelect);
-        this.searchByValue = this.searchByFormGroup.get('searchByFormGroup').get('id');
-        console.log('searchByFormGroup->', this.searchByFormGroup);
-        console.log('searchbyvalue->', this.searchByValue);
+    ngAfterViewInit(): void {}
 
-    }
-
-    ngAfterViewInit(): void {
-       
-    }
-
-    ngOnChanges(): void {
-        
-    }
+    ngOnChanges(): void {}
 
     onClickSubmit(value) {
-        console.log('isi value submit->', value)
+        console.log('isi value submit->', value);
     }
 
     getDataTab(index): void {
