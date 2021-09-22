@@ -10,11 +10,11 @@ import { BehaviorSubject } from 'rxjs';
 import { Router, NavigationEnd, } from "@angular/router";
 
 @Component({
-    selector: 'app-portfoliosv2',
-    templateUrl: './portfoliosv2.component.html',
-    styleUrls: ['./portfoliosv2.component.scss'],
+    selector: 'app-Activity-setting',
+    templateUrl: './activity-setting.component.html',
+    styleUrls: ['./activity-setting.component.scss'],
 })
-export class SrTargetComponent implements OnInit, OnDestroy {
+export class ActivitySettingComponent implements OnInit, OnDestroy {
     url$: BehaviorSubject<SafeResourceUrl> = new BehaviorSubject<SafeResourceUrl>('');
     isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     navigationSubscription;     
@@ -27,8 +27,7 @@ export class SrTargetComponent implements OnInit, OnDestroy {
             title: 'Sales Management',
         },
         {
-            title: 'Portfolio Of Store',
-            keepCase: true,
+            title: 'Activity Setting',
         },
     ];
 
@@ -69,11 +68,11 @@ export class SrTargetComponent implements OnInit, OnDestroy {
     }
 
     onLoadIframe(): void {
-         this.storage.get('user').subscribe((data: any) => {
+        this.storage.get('user').subscribe((data: any) => {
             const safeUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(
-                `${environment.microSiteHost}/salesmanagement/portfolio?token=${data.token}`
+                `${environment.microSiteHost}/salesmanagement/activitysetting?token=${data.token}`
             );
-            
+
             this.url$.next(safeUrl);
         });
     }
