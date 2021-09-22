@@ -103,7 +103,7 @@
             </div>
             <div class="timeline-label-wrap mb-8">
                 <p class="timeline-desc my-0 py-0">
-                    {{ log | orderLog }}
+                    {{ log | orderLog: data?.orderCancelReason?.reason }}
                 </p>
                 <p  class="timeline-time mt-0 pt-0">
                     {{ (log?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
