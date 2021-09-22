@@ -12,6 +12,7 @@ import { Store } from '@ngrx/store';
 import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable } from 'rxjs';
+import { Location } from '@angular/common';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
@@ -56,6 +57,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
+        private location: Location,
         private store: Store<collectionStatus.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
@@ -82,7 +84,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
     }
 
     onClickBack(): void {
-        this.router.navigateByUrl('/pages/finances/collection');
+        this.location.back();
         localStorage.clear();
     }
 

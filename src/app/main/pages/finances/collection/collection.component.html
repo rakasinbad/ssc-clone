@@ -8,13 +8,34 @@
             animationDuration="0ms"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-            <ng-container *ngFor="let user of dataSource$ | async">
+            <ng-container *ngIf="(isLoading$ | async); else others">
                 <mat-tab
                     class="collection-tab"
-                    aria-label="all"
-                    [label]="(user.title || '-') + ' (' + (user.total || 0) + ')'"
+                    [label]="'All (' + (0) + ')'"
+                ></mat-tab>
+                <mat-tab
+                    class="collection-tab"
+                    [label]="'Waiting (' + (0) + ')'"
+                ></mat-tab>
+                <mat-tab
+                    class="collection-tab"
+                    [label]="'Approved (' + (0) + ')'"
+                ></mat-tab>
+                <mat-tab
+                    class="collection-tab"
+                    [label]="'Rejected (' + (0) + ')'"
                 ></mat-tab>
             </ng-container>
+
+            <ng-template #others>
+                <ng-container *ngFor="let user of dataSource$ | async">
+                    <mat-tab
+                        class="collection-tab"
+                        aria-label="all"
+                        [label]="(user.title || '-') + ' (' + (user.total || 0) + ')'"
+                    ></mat-tab>
+                </ng-container>
+            </ng-template>
         </mat-tab-group>
 
         <!-- CONTENT CARD -->

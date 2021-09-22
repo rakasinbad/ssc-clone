@@ -33,6 +33,7 @@ import { HelperService } from 'app/shared/helpers';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { CollectionStatus } from '../../models';
 import { CollectionSelectors } from '../../store/selectors';
+import * as StatusPaymentLabel from '../../constants';
 
 @Component({
     selector: 'app-list-collection',
@@ -175,7 +176,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     openDetailPage(row: any): void {
-        let itemPromoHierarchy = { type: row.promoType };
+        let itemPromoHierarchy = { type: row.promoType, approvalStatus: row.approvalStatus, keyword: this.searchValue};
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
 
@@ -323,5 +324,37 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         }
 
         return '-';
+    }
+
+    statusLabel(status) {
+        switch (status) {
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
+                return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAYMENT_FAILED_LABEL:
+                return StatusPaymentLabel.STATUS_PAYMENT_FAILED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_PAYMENT_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_PAYMENT_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAID_LABEL:
+                return StatusPaymentLabel.STATUS_PAID_LABEL;
+                break;
+            default:
+                return '-';
+                break;
+        }
     }
 }

@@ -344,7 +344,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 return StatusPaymentLabel.STATUS_APPROVED_LABEL;
                 break;
             case StatusPaymentLabel.VALUE_PENDING_LABEL:
-                return StatusPaymentLabel.STATUS_PENDING_LABEL;
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
                 break;
             case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
                 return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
@@ -369,4 +369,5 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 break;
         }
     }
+
 }

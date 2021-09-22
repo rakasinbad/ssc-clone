@@ -69,7 +69,7 @@
     <ng-container matColumnDef="finance-collection-status">
         <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ (row?.approvalStatus | titlecase) || '-' }}</p>
+            <p style="word-break: break-word">{{ statusLabel(row?.approvalStatus) }}</p>
         </mat-cell>
     </ng-container>
 
