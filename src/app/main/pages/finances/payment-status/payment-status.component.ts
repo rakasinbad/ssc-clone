@@ -108,7 +108,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
     filterConfig: SinbadFilterConfig = {
         by: {
-            date: {
+            paymentOrderDate: {
                 title: 'Order Date',
                 sources: null
             },
