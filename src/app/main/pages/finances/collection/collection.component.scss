@@ -1,5 +1,11 @@
 @import 'src/@fuse/scss/fuse';
 
+@media (min-width: 768px) and (max-width: 1366px) {
+    .menu {
+        margin-bottom: 10px;
+    }
+}
+
 .search-search {
     .mat-form-field-infix {
         height: 0;
