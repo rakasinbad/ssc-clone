@@ -176,7 +176,11 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     openDetailPage(row: any): void {
-        let itemPromoHierarchy = { type: row.promoType, approvalStatus: row.approvalStatus, keyword: this.searchValue};
+        let itemPromoHierarchy = {
+            type: row.promoType,
+            approvalStatus: row.approvalStatus,
+            keyword: this.searchValue,
+        };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
 
@@ -250,7 +254,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
             data['keyword'] = this.searchValue;
             if (data['keyword'] !== '') {
                 data['skip'] = 0;
-                this.labelNoRecord = 'No search found'
+                this.labelNoRecord = 'No search found';
             }
 
             data['type'] = this.viewByType;
@@ -284,7 +288,13 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     getOrderCode(value): string {
         if (value && value.length > 0) {
             const lengthValue = value.length;
-            const orderCodes = value[0] + ' (+' + (lengthValue - 1) + ' more)';
+            let orderCodes;
+            if (lengthValue > 1) {
+                orderCodes = value[0] + ' (+' + (lengthValue - 1) + ' more)';
+                // tslint:disable-next-line: triple-equals
+            } else if (lengthValue == 1) {
+                orderCodes = value[0];
+            }
 
             return orderCodes.length > 0 ? orderCodes : '-';
         }
@@ -295,7 +305,13 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     getOrderRef(value): string {
         if (value && value.length > 0) {
             const lengthValue = value.length;
-            const orderRefs = value[0] + ' (+' + (lengthValue - 1) + ' more)';
+            let orderRefs;
+            if (lengthValue > 1) {
+                orderRefs = value[0] + ' (+' + (lengthValue - 1) + ' more)';
+                // tslint:disable-next-line: triple-equals
+            } else if (lengthValue == 1) {
+                orderRefs = value[0];
+            }
 
             return orderRefs.length > 0 ? orderRefs : '-';
         }

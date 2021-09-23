@@ -8,7 +8,7 @@
             animationDuration="0ms"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-            <ng-container *ngIf="(isLoading$ | async); else others">
+            <ng-container *ngIf="!(dataSource$ | async); else others">
                 <mat-tab
                     class="collection-tab"
                     [label]="'All (' + (0) + ')'"
@@ -40,7 +40,7 @@
 
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <div style="display: flex; justify-content: space-between">
+            <div class="menu" style="display: flex; justify-content: space-between">
                 <div>
                     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
                 </div>
