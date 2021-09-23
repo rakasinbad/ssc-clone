@@ -40,6 +40,7 @@ export class SinbadFilterComponent implements OnInit {
     filterSupplierDeliveredTotal: boolean = false;
     filterWarehouse: boolean = false;
     filterDate: boolean = false;
+    filterPaymentOrderDate: boolean = false;
     filterPaymentDate: boolean = false;
     filterPaymentDueDate: boolean = false;
     filterPaymentType: boolean = false;
@@ -146,6 +147,10 @@ export class SinbadFilterComponent implements OnInit {
 
                         if (typeof config.by['date'] !== 'undefined') {
                             this.filterDate = true;
+                        }
+
+                        if (typeof config.by['paymentOrderDate'] !== 'undefined') {
+                            this.filterPaymentOrderDate = true;
                         }
 
                         if (typeof config.by['paymentDueDate'] !== 'undefined') {
