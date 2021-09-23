@@ -208,7 +208,7 @@ pipeline {
             echo list 
 
             writeFile file: 'cloudfront_list.txt', text: list 
-            if(params.domain){
+            if(DOMAIN_URL){
               // get distribution id
               get_cmd = """grep ${DOMAIN_URL} 'cloudfront_list.txt' | awk '{print \$1}' | tr -d '\\n' """
               DISTRIBUTION_ID = sh(script: get_cmd, returnStdout: true)
