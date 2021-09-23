@@ -6,6 +6,7 @@
             style="border-radius: 4px"
             class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
             animationDuration="0ms"
+            [selectedIndex]="selectTab"
             (selectedIndexChange)="onSelectedTab($event)"
         >
             <ng-container *ngFor="let user of dataSource$ | async">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -18,7 +18,7 @@ import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
     templateUrl: './collection.component.html',
     styleUrls: ['./collection.component.scss'],
 })
-export class CollectionComponent implements OnInit, OnDestroy {
+export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
     // Untuk penanda tab mana yang sedang aktif.
 
     // tslint:disable-next-line: no-inferrable-types
@@ -39,6 +39,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
+    selectTab: number = 0;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -122,9 +123,22 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
     onSelectedTab(index): void {
         this.approvalStatusType = index;
+        this.selectTab = index;
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+    }
+
+    ngOnChanges(): void {
+        let getLocal = JSON.parse(localStorage.getItem('item'));
+        // console.log('isi getLocal->', getLocal)
+        if (getLocal !== null) {
+            // console.log('masuk sini')
+            this.selectTab = getLocal['approvalStatus'];
+        }
+
+        // console.log('selectab->', this.selectTab)
+    }
 
     getDataTab(index): void {
         let parameter = {};

@@ -85,7 +85,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
 
     onClickBack(): void {
         this.location.back();
-        localStorage.clear();
+        // localStorage.clear();
     }
 
     // -----------------------------------------------------------------------------------------------------
