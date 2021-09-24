@@ -9,7 +9,7 @@
             [selectedIndex]="selectTab"
             (selectedIndexChange)="onSelectedTab($event)"
         >
-            <ng-container *ngFor="let user of dataSource$ | async">
+            <ng-container *ngFor="let user of dataTabCollection; let index of index">
                 <mat-tab
                     class="collection-tab"
                     aria-label="all"
@@ -31,7 +31,7 @@
                         fxLayoutAlign="start stretch"
                         style="height: 25px; margin-top: 30px; margin-bottom: 30px"
                     >
-                        <form fxFlex>
+                        <form fxFlex [formGroup]="form">
                             <mat-form-field
                                 appearance="outline"
                                 style="padding-right: 10px; min-height: 31px"
@@ -63,6 +63,7 @@
                                     type="text"
                                     matInput
                                     placeholder="Search"
+                                    formControlName="searchValue"
                                     (keyup)="keyUpKeyword($event)"
                                     style="
                                         position: fixed;

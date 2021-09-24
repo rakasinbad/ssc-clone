@@ -32,6 +32,7 @@ import { Router } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DetailCollectionComponent implements OnInit, OnDestroy {
+
     detailCollection$: Observable<FinanceDetailCollection>;
     isLoading$: Observable<boolean>;
 

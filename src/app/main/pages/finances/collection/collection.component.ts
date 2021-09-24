@@ -1,4 +1,13 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    OnChanges,
+    SimpleChanges,
+    ViewChild,
+    AfterViewInit,
+} from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -12,14 +21,26 @@ import { CollectionActions } from './store/actions';
 import { CollectionSelectors, CollectionType } from './store/selectors';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
+import {
+    AbstractControl,
+    FormArray,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+} from '@angular/forms';
+import { SearchByList } from 'app/shared/models/search-by.model';
+import { MatTabGroup } from '@angular/material';
 
 @Component({
     selector: 'app-collection',
     templateUrl: './collection.component.html',
     styleUrls: ['./collection.component.scss'],
 })
-export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
+export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
     // Untuk penanda tab mana yang sedang aktif.
+    @ViewChild(MatTabGroup, { static: true }) tabGroup: MatTabGroup;
 
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
@@ -32,15 +53,18 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
     rejectedCollection: number = 1;
     selectedValue: string;
     searchByList = this._$helperService.searchByList();
-    selectedTab: string;
     subs: Subscription;
     searchByValue: string = this.searchByList[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
-    selectTab: number = 0;
-
+    selectTab = 0;
+    dataTabCollection = [];
+    valueSearch: string = '';
+    form: FormGroup;
+    isDetailPage: any;
+    subsData: Subscription;
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -63,6 +87,7 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
     dataSource$: Observable<Array<CalculateCollectionStatusPayment>>;
 
     constructor(
+        private fb: FormBuilder,
         private CollectionStore: NgRxStore<CollectionCoreState>,
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
@@ -104,6 +129,7 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
             case 'cStatus':
                 this.selectedViewBy = action;
                 this.getDataTab(COLLECTION_STATUS);
+
                 break;
             case 'bStatus':
                 this.selectedViewBy = action;
@@ -115,29 +141,28 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
 
     onSearchByChange(event: string) {
         this.searchByValue = event;
+        // localStorage.setItem('searchBy', JSON.stringify(this.searchByValue));
     }
 
     keyUpKeyword(event: any) {
         this.search = event.target.value;
+        this.form.get('searchValue').setValue(this.search);
+        // localStorage.setItem('keyword', JSON.stringify(this.search));
     }
 
     onSelectedTab(index): void {
         this.approvalStatusType = index;
         this.selectTab = index;
+        // localStorage.setItem('selectTab', JSON.stringify(this.selectTab));
     }
 
     ngOnInit(): void {
+        this.clickTabViewBy('cStatus');
+        this.initForm();
     }
 
-    ngOnChanges(): void {
-        let getLocal = JSON.parse(localStorage.getItem('item'));
-        // console.log('isi getLocal->', getLocal)
-        if (getLocal !== null) {
-            // console.log('masuk sini')
-            this.selectTab = getLocal['approvalStatus'];
-        }
-
-        // console.log('selectab->', this.selectTab)
+    ngAfterViewInit(): void {
+        this.clickTabViewBy('cStatus');
     }
 
     getDataTab(index): void {
@@ -151,14 +176,46 @@ export class CollectionComponent implements OnInit, OnChanges, OnDestroy {
 
         this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
 
-        this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
+        this.subsData = this.dataSource$.subscribe((res) => {
+            if (res.length !== 0) {
+                this.dataTabCollection = res;
+            }
+            this.cdRef.markForCheck();
+        });
 
-        this.cdRef.detectChanges();
+        this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
+        
+        this.initForm();
+        
+        let getDetail = JSON.parse(localStorage.getItem('item'));
+        if (getDetail) {
+            this.selectTab = getDetail['approvalStatus'];
+            this.searchByValue = getDetail['searchBy'];
+            this.search = getDetail['keyword'];
+            this.form.get('searchValue').setValue(this.search);
+        }
+
+        console.log('selectab->', this.selectTab);
+    }
+
+    initForm() {
+        this.form = this.fb.group({
+            searchBy:
+                SearchByList.STORE_EXT_ID ||
+                SearchByList.STORE_NAME ||
+                SearchByList.ORDER_CODE ||
+                SearchByList.SALES_REP_NAME ||
+                SearchByList.COL_CODE ||
+                SearchByList.BILL_PAYM_CODE ||
+                SearchByList.REF_CODE,
+            searchValue: '',
+        });
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+        this.subsData.unsubscribe();
         this.fuseNavigation$.unregister('customNavigation');
     }
 }

@@ -34,6 +34,7 @@ import { FuseNavigationService } from '@fuse/components/navigation/navigation.se
 import { CollectionStatus } from '../../models';
 import { CollectionSelectors } from '../../store/selectors';
 import * as StatusPaymentLabel from '../../constants';
+import { DetailCollectionComponent } from '../detail-collection/detail-collection.component';
 
 @Component({
     selector: 'app-list-collection',
@@ -178,7 +179,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     openDetailPage(row: any): void {
         this.router.navigate(['/pages/finances/collection/' + row.id + '/detail']);
         let itemPromoHierarchy = {
-            type: row.promoType,
+            searchBy: this.searchBy,
             approvalStatus: this.approvalStatus,
             keyword: this.searchValue,
         };
@@ -222,6 +223,8 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                 break;
 
             default:
+        // console.log('isDetailPage->', this.isDetailPage)
+
                 this.paginator.pageSize = this.defaultPageSize;
 
                 this.selection = new SelectionModel<any>(true, []);
