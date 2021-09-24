@@ -268,6 +268,21 @@ pipeline {
                 }
             }
         }
+        stage('Branch Cleansing') {
+            when { expression { SINBAD_ENV == "production" } }
+            steps {
+                script{
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+                        try{
+                            build job: 'Automation/Github Branch Cleansing', parameters: [[$class: 'StringParameterValue', name: 'REPOSITORY_NAME', value: SINBAD_REPO]]
+                        }catch (Exception e) {
+                            echo 'Exception occurred: ' + e.toString()
+                            sh "exit 1"
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
