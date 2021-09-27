@@ -7,6 +7,7 @@ import {
     SimpleChanges,
     ViewChild,
     AfterViewInit,
+    ViewEncapsulation,
 } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
@@ -32,13 +33,15 @@ import {
 } from '@angular/forms';
 import { SearchByList } from 'app/shared/models/search-by.model';
 import { MatTabGroup } from '@angular/material';
+import { CssSelector } from '@angular/compiler';
 
 @Component({
     selector: 'app-collection',
     templateUrl: './collection.component.html',
     styleUrls: ['./collection.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
-export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CollectionComponent implements OnInit, OnDestroy {
     // Untuk penanda tab mana yang sedang aktif.
     @ViewChild(MatTabGroup, { static: true }) tabGroup: MatTabGroup;
 
@@ -59,7 +62,7 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
-    selectTab = 0;
+    selectTab: number;
     dataTabCollection = [];
     valueSearch: string = '';
     form: FormGroup;
@@ -141,28 +144,53 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onSearchByChange(event: string) {
         this.searchByValue = event;
-        // localStorage.setItem('searchBy', JSON.stringify(this.searchByValue));
     }
 
     keyUpKeyword(event: any) {
         this.search = event.target.value;
         this.form.get('searchValue').setValue(this.search);
-        // localStorage.setItem('keyword', JSON.stringify(this.search));
-    }
-
-    onSelectedTab(index): void {
-        this.approvalStatusType = index;
-        this.selectTab = index;
-        // localStorage.setItem('selectTab', JSON.stringify(this.selectTab));
     }
 
     ngOnInit(): void {
-        this.clickTabViewBy('cStatus');
+        const isFromDetail = JSON.parse(localStorage.getItem('isFromDetail'));
+
         this.initForm();
+
+        this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
+        this.subsData = this.dataSource$.subscribe((res) => {
+            if (res.length !== 0) {
+                this.dataTabCollection = res;
+
+                if (isFromDetail) {
+                    const item = JSON.parse(localStorage.getItem('item'));
+
+                    if (item) {
+                        this.selectTab = item.approvalStatus;
+                    } else {
+                        this.selectTab = 0;
+                        this.search = '';
+                        this.form.get('searchValue').setValue(this.search);
+                    }
+
+                    localStorage.setItem('isFromDetail', 'false');
+                }
+            }
+            // this.cdRef.markForCheck();
+        });
+
+        this.clickTabViewBy('cStatus');
+        // this.initForm();
     }
 
-    ngAfterViewInit(): void {
-        this.clickTabViewBy('cStatus');
+    onSelectedTab(event): void {
+        this.selectTab = event.index;
+
+        let items = JSON.parse(localStorage.getItem('item'));
+        items = {
+            ...items,
+            approvalStatus: event.index,
+        };
+        localStorage.setItem('item', JSON.stringify(items));
     }
 
     getDataTab(index): void {
@@ -174,19 +202,10 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
             })
         );
 
-        this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
-
-        this.subsData = this.dataSource$.subscribe((res) => {
-            if (res.length !== 0) {
-                this.dataTabCollection = res;
-            }
-            this.cdRef.markForCheck();
-        });
-
         this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
-        
-        this.initForm();
-        
+
+        // this.initForm();
+
         let getDetail = JSON.parse(localStorage.getItem('item'));
         if (getDetail) {
             this.selectTab = getDetail['approvalStatus'];
@@ -194,20 +213,10 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
             this.search = getDetail['keyword'];
             this.form.get('searchValue').setValue(this.search);
         }
-
-        console.log('selectab->', this.selectTab);
     }
 
     initForm() {
         this.form = this.fb.group({
-            searchBy:
-                SearchByList.STORE_EXT_ID ||
-                SearchByList.STORE_NAME ||
-                SearchByList.ORDER_CODE ||
-                SearchByList.SALES_REP_NAME ||
-                SearchByList.COL_CODE ||
-                SearchByList.BILL_PAYM_CODE ||
-                SearchByList.REF_CODE,
             searchValue: '',
         });
     }
@@ -215,7 +224,10 @@ export class CollectionComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
-        this.subsData.unsubscribe();
+        if (this.subsData) {
+            this.subsData.unsubscribe();
+        }
         this.fuseNavigation$.unregister('customNavigation');
+        // localStorage.removeItem('item');
     }
 }

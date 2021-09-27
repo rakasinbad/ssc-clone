@@ -184,6 +184,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
             keyword: this.searchValue,
         };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
+        localStorage.setItem('isFromDetail', 'true');
     }
 
     isAllSelected(): boolean {
