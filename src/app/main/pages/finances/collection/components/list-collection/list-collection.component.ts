@@ -224,7 +224,6 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                 break;
 
             default:
-        // console.log('isDetailPage->', this.isDetailPage)
 
                 this.paginator.pageSize = this.defaultPageSize;
 
