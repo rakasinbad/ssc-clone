@@ -1,4 +1,14 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    OnChanges,
+    SimpleChanges,
+    ViewChild,
+    AfterViewInit,
+    ViewEncapsulation,
+} from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -12,14 +22,28 @@ import { CollectionActions } from './store/actions';
 import { CollectionSelectors, CollectionType } from './store/selectors';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
+import {
+    AbstractControl,
+    FormArray,
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+} from '@angular/forms';
+import { SearchByList } from 'app/shared/models/search-by.model';
+import { MatTabGroup } from '@angular/material';
+import { CssSelector } from '@angular/compiler';
 
 @Component({
     selector: 'app-collection',
     templateUrl: './collection.component.html',
     styleUrls: ['./collection.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class CollectionComponent implements OnInit, OnDestroy {
     // Untuk penanda tab mana yang sedang aktif.
+    @ViewChild(MatTabGroup, { static: true }) tabGroup: MatTabGroup;
 
     // tslint:disable-next-line: no-inferrable-types
     search: string = '';
@@ -32,14 +56,18 @@ export class CollectionComponent implements OnInit, OnDestroy {
     rejectedCollection: number = 1;
     selectedValue: string;
     searchByList = this._$helperService.searchByList();
-    selectedTab: string;
     subs: Subscription;
     searchByValue: string = this.searchByList[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
-
+    selectTab: number;
+    dataTabCollection = [];
+    valueSearch: string = '';
+    form: FormGroup;
+    isDetailPage: any;
+    subsData: Subscription;
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -62,6 +90,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
     dataSource$: Observable<Array<CalculateCollectionStatusPayment>>;
 
     constructor(
+        private fb: FormBuilder,
         private CollectionStore: NgRxStore<CollectionCoreState>,
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
@@ -103,6 +132,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
             case 'cStatus':
                 this.selectedViewBy = action;
                 this.getDataTab(COLLECTION_STATUS);
+
                 break;
             case 'bStatus':
                 this.selectedViewBy = action;
@@ -118,13 +148,50 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
     keyUpKeyword(event: any) {
         this.search = event.target.value;
+        this.form.get('searchValue').setValue(this.search);
     }
 
-    onSelectedTab(index): void {
-        this.approvalStatusType = index;
+    ngOnInit(): void {
+        const isFromDetail = JSON.parse(localStorage.getItem('isFromDetail'));
+
+        this.initForm();
+
+        this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
+        this.subsData = this.dataSource$.subscribe((res) => {
+            if (res.length !== 0) {
+                this.dataTabCollection = res;
+
+                if (isFromDetail) {
+                    const item = JSON.parse(localStorage.getItem('item'));
+
+                    if (item) {
+                        this.selectTab = item.approvalStatus;
+                    } else {
+                        this.selectTab = 0;
+                        this.search = '';
+                        this.form.get('searchValue').setValue(this.search);
+                    }
+
+                    localStorage.setItem('isFromDetail', 'false');
+                }
+            }
+            // this.cdRef.markForCheck();
+        });
+
+        this.clickTabViewBy('cStatus');
+        // this.initForm();
     }
 
-    ngOnInit(): void {}
+    onSelectedTab(event): void {
+        this.selectTab = event.index;
+
+        let items = JSON.parse(localStorage.getItem('item'));
+        items = {
+            ...items,
+            approvalStatus: event.index,
+        };
+        localStorage.setItem('item', JSON.stringify(items));
+    }
 
     getDataTab(index): void {
         let parameter = {};
@@ -135,16 +202,32 @@ export class CollectionComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.dataSource$ = this.CollectionStore.select(CollectionType.getCalculateData);
-
         this.isLoading$ = this.CollectionStore.select(CollectionSelectors.getLoadingState);
 
-        this.cdRef.detectChanges();
+        // this.initForm();
+
+        let getDetail = JSON.parse(localStorage.getItem('item'));
+        if (getDetail) {
+            this.selectTab = getDetail['approvalStatus'];
+            this.searchByValue = getDetail['searchBy'];
+            this.search = getDetail['keyword'];
+            this.form.get('searchValue').setValue(this.search);
+        }
+    }
+
+    initForm() {
+        this.form = this.fb.group({
+            searchValue: '',
+        });
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+        if (this.subsData) {
+            this.subsData.unsubscribe();
+        }
         this.fuseNavigation$.unregister('customNavigation');
+        // localStorage.removeItem('item');
     }
 }
