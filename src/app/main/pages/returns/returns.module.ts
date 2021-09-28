@@ -7,6 +7,8 @@ import { FuseSidebarModule } from '@fuse/components';
 import { ReturnsComponent } from './returns.component';
 import { ReturnsRoutingModule } from './returns-routing.module';
 import { returnsReducer } from './store/reducers';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 
 @NgModule({
     declarations: [
@@ -20,6 +22,8 @@ import { returnsReducer } from './store/reducers';
         MaterialModule,
         FuseSidebarModule,
 
+        RxReactiveFormsModule,
+        RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(returnsReducer.FEATURE_KEY, returnsReducer.reducer),
