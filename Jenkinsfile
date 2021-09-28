@@ -194,39 +194,39 @@ pipeline {
                 }
             }
         }
-       stage('init Invalidation'){
-      steps{
-        // sh 'brew install jq'
-          echo "${DOMAIN_URL}"
-      }
-    }//stage
-       stage('run Invalidation'){
-      steps{
-        script{
-            cmd = "aws cloudfront list-distributions | jq '.DistributionList.Items[]|[ .Id, .Status, .Origins.Items[0].DomainName, .Aliases.Items[0] ] | @tsv ' -r"
-            def list = sh(script: cmd, returnStdout: true)
-            echo list 
-
-            writeFile file: 'cloudfront_list.txt', text: list 
-            if(params.domain){
-              // get distribution id
-              get_cmd = """grep ${DOMAIN_URL} 'cloudfront_list.txt' | awk '{print \$1}' | tr -d '\\n' """
-              DISTRIBUTION_ID = sh(script: get_cmd, returnStdout: true)
-              println "$DISTRIBUTION_ID"
-
-              // create invalidation id
-              create_cmd = """aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" | jq -r .Invalidation.Id"""
-              echo create_cmd
-              INVALIDATION_ID = sh(script: create_cmd, returnStdout: true)
-              println "$INVALIDATION_ID"
-
-              // invalidate distribution and wait for finish
-              wait_cmd = """aws cloudfront wait invalidation-completed --distribution-id ${DISTRIBUTION_ID} --id ${INVALIDATION_ID}"""
-              sh(wait_cmd)
+        stage('init Invalidation'){
+            steps{
+                // sh 'brew install jq'
+                echo "${DOMAIN_URL}"
             }
-        }//script 
-      }//steps
-    }//stage
+        }//stage
+        stage('run Invalidation'){
+            steps{
+                script{
+                    cmd = "aws cloudfront list-distributions | jq '.DistributionList.Items[]|[ .Id, .Status, .Origins.Items[0].DomainName, .Aliases.Items[0] ] | @tsv ' -r"
+                    def list = sh(script: cmd, returnStdout: true)
+                    echo list 
+
+                    writeFile file: 'cloudfront_list.txt', text: list 
+                    if(DOMAIN_URL){
+                        // get distribution id
+                        get_cmd = """grep ${DOMAIN_URL} 'cloudfront_list.txt' | awk '{print \$1}' | tr -d '\\n' """
+                        DISTRIBUTION_ID = sh(script: get_cmd, returnStdout: true)
+                        println "$DISTRIBUTION_ID"
+
+                        // create invalidation id
+                        create_cmd = """aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*" | jq -r .Invalidation.Id"""
+                        echo create_cmd
+                        INVALIDATION_ID = sh(script: create_cmd, returnStdout: true)
+                        println "$INVALIDATION_ID"
+
+                        // invalidate distribution and wait for finish
+                        wait_cmd = """aws cloudfront wait invalidation-completed --distribution-id ${DISTRIBUTION_ID} --id ${INVALIDATION_ID}"""
+                        sh(wait_cmd)
+                    }
+                }//script 
+            }//steps
+        }//stage
         stage('Automation UI Test') {
             when { expression { SINBAD_ENV != "production" && SINBAD_ENV != "demo" && params.DEPLOY_PRODUCTION == "No" } }
             agent {
@@ -265,6 +265,21 @@ pipeline {
                             reportTitles: "automation-ui-test-reports"
                             ]
                     )
+                }
+            }
+        }
+        stage('Branch Cleansing') {
+            when { expression { SINBAD_ENV == "production" } }
+            steps {
+                script{
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+                        try{
+                            build job: 'Automation/Github Branch Cleansing', parameters: [[$class: 'StringParameterValue', name: 'REPOSITORY_NAME', value: SINBAD_REPO]]
+                        }catch (Exception e) {
+                            echo 'Exception occurred: ' + e.toString()
+                            sh "exit 1"
+                        }
+                    }
                 }
             }
         }
