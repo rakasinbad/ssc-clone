@@ -6,6 +6,7 @@ interface Routing {
   'attendances'? : ( '' | 'detail' | 'employee' | '*')[],
   'finances'? : ( '' | 'credit-limit-balance' | 'payment-status' | '*')[],
   'orders'? : ('' | 'detail' | '*')[],
+  'returns'? : ('' | '*')[],
   'catalogues'? : ('' | 'list' | 'add' | 'edit' | 'view' | '*')[],
   'in-store-inventories'? : ('' | 'detail' | '*')[],
   'sales-force'? : ('' | 'sales-rep' | 'portfolio' | 'journey-plans' | 'workday-setting' | 'sr-target' | 'associations' | '*')[],
@@ -76,6 +77,7 @@ export const Rules : Rule[] = [
         'account' : ['', 'stores', 'store-segmentation'],
         'finances' : ['*'],
         'orders': ['*'],
+        'returns': ['*'],
         'logistics': ['stock-managements', 'warehouse-coverages', 'warehouses']
       },
       toolbar: [],
@@ -114,6 +116,7 @@ export const Rules : Rule[] = [
         'catalogues': ['*'],
         'finances': ['*'],
         'orders': ['*'],
+        'returns': ['*'],
         'in-store-inventories': ['*'],
         'sales-force' : ['*'],
         'supplier-inventories' : ['*'],
@@ -157,6 +160,7 @@ export const Rules : Rule[] = [
         'attendances' : ['*'],
         'finances' : ['*'],
         'orders' : ['*'],
+        'returns': ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
         'sales-force' : ['*'],
@@ -174,6 +178,7 @@ export const Rules : Rule[] = [
         'attendances' : ['*'],
         'finances' : ['*'],
         'orders' : ['*'],
+        'returns': ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
         'sales-force' : ['*'],
@@ -217,6 +222,7 @@ export const Rules : Rule[] = [
         'account' : ['*'],
         'attendances' : ['*'],
         'orders' : ['*'],
+        'returns': ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
         'finances' : ['*'],
@@ -271,7 +277,8 @@ export const Rules : Rule[] = [
     {
       role: 'SALES_ADMIN_CABANG',
       routing: {
-        'orders' : ['*']
+        'orders' : ['*'],
+        'returns': ['*'],
       },
       toolbar: [],
       navbar: [ 'orderManagement', 'returnManagement' ],
