@@ -49,3 +49,12 @@ const returnReducer = createReducer(
 export function reducer(state: State | undefined, action: Action): State {
     return returnReducer(state, action);
 }
+
+const getReturnsState = (state: State) => state.returns;
+
+export const {
+    selectAll: selectAllReturn,
+    selectEntities: selectReturnEntities,
+    selectIds: selectReturnIds,
+    selectTotal: selectReturnTotal,
+} = adapterReturn.getSelectors(getReturnsState);
