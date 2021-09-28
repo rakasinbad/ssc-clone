@@ -136,6 +136,15 @@ export const navigation: IFuseNavigation[] = [
         url: '/pages/orders',
     },
     {
+        id: 'returnManagement',
+        title: 'Return',
+        translate: 'NAV.RETURN.TITLE',
+        type: 'item',
+        icon: 'custom-sinbad-oms-logo',
+        privilages: 'OMS.READ',
+        url: '/pages/returns',
+    },
+    {
         id: 'inventory',
         title: 'Inventory',
         translate: 'NAV.INVENTORIES.TITLE',

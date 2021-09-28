@@ -23,7 +23,7 @@ type Navbar = (
   '*' | 'dashboard' | 'account' | 'accountsStore' | 'storeSetting' | 
   'storeSegmentation' | 'catalogue' | 'manageProduct' | 'segmentation' | 
   'attendance' | 'finance' | 'creditLimitBalance' | 'paymentStatus' |
-  'orderManagement' | 'inventory' | 'instore' | 'sales-force' |
+  'orderManagement' | 'returnManagement' | 'inventory' | 'instore' | 'sales-force' |
   'sales-rep' | 'portfolio' | 'sr-target' | 'association' |
   'journey-plan' | 'workday-setting' | 'warehouse' | 'wh-list' |
   'wh-coverage' | 'wh-sku-assignment' | 'wh-stock-management' |
@@ -66,6 +66,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'warehouse',
         'wh-list',
         'wh-coverage',
@@ -93,6 +94,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -135,6 +137,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -191,6 +194,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -240,6 +244,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -269,7 +274,7 @@ export const Rules : Rule[] = [
         'orders' : ['*']
       },
       toolbar: [],
-      navbar: [ 'orderManagement' ],
+      navbar: [ 'orderManagement', 'returnManagement' ],
       redirectTo: '/pages/orders'
     }
   ]
@@ -513,6 +518,10 @@ export const Rules : Rule[] = [
     },
     {
       privilages : 'OMS.DELETE',
+      route: '',
+    },
+    {
+      privilages : 'RETURN.READ',
       route: '',
     },
     {
