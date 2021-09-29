@@ -94,6 +94,10 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         }
 
         this.pageFilters = [];
+
+        this.currentTab = null;
+        this.returnStartDate = null;
+        this.returnEndDate = null;
     }
 
     dataSource$: Observable<any>;
@@ -126,6 +130,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     readonly defaultPageOpts;
 
     private filterForm;
+    private currentTab;
     private readonly _searchKeyword: FormControl = new FormControl('');
 
     ngOnInit(): void {
@@ -158,31 +163,20 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
                 if (action === 'reset') {
                     this.filterForm.reset();
+
+                    this.returnStartDate = null;
+                    this.returnEndDate = null;
                 } else {
                     const {
                         startDate,
                         endDate,
                     } = this.filterForm.value;
 
-                    const nStartDate = startDate && isMoment(startDate) ?
+                    this.returnStartDate = startDate && isMoment(startDate) ?
                         startDate.format('YYYY-MM-DD') : null;
 
-                    const nEndDate = endDate && isMoment(endDate) ?
+                    this.returnEndDate = endDate && isMoment(endDate) ?
                         endDate.format('YYYY-MM-DD') : null;
-
-                    if (nStartDate) {
-                        this.pageFilters.push({
-                            fieldName: 'startReturnDate',
-                            keyword: nStartDate,
-                        });
-                    }
-
-                    if (nEndDate) {
-                        this.pageFilters.push({
-                            fieldName: 'endReturnDate',
-                            keyword: nEndDate,
-                        });
-                    }
                 }
 
                 this.loadData(true);
@@ -214,6 +208,27 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             this.pageFilters.push({
                 fieldName: 'keyword',
                 keyword: keyword,
+            });
+        }
+
+        if (this.currentTab) {
+            this.pageFilters.push({
+                fieldName: 'status',
+                keyword: this.currentTab,
+            });
+        }
+
+        if (this.returnStartDate) {
+            this.pageFilters.push({
+                fieldName: 'startReturnDate',
+                keyword: this.returnStartDate,
+            });
+        }
+
+        if (this.returnEndDate) {
+            this.pageFilters.push({
+                fieldName: 'endReturnDate',
+                keyword: this.returnEndDate,
             });
         }
 
@@ -249,7 +264,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
     onTabSelected(index: number): void {
         const statusMap = {
-            0: '',
+            0: null,
             1: 'pending',
             2: 'approved',
             3: 'approved_returned',
@@ -260,14 +275,11 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         this.filterForm.reset();
 
         if (statusMap[index]) {
-            this.pageFilters = [
-                {
-                    fieldName: 'status',
-                    keyword: statusMap[index],
-                }
-            ];
+            this.currentTab = statusMap[index];
         } else {
             this.pageFilters = [];
+
+            this.currentTab = null;
         }
 
         this.loadData();
