@@ -136,7 +136,7 @@ export class DetailCollectionTableComponent implements OnInit, OnDestroy {
                 return StatusPaymentLabel.STATUS_APPROVED_LABEL;
                 break;
             case StatusPaymentLabel.VALUE_PENDING_LABEL:
-                return StatusPaymentLabel.STATUS_PENDING_LABEL;
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
                 break;
             case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
                 return StatusPaymentLabel.STATUS_OVERDUE_LABEL;

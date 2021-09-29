@@ -26,8 +26,7 @@
 
         <div class="info" fxFlex="100">
             {{
-                ((detailCollection$ | async)?.data.paymentCollectionMethod.approvalStatus
-                    | titlecase) || '-'
+                (statusLabel(detailCollection$ | async)?.data.paymentCollectionMethod.approvalStatus)
             }}
         </div>
     </div>

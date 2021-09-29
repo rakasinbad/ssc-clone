@@ -169,7 +169,9 @@ export class CollectionComponent implements OnInit, OnDestroy {
                     } else {
                         this.selectTab = 0;
                         this.search = '';
+                        this.searchByValue = this.searchByList[0].id;
                         this.form.get('searchValue').setValue(this.search);
+                        console.log('masuk else sini oninit')
                     }
 
                     localStorage.setItem('isFromDetail', 'false');
