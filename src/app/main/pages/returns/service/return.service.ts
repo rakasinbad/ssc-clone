@@ -31,10 +31,10 @@ export class ReturnApiService implements IReturnApiService {
         const returnListEndpoint = '/return-parcels';
         const totalReturnEndpoint = '/count-returns';
 
-        this._returnUrl = `http://localhost:3000${returnListEndpoint}`; //this._$helper.handleApiRouter(returnListEndpoint);
+        this._returnUrl = this._$helper.handleApiRouter(returnListEndpoint);
         this._returnDetailUrl = this._returnUrl;
 
-        this._totalReturnUrl = `http://localhost:3000${totalReturnEndpoint}`; //this._$helper.handleApiRouter(totalReturnEndpoint);
+        this._totalReturnUrl = this._$helper.handleApiRouter(totalReturnEndpoint);
     }
 
     findAll(params: IQueryParams, supplierId: string): Observable<ListApiResponse> {
