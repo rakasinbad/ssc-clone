@@ -62,12 +62,9 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 active: true,
                 changed: (value: string) => {
                     this._searchKeyword.setValue(value);
-                    if (!this._filterTimeoutId) {
-                        this._filterTimeoutId = setTimeout(() => {
-                            this.loadData(true);
-                            this.clearFilterTimeout();
-                        }, 250);
-                    }
+                    this.pageFilters = [];
+
+                    setTimeout(() => this.loadData(true), 250);
                 },
             },
             filter: {
@@ -129,14 +126,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     readonly defaultPageOpts;
 
     private filterForm;
-    private _filterTimeoutId: null | any;
-
     private readonly _searchKeyword: FormControl = new FormControl('');
-
-    private clearFilterTimeout(): void {
-        clearTimeout(this._filterTimeoutId);
-        this._filterTimeoutId = null;
-    }
 
     ngOnInit(): void {
         this.filterForm = this.formBuilder.group({
@@ -218,7 +208,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             skip: paginator.pageSize * paginator.pageIndex || 0,
         };
 
-        const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value);
+        const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();
 
         if (keyword) {
             this.pageFilters.push({
@@ -233,10 +223,9 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         this.store.dispatch(ReturnActions.fetchReturnRequest({ payload: data }));
 
-        this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
-        this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
-
         if (refresh) {
+            this.paginator.pageIndex = 0;
+
             this.store.dispatch(ReturnActions.fetchTotalReturnRequest());
             this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
 
@@ -249,6 +238,9 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 totalRejected$: this.store.select(ReturnsSelector.getTotalStatusRejected),
             };
         }
+
+        this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
+        this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
     }
 
     onTrackBy(index: number, item: IReturnLine | null): string | number {
