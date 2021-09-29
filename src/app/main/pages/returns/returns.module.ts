@@ -5,7 +5,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { MaterialModule, SharedModule } from 'app/shared';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { FuseSidebarModule } from '@fuse/components';
-import { ReturnsComponent } from './returns.component';
+import { ReturnsComponent } from './pages/return_list/returns.component';
 import { ReturnsRoutingModule } from './returns-routing.module';
 import { returnsReducer } from './store/reducers';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';

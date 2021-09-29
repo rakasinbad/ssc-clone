@@ -3,8 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from '../core/auth/auth.guard';
 
-import { getRoleByRouter } from 'app/shared/helpers';
-import { ReturnsComponent } from './returns.component';
+import { ReturnsComponent } from './pages/return_list/returns.component';
 
 const routes: Routes = [
     {

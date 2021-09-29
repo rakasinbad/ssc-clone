@@ -31,19 +31,37 @@ export class ReturnApiService implements IReturnApiService {
         const returnListEndpoint = '/return-parcels';
         const totalReturnEndpoint = '/count-returns';
 
-        this._returnUrl = this._$helper.handleApiRouter(returnListEndpoint);
+        this._returnUrl = `http://localhost:3000${returnListEndpoint}`; //this._$helper.handleApiRouter(returnListEndpoint);
         this._returnDetailUrl = this._returnUrl;
 
-        this._totalReturnUrl = this._$helper.handleApiRouter(totalReturnEndpoint);
+        this._totalReturnUrl = `http://localhost:3000${totalReturnEndpoint}`; //this._$helper.handleApiRouter(totalReturnEndpoint);
     }
 
     findAll(params: IQueryParams, supplierId: string): Observable<ListApiResponse> {
-        const httpParameters = this._$helper.handleParams(this._returnUrl, params, []);
+        const args = supplierId
+            ? [
+                {
+                    key: 'supplierId',
+                    value: supplierId
+                }
+            ]
+            : [];
+
+        const httpParameters = this._$helper.handleParams(this._returnUrl, params, ...args);
         return this.http.get(this._returnUrl, { params: httpParameters }) as Observable<ListApiResponse>;
     }
 
     getTotal(params: IQueryParams, supplierId: string): Observable<ITotalReturnModel> {
-        const httpParameters = this._$helper.handleParams(this._returnUrl, params, []);
+        const args = supplierId
+            ? [
+                {
+                    key: 'supplierId',
+                    value: supplierId
+                }
+            ]
+            : [];
+
+        const httpParameters = this._$helper.handleParams(this._returnUrl, params, ...args);
         return this.http.get(this._totalReturnUrl, { params: httpParameters }) as Observable<ITotalReturnModel>;
     }
 

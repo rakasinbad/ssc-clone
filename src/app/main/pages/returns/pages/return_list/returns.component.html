@@ -163,9 +163,8 @@
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
-                    class="order"
+                    class="return"
                     matRipple
-                    [routerLink]="['/pages/returns', row.id, 'detail']"
                 >
                 </mat-row>
                 <mat-footer-row
@@ -174,7 +173,17 @@
                 ></mat-footer-row>
             </mat-table>
 
-
+            <mat-paginator
+                [disabled]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                showFirstLastButtons
+            >
+            </mat-paginator>
 
         </div>
     </div>

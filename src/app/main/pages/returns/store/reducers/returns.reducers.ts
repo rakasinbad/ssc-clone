@@ -16,6 +16,7 @@ interface ReturnState extends EntityState<any> {
 }
 
 export interface State {
+    isRefresh?: boolean;
     isLoading: boolean;
     source: TSource;
     returns: ReturnState;
@@ -108,6 +109,13 @@ const returnReducer = createReducer(
             errors: adapterError.removeOne('fetchTotalReturnFailure', state.errors)
         });
     }),
+
+    on(ReturnActions.resetReturn, (state) => ({
+        ...state,
+        isEdit: false,
+        returns: initialState.returns,
+        errors: adapterError.removeOne('fetchOrdersFailure', state.errors),
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

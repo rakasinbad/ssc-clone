@@ -59,3 +59,10 @@ export const fetchTotalReturnSuccess = createAction(
     props<{ payload: ITotalReturnModel }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Reset Return
+// -----------------------------------------------------------------------------------------------------
+
+export const resetReturn = createAction(
+    '[Reset Return]'
+);

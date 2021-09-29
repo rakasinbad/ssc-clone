@@ -5,7 +5,9 @@ export const getReturnState = createFeatureSelector<returnsReducer.State>(return
 
 export const getAllReturn = createSelector(getReturnState, returnsReducer.selectAllReturn);
 export const getTotalReturn = createSelector(getReturnState, (state) => state.returns.total);
+
 export const getIsLoading = createSelector(getReturnState, (state) => state.isLoading);
+export const getIsRefresh = createSelector(getReturnState, (state) => state.isRefresh);
 
 export const getTotalStatusState = createSelector(getReturnState, (state) => state.returns.totalStatus);
 

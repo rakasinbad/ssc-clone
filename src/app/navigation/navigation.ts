@@ -140,7 +140,7 @@ export const navigation: IFuseNavigation[] = [
         title: 'Return',
         translate: 'NAV.RETURN.TITLE',
         type: 'item',
-        icon: 'custom-sinbad-oms-logo',
+        icon: 'custom-sinbad-return',
         privilages: 'OMS.READ',
         url: '/pages/returns',
     },
