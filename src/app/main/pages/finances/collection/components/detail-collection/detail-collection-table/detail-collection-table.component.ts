@@ -64,11 +64,11 @@ export class DetailCollectionTableComponent implements OnInit, OnDestroy {
 
         this.subs = this.detailCollection$.subscribe((res) => {
             if (res != undefined) {
-                let dataBilling = [];
                 this.dataTable = res['data']['billingPayments'];
-                this.totalDataSourceBilling = dataBilling.length;
+                this.totalDataSourceBilling = this.dataTable.length;
             } else {
                 this.dataTable = [];
+                this.totalDataSourceBilling = 0;
             }
         });
     }
