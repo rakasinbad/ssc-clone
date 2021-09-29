@@ -95,9 +95,11 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         this.pageFilters = [];
 
-        this.currentTab = null;
-        this.returnStartDate = null;
-        this.returnEndDate = null;
+        this.pageState = {
+            currentTab: null,
+            returnStartDate: null,
+            returnEndDate: null,
+        };
     }
 
     dataSource$: Observable<any>;
@@ -130,7 +132,13 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     readonly defaultPageOpts;
 
     private filterForm;
-    private currentTab;
+
+    private pageState: {
+        currentTab: null | string;
+        returnStartDate: null | string;
+        returnEndDate: null | string;
+    };
+
     private readonly _searchKeyword: FormControl = new FormControl('');
 
     ngOnInit(): void {
@@ -161,21 +169,21 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             .subscribe((action) => {
                 this.pageFilters = [];
 
+                this.pageState.returnStartDate = null;
+                this.pageState.returnEndDate = null;
+
                 if (action === 'reset') {
                     this.filterForm.reset();
-
-                    this.returnStartDate = null;
-                    this.returnEndDate = null;
                 } else {
                     const {
                         startDate,
                         endDate,
                     } = this.filterForm.value;
 
-                    this.returnStartDate = startDate && isMoment(startDate) ?
+                    this.pageState.returnStartDate = startDate && isMoment(startDate) ?
                         startDate.format('YYYY-MM-DD') : null;
 
-                    this.returnEndDate = endDate && isMoment(endDate) ?
+                    this.pageState.returnEndDate = endDate && isMoment(endDate) ?
                         endDate.format('YYYY-MM-DD') : null;
                 }
 
@@ -211,24 +219,24 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             });
         }
 
-        if (this.currentTab) {
+        if (this.pageState.currentTab) {
             this.pageFilters.push({
                 fieldName: 'status',
-                keyword: this.currentTab,
+                keyword: this.pageState.currentTab,
             });
         }
 
-        if (this.returnStartDate) {
+        if (this.pageState.returnStartDate) {
             this.pageFilters.push({
                 fieldName: 'startReturnDate',
-                keyword: this.returnStartDate,
+                keyword: this.pageState.returnStartDate,
             });
         }
 
-        if (this.returnEndDate) {
+        if (this.pageState.returnEndDate) {
             this.pageFilters.push({
                 fieldName: 'endReturnDate',
-                keyword: this.returnEndDate,
+                keyword: this.pageState.returnEndDate,
             });
         }
 
@@ -274,15 +282,15 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         this.filterForm.reset();
 
+        this.pageState.currentTab = null;
+
         if (statusMap[index]) {
-            this.currentTab = statusMap[index];
+            this.pageState.currentTab = statusMap[index];
         } else {
             this.pageFilters = [];
-
-            this.currentTab = null;
         }
 
-        this.loadData();
+        this.loadData(true);
     }
 
     ngOnDestroy(): void {
