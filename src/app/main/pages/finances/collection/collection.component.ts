@@ -160,7 +160,6 @@ export class CollectionComponent implements OnInit, OnDestroy {
         this.subsData = this.dataSource$.subscribe((res) => {
             if (res.length !== 0) {
                 this.dataTabCollection = res;
-
                 if (isFromDetail) {
                     const item = JSON.parse(localStorage.getItem('item'));
 
@@ -173,6 +172,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
                     }
 
                     localStorage.setItem('isFromDetail', 'false');
+                } else {
+                    this.searchByValue = this.searchByList[0].id;
                 }
             }
             // this.cdRef.markForCheck();

@@ -26,8 +26,7 @@
 
         <div class="info" fxFlex="100">
             {{
-                ((detailCollection$ | async)?.data.paymentCollectionMethod.approvalStatus
-                    | titlecase) || '-'
+                statusLabel((detailCollection$ | async)?.data.paymentCollectionMethod.approvalStatus)
             }}
         </div>
     </div>
@@ -75,7 +74,8 @@
 
     <ng-container
         *ngIf="
-            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == 2 ||
+            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id ==
+                2 ||
             (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == 3
         "
     >
