@@ -160,7 +160,6 @@ export class CollectionComponent implements OnInit, OnDestroy {
         this.subsData = this.dataSource$.subscribe((res) => {
             if (res.length !== 0) {
                 this.dataTabCollection = res;
-
                 if (isFromDetail) {
                     const item = JSON.parse(localStorage.getItem('item'));
 
@@ -169,12 +168,12 @@ export class CollectionComponent implements OnInit, OnDestroy {
                     } else {
                         this.selectTab = 0;
                         this.search = '';
-                        this.searchByValue = this.searchByList[0].id;
                         this.form.get('searchValue').setValue(this.search);
-                        console.log('masuk else sini oninit')
                     }
 
                     localStorage.setItem('isFromDetail', 'false');
+                } else {
+                    this.searchByValue = this.searchByList[0].id;
                 }
             }
             // this.cdRef.markForCheck();
