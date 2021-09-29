@@ -1,7 +1,9 @@
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { FormBuilder } from '@angular/forms';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
@@ -10,6 +12,9 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services';
 import { returnsReducer } from './store/reducers';
 import { ReturnsSelector } from './store/selectors';
+import { IQueryParams } from '../../../shared/models/query.model';
+import { ReturnActions } from './store/actions';
+import { IReturnLine, ITotalReturnModel } from './models';
 
 @Component({
     selector: 'app-returns',
@@ -24,7 +29,26 @@ export class ReturnsComponent implements OnInit {
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
+    totalStatus: {
+        totalReturn$: Observable<number>;
+        totalPending$: Observable<number>;
+        totalApproved$: Observable<number>;
+        totalApprovedReturned$: Observable<number>;
+        totalClosed$: Observable<number>;
+        totalRejected$: Observable<number>;
+    };
+
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
+
     private _unSubscribe$: Subject<any> = new Subject<any>();
+
+    readonly displayedColumns;
+
+    readonly cardHeaderConfig: ICardHeaderConfiguration;
 
     constructor(
         private store: Store<returnsReducer.FeatureState>,
@@ -47,25 +71,35 @@ export class ReturnsComponent implements OnInit {
                 ]
             })
         );
-    }
 
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Return Management',
-        },
-        search: {
-            active: true,
-            changed: (value: string) => {
-
+        this.cardHeaderConfig = {
+            title: {
+                label: 'Return Management',
             },
-        },
-        filter: {
-            permissions: [],
-            onClick: () => {
-                this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
-            }
-        },
-    };
+            search: {
+                active: true,
+                changed: (value: string) => {
+
+                },
+            },
+            filter: {
+                permissions: [],
+                onClick: () => {
+                    this.fuseSidebarService.getSidebar('sinbadFilter').toggleOpen();
+                }
+            },
+        };
+
+        this.displayedColumns = [
+            'return-date',
+            'store-name',
+            'return-number',
+            'amount',
+            'user-name',
+            'status',
+            'actions',
+        ];
+    }
 
     ngOnInit(): void {
         const form = this.formBuilder.group({
@@ -104,15 +138,38 @@ export class ReturnsComponent implements OnInit {
 
                 }
 
-                // re refresh table
+                this.loadData();
             });
+
+        this.loadData();
+    }
+
+    loadData(): void {
+        const paginator: any = this.paginator || {};
+
+        const data: IQueryParams = {
+            limit: paginator.pageSize || 5,
+            skip: paginator.pageSize * paginator.pageIndex || 0,
+        };
+
+        this.store.dispatch(ReturnActions.fetchTotalReturnRequest());
+        this.store.dispatch(ReturnActions.fetchReturnRequest({ payload: data }));
 
         this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
         this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
         this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
+
+        this.totalStatus = {
+            totalReturn$: this.store.select(ReturnsSelector.getTotalStatusReturn),
+            totalPending$: this.store.select(ReturnsSelector.getTotalStatusPending),
+            totalApproved$: this.store.select(ReturnsSelector.getTotalStatusApproved),
+            totalApprovedReturned$: this.store.select(ReturnsSelector.getTotalStatusApprovedReturned),
+            totalClosed$: this.store.select(ReturnsSelector.getTotalStatusClosed),
+            totalRejected$: this.store.select(ReturnsSelector.getTotalStatusRejected),
+        };
     }
 
-    onTrackBy(index: number, item: any): string {
+    onTrackBy(index: number, item: IReturnLine | null): string | number {
         return !item ? null : item.id;
     }
 

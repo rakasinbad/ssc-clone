@@ -9,12 +9,12 @@
             animationDuration="0ms"
             (selectedIndexChange)="onTabSelected($event)"
         >
-            <mat-tab [label]="'All (' + (0) + ')'"></mat-tab>
-            <mat-tab [label]="'Pending (' + (0)+ ')'"></mat-tab>
-            <mat-tab [label]="'Approved (' + (0) + ')'"></mat-tab>
-            <mat-tab [label]="'Approved Returned (' + (0) + ')'"></mat-tab>
-            <mat-tab [label]="'Closed (' + (0) + ')'"></mat-tab>
-            <mat-tab [label]="'Rejected (' + (0) + ')'"></mat-tab>
+            <mat-tab [label]="'All (' + (totalStatus?.totalReturn$ | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Pending (' + (totalStatus?.totalPending$ | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Approved (' + (totalStatus?.totalApproved$ | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Approved Returned (' + (totalStatus?.totalApprovedReturned$ | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Closed (' + (totalStatus?.totalClosed$ | async) + ')'"></mat-tab>
+            <mat-tab [label]="'Rejected (' + (totalStatus?.totalRejected$ | async) + ')'"></mat-tab>
         </mat-tab-group>
 
         <div class="content-card">
@@ -43,7 +43,7 @@
                     </mat-cell>
                 </ng-container>
 
-                <ng-container matColumnDef="return-number">
+                <ng-container matColumnDef="store-name">
                     <mat-header-cell *matHeaderCellDef>
                         Store Name
                     </mat-header-cell>
@@ -65,7 +65,7 @@
                     </mat-cell>
                 </ng-container>
 
-                <ng-container matColumnDef="return-number">
+                <ng-container matColumnDef="amount">
                     <mat-header-cell *matHeaderCellDef>
                         Amount
                     </mat-header-cell>
@@ -76,7 +76,7 @@
                     </mat-cell>
                 </ng-container>
 
-                <ng-container matColumnDef="return-number">
+                <ng-container matColumnDef="user-name">
                     <mat-header-cell *matHeaderCellDef>
                         Created By
                     </mat-header-cell>
@@ -87,7 +87,7 @@
                     </mat-cell>
                 </ng-container>
 
-                <ng-container matColumnDef="return-number">
+                <ng-container matColumnDef="status">
                     <mat-header-cell *matHeaderCellDef>
                         Status
                     </mat-header-cell>

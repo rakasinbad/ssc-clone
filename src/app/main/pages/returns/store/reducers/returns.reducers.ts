@@ -1,7 +1,9 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
-import { Action, createReducer } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
+import { ReturnActions } from '../actions';
+import { ITotalReturnModel } from '../../models';
 
 export const FEATURE_KEY = 'returns';
 
@@ -10,6 +12,7 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 interface ReturnState extends EntityState<any> {
     selectedReturnId: string | number;
     total: number;
+    totalStatus: ITotalReturnModel;
 }
 
 export interface State {
@@ -30,6 +33,14 @@ const adapterReturn = createEntityAdapter<any>({
 const initialReturnState = adapterReturn.getInitialState({
     selectedReturnId: null,
     total: 0,
+    totalStatus: {
+        totalReturn: 0,
+        totalPending: 0,
+        totalApproved: 0,
+        totalApprovedReturned: 0,
+        totalClosed: 0,
+        totalRejected: 0
+    }
 });
 
 const adapterError = createEntityAdapter<IErrorHandler>();
@@ -43,7 +54,60 @@ const initialState: State = {
 };
 
 const returnReducer = createReducer(
-    initialState
+    initialState,
+
+    on(
+        ReturnActions.fetchReturnRequest,
+        ReturnActions.fetchReturnDetailRequest,
+        ReturnActions.fetchTotalReturnRequest,
+        (state) => ({
+            ...state,
+            isLoading: true,
+        })
+    ),
+    on(
+        ReturnActions.fetchReturnFailure,
+        ReturnActions.fetchReturnDetailFailure,
+        ReturnActions.fetchTotalReturnFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            errors: adapterError.upsertOne(payload, state.errors),
+        })
+    ),
+
+    on(ReturnActions.fetchReturnSuccess, (state, { payload }) => ({
+            ...state,
+            isEdit: false,
+            isLoading: false,
+            isRefresh: undefined,
+            returns: adapterReturn.addAll(payload.data, { ...state.returns, total: payload.total }),
+            errors: adapterError.removeOne('fetchReturnFailure', state.errors),
+        })
+    ),
+    on(ReturnActions.fetchReturnDetailSuccess, (state, { payload }) => ({
+            ...state,
+            isEdit: false,
+            isLoading: false,
+            isRefresh: undefined,
+            returns: adapterReturn.addOne(
+                payload.data,
+                { ...state.returns, selectedReturnId: payload.data.returnParcelId  }
+            ),
+            errors: adapterError.removeOne('fetchReturnDetailFailure', state.errors),
+        })
+    ),
+    on(ReturnActions.fetchTotalReturnSuccess, (state, { payload }) => {
+        return ({
+            ...state,
+            returns: {
+                ...state.returns,
+                totalStatus: payload
+            },
+            errors: adapterError.removeOne('fetchTotalReturnFailure', state.errors)
+        });
+    }),
 );
 
 export function reducer(state: State | undefined, action: Action): State {
