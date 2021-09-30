@@ -8,13 +8,14 @@
             class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
             animationDuration="0ms"
             (selectedIndexChange)="onTabSelected($event)"
+            *ngIf="totalStatus$ != null"
         >
-            <mat-tab [label]="'All (' + (totalStatus?.totalReturn$ | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Pending (' + (totalStatus?.totalPending$ | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Approved (' + (totalStatus?.totalApproved$ | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Approved Returned (' + (totalStatus?.totalApprovedReturned$ | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Closed (' + (totalStatus?.totalClosed$ | async) + ')'"></mat-tab>
-            <mat-tab [label]="'Rejected (' + (totalStatus?.totalRejected$ | async) + ')'"></mat-tab>
+            <mat-tab [label]="'All (' + (totalStatus$ | async).totalReturn + ')'"></mat-tab>
+            <mat-tab [label]="'Pending (' + (totalStatus$ | async).totalPending + ')'"></mat-tab>
+            <mat-tab [label]="'Approved (' + (totalStatus$ | async).totalApproved + ')'"></mat-tab>
+            <mat-tab [label]="'Approved Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
+            <mat-tab [label]="'Closed (' + (totalStatus$ | async).totalClosed + ')'"></mat-tab>
+            <mat-tab [label]="'Rejected (' + (totalStatus$ | async).totalRejected + ')'"></mat-tab>
         </mat-tab-group>
 
         <div class="content-card">
@@ -172,6 +173,13 @@
                     [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
                 ></mat-footer-row>
             </mat-table>
+
+            <div
+                class="loader-content"
+                *ngIf="(isLoading$ | async)"
+            >
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
 
             <mat-paginator
                 [disabled]="

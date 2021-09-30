@@ -1,5 +1,8 @@
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { environment } from 'environments/environment';
+import { ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
 import { Component, OnDestroy, OnInit, SecurityContext, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -10,15 +13,12 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { UiActions } from 'app/shared/store/actions';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { SinbadFilterService } from 'app/shared/components/sinbad-filter/services';
+import { IQueryParams, IQuerySearchParams } from 'app/shared/models/query.model';
+import { ReturnsComponentState } from './returns.component.state';
 import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
-import { IQueryParams, IQuerySearchParams } from '../../../../../shared/models/query.model';
 import { ReturnActions } from '../../store/actions';
-import { IReturnLine } from '../../models';
-import { environment } from '../../../../../../environments/environment';
-import { ActivatedRoute } from '@angular/router';
-import { isMoment } from 'moment';
-import { DomSanitizer } from '@angular/platform-browser';
+import { IReturnLine, ITotalReturnModel } from '../../models';
 
 @Component({
     selector: 'app-returns',
@@ -62,7 +62,6 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 active: true,
                 changed: (value: string) => {
                     this._searchKeyword.setValue(value);
-                    this.pageFilters = [];
 
                     setTimeout(() => this.loadData(true), 250);
                 },
@@ -93,29 +92,14 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             this.defaultPageOpts = null;
         }
 
-        this.pageFilters = [];
-
-        this.pageState = {
-            currentTab: null,
-            returnStartDate: null,
-            returnEndDate: null,
-        };
+        this.$pageState = new ReturnsComponentState();
     }
 
     dataSource$: Observable<any>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
-    totalStatus: {
-        totalReturn$: Observable<number>;
-        totalPending$: Observable<number>;
-        totalApproved$: Observable<number>;
-        totalApprovedReturned$: Observable<number>;
-        totalClosed$: Observable<number>;
-        totalRejected$: Observable<number>;
-    };
-
-    pageFilters: Array<IQuerySearchParams>;
+    totalStatus$: Observable<ITotalReturnModel>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -133,11 +117,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
     private filterForm;
 
-    private pageState: {
-        currentTab: null | string;
-        returnStartDate: null | string;
-        returnEndDate: null | string;
-    };
+    private $pageState: ReturnsComponentState;
 
     private readonly _searchKeyword: FormControl = new FormControl('');
 
@@ -167,24 +147,17 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubscribe$)
             )
             .subscribe((action) => {
-                this.pageFilters = [];
-
-                this.pageState.returnStartDate = null;
-                this.pageState.returnEndDate = null;
-
                 if (action === 'reset') {
                     this.filterForm.reset();
+
+                    this.$pageState.setDate(null, null);
                 } else {
                     const {
                         startDate,
                         endDate,
                     } = this.filterForm.value;
 
-                    this.pageState.returnStartDate = startDate && isMoment(startDate) ?
-                        startDate.format('YYYY-MM-DD') : null;
-
-                    this.pageState.returnEndDate = endDate && isMoment(endDate) ?
-                        endDate.format('YYYY-MM-DD') : null;
+                    this.$pageState.setDate(startDate, endDate);
                 }
 
                 this.loadData(true);
@@ -208,40 +181,41 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         const data: IQueryParams = {
             limit: paginator.pageSize || 5,
             skip: paginator.pageSize * paginator.pageIndex || 0,
+            search: [],
         };
 
         const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();
 
         if (keyword) {
-            this.pageFilters.push({
+            data.search.push({
                 fieldName: 'keyword',
                 keyword: keyword,
             });
         }
 
-        if (this.pageState.currentTab) {
-            this.pageFilters.push({
+        if (this.$pageState.getTab()) {
+            data.search.push({
                 fieldName: 'status',
-                keyword: this.pageState.currentTab,
+                keyword: this.$pageState.getTab(),
             });
         }
 
-        if (this.pageState.returnStartDate) {
-            this.pageFilters.push({
+        if (this.$pageState.getStartDate()) {
+            data.search.push({
                 fieldName: 'startReturnDate',
-                keyword: this.pageState.returnStartDate,
+                keyword: this.$pageState.getStartDate(),
             });
         }
 
-        if (this.pageState.returnEndDate) {
-            this.pageFilters.push({
+        if (this.$pageState.getEndDate()) {
+            data.search.push({
                 fieldName: 'endReturnDate',
-                keyword: this.pageState.returnEndDate,
+                keyword: this.$pageState.getEndDate(),
             });
         }
 
-        if (this.pageFilters.length > 0) {
-            data['search'] = this.pageFilters;
+        if (data.search.length === 0) {
+            delete data.search;
         }
 
         this.store.dispatch(ReturnActions.fetchReturnRequest({ payload: data }));
@@ -252,14 +226,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             this.store.dispatch(ReturnActions.fetchTotalReturnRequest());
             this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
 
-            this.totalStatus = {
-                totalReturn$: this.store.select(ReturnsSelector.getTotalStatusReturn),
-                totalPending$: this.store.select(ReturnsSelector.getTotalStatusPending),
-                totalApproved$: this.store.select(ReturnsSelector.getTotalStatusApproved),
-                totalApprovedReturned$: this.store.select(ReturnsSelector.getTotalStatusApprovedReturned),
-                totalClosed$: this.store.select(ReturnsSelector.getTotalStatusClosed),
-                totalRejected$: this.store.select(ReturnsSelector.getTotalStatusRejected),
-            };
+            this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
         }
 
         this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
@@ -282,12 +249,10 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         this.filterForm.reset();
 
-        this.pageState.currentTab = null;
+        this.$pageState.setTab(null);
 
         if (statusMap[index]) {
-            this.pageState.currentTab = statusMap[index];
-        } else {
-            this.pageFilters = [];
+            this.$pageState.setTab(statusMap[index]);
         }
 
         this.loadData(true);
