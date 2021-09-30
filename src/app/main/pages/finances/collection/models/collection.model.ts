@@ -292,7 +292,7 @@ export interface supplierStoreBilling {
     externalId: number;
 }
 
-export interface billingPaymentModels {
+export interface billingPaymentsModels {
     storeExternalId: number;
     storeName: string;
     orderCode: string;
@@ -313,26 +313,26 @@ export interface billingPaymentModels {
 interface IFinanceDetailCollection {
     id: string;
     paymentCollectionMethod: paymentCollectionMethodModels;
-    billingPayment: billingPaymentModels[];
+    billingPayments: billingPaymentsModels[];
 }
 
 export class FinanceDetailCollection {
     id: string;
     paymentCollectionMethod: paymentCollectionMethodModels;
-    billingPayment: billingPaymentModels[];
+    billingPayments: billingPaymentsModels[];
+    data: IFinanceDetailCollection;
 
     constructor(data: IFinanceDetailCollection) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
             paymentCollectionMethod,
-            billingPayment
+            billingPayments
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
         this.paymentCollectionMethod = paymentCollectionMethod;
-        this.billingPayment = billingPayment;
-
+        this.billingPayments = billingPayments;
     }
 }

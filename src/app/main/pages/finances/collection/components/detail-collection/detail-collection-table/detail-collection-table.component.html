@@ -4,9 +4,9 @@
 
 <mat-table
     class="billing-list-table sinbad-table"
-    [class.sinbad-table-no-record]="(dataTable.length === 0)"
+    [class.sinbad-table-no-record]="(((detailCollection$ | async)?.data?.billingPayments?.length || 0) == 0)"
     #table
-    [dataSource]="dataTable"
+    [dataSource]="(detailCollection$ | async)?.data?.billingPayments"
     matSort
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
@@ -155,7 +155,7 @@
 
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="8"> No records found </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef colspan="8"> No data available </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumnsBilling; sticky: true"></mat-header-row>
@@ -167,7 +167,7 @@
 
     <mat-footer-row
         *matFooterRowDef="['no-record']"
-        [fxShow]="!(isLoading$ | async) && (dataTable.length === 0)"
+        [fxShow]="(((detailCollection$ | async)?.data?.billingPayments?.length || 0) == 0)"
     ></mat-footer-row>
 </mat-table>
 
