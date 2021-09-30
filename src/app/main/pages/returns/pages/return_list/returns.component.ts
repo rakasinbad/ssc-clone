@@ -247,8 +247,6 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             5: 'rejected',
         };
 
-        this.filterForm.reset();
-
         this.$pageState.setTab(null);
 
         if (statusMap[index]) {
