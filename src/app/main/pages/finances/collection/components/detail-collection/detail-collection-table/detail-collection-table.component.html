@@ -4,9 +4,9 @@
 
 <mat-table
     class="billing-list-table sinbad-table"
-    [class.sinbad-table-no-record]="(totalDataSourceBilling === 0)"
+    [class.sinbad-table-no-record]="(((detailCollection$ | async)?.data?.billingPayments?.length || 0) == 0)"
     #table
-    [dataSource]="dataTable"
+    [dataSource]="(detailCollection$ | async)?.data?.billingPayments"
     matSort
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
@@ -167,7 +167,7 @@
 
     <mat-footer-row
         *matFooterRowDef="['no-record']"
-        [fxShow]="!(isLoading$ | async) && (totalDataSourceBilling === 0)"
+        [fxShow]="(((detailCollection$ | async)?.data?.billingPayments?.length || 0) == 0)"
     ></mat-footer-row>
 </mat-table>
 
