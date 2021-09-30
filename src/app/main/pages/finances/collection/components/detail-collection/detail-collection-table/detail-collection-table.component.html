@@ -13,7 +13,7 @@
 >
     <!-- External Id Column -->
     <ng-container matColumnDef="finance-external-id">
-        <mat-header-cell *matHeaderCellDef> External Id </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> External ID </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ row?.storeExternalId|| '-' }}
@@ -83,7 +83,7 @@
 
     <!-- Sales Rep Column -->
     <ng-container matColumnDef="finance-sales-rep">
-        <mat-header-cell *matHeaderCellDef> Sales Rep </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Sales Rep Name </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ row?.salesRepName || '-' }}

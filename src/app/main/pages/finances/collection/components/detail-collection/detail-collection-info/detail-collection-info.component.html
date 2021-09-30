@@ -55,7 +55,7 @@
         <div class="label" fxFlexAlign="center" fxFlex="30">Collection Ref No</div>
 
         <div class="info" fxFlex="100">
-            {{ (detailCollection$ | async)?.data.paymentCollectionMethod.collectionRef || '-' }}
+            {{ (detailCollection$ | async)?.data.paymentCollectionMethod.refNo || '-' }}
         </div>
     </div>
 
@@ -118,7 +118,7 @@
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
     >
-        <div class="label" fxFlexAlign="center" fxFlex="30">Collection User Amount</div>
+        <div class="label" fxFlexAlign="center" fxFlex="30">Collection Used Amount</div>
 
         <div class="info" fxFlex="100">
             {{ numberFormat((detailCollection$ | async)?.data.paymentCollectionMethod.usedAmount) }}
