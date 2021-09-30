@@ -63,6 +63,8 @@ export class HelperService {
         'warehouseId',
         'startOrderDate',
         'endOrderDate',
+        'startReturnDate',
+        'endReturnDate',
         'minOrderValue',
         'maxOrderValue',
         'web',

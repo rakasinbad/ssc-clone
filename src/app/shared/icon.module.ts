@@ -135,6 +135,11 @@ export class IconModule {
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/oms-logo.svg')
         );
 
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-return',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/return-product.svg')
+        );
+
         // On Process logo - packed box
         this.matIconRegistry.addSvgIcon(
             'sinbad-on-process',
