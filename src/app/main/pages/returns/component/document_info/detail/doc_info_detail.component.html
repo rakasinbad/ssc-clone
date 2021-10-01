@@ -16,7 +16,7 @@
             fxLayoutAlign="start stretch"
             fxLayoutGap="16px"
             fxFlex="37px"
-            *ngFor='let infoData in listInfoData'
+            *ngFor='let infoData of listInfoData'
         >
             <div class="label" fxFlex="120px">{{ infoData?.key }}</div>
             <div>

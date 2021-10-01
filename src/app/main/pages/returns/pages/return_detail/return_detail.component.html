@@ -126,8 +126,15 @@
                 <app-document-info
                     [title]='"Return Summary"'
                 >
-                    <div class="content-card">
-
+                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                        <app-document-info-detail
+                            [title]='"Return Summary"'
+                            [isLoading]='isLoading$ | async'
+                            [listInfoData]='
+                            returnInfoViewData$ ? (returnInfoViewData$ | async).returnSummaries :
+                            defaultViewData.returnSummaries'
+                        >
+                        </app-document-info-detail>
                     </div>
                 </app-document-info>
 
