@@ -29,7 +29,7 @@ export class DetailCollectionTableComponent implements OnInit {
         'finance-store-name',
         'finance-order-code',
         'finance-order-ref',
-        'finance-total-amount',
+        'finance-total-invoice-amount',
         'finance-order-due-date',
         'finance-payment-status',
         'finance-sales-rep',
