@@ -52,8 +52,8 @@
     </ng-container>
 
     <!-- Total Amount Column -->
-    <ng-container matColumnDef="finance-total-amount">
-        <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
+    <ng-container matColumnDef="finance-total-invoice-amount">
+        <mat-header-cell *matHeaderCellDef> Total Invoice Amount </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ totalAmountFormat(row?.totalAmount) }}
