@@ -14,3 +14,4 @@ export * from './safe.pipe';
 export * from './segmentation-view.pipe';
 export * from './tax.pipe';
 export * from './visibility-type.pipe';
+export * from './order-log.pipe';
