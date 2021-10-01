@@ -11,3 +11,15 @@ export const getIsRefresh = createSelector(getReturnState, (state) => state.isRe
 
 export const getTotalStatus = createSelector(getReturnState,
     (state) => state.returns.totalStatus);
+
+export const getReturnEntities = createSelector(getReturnState,
+    returnsReducer.selectReturnEntities);
+
+export const getActiveReturnId = createSelector(getReturnState,
+    (state) => state.returns.selectedReturnId);
+
+export const getActiveReturnDetail = createSelector(
+    getReturnEntities,
+    getActiveReturnId,
+    (entities, id) => entities[id]
+);

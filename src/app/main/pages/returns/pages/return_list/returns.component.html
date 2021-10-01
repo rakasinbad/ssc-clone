@@ -166,6 +166,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="return"
                     matRipple
+                    [routerLink]="['/pages/returns', row.id, 'detail']"
                 >
                 </mat-row>
                 <mat-footer-row

@@ -12,12 +12,15 @@ export interface IReturnCatalogue {
 }
 
 export interface IReturnDetail {
+    id?: string | number;
+    returnsQty?: number;
     returnParcelId: string | number;
     returnNumber: string;
     userId: number | string;
     userName: string;
     storeId: number | string;
     storeName: string;
+    storeAddress?: string;
     status: string;
     createdAt: string;
     returned: boolean;

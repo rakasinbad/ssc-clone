@@ -1,24 +1,40 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
+import { FuseSidebarModule } from '@fuse/components';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { MaterialModule, SharedModule } from 'app/shared';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
-import { FuseSidebarModule } from '@fuse/components';
-import { ReturnsComponent } from './pages/return_list/returns.component';
-import { ReturnsRoutingModule } from './returns-routing.module';
+
 import { returnsReducer } from './store/reducers';
-import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { ReturnEffects } from './store/effects';
+import { ReturnsRoutingModule } from './returns-routing.module';
+
+import { HeaderDetailComponent } from './component/header_detail';
+import { DocumentInfoComponent, DocumentInfoDetailComponent } from './component/document_info';
+import { TableRowComponent } from './component/table_row';
+
+import { ReturnListPageComponent } from './pages/return_list';
+import { ReturnDetailPageComponent } from './pages/return_detail';
 
 @NgModule({
     declarations: [
-        ReturnsComponent,
+        TableRowComponent,
+
+        HeaderDetailComponent,
+        DocumentInfoComponent,
+        DocumentInfoDetailComponent,
+
+        ReturnListPageComponent,
+        ReturnDetailPageComponent,
     ],
     imports: [
         ReturnsRoutingModule,
 
+        CommonModule,
         SharedModule,
         SharedComponentsModule,
         MaterialModule,
