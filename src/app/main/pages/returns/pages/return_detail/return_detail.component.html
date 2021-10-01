@@ -1,81 +1,77 @@
-<div class="mb-24" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex>
-    <div class="split-wrap-content p-16" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex>
+<div
+    id="return-detail"
+    class="page-layout carded fullwidth inner-scroll line-height-1.75"
+    fusePerfectScrollbar
+>
+    <div class="top-bg accent with-navigation"></div>
 
-    <div
-        id="return-detail"
-        class="page-layout carded fullwidth inner-scroll line-height-1.75"
-        fusePerfectScrollbar
-    >
-        <div class="top-bg accent with-navigation"></div>
-
+    <div class="center px-16">
         <app-header-detail
-            [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.returnNumber : ""'
-            [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.storeName : ""'
-            [isLoading]='(isLoading$ | async)'>
+          [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.returnNumber : ""'
+          [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.storeName : ""'
+          [isLoading]='(isLoading$ | async)'>
         </app-header-detail>
 
-        <div class="center">
-            <div class="content-card">
-                <div class="content" fusePerfectScrollbar>
+        <div class="content-card">
+            <div class="content" fusePerfectScrollbar>
+                <div class="mb-24" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px" fxFlex>
                     <app-document-info
-                        [title]='"Return Info"'
+                      [title]='"Return Info"'
                     >
-                        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="40px" fxFlex>
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                                <app-document-info-detail
-                                    [title]='"Store Info"'
-                                    [isLoading]='isLoading$ | async'
-                                    [listInfoData]='
-                                        returnInfoViewData$ ?
-                                            ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
-                                        defaultViewData.storeInfo'
-                                >
-                                </app-document-info-detail>
-                            </div>
+                        <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                            <app-document-info-detail
+                              [title]='"Store Info"'
+                              [isLoading]='isLoading$ | async'
+                              [listInfoData]='
+                                returnInfoViewData$ ?
+                                  ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
+                                  defaultViewData.storeInfo'
+                            >
+                            </app-document-info-detail>
                         </div>
 
-                        <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="40px" fxFlex>
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                                <app-document-info-detail
-                                    [title]='"Date"'
-                                    [isLoading]='isLoading$ | async'
-                                    [listInfoData]='
-                                        returnInfoViewData$ ?
-                                            ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
-                                        defaultViewData.dateInfo'
-                                >
-                                </app-document-info-detail>
-                            </div>
+                        <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                            <app-document-info-detail
+                              [title]='"Date"'
+                              [isLoading]='isLoading$ | async'
+                              [listInfoData]='
+                                returnInfoViewData$ ?
+                                  ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
+                                  defaultViewData.dateInfo'
+                            >
+                            </app-document-info-detail>
 
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                                <app-document-info-detail
-                                    [title]='"Return Info"'
-                                    [isLoading]='isLoading$ | async'
-                                    [listInfoData]='
-                                        returnInfoViewData$ ?
-                                            ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
-                                        defaultViewData.returnInfo'
-                                >
-                                </app-document-info-detail>
-                            </div>
+                            <app-document-info-detail
+                              [title]='"Return Info"'
+                              [isLoading]='isLoading$ | async'
+                              [listInfoData]='
+                                returnInfoViewData$ ?
+                                  ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
+                                  defaultViewData.returnInfo'
+                            >
+                            </app-document-info-detail>
                         </div>
                     </app-document-info>
 
-                    <app-document-info
-                        [title]='"Return Line"'
-                        *ngIf='returnInfoViewData$ != null'
+                    <div
+                      class="box-container fullwidth"
+                      *ngIf='returnInfoViewData$ != null'
                     >
+                        <div class="box-container__title m-0">
+                            <span class="mat-headline"> Return Line </span>
+                        </div>
+
                         <mat-table
-                            class="returns-table sinbad-table mx-12"
-                            [class.sinbad-table-no-record]="
-                               !(isLoading$ | async) &&
-                               (returnInfoViewData$ | async)?.totalReturnLine === 0
-                            "
-                            #table
-                            [dataSource]="(returnInfoViewData$ | async)?.returnLines || []"
-                            matSort
-                            [@animateStagger]="{ value: '50' }"
-                            fusePerfectScrollbar
+                          class="returns-table sinbad-table mx-12"
+                          [class.sinbad-table-no-record]="
+                                   !(isLoading$ | async) &&
+                                   (returnInfoViewData$ | async)?.totalReturnLine === 0
+                                "
+                          #table
+                          [dataSource]="(returnInfoViewData$ | async)?.returnLines || []"
+                          matSort
+                          [@animateStagger]="{ value: '50' }"
+                          fusePerfectScrollbar
                         >
                             <ng-container matColumnDef="product-name">
                                 <mat-header-cell *matHeaderCellDef>
@@ -151,42 +147,41 @@
 
                             <mat-header-row *matHeaderRowDef="displayedReturnLineColumns; sticky: true"></mat-header-row>
                             <mat-row
-                                *matRowDef="let row; columns: displayedReturnLineColumns"
-                                class="return"
-                                matRipple
+                              *matRowDef="let row; columns: displayedReturnLineColumns"
+                              class="return"
+                              matRipple
                             >
                             </mat-row>
                             <mat-footer-row
-                                *matFooterRowDef="['no-record']"
-                                [fxShow]="!(isLoading$ | async) && (returnInfoViewData$ | async)?.totalReturnLine === 0"
+                              *matFooterRowDef="['no-record']"
+                              [fxShow]="!(isLoading$ | async) && (returnInfoViewData$ | async)?.totalReturnLine === 0"
                             ></mat-footer-row>
                         </mat-table>
-                    </app-document-info>
+                    </div>
 
                     <app-document-info
-                        [title]='"Return Summary"'
+                      [title]='"Return Summary"'
                     >
                         <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
                             <app-document-info-detail
-                                [title]='null'
-                                [isLoading]='isLoading$ | async'
-                                [listInfoData]='
-                                returnInfoViewData$ ?
-                                    ((returnInfoViewData$ | async)?.returnSummaries || defaultViewData.returnSummaries):
-                                defaultViewData.returnSummaries'
+                              [title]='null'
+                              [isLoading]='isLoading$ | async'
+                              [listInfoData]='
+                                    returnInfoViewData$ ?
+                                        ((returnInfoViewData$ | async)?.returnSummaries || defaultViewData.returnSummaries):
+                                    defaultViewData.returnSummaries'
                             >
                             </app-document-info-detail>
                         </div>
                     </app-document-info>
 
                     <div class="loader" *ngIf="isLoading$ | async">
-                        <mat-spinner color="accent"></mat-spinner>
-                    </div>
+                    <mat-spinner color="accent"></mat-spinner>
+                </div>
 
                 </div>
             </div>
         </div>
+    </div>
 
-    </div>
-    </div>
 </div>

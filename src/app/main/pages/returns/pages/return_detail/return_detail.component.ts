@@ -150,7 +150,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         {
                             key: 'Created Date',
                             value: data.createdAt ?
-                                moment(data.createdAt).format('dd/MM/yyyy HH:mm:ss') : '-',
+                                moment(data.createdAt).format('DD MMMM YYYY h:mm:ss Z') : '-',
                             isDate: true,
                         }
                     ],
