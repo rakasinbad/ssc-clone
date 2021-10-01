@@ -1,15 +1,6 @@
 @import 'src/@fuse/scss/fuse';
 
 #return-detail {
-    .content-card{
-        background-color: inherit !important;
-        box-shadow: none;
-    }
-
-    .top-bg {
-        height: 144px;
-    }
-
     .header {
         height: 100px !important;
         min-height: 100px !important;
@@ -22,6 +13,13 @@
         .btn-action {
             min-width: 84px;
         }
+    }
+
+    .content-card {
+        background: white;
+        padding: 16px;
+        margin: 18px;
+        border-radius: 23px;
     }
 
     .content {

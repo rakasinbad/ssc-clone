@@ -1,11 +1,10 @@
 <div
     id="return-detail"
-    class="page-layout carded fullwidth inner-scroll line-height-1.75"
-    fusePerfectScrollbar
+    class="page-layout carded fullwidth inner-scroll"
 >
-    <div class="top-bg accent with-navigation"></div>
+    <div class="top-bg accent"></div>
 
-    <div class="center px-16">
+    <div class="center">
         <app-header-detail
           [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.returnNumber : ""'
           [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.storeName : ""'
