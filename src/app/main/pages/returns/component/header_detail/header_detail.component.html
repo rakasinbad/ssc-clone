@@ -21,7 +21,7 @@
                     ></ngx-skeleton-loader>
 
                     <ng-container *ngIf="!isLoading">
-                        {{ title }}
+                        {{ title || '' }}
                     </ng-container>
                 </div>
                 <div class="subtitle secondary-text">

@@ -1,5 +1,6 @@
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
+import moment from 'moment';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -148,7 +149,9 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     dateInfo: [
                         {
                             key: 'Created Date',
-                            value: data.createdAt,
+                            value: data.createdAt ?
+                                moment(data.createdAt).format('dd/MM/yyyy HH:mm:ss') : '-',
+                            isDate: true,
                         }
                     ],
                     returnInfo: [
@@ -166,7 +169,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                         {
                             key: 'Return Amount',
-                            value: data.amount,
+                            value: data.amount ? data.amount.toLocaleString() : '-',
                         },
                     ],
                 };
