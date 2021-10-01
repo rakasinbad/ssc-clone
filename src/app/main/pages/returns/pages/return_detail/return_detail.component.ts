@@ -1,5 +1,5 @@
-import { Observable, Subject, of } from 'rxjs';
-import { map, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -112,71 +112,68 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             payload: returnParcelId,
         }));
 
-        this.returnInfoViewData$ = of(null).pipe(
-            withLatestFrom<any, IReturnDetail>(
-                this.store.select(ReturnsSelector.getActiveReturnDetail)
-            ),
-            map((data: IReturnDetail|null) => {
-               if (!data) {
-                   return this.defaultViewData;
-               }
-
-               console.log(data);
-
-               return {
-                   returnNumber: data.returnNumber,
-                   storeName: data.storeName,
-                   storeInfo: [
-                       {
-                           key: 'Return Code',
-                           value: data.returnNumber,
-                       },
-                       {
-                           key: 'Store Name',
-                           value: data.storeName,
-                       },
-                       {
-                           key: 'Created By',
-                           value: data.userName,
-                       },
-                       {
-                           key: 'Store Address',
-                           value: data.storeAddress,
-                       },
-                   ],
-                   dateInfo: [
-                       {
-                           key: 'Created Date',
-                           value: data.createdAt,
-                       }
-                   ],
-                   returnInfo: [
-                       {
-                           key: 'Returned By Store',
-                           value: data.returned ? 'Yes' : 'No',
-                       }
-                   ],
-                   returnLines: data.returns || [],
-                   totalReturnLine: (data.returns || []).length,
-                   returnSummaries: [
-                       {
-                           key: 'Return Quantity',
-                           value: data.returnsQty,
-                       },
-                       {
-                           key: 'Return Amount',
-                           value: data.amount,
-                       },
-                   ],
-               };
-            }),
-            takeUntil(this._unSubscribe$),
-        );
-
         this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
     }
 
     ngOnInit(): void {
+        this.returnInfoViewData$ = this.store.select(ReturnsSelector.getActiveReturnDetail).pipe(
+            map((data: IReturnDetail|null) => {
+                if (!data) {
+                    return this.defaultViewData;
+                }
+
+                console.log(data);
+
+                return {
+                    returnNumber: data.returnNumber,
+                    storeName: data.storeName,
+                    storeInfo: [
+                        {
+                            key: 'Return Code',
+                            value: data.returnNumber,
+                        },
+                        {
+                            key: 'Store Name',
+                            value: data.storeName,
+                        },
+                        {
+                            key: 'Created By',
+                            value: data.userName,
+                        },
+                        {
+                            key: 'Store Address',
+                            value: data.storeAddress,
+                        },
+                    ],
+                    dateInfo: [
+                        {
+                            key: 'Created Date',
+                            value: data.createdAt,
+                        }
+                    ],
+                    returnInfo: [
+                        {
+                            key: 'Returned By Store',
+                            value: data.returned ? 'Yes' : 'No',
+                        }
+                    ],
+                    returnLines: data.returns || [],
+                    totalReturnLine: (data.returns || []).length,
+                    returnSummaries: [
+                        {
+                            key: 'Return Quantity',
+                            value: data.returnsQty,
+                        },
+                        {
+                            key: 'Return Amount',
+                            value: data.amount,
+                        },
+                    ],
+                };
+            }),
+            takeUntil(this._unSubscribe$),
+        );
+
         this.loadData();
     }
 
@@ -185,6 +182,11 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             this.store.dispatch(UiActions.resetBreadcrumb());
 
             delete this.store;
+        }
+
+        if (this._unSubscribe$) {
+            this._unSubscribe$.next();
+            this._unSubscribe$.complete();
         }
     }
 }
