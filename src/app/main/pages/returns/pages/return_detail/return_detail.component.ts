@@ -43,6 +43,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         );
 
         this.defaultViewData = {
+            returnNumber: null,
+            storeName: null,
             storeInfo: [
                 {
                     key: 'Return Code',
@@ -73,6 +75,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     value: null,
                 }
             ],
+            returnLines: [],
+            totalReturnLine: 0,
             returnSummaries: [
                 {
                     key: 'Return Quantity',
@@ -95,8 +99,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
     }
 
     isLoading$: Observable<boolean>;
-    returnInfoViewData$: Observable<ReturnDetailComponentViewModel>;
-    defaultViewData: Partial<ReturnDetailComponentViewModel>;
+    returnInfoViewData$: Observable<Partial<ReturnDetailComponentViewModel>>;
+    defaultViewData: ReturnDetailComponentViewModel;
 
     displayedReturnLineColumns: Array<string>;
     private readonly _unSubscribe$: Subject<any>;
@@ -112,7 +116,13 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
             withLatestFrom<any, IReturnDetail>(
                 this.store.select(ReturnsSelector.getActiveReturnDetail)
             ),
-            map((data: IReturnDetail) => {
+            map((data: IReturnDetail|null) => {
+               if (!data) {
+                   return this.defaultViewData;
+               }
+
+               console.log(data);
+
                return {
                    returnNumber: data.returnNumber,
                    storeName: data.storeName,
@@ -146,8 +156,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                            value: data.returned ? 'Yes' : 'No',
                        }
                    ],
-                   returnLines: data.returns,
-                   totalReturnLine: data.returns.length,
+                   returnLines: data.returns || [],
+                   totalReturnLine: (data.returns || []).length,
                    returnSummaries: [
                        {
                            key: 'Return Quantity',

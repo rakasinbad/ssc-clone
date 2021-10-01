@@ -6,8 +6,8 @@
     <div class="top-bg accent with-navigation"></div>
 
     <app-header-detail
-        [title]='returnInfoViewData$ ? (returnInfoViewData$ | async).returnNumber : null'
-        [description]='returnInfoViewData$ ? (returnInfoViewData$ | async).storeName : null'
+        [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.returnNumber : null'
+        [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.storeName : null'
         [isLoading]='(isLoading$ | async)'>
     </app-header-detail>
 
@@ -22,7 +22,8 @@
                             [title]='"Store Info"'
                             [isLoading]='isLoading$ | async'
                             [listInfoData]='
-                                returnInfoViewData$ ? (returnInfoViewData$ | async).storeInfo :
+                                returnInfoViewData$ ?
+                                    ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
                                 defaultViewData.storeInfo'
                         >
                         </app-document-info-detail>
@@ -33,7 +34,8 @@
                             [title]='"Date"'
                             [isLoading]='isLoading$ | async'
                             [listInfoData]='
-                                returnInfoViewData$ ? (returnInfoViewData$ | async).dateInfo :
+                                returnInfoViewData$ ?
+                                    ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
                                 defaultViewData.dateInfo'
                         >
                         </app-document-info-detail>
@@ -44,7 +46,8 @@
                             [title]='"Return Info"'
                             [isLoading]='isLoading$ | async'
                             [listInfoData]='
-                                returnInfoViewData$ ? (returnInfoViewData$ | async).returnInfo :
+                                returnInfoViewData$ ?
+                                    ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
                                 defaultViewData.returnInfo'
                         >
                         </app-document-info-detail>
@@ -59,49 +62,79 @@
                         class="returns-table sinbad-table mx-12"
                         [class.sinbad-table-no-record]="
                            !(isLoading$ | async) &&
-                           (returnInfoViewData$ | async).totalReturnLine === 0
+                           (returnInfoViewData$ | async)?.totalReturnLine === 0
                         "
                         #table
-                        [dataSource]="(returnInfoViewData$ | async).returnLines"
+                        [dataSource]="(returnInfoViewData$ | async)?.returnLines || []"
                         matSort
                         [@animateStagger]="{ value: '50' }"
                         fusePerfectScrollbar
                     >
-                        <app-table-row
-                            [columnName]="'product-name'"
-                            [title]="'Product Name'"
-                            [key]="'name'"
-                        ></app-table-row>
+                        <ng-container matColumnDef="product-name">
+                            <mat-header-cell *matHeaderCellDef>
+                                Product Name
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word;">
+                                    {{ row?.name || '-' }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
 
-                        <app-table-row
-                            [columnName]="'qty'"
-                            [title]="'Qty'"
-                            [key]="'qty'"
-                        ></app-table-row>
+                        <ng-container matColumnDef="qty">
+                            <mat-header-cell *matHeaderCellDef>
+                                Qty
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word;">
+                                    {{ row?.qty || '-' }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
 
-                        <app-table-row
-                            [columnName]="'unit-price'"
-                            [title]="'Unit Price'"
-                            [key]="'unitPrice'"
-                        ></app-table-row>
+                        <ng-container matColumnDef="unit-price">
+                            <mat-header-cell *matHeaderCellDef>
+                                Unit Price
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word;">
+                                    {{ row?.unitPrice || '-' }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
 
-                        <app-table-row
-                            [columnName]="'sum-price'"
-                            [title]="'Sum Price'"
-                            [key]="'sumPrice'"
-                        ></app-table-row>
+                        <ng-container matColumnDef="sum-price">
+                            <mat-header-cell *matHeaderCellDef>
+                                Sum Price
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word;">
+                                    {{ row?.sumPrice || '-' }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
 
-                        <app-table-row
-                            [columnName]="'return-reason'"
-                            [title]="'Return Reason'"
-                            [key]="'reason'"
-                        ></app-table-row>
+                        <ng-container matColumnDef="return-reason">
+                            <mat-header-cell *matHeaderCellDef>
+                                Return Reason
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word;">
+                                    {{ row?.reason || '-' }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
 
-                        <app-table-row
-                            [columnName]="'notes'"
-                            [title]="'Notes'"
-                            [key]="'note'"
-                        ></app-table-row>
+                        <ng-container matColumnDef="note">
+                            <mat-header-cell *matHeaderCellDef>
+                                Notes
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p style="word-break: break-word;">
+                                    {{ row?.note || '-' }}
+                                </p>
+                            </mat-cell>
+                        </ng-container>
 
                         <ng-container matColumnDef="no-record">
                             <mat-footer-cell *matFooterCellDef colspan="10">
@@ -118,7 +151,7 @@
                         </mat-row>
                         <mat-footer-row
                             *matFooterRowDef="['no-record']"
-                            [fxShow]="!(isLoading$ | async) && (returnInfoViewData$ | async).totalReturnLine === 0"
+                            [fxShow]="!(isLoading$ | async) && (returnInfoViewData$ | async)?.totalReturnLine === 0"
                         ></mat-footer-row>
                     </mat-table>
                 </app-document-info>
@@ -131,7 +164,8 @@
                             [title]='"Return Summary"'
                             [isLoading]='isLoading$ | async'
                             [listInfoData]='
-                            returnInfoViewData$ ? (returnInfoViewData$ | async).returnSummaries :
+                            returnInfoViewData$ ?
+                                ((returnInfoViewData$ | async)?.returnSummaries || defaultViewData.returnSummaries):
                             defaultViewData.returnSummaries'
                         >
                         </app-document-info-detail>
