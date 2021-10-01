@@ -232,6 +232,22 @@ export class FinanceBillingPayload implements IFinanceBillingPayload {
     [key: string]: any;
 }
 
+export interface IBank {
+    id: number;
+    name: string;
+    code: string;
+    displayName: string;
+}
+
+export interface IBankToAccount {
+    accountNo: string;
+    bank: IBank;
+    bankCode: string;
+    description: string;
+    displayName: string;
+    id: number;
+}
+
 export interface paymentCollectionMethodModels {
     id: number;
     refNo: string;
@@ -244,7 +260,7 @@ export interface paymentCollectionMethodModels {
     createdDate: string;
     paymentCollectionType: paymentCollectionTypeModels;
     bankFrom: bankFromModels;
-    bankToAccount: string;
+    bankToAccount: IBankToAccount;
     date: string;
     dueDate: string;
     approvalStatus: string;

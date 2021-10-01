@@ -74,9 +74,8 @@
 
     <ng-container
         *ngIf="
-            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id ==
-                2 ||
-            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == 3
+            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == CHECK ||
+            (detailCollection$ | async)?.data.paymentCollectionMethod.paymentCollectionType.id == GIRO
         "
     >
         <div
