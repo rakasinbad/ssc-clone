@@ -15,7 +15,7 @@ import * as fromCollectionPhoto from '../../../store/reducers';
 import { CollectionDetailSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
 import { ActivatedRoute } from '@angular/router';
 import { FinanceDetailCollection } from '../../../models';
-import * as collectionStatus from '../../../store/reducers';
+import * as StatusPaymentLabel from '../../../constants';
 
 @Component({
     selector: 'app-detail-collection-sales',
@@ -34,14 +34,21 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     collectionId: number;
     isLoadingPhoto$: Observable<boolean>;
 
-    constructor(private store: Store<fromCollectionPhoto.FeatureState>, 
-        private route: ActivatedRoute) {}
+    CASH = StatusPaymentLabel.CASH;
+    CHECK = StatusPaymentLabel.CHECK;
+    GIRO = StatusPaymentLabel.GIRO;
+    TRANSFER = StatusPaymentLabel.TRANSFER;
+
+    constructor(
+        private store: Store<fromCollectionPhoto.FeatureState>,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit() {
         const { id } = this.route.snapshot.params;
         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         this.collectionId = id;
-       
+
         this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
         const sub = this.collectionPhoto$.subscribe({
             next: (resp) => {

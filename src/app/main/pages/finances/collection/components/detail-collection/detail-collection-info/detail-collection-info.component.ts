@@ -28,6 +28,9 @@ export class DetailCollectionInfoComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     public subs: Subscription;
     public idDetail: number;
+    
+    CHECK = StatusPaymentLabel.CHECK;
+    GIRO = StatusPaymentLabel.GIRO;
 
     constructor(
         private store: Store<collectionStatus.FeatureState>,
