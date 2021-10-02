@@ -1,1 +1,10 @@
 @import '../../../../../../../@fuse/scss/fuse';
+
+app-document-info-detail {
+    .return-content {
+        padding: 10px;
+        margin: 16px;
+        border-radius: 2px;
+        border: 1px solid gray;
+    }
+}

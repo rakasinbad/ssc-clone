@@ -1,35 +1,27 @@
-<div class="box-content" fxLayout="column" fxLayoutGap="26px">
-    <div class="box-content__title" *ngIf="title">
+<div class="box-content return-content" fxLayout="column" *ngIf='listInfoData != null'>
+    <div class="box-content__title return-title" *ngIf="title">
         <span class="mat-headline"> {{ title }} </span>
     </div>
 
     <div
-        class="form-field"
-        fxLayout="column"
+        class="field"
+        fxLayout="row"
         fxLayoutAlign="start stretch"
-        fxLayoutGap="27px"
-        *ngIf='listInfoData != null'
+        fxLayoutGap="8px"
+        fxFlex="38px"
+        *ngFor='let infoData of listInfoData'
     >
-        <div
-            class="field"
-            fxLayout="row"
-            fxLayoutAlign="start stretch"
-            fxLayoutGap="16px"
-            fxFlex="37px"
-            *ngFor='let infoData of listInfoData'
-        >
-            <div class="label" fxFlex="120px">{{ infoData?.key }}</div>
-            <div>
-                <ngx-skeleton-loader
-                    [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                    *ngIf="isLoading"
-                ></ngx-skeleton-loader>
+        <div class="label">{{ infoData?.key }}</div>
+        <div>
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading"
+            ></ngx-skeleton-loader>
 
-                <ng-container *ngIf="!isLoading">
-                    {{ infoData?.value || '-' }}
-                </ng-container>
-            </div>
+            <ng-container *ngIf="!isLoading">
+                {{ infoData?.value || '-' }}
+            </ng-container>
         </div>
-
     </div>
+
 </div>

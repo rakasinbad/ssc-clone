@@ -1,13 +1,13 @@
 <div
     id="return-detail"
-    class="page-layout carded fullwidth inner-scroll"
+    class="page-layout carded fullwidth inner-scroll line-height-1d6"
 >
     <div class="top-bg accent"></div>
 
     <div class="center">
         <app-header-detail
-          [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.returnNumber : ""'
-          [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.storeName : ""'
+          [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.title : ""'
+          [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.description : ""'
           [isLoading]='(isLoading$ | async)'>
             <div *ngIf='returnInfoViewData$ != null'>
                 <app-return-status
@@ -24,57 +24,53 @@
                 <app-document-info
                     [title]='"Return Info"'
                 >
-                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                        <app-document-info-detail
-                            [title]='"Store Info"'
-                            [isLoading]='isLoading$ | async'
-                            [listInfoData]='
-                                returnInfoViewData$ ?
-                                  ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
-                                  defaultViewData.storeInfo'
-                        >
-                        </app-document-info-detail>
+                    <div fxLayout="row" fxLayoutAlign="start center">
+                        <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
+                            <app-document-info-detail
+                                [title]='"Store Info"'
+                                [isLoading]='isLoading$ | async'
+                                [listInfoData]='
+                                    returnInfoViewData$ ?
+                                      ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
+                                      defaultViewData.storeInfo'
+                            >
+                            </app-document-info-detail>
+                        </div>
+
+                        <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
+                            <app-document-info-detail
+                                [title]='"Date"'
+                                [isLoading]='isLoading$ | async'
+                                [listInfoData]='
+                                    returnInfoViewData$ ?
+                                      ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
+                                      defaultViewData.dateInfo'
+                            >
+                            </app-document-info-detail>
+
+                            <app-document-info-detail
+                                [title]='"Return Info"'
+                                [isLoading]='isLoading$ | async'
+                                [listInfoData]='
+                                    returnInfoViewData$ ?
+                                      ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
+                                      defaultViewData.returnInfo'
+                            >
+                            </app-document-info-detail>
+                        </div>
                     </div>
-
-                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                        <app-document-info-detail
-                            [title]='"Date"'
-                            [isLoading]='isLoading$ | async'
-                            [listInfoData]='
-                                returnInfoViewData$ ?
-                                  ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
-                                  defaultViewData.dateInfo'
-                        >
-                        </app-document-info-detail>
-
-                        <app-document-info-detail
-                            [title]='"Return Info"'
-                            [isLoading]='isLoading$ | async'
-                            [listInfoData]='
-                                returnInfoViewData$ ?
-                                  ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
-                                  defaultViewData.returnInfo'
-                        >
-                        </app-document-info-detail>
-                    </div>
-                </app-document-info>
-
-                <app-document-info
-                    [title]='"Actions"'
-                >
-
                 </app-document-info>
 
                 <div
-                    class="box-container fullwidth"
+                    class="box-container fullwidth return-content"
                     *ngIf='returnInfoViewData$ != null'
                 >
-                    <div class="box-container__title m-0">
+                    <div class="box-container__title return-title">
                         <span class="mat-headline"> Return Line </span>
                     </div>
 
                     <mat-table
-                        class="returns-table sinbad-table mx-12"
+                        class="returns-table sinbad-table no-margin"
                         [class.sinbad-table-no-record]="
                                    !(isLoading$ | async) &&
                                    (returnInfoViewData$ | async)?.totalReturnLine === 0
@@ -172,19 +168,17 @@
                 </div>
 
                 <app-document-info
-                    [title]='"Return Summary"'
+                    [title]='null'
                 >
-                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                        <app-document-info-detail
-                            [title]='null'
-                            [isLoading]='isLoading$ | async'
-                            [listInfoData]='
-                                    returnInfoViewData$ ?
-                                        ((returnInfoViewData$ | async)?.returnSummaries || defaultViewData.returnSummaries):
-                                    defaultViewData.returnSummaries'
-                        >
-                        </app-document-info-detail>
-                    </div>
+                    <app-document-info-detail
+                        [title]='"Return Summary"'
+                        [isLoading]='isLoading$ | async'
+                        [listInfoData]='
+                                returnInfoViewData$ ?
+                                    ((returnInfoViewData$ | async)?.returnSummaries || defaultViewData.returnSummaries):
+                                defaultViewData.returnSummaries'
+                    >
+                    </app-document-info-detail>
                 </app-document-info>
 
                 <div class="loader" *ngIf="isLoading$ | async">

@@ -2,9 +2,10 @@
 
 #return-detail {
     .header {
-        height: 94px !important;
-        min-height: 94px !important;
-        max-height: 94px !important;
+        padding-top: 19px !important;
+
+        min-height: 35px !important;
+        max-height: 53px !important;
 
         .subtitle {
             margin: 6px 0 0 0;
@@ -19,13 +20,29 @@
         background: white;
         padding: 16px;
         margin: 18px;
-        border-radius: 23px;
+        border-radius: 8px;
     }
 
-    .content {
-        .mat-headline {
-            font-size: 18px;
-            font-weight: 600;
-        }
+    .return-title {
+        margin-bottom: 11px;
+    }
+
+    .return-content {
+        padding: 10px;
+        margin: 16px;
+        border-radius: 5px;
+        border: 1px solid gray;
+    }
+
+    .no-margin {
+        margin: 0;
+    }
+
+    .line-height-1d6 {
+        line-height: 1.6 !important;
+    }
+
+    .btn-marked-status {
+        border:1.8px solid white;
     }
 }

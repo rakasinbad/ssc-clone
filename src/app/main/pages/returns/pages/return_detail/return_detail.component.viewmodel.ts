@@ -2,6 +2,8 @@ import { IDocumentInfoData } from '../../component/document_info';
 import { IReturnCatalogue } from '../../models/returndetail.model';
 
 export interface ReturnDetailComponentViewModel {
+    title: string;
+    description: string;
     returnNumber: number | string;
     storeName: string;
     status: string;

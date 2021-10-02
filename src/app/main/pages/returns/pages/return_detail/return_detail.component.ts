@@ -1,6 +1,7 @@
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import moment from 'moment';
+import 'moment-timezone';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -11,6 +12,7 @@ import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
+import { capitalizeFirstLetter } from '../../utility';
 
 @Component({
     selector: 'app-return-detail',
@@ -44,6 +46,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         );
 
         this.defaultViewData = {
+            title: null,
+            description: null,
             returnNumber: null,
             storeName: null,
             status: null,
@@ -125,9 +129,15 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     return this.defaultViewData;
                 }
 
-                console.log(data);
+                if (!data.status) {
+                    data.status = '';
+                }
+
+                const statusName = capitalizeFirstLetter(data.status.replace('_', ' '));
 
                 return {
+                    title: data.returnNumber,
+                    description: `${statusName} | ${data.storeName}`,
                     returnNumber: data.returnNumber,
                     storeName: data.storeName,
                     status: data.status,
@@ -154,7 +164,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         {
                             key: 'Created Date',
                             value: data.createdAt ?
-                                moment(data.createdAt).format('DD MMMM YYYY h:mm:ss Z') : '-',
+                                moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss z') : '-',
                             isDate: true,
                         }
                     ],
