@@ -1,4 +1,5 @@
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Actions } from '@ngrx/effects';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -14,4 +15,5 @@ export interface IReturnsEffects {
     readonly $notice: NoticeService;
     readonly storage: StorageMap;
     readonly router: Router;
+    readonly matDialog: MatDialog;
 }

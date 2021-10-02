@@ -46,6 +46,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         this.defaultViewData = {
             returnNumber: null,
             storeName: null,
+            status: null,
+            returned: null,
             storeInfo: [
                 {
                     key: 'Return Code',
@@ -128,6 +130,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 return {
                     returnNumber: data.returnNumber,
                     storeName: data.storeName,
+                    status: data.status,
+                    returned: data.returned,
                     storeInfo: [
                         {
                             key: 'Return Code',
@@ -178,6 +182,17 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         );
 
         this.loadData();
+    }
+
+    onChangeReturnStatus(status): void {
+        const { id } = this.route.snapshot.params;
+
+        this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
+            payload: {
+                status: status,
+                id: id,
+            }
+        }));
     }
 
     ngOnDestroy(): void {

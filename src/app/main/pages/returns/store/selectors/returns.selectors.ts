@@ -23,3 +23,8 @@ export const getActiveReturnDetail = createSelector(
     getActiveReturnId,
     (entities, id) => entities[id]
 );
+
+export const getActiveReturnNumber = createSelector(
+    getActiveReturnDetail,
+    (state) => state ? state.returnNumber : null
+);

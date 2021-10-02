@@ -15,6 +15,7 @@ import { ReturnsRoutingModule } from './returns-routing.module';
 
 import { HeaderDetailComponent } from './component/header_detail';
 import { DocumentInfoComponent, DocumentInfoDetailComponent } from './component/document_info';
+import { ReturnStatusComponent } from './component/return_status';
 
 import { ReturnListPageComponent } from './pages/return_list';
 import { ReturnDetailPageComponent } from './pages/return_detail';
@@ -24,6 +25,8 @@ import { ReturnDetailPageComponent } from './pages/return_detail';
         HeaderDetailComponent,
         DocumentInfoComponent,
         DocumentInfoDetailComponent,
+
+        ReturnStatusComponent,
 
         ReturnListPageComponent,
         ReturnDetailPageComponent,

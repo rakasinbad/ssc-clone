@@ -9,6 +9,8 @@ export interface IReturnApiService {
     findAll(params: IQueryParams, supplierId: string): Observable<any>;
     getTotal(params: IQueryParams, supplierId: string): Observable<ITotalReturnModel>;
     findById(id: string): Observable<IReturnDetail>;
+
+    update(id: string, changes: Partial<IReturnDetail>): Observable<any>;
 }
 
 interface ListApiResponse {
@@ -67,5 +69,9 @@ export class ReturnApiService implements IReturnApiService {
 
     findById(id: string): Observable<IReturnDetail> {
         return this.http.get(`${this._returnDetailUrl}/${id}`) as Observable<IReturnDetail>;
+    }
+
+    update(id: string, changes: Partial<IReturnDetail>): Observable<any> {
+        return this.http.patch(`${this._returnDetailUrl}/${id}`, changes);
     }
 }

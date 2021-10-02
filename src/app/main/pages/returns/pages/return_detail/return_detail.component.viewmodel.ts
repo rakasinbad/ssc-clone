@@ -4,6 +4,8 @@ import { IReturnCatalogue } from '../../models/returndetail.model';
 export interface ReturnDetailComponentViewModel {
     returnNumber: number | string;
     storeName: string;
+    status: string;
+    returned: boolean | null;
     storeInfo: Array<IDocumentInfoData>;
     dateInfo: Array<IDocumentInfoData>;
     returnInfo: Array<IDocumentInfoData>;

@@ -13,7 +13,8 @@ import {
     createFetchReturnDetailRequest,
     createFetchReturnFailure,
     createFetchReturnRequest,
-    createFetchTotalReturnRequest
+    createFetchTotalReturnRequest,
+    createConfirmChangeStatusReturn,
 } from './factory_handlers';
 
 import { IReturnsEffects } from './IReturnsEffects';
@@ -26,6 +27,11 @@ import {
 
 import { returnsReducer } from '../reducers';
 import { ReturnApiService } from '../../service';
+import { MatDialog } from '@angular/material/dialog';
+import {
+    createUpdateStatusReturnFailure,
+    createUpdateStatusReturnRequest
+} from './factory_handlers/change_status_returns';
 
 /**
  *
@@ -41,6 +47,7 @@ export class ReturnEffects implements IReturnsEffects {
     readonly $notice: NoticeService;
     readonly storage: StorageMap;
     readonly router: Router;
+    readonly matDialog: MatDialog;
 
     readonly fetchReturnRequest$: Observable<{ payload: {total: number, data: Array<IReturnLine>} | IErrorHandler }>;
     readonly fetchReturnFailure$: Observable<IErrorHandler>;
@@ -51,6 +58,10 @@ export class ReturnEffects implements IReturnsEffects {
     readonly fetchTotalReturnRequest$: Observable<{ payload: ITotalReturnModel | IErrorHandler }>;
     readonly fetchTotalReturnFailure$: Observable<IErrorHandler>;
 
+    readonly confirmChangeStatusReturn$: Observable<any>;
+    readonly updateStatusReturnRequest$: Observable<any>;
+    readonly updateStatusReturnFailure$: Observable<IErrorHandler>;
+
     constructor(
         store: Store<returnsReducer.FeatureState>,
         returnApiService: ReturnApiService,
@@ -59,6 +70,7 @@ export class ReturnEffects implements IReturnsEffects {
         $notice: NoticeService,
         storage: StorageMap,
         router: Router,
+        matDialog: MatDialog,
     ) {
         this.store = store;
         this.returnApiService = returnApiService;
@@ -67,6 +79,7 @@ export class ReturnEffects implements IReturnsEffects {
         this.$notice = $notice;
         this.storage = storage;
         this.router = router;
+        this.matDialog = matDialog;
 
         this.fetchReturnRequest$ = createFetchReturnRequest(this);
         this.fetchReturnFailure$ = createFetchReturnFailure(this);
@@ -76,5 +89,9 @@ export class ReturnEffects implements IReturnsEffects {
 
         this.fetchTotalReturnRequest$ = createFetchTotalReturnRequest(this);
         this.fetchTotalReturnFailure$ = createFetchReturnFailure(this);
+
+        this.confirmChangeStatusReturn$ = createConfirmChangeStatusReturn(this);
+        this.updateStatusReturnRequest$ = createUpdateStatusReturnRequest(this);
+        this.updateStatusReturnFailure$ = createUpdateStatusReturnFailure(this);
     }
 }
