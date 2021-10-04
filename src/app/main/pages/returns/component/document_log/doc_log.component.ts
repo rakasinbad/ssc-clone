@@ -18,6 +18,6 @@ export class DocumentLogComponent {
         if (this.logData == null) {
             return false;
         }
-        return index !== (this.logData.length - 1);
+        return index === (this.logData.length - 1);
     }
 }

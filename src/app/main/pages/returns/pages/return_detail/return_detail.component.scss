@@ -54,4 +54,11 @@
     .border-red {
         border: 1px solid #f0444c !important;
     }
+
+    .content {
+        .mat-headline {
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
 }
