@@ -16,7 +16,7 @@
                     <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                         <h1>Return Order</h1>
                     </div>
-                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
+                    <div dir="rtl" class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                         <div *ngIf='returnInfoViewData$ != null'>
                             <app-return-status
                                 [status]='(returnInfoViewData$ | async)?.status'
@@ -118,7 +118,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ row?.unitPrice || '-' }}
+                                    {{ formatRp(row?.unitPrice) || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>
@@ -129,7 +129,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
-                                    {{ row?.sumPrice || '-' }}
+                                    {{ formatRp(row?.sumPrice) || '-' }}
                                 </p>
                             </mat-cell>
                         </ng-container>

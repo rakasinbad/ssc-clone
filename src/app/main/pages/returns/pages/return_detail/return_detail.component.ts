@@ -12,7 +12,6 @@ import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
-import { capitalizeFirstLetter } from '../../utility';
 
 @Component({
     selector: 'app-return-detail',
@@ -128,6 +127,17 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     return this.defaultViewData;
                 }
 
+                let createdAtStr;
+
+                try {
+                    createdAtStr = data.createdAt ?
+                        // @ts-ignore
+                        moment(data.createdAt).tz().format('DD MMMM YYYY, h:mm:ss z') : '-';
+                } catch (e) {
+                    createdAtStr = data.createdAt ?
+                        moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss z') : '-';
+                }
+
                 return {
                     title: data.returnNumber,
                     returnNumber: data.returnNumber,
@@ -155,8 +165,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     dateInfo: [
                         {
                             key: 'Created Date',
-                            value: data.createdAt ?
-                                moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss z') : '-',
+                            value: createdAtStr,
                             isDate: true,
                         }
                     ],
@@ -175,7 +184,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                         },
                         {
                             key: 'Return Amount',
-                            value: data.amount ? data.amount.toLocaleString() : '-',
+                            value: this.formatRp(data.amount) || '-',
                         },
                     ],
                 };
@@ -184,6 +193,17 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
         );
 
         this.loadData();
+    }
+
+    formatRp(data: any): string {
+        const dataNum = Number(data);
+        return !isNaN(dataNum) ? dataNum.toLocaleString(
+            'id',
+            {
+                style: 'currency',
+                currency: 'IDR',
+            }
+        ) : null;
     }
 
     onChangeReturnStatus(status): void {
