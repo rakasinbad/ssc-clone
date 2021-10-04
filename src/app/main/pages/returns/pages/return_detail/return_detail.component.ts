@@ -132,10 +132,10 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 try {
                     createdAtStr = data.createdAt ?
                         // @ts-ignore
-                        moment(data.createdAt).tz().format('DD MMMM YYYY, h:mm:ss z') : '-';
+                        moment(data.createdAt).tz('Asia/Jakarta').format('DD MMMM YYYY, h:mm:ss z') : '-';
                 } catch (e) {
                     createdAtStr = data.createdAt ?
-                        moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss z') : '-';
+                        moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss Z') : '-';
                 }
 
                 return {

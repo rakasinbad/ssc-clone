@@ -36,6 +36,7 @@
     .return-head {
         padding-left: 10px;
         margin-left: 16px;
+        margin-right: 16px;
     }
 
     .no-margin {
@@ -48,5 +49,9 @@
 
     .btn-marked-status {
         border:1.8px solid white;
+    }
+
+    .border-red {
+        border: 1px solid #f0444c !important;
     }
 }
