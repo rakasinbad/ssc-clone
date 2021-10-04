@@ -151,23 +151,6 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     }));
                 }
 
-                else {
-                    dataLogs = [
-                        {
-                            title: 'Return created by Agus',
-                            happenedAt: '2021-08-25T12:42:29.814Z',
-                        },
-                        {
-                            title: 'Updated to Rejected by Zaki',
-                            happenedAt: '2021-09-18T12:42:29.814Z',
-                        },
-                        {
-                            title: 'Updated to Pending by Zaki',
-                            happenedAt: '2021-09-18T12:42:29.814Z',
-                        },
-                    ];
-                }
-
                 return {
                     title: data.returnNumber,
                     returnNumber: data.returnNumber,
