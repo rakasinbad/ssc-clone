@@ -35,7 +35,7 @@ export class ReturnStatusBarComponent {
         let title;
         switch (this.status) {
             case 'pending':
-                title = 'Pending';
+                title = 'Pending Return';
                 break;
             case 'approved':
                 title = 'Approved';
