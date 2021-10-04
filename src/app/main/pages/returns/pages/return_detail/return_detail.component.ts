@@ -12,7 +12,11 @@ import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
+import { DocumentLogItemViewModel } from '../../component/document_log';
 
+/**
+ * @author Mufid Jamaluddin
+ */
 @Component({
     selector: 'app-return-detail',
     templateUrl: './return_detail.component.html',
@@ -92,6 +96,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     value: null,
                 },
             ],
+            returnLogs: [],
         };
 
         this.displayedReturnLineColumns = [
@@ -128,6 +133,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 }
 
                 let createdAtStr;
+                let dataLogs: Array<DocumentLogItemViewModel>|null = null;
 
                 try {
                     createdAtStr = data.createdAt ?
@@ -136,6 +142,30 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 } catch (e) {
                     createdAtStr = data.createdAt ?
                         moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss Z') : '-';
+                }
+
+                if (data.returnParcelLogs) {
+                    dataLogs = data.returnParcelLogs.map((item) => ({
+                        title: item.description,
+                        happenedAt: item.createdAt,
+                    }));
+                }
+
+                else {
+                    dataLogs = [
+                        {
+                            title: 'Return created by Agus',
+                            happenedAt: '2021-08-25T12:42:29.814Z',
+                        },
+                        {
+                            title: 'Updated to Rejected by Zaki',
+                            happenedAt: '2021-09-18T12:42:29.814Z',
+                        },
+                        {
+                            title: 'Updated to Pending by Zaki',
+                            happenedAt: '2021-09-18T12:42:29.814Z',
+                        },
+                    ];
                 }
 
                 return {
@@ -187,6 +217,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                             value: this.formatRp(data.amount) || '-',
                         },
                     ],
+                    returnLogs: dataLogs,
                 };
             }),
             takeUntil(this._unSubscribe$),

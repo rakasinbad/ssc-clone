@@ -1,4 +1,5 @@
 import { IDocumentInfoData } from '../../component/document_info';
+import { DocumentLogItemViewModel } from '../../component/document_log';
 import { IReturnCatalogue } from '../../models/returndetail.model';
 
 export interface ReturnDetailComponentViewModel {
@@ -13,4 +14,5 @@ export interface ReturnDetailComponentViewModel {
     returnLines: Array<IReturnCatalogue>;
     totalReturnLine: number;
     returnSummaries: Array<IDocumentInfoData>;
+    returnLogs: Array<DocumentLogItemViewModel> | null;
 }

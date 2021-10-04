@@ -15,18 +15,26 @@ import { ReturnsRoutingModule } from './returns-routing.module';
 
 import { HeaderDetailComponent } from './component/header_detail';
 import { DocumentInfoComponent, DocumentInfoDetailComponent } from './component/document_info';
+import { DocumentLogComponent } from './component/document_log';
 import { ReturnStatusComponent } from './component/return_status';
+import { ReturnStatusBarComponent } from './component/return_status_bar';
 
 import { ReturnListPageComponent } from './pages/return_list';
 import { ReturnDetailPageComponent } from './pages/return_detail';
 
+/**
+ * @author Mufid Jamaluddin
+ */
 @NgModule({
     declarations: [
         HeaderDetailComponent,
+
         DocumentInfoComponent,
         DocumentInfoDetailComponent,
+        DocumentLogComponent,
 
         ReturnStatusComponent,
+        ReturnStatusBarComponent,
 
         ReturnListPageComponent,
         ReturnDetailPageComponent,
