@@ -5,7 +5,6 @@
         padding-top: 19px !important;
 
         min-height: 35px !important;
-        max-height: 53px !important;
 
         .subtitle {
             margin: 6px 0 0 0;
@@ -30,8 +29,13 @@
     .return-content {
         padding: 10px;
         margin: 16px;
-        border-radius: 5px;
-        border: 1px solid rgba(128, 128, 128, 0.77);
+        border-radius: 2px;
+        border: 1px solid #CACCCF;
+    }
+
+    .return-head {
+        padding: 10px;
+        margin: 16px;
     }
 
     .no-margin {
