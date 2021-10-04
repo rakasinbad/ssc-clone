@@ -26,7 +26,7 @@ export class HeaderDetailComponent {
     title: string;
 
     @Input()
-    description: string;
+    description: string | null;
 
     goBack(): void {
         this.location.back();

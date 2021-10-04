@@ -20,7 +20,7 @@
                         *ngIf="isLoading"
                     ></ngx-skeleton-loader>
 
-                    <ng-container *ngIf="!isLoading">
+                    <ng-container *ngIf="title && !isLoading">
                         {{ title || '' }}
                     </ng-container>
                 </div>
@@ -34,7 +34,7 @@
                         *ngIf="isLoading"
                     ></ngx-skeleton-loader>
 
-                    <ng-container *ngIf="!isLoading">
+                    <ng-container *ngIf="description && !isLoading">
                         <span>{{ description || '' }}</span>
                     </ng-container>
                 </div>

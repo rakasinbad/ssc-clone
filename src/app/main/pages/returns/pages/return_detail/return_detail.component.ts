@@ -47,7 +47,6 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
 
         this.defaultViewData = {
             title: null,
-            description: null,
             returnNumber: null,
             storeName: null,
             status: null,
@@ -129,15 +128,8 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     return this.defaultViewData;
                 }
 
-                if (!data.status) {
-                    data.status = '';
-                }
-
-                const statusName = capitalizeFirstLetter(data.status.replace('_', ' '));
-
                 return {
                     title: data.returnNumber,
-                    description: `${statusName} | ${data.storeName}`,
                     returnNumber: data.returnNumber,
                     storeName: data.storeName,
                     status: data.status,

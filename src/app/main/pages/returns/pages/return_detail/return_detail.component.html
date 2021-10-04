@@ -7,7 +7,6 @@
     <div class="center">
         <app-header-detail
           [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.title : ""'
-          [description]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.description : ""'
           [isLoading]='(isLoading$ | async)'>
         </app-header-detail>
 
@@ -32,6 +31,8 @@
                 <app-document-info
                     [title]='"Return Info"'
                 >
+                    <br/>
+
                     <div fxLayout="row" fxLayoutAlign="start center">
                         <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
                             <app-document-info-detail
