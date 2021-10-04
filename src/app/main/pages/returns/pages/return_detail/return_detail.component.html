@@ -10,8 +10,8 @@
           [isLoading]='(isLoading$ | async)'>
         </app-header-detail>
 
-        <div class="content-card">
-            <div class="content" fusePerfectScrollbar>
+        <div class="content-card" fusePerfectScrollbar>
+            <div class="content">
                 <div class="return-head" fxLayout="row" fxLayoutAlign="start center">
                     <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                         <h1>Return Order</h1>
@@ -103,7 +103,7 @@
 
                         <ng-container matColumnDef="qty">
                             <mat-header-cell *matHeaderCellDef>
-                                Return Quantity
+                                Quantity
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
