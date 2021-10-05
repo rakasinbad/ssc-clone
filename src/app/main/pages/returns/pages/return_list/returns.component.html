@@ -94,7 +94,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.status || '-' }}
+                            {{ getStatusTitle(row?.status) || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>

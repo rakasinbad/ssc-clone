@@ -19,6 +19,7 @@ import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { IReturnLine, ITotalReturnModel } from '../../models';
+import { getReturnStatusTitle } from '../../models/returnline.model';
 
 @Component({
     selector: 'app-returns',
@@ -120,6 +121,10 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     private $pageState: ReturnsComponentState;
 
     private readonly _searchKeyword: FormControl = new FormControl('');
+
+    getStatusTitle(status): string {
+        return status ? getReturnStatusTitle(status) : null;
+    }
 
     ngOnInit(): void {
         this.filterForm = this.formBuilder.group({
