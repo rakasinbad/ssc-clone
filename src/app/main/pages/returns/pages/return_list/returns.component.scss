@@ -120,42 +120,47 @@ app-returns {
                 min-width: 0;
                 display: flex;
                 align-items: center;
-                padding-right: 8px;
+                padding-right: 5px;
+                padding-left: 5px;
             }
 
             .mat-column-return-date {
-                flex: 0 1 180px;
-                min-width: 180px;
+                flex: 0 1 18%;
+                min-width: 153px;
             }
 
             .mat-column-store-name {
-                flex: 0 1 135px;
+                flex: 0 1 16%;
                 min-width: 135px;
             }
 
             .mat-column-return-number {
-                flex: 0 1 135px;
-                min-width: 135px;
+                flex: 0 1 18%;
+                min-width: 153px;
             }
 
             .mat-column-amount {
-                flex: 1 1 135px;
-                min-width: 135px;
+                flex: 1 1 15%;
+                min-width: 90px;
+                max-width: 135px;
             }
 
             .mat-column-user-name {
-                flex: 1 1 135px;
-                min-width: 135px;
+                flex: 1 1 15%;
+                min-width: 90px;
+                max-width: 120px;
             }
 
             .mat-column-status {
-                flex: 1 1 135px;
-                min-width: 135px;
+                flex: 1 1 13%;
+                min-width: 90px;
+                max-width: 120px;
             }
 
             .mat-column-actions {
-                flex: 0 1 60px;
+                flex: 0 1 5%;
                 min-width: 60px;
+                max-width: 60px;
                 justify-content: flex-end;
             }
 

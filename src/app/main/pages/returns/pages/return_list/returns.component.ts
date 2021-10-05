@@ -177,6 +177,12 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 }
             });
 
+        this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
+        this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
+
+        this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
+        this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
+
         this.loadData(true);
     }
 
@@ -229,13 +235,18 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             this.paginator.pageIndex = 0;
 
             this.store.dispatch(ReturnActions.fetchTotalReturnRequest());
-            this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
-
-            this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
         }
+    }
 
-        this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
-        this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
+    formatRp(data: any): string {
+        const dataNum = Number(data);
+        return !isNaN(dataNum) ? dataNum.toLocaleString(
+            'id',
+            {
+                style: 'currency',
+                currency: 'IDR',
+            }
+        ) : null;
     }
 
     onTrackBy(index: number, item: IReturnLine | null): string | number {
