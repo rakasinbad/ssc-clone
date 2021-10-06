@@ -12,7 +12,11 @@ import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { ReturnDetailComponentViewModel } from './return_detail.component.viewmodel';
+import { DocumentLogItemViewModel } from '../../component/document_log';
 
+/**
+ * @author Mufid Jamaluddin
+ */
 @Component({
     selector: 'app-return-detail',
     templateUrl: './return_detail.component.html',
@@ -92,6 +96,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                     value: null,
                 },
             ],
+            returnLogs: [],
         };
 
         this.displayedReturnLineColumns = [
@@ -128,6 +133,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 }
 
                 let createdAtStr;
+                let dataLogs: Array<DocumentLogItemViewModel>|null = null;
 
                 try {
                     createdAtStr = data.createdAt ?
@@ -136,6 +142,13 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 } catch (e) {
                     createdAtStr = data.createdAt ?
                         moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss Z') : '-';
+                }
+
+                if (data.returnParcelLogs) {
+                    dataLogs = data.returnParcelLogs.map((item) => ({
+                        title: item.description,
+                        happenedAt: item.createdAt,
+                    }));
                 }
 
                 return {
@@ -187,6 +200,7 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                             value: this.formatRp(data.amount) || '-',
                         },
                     ],
+                    returnLogs: dataLogs,
                 };
             }),
             takeUntil(this._unSubscribe$),

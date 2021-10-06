@@ -1,0 +1,23 @@
+<div class="box-content" fxLayout="column" *ngIf='status != null'>
+    <div class="box-content__title return-title">
+        <span class="mat-headline"> Status: {{ getStatusText() }} </span>
+    </div>
+
+    <div class="progress-bar mb-0">
+        <div class="content" fxLayout="row" fxFlex="90">
+            <div class="bar-left-wrapper">
+                <div class="bar-left" [class.active]='true'></div>
+            </div>
+            <div class="bar-center-wrapper">
+                <div class="bar-center" [class.active]="isStepTwoActive()"></div>
+            </div>
+            <div class="bar-right-wrapper">
+                <div class="bar-right" [class.active]="isStepThreeActive()"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="final-status mb-8">
+        {{ getFinalStatus() || '-'}}
+    </div>
+</div>

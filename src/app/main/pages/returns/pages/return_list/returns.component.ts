@@ -20,6 +20,9 @@ import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { IReturnLine, ITotalReturnModel } from '../../models';
 
+/**
+ * @author Mufid Jamaluddin
+ */
 @Component({
     selector: 'app-returns',
     templateUrl: './returns.component.html',

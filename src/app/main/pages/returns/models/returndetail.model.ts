@@ -1,3 +1,11 @@
+export interface IReturnDetailLog {
+    id: number | string;
+    status: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface IReturnCatalogue {
     id: string | number;
     catalogueId: string | number;
@@ -26,4 +34,5 @@ export interface IReturnDetail {
     returned: boolean;
     amount: number;
     returns: Array<IReturnCatalogue>;
+    returnParcelLogs: Array<IReturnDetailLog> | null;
 }

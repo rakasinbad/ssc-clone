@@ -12,7 +12,7 @@
 
         <div class="content-card" fusePerfectScrollbar>
             <div class="content">
-                <div class="return-head" fxLayout="row" fxLayoutAlign="start center">
+                <div class="return-head" fxLayout="row" fxLayoutAlign="start stretch">
                     <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                         <h1>Return Order</h1>
                     </div>
@@ -28,47 +28,58 @@
                     </div>
                 </div>
 
-                <app-document-info
-                    [title]='"Return Info"'
-                >
-                    <br/>
+                <div fxLayout="row" fxLayoutAlign="start stretch">
+                    <app-document-info
+                        [title]='"Return Info"'
+                    >
+                        <br/>
+                        <div fxLayout="row" fxLayoutAlign="start stretch">
+                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                                <app-document-info-detail
+                                    [title]='"Store Info"'
+                                    [isLoading]='isLoading$ | async'
+                                    [listInfoData]='
+                                        returnInfoViewData$ ?
+                                          ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
+                                          defaultViewData.storeInfo'
+                                >
+                                </app-document-info-detail>
+                            </div>
 
-                    <div fxLayout="row" fxLayoutAlign="start center">
-                        <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                            <app-document-info-detail
-                                [title]='"Store Info"'
-                                [isLoading]='isLoading$ | async'
-                                [listInfoData]='
-                                    returnInfoViewData$ ?
-                                      ((returnInfoViewData$ | async)?.storeInfo || defaultViewData.storeInfo):
-                                      defaultViewData.storeInfo'
-                            >
-                            </app-document-info-detail>
+                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                                <app-document-info-detail
+                                    [title]='"Date"'
+                                    [isLoading]='isLoading$ | async'
+                                    [listInfoData]='
+                                        returnInfoViewData$ ?
+                                          ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
+                                          defaultViewData.dateInfo'
+                                >
+                                </app-document-info-detail>
+
+                                <app-document-info-detail
+                                    [title]='"Return Info"'
+                                    [isLoading]='isLoading$ | async'
+                                    [listInfoData]='
+                                        returnInfoViewData$ ?
+                                          ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
+                                          defaultViewData.returnInfo'
+                                >
+                                </app-document-info-detail>
+                            </div>
+
                         </div>
+                    </app-document-info>
 
-                        <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
-                            <app-document-info-detail
-                                [title]='"Date"'
-                                [isLoading]='isLoading$ | async'
-                                [listInfoData]='
-                                    returnInfoViewData$ ?
-                                      ((returnInfoViewData$ | async)?.dateInfo || defaultViewData.dateInfo) :
-                                      defaultViewData.dateInfo'
-                            >
-                            </app-document-info-detail>
+                    <div class="box-content__container return-content"
+                         fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
+                        <app-return-status-bar [status]='(returnInfoViewData$ | async)?.status || null'>
+                        </app-return-status-bar>
 
-                            <app-document-info-detail
-                                [title]='"Return Info"'
-                                [isLoading]='isLoading$ | async'
-                                [listInfoData]='
-                                    returnInfoViewData$ ?
-                                      ((returnInfoViewData$ | async)?.returnInfo || defaultViewData.returnInfo):
-                                      defaultViewData.returnInfo'
-                            >
-                            </app-document-info-detail>
-                        </div>
+                        <app-document-log [logData]='(returnInfoViewData$ | async)?.returnLogs || null'>
+                        </app-document-log>
                     </div>
-                </app-document-info>
+                </div>
 
                 <div
                     class="box-container fullwidth return-content"

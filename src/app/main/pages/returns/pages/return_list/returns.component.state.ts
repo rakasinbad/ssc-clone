@@ -1,5 +1,8 @@
 import { isMoment } from 'moment';
 
+/**
+ * @author Mufid Jamaluddin
+ */
 export class ReturnsComponentState {
     _currentTab: null | string;
     _returnStartDate: null | string;
