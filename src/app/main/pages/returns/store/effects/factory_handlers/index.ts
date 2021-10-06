@@ -13,6 +13,12 @@ import {
     createFetchTotalReturnRequest
 } from './get_total_returns';
 
+import {
+    createConfirmChangeStatusReturn,
+    createUpdateStatusReturnRequest,
+    createUpdateStatusReturnFailure,
+} from './change_status_returns';
+
 export {
     createFetchReturnFailure,
     createFetchReturnRequest,
@@ -22,4 +28,6 @@ export {
 
     createFetchTotalReturnFailure,
     createFetchTotalReturnRequest,
+
+    createConfirmChangeStatusReturn,
 };

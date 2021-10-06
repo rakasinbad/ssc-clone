@@ -1,0 +1,57 @@
+@import 'src/@fuse/scss/fuse';
+
+#return-detail {
+    .header {
+        padding-top: 19px !important;
+
+        min-height: 35px !important;
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+
+        .btn-action {
+            min-width: 84px;
+        }
+    }
+
+    .content-card {
+        background: white;
+        padding: 16px;
+        margin: 18px;
+        border-radius: 8px;
+    }
+
+    .return-title {
+        margin-bottom: 11px;
+    }
+
+    .return-content {
+        padding: 10px;
+        margin: 16px;
+        border-radius: 2px;
+        border: 1px solid #CACCCF;
+    }
+
+    .return-head {
+        padding-left: 10px;
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+
+    .no-margin {
+        margin: 0;
+    }
+
+    .line-height-1d6 {
+        line-height: 1.6 !important;
+    }
+
+    .btn-marked-status {
+        border:1.8px solid white;
+    }
+
+    .border-red {
+        border: 1px solid #f0444c !important;
+    }
+}

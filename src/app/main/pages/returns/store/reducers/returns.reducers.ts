@@ -61,6 +61,7 @@ const returnReducer = createReducer(
         ReturnActions.fetchReturnRequest,
         ReturnActions.fetchReturnDetailRequest,
         ReturnActions.fetchTotalReturnRequest,
+        ReturnActions.updateStatusReturnRequest,
         (state) => ({
             ...state,
             isLoading: true,
@@ -70,6 +71,7 @@ const returnReducer = createReducer(
         ReturnActions.fetchReturnFailure,
         ReturnActions.fetchReturnDetailFailure,
         ReturnActions.fetchTotalReturnFailure,
+        ReturnActions.updateStatusReturnFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -109,6 +111,18 @@ const returnReducer = createReducer(
             errors: adapterError.removeOne('fetchTotalReturnFailure', state.errors)
         });
     }),
+    on(ReturnActions.updateStatusReturnSuccess, (state, { payload }) =>  ({
+            ...state,
+            isEdit: false,
+            isLoading: false,
+            isRefresh: undefined,
+            returns: adapterReturn.updateOne(
+                { id: payload.id, changes: { status: payload.status } },
+                state.returns
+            ),
+            errors: adapterError.removeOne('updateStatusReturnFailure', state.errors),
+        })
+    ),
 
     on(ReturnActions.resetReturn, (state) => ({
         ...state,

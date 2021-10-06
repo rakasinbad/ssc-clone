@@ -19,6 +19,12 @@ export function createFetchReturnDetailRequest(props: IReturnsEffects):
                     return props.returnApiService.findById(id).pipe(
                         catchOffline(),
                         map((resp: IReturnDetail) => {
+                            resp.id = resp.returnParcelId;
+                            resp.returnsQty = resp.returns
+                                .map(item => Number(item.qty))
+                                .filter(qty => !isNaN(qty))
+                                .reduce((a, b) => a + b);
+
                             const payload = {
                                 data: resp,
                             };

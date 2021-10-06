@@ -121,8 +121,9 @@
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
-                                        aria-label="Cancel"
+                                        aria-label="Approved"
                                         *ngIf="row?.status === 'pending'"
+                                        (click)="changeReturnStatus('approved', row)"
                                     >
                                         <mat-icon>send</mat-icon>
                                         <span>Approved</span>
@@ -132,8 +133,9 @@
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
-                                        aria-label="Cancel"
+                                        aria-label="Approved & Returned"
                                         *ngIf="row?.status === 'approved' || row?.status === 'pending'"
+                                        (click)="changeReturnStatus('approved_returned', row)"
                                     >
                                         <mat-icon>send</mat-icon>
                                         <span>Approved & Returned</span>
@@ -145,6 +147,7 @@
                                         class="sinbad-mat-menu-item"
                                         aria-label="Cancel"
                                         *ngIf="row?.status !== 'rejected'"
+                                        (click)="changeReturnStatus('rejected', row)"
                                     >
                                         <mat-icon>delete</mat-icon>
                                         <span>Rejected</span>
@@ -166,6 +169,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="return"
                     matRipple
+                    [routerLink]="['/pages/returns', row.id, 'detail']"
                 >
                 </mat-row>
                 <mat-footer-row

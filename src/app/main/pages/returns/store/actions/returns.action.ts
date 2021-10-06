@@ -59,6 +59,32 @@ export const fetchTotalReturnSuccess = createAction(
     props<{ payload: ITotalReturnModel }>()
 );
 
+
+// -----------------------------------------------------------------------------------------------------
+// Update Status Return
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeStatusReturn = createAction(
+    '[Returns Page] Confirm Change Status Return',
+    props<{ payload: { status: string; id: number|string, returnNumber?: string } }>()
+);
+
+export const updateStatusReturnRequest = createAction(
+    '[Returns API] Update Status Return Request',
+    props<{ payload: { status: string; id: string } }>()
+);
+
+export const updateStatusReturnSuccess = createAction(
+    '[Returns API] Update Status Return Succeeded',
+    props<{ payload: { status: string; id: string } }>()
+);
+
+export const updateStatusReturnFailure = createAction(
+    '[Returns API] Update Status Return Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+
 // -----------------------------------------------------------------------------------------------------
 // Reset Return
 // -----------------------------------------------------------------------------------------------------

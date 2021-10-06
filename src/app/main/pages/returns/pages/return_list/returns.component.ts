@@ -256,6 +256,16 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         this.loadData(true);
     }
 
+    changeReturnStatus(status: string, row: IReturnLine|null): void {
+        const { id = null, returnNumber = null } = row || {};
+
+        if (id && returnNumber) {
+            this.store.dispatch(ReturnActions.confirmChangeStatusReturn({
+                payload: { id, status, returnNumber }
+            }));
+        }
+    }
+
     ngOnDestroy(): void {
         if (this.store) {
             this.store.dispatch(UiActions.resetBreadcrumb());
