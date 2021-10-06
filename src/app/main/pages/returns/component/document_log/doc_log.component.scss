@@ -5,22 +5,22 @@ app-document-log {
         .status {
             position: relative;
             top: 0;
-            margin-top: 0px;
-            padding-top: 0px;
+            margin-top: 0;
+            padding-top: 0;
 
             .timeline-indicator-wrap{
                 width: auto;
                 height: 100%;
                 position: relative;
                 top: 0;
-                margin-top: 0px;
-                padding-top: 0px;
+                margin-top: 0;
+                padding-top: 0;
 
                 .timeline-indicator{
                     width: auto;
                     height: auto;
-                    margin-top: 0px;
-                    padding-top: 0px;
+                    margin-top: 0;
+                    padding-top: 0;
                     z-index: 1;
                 }
 
@@ -40,12 +40,10 @@ app-document-log {
 
                 .timeline-desc{
                     font-size: 14px;
-                    // font-weight: 500;
                 }
 
                 .timeline-time{
                     font-size: 12px;
-                    // font-weight: 500;
                 }
             }
         }

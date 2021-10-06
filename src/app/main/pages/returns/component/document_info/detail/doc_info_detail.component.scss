@@ -9,7 +9,11 @@ app-document-info-detail {
     }
 
     .col-label-width {
-        width: 120px;
+        min-width: 111px !important;
+    }
+
+    .col-value-width {
+        min-width: 123px;
     }
 
     .detail {

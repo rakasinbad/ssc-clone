@@ -13,7 +13,7 @@
         <div class="col-label-width" fxLayout="column" fxLayoutAlign="space-between stretch">
             <div class="label">{{ infoData?.key }}</div>
         </div>
-        <div fxLayout="column" fxLayoutAlign="space-between stretch">
+        <div class="col-value-width" fxLayout="column" fxLayoutAlign="space-between stretch">
             <ngx-skeleton-loader
                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                 *ngIf="isLoading"
