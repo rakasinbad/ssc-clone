@@ -19,6 +19,7 @@ import { returnsReducer } from '../../store/reducers';
 import { ReturnsSelector } from '../../store/selectors';
 import { ReturnActions } from '../../store/actions';
 import { IReturnLine, ITotalReturnModel } from '../../models';
+import { getReturnStatusTitle } from '../../models/returnline.model';
 
 /**
  * @author Mufid Jamaluddin
@@ -124,6 +125,10 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
     private readonly _searchKeyword: FormControl = new FormControl('');
 
+    getStatusTitle(status): string {
+        return status ? getReturnStatusTitle(status) : null;
+    }
+
     ngOnInit(): void {
         this.filterForm = this.formBuilder.group({
             startDate: null,
@@ -174,6 +179,12 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                     this.loadData(true);
                 }
             });
+
+        this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
+        this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
+
+        this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
+        this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
 
         this.loadData(true);
     }
@@ -227,13 +238,18 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             this.paginator.pageIndex = 0;
 
             this.store.dispatch(ReturnActions.fetchTotalReturnRequest());
-            this.totalDataSource$ = this.store.select(ReturnsSelector.getTotalReturn);
-
-            this.totalStatus$ = this.store.select(ReturnsSelector.getTotalStatus);
         }
+    }
 
-        this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
-        this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
+    formatRp(data: any): string {
+        const dataNum = Number(data);
+        return !isNaN(dataNum) ? dataNum.toLocaleString(
+            'id',
+            {
+                style: 'currency',
+                currency: 'IDR',
+            }
+        ) : null;
     }
 
     onTrackBy(index: number, item: IReturnLine | null): string | number {
