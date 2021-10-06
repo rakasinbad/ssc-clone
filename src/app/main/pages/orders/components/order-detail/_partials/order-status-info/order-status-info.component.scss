@@ -11,9 +11,10 @@ app-order-status-info{
         .progress-bar {
             .content {
                 .bar-left-wrapper {
+                    width: 33.3%;
                     margin-right: 3px;
                     .bar-left {
-                        width: 100px;
+                        width: 100%;
                         height: 0;
                         border-top: 10px solid #f0444c;
                         border-right: 3px solid transparent;
@@ -22,10 +23,11 @@ app-order-status-info{
                 }
 
                 .bar-center-wrapper {
+                    width: 33.3%;
                     margin-right: 3px;
                     margin-left: 3px;
                     .bar-center {
-                        width: 100px;
+                        width: 100%;
                         height: 0;
                         transform: skewX(-15deg);
                         border-bottom: 10px solid #cacccf;
@@ -36,9 +38,10 @@ app-order-status-info{
                 }
 
                 .bar-right-wrapper {
+                    width: 33.3%;
                     margin-left: 3px;
                     .bar-right {
-                        width: 100px;
+                        width: 100%;
                         height: 0;
                         border-bottom: 10px solid #cacccf;
                         border-left: 3px solid transparent;
