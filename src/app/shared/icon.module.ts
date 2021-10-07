@@ -190,5 +190,11 @@ export class IconModule {
             'sinbad-quest-logo',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/quest.svg')
         );
+
+        // timeline check
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-check-red',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/check-red.svg')
+        );
     }
 }
