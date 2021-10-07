@@ -90,7 +90,7 @@
                     </div>
 
                     <mat-table
-                        class="returns-table sinbad-table no-margin"
+                        class="return-detail-table sinbad-table no-margin"
                         [class.sinbad-table-no-record]="
                                    !(isLoading$ | async) &&
                                    (returnInfoViewData$ | async)?.totalReturnLine === 0
@@ -114,7 +114,7 @@
 
                         <ng-container matColumnDef="qty">
                             <mat-header-cell *matHeaderCellDef>
-                                Quantity
+                                Order Quantity
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">
