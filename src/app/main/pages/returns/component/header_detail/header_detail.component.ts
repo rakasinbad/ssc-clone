@@ -28,6 +28,9 @@ export class HeaderDetailComponent {
     @Input()
     description: string | null;
 
+    @Input()
+    withDesc: boolean;
+
     goBack(): void {
         this.location.back();
     }

@@ -7,6 +7,7 @@
     <div class="center">
         <app-header-detail
           [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.title : ""'
+          [withDesc]='false'
           [isLoading]='(isLoading$ | async)'>
         </app-header-detail>
 
@@ -34,7 +35,7 @@
                     >
                         <br/>
                         <div fxLayout="row" fxLayoutAlign="start stretch">
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
                                     [title]='"Store Info"'
                                     [isLoading]='isLoading$ | async'
@@ -46,7 +47,7 @@
                                 </app-document-info-detail>
                             </div>
 
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
                                     [title]='"Date"'
                                     [isLoading]='isLoading$ | async'
