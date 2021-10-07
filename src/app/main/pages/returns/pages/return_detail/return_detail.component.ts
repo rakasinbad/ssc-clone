@@ -138,10 +138,12 @@ export class ReturnDetailComponent implements OnInit, OnDestroy {
                 try {
                     createdAtStr = data.createdAt ?
                         // @ts-ignore
-                        moment(data.createdAt).tz('Asia/Jakarta').format('DD MMMM YYYY, h:mm:ss z') : '-';
+                        moment(data.createdAt).tz('Asia/Jakarta').format('DD/MM/YYYY HH:mm:ss') : '-';
+                        // moment(data.createdAt).tz('Asia/Jakarta').format('DD MMMM YYYY, h:mm:ss z') : '-';
                 } catch (e) {
                     createdAtStr = data.createdAt ?
-                        moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss Z') : '-';
+                        moment(data.createdAt).format('DD/MM/YYYY HH:mm:ss') : '-';
+                        // moment(data.createdAt).format('DD MMMM YYYY, h:mm:ss Z') : '-';
                 }
 
                 if (data.returnParcelLogs) {
