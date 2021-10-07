@@ -17,10 +17,13 @@ app-document-info-detail {
         opacity: 0.5;
     }
 
-    .col-label-width {
-        min-width: 111px !important;
+    .col-space-between {
         margin-bottom: 5px;
         margin-top: 5px;
+    }
+
+    .col-label-width {
+        min-width: 111px !important;
     }
 
     .col-value-width {
