@@ -7,13 +7,14 @@
     <div class="center">
         <app-header-detail
           [title]='returnInfoViewData$ ? (returnInfoViewData$ | async)?.title : ""'
+          [withDesc]='false'
           [isLoading]='(isLoading$ | async)'>
         </app-header-detail>
 
         <div class="content-card" fusePerfectScrollbar>
             <div class="content">
                 <div class="return-head" fxLayout="row" fxLayoutAlign="start stretch">
-                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
+                    <div class="box-content__container" fxLayout="column" fxLayoutAlign="center stretch" fxFlex>
                         <h1 class="page-title">Return Order</h1>
                     </div>
                     <div dir="rtl" class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
@@ -34,7 +35,7 @@
                     >
                         <br/>
                         <div fxLayout="row" fxLayoutAlign="start stretch">
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
                                     [title]='"Store Info"'
                                     [isLoading]='isLoading$ | async'
@@ -46,7 +47,7 @@
                                 </app-document-info-detail>
                             </div>
 
-                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="start stretch" fxFlex>
+                            <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
                                     [title]='"Date"'
                                     [isLoading]='isLoading$ | async'
@@ -90,7 +91,7 @@
                     </div>
 
                     <mat-table
-                        class="returns-table sinbad-table no-margin"
+                        class="return-detail-table sinbad-table no-margin"
                         [class.sinbad-table-no-record]="
                                    !(isLoading$ | async) &&
                                    (returnInfoViewData$ | async)?.totalReturnLine === 0
@@ -114,7 +115,7 @@
 
                         <ng-container matColumnDef="qty">
                             <mat-header-cell *matHeaderCellDef>
-                                Quantity
+                                Order Quantity
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <p style="word-break: break-word;">

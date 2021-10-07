@@ -4,16 +4,16 @@
     </div>
 
     <div
-        class="field detail"
+        class="field detail col-space-between"
         fxLayout="row"
         fxLayoutAlign="start stretch"
         fxLayoutGap="8px"
         *ngFor='let infoData of listInfoData'
     >
-        <div class="col-label-width" fxLayout="column" fxLayoutAlign="space-between stretch">
+        <div class="col-label-width return-detail-key" fxLayout="column" fxLayoutAlign="space-between stretch">
             <div class="label">{{ infoData?.key }}</div>
         </div>
-        <div class="col-value-width" fxLayout="column" fxLayoutAlign="space-between stretch">
+        <div class="col-value-width return-detail-value" fxLayout="column" fxLayoutAlign="space-between stretch">
             <ngx-skeleton-loader
                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                 *ngIf="isLoading"

@@ -24,6 +24,9 @@
 
     .page-title {
         margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: black;
     }
 
     .return-title {
@@ -63,6 +66,92 @@
         .mat-headline {
             font-size: 18px;
             font-weight: 600;
+        }
+    }
+
+    .return-detail-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+
+        .mat-column-product-name {
+            flex: 0 1 30%;
+            min-width: 153px;
+        }
+
+        .mat-column-qty {
+            flex: 0 1 15%;
+            min-width: 135px;
+        }
+
+        .mat-column-unit-price {
+            flex: 0 1 15%;
+            min-width: 135px;
+        }
+
+        .mat-column-return-reason {
+            flex: 1 1 15%;
+            min-width: 90px;
+            max-width: 135px;
+        }
+
+        .mat-column-note {
+            flex: 1 1 25%;
+            min-width: 135px;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 11em;
+            justify-content: center;
         }
     }
 }
