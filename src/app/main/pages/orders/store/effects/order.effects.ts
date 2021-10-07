@@ -735,7 +735,7 @@ export class OrderEffects {
                     );
                 }
 
-                return this._$calculateOrderApi.getStatusOrders<IStatusOMS>('oms', supplierId).pipe(
+                return this._$calculateOrderApi.getCalculateOrderView<IStatusOMS>(supplierId).pipe(
                     catchOffline(),
                     retry(3),
                     map(resp => {
@@ -1031,7 +1031,7 @@ export class OrderEffects {
 
                 return dialogRef.afterClosed();
             }),
-            map(({ id, change }) => {                
+            map(({ id, change }) => {
                 if (!!id && !!change) {
                     return OrderActions.updateOrderRequest({
                         payload: { id: id, body: change }
@@ -1039,7 +1039,7 @@ export class OrderEffects {
                 } else {
                     return UiActions.resetHighlightRow();
                 }
-            })    
+            })
         )
     );
 
@@ -1118,7 +1118,7 @@ export class OrderEffects {
                         value: resp
                     }
                 });
-    
+
                 this._$notice.open(resp.errors.error.message, 'error', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'

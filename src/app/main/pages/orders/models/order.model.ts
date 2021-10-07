@@ -1,11 +1,12 @@
 export interface IStatusOMS {
-    totalOrder: string;
-    totalNewOrder: string;
-    totalPackedOrder: string;
-    totalShippedOrder: string;
-    totalDeliveredOrder: string;
-    totalCompletedOrder: string;
-    totalPendingOrder: string;
-    totalCanceledOrder: string;
-    totalPendingPaymentOrder: string;
+    totalOrder: number;
+    totalNewOrder: number;
+    totalPackedOrder: number;
+    totalShippedOrder: number;
+    totalDeliveredOrder: number;
+    totalCompletedOrder: number;
+    totalPendingOrder: number;
+    totalCanceledOrder: number;
+    totalPendingPaymentOrder: number;
+    totalPendingPartialOrder: number;
 }

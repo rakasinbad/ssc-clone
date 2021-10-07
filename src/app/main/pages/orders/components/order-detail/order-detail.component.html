@@ -101,6 +101,7 @@
         <!-- / ORDER LINE -->
 
         <!-- BONUS SKU -->
+        <div *ngIf='(data?.bonusCatalogues?.length || 0) > 0'>
         <div class="box-container" fxLayout="column" fxLayoutGap="16px">
             <div class="box-container__title">
                 <span class="mat-headline m-0"> Bonus SKU </span>
@@ -108,6 +109,7 @@
 
             <mat-spinner color="accent" *ngIf="loading"></mat-spinner>
             <app-oms-order-line [orderLineType]="'bonus'" [editable]="(onEditValue | async)" [type]="type" *ngIf="!loading" (formValue)="onChangeBonus($event)"  (onChange)="onValidateBonus($event)"></app-oms-order-line>
+        </div>
         </div>
         <!-- / BONUS SKU -->
 
