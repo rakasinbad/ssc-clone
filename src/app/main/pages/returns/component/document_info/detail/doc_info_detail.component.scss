@@ -8,8 +8,19 @@ app-document-info-detail {
         border: 1px solid gray;
     }
 
+    .return-detail-key {
+        color: #52575c;
+    }
+
+    .return-detail-value {
+        color: #222526;
+        opacity: 0.5;
+    }
+
     .col-label-width {
         min-width: 111px !important;
+        margin-bottom: 5px;
+        margin-top: 5px;
     }
 
     .col-value-width {
