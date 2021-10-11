@@ -89,11 +89,9 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         ];
 
         try {
-            this.defaultPageSize = this.route.snapshot.queryParams.limit || 25;
-            this.defaultPageOpts = environment.pageSizeTable;
+            this.defaultPageSize = (this.route.snapshot.queryParams.limit || environment.pageSize) || 25;
         } catch (e) {
             this.defaultPageSize = 25;
-            this.defaultPageOpts = null;
         }
 
         this.$pageState = new ReturnsComponentState();
@@ -117,7 +115,6 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     readonly cardHeaderConfig: ICardHeaderConfiguration;
 
     readonly defaultPageSize;
-    readonly defaultPageOpts;
 
     private filterForm;
 
@@ -203,14 +200,15 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
     loadData(refresh?: boolean): void {
         const paginator: any = this.paginator || {};
+        const sorter: any = this.sort || {};
 
         const data: IQueryParams = {
-            limit: paginator.pageSize || 5,
+            limit: paginator.pageSize || this.defaultPageSize,
             skip: paginator.pageSize * paginator.pageIndex || 0,
             search: [],
             paginate: true,
-            sort: this.sort.direction || 'desc',
-            sortBy: this.sort.active || 'id',
+            sort: sorter.direction || 'desc',
+            sortBy: sorter.active || 'id',
         };
 
         const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();
