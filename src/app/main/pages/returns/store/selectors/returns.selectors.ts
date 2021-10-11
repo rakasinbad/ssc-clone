@@ -28,3 +28,8 @@ export const getActiveReturnNumber = createSelector(
     getActiveReturnDetail,
     (state) => state ? state.returnNumber : null
 );
+
+export const getActiveReturnLogs = createSelector(
+    getActiveReturnDetail,
+    (state) => state ? state.returnParcelLogs : []
+);

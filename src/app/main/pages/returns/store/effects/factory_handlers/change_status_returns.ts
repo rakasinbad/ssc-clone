@@ -75,7 +75,8 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
         props.actions$.pipe(
             ofType(ReturnActions.updateStatusReturnRequest),
             map(({ payload }) => payload),
-            exhaustMap(({ id, status }) => {
+            withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnLogs)),
+            exhaustMap(([{ id, status }, lastReturnParcelLogs]) => {
                 return props.returnApiService.update(id, { status })
                     .pipe(
                         map((resp) => {
@@ -86,10 +87,13 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
                               }
                            });
 
+                           const logs = Array.isArray(resp.returnParcelLogs) ? resp.returnParcelLogs : [];
+
                            return ReturnActions.updateStatusReturnSuccess({
                                payload: {
                                    status: status,
                                    id: id,
+                                   returnParcelLogs: logs.concat(lastReturnParcelLogs || []),
                                }
                            });
                         }),
