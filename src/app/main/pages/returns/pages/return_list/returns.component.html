@@ -104,12 +104,19 @@
                         Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxFlex="row" fxLayoutAlign="end center">
+                        <div
+                            fxFlex="row"
+                            fxLayoutAlign="end center"
+                            *ngIf="
+                                row?.status !== 'rejected' ||
+                                row?.status !== 'closed' ||
+                                row?.status !== 'approved_returned'
+                            "
+                        >
                             <button
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"
                                 aria-label="More"
-                                *ngIf="row?.status !== 'closed'"
                                 (click)="$event.stopPropagation()"
                             >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
@@ -146,16 +153,12 @@
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         aria-label="Cancel"
-                                        *ngIf="row?.status !== 'rejected' || row?.status !== 'approved_returned'"
+                                        *ngIf="row?.status !== 'rejected'"
                                         (click)="changeReturnStatus('rejected', row)"
                                     >
                                         <mat-icon>highlight_off</mat-icon>
                                         <span>Rejected</span>
                                     </button>
-
-                                    <p class='ab-desc' *ngIf="row?.status === 'rejected' || row?.status === 'closed' || row?.status === 'approved_returned'">
-                                        No button
-                                    </p>
                                 </ng-template>
                             </mat-menu>
                         </div>
