@@ -30,11 +30,16 @@
                 </div>
 
                 <div fxLayout="row" fxLayoutAlign="start stretch">
-                    <app-document-info
-                        [title]='"Return Info"'
-                        [id]="'return-info-section'"
+                    <div class="box-content__container return-content"
+                         fxLayout="column"
+                         fxLayoutAlign="start stretch"
                     >
+                        <div class="box-container__title m-0">
+                            <span class="mat-headline"> Return Info </span>
+                        </div>
+
                         <br/>
+
                         <div fxLayout="row" fxLayoutAlign="start start">
                             <div class="box-content__container" fxLayout="column" fxLayoutAlign="space-between stretch" fxFlex>
                                 <app-document-info-detail
@@ -71,10 +76,9 @@
                             </div>
 
                         </div>
-                    </app-document-info>
+                    </div>
 
                     <div class="box-content__container return-content log-section"
-                         id="'status-info-section'"
                          fxLayout="column"
                          fxLayoutAlign="start stretch"
                          fusePerfectScrollbar
