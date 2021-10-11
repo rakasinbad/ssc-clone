@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ActivatedRoute } from '@angular/router';
@@ -89,7 +89,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
         ];
 
         try {
-            this.defaultPageSize = this.route.snapshot.queryParams.limit || 25;
+            this.defaultPageSize = (this.route.snapshot.queryParams.limit || environment.pageSize) || 25;
             this.defaultPageOpts = environment.pageSizeTable;
         } catch (e) {
             this.defaultPageSize = 25;
@@ -180,6 +180,18 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 }
             });
 
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubscribe$))
+            .subscribe(() => (
+                this.paginator.pageIndex = 0
+            ));
+
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this._unSubscribe$))
+            .subscribe(() => {
+                this.loadData(false);
+            });
+
         this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
         this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
 
@@ -191,11 +203,15 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
     loadData(refresh?: boolean): void {
         const paginator: any = this.paginator || {};
+        const sorter: any = this.sort || {};
 
         const data: IQueryParams = {
-            limit: paginator.pageSize || 5,
+            limit: paginator.pageSize || this.defaultPageSize,
             skip: paginator.pageSize * paginator.pageIndex || 0,
             search: [],
+            paginate: true,
+            sort: sorter.direction || 'desc',
+            sortBy: sorter.active || 'id',
         };
 
         const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();

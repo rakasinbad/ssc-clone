@@ -13,7 +13,7 @@
             <mat-tab [label]="'All (' + (totalStatus$ | async).totalReturn + ')'"></mat-tab>
             <mat-tab [label]="'Pending (' + (totalStatus$ | async).totalPending + ')'"></mat-tab>
             <mat-tab [label]="'Approved (' + (totalStatus$ | async).totalApproved + ')'"></mat-tab>
-            <mat-tab [label]="'Approved Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
+            <mat-tab [label]="'Approved & Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
             <mat-tab [label]="'Closed (' + (totalStatus$ | async).totalClosed + ')'"></mat-tab>
             <mat-tab [label]="'Rejected (' + (totalStatus$ | async).totalRejected + ')'"></mat-tab>
         </mat-tab-group>
@@ -104,12 +104,19 @@
                         Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxFlex="row" fxLayoutAlign="end center">
+                        <div
+                            fxFlex="row"
+                            fxLayoutAlign="end center"
+                            *ngIf="
+                                row?.status !== 'rejected' &&
+                                row?.status !== 'closed' &&
+                                row?.status !== 'approved_returned'
+                            "
+                        >
                             <button
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"
                                 aria-label="More"
-                                *ngIf="row?.status !== 'closed'"
                                 (click)="$event.stopPropagation()"
                             >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
