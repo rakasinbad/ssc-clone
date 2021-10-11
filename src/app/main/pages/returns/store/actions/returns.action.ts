@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler } from 'app/shared/models/global.model';
 import { IReturnDetail, IReturnLine, ITotalReturnModel } from '../../models';
+import { IReturnDetailLog } from '../../models/returndetail.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Returns
@@ -76,7 +77,7 @@ export const updateStatusReturnRequest = createAction(
 
 export const updateStatusReturnSuccess = createAction(
     '[Returns API] Update Status Return Succeeded',
-    props<{ payload: { status: string; id: string } }>()
+    props<{ payload: { status: string; id: string, returnParcelLogs: Array<IReturnDetailLog> } }>()
 );
 
 export const updateStatusReturnFailure = createAction(

@@ -117,7 +117,13 @@ const returnReducer = createReducer(
             isLoading: false,
             isRefresh: undefined,
             returns: adapterReturn.updateOne(
-                { id: payload.id, changes: { status: payload.status } },
+                {
+                    id: payload.id,
+                    changes: {
+                        status: payload.status,
+                        returnParcelLogs: payload.returnParcelLogs,
+                    }
+                },
                 state.returns
             ),
             errors: adapterError.removeOne('updateStatusReturnFailure', state.errors),
