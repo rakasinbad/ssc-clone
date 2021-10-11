@@ -15,4 +15,7 @@ import { fuseAnimations } from '@fuse/animations';
 export class DocumentInfoComponent {
     @Input()
     title: string;
+
+    @Input()
+    id?: string;
 }
