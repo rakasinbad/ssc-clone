@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ActivatedRoute } from '@angular/router';
@@ -180,6 +180,12 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 }
             });
 
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this._unSubscribe$))
+            .subscribe(() => {
+                this.loadData(false);
+            });
+
         this.dataSource$ = this.store.select(ReturnsSelector.getAllReturn);
         this.isLoading$ = this.store.select(ReturnsSelector.getIsLoading);
 
@@ -196,6 +202,8 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             limit: paginator.pageSize || 5,
             skip: paginator.pageSize * paginator.pageIndex || 0,
             search: [],
+            paginate: true,
+            listEndpoint: true,
         };
 
         const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();

@@ -145,28 +145,16 @@
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
-                                        aria-label="Closed"
-                                        *ngIf="row?.status === 'approved_returned'"
-                                        (click)="changeReturnStatus('closed', row)"
-                                    >
-                                        <mat-icon>send</mat-icon>
-                                        <span>Closed</span>
-                                    </button>
-
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
                                         aria-label="Cancel"
-                                        *ngIf="row?.status !== 'rejected'"
+                                        *ngIf="row?.status !== 'rejected' || row?.status !== 'approved_returned'"
                                         (click)="changeReturnStatus('rejected', row)"
                                     >
                                         <mat-icon>highlight_off</mat-icon>
                                         <span>Rejected</span>
                                     </button>
 
-                                    <p *ngIf="row?.status === 'rejected'">
-                                        No action for <b>Rejected</b>
+                                    <p class='ab-desc' *ngIf="row?.status === 'rejected' || row?.status === 'closed' || row?.status === 'approved_returned'">
+                                        No button
                                     </p>
                                 </ng-template>
                             </mat-menu>
