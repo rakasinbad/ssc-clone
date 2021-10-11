@@ -13,7 +13,7 @@
             <mat-tab [label]="'All (' + (totalStatus$ | async).totalReturn + ')'"></mat-tab>
             <mat-tab [label]="'Pending (' + (totalStatus$ | async).totalPending + ')'"></mat-tab>
             <mat-tab [label]="'Approved (' + (totalStatus$ | async).totalApproved + ')'"></mat-tab>
-            <mat-tab [label]="'Approved Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
+            <mat-tab [label]="'Approved & Returned (' + (totalStatus$ | async).totalApprovedReturned + ')'"></mat-tab>
             <mat-tab [label]="'Closed (' + (totalStatus$ | async).totalClosed + ')'"></mat-tab>
             <mat-tab [label]="'Rejected (' + (totalStatus$ | async).totalRejected + ')'"></mat-tab>
         </mat-tab-group>
@@ -145,6 +145,18 @@
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
+                                        aria-label="Closed"
+                                        *ngIf="row?.status === 'approved_returned'"
+                                        (click)="changeReturnStatus('closed', row)"
+                                    >
+                                        <mat-icon>send</mat-icon>
+                                        <span>Closed</span>
+                                    </button>
+
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
                                         aria-label="Cancel"
                                         *ngIf="row?.status !== 'rejected'"
                                         (click)="changeReturnStatus('rejected', row)"
@@ -152,6 +164,10 @@
                                         <mat-icon>highlight_off</mat-icon>
                                         <span>Rejected</span>
                                     </button>
+
+                                    <p *ngIf="row?.status === 'rejected'">
+                                        No action for <b>Rejected</b>
+                                    </p>
                                 </ng-template>
                             </mat-menu>
                         </div>
