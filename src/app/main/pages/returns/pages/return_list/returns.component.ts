@@ -180,6 +180,12 @@ export class ReturnsComponent implements OnInit, OnDestroy {
                 }
             });
 
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubscribe$))
+            .subscribe(() => (
+                this.paginator.pageIndex = 0
+            ));
+
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubscribe$))
             .subscribe(() => {
@@ -203,7 +209,8 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             skip: paginator.pageSize * paginator.pageIndex || 0,
             search: [],
             paginate: true,
-            listEndpoint: true,
+            sort: this.sort.direction || 'desc',
+            sortBy: this.sort.active,
         };
 
         const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();
