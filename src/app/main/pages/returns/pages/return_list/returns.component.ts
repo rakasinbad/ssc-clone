@@ -90,8 +90,10 @@ export class ReturnsComponent implements OnInit, OnDestroy {
 
         try {
             this.defaultPageSize = (this.route.snapshot.queryParams.limit || environment.pageSize) || 25;
+            this.defaultPageOpts = environment.pageSizeTable;
         } catch (e) {
             this.defaultPageSize = 25;
+            this.defaultPageOpts = null;
         }
 
         this.$pageState = new ReturnsComponentState();
@@ -115,6 +117,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
     readonly cardHeaderConfig: ICardHeaderConfiguration;
 
     readonly defaultPageSize;
+    readonly defaultPageOpts;
 
     private filterForm;
 
