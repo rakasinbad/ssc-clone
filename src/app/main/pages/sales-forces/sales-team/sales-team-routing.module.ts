@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../../core/auth/auth.guard';
 import { SrTargetComponent } from './sales-team.component';
 
-const routes: Routes = [{ path: '', component: SrTargetComponent, canActivate: [AuthGuard] }];
+const routes: Routes = [{ path: '', component: SrTargetComponent, canActivate: [AuthGuard], runGuardsAndResolvers: 'always', }];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
