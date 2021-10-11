@@ -210,7 +210,7 @@ export class ReturnsComponent implements OnInit, OnDestroy {
             search: [],
             paginate: true,
             sort: this.sort.direction || 'desc',
-            sortBy: this.sort.active,
+            sortBy: this.sort.active || 'id',
         };
 
         const keyword = this.domSanitizer.sanitize(SecurityContext.HTML, this._searchKeyword.value).trim();
