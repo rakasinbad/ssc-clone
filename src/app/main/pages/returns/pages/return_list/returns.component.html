@@ -108,8 +108,8 @@
                             fxFlex="row"
                             fxLayoutAlign="end center"
                             *ngIf="
-                                row?.status !== 'rejected' ||
-                                row?.status !== 'closed' ||
+                                row?.status !== 'rejected' &&
+                                row?.status !== 'closed' &&
                                 row?.status !== 'approved_returned'
                             "
                         >
