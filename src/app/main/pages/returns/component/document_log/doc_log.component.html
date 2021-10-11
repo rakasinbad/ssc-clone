@@ -1,10 +1,27 @@
 <div class="log-info mt-8" fxLayout="column" *ngIf="logData">
-    <div *ngFor="let log of logData; index as i" class="status secondary-text mb-0 pb-0" fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-        <div class="timeline-indicator-wrap" fxLayoutAlign="center start" >
-            <mat-icon class="s-16 timeline-indicator" svgIcon="sinbad-check-red"></mat-icon>
-            <div *ngIf="!isLastItem(i)" class="s-line secondary-text"></div>
+    <div *ngFor="let log of logData; index as i" class="status secondary-text mb-0 pb-0"
+         fxLayout="row"
+         fxLayoutAlign="start stretch"
+    >
+        <div class="timeline-indicator-wrap"
+             fxLayout="column"
+             fxLayoutAlign="center stretch"
+             fxFlex="0 1 10"
+        >
+            <div fxLayoutAlign="start center">
+                <mat-icon class="s-16 timeline-indicator" svgIcon="sinbad-check-red"></mat-icon>
+            </div>
+            <div fxLayoutAlign="start center" *ngIf="i > 0 && !isLastItem(i)">
+                <div class="s-line secondary-text"></div>
+            </div>
+            <div fxLayoutAlign="start center" *ngIf="i === 0 && !isLastItem(i)">
+                <div class="s-line-two secondary-text"></div>
+            </div>
         </div>
-        <div class="timeline-label-wrap mb-8 log-detail">
+        <div class="timeline-label-wrap mb-8 log-detail"
+             fxFlex="0 1 90"
+             fxLayoutGap="10px"
+        >
             <p class="timeline-desc my-0 py-0">
                 {{ log?.title }}
             </p>

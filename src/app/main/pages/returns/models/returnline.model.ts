@@ -14,6 +14,8 @@ export interface IReturnLine {
 
 export function getReturnStatusTitle(status: string): string {
     switch (status) {
+        case 'created':
+            return 'Created';
         case 'pending':
             return 'Pending';
         case 'approved':

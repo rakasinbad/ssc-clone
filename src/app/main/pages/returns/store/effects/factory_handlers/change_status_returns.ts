@@ -7,6 +7,7 @@ import { IErrorHandler } from 'app/shared/models/global.model';
 import { IReturnsEffects } from '../IReturnsEffects';
 import { ReturnActions } from '../../actions';
 import { ReturnsSelector } from '../../selectors';
+import { getReturnStatusTitle } from '../../../models/returnline.model';
 
 
 export function createConfirmChangeStatusReturn(props: IReturnsEffects):
@@ -24,20 +25,7 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                     returnNumber = nReturnNumber;
                 }
 
-                switch (status) {
-                    case 'approved':
-                        title = 'Approved';
-                        break;
-                    case 'approved_returned':
-                        title = 'Approved & Returned';
-                        break;
-                    case 'rejected':
-                        title = 'Rejected';
-                        break;
-                    default:
-                        title = '';
-                        break;
-                }
+                title = getReturnStatusTitle(status);
 
                 const dialogRef = props.matDialog.open<
                     ChangeConfirmationComponent,
