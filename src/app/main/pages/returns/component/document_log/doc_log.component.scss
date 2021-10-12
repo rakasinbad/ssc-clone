@@ -25,10 +25,22 @@ app-document-log {
                 }
 
                 .s-line {
-                    min-height: 53px;
+                    min-height: 75px;
                     height: 100%;
                     overflow: hidden;
                     margin-top: 11%;
+                    margin-left: 6px;
+                    width: 2px;
+                    background-color: #f0444c;
+                    position: absolute;
+                }
+
+                .s-line-two {
+                    height: 53px;
+                    margin-top: 41px;
+                    min-height: 72px;
+                    overflow: hidden;
+                    margin-left: 6px;
                     width: 2px;
                     background-color: #f0444c;
                     position: absolute;

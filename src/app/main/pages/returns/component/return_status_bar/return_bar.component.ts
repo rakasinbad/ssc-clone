@@ -1,5 +1,5 @@
-import { Component, ViewEncapsulation, Input, Output, EventEmitter } from '@angular/core';
-import { capitalizeFirstLetter } from '../../utility';
+import { Component, ViewEncapsulation, Input } from '@angular/core';
+import { getReturnStatusTitle } from '../../models/returnline.model';
 
 
 /**
@@ -32,25 +32,7 @@ export class ReturnStatusBarComponent {
     }
 
     getStatusText(): string {
-        let title;
-        switch (this.status) {
-            case 'pending':
-                title = 'Pending Return';
-                break;
-            case 'approved':
-                title = 'Approved';
-                break;
-            case 'approved_returned':
-                title = 'Approved & Returned';
-                break;
-            case 'rejected':
-                title = 'Rejected';
-                break;
-            default:
-                title = '';
-                break;
-        }
-        return title;
+        return getReturnStatusTitle(this.status);
     }
 
     isStepTwoActive(): boolean {

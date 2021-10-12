@@ -7,6 +7,7 @@ import { Component, ViewEncapsulation, Input, Output, EventEmitter } from '@angu
 @Component({
     selector: 'app-return-status',
     templateUrl: './return_status.component.html',
+    styleUrls: ['./return_status.component.scss'],
     encapsulation: ViewEncapsulation.None,
 })
 export class ReturnStatusComponent {
