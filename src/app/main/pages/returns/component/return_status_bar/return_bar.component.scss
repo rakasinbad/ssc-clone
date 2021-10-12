@@ -6,7 +6,8 @@ app-return-status-bar {
             .bar-left-wrapper {
                 margin-right: 3px;
                 .bar-left {
-                    width: 94px;
+                    width: 100%;
+                    min-width: 94px;
                     height: 0;
                     border-top: 10px solid #f0444c;
                     border-right: 3px solid transparent;
@@ -18,7 +19,8 @@ app-return-status-bar {
                 margin-right: 3px;
                 margin-left: 3px;
                 .bar-center {
-                    width: 94px;
+                    width: 100%;
+                    min-width: 94px;
                     height: 0;
                     transform: skewX(-15deg);
                     border-bottom: 10px solid #cacccf;
@@ -31,7 +33,8 @@ app-return-status-bar {
             .bar-right-wrapper {
                 margin-left: 3px;
                 .bar-right {
-                    width: 94px;
+                    width: 100%;
+                    min-width: 94px;
                     height: 0;
                     border-bottom: 10px solid #cacccf;
                     border-left: 3px solid transparent;
