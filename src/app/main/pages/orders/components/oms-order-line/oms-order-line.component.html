@@ -19,7 +19,7 @@ novalidate
             <mat-header-cell *matHeaderCellDef> SKU Code </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break">
-                    {{ row?.catalogue?.sku || '-' }}
+                    {{ row?.catalogue?.externalId || '-' }}
                 </p>
             </mat-cell>
         </ng-container>
