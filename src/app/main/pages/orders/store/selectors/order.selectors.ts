@@ -86,7 +86,11 @@ export const getOrderBrandCatalogue = (type: OrderLineType) =>
                 return (
                     state.promoList.map((v) => ({
                         id: v.promoOrderBrandCatalogueId,
-                        catalogue: { id: v.promoOrderBrandCatalogueId, name: v.catalogueName },
+                        catalogue: {
+                            id: v.promoOrderBrandCatalogueId,
+                            name: v.catalogueName,
+                            sku: v.catalogueSku,
+                        },
                         cataloguePromo: 0,
                         deliveredCataloguePromo: 0,
                         invoicedCataloguePromo: 0,
