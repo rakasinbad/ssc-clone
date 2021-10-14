@@ -3,48 +3,27 @@
 app-document-log {
     .log-info {
         .status {
-            position: relative;
-            top: 0;
-            margin-top: 0;
-            padding-top: 0;
-
-            .timeline-indicator-wrap{
+            .timeline-indicator{
                 width: auto;
-                height: 100%;
-                position: relative;
-                top: 0;
-                margin-top: 0;
+                height: auto;
                 padding-top: 0;
+                z-index: 1;
+                margin-left: -8px;
+                margin-top: -4px;
+                margin-bottom: 0;
+            }
 
-                .timeline-indicator{
-                    width: auto;
-                    height: auto;
-                    margin-top: 0;
-                    padding-top: 0;
-                    z-index: 1;
-                }
+            .doc-log-line {
+                border-left: 2px solid #f0444c;
+                margin-left: 8px;
+                margin-right: 6px;
+                margin-top: 4px;
+            }
 
-                .s-line {
-                    min-height: 75px;
-                    height: 100%;
-                    overflow: hidden;
-                    margin-top: 11%;
-                    margin-left: 6px;
-                    width: 2px;
-                    background-color: #f0444c;
-                    position: absolute;
-                }
-
-                .s-line-two {
-                    height: 53px;
-                    margin-top: 41px;
-                    min-height: 72px;
-                    overflow: hidden;
-                    margin-left: 6px;
-                    width: 2px;
-                    background-color: #f0444c;
-                    position: absolute;
-                }
+            .doc-log-line-last {
+                margin-left: 8px;
+                margin-right: 6px;
+                margin-top: 4px;
             }
 
             .timeline-label-wrap {
