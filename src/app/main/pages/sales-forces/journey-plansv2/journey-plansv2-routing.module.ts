@@ -21,6 +21,7 @@ const routes: Routes = [
                 },    
             },
         }, 
+        runGuardsAndResolvers: 'always',
     }
 ];
 
