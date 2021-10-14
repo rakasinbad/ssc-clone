@@ -3,7 +3,7 @@
         <button
             type="button"
             mat-button
-            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg small-button"
             (click)="returnStatusHandler.emit('approved')"
         >
             Mark as Approved
@@ -12,27 +12,46 @@
         <button
             type="button"
             mat-button
-            class="btn-marked-status sinbad-red-fg ml-8 sinbad-white-50-bg border-red"
+            class="btn-marked-status sinbad-red-fg ml-8 sinbad-white-50-bg border-red small-button"
             (click)="returnStatusHandler.emit('rejected')"
         >
             Mark as Rejected
         </button>
     </div>
-    <div *ngIf="status === 'approved' || (status === 'pending' && returned === true)">
+    <div *ngIf="status === 'pending' && returned === true">
         <button
             type="button"
             mat-button
-            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg small-button"
             (click)="returnStatusHandler.emit('approved_returned')"
         >
-            Mark as Approved & Returned
+            Approved & Returned
+        </button>
+
+        <button
+            type="button"
+            mat-button
+            class="btn-marked-status sinbad-red-fg ml-8 sinbad-white-50-bg border-red small-button"
+            (click)="returnStatusHandler.emit('rejected')"
+        >
+            Mark as Rejected
+        </button>
+    </div>
+    <div *ngIf="status === 'approved'">
+        <button
+            type="button"
+            mat-button
+            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg small-button"
+            (click)="returnStatusHandler.emit('approved_returned')"
+        >
+            Approved & Returned
         </button>
     </div>
     <div *ngIf="status === 'approved_returned'">
         <button
             type="button"
             mat-button
-            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg"
+            class="btn-marked-status sinbad-white-fg ml-8 sinbad-red-50-bg small-button"
             (click)="returnStatusHandler.emit('closed')"
         >
             Mark as Closed
