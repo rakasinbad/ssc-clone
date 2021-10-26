@@ -121,6 +121,7 @@ const returnReducer = createReducer(
                     id: payload.id,
                     changes: {
                         status: payload.status,
+                        returned: payload.returned,
                         returnParcelLogs: payload.returnParcelLogs,
                     }
                 },

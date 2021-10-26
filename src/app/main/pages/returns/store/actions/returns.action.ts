@@ -72,12 +72,19 @@ export const confirmChangeStatusReturn = createAction(
 
 export const updateStatusReturnRequest = createAction(
     '[Returns API] Update Status Return Request',
-    props<{ payload: { status: string; id: string } }>()
+    props<{ payload: { status: string; id: string, returned: boolean } }>()
 );
 
 export const updateStatusReturnSuccess = createAction(
     '[Returns API] Update Status Return Succeeded',
-    props<{ payload: { status: string; id: string, returnParcelLogs: Array<IReturnDetailLog> } }>()
+    props<{
+        payload: {
+            returned: boolean;
+            status: string;
+            id: string,
+            returnParcelLogs: Array<IReturnDetailLog>
+        }
+    }>()
 );
 
 export const updateStatusReturnFailure = createAction(
