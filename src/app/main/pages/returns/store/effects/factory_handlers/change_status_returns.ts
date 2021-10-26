@@ -31,7 +31,7 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                 const dialogRef = props.matDialog.open<
                     ChangeConfirmationComponent,
                     any,
-                    { id: string; change: string }
+                    { id: string; change: string, returned: boolean, }
                     >(ChangeConfirmationComponent, {
                     data: {
                         title: `Set as ${title}`,
@@ -45,7 +45,7 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
 
                 return dialogRef.afterClosed();
             }),
-            map((data: any) => {
+            map((data) => {
                 if (data.id && data.change) {
                     return ReturnActions.updateStatusReturnRequest({
                         payload: { id: data.id, status: data.change, returned: data.returned }
@@ -78,10 +78,11 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
                            });
 
                            const logs = Array.isArray(resp.returnParcelLogs) ? resp.returnParcelLogs : [];
+                           const latestReturned = resp.status === 'approved_returned' ? true : returned;
 
                            return ReturnActions.updateStatusReturnSuccess({
                                payload: {
-                                   returned: resp.status === 'approved_returned' ? true : returned,
+                                   returned: latestReturned,
                                    status: resp.status,
                                    id: id,
                                    returnParcelLogs: logs.concat(lastReturnParcelLogs || []),
