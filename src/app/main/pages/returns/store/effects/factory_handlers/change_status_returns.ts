@@ -78,7 +78,11 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
                            });
 
                            const logs = Array.isArray(resp.returnParcelLogs) ? resp.returnParcelLogs : [];
-                           const latestReturned = resp.status === 'approved_returned' ? true : returned;
+
+                           let latestReturned = resp.returned;
+                           if (latestReturned === null || latestReturned === undefined) {
+                               latestReturned = resp.status === 'approved_returned' ? true : returned;
+                           }
 
                            return ReturnActions.updateStatusReturnSuccess({
                                payload: {
