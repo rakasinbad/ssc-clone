@@ -24,11 +24,6 @@ export const getActiveReturnDetail = createSelector(
     (entities, id) => entities[id]
 );
 
-export const getActiveReturnNumber = createSelector(
-    getActiveReturnDetail,
-    (state) => state ? state.returnNumber : null
-);
-
 export const getActiveReturnLogs = createSelector(
     getActiveReturnDetail,
     (state) => state ? state.returnParcelLogs : []

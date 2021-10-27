@@ -17,12 +17,13 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
         props.actions$.pipe(
             ofType(ReturnActions.confirmChangeStatusReturn),
             map(({ payload }) => payload),
-            withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnNumber)),
-            exhaustMap(([{id, status, returnNumber}, nReturnNumber]) => {
+            withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnDetail)),
+            exhaustMap(([{id, status, returnNumber}, nReturnDetail]) => {
                 let title: string;
+                const returned: boolean = nReturnDetail.returned;
 
                 if (!returnNumber) {
-                    returnNumber = nReturnNumber;
+                    returnNumber = nReturnDetail.returnNumber;
                 }
 
                 title = getReturnStatusTitle(status);
@@ -30,23 +31,24 @@ export function createConfirmChangeStatusReturn(props: IReturnsEffects):
                 const dialogRef = props.matDialog.open<
                     ChangeConfirmationComponent,
                     any,
-                    { id: string; change: string }
+                    { id: string; change: string, returned: boolean, }
                     >(ChangeConfirmationComponent, {
                     data: {
                         title: `Set as ${title}`,
                         message: `Are you sure want to change <strong>${returnNumber}</strong> status to ${title.toLowerCase()}?`,
                         id: id,
                         change: status,
+                        returned: returned,
                     },
                     disableClose: true
                 });
 
                 return dialogRef.afterClosed();
             }),
-            map(({ id, change }) => {
-                if (id && change) {
+            map((data) => {
+                if (data.id && data.change) {
                     return ReturnActions.updateStatusReturnRequest({
-                        payload: { id, status: change }
+                        payload: { id: data.id, status: data.change, returned: data.returned }
                     });
                 } else {
                     return UiActions.resetHighlightRow();
@@ -64,7 +66,7 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
             ofType(ReturnActions.updateStatusReturnRequest),
             map(({ payload }) => payload),
             withLatestFrom(props.store.select(ReturnsSelector.getActiveReturnLogs)),
-            exhaustMap(([{ id, status }, lastReturnParcelLogs]) => {
+            exhaustMap(([{ id, status, returned }, lastReturnParcelLogs]) => {
                 return props.returnApiService.update(id, { status })
                     .pipe(
                         map((resp) => {
@@ -77,9 +79,15 @@ export function createUpdateStatusReturnRequest(props: IReturnsEffects):
 
                            const logs = Array.isArray(resp.returnParcelLogs) ? resp.returnParcelLogs : [];
 
+                           let latestReturned = resp.returned;
+                           if (latestReturned === null || latestReturned === undefined) {
+                               latestReturned = resp.status === 'approved_returned' ? true : returned;
+                           }
+
                            return ReturnActions.updateStatusReturnSuccess({
                                payload: {
-                                   status: status,
+                                   returned: latestReturned,
+                                   status: resp.status,
                                    id: id,
                                    returnParcelLogs: logs.concat(lastReturnParcelLogs || []),
                                }
