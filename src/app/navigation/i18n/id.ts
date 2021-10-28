@@ -57,6 +57,9 @@ export const locale = {
             ORDER_MANAGEMENTS: {
                 TITLE: 'OMS'
             },
+            RETURN: {
+                TITLE: 'Return'
+            },
             PAYMENT_STATUS: {
                 TITLE: 'Payment Status'
             },

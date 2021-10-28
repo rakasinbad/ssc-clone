@@ -135,6 +135,11 @@ export class IconModule {
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/oms-logo.svg')
         );
 
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-return',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/return-product.svg')
+        );
+
         // On Process logo - packed box
         this.matIconRegistry.addSvgIcon(
             'sinbad-on-process',
@@ -189,6 +194,12 @@ export class IconModule {
           this.matIconRegistry.addSvgIcon(
             'sinbad-quest-logo',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/quest.svg')
+        );
+
+        // timeline check
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-check-red',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/check-red.svg')
         );
     }
 }

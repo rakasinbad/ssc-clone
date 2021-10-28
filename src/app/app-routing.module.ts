@@ -4,6 +4,7 @@ import { getRoleByRouter } from 'app/shared/helpers';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
 import { RoleGuard } from './main/pages/core/auth/role.guard';
+import { ReturnsModule } from './main/pages/returns/returns.module';
 
 const routes: Routes = [
     {
@@ -144,6 +145,12 @@ const routes: Routes = [
                 //         },
                 //     },
                 // },
+            },
+            {
+                path: 'returns',
+                loadChildren: () =>
+                    import('./main/pages/returns/returns.module').then((m) => m.ReturnsModule),
+                canLoad: [AuthGuard],
             },
             {
                 path: 'catalogues',
