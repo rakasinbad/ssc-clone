@@ -282,6 +282,10 @@ export class HelperService {
             label: 'Waiting for Payment',
         },
         {
+            id: 'overdue',
+            label: 'Overdue',
+        },
+        {
             id: 'paid',
             label: 'Paid',
         },
