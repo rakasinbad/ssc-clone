@@ -15,6 +15,16 @@ novalidate
         fusePerfectScrollbar
     >
         <!-- Product Column -->
+        <ng-container matColumnDef="sku">
+            <mat-header-cell *matHeaderCellDef> SKU Code </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break">
+                    {{ row?.catalogue?.externalId || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Product Column -->
         <ng-container matColumnDef="product">
             <mat-header-cell *matHeaderCellDef> Product </mat-header-cell>
             <mat-cell *matCellDef="let row">
