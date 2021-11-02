@@ -147,8 +147,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
 
     keyUpKeyword(event: any) {
-        this.search = event.target.value;
-        this.form.get('searchValue').setValue(this.search);
+        clearTimeout();
+        setTimeout(() => {
+            this.search = event.target.value;
+            this.form.get('searchValue').setValue(this.search);
+        }, 1500);
     }
 
     ngOnInit(): void {
