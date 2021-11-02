@@ -147,8 +147,14 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
 
     keyUpKeyword(event: any) {
-        this.search = event.target.value;
-        this.form.get('searchValue').setValue(this.search);
+        this.form.get('searchValue').setValue(event.target.value);
+        if (event.keyCode === 13) {
+            this.searchKeyword();
+          }
+    }
+
+    searchKeyword():void {
+        this.search = this.form.get('searchValue').value;
     }
 
     ngOnInit(): void {
