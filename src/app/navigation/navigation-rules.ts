@@ -6,6 +6,7 @@ interface Routing {
   'attendances'? : ( '' | 'detail' | 'employee' | '*')[],
   'finances'? : ( '' | 'credit-limit-balance' | 'payment-status' | '*')[],
   'orders'? : ('' | 'detail' | '*')[],
+  'returns'? : ('' | '*')[],
   'catalogues'? : ('' | 'list' | 'add' | 'edit' | 'view' | '*')[],
   'in-store-inventories'? : ('' | 'detail' | '*')[],
   'sales-force'? : ('' | 'sales-rep' | 'portfolio' | 'journey-plans' | 'workday-setting' | 'sr-target' | 'associations' | '*')[],
@@ -23,7 +24,7 @@ type Navbar = (
   '*' | 'dashboard' | 'account' | 'accountsStore' | 'storeSetting' | 
   'storeSegmentation' | 'catalogue' | 'manageProduct' | 'segmentation' | 
   'attendance' | 'finance' | 'creditLimitBalance' | 'paymentStatus' |
-  'orderManagement' | 'inventory' | 'instore' | 'sales-force' |
+  'orderManagement' | 'returnManagement' | 'inventory' | 'instore' | 'sales-force' |
   'sales-rep' | 'portfolio' | 'sr-target' | 'association' |
   'journey-plan' | 'workday-setting' | 'warehouse' | 'wh-list' |
   'wh-coverage' | 'wh-sku-assignment' | 'wh-stock-management' |
@@ -66,6 +67,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'warehouse',
         'wh-list',
         'wh-coverage',
@@ -75,6 +77,7 @@ export const Rules : Rule[] = [
         'account' : ['', 'stores', 'store-segmentation'],
         'finances' : ['*'],
         'orders': ['*'],
+        'returns': ['*'],
         'logistics': ['stock-managements', 'warehouse-coverages', 'warehouses']
       },
       toolbar: [],
@@ -93,6 +96,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -112,6 +116,7 @@ export const Rules : Rule[] = [
         'catalogues': ['*'],
         'finances': ['*'],
         'orders': ['*'],
+        'returns': ['*'],
         'in-store-inventories': ['*'],
         'sales-force' : ['*'],
         'supplier-inventories' : ['*'],
@@ -135,6 +140,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -154,6 +160,7 @@ export const Rules : Rule[] = [
         'attendances' : ['*'],
         'finances' : ['*'],
         'orders' : ['*'],
+        'returns': ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
         'sales-force' : ['*'],
@@ -171,6 +178,7 @@ export const Rules : Rule[] = [
         'attendances' : ['*'],
         'finances' : ['*'],
         'orders' : ['*'],
+        'returns': ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
         'sales-force' : ['*'],
@@ -191,6 +199,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -213,6 +222,7 @@ export const Rules : Rule[] = [
         'account' : ['*'],
         'attendances' : ['*'],
         'orders' : ['*'],
+        'returns': ['*'],
         'catalogues' : ['*'],
         'in-store-inventories' : ['*'],
         'finances' : ['*'],
@@ -240,6 +250,7 @@ export const Rules : Rule[] = [
         'creditLimitBalance',
         'paymentStatus',
         'orderManagement',
+        'returnManagement',
         'inventory',
         'instore',
         'sales-force',
@@ -266,10 +277,11 @@ export const Rules : Rule[] = [
     {
       role: 'SALES_ADMIN_CABANG',
       routing: {
-        'orders' : ['*']
+        'orders' : ['*'],
+        'returns': ['*'],
       },
       toolbar: [],
-      navbar: [ 'orderManagement' ],
+      navbar: [ 'orderManagement', 'returnManagement' ],
       redirectTo: '/pages/orders'
     }
   ]
@@ -513,6 +525,10 @@ export const Rules : Rule[] = [
     },
     {
       privilages : 'OMS.DELETE',
+      route: '',
+    },
+    {
+      privilages : 'RETURN.READ',
       route: '',
     },
     {

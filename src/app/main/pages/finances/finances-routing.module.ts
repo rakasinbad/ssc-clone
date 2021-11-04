@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
-import { getRoleByRouter } from 'app/shared/helpers';
 
 const routes: Routes = [
     { path: '', redirectTo: 'credit-limit-balance', pathMatch: 'full' },
@@ -40,6 +39,24 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['FINANCE.PS.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
+    },
+    {
+        path: 'collection',
+        loadChildren: () =>
+            import('./collection/collection.module').then(m => m.CollectionModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['FINANCE.CL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

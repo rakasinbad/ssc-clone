@@ -8,7 +8,7 @@ import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { MaterialModule } from 'app/shared/material.module';
-import { CalculateGrossPricePipe, CatalogueTypePipe, OrderStatusPipe } from 'app/shared/pipes';
+import { CalculateGrossPricePipe, CatalogueTypePipe, OrderLogPipe, OrderStatusPipe } from 'app/shared/pipes';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
@@ -40,6 +40,7 @@ import { FuseSidebarModule } from '@fuse/components';
         OrdersComponent,
         OrderStatusInfoComponent,
         OrderStatusPipe,
+        OrderLogPipe
     ],
     imports: [
         OrdersRoutingModule,
