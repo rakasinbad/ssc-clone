@@ -1,0 +1,84 @@
+.box-info {
+    .info {
+        color: #25282b;
+        font-weight: 600;
+        opacity: 0.5;
+    }
+
+    .custom-field:not(.info-field) {
+        margin-bottom: 0 !important;
+    }
+
+    .custom-field {
+        .label {
+            color: #52575c;
+            position: relative;
+            top: -0.78em;
+        }
+
+        .mat-form-field-prefix {
+            top: -0.2em;
+        }
+
+        .mat-form-field-infix {
+            padding: 0.5em 0 !important;
+            top: -0.25em;
+        }
+
+        &.info-field {
+            .label {
+                top: 0;
+            }
+
+            .mat-form-field {
+                &.form-info {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        > .info {
+            .form-info {
+                .mat-form-field-outline,
+                .mat-select-arrow-wrapper {
+                    visibility: hidden;
+                }
+
+                .mat-form-field-wrapper,
+                .mat-form-field-flex {
+                    margin: 0;
+                    padding: 0;
+                }
+
+                .mat-form-field-prefix {
+                    top: 0;
+                }
+
+                .mat-form-field-infix {
+                    padding: 0 !important;
+                    // top: 0;
+                }
+
+                .mat-select-placeholder,
+                .mat-select-value-text,
+                .mat-input-element:disabled {
+                    color: #828282;
+                }
+
+                .mat-select-trigger {
+                    cursor: text;
+                }
+            }
+
+            .mat-radio-button ~ .mat-radio-button {
+                margin-left: 10px;
+            }
+           
+        }
+    }
+
+    .mat-checkbox ~ .mat-checkbox {
+        margin-left: 16px;
+    }
+
+}

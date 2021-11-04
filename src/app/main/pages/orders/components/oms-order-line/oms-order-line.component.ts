@@ -33,6 +33,7 @@ export class OmsOrderLineComponent implements OnInit {
     readonly defaultPageOpts = environment.pageSizeTable;
 
     displayedColumns = [
+        'sku',
         'product',
         'order-qty',
         'unit-price',

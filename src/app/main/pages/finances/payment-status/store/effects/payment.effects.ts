@@ -302,7 +302,7 @@ export class PaymentEffects {
                     .getCalculateOrder<IStatusPayment>(supplierId)
                     .pipe(
                         catchOffline(),
-                        retry(3),
+                        // retry(3),
                         map(resp => {
                             return PaymentStatusActions.fetchCalculateOrdersByPaymentSuccess({
                                 payload: resp['data']
