@@ -89,7 +89,7 @@
             <div class="info" fxFlex="100">
                 {{
                     numberMateraiFormat(
-                        (detailCollection$ | async)?.data.paymentCollectionMethod.stamp.nominal
+                        (detailCollection$ | async)?.data.paymentCollectionMethod.stamp?.nominal
                     )
                 }}
             </div>
