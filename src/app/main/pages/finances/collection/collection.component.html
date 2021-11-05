@@ -20,7 +20,7 @@
                 <ng-container *ngFor="let user of dataSource$ | async">
                     <mat-tab
                         class="collection-tab"
-                        [label]="(user.title || '-') + ' (' + (user.total || 0) + ')'"
+                        [label]="(user?.title || '-') + ' (' + (user?.total || 0) + ')'"
                     ></mat-tab>
                 </ng-container>
             </mat-tab-group>

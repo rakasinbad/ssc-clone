@@ -12,7 +12,7 @@
         <mat-header-cell *matHeaderCellDef> External Id </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod.supplierStore.externalId || '-' }}
+                {{ row?.paymentCollectionMethod?.supplierStore?.externalId || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -22,7 +22,7 @@
         <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod.store.name || '-' }}
+                {{ row?.paymentCollectionMethod?.store?.name || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -32,7 +32,7 @@
         <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.billing.orderParcel.orderCode || '-' }}
+                {{ row?.billing?.orderParcel?.orderCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -41,7 +41,7 @@
     <ng-container matColumnDef="finance-order-ref">
         <mat-header-cell *matHeaderCellDef> Order Ref </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.billing.orderParcel.orderRef || '-' }}</p>
+            <p style="word-break: break-word">{{ row?.billing?.orderParcel?.orderRef || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -50,7 +50,7 @@
         <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ totalAmountFormat(row?.billing.orderParcel.deliveredParcelFinalPriceBuyer) }}
+                {{ totalAmountFormat(row?.billing?.orderParcel?.deliveredParcelFinalPriceBuyer) }}
             </p>
         </mat-cell>
     </ng-container>
@@ -60,7 +60,7 @@
         <mat-header-cell *matHeaderCellDef> Order Due Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.billing.orderParcel.dueDate | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.billing?.orderParcel?.dueDate | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -70,7 +70,7 @@
         <mat-header-cell *matHeaderCellDef> Payment Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ statusLabel(row?.billing.orderParcel.statusPayment) }}
+                {{ statusLabel(row?.billing?.orderParcel?.statusPayment) }}
             </p>
         </mat-cell>
     </ng-container>
@@ -80,7 +80,7 @@
         <mat-header-cell *matHeaderCellDef> Sales Rep </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod.user.fullName || '-' }}
+                {{ row?.paymentCollectionMethod?.user?.fullName || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -90,7 +90,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod.collectionCode || '-' }}
+                {{ row?.paymentCollectionMethod?.collectionCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -100,7 +100,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Ref No </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod.refNo || '-' }}
+                {{ row?.paymentCollectionMethod?.refNo || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -110,7 +110,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Total Amount </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ numberFormat(row?.paymentCollectionMethod.amount) }}
+                {{ numberFormat(row?.paymentCollectionMethod?.amount) }}
             </p>
         </mat-cell>
     </ng-container>
@@ -120,7 +120,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.paymentCollectionMethod.createdAt | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.paymentCollectionMethod?.createdAt | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -130,7 +130,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ statusLabel(row?.paymentCollectionMethod.approvalStatus) }}
+                {{ statusLabel(row?.paymentCollectionMethod?.approvalStatus) }}
             </p>
         </mat-cell>
     </ng-container>
