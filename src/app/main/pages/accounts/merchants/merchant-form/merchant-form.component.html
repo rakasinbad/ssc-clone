@@ -682,7 +682,7 @@
                                 <mat-autocomplete
                                     #autoDistrict="matAutocomplete"
                                     [displayWith]="onDisplayDistrict"
-                                    (opened)="onOpenAutocomplete('district')"
+                                    (opened)="onOpenAutocomplete()"
                                     (optionSelected)="onSelectAutocomplete($event, 'district')"
                                 >
                                     <!-- <mat-option *ngIf="isLoadingDistrict$ | async">

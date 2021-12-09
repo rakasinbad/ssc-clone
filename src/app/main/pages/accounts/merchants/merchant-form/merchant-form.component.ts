@@ -1412,59 +1412,83 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    onOpenAutocomplete(field: string): void {
-        switch (field) {
-            case 'district':
-                {
-                    if (this.autoDistrict && this.autoDistrict.panel && this.autoCompleteTrigger) {
-                        fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
-                            .pipe(
-                                map((x) => this.autoDistrict.panel.nativeElement.scrollTop),
-                                withLatestFrom(
-                                    this.store.select(DropdownSelectors.getTotalDistrictEntity),
-                                    this.store.select(DropdownSelectors.getTotalDistrict)
-                                ),
-                                takeUntil(this.autoCompleteTrigger.panelClosingActions)
-                            )
-                            .subscribe(([x, skip, total]) => {
-                                const scrollTop = this.autoDistrict.panel.nativeElement.scrollTop;
-                                const scrollHeight = this.autoDistrict.panel.nativeElement
-                                    .scrollHeight;
-                                const elementHeight = this.autoDistrict.panel.nativeElement
-                                    .clientHeight;
-                                const atBottom = scrollHeight === scrollTop + elementHeight;
+    onOpenAutocomplete(): void {
+      HelperService.debug('[MerchantFormComponent] onOpenedAutocomplete', {
+        autoDistrict: this.autoDistrict,
+        panel: this.autoDistrict.panel,
+        triggerDistrict: this.triggerDistrict,
+      });
 
-                                if (atBottom && skip && total && skip < total) {
-                                    const data: IQueryParams = {
-                                        limit: 10,
-                                        skip: skip,
-                                    };
+      this.cdRef.detectChanges();
 
-                                    data['paginate'] = true;
+      fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
+            .pipe(
+                map(() => ({
+                    scrollTop: this.autoDistrict.panel.nativeElement.scrollTop,
+                    scrollHeight: this.autoDistrict.panel.nativeElement.scrollHeight,
+                    elHeight: this.autoDistrict.panel.nativeElement.clientHeight,
+                })),
+                filter(
+                    ({ scrollTop, scrollHeight, elHeight }) => scrollHeight === scrollTop + elHeight
+                ),
+                tap(({ scrollTop, scrollHeight, elHeight }) =>
+                    HelperService.debug('[MerchantFromComponent tap] onOpenAutocomplete fromEvent', {
+                        scrollTop,
+                        scrollX,
+                        scrollHeight,
+                        elHeight,
+                    })
+                ),
+                withLatestFrom(
+                  this.store.select(DropdownSelectors.getTotalDistrictEntity),
+                  this.store.select(DropdownSelectors.getTotalDistrict)
+                ),
+                takeUntil(this.triggerDistrict.panelClosingActions)
+            )
+            .subscribe({
+                next: ([{ scrollTop, scrollHeight, elHeight }, skip, total]) => {
+                    const atBottom = scrollHeight === scrollTop + elHeight;
 
-                                    if (this.districtHighlight) {
-                                        data['search'] = [
-                                            {
-                                                fieldName: 'keyword',
-                                                keyword: this.districtHighlight,
-                                            },
-                                        ];
+                    HelperService.debug('[MerchantFromComponent next] onOpenAutocomplete fromEvent', {
+                        scrollTop,
+                        scrollX,
+                        scrollHeight,
+                        elHeight,
+                        atBottom,
+                        skip,
+                        total
+                    });
 
-                                        this.store.dispatch(
-                                            DropdownActions.fetchScrollDistrictRequest({
-                                                payload: data,
-                                            })
-                                        );
-                                    }
-                                }
-                            });
-                    }
-                }
-                break;
+                    if (atBottom && skip && total && skip < total) {
+                      const data: IQueryParams = {
+                          limit: 10,
+                          skip: skip,
+                      };
 
-            default:
-                return;
-        }
+                      data['paginate'] = true;
+
+                      if (this.districtHighlight) {
+                          data['search'] = [
+                              {
+                                  fieldName: 'keyword',
+                                  keyword: this.districtHighlight,
+                              },
+                          ];
+
+                          this.store.dispatch(
+                              DropdownActions.fetchScrollDistrictRequest({
+                                  payload: data,
+                              })
+                          );
+                      }
+                  }
+                },
+                complete: () =>
+                    HelperService.debug(
+                        '[MerchantFromComponent complete] onOpenAutocomplete fromEvent'
+                    ),
+            });
+
     }
 
     onOpenChangeProvince(ev: boolean): void {
