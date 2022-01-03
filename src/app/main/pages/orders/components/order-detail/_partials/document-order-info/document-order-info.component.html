@@ -11,21 +11,10 @@
                     <span class="mat-headline"> Store </span>
                 </div>
 
-                <div
-                    class="form-field"
-                    fxLayout="column"
-                    fxLayoutAlign="start stretch"
-                    fxLayoutGap="27px"
-                >
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Owner Name</div>
-                        <div>
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Owner Name</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -34,18 +23,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.order?.user?.fullName || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Store Name</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Store Name</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -54,18 +36,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.order?.store?.name || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Supplier ID</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Supplier ID</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -74,18 +49,12 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.supplierStore?.externalId || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Store Address</td>
+                        <td>
 
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Store Address</div>
-                        <div>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -94,18 +63,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.store?.address || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Urban</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Urban</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -114,9 +76,9 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.store?.urban?.urban || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <!-- !SECTION STORE -->
 
@@ -126,21 +88,10 @@
                     <span class="mat-headline"> Shipment </span>
                 </div>
 
-                <div
-                    class="form-field"
-                    fxLayout="column"
-                    fxLayoutAlign="start stretch"
-                    fxLayoutGap="27px"
-                >
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Delivery Address</div>
-                        <div>
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Delivery Address</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -149,18 +100,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.order?.store?.address || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Geo Coverage</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Geo Coverage</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -169,9 +113,9 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.order?.store?.urban?.urban || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <!-- !SECTION SHIPMENT -->
 
@@ -353,7 +297,7 @@
             <!-- SECTION INVOICE -->
             <div class="box-content" fxLayout="column" fxLayoutGap="26px">
                 <div class="box-content__title">
-                    <span class="mat-headline"> Invoice </span>
+                    <span class="mat-headline"> Invoice Mufid </span>
                 </div>
 
                 <div
