@@ -14,12 +14,12 @@ app-document-order-info {
             vertical-align: top;
             margin-top: 10px;
             margin-bottom: 10px;
-        }
 
-        .label {
-            color: #52575C;
-            @media (min-width: 800px) {
-                width: 123px;
+            .label {
+                color: #52575C;
+                @media (min-width: 800px) {
+                    width: 123px;
+                }
             }
         }
     }

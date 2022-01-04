@@ -125,21 +125,10 @@
                     <span class="mat-headline"> Order </span>
                 </div>
 
-                <div
-                    class="form-field"
-                    fxLayout="column"
-                    fxLayoutAlign="start stretch"
-                    fxLayoutGap="27px"
-                >
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Order Date</div>
-                        <div>
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Order Date</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -148,9 +137,22 @@
                             <ng-container *ngIf="!loading">
                                 {{ (data?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Due Date</td>
+                        <td>
+                            <ngx-skeleton-loader
+                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                                *ngIf="loading"
+                            ></ngx-skeleton-loader>
+
+                            <ng-container *ngIf="!loading">
+                                {{ (data?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <!-- !SECTION ORDER -->
         </div>
@@ -162,21 +164,10 @@
                     <span class="mat-headline"> Payment </span>
                 </div>
 
-                <div
-                    class="form-field"
-                    fxLayout="column"
-                    fxLayoutAlign="start stretch"
-                    fxLayoutGap="27px"
-                >
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                    <div class="label" fxFlex="120px">Payment Status</div>
-                    <div>
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Payment Status</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -185,18 +176,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.statusPaymentName || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Payment Due Date</div>
-                        <div fxFlexAlign="center">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Due Date</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -205,18 +189,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ (data?.dueDate | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Payment Date</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Date</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -225,18 +202,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ (data?.paidTime | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Payment Term</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Term</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -248,17 +218,11 @@
                                         ?.paymentType?.name || '-'
                                 }}
                             </ng-container>
-                        </div>
-                    </div>
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Paylater Type</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Paylater Type</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -266,20 +230,14 @@
 
                             <ng-container *ngIf="!loading">
                                 {{
-                                data?.paylaterType?.name || '-'
+                                    data?.paylaterType?.name || '-'
                                 }}
                             </ng-container>
-                        </div>
-                    </div>
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Payment Method</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Payment Method</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -288,33 +246,23 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.paymentChannel?.name || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <!-- !SECTION PAYMENT -->
 
             <!-- SECTION INVOICE -->
             <div class="box-content" fxLayout="column" fxLayoutGap="26px">
                 <div class="box-content__title">
-                    <span class="mat-headline"> Invoice Mufid </span>
+                    <span class="mat-headline"> Invoice </span>
                 </div>
 
-                <div
-                    class="form-field"
-                    fxLayout="column"
-                    fxLayoutAlign="start stretch"
-                    fxLayoutGap="27px"
-                >
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Order ID</div>
-                        <div>
+
+                <table class="table-data">
+                    <tr>
+                        <td class="label">Order ID</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -323,18 +271,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.orderCode || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Order Reference</div>
-                        <div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Order Reference</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -343,18 +284,11 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.orderRef || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        fxLayout="row"
-                        fxLayoutAlign="start stretch"
-                        fxLayoutGap="16px"
-                        fxFlex="37px"
-                    >
-                        <div class="label" fxFlex="120px">Group Faktur Name</div>
-                        <div fxFlexAlign="center">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Group Faktur Name</td>
+                        <td>
                             <ngx-skeleton-loader
                                 [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
                                 *ngIf="loading"
@@ -363,9 +297,9 @@
                             <ng-container *ngIf="!loading">
                                 {{ data?.invoiceGroup?.name || '-' }}
                             </ng-container>
-                        </div>
-                    </div>
-                </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <!-- !SECTION INVOICE -->
         </div>
