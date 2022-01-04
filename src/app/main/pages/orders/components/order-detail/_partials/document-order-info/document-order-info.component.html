@@ -139,19 +139,6 @@
                             </ng-container>
                         </td>
                     </tr>
-                    <tr>
-                        <td class="label">Payment Due Date</td>
-                        <td>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                                *ngIf="loading"
-                            ></ngx-skeleton-loader>
-
-                            <ng-container *ngIf="!loading">
-                                {{ (data?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
-                            </ng-container>
-                        </td>
-                    </tr>
                 </table>
             </div>
             <!-- !SECTION ORDER -->
