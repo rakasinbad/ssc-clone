@@ -1,18 +1,11 @@
 <div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CENTER -->
     <div class="center p-8">
-        <ng-container *ngIf="(dataSource$ | async).length > 0; else others">
+        <ng-container *ngIf="(dataSource$ | async).length > 0 && !isHiddenTab; else others">
             <mat-tab-group
                 color="accent"
                 style="border-radius: 4px"
-                class="
-                    px-16
-                    mt-0
-                    my-8
-                    sinbad-white sinbad-mat-tab-group
-                    narrow
-                    mat-tab-header-px-12
-                "
+                class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
                 animationDuration="0ms"
                 [selectedIndex]="selectTab"
                 (selectedTabChange)="onSelectedTab($event)"
@@ -26,9 +19,15 @@
             </mat-tab-group>
         </ng-container>
         <ng-template #others>
-            <div class="content-card" style="margin-bottom: 10px;">
+            <div class="content-card" style="margin-bottom: 10px">
                 <ngx-skeleton-loader
-                    [theme]="{ width: '30%', height: '30px', 'margin-bottom': '-15px', 'margin-left': '10px' }" style="margin-top: 15px;"
+                    [theme]="{
+                        width: '30%',
+                        height: '30px',
+                        'margin-bottom': '-15px',
+                        'margin-left': '10px'
+                    }"
+                    style="margin-top: 15px"
                 ></ngx-skeleton-loader>
             </div>
         </ng-template>
@@ -89,7 +88,11 @@
                                 />
                                 <mat-icon
                                     matSuffix
-                                    style="position: fixed; margin: -36px -36px -36px -20px; cursor: pointer;"
+                                    style="
+                                        position: fixed;
+                                        margin: -36px -36px -36px -20px;
+                                        cursor: pointer;
+                                    "
                                     (click)="searchKeyword()"
                                     >search</mat-icon
                                 >

@@ -177,7 +177,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     openDetailPage(row: any): void {
-        this.router.navigate(['/pages/finances/collection/' + row.id + '/detail']);
+        this.router.navigate(['/pages/finances/collection/' + row.id + '/collection/detail']);
         let itemPromoHierarchy = {
             searchBy: this.searchBy,
             approvalStatus: this.approvalStatus,
@@ -224,7 +224,6 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                 break;
 
             default:
-
                 this.paginator.pageSize = this.defaultPageSize;
 
                 this.selection = new SelectionModel<any>(true, []);

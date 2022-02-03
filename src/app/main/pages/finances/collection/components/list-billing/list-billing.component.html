@@ -7,16 +7,6 @@
     [@animateStagger]="{ value: '50' }"
     fusePerfectScrollbar
 >
-    <!-- External Id Column -->
-    <ng-container matColumnDef="finance-external-id">
-        <mat-header-cell *matHeaderCellDef> External Id </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod?.supplierStore?.externalId || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
     <!-- Store Name Column -->
     <ng-container matColumnDef="finance-store-name">
         <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
@@ -27,9 +17,9 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Order Code Column -->
-    <ng-container matColumnDef="finance-order-code">
-        <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
+    <!-- Invoice Number Column -->
+    <ng-container matColumnDef="finance-invoice-number">
+        <mat-header-cell *matHeaderCellDef> Invoice Number </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ row?.billing?.orderParcel?.orderCode || '-' }}
@@ -37,80 +27,22 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Order Ref Column -->
-    <ng-container matColumnDef="finance-order-ref">
-        <mat-header-cell *matHeaderCellDef> Order Ref </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.billing?.orderParcel?.orderRef || '-' }}</p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Total Amount Column -->
-    <ng-container matColumnDef="finance-total-amount">
-        <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
+    <!-- Invoice Amount Column -->
+    <ng-container matColumnDef="finance-invoice-amount">
+        <mat-header-cell *matHeaderCellDef> Invoice Amount </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ totalAmountFormat(row?.billing?.orderParcel?.deliveredParcelFinalPriceBuyer) }}
+                {{ row?.billing?.orderParcel?.orderCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
 
-    <!-- Order Due Date Column -->
-    <ng-container matColumnDef="finance-order-due-date">
-        <mat-header-cell *matHeaderCellDef> Order Due Date </mat-header-cell>
+    <!-- Amount Paid Column -->
+    <ng-container matColumnDef="finance-amount-paid">
+        <mat-header-cell *matHeaderCellDef> Amount Paid </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.billing?.orderParcel?.dueDate | date: 'dd MMM yyyy') || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Payment Status Column -->
-    <ng-container matColumnDef="finance-payment-status">
-        <mat-header-cell *matHeaderCellDef> Payment Status </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ statusLabel(row?.billing?.orderParcel?.statusPayment) }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Sales Rep Column -->
-    <ng-container matColumnDef="finance-sales-rep">
-        <mat-header-cell *matHeaderCellDef> Sales Rep </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod?.user?.fullName || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Collection Code Column -->
-    <ng-container matColumnDef="finance-collect-code">
-        <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod?.collectionCode || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Collection Ref No Column -->
-    <ng-container matColumnDef="finance-collection-ref">
-        <mat-header-cell *matHeaderCellDef> Collection Ref No </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod?.refNo || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Collection Total Amount Column -->
-    <ng-container matColumnDef="finance-collection-amount">
-        <mat-header-cell *matHeaderCellDef> Collection Total Amount </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ numberFormat(row?.paymentCollectionMethod?.amount) }}
+                {{ row?.billing?.orderParcel?.orderCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -120,86 +52,57 @@
         <mat-header-cell *matHeaderCellDef> Collection Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.paymentCollectionMethod?.createdAt | date: 'dd MMM yyyy') || '-' }}
+                {{ row?.billing?.orderParcel?.orderCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
 
-    <!-- Collection Status Column -->
-    <ng-container matColumnDef="finance-collection-status">
-        <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
+    <!-- Invoice Due Date Column -->
+    <ng-container matColumnDef="finance-invoice-due-date">
+        <mat-header-cell *matHeaderCellDef> Invoice Due Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ statusLabel(row?.paymentCollectionMethod?.approvalStatus) }}
+                {{ row?.billing?.orderParcel?.orderCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
 
-    <!-- Billing Code Column -->
-    <ng-container matColumnDef="finance-billing-code">
-        <mat-header-cell *matHeaderCellDef> Billing Code </mat-header-cell>
+    <!-- Action Column -->
+    <ng-container matColumnDef="finance-actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.billingPaymentCode || '-' }}</p>
-        </mat-cell>
-    </ng-container>
+            <div fxFlex="row" fxLayoutAlign=" center">
+                <button
+                    id="btn__actions"
+                    mat-icon-button
+                    [matMenuTriggerFor]="moreMenu"
+                    aria-label="More"
+                    (click)="$event.stopPropagation()"
+                >
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
 
-    <!-- Billing Amount Column -->
-    <ng-container matColumnDef="finance-bill-amount">
-        <mat-header-cell *matHeaderCellDef> Billing Amount</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ numberFormat(row?.paidAmount) }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Materai Column -->
-    <ng-container matColumnDef="finance-materai">
-        <mat-header-cell *matHeaderCellDef> Materai </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ numberFormat(row?.stampNominal) }}</p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Total Billing Amount Column -->
-    <ng-container matColumnDef="finance-total-bill-amount">
-        <mat-header-cell *matHeaderCellDef> Total Billing Amount</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ numberFormat(row?.paidByCollectionMethod) }}</p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Billing Date Column -->
-    <ng-container matColumnDef="finance-bill-date">
-        <mat-header-cell *matHeaderCellDef> Billing Date</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Billing Status Column -->
-    <ng-container matColumnDef="finance-bill-status">
-        <mat-header-cell *matHeaderCellDef> Billing Status</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ statusLabel(row?.approvalStatus) }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Reason Column -->
-    <ng-container matColumnDef="finance-reason">
-        <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.approvalReason || '-' }}</p>
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.SL.UPDATE']">
+                        <button
+                            id="btn__edit"
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="Edit"
+                            (click)="openDetailPage(row)"
+                        >
+                            <span>Detail</span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
         </mat-cell>
     </ng-container>
 
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="8"> {{labelNoRecord}} </mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef colspan="8"> {{ labelNoRecord }} </mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumnsBilling; sticky: true"></mat-header-row>
@@ -207,6 +110,7 @@
     <mat-row
         *matRowDef="let row; columns: displayedColumnsBilling"
         class="sinbad-billing-list-item"
+        (click)="openDetailPage(row)"
     ></mat-row>
 
     <mat-footer-row

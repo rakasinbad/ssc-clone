@@ -1,0 +1,38 @@
+@import 'src/@fuse/scss/fuse';
+
+#billing-detail {
+    .top-bg {
+        height: 144px;
+    }
+
+    .header {
+        height: 100px !important;
+        min-height: 100px !important;
+        max-height: 100px !important;
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+
+    .mat-headline {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .label {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 18px;
+        color: #677a8e;
+    }
+
+    .description {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #0b1a28;
+    }
+}

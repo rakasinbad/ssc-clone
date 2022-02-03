@@ -22,6 +22,7 @@ import { CollectionActions } from './store/actions';
 import { CollectionSelectors, CollectionType } from './store/selectors';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
+import { Router } from '@angular/router';
 import {
     AbstractControl,
     FormArray,
@@ -49,7 +50,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
     search: string = '';
     selectedViewBy: string = 'cStatus';
     labelInfo: string = '';
-    isHidden: boolean = false;
+    isHiddenTab: boolean = false;
     allPayment: number = 2;
     waiting: number = 1;
     approvedCollection: number = 1;
@@ -95,7 +96,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
         private _$helperService: HelperService,
-        private cdRef: ChangeDetectorRef
+        private cdRef: ChangeDetectorRef,
+        private router: Router
     ) {
         // Memuat terjemahan.
         this.fuseTranslationLoader$.loadTranslations(indonesian, english);
@@ -120,6 +122,15 @@ export class CollectionComponent implements OnInit, OnDestroy {
         );
     }
 
+    changeRoute(action: { route: string }): void {
+        console.log('action, action', action);
+        if (action.route === 'collection') {
+            // this.isHiddenTab = true;
+        } else {
+            // this.isHiddenTab = false;
+        }
+    }
+
     clickTabViewBy(action: string): void {
         if (!action) {
             return;
@@ -130,11 +141,13 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
         switch (action) {
             case 'cStatus':
+                this.changeRoute({ route: 'collection' });
                 this.selectedViewBy = action;
                 this.getDataTab(COLLECTION_STATUS);
 
                 break;
             case 'bStatus':
+                this.changeRoute({ route: 'billing' });
                 this.selectedViewBy = action;
                 this.getDataTab(COLLECTION_BILLING);
             default:
@@ -150,10 +163,10 @@ export class CollectionComponent implements OnInit, OnDestroy {
         this.form.get('searchValue').setValue(event.target.value);
         if (event.keyCode === 13) {
             this.searchKeyword();
-          }
+        }
     }
 
-    searchKeyword():void {
+    searchKeyword(): void {
         this.search = this.form.get('searchValue').value;
     }
 

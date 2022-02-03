@@ -1,0 +1,154 @@
+@import 'src/@fuse/scss/fuse';
+
+app-collection-history-table {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    overflow: auto !important;
+
+    .collection-history-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        min-height: 40px;
+        max-height: 350px;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+            max-height: 350px;
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .sinbad-collection-list-item,
+        .sinbad-billing-list-item {
+            position: relative;
+            // cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+        }
+
+        .mat-column-id {
+            flex: 0 1 84px;
+        }
+
+        .mat-column-image {
+            flex: 0 1 84px;
+
+            .product-image {
+                width: 52px;
+                height: 52px;
+                border: 1px solid rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        .mat-column-finance-collection-code {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-finance-billing-date {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-paid-amount {
+            flex: 0 0 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-method-payment {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-finance-sales-rep-name {
+            // flex: 0 1 240px;
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-collection-status {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-finance-billing-status {
+            flex: 0 1 110px;
+            min-width: 110px;
+        }
+
+        .mat-column-finance-reason {
+            flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-finance-updatedby {
+            flex: 0 1 200px;
+            min-width: 200px;
+        }
+
+        .mat-column-finance-action {
+            flex: 0 1 80px;
+            min-width: 80px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            // top: 7em;
+            justify-content: center;
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
+    }
+}
+
+mat-menu-panel {
+    min-height: 52px;
+}
