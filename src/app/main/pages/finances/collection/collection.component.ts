@@ -123,12 +123,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
 
     changeRoute(action: { route: string }): void {
-        console.log('action, action', action);
-        if (action.route === 'collection') {
-            // this.isHiddenTab = true;
-        } else {
-            // this.isHiddenTab = false;
-        }
+        if (action.route === 'collection') this.isHiddenTab = false;
+        else this.isHiddenTab = true;
     }
 
     clickTabViewBy(action: string): void {

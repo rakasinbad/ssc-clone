@@ -1,68 +1,45 @@
 <div id="billing-generalinfo">
     <div class="content">
         <div class="tab-content p-16">
-            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-                <div
-                    class="custom-field info-field"
-                    fxLayout="column"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <div class="label" fxFlexAlign="center" fxFlex="30">Invoice Number</div>
+            <div class="box-info">
+                <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                    <div class="label">Invoice Number</div>
+
+                    <div class="description">
+                        {{ mockDataGetDetailBilling?.data?.storeName || '-' }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-info">
+                <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                    <div class="label">Total Invoice Amount</div>
 
                     <div class="description">Example</div>
                 </div>
             </div>
 
-            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-                <div
-                    class="custom-field info-field"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <div class="label" fxFlexAlign="center" fxFlex="30">Total Invoice Amount</div>
+            <div class="box-info">
+                <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                    <div class="label">Total Amount Paid</div>
 
-                    <div class="info" fxFlex="100">Example</div>
-                </div>
-            </div>
-
-            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-                <div
-                    class="custom-field info-field"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <div class="label" fxFlexAlign="center" fxFlex="30">Total Amount Paid</div>
-
-                    <div class="info" fxFlex="100">Example</div>
+                    <div class="description">Example</div>
                 </div>
             </div>
         </div>
         <div class="tab-content p-16">
-            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-                <div
-                    class="custom-field info-field"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <div class="label" fxFlexAlign="center" fxFlex="30">Order Referensi</div>
+            <div class="box-info">
+                <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                    <div class="label">Order Referensi</div>
 
-                    <div class="info" fxFlex="100">Example</div>
+                    <div class="description">Example</div>
                 </div>
             </div>
-            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-                <div
-                    class="custom-field info-field"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <div class="label" fxFlexAlign="center" fxFlex="30">Invoice Due Date</div>
+            <div class="box-info">
+                <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                    <div class="label">Invoice Due Date</div>
 
-                    <div class="info" fxFlex="100">Example</div>
+                    <div class="description">Example</div>
                 </div>
             </div>
         </div>
