@@ -86,7 +86,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         'finance-reason',
         'finance-collection-method',
         'finance-collection-status',
-        'action'
+        'action',
     ];
 
     constructor(
@@ -219,7 +219,6 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
                 break;
 
             default:
-
                 this.paginator.pageSize = this.defaultPageSize;
 
                 this.selection = new SelectionModel<any>(true, []);

@@ -1,7 +1,7 @@
 <div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CENTER -->
     <div class="center p-8">
-        <ng-container *ngIf="(dataSource$ | async).length > 0; else others">
+        <ng-container *ngIf="(dataSource$ | async).length > 0 && !isHiddenTab; else others">
             <mat-tab-group
                 color="accent"
                 style="border-radius: 4px"
@@ -82,11 +82,11 @@
                                             font-size: 14px;
                                             line-height: 18px;
                                         "
-                                        [(value)]="searchByValue"
+                                        [(value)]="searchByValueBilling"
                                         (change)="onSearchByChange($event)"
                                     >
                                         <mat-option
-                                            *ngFor="let row of searchByList"
+                                            *ngFor="let row of searchByListBilling"
                                             [value]="row.id"
                                         >
                                             {{ row.label }}
@@ -146,7 +146,7 @@
                     class="mx-16"
                     [approvalStatus]="selectTab"
                     [viewByType]="selectedViewBy"
-                    [searchBy]="searchByValue"
+                    [searchBy]="searchByValueBilling"
                     [searchValue]="search"
                 ></app-list-billing>
             </ng-container>

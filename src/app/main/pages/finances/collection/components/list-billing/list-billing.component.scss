@@ -203,10 +203,11 @@ app-list-billing {
             min-width: 110px;
         }
 
-        .mat-column-actions {
+        .mat-column-finance-actions {
             flex: 0 1 80px;
             min-width: 80px;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: end;
         }
 
         .mat-column-no-record {

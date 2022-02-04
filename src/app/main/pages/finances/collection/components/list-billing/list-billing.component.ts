@@ -71,26 +71,13 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     displayedColumnsBilling = [
-        'finance-external-id',
         'finance-store-name',
-        'finance-order-code',
-        'finance-order-ref',
-        'finance-total-amount',
-        'finance-order-due-date',
-        'finance-payment-status',
-        'finance-sales-rep',
-        'finance-collect-code',
-        'finance-collection-ref',
-        'finance-collection-amount',
+        'finance-invoice-number',
+        'finance-invoice-amount',
+        'finance-amount-paid',
         'finance-collection-date',
-        'finance-collection-status',
-        'finance-billing-code',
-        'finance-bill-amount',
-        'finance-materai',
-        'finance-total-bill-amount',
-        'finance-bill-date',
-        'finance-bill-status',
-        'finance-reason',
+        'finance-invoice-due-date',
+        'finance-actions',
     ];
 
     constructor(
@@ -176,6 +163,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     openDetailPage(row: any): void {
+        this.router.navigate(['/pages/finances/collection/billing/' + row.id]);
         let itemPromoHierarchy = { type: row.promoType };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
@@ -369,5 +357,4 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 break;
         }
     }
-
 }

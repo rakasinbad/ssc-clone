@@ -12,6 +12,7 @@ import { AuthGuard } from '../../core/auth/auth.guard';
 
 import { CollectionComponent } from './collection.component';
 import { DetailCollectionComponent } from './components/detail-collection/detail-collection.component';
+import { DetailBillingComponent } from './components/detail-billing/detail-billing/detail-billing.component';
 
 const routes: Routes = [
     {
@@ -35,6 +36,22 @@ const routes: Routes = [
         path: 'collection/:id',
         component: DetailCollectionComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['FINANCE.CL.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
+    {
+        path: 'billing/:id',
+        component: DetailBillingComponent,
         data: {
             permissions: {
                 only: ['FINANCE.CL.READ'],

@@ -1,0 +1,57 @@
+<div id="billing-detail" class="page-layout carded fullwidth tabbed inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16" (click)="onClickBack()">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">Store Name</div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD Detail-->
+        <div class="content-card">
+            <div class="pt-16 pl-16">
+                <span class="mat-headline"> Billing General Information </span>
+            </div>
+            <app-detail-billing-generalinfo></app-detail-billing-generalinfo>
+            <!-- CONTENT -->
+
+            <br />
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD Detail-->
+
+        <br />
+
+        <!-- CONTENT CARD Table -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <div class="tab-content p-16">
+                    <app-collection-history-table></app-collection-history-table>
+                </div>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+
+        <br />
+        <!-- / CONTENT CARD Table-->
+    </div>
+    <!-- / CENTER -->
+</div>

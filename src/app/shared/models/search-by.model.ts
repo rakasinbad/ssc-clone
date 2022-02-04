@@ -6,7 +6,16 @@ export enum SearchByListCollection {
     COL_DUE_DATE = 'colDueDate',
     SALES_REP_NAME = 'salesmanName',
     COL_METHOD = 'collectionMethod',
-    COL_STATUS = 'collectionStatus'
+    COL_STATUS = 'collectionStatus',
+}
+
+export enum SearchByListBilling {
+    STORE_NAME = 'storeName',
+    INVOICE_NUMBER = 'invoiceNumber',
+    INVOICE_AMOUNT = 'invoiceAmount',
+    AMOUNT_PAID = 'amountPaid',
+    COL_DATE = 'collectionDate',
+    INVOICE_DUE_DATE = 'invoiceDueDate',
 }
 
 export enum SearchByList {
@@ -16,5 +25,5 @@ export enum SearchByList {
     SALES_REP_NAME = 'salesmanName',
     COL_CODE = 'collectionCode',
     BILL_PAYM_CODE = 'billingPaymentCode',
-    REF_CODE = 'referenceCode'
+    REF_CODE = 'referenceCode',
 }
