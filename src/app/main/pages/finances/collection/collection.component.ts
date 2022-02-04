@@ -3,10 +3,7 @@ import {
     OnInit,
     OnDestroy,
     ChangeDetectorRef,
-    OnChanges,
-    SimpleChanges,
     ViewChild,
-    AfterViewInit,
     ViewEncapsulation,
 } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -21,20 +18,10 @@ import { HelperService } from 'app/shared/helpers';
 import { CollectionActions } from './store/actions';
 import { CollectionSelectors, CollectionType } from './store/selectors';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
-import { Router } from '@angular/router';
-import {
-    AbstractControl,
-    FormArray,
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    ValidationErrors,
-    ValidatorFn,
-} from '@angular/forms';
-import { SearchByList } from 'app/shared/models/search-by.model';
+import { CalculateCollectionStatusPayment } from './models';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatTabGroup } from '@angular/material';
-import { CssSelector } from '@angular/compiler';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-collection',
@@ -57,12 +44,15 @@ export class CollectionComponent implements OnInit, OnDestroy {
     rejectedCollection: number = 1;
     selectedValue: string;
     searchByList = this._$helperService.searchByList();
+    searchByListCollection = this._$helperService.searchByListCollection();
     subs: Subscription;
     searchByValue: string = this.searchByList[0].id;
+    searchByValueCollection: string = this.searchByListCollection[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
+    selectedListCollection = this.searchByListCollection[0].id;
     selectTab: number;
     dataTabCollection = [];
     valueSearch: string = '';
@@ -152,7 +142,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
 
     onSearchByChange(event: string) {
-        this.searchByValue = event;
+        if (this.selectedViewBy == 'cStatus') {
+            this.searchByValueCollection = event;
+        } else {
+            this.searchByValue = event;
+        }
     }
 
     keyUpKeyword(event: any) {

@@ -50,21 +50,49 @@
                                 appearance="outline"
                                 style="padding-right: 10px; min-height: 31px"
                             >
-                                <mat-select
-                                    style="
-                                        min-height: 20px;
-                                        margin-top: -13px;
-                                        margin-bottom: -10px;
-                                        font-size: 14px;
-                                        line-height: 18px;
-                                    "
-                                    [(value)]="searchByValue"
-                                    (change)="onSearchByChange($event)"
+                                <ng-container
+                                    *ngIf="selectedViewBy == 'cStatus'; else viewByBilling"
                                 >
-                                    <mat-option *ngFor="let row of searchByList" [value]="row.id">
-                                        {{ row.label }}
-                                    </mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        style="
+                                            min-height: 20px;
+                                            margin-top: -13px;
+                                            margin-bottom: -10px;
+                                            font-size: 14px;
+                                            line-height: 18px;
+                                        "
+                                        [(value)]="searchByValueCollection"
+                                        (change)="onSearchByChange($event)"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of searchByListCollection"
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #viewByBilling>
+                                    <mat-select
+                                        style="
+                                            min-height: 20px;
+                                            margin-top: -13px;
+                                            margin-bottom: -10px;
+                                            font-size: 14px;
+                                            line-height: 18px;
+                                        "
+                                        [(value)]="searchByValue"
+                                        (change)="onSearchByChange($event)"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of searchByList"
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-template>
                             </mat-form-field>
 
                             <mat-form-field
@@ -108,7 +136,7 @@
                     class="mx-16"
                     [approvalStatus]="selectTab"
                     [viewByType]="selectedViewBy"
-                    [searchBy]="searchByValue"
+                    [searchBy]="searchByValueCollection"
                     [searchValue]="search"
                 ></app-list-collection>
             </ng-container>

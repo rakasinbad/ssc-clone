@@ -163,7 +163,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     openDetailPage(row: any): void {
-        this.router.navigate(['/pages/finances/collection/' + row.id + '/billing/detail']);
+        this.router.navigate(['/pages/finances/collection/billing/' + row.id]);
         let itemPromoHierarchy = { type: row.promoType };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
