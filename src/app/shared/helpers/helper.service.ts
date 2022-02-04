@@ -31,7 +31,7 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
 import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
-import { SearchByList } from '../models/search-by.model';
+import { SearchByList, SearchByListCollection } from '../models/search-by.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -667,6 +667,44 @@ export class HelperService {
         {
             id: SearchByList.REF_CODE,
             label: 'Collection Ref No',
+        },
+    ];
+
+    private static readonly _searchByListCollection: {
+        id: SearchByListCollection;
+        label: string;
+    }[] = [
+        {
+            id: SearchByListCollection.COL_CODE,
+            label: 'Collection Code',
+        },
+        {
+            id: SearchByListCollection.STORE_NAME,
+            label: 'Store Name',
+        },
+        {
+            id: SearchByListCollection.TOTAL_AMOUNT,
+            label: 'Total Amount',
+        },
+        {
+            id: SearchByListCollection.COL_DATE,
+            label: 'Col.Date',
+        },
+        {
+            id: SearchByListCollection.COL_DUE_DATE,
+            label: 'Col.Due Date',
+        },
+        {
+            id: SearchByListCollection.SALES_REP_NAME,
+            label: 'Sales Rep',
+        },
+        {
+            id: SearchByListCollection.COL_METHOD,
+            label: 'Collection Method',
+        },
+        {
+            id: SearchByListCollection.COL_STATUS,
+            label: 'Status',
         },
     ];
 
@@ -1417,6 +1455,10 @@ export class HelperService {
         return HelperService._searchByList;
     }
 
+    searchByListCollection(): { id: SearchByListCollection; label: string }[] {
+        return HelperService._searchByListCollection;
+    }
+    
     stockType(): { id: boolean; label: string }[] {
         return [
             {

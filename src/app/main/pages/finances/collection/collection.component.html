@@ -5,14 +5,7 @@
             <mat-tab-group
                 color="accent"
                 style="border-radius: 4px"
-                class="
-                    px-16
-                    mt-0
-                    my-8
-                    sinbad-white sinbad-mat-tab-group
-                    narrow
-                    mat-tab-header-px-12
-                "
+                class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
                 animationDuration="0ms"
                 [selectedIndex]="selectTab"
                 (selectedTabChange)="onSelectedTab($event)"
@@ -26,9 +19,15 @@
             </mat-tab-group>
         </ng-container>
         <ng-template #others>
-            <div class="content-card" style="margin-bottom: 10px;">
+            <div class="content-card" style="margin-bottom: 10px">
                 <ngx-skeleton-loader
-                    [theme]="{ width: '30%', height: '30px', 'margin-bottom': '-15px', 'margin-left': '10px' }" style="margin-top: 15px;"
+                    [theme]="{
+                        width: '30%',
+                        height: '30px',
+                        'margin-bottom': '-15px',
+                        'margin-left': '10px'
+                    }"
+                    style="margin-top: 15px"
                 ></ngx-skeleton-loader>
             </div>
         </ng-template>
@@ -51,21 +50,49 @@
                                 appearance="outline"
                                 style="padding-right: 10px; min-height: 31px"
                             >
-                                <mat-select
-                                    style="
-                                        min-height: 20px;
-                                        margin-top: -13px;
-                                        margin-bottom: -10px;
-                                        font-size: 14px;
-                                        line-height: 18px;
-                                    "
-                                    [(value)]="searchByValue"
-                                    (change)="onSearchByChange($event)"
+                                <ng-container
+                                    *ngIf="selectedViewBy == 'cStatus'; else viewByBilling"
                                 >
-                                    <mat-option *ngFor="let row of searchByList" [value]="row.id">
-                                        {{ row.label }}
-                                    </mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        style="
+                                            min-height: 20px;
+                                            margin-top: -13px;
+                                            margin-bottom: -10px;
+                                            font-size: 14px;
+                                            line-height: 18px;
+                                        "
+                                        [(value)]="searchByValueCollection"
+                                        (change)="onSearchByChange($event)"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of searchByListCollection"
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #viewByBilling>
+                                    <mat-select
+                                        style="
+                                            min-height: 20px;
+                                            margin-top: -13px;
+                                            margin-bottom: -10px;
+                                            font-size: 14px;
+                                            line-height: 18px;
+                                        "
+                                        [(value)]="searchByValue"
+                                        (change)="onSearchByChange($event)"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of searchByList"
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-template>
                             </mat-form-field>
 
                             <mat-form-field
@@ -89,7 +116,11 @@
                                 />
                                 <mat-icon
                                     matSuffix
-                                    style="position: fixed; margin: -36px -36px -36px -20px; cursor: pointer;"
+                                    style="
+                                        position: fixed;
+                                        margin: -36px -36px -36px -20px;
+                                        cursor: pointer;
+                                    "
                                     (click)="searchKeyword()"
                                     >search</mat-icon
                                 >
@@ -105,7 +136,7 @@
                     class="mx-16"
                     [approvalStatus]="selectTab"
                     [viewByType]="selectedViewBy"
-                    [searchBy]="searchByValue"
+                    [searchBy]="searchByValueCollection"
                     [searchValue]="search"
                 ></app-list-collection>
             </ng-container>
