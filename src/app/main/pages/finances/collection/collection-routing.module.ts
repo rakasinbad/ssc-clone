@@ -36,7 +36,7 @@ const routes: Routes = [
         component: DetailCollectionComponent,
         data: {
             permissions: {
-                only: ['FINANCE.CL.READ', 'FINANCE.CL.UPDATE'],
+                only: ['FINANCE.CL.READ'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
