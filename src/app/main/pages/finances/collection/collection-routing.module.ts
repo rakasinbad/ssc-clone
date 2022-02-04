@@ -32,11 +32,11 @@ const routes: Routes = [
         },
     },
     {
-        path: ':id/detail',
+        path: ':id/detail-collection',
         component: DetailCollectionComponent,
         data: {
             permissions: {
-                only: ['FINANCE.CL.READ'],
+                only: ['FINANCE.CL.READ', 'FINANCE.CL.UPDATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

@@ -80,18 +80,15 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
     displayedColumnsCollection = [
         'finance-collection-code',
-        'finance-collection-method',
-        'finance-collection-ref',
+        'finance-store-name',
         'finance-collection-amount',
         'finance-collection-date',
         'finance-collection-due-date',
-        'finance-collection-status',
         'finance-sales-rep',
-        'finance-external-id',
-        'finance-store-name',
-        'finance-order-code',
-        'finance-order-ref',
         'finance-reason',
+        'finance-collection-method',
+        'finance-collection-status',
+        'action'
     ];
 
     constructor(
@@ -177,7 +174,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     openDetailPage(row: any): void {
-        this.router.navigate(['/pages/finances/collection/' + row.id + '/detail']);
+        this.router.navigate(['/pages/finances/collection/' + row.id + '/detail-collection']);
         let itemPromoHierarchy = {
             searchBy: this.searchBy,
             approvalStatus: this.approvalStatus,
