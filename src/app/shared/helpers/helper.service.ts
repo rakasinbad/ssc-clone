@@ -696,7 +696,7 @@ export class HelperService {
         },
         {
             id: SearchByListCollection.SALES_REP_NAME,
-            label: 'Sales Rep Name',
+            label: 'Sales Rep',
         },
         {
             id: SearchByListCollection.COL_METHOD,
@@ -704,7 +704,7 @@ export class HelperService {
         },
         {
             id: SearchByListCollection.COL_STATUS,
-            label: 'Collection Status',
+            label: 'Status',
         },
     ];
 
