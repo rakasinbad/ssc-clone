@@ -32,8 +32,9 @@ const routes: Routes = [
         },
     },
     {
-        path: '/collection/:id',
+        path: 'collection/:id',
         component: DetailCollectionComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
                 only: ['FINANCE.CL.READ'],
