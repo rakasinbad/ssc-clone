@@ -33,7 +33,7 @@ const routes: Routes = [
         },
     },
     {
-        path: '/collection/:id',
+        path: 'collection/:id',
         component: DetailCollectionComponent,
         data: {
             permissions: {
@@ -49,7 +49,7 @@ const routes: Routes = [
         },
     },
     {
-        path: ':id/billing/detail',
+        path: 'billing/:id',
         component: DetailBillingComponent,
         data: {
             permissions: {

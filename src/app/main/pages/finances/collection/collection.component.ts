@@ -37,6 +37,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
     search: string = '';
     selectedViewBy: string = 'cStatus';
     labelInfo: string = '';
+    //hidden status filter
     isHiddenTab: boolean = false;
     allPayment: number = 2;
     waiting: number = 1;
@@ -45,14 +46,17 @@ export class CollectionComponent implements OnInit, OnDestroy {
     selectedValue: string;
     searchByList = this._$helperService.searchByList();
     searchByListCollection = this._$helperService.searchByListCollection();
+    searchByListBilling = this._$helperService.searchByListBilling();
     subs: Subscription;
     searchByValue: string = this.searchByList[0].id;
     searchByValueCollection: string = this.searchByListCollection[0].id;
+    searchByValueBilling: string = this.searchByListBilling[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
     selectedListCollection = this.searchByListCollection[0].id;
+    selectedListBilling = this.searchByListBilling[0].id;
     selectTab: number;
     dataTabCollection = [];
     valueSearch: string = '';
@@ -145,7 +149,7 @@ export class CollectionComponent implements OnInit, OnDestroy {
         if (this.selectedViewBy == 'cStatus') {
             this.searchByValueCollection = event;
         } else {
-            this.searchByValue = event;
+            this.searchByValueBilling = event;
         }
     }
 
