@@ -6,7 +6,7 @@ app-detail-collection-table {
     flex-direction: column !important;
     overflow: auto !important;
 
-    .billing-list-table {
+    #finance-billing-list-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
@@ -86,27 +86,11 @@ app-detail-collection-table {
         }
 
         .mat-column-finance-collection-code {
-            flex: 0 1 180px;
-            min-width: 180px;
-        }
-
-        .mat-column-finance-collection-method {
-            flex: 0 1 110px;
-            min-width: 110px;
-        }
-
-        .mat-column-finance-collection-ref {
-            flex: 0 0 110px;
-            min-width: 110px;
-        }
-
-        .mat-column-finance-collection-amount {
-            flex: 0 1 180px;
-            min-width: 180px;
+            flex: 0 1 114px;
+            min-width: 114px;
         }
 
         .mat-column-finance-collection-date {
-            // flex: 0 1 240px;
             flex: 0 1 110px;
             min-width: 110px;
         }
@@ -122,15 +106,15 @@ app-detail-collection-table {
         }
 
         .mat-column-finance-sales-rep {
-            flex: 0 1 80px;
-            min-width: 80px;
+            flex: 0 1 127px;
+            min-width: 127px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .mat-column-finance-external-id,
-        .mat-column-finance-payment-status,
-        .mat-column-finance-billing-code {
-            flex: 0 1 180px;
-            min-width: 180px;
+        .mat-column-finance-invoice-number {
+            flex: 0 1 136px;
+            min-width: 136px;
         }
 
         .mat-column-finance-store-name {
@@ -149,18 +133,20 @@ app-detail-collection-table {
         }
 
         .mat-column-finance-reason {
-            flex: 0 1 110px;
-            min-width: 110px;
+            flex: 0 1 127px;
+            min-width: 127px;
+            align-items: center;
+            justify-content: center;
         }
 
         .mat-column-finance-total-invoice-amount {
-            flex: 0 1 180px;
-            min-width: 180px;
+            flex: 0 1 158px;
+            min-width: 158px;
         }
 
-        .mat-column-finance-order-due-date {
-            flex: 0 1 110px;
-            min-width: 110px;
+        .mat-column-finance-invoice-due-date {
+            flex: 0 1 122px;
+            min-width: 122px;
         }
 
         .mat-column-finance-collect-code {
@@ -173,9 +159,11 @@ app-detail-collection-table {
             min-width: 110px;
         }
 
-        .mat-column-finance-bill-amount {
-            flex: 0 1 180px;
-            min-width: 180px;
+        .mat-column-finance-amount-use {
+            flex: 0 1 127px;
+            min-width: 127px;
+            align-items: center;
+            justify-content: center;
         }
 
         .mat-column-finance-total-bill-amount {
@@ -189,14 +177,41 @@ app-detail-collection-table {
         }
 
         .mat-column-finance-bill-status {
-            flex: 0 1 110px;
-            min-width: 110px;
+            flex: 0 1 112px;
+            min-width: 112px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .mat-column-actions {
+        .mat-column-finance-action {
             flex: 0 1 80px;
             min-width: 80px;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: end;
+        }
+        .text-approved {
+            color: #31b057;
+            background: #effbf3;
+            border-radius: 4px;
+            word-break: break-word;
+            padding: 4px 6px;
+        }
+
+        .text-waiting,
+        .text-pending {
+            color: #e79b04;
+            background: #fff8eb;
+            border-radius: 4px;
+            word-break: break-word;
+            padding: 4px 6px;
+        }
+
+        .text-rejected {
+            color: #ec1a24;
+            background: #ffedee;
+            border-radius: 4px;
+            word-break: break-word;
+            padding: 4px 6px;
         }
 
         .mat-column-no-record {
@@ -211,6 +226,8 @@ app-detail-collection-table {
     }
 }
 
-mat-menu-panel {
-    min-height: 52px;
+
+.mat-menu-panel {
+    min-height: 0px;
+
 }

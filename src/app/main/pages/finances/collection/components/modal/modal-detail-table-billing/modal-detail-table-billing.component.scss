@@ -1,0 +1,89 @@
+@import 'src/@fuse/scss/fuse';
+
+$background-netral: #f3f5f7;
+$box-shadow-netral: inset 0px -1px 0px rgba(218, 224, 231, 0.5);
+
+#billing-detail {
+    .top-bg {
+        height: 144px;
+    }
+
+    .header {
+        height: 100px !important;
+        min-height: 100px !important;
+        max-height: 100px !important;
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+
+    .content {
+        flex: 1 1 auto;
+        max-width: 100%;
+        display: flex;
+
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content {
+            flex: 1 1 auto;
+            max-width: 100%;
+        }
+
+        .tab-content {
+            .mat-headline {
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .detail-collection-code,
+            .detail-billing {
+                background: $background-netral;
+                box-shadow: $box-shadow-netral;
+                padding: 12px 16px;
+
+                .text-status {
+                    padding: 0px 4px;
+                    font-size: 11px;
+                }
+
+                .text-approved {
+                    color: #31b057;
+                    background: #effbf3;
+                    border-radius: 4px;
+                    word-break: break-word;
+                }
+
+                .text-waiting,
+                .text-pending {
+                    color: #e79b04;
+                    background: #fff8eb;
+                    border-radius: 4px;
+                    word-break: break-word;
+                }
+
+                .text-rejected {
+                    color: #ec1a24;
+                    background: #ffedee;
+                    border-radius: 4px;
+                    word-break: break-word;
+                }
+            }
+        }
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+        .mat-tab-label {
+            height: 44px;
+            opacity: 1;
+
+            &.mat-tab-label-active {
+                > .mat-tab-label-content {
+                    color: #f0444c;
+                }
+            }
+        }
+    }
+}
