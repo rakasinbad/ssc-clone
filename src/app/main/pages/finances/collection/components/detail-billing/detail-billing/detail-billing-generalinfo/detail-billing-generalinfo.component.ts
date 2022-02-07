@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
+import { FinanceDetailBillingV1 } from '../../../../models/billing.model';
 
 @Component({
     selector: 'app-detail-billing-generalinfo',
@@ -7,6 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DetailBillingGeneralinfoComponent implements OnInit {
     constructor() {}
+    @Input() dataDetail$: any ;
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
+
+    numberFormat(num) {
+        if (num) {
+            return num
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        return '-';
+    }
 }

@@ -8,7 +8,7 @@
             class="collection-history-table sinbad-table"
             [class.sinbad-table-no-record]=""
             #table
-            [dataSource]=""
+            [dataSource]="(dataDetail$ | async)?.data?.collectionHistory"
             matSort
             [@animateStagger]="{ value: '50' }"
             fusePerfectScrollbar
@@ -18,7 +18,7 @@
                 <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ row?.storeExternalId || '-' }}
+                        {{ row?.collectionCode || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -28,7 +28,7 @@
                 <mat-header-cell *matHeaderCellDef> Billing Date</mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ row?.storeName || '-' }}
+                        {{ (row?.billingDate | date: 'dd MMM yyyy') || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -38,7 +38,7 @@
                 <mat-header-cell *matHeaderCellDef> Paid Amount </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ row?.orderCode || '-' }}
+                        {{ numberFormat(row?.amountPaid) || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -48,7 +48,7 @@
                 <mat-header-cell *matHeaderCellDef> Method Payment </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ row?.orderRef || '-' }}
+                        {{ numberFormat(row?.paymentMethod) || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -58,7 +58,7 @@
                 <mat-header-cell *matHeaderCellDef> Sales Rep Name </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ totalAmountFormat(row?.totalAmount) }}
+                        {{ row?.salesRepName || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -68,7 +68,7 @@
                 <mat-header-cell *matHeaderCellDef> Collection Status Date </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ (row?.dueDate | date: 'dd MMM yyyy') || '-' }}
+                        {{ (row?.collectionStatus | date: 'dd MMM yyyy') || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -78,7 +78,7 @@
                 <mat-header-cell *matHeaderCellDef> Billing Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ statusLabel(row?.statusPayment) }}
+                        {{ row?.billingStatus || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -88,7 +88,7 @@
                 <mat-header-cell *matHeaderCellDef> Reason Name </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ row?.salesRepName || '-' }}
+                        {{ row?.reason || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -97,18 +97,18 @@
             <ng-container matColumnDef="finance-updatedby">
                 <mat-header-cell *matHeaderCellDef> Updated By </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p style="word-break: break-word">{{ row?.billingPaymentCode || '-' }}</p>
+                    <p style="word-break: break-word">{{ row?.updatedBy || '-' }}</p>
                 </mat-cell>
             </ng-container>
     
             <!-- Action Column -->
             <ng-container matColumnDef="finance-action">
                 <mat-header-cell *matHeaderCellDef> Action</mat-header-cell>
-                <mat-cell *matCellDef="let row">
+                <!-- <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
                         {{ numberFormat(row?.billingAmount) }}
                     </p>
-                </mat-cell>
+                </mat-cell> -->
             </ng-container>
     
             <!-- No Record Column -->

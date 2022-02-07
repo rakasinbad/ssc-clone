@@ -52,6 +52,7 @@ const routes: Routes = [
     {
         path: 'billing/:id',
         component: DetailBillingComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
                 only: ['FINANCE.CL.READ'],

@@ -4,6 +4,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import * as fromCollection from './collection.reducer';
 import * as fromBilling from './billing.reducer';
 import * as fromCollectionDetail from './collection-detail.reducer';
+import * as fromBillingDetail from './billing-detail.reducer';
 import * as fromCollectionPhoto from './collection-photo.reducer';
 import * as fromCollectionType from './collection-type.reducer';
 
@@ -19,6 +20,7 @@ export interface State {
     [fromCollection.featureKey]: fromCollection.State;
     [fromBilling.featureKey]: fromBilling.State;
     [fromCollectionDetail.featureKey]: fromCollectionDetail.State;
+    [fromBillingDetail.featureKey]: fromBillingDetail.State;
     [fromCollectionPhoto.featureKey]: fromCollectionPhoto.State;
     [fromCollectionType.featureKey]: fromCollectionType.State;
 }
@@ -46,6 +48,7 @@ export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
         [fromCollection.featureKey]: fromCollection.reducer,
         [fromBilling.featureKey]: fromBilling.reducer,
+        [fromBillingDetail.featureKey]: fromBillingDetail.reducer,
         [fromCollectionDetail.featureKey]: fromCollectionDetail.reducer,
         [fromCollectionPhoto.featureKey]: fromCollectionPhoto.reducer,
         [fromCollectionType.featureKey]: fromCollectionType.reducer,

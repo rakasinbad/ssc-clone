@@ -11,6 +11,7 @@ export const environment = {
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50],
     host: 'https://kong-dev.sinbad.web.id',
+    mockHost: 'https://3fa72960-8441-4179-9df8-6ccf8d0fb05b.mock.pstmn.io',
     hiddenMenu: [],
     microSiteHost: 'https://micro-dev.sinbad.web.id',
     firebase: {

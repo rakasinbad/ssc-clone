@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -8,13 +8,24 @@ import { locale as english } from '../../../i18n/en';
 import { locale as indonesian } from '../../../i18n/id';
 import { UiActions } from 'app/shared/store/actions';
 import { Location } from '@angular/common';
+import { Observable, Subscription } from 'rxjs';
+import { FinanceDetailBillingV1 } from '../../../models/billing.model';
+import { fuseAnimations } from '@fuse/animations';
+import { BillingDetailSelectors, BillingSelectors, CollectionDetailSelectors } from '../../../store/selectors';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { BillingActions } from '../../../store/actions';
 
 @Component({
     selector: 'app-detail-billing',
     templateUrl: './detail-billing.component.html',
     styleUrls: ['./detail-billing.component.scss'],
+    animations: fuseAnimations, // for enabled directive animate
 })
-export class DetailBillingComponent implements OnInit {
+export class DetailBillingComponent implements OnInit, OnDestroy {
+    detailBilling$: Observable<string>;
+    isLoading$: Observable<boolean>;
+    public idDetail: number;
+    public subs: Subscription;
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -30,6 +41,35 @@ export class DetailBillingComponent implements OnInit {
             active: true,
         },
     ];
+
+    dataDummy = {
+        data: {
+            id: 341,
+            storeName: "Toko Oke Oce",
+            invoiceNumber: "S1000787989898WJDGJD",
+            invoiceAmount: 5000000,
+            amountPaid: 4000000,
+            collectionDate: "2021-07-08 09:16:15",
+            invoiceDueDate: "2021-07-08 09:16:15",
+            oderReference: 978782197, // external_id
+            collectionHistory: [
+                {
+                    collectionHistoryId: 1,
+                    collectionCode: 123,
+                    billingDate: "2021-07-08 09:16:15",
+                    amountPaid: 1000000,
+                    paymentMethod: "Barang retur",
+                    salesRepName: "Qia",
+                    collectionStatus: "Approved",
+                    billingStatus: "Waiting",
+                    reason: "-",
+                    updatedBy: "-",
+                    approvedDate: "2021-07-08 09:16:15"
+                }
+            ]
+        }
+    }
+    
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -59,7 +99,7 @@ export class DetailBillingComponent implements OnInit {
     }
 
     onClickBack(): void {
-        this.location.back();
+        this.router.navigateByUrl('/pages/collection');
         // localStorage.clear();
     }
 
@@ -69,35 +109,38 @@ export class DetailBillingComponent implements OnInit {
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         const { id } = this.route.snapshot.params;
-        // this.idDetail = id;
-        // switch (lifeCycle) {
-        //     case LifecyclePlatform.OnDestroy:
-        //         // Reset breadcrumb state
-        //         this.store.dispatch(UiActions.resetBreadcrumb());
+        this.idDetail = id;
 
-        //         // Reset core state flexiCombos
-        //         this.store.dispatch(CollectionActions.clearState());
-        //         break;
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
 
-        //     default:
-        //         // Set breadcrumbs
-        //         this.store.dispatch(
-        //             UiActions.createBreadcrumb({
-        //                 payload: this._breadCrumbs,
-        //             })
-        //         );
+                // Reset core state flexiCombos
+                this.store.dispatch(BillingActions.clearState());
+                break;
 
-        //         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
+            default:
+                // Set breadcrumbs
+                this.store.dispatch(
+                    UiActions.createBreadcrumb({
+                        payload: this._breadCrumbs,
+                    })
+                );
 
-        //         const parameter: IQueryParams = {};
-        //         parameter['splitRequest'] = true;
+                this.detailBilling$ = this.store.select(
+                    BillingSelectors.getSelectedId
+                );
 
-        //         this.store.dispatch(
-        //             CollectionActions.fetchCollectionDetailRequest({ payload: id })
-        //         );
+                const parameter: IQueryParams = {};
+                parameter['splitRequest'] = true;
 
-        //         this.isLoading$ = this.store.select(CollectionDetailSelectors.getLoadingState);
-        //         break;
-        // }
+                this.store.dispatch(
+                    BillingActions.fetchBillingDetailRequest({ payload: id })
+                );
+
+                this.isLoading$ = this.store.select(BillingDetailSelectors.getLoadingState);
+                break;
+        }
     }
 }

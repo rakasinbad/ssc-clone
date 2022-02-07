@@ -737,6 +737,8 @@ export class HelperService {
     ];
 
     private static _host = environment.host;
+    private static _mockHost = environment.mockHost;
+
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
@@ -961,6 +963,10 @@ export class HelperService {
         } */
 
         return `${HelperService._host}${endpoint}`;
+    }
+
+    handleApiMockRouter(endpoint: string): string {
+        return `${HelperService._mockHost}${endpoint}`;
     }
 
     handleHeaders(queryParams: IQueryParams): HttpHeaders {

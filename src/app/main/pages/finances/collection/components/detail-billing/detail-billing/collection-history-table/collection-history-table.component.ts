@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 
 @Component({
@@ -24,6 +24,19 @@ export class CollectionHistoryTableComponent implements OnInit {
     ];
 
     constructor() {}
+    @Input() dataDetail$: any ;
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
+    
+    numberFormat(num) {
+        if (num) {
+            return num
+                .toFixed(2)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        return '-';
+    }
 }
