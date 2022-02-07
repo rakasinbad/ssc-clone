@@ -3,15 +3,30 @@
 </div>
 
 <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div class="box-info">
+        <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+            <div class="label">Collection Method</div>
+
+            <div class="description">
+                {{
+                    (detailCollection$ | async)?.data?.paymentCollectionMethod
+                        ?.paymentCollectionType?.name || '-'
+                }}
+            </div>
+        </div>
+    </div>
+
     <div
         class="box-info"
         *ngIf="
-            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.id !== CASH
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code === 'check' ||
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code === 'giro'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
-            <div class="label">Bank From</div>
+            <div class="label">Source Bank</div>
 
             <div class="description">
                 {{
@@ -25,20 +40,35 @@
     <div
         class="box-info"
         *ngIf="
-            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.id === TRANSFER
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code === 'check' ||
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code === 'giro'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
-            <div class="label">Bank To</div>
+            <div class="label">Materai</div>
+
+            <div class="description">
+                {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.stamp?.name || '-' }}
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="box-info"
+        *ngIf="
+            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
+                ?.code === 'transfer'
+        "
+    >
+        <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+            <div class="label">Target Bank</div>
 
             <div class="description">
                 {{
                     (detailCollection$ | async)?.data?.paymentCollectionMethod?.bankToAccount?.bank
-                        ?.name +
-                        ' - ' +
-                        (detailCollection$ | async)?.data?.paymentCollectionMethod?.bankToAccount
-                            ?.accountNo
+                        ?.displayName
                 }}
             </div>
         </div>
@@ -48,7 +78,7 @@
         class="box-info"
         *ngIf="
             (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.id === TRANSFER
+                ?.code === 'transfer'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
@@ -63,13 +93,13 @@
         </div>
     </div>
 
-    <div
+    <!-- <div
         class="box-info"
         *ngIf="
             (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.id === CHECK ||
+                ?.code === 'check' ||
             (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.id === GIRO
+                ?.code === 'giro'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
@@ -87,10 +117,10 @@
     <div
         class="box-info"
         *ngIf="
-            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType?.id ===
-                CHECK ||
-            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType?.id ===
-                GIRO
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code === 'check' ||
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code === 'giro'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
@@ -103,9 +133,45 @@
                 }}
             </div>
         </div>
+    </div> -->
+
+    <div
+        class="box-info"
+        *ngIf="
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.name == 'Kerjasama Promosi'
+        "
+    >
+        <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+            <div class="label">Promotion Cooperation Letter</div>
+
+            <div class="description">
+                <ng-container *ngIf="collectionId; else promotionLetterNoData">
+                    <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                        <a
+                            style="color: #2097f6"
+                            href="javascript:void(0)"
+                            (click)="onClickViewPromotion()"
+                        >
+                            View Photo
+                        </a>
+                    </ng-container>
+                    <ng-template #loadingSpin>
+                        <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
+                    </ng-template>
+                </ng-container>
+                <ng-template #promotionLetterNoData> - </ng-template>
+            </div>
+        </div>
     </div>
 
-    <div class="box-info">
+    <div
+        class="box-info"
+        *ngIf="
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
+                ?.code !== 'good_return'
+        "
+    >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
             <div class="label">Collection Photo</div>
 

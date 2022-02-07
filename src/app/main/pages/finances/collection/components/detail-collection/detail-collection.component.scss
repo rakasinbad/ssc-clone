@@ -12,6 +12,10 @@ $grey-color: #677a8e;
         max-height: 80px !important;
         margin-top: 10px;
 
+        &-title {
+            font-weight: bold;
+            letter-spacing: -0.02em;
+        }
         .subtitle {
             margin: 6px 0 0 0;
         }

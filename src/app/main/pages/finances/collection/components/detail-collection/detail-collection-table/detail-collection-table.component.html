@@ -28,7 +28,7 @@
     <ng-container matColumnDef="finance-invoice-number">
         <mat-header-cell *matHeaderCellDef> Invoice Number </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.billingPaymentCode || '-' }}</p>
+            <p style="word-break: break-word">{{ row?.orderCode || '-' }}</p>
         </mat-cell>
     </ng-container>
 

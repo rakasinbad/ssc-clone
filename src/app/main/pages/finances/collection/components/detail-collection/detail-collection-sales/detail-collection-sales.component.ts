@@ -29,7 +29,9 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     public idDetail: number;
     private subs: Subscription = new Subscription();
+    private skpImageSub: Subscription = new Subscription();
     private collectionPhoto$: Observable<any>;
+    private skpPhoto$: Observable<any>;
 
     collectionId: number;
     isLoadingPhoto$: Observable<boolean>;
@@ -50,6 +52,8 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         this.collectionId = id;
 
         this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
+        this.skpPhoto$ = this.store.select(CollectionPhotoSelectors.getSkpImage);
+
         const sub = this.collectionPhoto$.subscribe({
             next: (resp) => {
                 if (resp) {
@@ -59,11 +63,33 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         });
         this.subs.add(sub);
 
+        const skpSub = this.skpPhoto$.subscribe({
+            next: (resp) => {
+                if (resp) {
+                    this.initViewerSkp(resp);
+                }
+            },
+        });
+        this.skpImageSub.add(skpSub);
+
         this.isLoadingPhoto$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
     }
 
     initViewerImage = (image: string): void => {
         const imgSrc = 'data:image/jpeg;base64,' + image;
+
+        const imgEl = document.createElement('img');
+        imgEl.src = imgSrc;
+        imgEl.alt = 'Collection Photo';
+
+        const viewer = new Viewer(imgEl, {
+            inline: false,
+        });
+        viewer.show();
+    };
+
+    initViewerSkp = (skpImage: string): void => {
+        const imgSrc = 'data:image/jpeg;base64,' + skpImage;
 
         const imgEl = document.createElement('img');
         imgEl.src = imgSrc;
@@ -84,10 +110,22 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         );
     };
 
+    onClickViewPromotion = (): void => {
+        this.clearCollectionPhotoState();
+        this.store.dispatch(
+            CollectionActions.fetchCollectionPhotoRequest({
+                payload: { id: this.collectionId },
+            })
+        );
+    };
+
     ngOnDestroy(): void {
         if (!this.subs.closed) {
             this.subs.unsubscribe();
         }
+        if (!this.skpImageSub.closed) {
+            this.skpImageSub.unsubscribe();
+        } 
         this.clearCollectionPhotoState();
     }
 

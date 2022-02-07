@@ -92,11 +92,10 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         // localStorage.clear();
     }
 
-    btnApproved(value) {
-        console.log('value->', value);
+    btnApproved(val) {
         const dialogApproved = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: {title: 'Collection Approve', type:'collection', status: 'approved', value},
+            data: {title: 'Collection Approve', type:'collection', status: 'approved', value: val},
             
         });
 
@@ -105,11 +104,10 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
     }
 
-    btnReject(value) {
-        console.log('reject->', value);
+    btnReject(val) {
         const dialogReject = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: {title: 'Collection Reject', type:'collection', status: 'reject', value},
+            data: {title: 'Collection Reject', type:'collection', status: 'reject', value: val},
             
         });
 

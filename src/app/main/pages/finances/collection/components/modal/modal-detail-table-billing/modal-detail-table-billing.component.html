@@ -21,7 +21,7 @@
                                 Billing Code
                             </div>
 
-                            <div class="info" fxFlex="100">{{ data?.billingPaymentCode || '-' }}</div>
+                            <div class="info text-billing" fxFlex="100">{{ data?.billingPaymentCode || '-' }}</div>
                         </div>
                     </div>
                     <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
@@ -34,7 +34,7 @@
                             <div class="label" fxFlexAlign="center" fxFlex="40">Invoice Number</div>
 
                             <div class="info" fxFlex="100">
-                                {{ data?.billingPaymentCode || '-' }}
+                                {{ data?.orderCode || '-' }}
                             </div>
                         </div>
                     </div>
