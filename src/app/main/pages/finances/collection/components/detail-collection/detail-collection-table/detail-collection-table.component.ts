@@ -22,7 +22,7 @@ export class DetailCollectionTableComponent implements OnInit {
     isLoading$: Observable<boolean>;
 
     displayedColumnsBilling = [
-        'finance-collection-code',
+        'finance-billing-code',
         'finance-invoice-number',
         'finance-total-invoice-amount',
         'finance-invoice-due-date',
@@ -31,15 +31,6 @@ export class DetailCollectionTableComponent implements OnInit {
         'finance-bill-status',
         'finance-reason',
         'finance-action',
-
-        // 'finance-store-name',
-        // 'finance-order-code',
-        // 'finance-order-ref',
-
-        // 'finance-payment-status',
-        // 'finance-materai',
-        // 'finance-total-bill-amount',
-        // 'finance-bill-date',
     ];
 
     constructor(

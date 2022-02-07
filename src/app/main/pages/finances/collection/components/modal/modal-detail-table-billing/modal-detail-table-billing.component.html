@@ -10,21 +10,21 @@
         <div class="content-card">
             <div class="content">
                 <div class="tab-content">
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
-                            class="detail-collection-code"
+                            class="detail-billing-code"
                             fxLayout="row"
                             fxLayoutAlign="start center"
                             fxLayoutGap="15px"
                         >
                             <div class="label" fxFlexAlign="center" fxFlex="40">
-                                Collection Code
+                                Billing Code
                             </div>
 
-                            <div class="info" fxFlex="100">{{ data?.storeExternalId || '-' }}</div>
+                            <div class="info" fxFlex="100">{{ data?.billingPaymentCode || '-' }}</div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -38,7 +38,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -54,7 +54,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -84,7 +84,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <div class="tab-content">
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -113,7 +113,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -127,7 +127,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -141,7 +141,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -151,12 +151,11 @@
                             <div class="label" fxFlexAlign="center" fxFlex="40">Updated By</div>
 
                             <div class="info" fxFlex="100">
-                                -
-                                <!-- {{ data?.updateBy || '-' }} -->
+                                {{ data?.updated_by || '-' }}
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"
@@ -166,12 +165,11 @@
                             <div class="label" fxFlexAlign="center" fxFlex="40">Updated Date</div>
 
                             <div class="info" fxFlex="100">
-                                -
-                                <!-- {{ data?.updateDate || '-' }} -->
+                                {{ (data?.updatedAt | date: 'dd MMM yyyy') || '-' }}
                             </div>
                         </div>
                     </div>
-                    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
                         <div
                             class="detail-billing"
                             fxLayout="row"

@@ -1,5 +1,5 @@
 <div class="pb-16">
-    <span class="mat-headline"> Billing </span>
+    <span class="mat-title-headline"> Billing </span>
 </div>
 
 <mat-table
@@ -15,11 +15,11 @@
     fusePerfectScrollbar
 >
     <!-- Collection Code Column -->
-    <ng-container matColumnDef="finance-collection-code">
-        <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
+    <ng-container matColumnDef="finance-billing-code">
+        <mat-header-cell *matHeaderCellDef> Billing Code </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.storeExternalId || '-' }}
+                {{ row?.billingPaymentCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>

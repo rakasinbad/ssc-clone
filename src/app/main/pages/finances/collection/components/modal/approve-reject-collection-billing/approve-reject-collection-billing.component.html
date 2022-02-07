@@ -1,0 +1,111 @@
+<div id="approve-reject" class="page-layout carded fullwidth tabbed inner-scroll">
+    <div fxLayout="row" fxLayoutAlign="space-between center" style="margin-bottom: 5px">
+        <h4 mat-dialog-title style="margin-bottom: 0px">{{ title }}</h4>
+        <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+            <mat-icon class="close-icon" color="black">close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content class="mat-typography">
+        <div class="content-card">
+            <div class="content">
+                <div class="tab-content">
+                    <!-- Detail Info Collection-->
+                    <ng-container *ngIf="type == 'collection'">
+                        <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                            <div
+                                class="detail-approve-reject"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="15px"
+                            >
+                                <div class="label" fxFlexAlign="center" fxFlex="40">
+                                    Collection Method
+                                </div>
+
+                                <div class="info" fxFlex="100">
+                                    {{ data?.collectionMethod || '-' }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                            <div
+                                class="detail-approve-reject"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="15px"
+                            >
+                                <div class="label" fxFlexAlign="center" fxFlex="40">
+                                    Total Amount
+                                </div>
+
+                                <div class="info" fxFlex="100">
+                                    {{ numberFormat(data?.totalBillingAmount) }}
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                    </ng-container>
+
+                    <!-- Detail Info Billing -->
+                    <ng-container *ngIf="type == 'billing'">
+                        <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                            <div
+                                class="detail-approve-reject"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="15px"
+                            >
+                                <div class="label" fxFlexAlign="center" fxFlex="40">Amount Use</div>
+
+                                <div class="info" fxFlex="100">
+                                    {{ numberFormat(data?.totalAmount) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+                            <div
+                                class="detail-approve-reject"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="15px"
+                            >
+                                <div class="label" fxFlexAlign="center" fxFlex="40">
+                                    Method Payment
+                                </div>
+
+                                <div class="info" fxFlex="100">{{ data?.methodPayment }}</div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <!-- For click Approve -->
+                    <ng-container *ngIf="type == 'collection' && status == 'approved'">
+                        <div>
+                            <span>Are you sure to approve this collection?</span>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="type == 'billing' && status == 'approved'">
+                        <div>
+                            <span>Are you sure to approve this billing?</span>
+                        </div>
+                    </ng-container>
+
+                    <!-- For click Reject Reason -->
+                    <ng-container *ngIf="type == 'collection' && status == 'reject'">
+
+                        <div class="info-reject">
+                            <span>Please choose the reason for rejection.</span>
+                        </div>
+
+                        <div>
+                            Reject Reason
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <br />
+            <!-- / CONTENT -->
+        </div>
+    </mat-dialog-content>
+</div>
