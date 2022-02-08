@@ -1,23 +1,62 @@
 export class FinanceDetailBillingV1 {
-    id: number;
-    paymentCollectionMethod: financeCollectionMethodV1;
-    billingPayment: Array<billingPaymentModelV1>;
-    data: IFinanceBillingStatusV1;
-    constructor(data: IFinanceBillingStatusV1) {
-        // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
-        const { id, billingPayment, paymentCollectionMethod } = data;
-        // Memasukkan nilai ke dalam object dari parameter-nya constructor.
+    id: string;
+    storeName: string;
+    invoiceNumber: number;
+    invoiceAmount: number;
+    amountPaid: number;
+    collectionDate: string;
+    invoiceDueDate: string;
+    oderReference: number;
+    collectionHistory: Array<ICollectionHistory>;
+    data: IFinanceDetailBillingV1;
+    constructor(data: IFinanceDetailBillingV1) {
+        const {
+            id,
+            storeName,
+            invoiceNumber,
+            invoiceAmount,
+            amountPaid,
+            collectionDate,
+            invoiceDueDate,
+            oderReference,
+            collectionHistory,
+        } = data;
         (this.id = id),
-            (this.paymentCollectionMethod = paymentCollectionMethod),
-            (this.billingPayment = billingPayment);
+            (this.storeName = storeName),
+            (this.invoiceNumber = invoiceNumber),
+            (this.invoiceAmount = invoiceAmount),
+            (this.amountPaid = amountPaid),
+            (this.collectionDate = collectionDate),
+            (this.invoiceDueDate = invoiceDueDate),
+            (this.oderReference = oderReference),
+            (this.collectionHistory = collectionHistory);
     }
 }
 
+interface ICollectionHistory {
+    collectionHistoryId: number;
+    collectionCode: number;
+    billingDate: string;
+    amountPaid: number;
+    paymentMethod: string;
+    salesRepName: string;
+    collectionStatus: string;
+    billingStatus: string;
+    reason: string;
+    updatedBy: string;
+    approvedDate: string;
+}
 //V1 Response
-interface IFinanceBillingStatusV1 {
-    id: number;
-    paymentCollectionMethod: financeCollectionMethodV1;
-    billingPayment: Array<billingPaymentModelV1>;
+interface IFinanceDetailBillingV1 {
+    id: string;
+    storeName: string;
+    invoiceNumber: number;
+    invoiceAmount: number;
+    amountPaid: number;
+    collectionDate: string;
+    invoiceDueDate: string;
+    oderReference: number;
+    collectionHistory: Array<ICollectionHistory>;
 }
 export interface financeCollectionMethodV1 {
     id: number;

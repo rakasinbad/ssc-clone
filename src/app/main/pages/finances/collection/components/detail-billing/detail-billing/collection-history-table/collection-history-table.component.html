@@ -3,10 +3,12 @@
         <div class="pb-16">
             <span class="mat-headline"> Collection History </span>
         </div>
-    
+
         <mat-table
             class="collection-history-table sinbad-table"
-            [class.sinbad-table-no-record]=""
+            [class.sinbad-table-no-record]="
+                ((dataDetail$ | async)?.data?.collectionHistory?.length || 0) == 0
+            "
             #table
             [dataSource]="(dataDetail$ | async)?.data?.collectionHistory"
             matSort
@@ -22,7 +24,7 @@
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Billing Date Column -->
             <ng-container matColumnDef="finance-billing-date">
                 <mat-header-cell *matHeaderCellDef> Billing Date</mat-header-cell>
@@ -32,7 +34,7 @@
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Paid Amount Column -->
             <ng-container matColumnDef="finance-paid-amount">
                 <mat-header-cell *matHeaderCellDef> Paid Amount </mat-header-cell>
@@ -42,17 +44,17 @@
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Method Payment Column -->
             <ng-container matColumnDef="finance-method-payment">
                 <mat-header-cell *matHeaderCellDef> Method Payment </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                        {{ numberFormat(row?.paymentMethod) || '-' }}
+                        {{ row?.paymentMethod || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Sales Rep Name Column -->
             <ng-container matColumnDef="finance-sales-rep-name">
                 <mat-header-cell *matHeaderCellDef> Sales Rep Name </mat-header-cell>
@@ -62,37 +64,41 @@
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Collection Status Date Column -->
             <ng-container matColumnDef="finance-collection-status">
-                <mat-header-cell *matHeaderCellDef> Collection Status Date </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p style="word-break: break-word">
-                        {{ (row?.collectionStatus | date: 'dd MMM yyyy') || '-' }}
+                    <p
+                        style="word-break: normal; overflow-wrap: anywhere"
+                        class="text-{{ row?.collectionStatus }}"
+                    >
+                        {{ row?.collectionStatus || '-' }}
+                        {{ (row?.approvedDate | date: 'dd MMM yyyy') || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Billing Status Column -->
             <ng-container matColumnDef="finance-billing-status">
                 <mat-header-cell *matHeaderCellDef> Billing Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p style="word-break: break-word">
+                    <p style="word-break: break-word" class="text-{{ row?.billingStatus }}">
                         {{ row?.billingStatus || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Reason Column -->
             <ng-container matColumnDef="finance-reason">
-                <mat-header-cell *matHeaderCellDef> Reason Name </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
                         {{ row?.reason || '-' }}
                     </p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Updated By Column -->
             <ng-container matColumnDef="finance-updatedby">
                 <mat-header-cell *matHeaderCellDef> Updated By </mat-header-cell>
@@ -100,35 +106,72 @@
                     <p style="word-break: break-word">{{ row?.updatedBy || '-' }}</p>
                 </mat-cell>
             </ng-container>
-    
+
             <!-- Action Column -->
             <ng-container matColumnDef="finance-action">
                 <mat-header-cell *matHeaderCellDef> Action</mat-header-cell>
-                <!-- <mat-cell *matCellDef="let row">
-                    <p style="word-break: break-word">
-                        {{ numberFormat(row?.billingAmount) }}
-                    </p>
-                </mat-cell> -->
+                <mat-cell *matCellDef="let row">
+                    <div fxFlex="row" fxLayoutAlign="end center">
+                        <button
+                            id="btn__actions"
+                            mat-icon-button
+                            [matMenuTriggerFor]="moreMenu"
+                            aria-label="More"
+                            (click)="$event.stopPropagation()"
+                        >
+                            <mat-icon class="secondary-text">more_vert</mat-icon>
+                        </button>
+
+                        <mat-menu #moreMenu="matMenu">
+                            <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.SL.READ']">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Detail"
+                                    (click)="openDetailPage(row)"
+                                >
+                                    <mat-icon>check</mat-icon>
+                                    <span>Approve</span>
+                                </button>
+                            </ng-template>
+                            <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.SL.READ']">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Detail"
+                                    (click)="openDetailPage(row)"
+                                >
+                                    <mat-icon>close</mat-icon>
+                                    <span>Reject</span>
+                                </button>
+                            </ng-template>
+                        </mat-menu>
+                    </div>
+                </mat-cell>
             </ng-container>
-    
+
             <!-- No Record Column -->
             <ng-container matColumnDef="no-record">
                 <mat-footer-cell *matFooterCellDef colspan="8"> No data available </mat-footer-cell>
             </ng-container>
-    
+
             <mat-header-row
                 *matHeaderRowDef="displayedColumnsCollectionHistory; sticky: true"
             ></mat-header-row>
-    
+
             <mat-row
                 *matRowDef="let row; columns: displayedColumnsCollectionHistory"
                 class="sinbad-billing-list-item"
             ></mat-row>
-    
-            <mat-footer-row *matFooterRowDef="['no-record']" [fxShow]=""></mat-footer-row>
+
+            <mat-footer-row
+                *matFooterRowDef="['no-record']"
+                [fxShow]="((dataDetail$ | async)?.data?.collectionHistory?.length || 0) == 0"
+            ></mat-footer-row>
         </mat-table>
-    
+
         <br />
     </div>
-    
 </div>

@@ -6,7 +6,7 @@
                     <div class="label">Invoice Number</div>
 
                     <div class="description">
-                        {{ dataDetail$?.data?.invoiceNumber }}
+                        {{ (dataDetail$ | async)?.data?.invoiceNumber || '-' }}
                     </div>
                 </div>
             </div>
@@ -15,7 +15,9 @@
                 <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
                     <div class="label">Total Invoice Amount</div>
 
-                    <div class="description">{{ numberFormat(dataDetail$?.data?.invoiceAmount) || '-' }}</div>
+                    <div class="description">
+                        {{ numberFormat((dataDetail$ | async)?.data?.invoiceAmount) || '-' }}
+                    </div>
                 </div>
             </div>
 
@@ -23,7 +25,9 @@
                 <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
                     <div class="label">Total Amount Paid</div>
 
-                    <div class="description">{{ numberFormat(dataDetail$?.data?.amountPaid) || '-' }}</div>
+                    <div class="description">
+                        {{ numberFormat((dataDetail$ | async)?.data?.amountPaid) || '-' }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -32,14 +36,21 @@
                 <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
                     <div class="label">Order Referensi</div>
 
-                    <div class="description">{{ dataDetail$?.data?.oderReference }}</div>
+                    <div class="description">
+                        {{ (dataDetail$ | async)?.data?.oderReference || '-' }}
+                    </div>
                 </div>
             </div>
             <div class="box-info">
                 <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
                     <div class="label">Invoice Due Date</div>
 
-                    <div class="description">{{ (dataDetail$?.data?.invoiceDueDate | date: 'dd MMM yyyy') || '-' }}</div>
+                    <div class="description">
+                        {{
+                            ((dataDetail$ | async)?.data?.invoiceDueDate | date: 'dd MMM yyyy') ||
+                                '-'
+                        }}
+                    </div>
                 </div>
             </div>
         </div>

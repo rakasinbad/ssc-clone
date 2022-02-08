@@ -12,12 +12,8 @@ export const getBillingDetailEntitiesState = createSelector(
     (state) => state.billingDetailStatus
 );
 
-export const {
-    selectAll,
-    selectEntities,
-    selectIds,
-    selectTotal,
-} = fromBillingDetail.adapterDetail.getSelectors(getBillingDetailEntitiesState);
+export const { selectAll, selectEntities, selectIds, selectTotal } =
+    fromBillingDetail.adapterDetail.getSelectors(getBillingDetailEntitiesState);
 
 export const getTotalItem = createSelector(getBillingDetailEntitiesState, (state) => state.total);
 
@@ -29,7 +25,7 @@ export const getSelectedId = createSelector(
 export const getSelectedItem = createSelector(
     selectEntities,
     getSelectedId,
-    (entities, id) => entities[id]
+    (entities: any, id: any) => entities[id]
 );
 
 export const getLoadingState = createSelector(

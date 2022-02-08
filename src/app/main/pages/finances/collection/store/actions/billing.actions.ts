@@ -1,7 +1,10 @@
 import { createAction, props } from '@ngrx/store';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { ErrorHandler } from 'app/shared/models/global.model';
-import { BillingStatus, FinanceDetailBillingV1 } from '../../models';
+import {
+    BillingStatus,
+    FinanceDetailBillingV1,
+} from '../../models';
 
 const featureKey = `[Billing API]`;
 

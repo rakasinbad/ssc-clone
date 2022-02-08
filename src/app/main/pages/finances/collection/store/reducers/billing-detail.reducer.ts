@@ -1,9 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import {
-    FinanceDetailBillingV1,
-} from '../../models';
+import { FinanceDetailBillingV1 } from '../../models';
 import { BillingActions } from '../actions';
 
 // Keyname for reducer
@@ -18,7 +16,7 @@ export interface State extends EntityState<FinanceDetailBillingV1> {
 }
 // Adapter for Detail state
 export const adapterDetail = createEntityAdapter<FinanceDetailBillingV1>({
-    selectId: (row) => row.id,
+    selectId: (row) => row.data.id,
 });
 
 // Initialize state
@@ -37,10 +35,13 @@ export const reducer = createReducer(
     on(
         BillingActions.fetchBillingDetailRequest,
         // BillingActions.updateCollectionStatusRequest,
-        (state) => ({
-            ...state,
-            isLoading: true,
-        })
+        (state, { payload }) => {
+            return {
+                ...state,
+                isLoading: true,
+                selectedId: payload.id,
+            };
+        }
     ),
     on(
         BillingActions.fetchBillingDetailFailure,

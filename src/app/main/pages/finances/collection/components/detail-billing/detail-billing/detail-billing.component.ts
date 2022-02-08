@@ -9,11 +9,11 @@ import { locale as indonesian } from '../../../i18n/id';
 import { UiActions } from 'app/shared/store/actions';
 import { Location } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
-import { FinanceDetailBillingV1 } from '../../../models/billing.model';
 import { fuseAnimations } from '@fuse/animations';
-import { BillingDetailSelectors, BillingSelectors, CollectionDetailSelectors } from '../../../store/selectors';
+import { BillingDetailSelectors } from '../../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { BillingActions } from '../../../store/actions';
+import { FinanceDetailBillingV1 } from '../../../models';
 
 @Component({
     selector: 'app-detail-billing',
@@ -22,7 +22,7 @@ import { BillingActions } from '../../../store/actions';
     animations: fuseAnimations, // for enabled directive animate
 })
 export class DetailBillingComponent implements OnInit, OnDestroy {
-    detailBilling$: Observable<string>;
+    detailBilling$: Observable<FinanceDetailBillingV1>;
     isLoading$: Observable<boolean>;
     public idDetail: number;
     public subs: Subscription;
@@ -45,31 +45,31 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
     dataDummy = {
         data: {
             id: 341,
-            storeName: "Toko Oke Oce",
-            invoiceNumber: "S1000787989898WJDGJD",
+            storeName: 'Toko Oke Oce',
+            invoiceNumber: 'S1000787989898WJDGJD',
             invoiceAmount: 5000000,
             amountPaid: 4000000,
-            collectionDate: "2021-07-08 09:16:15",
-            invoiceDueDate: "2021-07-08 09:16:15",
+            collectionDate: '2021-07-08 09:16:15',
+            invoiceDueDate: '2021-07-08 09:16:15',
             oderReference: 978782197, // external_id
             collectionHistory: [
                 {
                     collectionHistoryId: 1,
                     collectionCode: 123,
-                    billingDate: "2021-07-08 09:16:15",
+                    billingDate: '2021-07-08 09:16:15',
                     amountPaid: 1000000,
-                    paymentMethod: "Barang retur",
-                    salesRepName: "Qia",
-                    collectionStatus: "Approved",
-                    billingStatus: "Waiting",
-                    reason: "-",
-                    updatedBy: "-",
-                    approvedDate: "2021-07-08 09:16:15"
-                }
-            ]
-        }
-    }
-    
+                    paymentMethod: 'Barang retur',
+                    salesRepName: 'Qia',
+                    collectionStatus: 'Approved',
+                    billingStatus: 'Waiting',
+                    reason: '-',
+                    updatedBy: '-',
+                    approvedDate: '2021-07-08 09:16:15',
+                },
+            ],
+        },
+    };
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -111,6 +111,7 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
         const { id } = this.route.snapshot.params;
         this.idDetail = id;
 
+
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
                 // Reset breadcrumb state
@@ -127,17 +128,13 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
                         payload: this._breadCrumbs,
                     })
                 );
-
-                this.detailBilling$ = this.store.select(
-                    BillingSelectors.getSelectedId
-                );
+                const { id } = this.route.snapshot.params;
+                this.detailBilling$ = this.store.select(BillingDetailSelectors.getSelectedItem);
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
 
-                this.store.dispatch(
-                    BillingActions.fetchBillingDetailRequest({ payload: id })
-                );
+                this.store.dispatch(BillingActions.fetchBillingDetailRequest({ payload: {id: id} }));
 
                 this.isLoading$ = this.store.select(BillingDetailSelectors.getLoadingState);
                 break;

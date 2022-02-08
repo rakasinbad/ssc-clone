@@ -1,5 +1,18 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
+import { Store } from '@ngrx/store';
+import { Console } from 'console';
+import { Observable } from 'rxjs';
+import { FinanceDetailBillingV1 } from '../../../../models';
+import * as billingStatus from '../../../../store/reducers';
+import { BillingDetailSelectors } from '../../../../store/selectors';
 
 @Component({
     selector: 'app-collection-history-table',
@@ -23,12 +36,16 @@ export class CollectionHistoryTableComponent implements OnInit {
         'finance-action',
     ];
 
-    constructor() {}
-    @Input() dataDetail$: any ;
+    constructor(private store: Store<billingStatus.FeatureState>, private route: ActivatedRoute) {}
+    dataDetail$: Observable<FinanceDetailBillingV1>;
+    isLoading$: Observable<boolean>;
 
     ngOnInit() {
+        const { id } = this.route.snapshot.params;
+        this.dataDetail$ = this.store.select(BillingDetailSelectors.getSelectedItem, id);
+        this.isLoading$ = this.store.select(BillingDetailSelectors.getLoadingState);
     }
-    
+
     numberFormat(num) {
         if (num) {
             return num

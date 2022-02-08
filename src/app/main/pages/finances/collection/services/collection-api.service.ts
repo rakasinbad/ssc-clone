@@ -143,12 +143,12 @@ export class CollectionApiService {
         return this.http.get(`${this._url}/${id}`);
     }
 
-    findByIdBilling(id): Observable<any> {
+    findByIdBilling(payload: {id: string}): Observable<any> {
         this._url = this._$helper.handleApiMockRouter(
             this._endpointCollection + '/web/payment-methods'
         );
 
-        return this.http.get(`${this._url}/${id}`);
+        return this.http.get(`${this._url}/${payload.id}`);
     }
     
     // get data collection photo by id
