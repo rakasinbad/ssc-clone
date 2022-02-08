@@ -31,7 +31,11 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
 import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
-import { SearchByList, SearchByListBilling, SearchByListCollection } from '../models/search-by.model';
+import {
+    SearchByList,
+    SearchByListBilling,
+    SearchByListCollection,
+} from '../models/search-by.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -270,7 +274,7 @@ export class HelperService {
         {
             id: 'overdue',
             label: 'Overdue',
-        }
+        },
     ];
 
     // tslint:disable-next-line:member-ordering
@@ -298,7 +302,7 @@ export class HelperService {
         {
             id: 'payment_failed',
             label: 'Payment Failed',
-        }
+        },
     ];
 
     private static _paymentTypes: Array<{ id: string; label: string }> = [
@@ -313,7 +317,7 @@ export class HelperService {
         {
             id: EPaymentType.COD,
             label: 'Bayar di Tempat',
-        }
+        },
     ];
 
     private static _paymentTypesV2: Array<{ id: number; label: string }> = [
@@ -328,7 +332,7 @@ export class HelperService {
         {
             id: EPaymentTypeV2.COD,
             label: 'Bayar di Tempat',
-        }
+        },
     ];
 
     private static _payLaterTypes: Array<{ id: string; label: string }> = [
@@ -339,7 +343,7 @@ export class HelperService {
         {
             id: EPayLaterType.SUPPLIER_KUR_CLICK_ACC,
             label: 'Supplier with KUR KlickACC',
-        }
+        },
     ];
 
     private static _payLaterTypesV2: Array<{ id: number; label: string }> = [
@@ -350,7 +354,7 @@ export class HelperService {
         {
             id: EPayLaterTypeV2.SUPPLIER_KUR_CLICK_ACC,
             label: 'Supplier with KUR KlickACC',
-        }
+        },
     ];
 
     private static readonly _platformSinbad: { id: PlatformSinbad; label: string }[] = [
@@ -737,10 +741,11 @@ export class HelperService {
     ];
 
     private static _host = environment.host;
-    private static _mockHost = environment.mockHost;
+    private static _mockHostCollection = 'https://3fa72960-8441-4179-9df8-6ccf8d0fb05b.mock.pstmn.io';
 
     // tslint:disable-next-line: max-line-length
-    private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    private static readonly _regexIp =
+        /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
     private _attendanceTypes: Array<{ value: string; text: string }> = [
         {
@@ -966,7 +971,7 @@ export class HelperService {
     }
 
     handleApiMockRouter(endpoint: string): string {
-        return `${HelperService._mockHost}${endpoint}`;
+        return `${HelperService._mockHostCollection}${endpoint}`;
     }
 
     handleHeaders(queryParams: IQueryParams): HttpHeaders {
@@ -1046,9 +1051,11 @@ export class HelperService {
                             if (search.fieldName.includes('[]')) {
                                 newParams = newParams.append(search.fieldName, `${search.keyword}`);
                             } else {
-                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                                newParams = newParams.set(
+                                    `${search.fieldName}`,
+                                    `${search.keyword}`
+                                );
                             }
-
                         } else if (search.fieldName && search.fieldName !== 'id') {
                             newParams = newParams.append(
                                 `search[${search.fieldName}]`,
@@ -1104,10 +1111,10 @@ export class HelperService {
 
     /**
      * This function is remove dollar in request params:
-     * 
+     *
      * 1. Change params `$limit` to `limit`
      * 2. Change params `$skip` to `skip`
-     * 
+     *
      * @param url string
      * @param params IQueryParams
      * @param args any
@@ -1170,9 +1177,11 @@ export class HelperService {
                             if (search.fieldName.includes('[]')) {
                                 newParams = newParams.append(search.fieldName, `${search.keyword}`);
                             } else {
-                                newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                                newParams = newParams.set(
+                                    `${search.fieldName}`,
+                                    `${search.keyword}`
+                                );
                             }
-
                         } else if (search.fieldName && search.fieldName !== 'id') {
                             newParams = newParams.append(
                                 `search[${search.fieldName}]`,
@@ -1496,7 +1505,7 @@ export class HelperService {
     searchByListBilling(): { id: SearchByListBilling; label: string }[] {
         return HelperService._searchByListBilling;
     }
-    
+
     stockType(): { id: boolean; label: string }[] {
         return [
             {
