@@ -1,7 +1,7 @@
 <div id="approve-reject" class="page-layout carded fullwidth tabbed inner-scroll">
     <div fxLayout="row" fxLayoutAlign="space-between center" style="margin-bottom: 5px">
-        <h4 mat-dialog-title style="margin-bottom: 0px">{{ title }}</h4>
-        <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+        <h4 mat-dialog-title style="margin-bottom: 0px">{{ title || '-' }}</h4>
+        <button mat-icon-button class="close-button" mat-dialog-close>
             <mat-icon class="close-icon" color="black">close</mat-icon>
         </button>
     </div>
@@ -24,7 +24,7 @@
                                 </div>
 
                                 <div class="info" fxFlex="100">
-                                    {{ data?.collectionMethod || '-' }}
+                                    {{ data?.value?.data?.paymentCollectionMethod?.paymentCollectionType?.name || '-' }}
                                 </div>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                                 </div>
 
                                 <div class="info" fxFlex="100">
-                                    {{ numberFormat(data?.totalBillingAmount) }}
+                                    {{ numberFormat(data?.value?.data?.paymentCollectionMethod?.totalAmount) }}
                                 </div>
                             </div>
                         </div>
@@ -95,11 +95,22 @@
                     <ng-container *ngIf="type == 'collection' && status == 'reject'">
 
                         <div class="info-reject">
-                            <span>Please choose the reason for rejection.</span>
+                            <mat-icon>info</mat-icon><span>Please choose the reason for rejection.</span>
                         </div>
-
-                        <div>
-                            Reject Reason
+                        <br/>
+                        <div fxLayout="column" class="info">
+                            <label fxFlex="12">
+                                Reject Reason <span class="sinbad-red-fg">*</span>
+                            </label>
+                            <mat-form-field appearance="outline" fxFlex="30" >
+                                <mat-select  [(ngModel)]="selectedValue">
+                                  <mat-option *ngFor="let rejectReason of reasonList" [value]="rejectReason.reason">
+                                    <mat-radio-button>
+                                    {{rejectReason.reason}}
+                                    </mat-radio-button>
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
                         </div>
                     </ng-container>
                 </div>
@@ -108,4 +119,12 @@
             <!-- / CONTENT -->
         </div>
     </mat-dialog-content>
+
+    <mat-dialog-actions align="end" style="margin-bottom: 0px;">
+        <button class="btn-cancel" mat-button mat-dialog-close>Cancel</button>
+        <button class="btn-submit" mat-button [mat-dialog-close]="{ id: data?.id, reason: selectedValue, status: status }" cdkFocusInitial>
+            {{title}}
+        </button>
+    </mat-dialog-actions>
+
 </div>

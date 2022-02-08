@@ -25,6 +25,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { Router } from '@angular/router';
 import { ApproveRejectCollectionBillingComponent } from '../modal/approve-reject-collection-billing/approve-reject-collection-billing.component';
 import * as StatusPaymentLabel from '../../constants';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-detail-collection',
@@ -39,8 +40,9 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     public idDetail: number;
-    public dataDetail: any;
-
+    public dataDetail: FinanceDetailCollection;
+    private subs: Subscription;
+    
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -100,7 +102,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
 
         dialogApproved.afterClosed().subscribe((result) => {
-            // console.log('The dialog was closed');
         });
     }
 
@@ -112,7 +113,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
 
         dialogReject.afterClosed().subscribe((result) => {
-            // console.log('The dialog was closed');
         });
     }
 
@@ -151,6 +151,8 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
                 // Reset breadcrumb state
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
+                this.subs.unsubscribe();
+
                 // Reset core state flexiCombos
                 this.store.dispatch(CollectionActions.clearState());
                 break;
@@ -166,6 +168,10 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
                 this.detailCollection$ = this.store.select(
                     CollectionDetailSelectors.getSelectedItem
                 );
+
+                this.subs = this.detailCollection$.subscribe(res => {
+                    this.dataDetail = res;
+                })
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;

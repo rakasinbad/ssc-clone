@@ -1,6 +1,10 @@
 import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import * as StatusPaymentLabel from '../../../constants';
+
+interface Reason {
+  id: number;
+  reason: string;
+}
 
 @Component({
   selector: 'app-approve-reject-collection-billing',
@@ -13,6 +17,13 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
   public title: string;
   public type: string;
   public status: string;
+  selectedValue: string;
+
+  reasonList: Reason[] = [
+    {id: 1, reason: 'Empty Giro'},
+    {id: 2, reason: 'Empty Check'},
+    {id: 3, reason: 'Actual Cash Inapropriate'},
+  ];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
