@@ -11,6 +11,7 @@ export const featureKey = 'collectionPhoto';
 export interface State extends EntityState<CollectionPhoto> {
     isLoading: boolean;
     image: string;
+    skpImage: string;
 }
 
 // Adapter for Collection Photo state
@@ -22,6 +23,7 @@ export const adapter = createEntityAdapter<CollectionPhoto>({
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
     image: '',
+    skpImage: '',
 });
 
 // Create the reducer.
@@ -41,7 +43,7 @@ export const reducer = createReducer(
         id: payload.id,
     })),
     on(CollectionActions.fetchCollectionPhotoSuccess, (state, { payload }) =>
-        adapter.addOne(payload.data, { ...state, isLoading: false, image: payload.data.image })
+        adapter.addOne(payload.data, { ...state, isLoading: false, image: payload.data.image, skpImage: payload.data.skpImage })
     ),
     on(CollectionActions.clearState, CollectionActions.clearCollectionPhoto, () => initialState)
 );

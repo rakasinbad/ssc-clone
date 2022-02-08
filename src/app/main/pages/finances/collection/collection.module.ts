@@ -19,6 +19,8 @@ import { ListBillingComponent } from './components/list-billing/list-billing.com
 import { DetailBillingComponent } from './components/detail-billing/detail-billing/detail-billing.component';
 import { DetailBillingGeneralinfoComponent } from './components/detail-billing/detail-billing/detail-billing-generalinfo/detail-billing-generalinfo.component';
 import { CollectionHistoryTableComponent } from './components/detail-billing/detail-billing/collection-history-table/collection-history-table.component';
+import { ModalDetailTableBillingComponent } from './components/modal/modal-detail-table-billing/modal-detail-table-billing.component';
+import { ApproveRejectCollectionBillingComponent } from './components/modal/approve-reject-collection-billing/approve-reject-collection-billing.component';
 
 @NgModule({
     declarations: [
@@ -32,6 +34,8 @@ import { CollectionHistoryTableComponent } from './components/detail-billing/det
         DetailBillingComponent,
         DetailBillingGeneralinfoComponent,
         CollectionHistoryTableComponent,
+        ModalDetailTableBillingComponent,
+        ApproveRejectCollectionBillingComponent,
     ],
 
     imports: [
@@ -47,5 +51,13 @@ import { CollectionHistoryTableComponent } from './components/detail-billing/det
         // Ngrx Store
         CollectionNgrxModule,
     ],
+    exports: [
+        ModalDetailTableBillingComponent,
+        ApproveRejectCollectionBillingComponent
+    ],
+    entryComponents: [
+        ModalDetailTableBillingComponent,
+        ApproveRejectCollectionBillingComponent
+    ]
 })
 export class CollectionModule {}

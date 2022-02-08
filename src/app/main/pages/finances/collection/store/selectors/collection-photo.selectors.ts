@@ -20,6 +20,7 @@ export const getId = createSelector(
     (state) => state
 );
 export const getImage = createSelector(getCollectionPhotoEntitiesState, (state) => state.image);
+export const getSkpImage = createSelector(getCollectionPhotoEntitiesState, (state) => state.skpImage);
 export const getIsLoading = createSelector(
     getCollectionPhotoEntitiesState,
     (state) => state.isLoading

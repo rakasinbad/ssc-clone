@@ -1,6 +1,7 @@
 export interface ICollectionPhoto {
     readonly id: NonNullable<number>;
     image: string;
+    skpImage: NonNullable<string>;
 }
 
 export class CollectionPhoto {

@@ -1,9 +1,4 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ViewEncapsulation,
-} from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, Inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { FinanceDetailCollection } from '../../../models';
@@ -11,6 +6,8 @@ import * as collectionStatus from '../../../store/reducers';
 import { CollectionDetailSelectors } from '../../../store/selectors';
 import * as StatusPaymentLabel from '../../../constants';
 import { fuseAnimations } from '@fuse/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalDetailTableBillingComponent } from '../../modal/modal-detail-table-billing/modal-detail-table-billing.component';
 
 @Component({
     selector: 'app-detail-collection-table',
@@ -25,30 +22,36 @@ export class DetailCollectionTableComponent implements OnInit {
     isLoading$: Observable<boolean>;
 
     displayedColumnsBilling = [
-        'finance-external-id',
-        'finance-store-name',
-        'finance-order-code',
-        'finance-order-ref',
-        'finance-total-invoice-amount',
-        'finance-order-due-date',
-        'finance-payment-status',
-        'finance-sales-rep',
         'finance-billing-code',
-        'finance-bill-amount',
-        'finance-materai',
-        'finance-total-bill-amount',
-        'finance-bill-date',
+        'finance-invoice-number',
+        'finance-total-invoice-amount',
+        'finance-invoice-due-date',
+        'finance-amount-use',
+        'finance-sales-rep',
         'finance-bill-status',
         'finance-reason',
+        'finance-action',
     ];
 
     constructor(
-        private store: Store<collectionStatus.FeatureState>
+        private store: Store<collectionStatus.FeatureState>,
+        private dialog: MatDialog,
     ) {}
 
     ngOnInit() {
         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         this.isLoading$ = this.store.select(CollectionDetailSelectors.getLoadingState);
+    }
+
+    openDetailRow(row) {
+        const dialogRef = this.dialog.open(ModalDetailTableBillingComponent, {
+            width: '882px',
+            data: row
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            // console.log('The dialog was closed');
+        });
     }
 
     getOrderCode(value): string {
@@ -75,7 +78,7 @@ export class DetailCollectionTableComponent implements OnInit {
 
     numberFormat(num) {
         if (num) {
-            return num
+            return 'Rp' + num
                 .toFixed(2)
                 .replace('.', ',')
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
@@ -99,7 +102,7 @@ export class DetailCollectionTableComponent implements OnInit {
     totalAmountFormat(num) {
         let value = parseInt(num);
         if (num) {
-            return value
+            return 'Rp' + value
                 .toFixed(2)
                 .replace('.', ',')
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
