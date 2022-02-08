@@ -93,48 +93,6 @@
         </div>
     </div>
 
-    <!-- <div
-        class="box-info"
-        *ngIf="
-            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.code === 'check' ||
-            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType
-                ?.code === 'giro'
-        "
-    >
-        <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
-            <div class="label">Issued Date</div>
-
-            <div class="description">
-                {{
-                    ((detailCollection$ | async)?.data?.paymentCollectionMethod?.date
-                        | date: 'dd MMM yyyy') || '-'
-                }}
-            </div>
-        </div>
-    </div>
-
-    <div
-        class="box-info"
-        *ngIf="
-            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
-                ?.code === 'check' ||
-            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
-                ?.code === 'giro'
-        "
-    >
-        <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
-            <div class="label">Due Date</div>
-
-            <div class="description">
-                {{
-                    ((detailCollection$ | async)?.data?.paymentCollectionMethod?.dueDate
-                        | date: 'dd MMM yyyy') || '-'
-                }}
-            </div>
-        </div>
-    </div> -->
-
     <div
         class="box-info"
         *ngIf="
