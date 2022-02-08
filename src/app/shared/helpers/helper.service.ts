@@ -683,18 +683,18 @@ export class HelperService {
             id: SearchByListCollection.STORE_NAME,
             label: 'Store Name',
         },
-        {
-            id: SearchByListCollection.TOTAL_AMOUNT,
-            label: 'Total Amount',
-        },
-        {
-            id: SearchByListCollection.COL_DATE,
-            label: 'Col.Date',
-        },
-        {
-            id: SearchByListCollection.COL_DUE_DATE,
-            label: 'Col.Due Date',
-        },
+        // {
+        //     id: SearchByListCollection.TOTAL_AMOUNT,
+        //     label: 'Total Amount',
+        // },
+        // {
+        //     id: SearchByListCollection.COL_DATE,
+        //     label: 'Col.Date',
+        // },
+        // {
+        //     id: SearchByListCollection.COL_DUE_DATE,
+        //     label: 'Col.Due Date',
+        // },
         {
             id: SearchByListCollection.SALES_REP_NAME,
             label: 'Sales Rep',
