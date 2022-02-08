@@ -1,0 +1,46 @@
+@import '../../../../../../@fuse/scss/fuse';
+
+app-document-log {
+    .log-info {
+        .status {
+            .timeline-indicator{
+                width: auto;
+                height: auto;
+                padding-top: 0;
+                z-index: 1;
+                margin-left: -8px;
+                margin-top: -4px;
+                margin-bottom: 0;
+            }
+
+            .doc-log-line {
+                border-left: 2px solid #f0444c;
+                margin-left: 8px;
+                margin-right: 6px;
+                margin-top: 4px;
+            }
+
+            .doc-log-line-last {
+                margin-left: 10px;
+                margin-right: 6px;
+                margin-top: 4px;
+            }
+
+            .timeline-label-wrap {
+                font-weight: 500;
+
+                .timeline-desc{
+                    font-size: 14px;
+                }
+
+                .timeline-time{
+                    font-size: 12px;
+                }
+            }
+        }
+
+        .log-detail {
+            color: rgba(0, 0, 0, 0.54);
+        }
+    }
+}

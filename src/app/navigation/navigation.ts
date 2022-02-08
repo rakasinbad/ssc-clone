@@ -124,6 +124,13 @@ export const navigation: IFuseNavigation[] = [
                 privilages: 'FINANCE.PS.READ',
                 url: '/pages/finances/payment-status',
             },
+            {
+                id: 'collection',
+                title: 'Collection',
+                type: 'item',
+                privilages: 'FINANCE.CL.READ',
+                url: '/pages/finances/collection',
+            },
         ],
     },
     {
@@ -134,6 +141,15 @@ export const navigation: IFuseNavigation[] = [
         icon: 'custom-sinbad-oms-logo',
         privilages: 'OMS.READ',
         url: '/pages/orders',
+    },
+    {
+        id: 'returnManagement',
+        title: 'Return',
+        translate: 'NAV.RETURN.TITLE',
+        type: 'item',
+        icon: 'custom-sinbad-return',
+        privilages: 'OMS.READ',
+        url: '/pages/returns',
     },
     {
         id: 'inventory',

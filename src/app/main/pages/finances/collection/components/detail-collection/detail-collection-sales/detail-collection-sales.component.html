@@ -1,0 +1,171 @@
+<div class="pb-16">
+    <span class="mat-headline"> Collection Details </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        *ngIf="(detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType?.id !== CASH"
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Bank From</div>
+
+        <div class="info" fxFlex="100">
+            {{
+                (detailCollection$ | async)?.data?.paymentCollectionMethod?.bankFrom?.displayName || '-'
+            }}
+        </div>
+    </div>
+
+    <div
+        *ngIf="(detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType?.id === TRANSFER"
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Bank To</div>
+
+        <div class="info" fxFlex="100">
+            {{
+                ((detailCollection$ | async)?.data?.paymentCollectionMethod?.bankToAccount?.bank?.name) + ' - ' +
+                ((detailCollection$ | async)?.data?.paymentCollectionMethod?.bankToAccount?.accountNo)
+            }}
+        </div>
+    </div>
+
+    <div
+        *ngIf="
+            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType?.id === TRANSFER
+        "
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Transfer Date</div>
+
+        <div class="info" fxFlex="100">
+            {{
+                ((detailCollection$ | async)?.data?.paymentCollectionMethod?.date
+                    | date: 'dd MMM yyyy') || '-'
+            }}
+        </div>
+    </div>
+
+    <div
+        *ngIf="
+            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType?.id === CHECK ||
+            (detailCollection$ | async)?.data?.paymentCollectionMethod?.paymentCollectionType?.id === GIRO
+        "
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Issued Date</div>
+
+        <div class="info" fxFlex="100">
+            {{
+                ((detailCollection$ | async)?.data?.paymentCollectionMethod?.date
+                    | date: 'dd MMM yyyy') || '-'
+            }}
+        </div>
+    </div>
+
+    <div
+        *ngIf="
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType?.id === CHECK ||
+            (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType?.id === GIRO
+        "
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Due Date</div>
+
+        <div class="info" fxFlex="100">
+            {{
+                ((detailCollection$ | async)?.data?.paymentCollectionMethod?.dueDate
+                    | date: 'dd MMM yyyy') || '-'
+            }}
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Collection Photo</div>
+
+        <div class="info" fxFlex="100">
+            <ng-container *ngIf="collectionId; else collPhotoNoData">
+                <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <a
+                        style="color: #2097f6"
+                        href="javascript:void(0)"
+                        (click)="onClickViewImage()"
+                    >
+                        View Photo
+                    </a>
+                </ng-container>
+                <ng-template #loadingSpin>
+                    <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
+                </ng-template>
+            </ng-container>
+            <ng-template #collPhotoNoData> - </ng-template>
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Reason</div>
+
+        <div class="info" fxFlex="100">
+            {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.approvalReason || '-' }}
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div class="pb-16">
+    <span class="mat-headline"> Sales Rep Information </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Sales Rep ID</div>
+
+        <div class="info" fxFlex="100">
+            {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.salesRepCode || '-' }}
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="30">Sales Rep Name</div>
+
+        <div class="info" fxFlex="100">
+            {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.salesRepName || '-' }}
+        </div>
+    </div>
+</div>
