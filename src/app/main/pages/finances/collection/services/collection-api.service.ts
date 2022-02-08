@@ -19,6 +19,7 @@ export class CollectionApiService {
     private _urlBillingStatus: string;
 
     private readonly _endpointCollection = '/collection/v1';
+    
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
         this._urlCalculate = this._$helper.handleApiRouter(this._endpointCollection);
@@ -140,6 +141,14 @@ export class CollectionApiService {
         );
 
         return this.http.get(`${this._url}/${id}`);
+    }
+
+    findByIdBilling(payload: {id: string}): Observable<any> {
+        this._url = this._$helper.handleApiMockRouter(
+            this._endpointCollection + '/web/payment-methods'
+        );
+
+        return this.http.get(`${this._url}/${payload.id}`);
     }
     
     // get data collection photo by id

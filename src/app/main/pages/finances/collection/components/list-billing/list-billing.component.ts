@@ -23,7 +23,7 @@ import { takeUntil, flatMap, filter } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store as NgRxStore } from '@ngrx/store';
-import { CollectionActions } from '../../store/actions';
+import { BillingActions, CollectionActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -262,7 +262,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
             data['type'] = this.viewByType;
             this.BillingStore.dispatch(
-                CollectionActions.fetchBillingStatusRequest({
+                BillingActions.fetchBillingStatusRequest({
                     payload: data,
                 })
             );

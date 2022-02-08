@@ -126,13 +126,13 @@ app-collection-history-table {
             }
 
             .mat-column-finance-reason {
-                flex: 0 1 80px;
-                min-width: 80px;
+                flex: 0 1 200px;
+                min-width: 200px;
             }
 
             .mat-column-finance-updatedby {
-                flex: 0 1 200px;
-                min-width: 200px;
+                flex: 0 1 110px;
+                min-width: 110px;
             }
 
             .mat-column-finance-action {
@@ -149,6 +149,31 @@ app-collection-history-table {
 
             .active-icon {
                 border-radius: 50%;
+            }
+
+            .text-Approved {
+                color: #31b057;
+                background: #effbf3;
+                border-radius: 4px;
+                word-break: break-word;
+                padding: 4px 6px;
+            }
+
+            .text-Waiting,
+            .text-Pending {
+                color: #e79b04;
+                background: #fff8eb;
+                border-radius: 4px;
+                word-break: break-word;
+                padding: 4px 6px;
+            }
+
+            .text-Rejected {
+                color: #ec1a24;
+                background: #ffedee;
+                border-radius: 4px;
+                word-break: break-word;
+                padding: 4px 6px;
             }
         }
     }

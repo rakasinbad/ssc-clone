@@ -39,6 +39,8 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
     public idDetail: number;
     public dataDetail: any;
 
+    
+
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',

@@ -17,7 +17,7 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <div class="h2">Store Name</div>
+                    <div class="h2">{{ (detailBilling$ | async)?.data?.storeName || '-' }}</div>
                 </div>
             </div>
             <!-- / APP TITLE -->
