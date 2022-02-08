@@ -224,7 +224,6 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageIndex + 1,
             };
-            console.log("data", data);
 
             data['paginate'] = true;
 
