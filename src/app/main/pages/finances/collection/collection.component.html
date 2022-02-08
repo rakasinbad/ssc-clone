@@ -1,37 +1,40 @@
 <div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CENTER -->
     <div class="center p-8">
-        <ng-container *ngIf="(dataSource$ | async).length > 0 && !isHiddenTab; else others">
-            <mat-tab-group
-                color="accent"
-                style="border-radius: 4px"
-                class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
-                animationDuration="0ms"
-                [selectedIndex]="selectTab"
-                (selectedTabChange)="onSelectedTab($event)"
-            >
-                <ng-container *ngFor="let user of dataSource$ | async">
-                    <mat-tab
-                        class="collection-tab"
-                        [label]="(user?.title || '-') + ' (' + (user?.total || 0) + ')'"
-                    ></mat-tab>
-                </ng-container>
-            </mat-tab-group>
+        <ng-container *ngIf="!isHiddenTab">
+            <!-- CONTENT CARD -->
+            <ng-container *ngIf="(dataSource$ | async).length > 0; else others">
+                <mat-tab-group
+                    color="accent"
+                    style="border-radius: 4px"
+                    class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+                    animationDuration="0ms"
+                    [selectedIndex]="selectTab"
+                    (selectedTabChange)="onSelectedTab($event)"
+                >
+                    <ng-container *ngFor="let user of dataSource$ | async">
+                        <mat-tab
+                            class="collection-tab"
+                            [label]="(user?.title || '-') + ' (' + (user?.total || 0) + ')'"
+                        ></mat-tab>
+                    </ng-container>
+                </mat-tab-group>
+            </ng-container>
+            <ng-template #others>
+                <div class="content-card" style="margin-bottom: 10px">
+                    <ngx-skeleton-loader
+                        [theme]="{
+                            width: '30%',
+                            height: '30px',
+                            'margin-bottom': '-15px',
+                            'margin-left': '10px'
+                        }"
+                        style="margin-top: 15px"
+                    ></ngx-skeleton-loader>
+                </div>
+            </ng-template>
+            <!-- CONTENT CARD -->
         </ng-container>
-        <ng-template #others>
-            <div class="content-card" style="margin-bottom: 10px">
-                <ngx-skeleton-loader
-                    [theme]="{
-                        width: '30%',
-                        height: '30px',
-                        'margin-bottom': '-15px',
-                        'margin-left': '10px'
-                    }"
-                    style="margin-top: 15px"
-                ></ngx-skeleton-loader>
-            </div>
-        </ng-template>
-        <!-- CONTENT CARD -->
 
         <div class="content-card">
             <div class="menu" style="display: flex; justify-content: space-between">
@@ -144,7 +147,7 @@
             <ng-container *ngIf="selectedViewBy == 'bStatus'">
                 <app-list-billing
                     class="mx-16"
-                    [approvalStatus]="selectTab"
+                    [approvalStatus]="0"
                     [viewByType]="selectedViewBy"
                     [searchBy]="searchByValueBilling"
                     [searchValue]="search"
