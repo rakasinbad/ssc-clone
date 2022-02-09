@@ -4,6 +4,7 @@ import * as BillingDetailSelectors from './billing-detail.selectors';
 import * as CollectionDetailSelectors from './collection-detail.selectors';
 import * as CollectionPhotoSelectors from './collection-photo.selectors';
 import * as CollectionType from './collection-type.selectors';
+import * as RejectReasonSelectors from './reject-reason.selector';
 
 export {
     CollectionSelectors,
@@ -12,4 +13,5 @@ export {
     CollectionDetailSelectors,
     CollectionPhotoSelectors,
     CollectionType,
+    RejectReasonSelectors
 };

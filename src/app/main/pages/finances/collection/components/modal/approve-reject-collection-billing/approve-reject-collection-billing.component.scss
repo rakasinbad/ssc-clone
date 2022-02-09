@@ -24,6 +24,15 @@ $red-color: #f0444c;
         }
     }
     > .info {
+        > .mat-radio-button {
+             > .mat-radio-label {
+                > :host ::ng-deep .mat-radio-label-content {
+                    width: 100%;
+                }
+            }
+            
+        }
+
         .mat-form-field-outline,
         .mat-select-arrow-wrapper {
             visibility: hidden;

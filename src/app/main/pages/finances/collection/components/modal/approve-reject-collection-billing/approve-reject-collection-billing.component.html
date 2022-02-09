@@ -112,15 +112,15 @@
                             <mat-form-field appearance="outline" fxFlex="30">
                                 <mat-select [(ngModel)]="selectedValue" style="width: 100%">
                                     <mat-option
-                                        *ngFor="let rejectReason of reasonList"
-                                        [value]="rejectReason.reason"
+                                        *ngFor="let rejectReason of listReason"
+                                        [value]="rejectReason.reasonName"
                                         style="width: 100%"
                                     >
                                         <mat-radio-button
-                                            [checked]="rejectReason.reason"
-                                            [value]="rejectReason.reason"
+                                            [checked]="rejectReason.reasonName"
+                                            [value]="rejectReason.reasonName"
                                         >
-                                            {{ rejectReason.reason }}
+                                            {{ rejectReason.reasonName }}
                                         </mat-radio-button>
                                     </mat-option>
                                 </mat-select>
