@@ -7,8 +7,13 @@ app-collection-history-table {
     overflow: auto !important;
     #billing-collection-history {
         .mat-headline {
-            font-size: 18px;
+            font-family: Inter;
+            font-style: normal;
             font-weight: 600;
+            font-size: 16px;
+            line-height: 22px;
+            letter-spacing: -0.01em;
+            color: #677a8e;
         }
         .collection-history-table {
             flex: 1 1 auto;
