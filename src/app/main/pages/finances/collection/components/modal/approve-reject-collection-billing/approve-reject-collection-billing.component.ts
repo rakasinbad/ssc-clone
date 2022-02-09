@@ -52,27 +52,32 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     return '-';
   }
 
-  onSelectEvent(value: any, type: string, id:string){
-    console.log("value", value);
-    this.selectedValue = value
-    this.buttonRejectDisabled = false
-    if(type === "collection"){
-      this.payload = {
-        approvalStatus: "rejected",
-        billingRef: "", // di set empty string
-        rejectReasonId: value, // int // approvalStatus = "rejected"  | default value , if not set
-      }
-    }else{
-      this.payload = {
-        approvalStatus: "rejected",
-        billingRef: "", // di set empty string
-        rejectReasonId: value, // int // approvalStatus = "rejected"  | default value , if not set
+  onSelectEvent(event: any, type: string, id:string){
+    console.log("value", event);
+    if(event.isUserInput) {
+      this.selectedValue = event.source.value
+      this.buttonRejectDisabled = false
+      if(type === "collection"){
+        this.payload = {
+          approvalStatus: "rejected",
+          billingRef: "", // di set empty string
+          rejectReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
+        }
+      }else{
+        this.payload = {
+          approvalStatus: "rejected",
+          billingRef: "", // di set empty string
+          rejectReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
+        }
       }
     }
+    
   }
 
   onClickButton(type: string, status: string){
     console.log("onClickButton",type,  status);
+    console.log("this.payload",this.payload);
+
     if(type == "collection" && status == "approved"){
       //fetch approve collection
     }
