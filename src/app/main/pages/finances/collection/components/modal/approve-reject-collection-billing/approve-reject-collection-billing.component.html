@@ -99,7 +99,7 @@
                     </ng-container>
 
                     <!-- For click Reject Reason Collection -->
-                    <ng-container *ngIf="(type == 'collection' && status == 'reject') || type == 'billing' && status == 'reject'">
+                    <ng-container *ngIf="type == 'collection' && status == 'reject'">
                         <div class="info-reject">
                             <mat-icon>info</mat-icon
                             ><span>Please choose the reason for rejection.</span>
@@ -110,26 +110,19 @@
                                 Reject Reason <span class="sinbad-red-fg">*</span>
                             </label>
                             <mat-form-field appearance="outline" fxFlex="30">
-                                <mat-select [(ngModel)]="selectedValue" style="width: 100%">
-                                    <mat-option
-                                        *ngFor="let rejectReason of listReason"
-                                        [value]="rejectReason.reasonName"
-                                        style="width: 100%"
-                                    >
-                                        <mat-radio-button
-                                            [checked]="rejectReason.reasonName"
-                                            [value]="rejectReason.reasonName"
-                                        >
-                                            {{ rejectReason.reasonName }}
-                                        </mat-radio-button>
-                                    </mat-option>
+                                <mat-select placeholder="Choose Reject Reason">
+                                  <mat-option (onSelectionChange)="onSelectEvent($event,type,data?.value?.collectionHistoryId || '-')" *ngFor="let rejectReason of reasonList" [value]="rejectReason.id">
+                                    <mat-radio-button>
+                                        {{ rejectReason.reason }}
+                                    </mat-radio-button>
+                                  </mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
                     </ng-container>
 
                     <!-- For click Reject Reason Billing -->
-                    <ng-container *ngIf="type == 'blling' && status == 'reject'">
+                    <ng-container *ngIf="type == 'billing' && status == 'reject'">
                         <div class="info-reject">
                             <mat-icon>info</mat-icon
                             ><span>Please choose the reason for rejection.</span>
@@ -140,16 +133,12 @@
                                 Reject Reason <span class="sinbad-red-fg">*</span>
                             </label>
                             <mat-form-field appearance="outline" fxFlex="30">
-                                <mat-select [(ngModel)]="selectedValue" style="width: 100%">
-                                    <mat-option
-                                        *ngFor="let rejectReason of reasonList"
-                                        [value]="rejectReason.reason"
-                                        style="width: 100%"
-                                    >
-                                        <mat-radio-button>
-                                            {{ rejectReason.reason }}
-                                        </mat-radio-button>
-                                    </mat-option>
+                                <mat-select placeholder="Choose Reject Reason">
+                                  <mat-option (onSelectionChange)="onSelectEvent($event,type,data?.value?.collectionHistoryId || '-')" *ngFor="let rejectReason of reasonList" [value]="rejectReason.id">
+                                    <mat-radio-button>
+                                        {{ rejectReason.reason }}
+                                    </mat-radio-button>
+                                  </mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -168,6 +157,8 @@
             mat-button
             [mat-dialog-close]="{ id: data?.id, reason: selectedValue, status: status }"
             cdkFocusInitial
+            (click)="onClickButton(type,status)"
+            [disabled]="status == 'reject' && buttonRejectDisabled"
         >
             {{ title }}
         </button>

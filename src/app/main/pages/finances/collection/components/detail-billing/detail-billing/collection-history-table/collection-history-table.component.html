@@ -116,7 +116,7 @@
                         <button
                             id="btn__actions"
                             mat-icon-button
-                            [matMenuTriggerFor]="row?.billingStatus !== 'Approved' && moreMenu"
+                            [matMenuTriggerFor]="row?.billingStatus !== 'Approved'? moreMenu : hiddenMatMenu"
                             matTooltip="Can’t reject and approve because the billing status already approved"
                             [matTooltipClass]="
                                 row?.billingStatus !== 'Approved' && 'tooltip-hidden'
@@ -126,6 +126,7 @@
                         >
                             <mat-icon class="secondary-text">more_vert</mat-icon>
                         </button>
+                        <mat-menu #hiddenMatMenu="matMenu"></mat-menu>
                         <mat-menu #moreMenu="matMenu">
                             <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.SL.READ']">
                                 <button

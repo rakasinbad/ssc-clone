@@ -1,10 +1,12 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatRadioChange } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Store } from '@ngrx/store';
-import * as fromRejectReason from '../../../store/reducers';
-import { RejectReasonSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
-import { RejectReason } from '../../../models';
 import { Observable, Subscription } from 'rxjs';
+import { FinanceDetailBillingV1, RejectReason } from '../../../models';
+import { RejectReasonSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
+import * as fromRejectReason from '../../../store/reducers';
+import { Store } from '@ngrx/store';
 
 interface Reason {
     id: number;
@@ -17,11 +19,13 @@ interface Reason {
     styleUrls: ['./approve-reject-collection-billing.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ApproveRejectCollectionBillingComponent implements OnInit, OnDestroy {
+export class ApproveRejectCollectionBillingComponent implements OnInit {
     public title: string;
     public type: string;
     public status: string;
-    selectedValue: string;
+    public selectedValue: string;
+    public payload: object | null;
+    public buttonRejectDisabled: boolean;
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
     subs: Subscription;
@@ -43,11 +47,12 @@ export class ApproveRejectCollectionBillingComponent implements OnInit, OnDestro
         this.type = this.data.type;
         this.title = this.data.title;
         this.status = this.data.status;
+        this.buttonRejectDisabled = true;
 
         this.rejectReasonList$ = this.store.select(RejectReasonSelectors.selectAll);
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
-            console.log('isi val->', val)
+            console.log('isi val->', val);
         });
     }
 
@@ -63,6 +68,45 @@ export class ApproveRejectCollectionBillingComponent implements OnInit, OnDestro
         }
 
         return '-';
+    }
+
+    onSelectEvent(event: any, type: string, id: string) {
+        console.log('value', event);
+        if (event.isUserInput) {
+            this.selectedValue = event.source.value;
+            this.buttonRejectDisabled = false;
+            if (type === 'collection') {
+                this.payload = {
+                    approvalStatus: 'rejected',
+                    billingRef: '', // di set empty string
+                    rejectReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
+                };
+            } else {
+                this.payload = {
+                    approvalStatus: 'rejected',
+                    billingRef: '', // di set empty string
+                    rejectReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
+                };
+            }
+        }
+    }
+
+    onClickButton(type: string, status: string) {
+        console.log('onClickButton', type, status);
+        console.log('this.payload', this.payload);
+
+        if (type == 'collection' && status == 'approved') {
+            //fetch approve collection
+        }
+        if (type == 'billing' && status == 'rejected') {
+            //fetch rejected collection
+        }
+        if (type == 'collection' && status == 'approved') {
+            //fetch approve billing
+        }
+        if (type == 'billing' && status == 'rejected') {
+            //fetch rejected billing
+        }
     }
 
     ngOnDestroy(): void {
