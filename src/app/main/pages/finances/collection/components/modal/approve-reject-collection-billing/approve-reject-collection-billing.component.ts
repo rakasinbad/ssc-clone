@@ -23,6 +23,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     {id: 1, reason: 'Empty Giro'},
     {id: 2, reason: 'Empty Check'},
     {id: 3, reason: 'Actual Cash Inapropriate'},
+    {id: 4, reason: 'Others'},
   ];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}

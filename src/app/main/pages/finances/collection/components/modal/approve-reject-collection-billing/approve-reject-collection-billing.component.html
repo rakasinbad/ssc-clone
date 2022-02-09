@@ -66,7 +66,7 @@
                                 <div class="label" fxFlexAlign="center" fxFlex="40">Amount Use</div>
 
                                 <div class="info" fxFlex="100">
-                                    {{ numberFormat(data?.totalAmount) }}
+                                    {{ numberFormat(data?.value?.amountPaid) || '-' }}
                                 </div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                                     Method Payment
                                 </div>
 
-                                <div class="info" fxFlex="100">{{ data?.methodPayment }}</div>
+                                <div class="info" fxFlex="100">{{ data?.value?.paymentMethod || '-' }}</div>
                             </div>
                         </div>
                     </ng-container>
@@ -99,7 +99,7 @@
                     </ng-container>
 
                     <!-- For click Reject Reason Collection -->
-                    <ng-container *ngIf="type == 'collection' && status == 'reject'">
+                    <ng-container *ngIf="(type == 'collection' && status == 'reject') || type == 'billing' && status == 'reject'">
                         <div class="info-reject">
                             <mat-icon>info</mat-icon
                             ><span>Please choose the reason for rejection.</span>

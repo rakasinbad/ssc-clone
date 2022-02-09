@@ -19,7 +19,7 @@
             <ng-container matColumnDef="finance-collection-code">
                 <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p style="word-break: break-word">
+                    <p class="text-collectionCode" style="word-break: break-word">
                         {{ row?.collectionCode || '-' }}
                     </p>
                 </mat-cell>
@@ -69,13 +69,14 @@
             <ng-container matColumnDef="finance-collection-status">
                 <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p
-                        style="word-break: normal; overflow-wrap: anywhere"
-                        class="text-{{ row?.collectionStatus }}"
-                    >
-                        {{ row?.collectionStatus || '-' }}
-                        {{ (row?.approvedDate | date: 'dd MMM yyyy') || '-' }}
-                    </p>
+                    <div style="display: inline-grid" class="text-{{ row?.collectionStatus }}">
+                        <span>
+                            {{ row?.collectionStatus || '-' }}
+                        </span>
+                        <span>
+                            {{ (row?.approvedDate | date: 'dd MMM yyyy') || '-' }}
+                        </span>
+                    </div>
                 </mat-cell>
             </ng-container>
 
@@ -117,6 +118,9 @@
                             mat-icon-button
                             [matMenuTriggerFor]="row?.billingStatus !== 'Approved' && moreMenu"
                             matTooltip="Can’t reject and approve because the billing status already approved"
+                            [matTooltipClass]="
+                                row?.billingStatus !== 'Approved' && 'tooltip-hidden'
+                            "
                             aria-label="More"
                             (click)="$event.stopPropagation()"
                         >
@@ -129,7 +133,7 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="Detail"
-                                    (click)="openDetailPage(row)"
+                                    (click)="btnApproved(row)"
                                 >
                                     <mat-icon>check</mat-icon>
                                     <span>Approve</span>
@@ -141,7 +145,7 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="Detail"
-                                    (click)="openDetailPage(row)"
+                                    (click)="btnReject(row)"
                                 >
                                     <mat-icon>close</mat-icon>
                                     <span>Reject</span>
