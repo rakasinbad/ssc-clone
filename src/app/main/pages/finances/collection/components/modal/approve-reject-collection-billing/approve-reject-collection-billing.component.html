@@ -111,9 +111,9 @@
                             </label>
                             <mat-form-field appearance="outline" fxFlex="30">
                                 <mat-select placeholder="Choose Reject Reason">
-                                  <mat-option (onSelectionChange)="onSelectEvent($event,type,data?.value?.collectionHistoryId || '-')" *ngFor="let rejectReason of reasonList" [value]="rejectReason.id">
+                                  <mat-option (onSelectionChange)="onSelectEvent($event,type,data?.value?.collectionHistoryId || '-')" *ngFor="let rejectReason of listReason" [value]="rejectReason.id">
                                     <mat-radio-button>
-                                        {{ rejectReason.reason }}
+                                        {{ rejectReason.reasonName }}
                                     </mat-radio-button>
                                   </mat-option>
                                 </mat-select>
@@ -134,9 +134,9 @@
                             </label>
                             <mat-form-field appearance="outline" fxFlex="30">
                                 <mat-select placeholder="Choose Reject Reason">
-                                  <mat-option (onSelectionChange)="onSelectEvent($event,type,data?.value?.collectionHistoryId || '-')" *ngFor="let rejectReason of reasonList" [value]="rejectReason.id">
+                                  <mat-option (onSelectionChange)="onSelectEvent($event,type,data?.value?.collectionHistoryId || '-')" *ngFor="let rejectReason of listReason" [value]="rejectReason.id">
                                     <mat-radio-button>
-                                        {{ rejectReason.reason }}
+                                        {{ rejectReason.reasonName }}
                                     </mat-radio-button>
                                   </mat-option>
                                 </mat-select>
