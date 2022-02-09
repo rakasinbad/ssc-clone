@@ -86,3 +86,8 @@ $red-color: #f0444c;
         margin: 0px 8px;
     }
 }
+
+::ng-deep .mat-radio-button{
+    width: -webkit-fill-available;
+}
+

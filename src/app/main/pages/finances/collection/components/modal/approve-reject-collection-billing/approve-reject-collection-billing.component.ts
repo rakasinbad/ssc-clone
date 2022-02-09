@@ -1,5 +1,9 @@
 import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatRadioChange } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { FinanceDetailBillingV1 } from '../../../models';
 
 interface Reason {
   id: number;
@@ -17,7 +21,9 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
   public title: string;
   public type: string;
   public status: string;
-  selectedValue: string;
+  public selectedValue: string;
+  public payload: object | null; 
+  public buttonRejectDisabled: boolean;
 
   reasonList: Reason[] = [
     {id: 1, reason: 'Empty Giro'},
@@ -32,6 +38,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     this.type = this.data.type;
     this.title = this.data.title;
     this.status = this.data.status;
+    this.buttonRejectDisabled = true
   }
 
   numberFormat(num) {
@@ -43,6 +50,41 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     }
 
     return '-';
-}
+  }
+
+  onSelectEvent(value: any, type: string, id:string){
+    console.log("value", value);
+    this.selectedValue = value
+    this.buttonRejectDisabled = false
+    if(type === "collection"){
+      this.payload = {
+        approvalStatus: "rejected",
+        billingRef: "", // di set empty string
+        rejectReasonId: value, // int // approvalStatus = "rejected"  | default value , if not set
+      }
+    }else{
+      this.payload = {
+        approvalStatus: "rejected",
+        billingRef: "", // di set empty string
+        rejectReasonId: value, // int // approvalStatus = "rejected"  | default value , if not set
+      }
+    }
+  }
+
+  onClickButton(type: string, status: string){
+    console.log("onClickButton",type,  status);
+    if(type == "collection" && status == "approved"){
+      //fetch approve collection
+    }
+    if(type == "billing" && status == "rejected"){
+      //fetch rejected collection
+    }
+    if(type == "collection" && status == "approved"){
+      //fetch approve billing
+    }
+    if(type == "billing" && status == "rejected"){
+      //fetch rejected billing
+    }
+  }
 
 }
