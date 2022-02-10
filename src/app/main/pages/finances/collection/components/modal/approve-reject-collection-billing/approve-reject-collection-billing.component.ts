@@ -3,10 +3,11 @@ import { FormControl } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, Subscription } from 'rxjs';
-import { FinanceDetailBillingV1, RejectReason } from '../../../models';
+import { FinanceDetailBillingV1, RejectReason, PaymApproval } from '../../../models';
 import { RejectReasonSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
 import * as fromRejectReason from '../../../store/reducers';
 import { Store } from '@ngrx/store';
+import { CollectionActions, RejectReasonActions } from '../../../store/actions';
 
 interface Reason {
     id: number;
@@ -24,7 +25,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     public type: string;
     public status: string;
     public selectedValue: string;
-    public payload: object | null;
+    public payload: PaymApproval | null;
     public buttonRejectDisabled: boolean;
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
@@ -48,11 +49,9 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         this.title = this.data.title;
         this.status = this.data.status;
         this.buttonRejectDisabled = true;
-
         this.rejectReasonList$ = this.store.select(RejectReasonSelectors.selectAll);
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
-            console.log('isi val->', val);
         });
     }
 
@@ -71,7 +70,6 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     }
 
     onSelectEvent(event: any, type: string, id: string) {
-        console.log('value', event);
         if (event.isUserInput) {
             this.selectedValue = event.source.value;
             this.buttonRejectDisabled = false;
@@ -79,29 +77,45 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                 this.payload = {
                     approvalStatus: 'rejected',
                     billingRef: '', // di set empty string
-                    rejectReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
+                    rejectedReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
                 };
             } else {
                 this.payload = {
                     approvalStatus: 'rejected',
                     billingRef: '', // di set empty string
-                    rejectReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
+                    rejectedReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
                 };
             }
         }
     }
 
     onClickButton(type: string, status: string) {
-        console.log('onClickButton', type, status);
-        console.log('this.payload', this.payload);
+        // console.log('onClickButton', type, status);
+        // console.log('this.payload', this.payload);
 
         if (type == 'collection' && status == 'approved') {
             //fetch approve collection
+            this.store.dispatch(
+                RejectReasonActions.updateColPaymentApprovalRequest({
+                    payload: {
+                        id: this.data.value.data.id,
+                        body: this.payload
+                    }
+                })
+            );
         }
-        if (type == 'billing' && status == 'rejected') {
+        if (type == 'collection' && status == 'reject') {
             //fetch rejected collection
+            this.store.dispatch(
+                RejectReasonActions.updateColPaymentApprovalRequest({
+                    payload: {
+                        id: this.data.value.data.id,
+                        body: this.payload
+                    }
+                })
+            );
         }
-        if (type == 'collection' && status == 'approved') {
+        if (type == 'billing' && status == 'approved') {
             //fetch approve billing
         }
         if (type == 'billing' && status == 'rejected') {

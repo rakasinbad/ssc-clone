@@ -7,13 +7,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import {
-    CalculateOrderApiService,
-    DownloadApiService,
-    LogService,
-    NoticeService,
-    UploadApiService,
-} from 'app/shared/helpers';
+import { LogService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
@@ -25,23 +19,20 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-
 import { CollectionApiService, ApproveRejectApiService } from '../../services';
-import { BillingActions, CollectionActions, RejectReasonActions } from '../actions';
-import { BillingStatus, CalculateCollectionStatusPayment, CollectionStatus, FinanceDetailBillingV1 } from '../../models';
+import { RejectReasonActions } from '../actions';
+import {
+    BillingStatus,
+    CalculateCollectionStatusPayment,
+    CollectionStatus,
+    FinanceDetailBillingV1,
+    FinanceDetailCollection,
+} from '../../models';
 import * as collectionStatus from '../reducers';
-import * as fromBilling from '../reducers/billing.reducer';
-import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
-import { OrderActions } from '../../../../orders/store/actions';
-import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 
 @Injectable()
 export class RejectApproveEffects {
-    // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods
-    // -----------------------------------------------------------------------------------------------------
-
-      /**
+    /**
      *
      * [REQUEST] Reject Reason List Statuses
      * @memberof Reject Approve Effects
@@ -51,12 +42,11 @@ export class RejectApproveEffects {
             ofType(RejectReasonActions.fetchRejectReasonRequest),
             map((action) => action.payload),
             switchMap((payload) => {
-                console.log('payload->', payload)
                 return this._$rejectApproveApi.getRejectReasonList(payload.type).pipe(
                     catchOffline(),
                     map((resp) => {
                         return RejectReasonActions.fetchRejectReasonSuccess({
-                            payload: resp
+                            payload: resp,
                         });
                     }),
                     catchError((err) =>
@@ -108,6 +98,82 @@ export class RejectApproveEffects {
         { dispatch: false }
     );
 
+    /**
+     *
+     * [REQUEST] Collection Payment Approval
+     * @memberof Reject Approve Effects
+     */
+
+    updateColPaymentApproval$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(RejectReasonActions.updateColPaymentApprovalRequest),
+            map((action) => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
+                    map((resp) => {
+                        return RejectReasonActions.updateColPaymentApprovalSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...body,
+                                },
+                            },
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            RejectReasonActions.updateColPaymentApprovalFailure({
+                                payload: { id: 'updateColPaymentApprovalFailure', errors: err },
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Credit Limit Store
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateColPaymentApprovalFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.fetchRejectReasonFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map((r) => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
@@ -116,7 +182,6 @@ export class RejectApproveEffects {
         private store: Store<collectionStatus.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
-        private _$collectionStatusApi: CollectionApiService,
         private _$rejectApproveApi: ApproveRejectApiService
     ) {}
 }

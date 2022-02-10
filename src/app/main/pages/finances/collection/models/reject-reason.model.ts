@@ -14,3 +14,38 @@ export class RejectReason {
         this.reasonName = reasonName;
     }
 }
+
+export class PaymApproval {
+        approvalStatus: string;
+        billingRef: string;
+        rejectedReasonId: string;
+}
+
+export interface IColPaymentApproval {
+    readonly id: number;
+    billingCode: string;
+    billingRef: string;
+    updatedAt: string;
+    approvalStatus: string;
+    reasonName: string;
+}
+
+export class ColPaymentApproval {
+    readonly id: number;
+    billingCode: string;
+    billingRef: string;
+    updatedAt: string;
+    approvalStatus: string;
+    reasonName: string;
+
+    constructor(data: IColPaymentApproval) {
+        const { id, billingCode, billingRef, updatedAt, approvalStatus, reasonName } = data;
+
+        this.id = id;
+        this.billingCode = billingCode;
+        this.billingRef = billingRef;
+        this.updatedAt = updatedAt;
+        this.approvalStatus = approvalStatus;
+        this.reasonName = reasonName;
+    }
+}
