@@ -137,8 +137,27 @@ export class RejectApproveEffects {
 
     /**
      *
-     * [UPDATE - FAILURE] Credit Limit Store
-     * @memberof CreditLimitBalanceEffects
+     * [UPDATE - SUCCESS] Collection Payment Approval
+     * @memberof Reject Approve Effects
+     */
+    updateColPaymentApprovalSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully Approved', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Collection Payment Approval
+     * @memberof Reject Approve Effects
      */
     updateColPaymentApprovalFailure$ = createEffect(
         () =>
