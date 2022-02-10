@@ -23,16 +23,17 @@ $red-color: #f0444c;
             padding: 3px 3px;
         }
     }
-    > .info {
-        > .mat-radio-button {
-             > .mat-radio-label {
-                > :host ::ng-deep .mat-radio-label-content {
-                    width: 100%;
-                }
-            }
-            
-        }
+    
+    .mat-form-field-flex{    
+        min-height: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding-top: 0.5em !important;
+        padding-bottom: 1em !important; 
+    }
 
+    > .info {
         .mat-form-field-outline,
         .mat-select-arrow-wrapper {
             visibility: hidden;
@@ -46,15 +47,6 @@ $red-color: #f0444c;
 
         .mat-form-field-prefix {
             top: 0;
-        }
-
-        .mat-form-field-infix {
-            display: flex;
-            height: 44px;
-            align-items: center;
-            padding-top: 0.5em !important;
-            padding-bottom: 1em !important;
-            // top: 0;
         }
 
         .mat-select-placeholder,
@@ -101,9 +93,11 @@ $red-color: #f0444c;
     .btn-submit:disabled {
         background: #FBC9CC;
     }
+
+    
 }
 
-::ng-deep .mat-radio-button{
-    width: -webkit-fill-available;
+.matRadioButtonRejectApprove{
+    width: -webkit-fill-available !important;
 }
 

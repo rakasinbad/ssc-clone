@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -19,6 +19,7 @@ interface Reason {
     templateUrl: './approve-reject-collection-billing.component.html',
     styleUrls: ['./approve-reject-collection-billing.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None
 })
 export class ApproveRejectCollectionBillingComponent implements OnInit {
     public title: string;
