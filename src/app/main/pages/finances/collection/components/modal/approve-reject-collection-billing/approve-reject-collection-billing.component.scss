@@ -94,6 +94,9 @@ $red-color: #f0444c;
         font-size: 12px;
         margin: 0px 8px;
     }
+    .btn-submit:disabled {
+        background: #FBC9CC;
+    }
 }
 
 ::ng-deep .mat-radio-button{

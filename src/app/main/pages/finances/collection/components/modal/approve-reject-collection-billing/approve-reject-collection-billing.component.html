@@ -1,7 +1,7 @@
 <div id="approve-reject" class="page-layout carded fullwidth tabbed inner-scroll">
     <div fxLayout="row" fxLayoutAlign="space-between center" style="margin-bottom: 5px">
         <h4 mat-dialog-title style="margin-bottom: 0px">{{ title || '-' }}</h4>
-        <button mat-icon-button class="close-button" mat-dialog-close>
+        <button mat-icon-button class="close-button" [mat-dialog-close]="{status: 'cancel'}">
             <mat-icon class="close-icon" color="black">close</mat-icon>
         </button>
     </div>
@@ -151,11 +151,11 @@
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" style="margin-bottom: 0px">
-        <button class="btn-cancel" mat-button mat-dialog-close>Cancel</button>
+        <button class="btn-cancel" mat-button [mat-dialog-close]="{status: 'cancel'}">Cancel</button>
         <button
             class="btn-submit"
             mat-button
-            [mat-dialog-close]="{ id: data?.id, reason: selectedValue, status: status }"
+            [mat-dialog-close]="{ id: data?.value?.data?.id, reason: selectedValue, status: status }"
             cdkFocusInitial
             (click)="onClickButton(type,status)"
             [disabled]="status == 'reject' && buttonRejectDisabled"

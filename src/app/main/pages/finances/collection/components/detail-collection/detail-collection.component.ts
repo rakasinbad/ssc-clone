@@ -111,7 +111,11 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
             },
         });
 
-        dialogApproved.afterClosed().subscribe((result) => {});
+        dialogApproved.afterClosed().subscribe((result) => {
+            if (result != undefined && result.status !== 'cancel') {
+                this.router.navigate(['/pages/finances/collection']);
+            }
+        });
     }
 
     btnReject(val) {
@@ -128,7 +132,11 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
             data: { title: 'Collection Reject', type: 'collection', status: 'reject', value: val },
         });
 
-        dialogReject.afterClosed().subscribe((result) => {});
+        dialogReject.afterClosed().subscribe((result) => {
+            if (result != undefined && result.status !== 'cancel') {
+                this.router.navigate(['/pages/finances/collection']);
+            }
+        });
     }
 
     statusLabel(status) {
