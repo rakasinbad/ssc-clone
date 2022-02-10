@@ -49,7 +49,11 @@ $red-color: #f0444c;
         }
 
         .mat-form-field-infix {
-            padding: 0 !important;
+            display: flex;
+            height: 44px;
+            align-items: center;
+            padding-top: 0.5em !important;
+            padding-bottom: 1em !important;
             // top: 0;
         }
 
