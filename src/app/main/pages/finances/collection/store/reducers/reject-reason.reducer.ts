@@ -44,6 +44,10 @@ export const reducer = createReducer(
         ...state,
         isLoading: false,
     })),
+    on(RejectReasonActions.updateBillingPaymentApprovalRequest, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
     on(RejectReasonActions.fetchRejectReasonFailure, (state) => ({
         ...state,
         isLoading: false,
@@ -52,10 +56,17 @@ export const reducer = createReducer(
         ...state,
         isLoading: false,
     })),
+    on(RejectReasonActions.updateBillingPaymentApprovalFailure, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
     on(RejectReasonActions.fetchRejectReasonSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.data.length })
     ),
     on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
+        adapter.updateOne(payload, { ...state, isLoading: false })
+    ),
+    on(RejectReasonActions.updateBillingPaymentApprovalSuccess, (state, { payload }) =>
         adapter.updateOne(payload, { ...state, isLoading: false })
     ),
     on(RejectReasonActions.clearState, RejectReasonActions.clearRejectReason, () => initialState)

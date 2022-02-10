@@ -4,6 +4,10 @@ import { Update } from '@ngrx/entity';
 import { RejectReason, ColPaymentApproval, PaymApproval } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
+// Collection
+// -----------------------------------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------
 // Fetch Reject Reason List
 // -----------------------------------------------------------------------------------------------------
 
@@ -40,6 +44,32 @@ export const updateColPaymentApprovalSuccess = createAction(
     '[Collection API] Update Collection Payment Approval Success',
     props<{ payload: Update<ColPaymentApproval> }>()
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Billing
+// -----------------------------------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------------------------------
+// Update Billing Payment Approval
+// -----------------------------------------------------------------------------------------------------
+
+export const updateBillingPaymentApprovalRequest = createAction(
+    '[Billing API] Update Billing Payment Approval Request',
+    props<{ payload: { body: PaymApproval; id: number } }>()
+);
+
+export const updateBillingPaymentApprovalFailure = createAction(
+    '[Billing API] Update Billing Payment Approval Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateBillingPaymentApprovalSuccess = createAction(
+    '[Billing API] Update Billing Payment Approval Success',
+    props<{ payload: Update<ColPaymentApproval> }>()
+);
+
+
+
 
 export const clearState = createAction('[Collection Page] Reset Collection Core State');
 

@@ -5,33 +5,25 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
     catchError,
-    exhaustMap,
     finalize,
     map,
     switchMap,
     tap,
-    withLatestFrom,
 } from 'rxjs/operators';
-import { CollectionApiService, ApproveRejectApiService } from '../../services';
+import { ApproveRejectApiService } from '../../services';
 import { RejectReasonActions } from '../actions';
-import {
-    BillingStatus,
-    CalculateCollectionStatusPayment,
-    CollectionStatus,
-    FinanceDetailBillingV1,
-    FinanceDetailCollection,
-} from '../../models';
 import * as collectionStatus from '../reducers';
 
 @Injectable()
 export class RejectApproveEffects {
+    // -----------------------------------------------------------------------------------------------------
+    // Collection
+    // -----------------------------------------------------------------------------------------------------
     /**
      *
      * [REQUEST] Reject Reason List Statuses
@@ -106,7 +98,9 @@ export class RejectApproveEffects {
 
     updateColPaymentApproval$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(RejectReasonActions.updateColPaymentApprovalRequest),
+            ofType(
+                RejectReasonActions.updateColPaymentApprovalRequest,
+            ),
             map((action) => action.payload),
             switchMap(({ body, id }) => {
                 return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
@@ -143,8 +137,11 @@ export class RejectApproveEffects {
     updateColPaymentApprovalSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
-                tap(() => {
+                ofType(
+                    RejectReasonActions.updateColPaymentApprovalSuccess,
+                ),
+                tap((resp) => {
+                    console.log("resp", resp)
                     this._$notice.open('Successfully Approved', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
@@ -192,6 +189,110 @@ export class RejectApproveEffects {
             ),
         { dispatch: false }
     );
+    // -----------------------------------------------------------------------------------------------------
+    // Billing
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Billing Payment Approval
+     * @memberof Reject Approve Effects
+     */
+
+    updateBillingPaymentApproval$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(
+                RejectReasonActions.updateBillingPaymentApprovalRequest,
+            ),
+            map((action) => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
+                    map((resp) => {
+                        return RejectReasonActions.updateBillingPaymentApprovalSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...body,
+                                },
+                            },
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            RejectReasonActions.updateBillingPaymentApprovalFailure({
+                                payload: { id: 'updateBillingPaymentApprovalFailure', errors: err },
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Billinglection Payment Approval
+     * @memberof Reject Approve Effects
+     */
+    updateBillingPaymentApprovalSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    RejectReasonActions.updateBillingPaymentApprovalSuccess,
+                ),
+                tap(() => {
+                    this._$notice.open('Billing Approved', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Billinglection Payment Approval
+     * @memberof Reject Approve Effects
+     */
+    updateBillingPaymentApprovalFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.fetchRejectReasonFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map((r) => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+
 
     constructor(
         private actions$: Actions,

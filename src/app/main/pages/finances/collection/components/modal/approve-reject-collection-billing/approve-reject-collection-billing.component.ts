@@ -90,9 +90,6 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     }
 
     onClickButton(type: string, status: string) {
-        // console.log('onClickButton', type, status);
-        // console.log('this.payload', this.payload);
-
         if (type == 'collection' && status == 'approved') {
             //fetch approve collection
             this.store.dispatch(
@@ -117,9 +114,25 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         }
         if (type == 'billing' && status == 'approved') {
             //fetch approve billing
+            this.store.dispatch(
+                RejectReasonActions.updateBillingPaymentApprovalRequest({
+                    payload: {
+                        id: this.data.value.collectionHistoryId,
+                        body: this.payload
+                    }
+                })
+            );
         }
         if (type == 'billing' && status == 'rejected') {
             //fetch rejected billing
+            this.store.dispatch(
+                RejectReasonActions.updateBillingPaymentApprovalRequest({
+                    payload: {
+                        id: this.data.value.collectionHistoryId,
+                        body: this.payload
+                    }
+                })
+            );
         }
     }
 
