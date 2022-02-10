@@ -33,7 +33,7 @@ export class FinanceDetailBillingV1 {
     }
 }
 
-interface ICollectionHistory {
+export interface ICollectionHistory {
     collectionHistoryId: number;
     collectionCode: number;
     billingDate: string;

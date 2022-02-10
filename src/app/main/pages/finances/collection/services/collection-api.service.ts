@@ -150,6 +150,14 @@ export class CollectionApiService {
 
         return this.http.get(`${this._url}/${payload.id}`);
     }
+
+    findByIdBillingUpdateMock(payload: {id: string}): Observable<any> {
+        this._url = this._$helper.handleApiMockRouter(
+            this._endpointCollection + '/web/payment-methods'
+        );
+
+        return this.http.get(`${this._url}/${payload.id}/a`);
+    }
     
     // get data collection photo by id
     findCollectionPhotoById(id: number): Observable<any> {

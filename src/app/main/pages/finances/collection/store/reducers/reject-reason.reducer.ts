@@ -66,8 +66,8 @@ export const reducer = createReducer(
     on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
         adapter.updateOne(payload, { ...state, isLoading: false })
     ),
-    on(RejectReasonActions.updateBillingPaymentApprovalSuccess, (state, { payload }) =>
-        adapter.updateOne(payload, { ...state, isLoading: false })
-    ),
+    on(RejectReasonActions.updateBillingPaymentApprovalSuccess, (state, { payload }) => {
+        return adapter.updateOne(payload, { ...state, isLoading: false })
+    }),
     on(RejectReasonActions.clearState, RejectReasonActions.clearRejectReason, () => initialState)
 );

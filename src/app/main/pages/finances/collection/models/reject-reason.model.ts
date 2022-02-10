@@ -18,7 +18,7 @@ export class RejectReason {
 export class PaymApproval {
         approvalStatus: string;
         billingRef: string;
-        rejectedReasonId: string;
+        // rejectedReasonId: string;
 }
 
 export interface IColPaymentApproval {

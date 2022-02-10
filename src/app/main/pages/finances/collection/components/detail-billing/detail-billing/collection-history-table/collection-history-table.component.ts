@@ -6,14 +6,15 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { Console } from 'console';
 import { Observable, Subscription } from 'rxjs';
 import { FinanceDetailBillingV1 } from '../../../../models';
+import { RejectReasonActions } from '../../../../store/actions';
 import * as billingStatus from '../../../../store/reducers';
-import { BillingDetailSelectors } from '../../../../store/selectors';
+import { BillingDetailSelectors, RejectReasonSelectors } from '../../../../store/selectors';
 import { ApproveRejectCollectionBillingComponent } from '../../../modal/approve-reject-collection-billing/approve-reject-collection-billing.component';
 
 @Component({
@@ -41,11 +42,13 @@ export class CollectionHistoryTableComponent implements OnInit {
     constructor(
         private store: Store<billingStatus.FeatureState>,
         private route: ActivatedRoute,
+        private router: Router,
         private dialog: MatDialog
     ) {}
     dataDetail$: Observable<FinanceDetailBillingV1>;
     dataDetail: FinanceDetailBillingV1;
     isLoading$: Observable<boolean>;
+    isLoadingRejectReason$: Observable<boolean>;
 
     public subs: Subscription;
 
@@ -69,12 +72,24 @@ export class CollectionHistoryTableComponent implements OnInit {
     }
 
     btnReject(val) {
+        //for fetch reject reason list
+        this.store.dispatch(
+            RejectReasonActions.fetchRejectReasonRequest({
+                payload: { type: 'collection' },
+            })
+        );
+        this.isLoadingRejectReason$ = this.store.select(RejectReasonSelectors.getLoadingState);
+
         const dialogReject = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
             data: { title: 'Reject Billing', type: 'billing', status: 'reject', value: val },
         });
 
-        dialogReject.afterClosed().subscribe((result) => {});
+        dialogReject.afterClosed().subscribe((result) => {
+            if (result != undefined && result.status !== 'cancel') {
+                // console.log("result", result)
+            }
+        });
     }
 
     numberFormat(num) {

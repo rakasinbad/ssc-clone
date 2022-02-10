@@ -7,6 +7,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { LogService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
+import * as fromRoot from '../../../../../../store/app.reducer'
 import { of } from 'rxjs';
 import {
     catchError,
@@ -14,9 +15,10 @@ import {
     map,
     switchMap,
     tap,
+    withLatestFrom,
 } from 'rxjs/operators';
-import { ApproveRejectApiService } from '../../services';
-import { RejectReasonActions } from '../actions';
+import { ApproveRejectApiService, CollectionApiService } from '../../services';
+import { BillingActions, RejectReasonActions } from '../actions';
 import * as collectionStatus from '../reducers';
 
 @Injectable()
@@ -205,14 +207,15 @@ export class RejectApproveEffects {
                 RejectReasonActions.updateBillingPaymentApprovalRequest,
             ),
             map((action) => action.payload),
-            switchMap(({ body, id }) => {
+            switchMap(({body, id}) => {
                 return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
-                    map((resp) => {
+                    map(() => {
                         return RejectReasonActions.updateBillingPaymentApprovalSuccess({
                             payload: {
                                 id,
                                 changes: {
-                                    ...body,
+                                    approvalStatus: body.approvalStatus,
+                                    billingRef: body.billingRef,
                                 },
                             },
                         });
@@ -248,6 +251,39 @@ export class RejectApproveEffects {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
                     });
+                }),
+                withLatestFrom(
+                    this.store.select(fromRoot.getRouterState),
+                    (action, router) => {
+                        return {
+                            id: router.state.params.id,
+                        }
+                    }
+                ),
+                switchMap(newPayload => {
+                    return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            return BillingActions.fetchBillingDetailUpdateSuccess({
+                                payload: {
+                                    id: newPayload.id,
+                                    changes: {
+                                        ...resp,
+                                    },
+                                },
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                BillingActions.fetchBillingDetailUpdateFailure({
+                                    payload: {
+                                        id: 'fetchBillingDetailUpdateFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
+                        )
+                    );
                 })
             ),
         { dispatch: false }
@@ -302,6 +338,7 @@ export class RejectApproveEffects {
         private store: Store<collectionStatus.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
-        private _$rejectApproveApi: ApproveRejectApiService
+        private _$rejectApproveApi: ApproveRejectApiService,
+        private _$collectionStatusApi: CollectionApiService
     ) {}
 }

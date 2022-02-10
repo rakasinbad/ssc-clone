@@ -78,13 +78,11 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                 this.payload = {
                     approvalStatus: 'rejected',
                     billingRef: '', // di set empty string
-                    rejectedReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
                 };
             } else {
                 this.payload = {
                     approvalStatus: 'rejected',
                     billingRef: '', // di set empty string
-                    rejectedReasonId: event.source.value, // int // approvalStatus = "rejected"  | default value , if not set
                 };
             }
         }
@@ -119,7 +117,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                 RejectReasonActions.updateBillingPaymentApprovalRequest({
                     payload: {
                         id: this.data.value.collectionHistoryId,
-                        body: this.payload
+                        body: {
+                            approvalStatus: 'approved',
+                            billingRef: '', // di set empty string
+                        }
                     }
                 })
             );
