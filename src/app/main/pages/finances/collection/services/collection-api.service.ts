@@ -19,7 +19,7 @@ export class CollectionApiService {
     private _urlBillingStatus: string;
 
     private readonly _endpointCollection = '/collection/v1';
-    
+
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
         this._urlCalculate = this._$helper.handleApiRouter(this._endpointCollection);
@@ -91,6 +91,11 @@ export class CollectionApiService {
     }
 
     findAllBilling<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        let urlMock =
+            'https://e7686c2e-1298-481b-a158-af31670f15b3.mock.pstmn.io' +
+            this._endpointCollection +
+            '/billing-collections?';
+
         this._urlBillingStatus = this._$helper.handleApiRouter(
             this._endpointCollection + '/web/payment-billings'
         );
@@ -120,18 +125,14 @@ export class CollectionApiService {
             newArg.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['searchBy'] && params['keyword'] !== '') {
+        if (params['searchBy'] && (params['keyword'] !== '' && params['keyword'] !== undefined)) {
             newArg.push({ key: 'searchBy', value: params['searchBy'] });
-        }
-
-        if (params['approvalStatus'] !== 'all') {
-            newArg.push({ key: 'approvalStatus', value: params['approvalStatus'] });
         }
 
         const newParams = this._$helper.handleParams(this._urlBillingStatus, params, ...newArg);
         delete newParams['paginate'];
 
-        return this.http.get<T>(this._urlBillingStatus, { params: newParams });
+        return this.http.get<T>(urlMock, { params: newParams });
     }
 
     //get data detail
@@ -143,17 +144,19 @@ export class CollectionApiService {
         return this.http.get(`${this._url}/${id}`);
     }
 
-    findByIdBilling(payload: {id: string}): Observable<any> {
+    findByIdBilling(payload: { id: string }): Observable<any> {
         this._url = this._$helper.handleApiMockRouter(
             this._endpointCollection + '/web/payment-methods'
         );
 
         return this.http.get(`${this._url}/${payload.id}`);
     }
-    
+
     // get data collection photo by id
     findCollectionPhotoById(id: number): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/payment-method/images');
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/payment-method/images'
+        );
 
         return this.http.get(`${this._url}/${id}`);
     }
