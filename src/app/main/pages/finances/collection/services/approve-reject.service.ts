@@ -31,13 +31,18 @@ export class ApproveRejectApiService {
 
     }
 
-    patchRejectApprove(body: any, id: number, opts?: IAPIOptions): Observable<any> {
+    patchRejectApprove(body: any, id: number, type: string, opts?: IAPIOptions): Observable<any> {
         // this._url = this._$helper.handleApiRouter(
         //     this._endpointCollection + '/internal/payment-approval'
         // );
         let headers: HttpHeaders;
-
-        let url = this._urlMock + '/internal/payment-approval'
+        let url: string;
+        
+        if (type == 'collection') {
+            url = this._urlMock + '/internal/payment-method-approval'
+        } else {
+            url = this._urlMock + '/internal/payment-approval'
+        }
         return this.http.patch(`${url}/${id}`, body, { headers });
     }
 

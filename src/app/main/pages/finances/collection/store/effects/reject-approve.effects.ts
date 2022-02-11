@@ -105,7 +105,7 @@ export class RejectApproveEffects {
             ),
             map((action) => action.payload),
             switchMap(({ body, id }) => {
-                return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
+                return this._$rejectApproveApi.patchRejectApprove(body, id, 'collection').pipe(
                     map((resp) => {
                         return RejectReasonActions.updateColPaymentApprovalSuccess({
                             payload: {
@@ -208,7 +208,7 @@ export class RejectApproveEffects {
             ),
             map((action) => action.payload),
             switchMap(({body, id}) => {
-                return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
+                return this._$rejectApproveApi.patchRejectApprove(body, id, 'billing').pipe(
                     map(() => {
                         return RejectReasonActions.updateBillingPaymentApprovalSuccess({
                             payload: {
