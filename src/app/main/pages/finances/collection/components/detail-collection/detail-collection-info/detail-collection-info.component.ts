@@ -40,12 +40,13 @@ export class DetailCollectionInfoComponent implements OnInit, OnDestroy {
         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
     }
 
+    
     numberFormat(num) {
         if (num) {
-            return num
-                .toFixed(2)
-                .replace(',', '.')
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+            return 'Rp' + num
+                .toFixed(0)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
 
         return '-';

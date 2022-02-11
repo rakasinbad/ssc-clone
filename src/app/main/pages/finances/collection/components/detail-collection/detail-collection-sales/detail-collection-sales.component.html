@@ -127,7 +127,7 @@
         class="box-info"
         *ngIf="
             (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
-                ?.code !== 'good_return'
+                ?.code !== 'sales_return'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
