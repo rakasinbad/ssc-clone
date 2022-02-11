@@ -3,11 +3,11 @@ import { FormControl } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, Subscription } from 'rxjs';
-import { FinanceDetailBillingV1, RejectReason, PaymApproval } from '../../../models';
+import { PaymColApprove, RejectReason, PaymApproval } from '../../../models';
 import { RejectReasonSelectors, CollectionPhotoSelectors } from '../../../store/selectors';
 import * as fromRejectReason from '../../../store/reducers';
 import { Store } from '@ngrx/store';
-import { CollectionActions, RejectReasonActions } from '../../../store/actions';
+import { RejectReasonActions } from '../../../store/actions';
 
 interface Reason {
     id: number;
@@ -27,6 +27,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     public status: string;
     public selectedValue: string;
     public payload: PaymApproval | null;
+    public payloadCollection: PaymColApprove | null;
     public buttonRejectDisabled: boolean;
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
@@ -77,9 +78,9 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.selectedValue = event.source.value;
             this.buttonRejectDisabled = false;
             if (type === 'collection') {
-                this.payload = {
+                this.payloadCollection = {
                     approvalStatus: 'rejected',
-                    billingRef: '', // di set empty string
+                    collectionRef: '', // di set empty string
                 };
             } else {
                 this.payload = {
@@ -97,7 +98,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                 RejectReasonActions.updateColPaymentApprovalRequest({
                     payload: {
                         id: this.data.value.data.id,
-                        body: this.payload
+                        body: {
+                            approvalStatus: 'approved',
+                            collectionRef: '', // di set empty string
+                        }
                     }
                 })
             );
@@ -105,10 +109,13 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         if (type == 'collection' && status == 'reject') {
             //fetch rejected collection
             this.store.dispatch(
-                RejectReasonActions.updateColPaymentApprovalRequest({
+                RejectReasonActions.updateColPaymentRejectRequest({
                     payload: {
                         id: this.data.value.data.id,
-                        body: this.payload
+                        body: {
+                            ...this.payloadCollection,
+                            rejectedReasonId: Number(this.selectedValue)
+                        }
                     }
                 })
             );
