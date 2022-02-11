@@ -229,10 +229,6 @@ export class CollectionEffects {
 
                 const newParams = {};
 
-//                 supplierId: number,
-// searchBy: enum of "store_name", "invoice_number", "total_invoice_number", "amount_paid", "collection_date", "invoice_due_date"   
-// keyword:
-
                 if (supplierId) {
                     newParams['supplierId'] = supplierId;
                     newParams['limit'] = params.payload.limit;
