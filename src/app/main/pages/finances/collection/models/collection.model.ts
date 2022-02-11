@@ -339,4 +339,11 @@ export class FinanceDetailCollection {
         this.paymentCollectionMethod = paymentCollectionMethod;
         this.billingPayments = billingPayments;
     }
+
+    static patch(body: CollectionDetailOptions): CollectionDetailOptions {
+        return body;
+    }
+
 }
+
+export type CollectionDetailOptions = Partial<FinanceDetailCollection>;

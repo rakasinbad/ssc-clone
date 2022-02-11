@@ -18,14 +18,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
 import { FinanceDetailCollection } from '../../models';
-import { CollectionActions } from '../../store/actions';
+import { CollectionActions, RejectReasonActions } from '../../store/actions';
 import * as collectionStatus from '../../store/reducers';
-import { CollectionDetailSelectors } from '../../store/selectors';
+import { CollectionDetailSelectors, RejectReasonSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Router } from '@angular/router';
 import { ApproveRejectCollectionBillingComponent } from '../modal/approve-reject-collection-billing/approve-reject-collection-billing.component';
 import * as StatusPaymentLabel from '../../constants';
 import { Subscription } from 'rxjs';
+import { RejectReason } from '../../models';
+import { FeatureState as CollectionCoreState } from '../../store/reducers';
 
 @Component({
     selector: 'app-detail-collection',
@@ -38,11 +40,13 @@ import { Subscription } from 'rxjs';
 export class DetailCollectionComponent implements OnInit, OnDestroy {
     detailCollection$: Observable<FinanceDetailCollection>;
     isLoading$: Observable<boolean>;
+    isLoadingRejectReason$: Observable<boolean>;
 
     public idDetail: number;
     public dataDetail: FinanceDetailCollection;
     private subs: Subscription;
-    
+    rejectReasonList$: Observable<Array<RejectReason>>;
+
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -65,7 +69,8 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         private location: Location,
         private store: Store<collectionStatus.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private CollectionStore: Store<CollectionCoreState>
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -87,6 +92,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this._initPage(LifecyclePlatform.OnDestroy);
+        this.clearRejectReasonState();
     }
 
     onClickBack(): void {
@@ -97,22 +103,39 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
     btnApproved(val) {
         const dialogApproved = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: {title: 'Collection Approve', type:'collection', status: 'approved', value: val},
-            
+            data: {
+                title: 'Collection Approve',
+                type: 'collection',
+                status: 'approved',
+                value: val,
+            },
         });
 
         dialogApproved.afterClosed().subscribe((result) => {
+            if (result != undefined && result.status !== 'cancel') {
+                this.router.navigate(['/pages/finances/collection']);
+            }
         });
     }
 
     btnReject(val) {
+        //for fetch reject reason list
+        this.store.dispatch(
+            RejectReasonActions.fetchRejectReasonRequest({
+                payload: { type: 'collection' },
+            })
+        );
+        this.isLoadingRejectReason$ = this.store.select(RejectReasonSelectors.getLoadingState);
+
         const dialogReject = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: {title: 'Collection Reject', type:'collection', status: 'reject', value: val},
-            
+            data: { title: 'Collection Reject', type: 'collection', status: 'reject', value: val },
         });
 
         dialogReject.afterClosed().subscribe((result) => {
+            if (result != undefined && result.status !== 'cancel') {
+                this.router.navigate(['/pages/finances/collection']);
+            }
         });
     }
 
@@ -168,10 +191,13 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
                 this.detailCollection$ = this.store.select(
                     CollectionDetailSelectors.getSelectedItem
                 );
+                // this.dataSource$ = this.CollectionStore.select(CollectionSelectors.selectAll);
 
-                this.subs = this.detailCollection$.subscribe(res => {
+                // this.rejectReasonList$ = this.store.select(RejectReasonSelectors.selectAll);
+
+                this.subs = this.detailCollection$.subscribe((res) => {
                     this.dataDetail = res;
-                })
+                });
 
                 const parameter: IQueryParams = {};
                 parameter['splitRequest'] = true;
@@ -181,7 +207,12 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
                 );
 
                 this.isLoading$ = this.store.select(CollectionDetailSelectors.getLoadingState);
+
                 break;
         }
     }
+
+    clearRejectReasonState = (): void => {
+        this.store.dispatch(RejectReasonActions.clearRejectReason());
+    };
 }

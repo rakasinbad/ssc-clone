@@ -7,8 +7,13 @@ app-collection-history-table {
     overflow: auto !important;
     #billing-collection-history {
         .mat-headline {
-            font-size: 18px;
+            font-family: Inter;
+            font-style: normal;
             font-weight: 600;
+            font-size: 16px;
+            line-height: 22px;
+            letter-spacing: -0.01em;
+            color: #677a8e;
         }
         .collection-history-table {
             flex: 1 1 auto;
@@ -26,6 +31,15 @@ app-collection-history-table {
                 .mat-header-row {
                     pointer-events: none;
                 }
+            }
+
+            .text-collectionCode {
+                font-style: normal;
+                font-weight: normal;
+                font-size: 14px;
+                line-height: 20px;
+                letter-spacing: -0.01em;
+                color: #237ae1;
             }
 
             .mat-header-row,
@@ -90,49 +104,55 @@ app-collection-history-table {
             }
 
             .mat-column-finance-collection-code {
-                flex: 0 1 180px;
-                min-width: 180px;
+                flex: 0 1 110px;
+                min-width: 110px;
             }
 
             .mat-column-finance-billing-date {
                 flex: 0 1 110px;
                 min-width: 110px;
+                justify-content: center;
             }
 
             .mat-column-finance-paid-amount {
                 flex: 0 0 110px;
                 min-width: 110px;
+                justify-content: center;
             }
 
             .mat-column-finance-method-payment {
-                flex: 0 1 180px;
-                min-width: 180px;
+                flex: 0 1 110px;
+                min-width: 110px;
             }
 
             .mat-column-finance-sales-rep-name {
-                // flex: 0 1 240px;
                 flex: 0 1 110px;
                 min-width: 110px;
+                justify-content: center;
             }
 
             .mat-column-finance-collection-status {
                 flex: 0 1 180px;
                 min-width: 180px;
+                justify-content: center;
             }
 
             .mat-column-finance-billing-status {
                 flex: 0 1 110px;
                 min-width: 110px;
+                justify-content: center;
             }
 
             .mat-column-finance-reason {
                 flex: 0 1 200px;
                 min-width: 200px;
+                justify-content: center;
             }
 
             .mat-column-finance-updatedby {
                 flex: 0 1 110px;
                 min-width: 110px;
+                justify-content: center;
             }
 
             .mat-column-finance-action {
@@ -181,4 +201,8 @@ app-collection-history-table {
 
 mat-menu-panel {
     min-height: 52px;
+}
+
+.mat-tooltip.tooltip-hidden {
+    display: none;
 }

@@ -5,6 +5,7 @@ import {
     BillingStatus,
     FinanceDetailBillingV1,
 } from '../../models';
+import { Update } from '@ngrx/entity';
 
 const featureKey = `[Billing API]`;
 
@@ -50,6 +51,16 @@ export const fetchBillingDetailSuccess = createAction(
 export const setRefreshStatus = createAction(
     `${featureKey} Set Refresh Status`,
     props<{ payload: boolean }>()
+);
+
+export const fetchBillingDetailUpdateFailure = createAction(
+    `${featureKey} Fetch Detail Billing Update Request Failure`,
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchBillingDetailUpdateSuccess = createAction(
+    `${featureKey} Fetch Detail Billing Update Request Success`,
+    props<{ payload: Update<FinanceDetailBillingV1> }>()
 );
 
 export const clearState = createAction(`${featureKey} Reset Billing Core State`);

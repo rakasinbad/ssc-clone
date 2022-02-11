@@ -7,6 +7,7 @@ import * as fromCollectionDetail from './collection-detail.reducer';
 import * as fromBillingDetail from './billing-detail.reducer';
 import * as fromCollectionPhoto from './collection-photo.reducer';
 import * as fromCollectionType from './collection-type.reducer';
+import * as fromRejectReason from './reject-reason.reducer';
 
 // Keyname for core reducer
 export const featureKey = 'collectionMenus';
@@ -23,6 +24,7 @@ export interface State {
     [fromBillingDetail.featureKey]: fromBillingDetail.State;
     [fromCollectionPhoto.featureKey]: fromCollectionPhoto.State;
     [fromCollectionType.featureKey]: fromCollectionType.State;
+    [fromRejectReason.featureKey]: fromRejectReason.State;
 }
 
 /**
@@ -52,5 +54,7 @@ export function reducers(state: State | undefined, action: Action): State {
         [fromCollectionDetail.featureKey]: fromCollectionDetail.reducer,
         [fromCollectionPhoto.featureKey]: fromCollectionPhoto.reducer,
         [fromCollectionType.featureKey]: fromCollectionType.reducer,
+        [fromRejectReason.featureKey]: fromRejectReason.reducer,
+
     })(state, action);
 }

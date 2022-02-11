@@ -23,6 +23,16 @@ $red-color: #f0444c;
             padding: 3px 3px;
         }
     }
+    
+    .mat-form-field-flex{    
+        min-height: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding-top: 0.5em !important;
+        padding-bottom: 1em !important; 
+    }
+
     > .info {
         .mat-form-field-outline,
         .mat-select-arrow-wrapper {
@@ -37,11 +47,6 @@ $red-color: #f0444c;
 
         .mat-form-field-prefix {
             top: 0;
-        }
-
-        .mat-form-field-infix {
-            padding: 0 !important;
-            // top: 0;
         }
 
         .mat-select-placeholder,
@@ -85,4 +90,14 @@ $red-color: #f0444c;
         font-size: 12px;
         margin: 0px 8px;
     }
+    .btn-submit:disabled {
+        background: #FBC9CC;
+    }
+
+    
 }
+
+.matRadioButtonRejectApprove{
+    width: -webkit-fill-available !important;
+}
+

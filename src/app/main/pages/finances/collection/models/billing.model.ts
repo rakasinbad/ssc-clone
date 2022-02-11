@@ -33,7 +33,7 @@ export class FinanceDetailBillingV1 {
     }
 }
 
-interface ICollectionHistory {
+export interface ICollectionHistory {
     collectionHistoryId: number;
     collectionCode: number;
     billingDate: string;
@@ -44,7 +44,8 @@ interface ICollectionHistory {
     billingStatus: string;
     reason: string;
     updatedBy: string;
-    approvedDate: string;
+    billingApprovedDate: string;
+    collectionApprovedDate: string;
 }
 //V1 Response
 interface IFinanceDetailBillingV1 {

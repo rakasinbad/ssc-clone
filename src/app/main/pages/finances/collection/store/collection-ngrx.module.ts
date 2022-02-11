@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
-import {CollectionEffects} from './effects';
+import {CollectionEffects, RejectApproveEffects} from './effects';
 import * as fromCollections from './reducers';
 
 @NgModule({
@@ -10,7 +10,8 @@ import * as fromCollections from './reducers';
         // Third Party (Ngrx: https://ngrx.io)
         StoreModule.forFeature(fromCollections.featureKey, fromCollections.reducers),
         EffectsModule.forFeature([
-            CollectionEffects
+            CollectionEffects,
+            RejectApproveEffects
         ])
     ]
 })
