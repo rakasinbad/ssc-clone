@@ -51,6 +51,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         this.status = this.data.status;
         this.buttonRejectDisabled = true;
         this.rejectReasonList$ = this.store.select(RejectReasonSelectors.selectAll);
+        this.isLoading$ = this.store.select(RejectReasonSelectors.getLoadingState)
+
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
         });

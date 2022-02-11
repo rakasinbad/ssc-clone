@@ -73,8 +73,11 @@
                         <span>
                             {{ row?.collectionStatus || '-' }}
                         </span>
-                        <span>
-                            {{ (row?.approvedDate | date: 'dd MMM yyyy') || '-' }}
+                        <span *ngIf="row?.collectionApprovedDate">
+                            {{ (row?.collectionApprovedDate | date: 'dd MMM yyyy') || '-' }}
+                        </span>
+                        <span *ngIf="row?.collectionRejectedDate">
+                            {{ (row?.collectionApprovedDate | date: 'dd MMM yyyy') || '-' }}
                         </span>
                     </div>
                 </mat-cell>
@@ -84,9 +87,17 @@
             <ng-container matColumnDef="finance-billing-status">
                 <mat-header-cell *matHeaderCellDef> Billing Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p style="word-break: break-word" class="text-{{ row?.billingStatus }}">
-                        {{ row?.billingStatus || '-' }}
-                    </p>
+                    <div style="display: inline-grid" class="text-{{ row?.billingStatus }}">
+                        <span>
+                            {{ row?.billingStatus || '-' }}
+                        </span>
+                        <span *ngIf="row?.billingApprovedDate">
+                            {{ (row?.billingApprovedDate | date: 'dd MMM yyyy') || '-' }}
+                        </span>
+                        <span *ngIf="row?.billingRejectedDate">
+                            {{ (row?.billingRejectedDate | date: 'dd MMM yyyy') || '-' }}
+                        </span>
+                    </div>
                 </mat-cell>
             </ng-container>
 
