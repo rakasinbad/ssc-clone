@@ -21,6 +21,12 @@ export class PaymApproval {
         // rejectedReasonId: string;
 }
 
+export class PaymReject {
+    approvalStatus: string;
+    billingRef: string;
+    rejectedReasonId: string;
+}
+
 export interface IColPaymentApproval {
     readonly id: number;
     billingCode: string;
@@ -49,3 +55,5 @@ export class ColPaymentApproval {
         this.reasonName = reasonName;
     }
 }
+
+export class ColPaymentReject extends ColPaymentApproval{}

@@ -264,14 +264,18 @@ export class RejectApproveEffects {
                     return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
                         catchOffline(),
                         map((resp) => {
-                            return BillingActions.fetchBillingDetailUpdateSuccess({
-                                payload: {
-                                    id: newPayload.id,
-                                    changes: {
-                                        ...resp,
+                            if(resp && newPayload){
+                                return BillingActions.fetchBillingDetailUpdateSuccess({
+                                    payload: {
+                                        id: newPayload.id,
+                                        changes: {
+                                            ...resp,
+                                        },
                                     },
-                                },
-                            });
+                                });
+                            }else{
+                                return UiActions.resetHighlightRow();
+                            }
                         }),
                         catchError((err) =>
                             of(
@@ -282,7 +286,71 @@ export class RejectApproveEffects {
                                     },
                                 })
                             )
-                        )
+                        ),
+                        finalize(() => {
+                            this.store.dispatch(UiActions.resetHighlightRow());
+                        })
+                    );
+                })
+            ),
+        { dispatch: false }
+    );
+
+      /**
+     *
+     * [UPDATE - SUCCESS] Billinglection Payment Reject
+     * @memberof Reject Approve Effects
+     */
+       updateBillingPaymentRejectSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    RejectReasonActions.updateBillingPaymentRejectRequest,
+                ),
+                tap(() => {
+                    this._$notice.open('Billing Rejected', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                }),
+                withLatestFrom(
+                    this.store.select(fromRoot.getRouterState),
+                    (action, router) => {
+                        return {
+                            id: router.state.params.id,
+                        }
+                    }
+                ),
+                switchMap(newPayload => {
+                    return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            if(resp && newPayload){
+                                return BillingActions.fetchBillingDetailUpdateSuccess({
+                                    payload: {
+                                        id: newPayload.id,
+                                        changes: {
+                                            ...resp,
+                                        },
+                                    },
+                                });
+                            }else{
+                                return UiActions.resetHighlightRow();
+                            }
+                        }),
+                        catchError((err) =>
+                            of(
+                                BillingActions.fetchBillingDetailUpdateFailure({
+                                    payload: {
+                                        id: 'fetchBillingDetailUpdateFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
+                        ),
+                        finalize(() => {
+                            this.store.dispatch(UiActions.resetHighlightRow());
+                        })
                     );
                 })
             ),

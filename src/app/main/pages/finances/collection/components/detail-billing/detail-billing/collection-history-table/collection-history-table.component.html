@@ -176,6 +176,12 @@
                 [fxShow]="((dataDetail$ | async)?.data?.collectionHistory?.length || 0) == 0"
             ></mat-footer-row>
         </mat-table>
+        <div
+            class="loader-content"
+            *ngIf="(isLoading$ | async)"
+        >
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
 
         <br />
     </div>

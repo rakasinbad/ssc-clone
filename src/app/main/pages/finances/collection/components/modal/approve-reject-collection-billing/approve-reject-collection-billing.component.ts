@@ -125,13 +125,16 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                 })
             );
         }
-        if (type == 'billing' && status == 'rejected') {
+        if (type == 'billing' && status == 'reject') {
             //fetch rejected billing
             this.store.dispatch(
-                RejectReasonActions.updateBillingPaymentApprovalRequest({
+                RejectReasonActions.updateBillingPaymentRejectRequest({
                     payload: {
                         id: this.data.value.collectionHistoryId,
-                        body: this.payload
+                        body: {
+                            ...this.payload,
+                            rejectedReasonId: this.selectedValue
+                        }
                     }
                 })
             );

@@ -56,7 +56,7 @@ export class CollectionHistoryTableComponent implements OnInit {
         const { id } = this.route.snapshot.params;
         this.dataDetail$ = this.store.select(BillingDetailSelectors.getSelectedItem, id);
         this.isLoading$ = this.store.select(BillingDetailSelectors.getLoadingState);
-
+        
         this.subs = this.dataDetail$.subscribe((res) => {
             this.dataDetail = res;
         });

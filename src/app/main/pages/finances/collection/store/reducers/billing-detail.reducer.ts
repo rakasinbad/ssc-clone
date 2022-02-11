@@ -59,7 +59,6 @@ export const reducer = createReducer(
         adapterDetail.addOne(payload, { ...state, isLoading: false })
     ),
     on(BillingActions.fetchBillingDetailUpdateSuccess, (state, { payload }) => {
-        console.log("state, { payload }1", state, { payload })
         return adapterDetail.updateOne(payload, { ...state, isLoading: false })
     }),
     on(
