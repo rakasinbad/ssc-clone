@@ -233,7 +233,6 @@ export class CollectionEffects {
                     newParams['supplierId'] = supplierId;
                     newParams['limit'] = params.payload.limit;
                     newParams['skip'] = params.payload.skip;
-                    newParams['approvalStatus'] = params.payload.approvalStatus;
                     newParams['searchBy'] = params.payload.searchBy;
                     newParams['keyword'] = params.payload.keyword;
                 }
