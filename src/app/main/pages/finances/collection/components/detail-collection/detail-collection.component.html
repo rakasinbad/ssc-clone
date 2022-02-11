@@ -65,7 +65,9 @@
                         fxLayoutAlign="start center"
                         *ngIf="
                             (detailCollection$ | async)?.data.paymentCollectionMethod
-                                .approvalStatus == 'pending'
+                                .approvalStatus == 'pending' && 
+                            (detailCollection$ | async)?.data.paymentCollectionMethod
+                                .paymentCollectionType.code !== 'sales_return'
                         "
                     >
                         <button class="btn-rejected" (click)="btnReject(dataDetail)">Reject</button>
