@@ -73,12 +73,8 @@ export class CollectionApiService {
             newArg.push({ key: 'limit', value: params.limit });
         }
 
-        if (params['keyword'] !== '') {
-            newArg.push({ key: 'keyword', value: params['keyword'] });
-        }
-
-        if (params['searchBy'] && params['keyword'] !== '') {
-            newArg.push({ key: 'searchBy', value: params['searchBy'] });
+        if (params['searchBy'] && (params['keyword'] !== '' && params['keyword'] !== undefined)) {
+            newArg.push({ key: params['searchBy'], value: params['keyword']  });
         }
 
         if (params['approvalStatus'] !== 'all') {
