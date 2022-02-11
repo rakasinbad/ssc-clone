@@ -111,14 +111,6 @@ interface IFinanceBillingStatus {
     amountPaid: number
     collectionDate: string;
     invoiceDueDate: string;
-
-    // billing: billingModels;
-    // billingPaymentCode: string;
-    // createdAt: string;
-    // paidAmount: number;
-    // paidByCollectionMethod: number;
-    // paymentCollectionMethod: financeCollectionMethod;
-    // stampNominal: number;
 }
 
 export class CollectionStatus {
