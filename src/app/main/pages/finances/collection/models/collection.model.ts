@@ -105,15 +105,12 @@ interface billingModels {
 
 interface IFinanceBillingStatus {
     id: number;
-    approvalReason: string;
-    approvalStatus: string;
-    billing: billingModels;
-    billingPaymentCode: string;
-    createdAt: string;
-    paidAmount: number;
-    paidByCollectionMethod: number;
-    paymentCollectionMethod: financeCollectionMethod;
-    stampNominal: number;
+    storeName: string;
+    invoiceNumber: string;
+    invoiceAmount: number;
+    amountPaid: number
+    collectionDate: string;
+    invoiceDueDate: string;
 }
 
 export class CollectionStatus {
@@ -177,42 +174,33 @@ export class CollectionStatus {
 
 export class BillingStatus {
     id: number;
-    approvalReason: string;
-    approvalStatus: string;
-    billing: billingModels;
-    billingPaymentCode: string;
-    createdAt: string;
-    paidAmount: number;
-    paidByCollectionMethod: number;
-    paymentCollectionMethod: financeCollectionMethod;
-    stampNominal: number;
+    storeName: string;
+    invoiceNumber: string;
+    invoiceAmount: number;
+    amountPaid: number;
+    collectionDate: string;
+    invoiceDueDate: string;
 
     constructor(data: IFinanceBillingStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            stampNominal,
-            paidByCollectionMethod,
-            paidAmount,
-            billingPaymentCode,
-            createdAt,
-            approvalStatus,
-            approvalReason,
-            paymentCollectionMethod,
-            billing,
+            storeName,
+            invoiceNumber,
+            invoiceAmount,
+            amountPaid,
+            collectionDate,
+            invoiceDueDate,
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.stampNominal = stampNominal;
-        this.approvalReason = approvalReason;
-        this.paidByCollectionMethod = paidByCollectionMethod;
-        this.paidAmount = paidAmount;
-        this.billingPaymentCode = billingPaymentCode;
-        this.createdAt = createdAt;
-        this.approvalStatus = approvalStatus;
-        this.paymentCollectionMethod = paymentCollectionMethod;
-        this.billing = billing;
+        this.storeName = storeName;
+        this.invoiceNumber = invoiceNumber;
+        this.invoiceAmount = invoiceAmount;
+        this.amountPaid = amountPaid;
+        this.collectionDate = collectionDate;
+        this.invoiceDueDate = invoiceDueDate;
     }
 }
 

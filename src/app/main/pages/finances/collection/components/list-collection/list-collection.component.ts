@@ -319,20 +319,8 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
     numberFormat(num) {
         if (num) {
-            return num
-                .toFixed(2)
-                .replace('.', ',')
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        }
-
-        return '-';
-    }
-
-    numberFormatFromString(num) {
-        let value = parseInt(num);
-        if (num) {
-            return value
-                .toFixed(2)
+            return 'Rp' + num
+                .toFixed(0)
                 .replace('.', ',')
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }

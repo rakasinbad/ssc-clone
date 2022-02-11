@@ -4,9 +4,9 @@ export enum SearchByListCollection {
     // TOTAL_AMOUNT = 'totalAmount',
     // COL_DATE = 'colDate',
     // COL_DUE_DATE = 'colDueDate',
-    SALES_REP_NAME = 'salesmanName',
-    COL_METHOD = 'collectionMethod',
-    COL_STATUS = 'collectionStatus',
+    SALES_REP_NAME = 'salesRep',
+    COL_METHOD = 'collectionMethodId',
+    COL_STATUS = 'approvalStatus',
 }
 
 export enum SearchByListBilling {
