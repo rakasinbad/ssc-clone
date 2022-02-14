@@ -21,13 +21,11 @@ export class ApproveRejectApiService {
     }
 
     getRejectReasonList(type: string): Observable<any> {
-        // this._url = this._$helper.handleApiRouter(
-        //     this._endpointCollection + '/reject-reasons?type=' + type
-        // );
-        // return this.http.get(`${this._url}`);
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/reject-reasons?type=' + type
+        );
 
-        //using mock
-        return this.http.get(`${this._urlMock}`+ '/reject-reasons?'+type);
+        return this.http.get(`${this._url}`);
 
     }
 

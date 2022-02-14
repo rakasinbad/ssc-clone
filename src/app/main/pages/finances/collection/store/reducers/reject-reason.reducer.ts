@@ -60,9 +60,11 @@ export const reducer = createReducer(
         ...state,
         isLoading: false,
     })),
-    on(RejectReasonActions.fetchRejectReasonSuccess, (state, { payload }) =>
-        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.data.length })
-    ),
+    on(RejectReasonActions.fetchRejectReasonSuccess, (state, { payload }) =>{
+        let arrayForSort = [...payload.data]
+        let sortResp = arrayForSort.length > 0 ? arrayForSort.sort((a,b) => {return  a.id - b.id}) : []//sort response by id
+        return adapter.addAll(sortResp, { ...state, isLoading: false, total: sortResp.length })
+    }),
     on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
         adapter.updateOne(payload, { ...state, isLoading: false })
     ),
