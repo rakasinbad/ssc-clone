@@ -87,13 +87,8 @@ export class CollectionApiService {
     }
 
     findAllBilling<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        let urlMock =
-            'https://e7686c2e-1298-481b-a158-af31670f15b3.mock.pstmn.io' +
-            this._endpointCollection +
-            '/billing-collections?';
-
         this._urlBillingStatus = this._$helper.handleApiRouter(
-            this._endpointCollection + '/web/payment-billings'
+            this._endpointCollection + '/billing-collections'
         );
         const newArg = [];
 
@@ -128,7 +123,7 @@ export class CollectionApiService {
         const newParams = this._$helper.handleParams(this._urlBillingStatus, params, ...newArg);
         delete newParams['paginate'];
 
-        return this.http.get<T>(urlMock, { params: newParams });
+        return this.http.get<T>(this._urlBillingStatus, { params: newParams });
     }
 
     //get data detail
