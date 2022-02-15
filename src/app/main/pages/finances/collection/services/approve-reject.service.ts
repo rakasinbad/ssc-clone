@@ -2,9 +2,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
+import { PaymReject } from '../models';
 
 export interface IAPIOptions {
-    header_X_Type: string;
+    header_X_Type?: string;
+    header_X_Internal_API_Key?: string;
 }
 
 @Injectable({
@@ -14,7 +16,6 @@ export class ApproveRejectApiService {
     private _url: string;
 
     private readonly _endpointCollection = '/collection/v1';
-    private readonly _urlMock = 'https://e7686c2e-1298-481b-a158-af31670f15b3.mock.pstmn.io/collection/v1'
 
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
@@ -29,14 +30,20 @@ export class ApproveRejectApiService {
 
     }
 
-    patchRejectApprove(body: any, id: number, opts?: IAPIOptions): Observable<any> {
-        // this._url = this._$helper.handleApiRouter(
-        //     this._endpointCollection + '/internal/payment-approval'
-        // );
+    patchRejectApprove(body : any, id:any,  opts?: IAPIOptions): Observable<any> {
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/internal/payment-approval'
+        );
+
         let headers: HttpHeaders;
 
-        let url = this._urlMock + '/internal/payment-approval'
-        return this.http.patch(`${url}/${id}`, body, { headers });
+        if (opts.header_X_Internal_API_Key) {
+            headers = new HttpHeaders({
+                'X-Internal-API-Key': opts.header_X_Internal_API_Key,
+            });
+        }
+
+        return this.http.patch(`${this._url}/${id}`,body,{headers});
     }
 
 }

@@ -56,6 +56,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
         });
+
+        
     }
 
     numberFormat(num) {
@@ -122,7 +124,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                         body: {
                             approvalStatus: 'approved',
                             billingRef: '', // di set empty string
-                        }
+                        },
+                        opts: { header_X_Internal_API_Key: '12345678900123456789' },
                     }
                 })
             );
@@ -136,7 +139,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                         body: {
                             ...this.payload,
                             rejectedReasonId: this.selectedValue
-                        }
+                        },
+                        opts: { header_X_Internal_API_Key: '12345678900123456789' },
                     }
                 })
             );
