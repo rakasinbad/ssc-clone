@@ -266,6 +266,7 @@ export interface paymentCollectionMethodModels {
     salesRepCode: string;
     salesRepName: string;
     updatedBy: string;
+    updateDate: string;
 }
 
 export interface stampDetailModels {
