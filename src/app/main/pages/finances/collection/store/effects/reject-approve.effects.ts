@@ -136,7 +136,6 @@ export class RejectApproveEffects {
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
                 tap((resp) => {
-                    console.log('resp', resp);
                     this._$notice.open('Collection Approved', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
@@ -232,7 +231,6 @@ export class RejectApproveEffects {
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
                 tap((resp) => {
-                    console.log('resp', resp);
                     this._$notice.open('Collection Rejected', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
