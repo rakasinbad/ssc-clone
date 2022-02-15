@@ -97,7 +97,7 @@
         class="box-info"
         *ngIf="
             (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
-                ?.name == 'Kerjasama Promosi'
+                ?.code == 'promo'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">

@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
 import { CollectionStatus, FinanceDetailCollection } from '../../models';
-import { CollectionActions } from '../actions';
+import { CollectionActions, RejectReasonActions } from '../actions';
 
 // Keyname for reducer
 export const featureKey = 'collectionStatus';
@@ -38,6 +38,14 @@ export const reducer = createReducer(
             isLoading: true,
         })
     ),
+    on(RejectReasonActions.updateColPaymentApprovalRequest, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
+    on(RejectReasonActions.updateColPaymentRejectRequest, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
     on(
         CollectionActions.fetchCollectionStatusFailure,
         CollectionActions.updateCollectionStatusFailure,
@@ -46,6 +54,14 @@ export const reducer = createReducer(
             isLoading: false,
         })
     ),
+    on(RejectReasonActions.updateColPaymentApprovalFailure, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
+    on(RejectReasonActions.updateColPaymentRejectFailure, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
     on(CollectionActions.fetchCollectionStatusSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
@@ -53,5 +69,11 @@ export const reducer = createReducer(
         ...state,
         needRefresh: payload,
     })),
+    on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
+    adapter.updateOne(payload, { ...state, isLoading: false })
+    ),
+    on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
+        adapter.updateOne(payload, { ...state, isLoading: false })
+    ),
     on(CollectionActions.clearState, () => initialState)
 );

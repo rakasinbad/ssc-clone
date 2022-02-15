@@ -1,7 +1,15 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { Update } from '@ngrx/entity';
-import { ColPaymentApproval, PaymApproval, PaymReject, ColPaymentReject, PaymColApprove, PaymColReject } from '../../models';
+import {
+    ColPaymentApproval,
+    PaymApproval,
+    PaymReject,
+    ColPaymentReject,
+    PaymColApprove,
+    PaymColReject,
+    CollectionStatus,
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Collection
@@ -42,27 +50,26 @@ export const updateColPaymentApprovalFailure = createAction(
 
 export const updateColPaymentApprovalSuccess = createAction(
     '[Collection API] Update Collection Payment Approval Success',
-    props<{ payload: Update<ColPaymentApproval> }>()
+    props<{ payload: Update<CollectionStatus> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
 // Update Collection Payment Reject
 // -----------------------------------------------------------------------------------------------------
 
-
 export const updateColPaymentRejectRequest = createAction(
-    '[Collection API] Update Collection Payment Approval Request',
+    '[Collection API] Update Collection Payment Reject Request',
     props<{ payload: { body: PaymColReject; id: number } }>()
 );
 
 export const updateColPaymentRejectFailure = createAction(
-    '[Collection API] Update Collection Payment Approval Failure',
+    '[Collection API] Update Collection Payment Reject Failure',
     props<{ payload: ErrorHandler }>()
 );
 
 export const updateColPaymentRejectSuccess = createAction(
-    '[Collection API] Update Collection Payment Approval Success',
-    props<{ payload: Update<ColPaymentApproval> }>()
+    '[Collection API] Update Collection Payment Reject Success',
+    props<{ payload: Update<CollectionStatus> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -106,8 +113,6 @@ export const updateBillingPaymentRejectSuccess = createAction(
     '[Billing API] Update Billing Payment Reject Success',
     props<{ payload: Update<ColPaymentReject> }>()
 );
-
-
 
 export const clearState = createAction('[Collection Page] Reset Collection Core State');
 

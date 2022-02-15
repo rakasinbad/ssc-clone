@@ -202,7 +202,10 @@ export class RejectApproveEffects {
                             payload: {
                                 id,
                                 changes: {
-                                    ...body,
+                                    approvalStatus: resp.payload.changes.approvalStatus,
+                                    collectionRef: resp.payload.changes.collectionRef,
+                                    collectionCode: resp.payload.changes.collectionCode,
+                                    updatedAt: resp.payload.changes.updatedAt
                                 },
                             },
                         });
