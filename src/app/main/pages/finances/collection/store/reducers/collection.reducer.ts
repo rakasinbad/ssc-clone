@@ -72,7 +72,7 @@ export const reducer = createReducer(
     on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
     adapter.updateOne(payload, { ...state, isLoading: false })
     ),
-    on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
+    on(RejectReasonActions.updateColPaymentRejectSuccess, (state, { payload }) =>
         adapter.updateOne(payload, { ...state, isLoading: false })
     ),
     on(CollectionActions.clearState, () => initialState)
