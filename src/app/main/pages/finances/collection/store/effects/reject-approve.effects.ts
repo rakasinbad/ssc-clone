@@ -244,7 +244,7 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(
-                    RejectReasonActions.updateBillingPaymentApprovalSuccess,
+                    RejectReasonActions.updateBillingPaymentApprovalRequest,
                 ),
                 tap(() => {
                     this._$notice.open('Billing Approved', 'success', {
@@ -257,22 +257,40 @@ export class RejectApproveEffects {
                     (action, router) => {
                         return {
                             id: router.state.params.id,
+                            body: action.payload
                         }
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
+                    return this._$rejectApproveApi.patchRejectApprove(newPayload.body, newPayload.id).pipe(
                         catchOffline(),
                         map((resp) => {
                             if(resp && newPayload){
-                                return BillingActions.fetchBillingDetailUpdateSuccess({
-                                    payload: {
-                                        id: newPayload.id,
-                                        changes: {
-                                            ...resp,
-                                        },
-                                    },
-                                });
+                                return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload.id).pipe(
+                                    map((resp) => {
+                                        return BillingActions.fetchBillingDetailUpdateSuccess({
+                                            payload: {
+                                                id: newPayload.id,
+                                                changes: {
+                                                    ...resp,
+                                                },
+                                            },
+                                        });
+                                    }),
+                                    catchError((err) =>
+                                        of(
+                                            BillingActions.fetchBillingDetailUpdateFailure({
+                                                payload: {
+                                                    id: 'fetchBillingDetailUpdateFailure',
+                                                    errors: err,
+                                                },
+                                            })
+                                        )
+                                    ),
+                                    finalize(() => {
+                                        this.store.dispatch(UiActions.resetHighlightRow());
+                                    })
+                                )
                             }else{
                                 return UiActions.resetHighlightRow();
                             }
@@ -318,22 +336,40 @@ export class RejectApproveEffects {
                     (action, router) => {
                         return {
                             id: router.state.params.id,
+                            body: action.payload
                         }
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
+                    return this._$rejectApproveApi.patchRejectApprove(newPayload.body, newPayload.id).pipe(
                         catchOffline(),
                         map((resp) => {
                             if(resp && newPayload){
-                                return BillingActions.fetchBillingDetailUpdateSuccess({
-                                    payload: {
-                                        id: newPayload.id,
-                                        changes: {
-                                            ...resp,
-                                        },
-                                    },
-                                });
+                                return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload.id).pipe(
+                                    map((resp) => {
+                                        return BillingActions.fetchBillingDetailUpdateSuccess({
+                                            payload: {
+                                                id: newPayload.id,
+                                                changes: {
+                                                    ...resp,
+                                                },
+                                            },
+                                        });
+                                    }),
+                                    catchError((err) =>
+                                        of(
+                                            BillingActions.fetchBillingDetailUpdateFailure({
+                                                payload: {
+                                                    id: 'fetchBillingDetailUpdateFailure',
+                                                    errors: err,
+                                                },
+                                            })
+                                        )
+                                    ),
+                                    finalize(() => {
+                                        this.store.dispatch(UiActions.resetHighlightRow());
+                                    })
+                                )
                             }else{
                                 return UiActions.resetHighlightRow();
                             }
