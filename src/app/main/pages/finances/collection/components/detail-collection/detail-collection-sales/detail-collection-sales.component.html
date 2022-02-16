@@ -105,7 +105,7 @@
 
             <div class="description">
                 <ng-container *ngIf="collectionId; else promotionLetterNoData">
-                    <ng-container *ngIf="!(isLoadingPhotoSkp$ | async); else loadingSpinSkp">
+                    <!-- <ng-container *ngIf="!(isLoadingPhotoSkp$ | async); else loadingSpinSkp"> -->
                         <a
                             style="color: #2097f6"
                             href="javascript:void(0)"
@@ -113,10 +113,10 @@
                         >
                             View Photo
                         </a>
-                    </ng-container>
+                    <!-- </ng-container>
                     <ng-template #loadingSpinSkp>
                         <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
-                    </ng-template>
+                    </ng-template> -->
                 </ng-container>
                 <ng-template #promotionLetterNoData> - </ng-template>
             </div>
@@ -135,7 +135,7 @@
 
             <div class="description">
                 <ng-container *ngIf="collectionId; else collPhotoNoData">
-                    <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <!-- <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin"> -->
                         <a
                             style="color: #2097f6"
                             href="javascript:void(0)"
@@ -143,10 +143,10 @@
                         >
                             View Photo
                         </a>
-                    </ng-container>
+                    <!-- </ng-container>
                     <ng-template #loadingSpin>
                         <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
-                    </ng-template>
+                    </ng-template> -->
                 </ng-container>
                 <ng-template #collPhotoNoData> - </ng-template>
             </div>
