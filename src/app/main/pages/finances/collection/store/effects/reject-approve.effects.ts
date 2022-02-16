@@ -214,7 +214,7 @@ export class RejectApproveEffects {
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$rejectApproveApi.patchRejectApprove(newPayload.body.body, newPayload.id, newPayload.body.opts).pipe(
+                    return this._$rejectApproveApi.patchRejectApprove(newPayload.body.body, newPayload.id).pipe(
                         tap(() => {
                             this._$notice.open('Billing Approved', 'success', {
                                 verticalPosition: 'bottom',
@@ -255,9 +255,9 @@ export class RejectApproveEffects {
                         }),
                         catchError((err) =>
                             of(
-                                BillingActions.fetchBillingDetailUpdateFailure({
+                                RejectReasonActions.updateBillingPaymentApprovalFailure({
                                     payload: {
-                                        id: 'fetchBillingDetailUpdateFailure',
+                                        id: 'updateBillingPaymentApprovalFailure',
                                         errors: err,
                                     },
                                 })
@@ -292,7 +292,7 @@ export class RejectApproveEffects {
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$rejectApproveApi.patchRejectApprove(newPayload.body.body, newPayload.id, newPayload.body.opts).pipe(
+                    return this._$rejectApproveApi.patchRejectApprove(newPayload.body.body, newPayload.id).pipe(
                         tap(() => {
                             this._$notice.open('Billing Rejected', 'error', {
                                 verticalPosition: 'bottom',
@@ -331,16 +331,17 @@ export class RejectApproveEffects {
                                 return UiActions.resetHighlightRow();
                             }
                         }),
-                        catchError((err) =>
-                            of(
-                                BillingActions.fetchBillingDetailUpdateFailure({
+                        catchError((err) =>{
+                            console.log("err1", err)
+                            return of(
+                                RejectReasonActions.updateBillingPaymentRejectFailure({
                                     payload: {
-                                        id: 'fetchBillingDetailUpdateFailure',
+                                        id: 'updateBillingPaymentRejectFailure',
                                         errors: err,
                                     },
                                 })
                             )
-                        ),
+                        }),
                         finalize(() => {
                             this.store.dispatch(UiActions.resetHighlightRow());
                         })
@@ -364,6 +365,7 @@ export class RejectApproveEffects {
                 ),
                 map((action) => action.payload),
                 tap((resp) => {
+                    console.log("resp", resp)
                     let message;
 
                     if (resp.errors.code === 406) {

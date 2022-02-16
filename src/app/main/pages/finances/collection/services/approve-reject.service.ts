@@ -6,7 +6,6 @@ import { PaymReject } from '../models';
 
 export interface IAPIOptions {
     header_X_Type?: string;
-    header_X_Internal_API_Key?: string;
 }
 
 @Injectable({
@@ -30,20 +29,12 @@ export class ApproveRejectApiService {
 
     }
 
-    patchRejectApprove(body : any, id:any,  opts?: IAPIOptions): Observable<any> {
+    patchRejectApprove(body : any, id:any): Observable<any> {
         this._url = this._$helper.handleApiRouter(
-            this._endpointCollection + '/internal/payment-approval'
+            this._endpointCollection + '/payment-approval'
         );
 
-        let headers: HttpHeaders;
-
-        if (opts.header_X_Internal_API_Key) {
-            headers = new HttpHeaders({
-                'X-Internal-API-Key': opts.header_X_Internal_API_Key,
-            });
-        }
-
-        return this.http.patch(`${this._url}/${id}`,body,{headers});
+        return this.http.patch(`${this._url}/${id}`,body);
     }
 
 }

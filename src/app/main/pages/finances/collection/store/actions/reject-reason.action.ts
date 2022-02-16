@@ -56,7 +56,7 @@ export const updateColPaymentApprovalSuccess = createAction(
 
 export const updateBillingPaymentApprovalRequest = createAction(
     '[Billing API] Update Billing Payment Approval Request',
-    props<{ payload: { body: PaymApproval; id: number, opts?: IAPIOptions } }>()
+    props<{ payload: { body: PaymApproval; id: number} }>()
 );
 
 export const updateBillingPaymentApprovalFailure = createAction(
@@ -75,7 +75,7 @@ export const updateBillingPaymentApprovalSuccess = createAction(
 
 export const updateBillingPaymentRejectRequest = createAction(
     '[Billing API] Update Billing Payment Reject Request',
-    props<{ payload: { body: PaymReject; id: number, opts?: IAPIOptions } }>()
+    props<{ payload: { body: PaymReject; id: number } }>()
 );
 
 export const updateBillingPaymentRejectFailure = createAction(
