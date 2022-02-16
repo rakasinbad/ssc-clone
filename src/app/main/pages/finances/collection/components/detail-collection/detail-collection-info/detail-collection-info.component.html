@@ -21,7 +21,7 @@
                 <div class="label">Collection Reference Number</div>
 
                 <div class="description">
-                    {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.collectionRef || '-' }}
+                    {{ (detailCollection$ | async)?.data?.paymentCollectionMethod?.refNo || '-' }}
                 </div>
             </div>
         </div>
