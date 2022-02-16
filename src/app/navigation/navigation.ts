@@ -131,6 +131,14 @@ export const navigation: IFuseNavigation[] = [
                 privilages: 'FINANCE.CL.READ',
                 url: '/pages/finances/collection',
             },
+            {
+                id: 'collection-request',
+                title: 'Collection Request',
+                translate: 'NAV.COLLECTION_REQUEST.TITLE',
+                type: 'item',
+                privilages: 'FINANCE.CL.READ',
+                url: '/pages/finances/collection-request',
+            },
         ],
     },
     {

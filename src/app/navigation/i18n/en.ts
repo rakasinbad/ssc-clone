@@ -63,6 +63,9 @@ export const locale = {
             PAYMENT_STATUS: {
                 TITLE: 'Payment Status'
             },
+            COLLECTION_REQUEST: {
+                TITLE: 'Collection Request'
+            },
             SET_BANK: {
                 TITLE: 'Set Bank'
             },
