@@ -105,16 +105,16 @@
 
             <div class="description">
                 <ng-container *ngIf="collectionId; else promotionLetterNoData">
-                    <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <ng-container *ngIf="!(isLoadingPhotoSkp$ | async); else loadingSpinSkp">
                         <a
                             style="color: #2097f6"
                             href="javascript:void(0)"
-                            (click)="onClickViewPromotion()"
+                            (click)="onClickViewPromotion('promo')"
                         >
                             View Photo
                         </a>
                     </ng-container>
-                    <ng-template #loadingSpin>
+                    <ng-template #loadingSpinSkp>
                         <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
                     </ng-template>
                 </ng-container>
@@ -139,7 +139,7 @@
                         <a
                             style="color: #2097f6"
                             href="javascript:void(0)"
-                            (click)="onClickViewImage()"
+                            (click)="onClickViewImage('other')"
                         >
                             View Photo
                         </a>
