@@ -37,7 +37,7 @@
             <!-- CONTENT -->
             <div class="content">
                 <div class="tab-content pl-16 pr-16">
-                    <app-collection-history-table></app-collection-history-table>
+                    <app-collection-history-table [idDetail]="(detailBilling$ | async)?.data?.id || '-'"></app-collection-history-table>
                 </div>
             </div>
             <br />

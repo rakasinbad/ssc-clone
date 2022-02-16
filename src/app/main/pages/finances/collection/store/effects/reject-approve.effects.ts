@@ -365,7 +365,6 @@ export class RejectApproveEffects {
                 ),
                 map((action) => action.payload),
                 tap((resp) => {
-                    console.log("resp", resp)
                     let message;
 
                     if (resp.errors.code === 406) {

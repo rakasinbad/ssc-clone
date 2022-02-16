@@ -56,7 +56,6 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
         });
-
         
     }
 
@@ -120,7 +119,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateBillingPaymentApprovalRequest({
                     payload: {
-                        id: this.data.value.collectionHistoryId,
+                        id: this.data.value,
                         body: {
                             approvalStatus: 'approved',
                             billingRef: '', // di set empty string
@@ -130,11 +129,12 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             );
         }
         if (type == 'billing' && status == 'reject') {
+            // idDetail
             //fetch rejected billing
             this.store.dispatch(
                 RejectReasonActions.updateBillingPaymentRejectRequest({
                     payload: {
-                        id: this.data.value.collectionHistoryId,
+                        id: this.data.value,
                         body: {
                             ...this.payload,
                             rejectedReasonId: this.selectedValue
