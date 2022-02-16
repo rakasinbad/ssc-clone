@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { Update } from '@ngrx/entity';
-import { RejectReason, ColPaymentApproval, PaymApproval, PaymReject, ColPaymentReject } from '../../models';
+import { RejectReason, ColPaymentApproval, PaymApproval, ColPaymentReject } from '../../models';
 import { IAPIOptions } from '../../services/approve-reject.service';
 
 // -----------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ export const updateBillingPaymentApprovalSuccess = createAction(
 
 export const updateBillingPaymentRejectRequest = createAction(
     '[Billing API] Update Billing Payment Reject Request',
-    props<{ payload: { body: PaymReject; id: number } }>()
+    props<{ payload: { body: PaymApproval; id: number } }>()
 );
 
 export const updateBillingPaymentRejectFailure = createAction(

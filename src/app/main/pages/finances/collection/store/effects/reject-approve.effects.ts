@@ -332,7 +332,6 @@ export class RejectApproveEffects {
                             }
                         }),
                         catchError((err) =>{
-                            console.log("err1", err)
                             return of(
                                 RejectReasonActions.updateBillingPaymentRejectFailure({
                                     payload: {

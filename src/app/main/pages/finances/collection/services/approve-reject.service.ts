@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
-import { PaymReject } from '../models';
 
 export interface IAPIOptions {
     header_X_Type?: string;
