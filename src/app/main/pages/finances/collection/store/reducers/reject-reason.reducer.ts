@@ -60,6 +60,10 @@ export const reducer = createReducer(
         ...state,
         isLoading: false,
     })),
+    on(RejectReasonActions.updateBillingPaymentRejectFailure, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
     on(RejectReasonActions.fetchRejectReasonSuccess, (state, { payload }) =>{
         let arrayForSort = [...payload.data]
         let sortResp = arrayForSort.length > 0 ? arrayForSort.sort((a,b) => {return  a.id - b.id}) : []//sort response by id

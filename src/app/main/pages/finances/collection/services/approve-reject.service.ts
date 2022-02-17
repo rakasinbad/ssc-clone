@@ -15,6 +15,7 @@ export class ApproveRejectApiService {
 
     private readonly _endpointCollection = '/collection/v1';
 
+
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
     }
@@ -28,7 +29,15 @@ export class ApproveRejectApiService {
 
     }
 
-    patchRejectApprove(body : any, id:any): Observable<any> {
+    patchRejectApproveCollection(body : any, id:any): Observable<any> {
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/payment-approval'
+        );
+
+        return this.http.patch(`${this._url}/${id}`,body);
+    }
+
+    patchRejectApproveBilling(body : any, id:any): Observable<any> {
         this._url = this._$helper.handleApiRouter(
             this._endpointCollection + '/payment-approval'
         );
