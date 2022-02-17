@@ -49,7 +49,7 @@ export class RejectApproveEffects {
                     )
                 );
             })
-        )
+        ),{dispatch: false}
     );
 
     @Effect() fetchRejectReasonFailure$ = createEffect(
@@ -124,7 +124,7 @@ export class RejectApproveEffects {
                     })
                 );
             })
-        )
+        ),{dispatch: false}
     );
 
     /**
@@ -146,38 +146,6 @@ export class RejectApproveEffects {
         { dispatch: false }
     );
 
-    @Effect() fetchBillingDetailUpdateAfterApproveSuccess$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(
-                    BillingActions.fetchBillingDetailUpdateAfterApproveSuccess,
-                ),
-                tap((resp) => {
-                    this._$notice.open('Billing Approved', 'success', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
-                    });
-                })
-            ),
-        { dispatch: false }
-    );
-
-    @Effect() fetchBillingDetailUpdateAfterRejectSuccess$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(
-                    BillingActions.fetchBillingDetailUpdateAfterRejectSuccess,
-                ),
-                tap((resp) => {
-                    
-                    this._$notice.open('Billing Rejected', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
-                    });
-                })
-            ),
-        { dispatch: false }
-    );
 
     /**
      *
@@ -252,7 +220,7 @@ export class RejectApproveEffects {
                     })
                 );
             })
-        )
+        ),{dispatch: false}
     );
 
     /**
@@ -317,6 +285,38 @@ export class RejectApproveEffects {
     // Billing
     // -----------------------------------------------------------------------------------------------------
 
+    @Effect() fetchBillingDetailUpdateAfterApproveSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    BillingActions.fetchBillingDetailUpdateAfterApproveSuccess,
+                ),
+                tap((resp) => {
+                    this._$notice.open('Billing Approved', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    @Effect() fetchBillingDetailUpdateAfterRejectSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    BillingActions.fetchBillingDetailUpdateAfterRejectSuccess,
+                ),
+                tap((resp) => {
+                    
+                    this._$notice.open('Billing Rejected', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
     /**
      *
      * [UPDATE - REQUEST] Billing Payment Approval
