@@ -101,7 +101,7 @@ export class RejectApproveEffects {
             ofType(RejectReasonActions.updateColPaymentApprovalRequest),
             map((action) => action.payload),
             switchMap(({ body, id }) => {
-                return this._$rejectApproveApi.patchRejectApproveBilling(body, id).pipe(
+                return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
                     map((resp) => {
                         return RejectReasonActions.updateColPaymentApprovalSuccess({
                             payload: {
