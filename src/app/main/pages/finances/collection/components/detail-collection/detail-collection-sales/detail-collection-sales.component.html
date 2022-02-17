@@ -97,7 +97,7 @@
         class="box-info"
         *ngIf="
             (detailCollection$ | async)?.data?.paymentCollectionMethod.paymentCollectionType
-                ?.name == 'Kerjasama Promosi'
+                ?.code == 'promo'
         "
     >
         <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
@@ -105,18 +105,18 @@
 
             <div class="description">
                 <ng-container *ngIf="collectionId; else promotionLetterNoData">
-                    <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <!-- <ng-container *ngIf="!(isLoadingPhotoSkp$ | async); else loadingSpinSkp"> -->
                         <a
                             style="color: #2097f6"
                             href="javascript:void(0)"
-                            (click)="onClickViewPromotion()"
+                            (click)="onClickViewPromotion('promo')"
                         >
                             View Photo
                         </a>
-                    </ng-container>
-                    <ng-template #loadingSpin>
+                    <!-- </ng-container>
+                    <ng-template #loadingSpinSkp>
                         <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
-                    </ng-template>
+                    </ng-template> -->
                 </ng-container>
                 <ng-template #promotionLetterNoData> - </ng-template>
             </div>
@@ -135,18 +135,18 @@
 
             <div class="description">
                 <ng-container *ngIf="collectionId; else collPhotoNoData">
-                    <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin">
+                    <!-- <ng-container *ngIf="!(isLoadingPhoto$ | async); else loadingSpin"> -->
                         <a
                             style="color: #2097f6"
                             href="javascript:void(0)"
-                            (click)="onClickViewImage()"
+                            (click)="onClickViewImage('other')"
                         >
                             View Photo
                         </a>
-                    </ng-container>
+                    <!-- </ng-container>
                     <ng-template #loadingSpin>
                         <mat-spinner color="accent" strokeWidth="2" [diameter]="16"></mat-spinner>
-                    </ng-template>
+                    </ng-template> -->
                 </ng-container>
                 <ng-template #collPhotoNoData> - </ng-template>
             </div>

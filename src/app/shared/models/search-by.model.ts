@@ -10,12 +10,12 @@ export enum SearchByListCollection {
 }
 
 export enum SearchByListBilling {
-    STORE_NAME = 'storeName',
-    INVOICE_NUMBER = 'invoiceNumber',
-    INVOICE_AMOUNT = 'invoiceAmount',
-    AMOUNT_PAID = 'amountPaid',
-    COL_DATE = 'collectionDate',
-    INVOICE_DUE_DATE = 'invoiceDueDate',
+    STORE_NAME = 'store_name',
+    INVOICE_NUMBER = 'invoice_number',
+    INVOICE_AMOUNT = 'total_invoice_number',
+    AMOUNT_PAID = 'amount_paid',
+    COL_DATE = 'collection_date',
+    INVOICE_DUE_DATE = 'invoice_due_date',
 }
 
 export enum SearchByList {

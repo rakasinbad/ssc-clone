@@ -98,7 +98,7 @@
 
                 <div class="description">
                     {{
-                        ((detailCollection$ | async)?.data?.paymentCollectionMethod?.date
+                        ((detailCollection$ | async)?.data?.paymentCollectionMethod?.updatedDate
                             | date: 'dd MMM yyyy') || '-'
                     }}
                 </div>

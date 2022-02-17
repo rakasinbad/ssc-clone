@@ -40,19 +40,11 @@ export const reducer = createReducer(
         isLoading: true,
         type: payload.type,
     })),
-    on(RejectReasonActions.updateColPaymentApprovalRequest, (state) => ({
-        ...state,
-        isLoading: false,
-    })),
     on(RejectReasonActions.updateBillingPaymentApprovalRequest, (state) => ({
         ...state,
         isLoading: false,
     })),
     on(RejectReasonActions.fetchRejectReasonFailure, (state) => ({
-        ...state,
-        isLoading: false,
-    })),
-    on(RejectReasonActions.updateColPaymentApprovalFailure, (state) => ({
         ...state,
         isLoading: false,
     })),
@@ -69,9 +61,6 @@ export const reducer = createReducer(
         let sortResp = arrayForSort.length > 0 ? arrayForSort.sort((a,b) => {return  a.id - b.id}) : []//sort response by id
         return adapter.addAll(sortResp, { ...state, isLoading: false, total: sortResp.length })
     }),
-    on(RejectReasonActions.updateColPaymentApprovalSuccess, (state, { payload }) =>
-        adapter.updateOne(payload, { ...state, isLoading: false })
-    ),
     on(RejectReasonActions.updateBillingPaymentApprovalSuccess, (state, { payload }) => {
         return adapter.updateOne(payload, { ...state, isLoading: false })
     }),

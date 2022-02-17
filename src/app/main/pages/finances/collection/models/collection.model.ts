@@ -46,6 +46,8 @@ interface IFinanceCollectionStatus {
     orderCode: Array<any>;
     orderRef: Array<any>;
     reason: string;
+    collectionRef: string;
+    updatedAt: string;
 }
 
 interface userModels {
@@ -130,6 +132,8 @@ export class CollectionStatus {
     orderCode: Array<any>;
     orderRef: Array<any>;
     reason: string;
+    collectionRef: string;
+    updatedAt: string;
 
     constructor(data: IFinanceCollectionStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
@@ -150,6 +154,8 @@ export class CollectionStatus {
             orderCode,
             orderRef,
             reason,
+            collectionRef,
+            updatedAt
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
@@ -169,6 +175,8 @@ export class CollectionStatus {
         this.orderCode = orderCode;
         this.orderRef = orderRef;
         this.reason = reason;
+        this.collectionRef = collectionRef || null;
+        this.updatedAt = updatedAt || null;
     }
 }
 
@@ -257,6 +265,8 @@ export interface paymentCollectionMethodModels {
     suplierResponse: supplierResponModels;
     salesRepCode: string;
     salesRepName: string;
+    updatedBy: string;
+    updateDate: string;
 }
 
 export interface stampDetailModels {

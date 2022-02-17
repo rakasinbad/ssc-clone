@@ -7,14 +7,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import {
-    CalculateOrderApiService,
-    DownloadApiService,
-    LogService,
-    NoticeService,
-    UploadApiService,
-} from 'app/shared/helpers';
-import { UiActions } from 'app/shared/store/actions';
+import { LogService, NoticeService } from 'app/shared/helpers';
 import { of } from 'rxjs';
 import {
     catchError,
@@ -28,7 +21,12 @@ import {
 
 import { CollectionApiService } from '../../services';
 import { BillingActions, CollectionActions } from '../actions';
-import { BillingStatus, CalculateCollectionStatusPayment, CollectionStatus, FinanceDetailBillingV1 } from '../../models';
+import {
+    BillingStatus,
+    CalculateCollectionStatusPayment,
+    CollectionStatus,
+    FinanceDetailBillingV1,
+} from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
@@ -315,7 +313,7 @@ export class CollectionEffects {
      * [REQUEST] Detail Billing
      * @memberof CollectionEffects
      */
-     fetchBillingDetailRequest$ = createEffect(() =>
+    fetchBillingDetailRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(BillingActions.fetchBillingDetailRequest),
             map((action) => action.payload),
@@ -496,7 +494,7 @@ export class CollectionEffects {
      * [REQUEST] Detail Collection
      * @memberof CollectionEffects
      */
-     fetchCollectionDetailRequest$ = createEffect(() =>
+    fetchCollectionDetailRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchCollectionDetailRequest),
             map((action) => action.payload),
@@ -571,7 +569,7 @@ export class CollectionEffects {
                     catchOffline(),
                     map((resp) => {
                         return CollectionActions.fetchCollectionPhotoSuccess({
-                            payload: resp
+                            payload: resp,
                         });
                     }),
                     catchError((err) =>

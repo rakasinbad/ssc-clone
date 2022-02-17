@@ -31,7 +31,7 @@ export class ApproveRejectApiService {
 
     patchRejectApproveCollection(body : any, id:any): Observable<any> {
         this._url = this._$helper.handleApiRouter(
-            this._endpointCollection + '/payment-approval'
+            this._endpointCollection + '/payment-method-approval'
         );
 
         return this.http.patch(`${this._url}/${id}`,body);

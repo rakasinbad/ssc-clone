@@ -727,6 +727,10 @@ export class HelperService {
             label: 'Invoice Amount',
         },
         {
+            id: SearchByListBilling.AMOUNT_PAID,
+            label: 'Amount Paid',
+        },
+        {
             id: SearchByListBilling.COL_DATE,
             label: 'Collection Date',
         },
