@@ -14,6 +14,7 @@ import { ApproveRejectApiService, CollectionApiService } from '../../services';
 import { BillingActions, RejectReasonActions } from '../actions';
 import * as collectionStatus from '../reducers';
 import { ErrorHandler } from 'app/shared/models/global.model';
+import { ColPaymentApproval } from '../../models';
 
 @Injectable()
 export class RejectApproveEffects {
@@ -32,7 +33,7 @@ export class RejectApproveEffects {
             switchMap((payload) => {
                 return this._$rejectApproveApi.getRejectReasonList(payload.type).pipe(
                     catchOffline(),
-                    map((resp) => {
+                    map((resp: {data: ColPaymentApproval[]}) => {
                         return RejectReasonActions.fetchRejectReasonSuccess({
                             payload: resp,
                         });
