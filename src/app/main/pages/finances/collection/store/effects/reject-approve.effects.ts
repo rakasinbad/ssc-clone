@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
@@ -20,6 +20,8 @@ import {
 import { ApproveRejectApiService, CollectionApiService } from '../../services';
 import { BillingActions, RejectReasonActions } from '../actions';
 import * as collectionStatus from '../reducers';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { ColPaymentApproval } from '../../models';
 
 @Injectable()
 export class RejectApproveEffects {
@@ -31,14 +33,14 @@ export class RejectApproveEffects {
      * [REQUEST] Reject Reason List Statuses
      * @memberof Reject Approve Effects
      */
-    fetchRejectReasonRequest$ = createEffect(() =>
+     @Effect() fetchRejectReasonRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(RejectReasonActions.fetchRejectReasonRequest),
             map((action) => action.payload),
             switchMap((payload) => {
                 return this._$rejectApproveApi.getRejectReasonList(payload.type).pipe(
                     catchOffline(),
-                    map((resp) => {
+                    map((resp: {data: ColPaymentApproval[]}) => {
                         return RejectReasonActions.fetchRejectReasonSuccess({
                             payload: resp,
                         });
@@ -55,10 +57,10 @@ export class RejectApproveEffects {
                     )
                 );
             })
-        )
+        ),{ dispatch: false }
     );
 
-    fetchRejectReasonFailure$ = createEffect(
+    @Effect() fetchRejectReasonFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.fetchRejectReasonFailure),
@@ -98,14 +100,14 @@ export class RejectApproveEffects {
      * @memberof Reject Approve Effects
      */
 
-    updateColPaymentApproval$ = createEffect(() =>
+     @Effect() updateColPaymentApproval$ = createEffect(() => 
         this.actions$.pipe(
             ofType(
                 RejectReasonActions.updateColPaymentApprovalRequest,
             ),
             map((action) => action.payload),
             switchMap(({ body, id }) => {
-                return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
+                return this._$rejectApproveApi.patchRejectApproveBilling(body, id).pipe(
                     map((resp) => {
                         return RejectReasonActions.updateColPaymentApprovalSuccess({
                             payload: {
@@ -128,7 +130,7 @@ export class RejectApproveEffects {
                     })
                 );
             })
-        )
+        ),{ dispatch: false }
     );
 
     /**
@@ -136,15 +138,47 @@ export class RejectApproveEffects {
      * [UPDATE - SUCCESS] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-    updateColPaymentApprovalSuccess$ = createEffect(
+     @Effect() updateColPaymentApprovalSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(
                     RejectReasonActions.updateColPaymentApprovalSuccess,
                 ),
                 tap((resp) => {
-                    console.log("resp", resp)
                     this._$notice.open('Successfully Approved', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    @Effect() fetchBillingDetailUpdateAfterApproveSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    BillingActions.fetchBillingDetailUpdateAfterApproveSuccess,
+                ),
+                tap((resp) => {
+                    this._$notice.open('Billing Approved', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    @Effect() fetchBillingDetailUpdateAfterRejectSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    BillingActions.fetchBillingDetailUpdateAfterRejectSuccess,
+                ),
+                tap((resp) => {
+                    
+                    this._$notice.open('Billing Rejected', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
                     });
@@ -158,7 +192,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-    updateColPaymentApprovalFailure$ = createEffect(
+     @Effect() updateColPaymentApprovalFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.fetchRejectReasonFailure),
@@ -197,91 +231,62 @@ export class RejectApproveEffects {
 
     /**
      *
-     * [REQUEST] Billing Payment Approval
-     * @memberof Reject Approve Effects
+     * [UPDATE - REQUEST] Billing Payment Approval
      */
-
-    updateBillingPaymentApproval$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(
-                RejectReasonActions.updateBillingPaymentApprovalRequest,
-            ),
-            map((action) => action.payload),
-            switchMap(({body, id}) => {
-                return this._$rejectApproveApi.patchRejectApprove(body, id).pipe(
-                    map(() => {
-                        return RejectReasonActions.updateBillingPaymentApprovalSuccess({
-                            payload: {
-                                id,
-                                changes: {
-                                    approvalStatus: body.approvalStatus,
-                                    billingRef: body.billingRef,
-                                },
-                            },
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            RejectReasonActions.updateBillingPaymentApprovalFailure({
-                                payload: { id: 'updateBillingPaymentApprovalFailure', errors: err },
-                            })
-                        )
-                    ),
-                    finalize(() => {
-                        this.store.dispatch(UiActions.resetHighlightRow());
-                    })
-                );
-            })
-        )
-    );
-
-    /**
-     *
-     * [UPDATE - SUCCESS] Billinglection Payment Approval
-     * @memberof Reject Approve Effects
-     */
-    updateBillingPaymentApprovalSuccess$ = createEffect(
+     @Effect() updateBillingPaymentApprovalRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(
-                    RejectReasonActions.updateBillingPaymentApprovalSuccess,
+                    RejectReasonActions.updateBillingPaymentApprovalRequest,
                 ),
-                tap(() => {
-                    this._$notice.open('Billing Approved', 'success', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
-                    });
-                }),
                 withLatestFrom(
                     this.store.select(fromRoot.getRouterState),
                     (action, router) => {
                         return {
                             id: router.state.params.id,
+                            body: action.payload
                         }
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
+                    return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.id).pipe(
                         catchOffline(),
                         map((resp) => {
                             if(resp && newPayload){
-                                return BillingActions.fetchBillingDetailUpdateSuccess({
-                                    payload: {
-                                        id: newPayload.id,
-                                        changes: {
-                                            ...resp,
-                                        },
-                                    },
-                                });
+                                return this._$collectionStatusApi.findByIdBilling(newPayload.id).pipe(
+                                    map((resp) => {
+                                        return BillingActions.fetchBillingDetailUpdateAfterApproveSuccess({
+                                            payload: {
+                                                id: newPayload.id,
+                                                changes: {
+                                                    ...resp,
+                                                },
+                                            },
+                                        });
+                                    }),
+                                    catchError((err) =>
+                                        of(
+                                            BillingActions.fetchBillingDetailUpdateFailure({
+                                                payload: {
+                                                    id: 'fetchBillingDetailUpdateFailure',
+                                                    errors: err,
+                                                },
+                                            })
+                                        )
+                                    ),
+                                    finalize(() => {
+                                        this.store.dispatch(UiActions.resetHighlightRow());
+                                    })
+                                )
                             }else{
                                 return UiActions.resetHighlightRow();
                             }
                         }),
                         catchError((err) =>
                             of(
-                                BillingActions.fetchBillingDetailUpdateFailure({
+                                RejectReasonActions.updateBillingPaymentApprovalFailure({
                                     payload: {
-                                        id: 'fetchBillingDetailUpdateFailure',
+                                        id: 'updateBillingPaymentApprovalFailure',
                                         errors: err,
                                     },
                                 })
@@ -298,56 +303,69 @@ export class RejectApproveEffects {
 
       /**
      *
-     * [UPDATE - SUCCESS] Billinglection Payment Reject
-     * @memberof Reject Approve Effects
+     * [UPDATE - REQUEST] Billing Payment Reject
      */
-       updateBillingPaymentRejectSuccess$ = createEffect(
+    @Effect() updateBillingPaymentRejectRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(
                     RejectReasonActions.updateBillingPaymentRejectRequest,
                 ),
-                tap(() => {
-                    this._$notice.open('Billing Rejected', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
-                    });
-                }),
                 withLatestFrom(
                     this.store.select(fromRoot.getRouterState),
                     (action, router) => {
                         return {
                             id: router.state.params.id,
+                            body: action.payload
                         }
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$collectionStatusApi.findByIdBillingUpdateMock(newPayload).pipe(
+                    return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.body.id).pipe(
                         catchOffline(),
                         map((resp) => {
                             if(resp && newPayload){
-                                return BillingActions.fetchBillingDetailUpdateSuccess({
-                                    payload: {
-                                        id: newPayload.id,
-                                        changes: {
-                                            ...resp,
-                                        },
-                                    },
-                                });
+                                
+                                return this._$collectionStatusApi.findByIdBilling(newPayload.id).pipe(
+                                    map((resp) => {
+                                        return BillingActions.fetchBillingDetailUpdateAfterRejectSuccess({
+                                            payload: {
+                                                id: newPayload.id,
+                                                changes: {
+                                                    ...resp,
+                                                },
+                                            },
+                                        });
+                                    }),
+                                    catchError((err) =>
+                                        of(
+                                            BillingActions.fetchBillingDetailUpdateFailure({
+                                                payload: {
+                                                    id: 'fetchBillingDetailUpdateFailure',
+                                                    errors: err,
+                                                },
+                                            })
+                                        )
+                                    ),
+                                    finalize(() => {
+                                        this.store.dispatch(UiActions.resetHighlightRow());
+                                    })
+                                )
                             }else{
                                 return UiActions.resetHighlightRow();
                             }
                         }),
-                        catchError((err) =>
-                            of(
-                                BillingActions.fetchBillingDetailUpdateFailure({
+                        catchError((err) =>{
+                            
+                            return of(
+                                RejectReasonActions.updateBillingPaymentRejectFailure({
                                     payload: {
-                                        id: 'fetchBillingDetailUpdateFailure',
+                                        id: 'updateBillingPaymentRejectFailure',
                                         errors: err,
                                     },
                                 })
                             )
-                        ),
+                        }),
                         finalize(() => {
                             this.store.dispatch(UiActions.resetHighlightRow());
                         })
@@ -359,33 +377,15 @@ export class RejectApproveEffects {
 
     /**
      *
-     * [UPDATE - FAILURE] Billinglection Payment Approval
-     * @memberof Reject Approve Effects
+     * [UPDATE - FAILURE] Billing Payment Approval
      */
-    updateBillingPaymentApprovalFailure$ = createEffect(
+    @Effect({ dispatch: false }) updateBillingPaymentApprovalFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(RejectReasonActions.fetchRejectReasonFailure),
+                ofType(RejectReasonActions.updateBillingPaymentApprovalFailure),
                 map((action) => action.payload),
                 tap((resp) => {
-                    let message;
-
-                    if (resp.errors.code === 406) {
-                        message = resp.errors.error.errors
-                            .map((r) => {
-                                return `${r.errCode}<br>${r.solve}`;
-                            })
-                            .join('<br><br>');
-                    } else {
-                        if (typeof resp.errors === 'string') {
-                            message = resp.errors;
-                        } else {
-                            message =
-                                resp.errors.error && resp.errors.error.message
-                                    ? resp.errors.error.message
-                                    : resp.errors.message;
-                        }
-                    }
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -395,6 +395,35 @@ export class RejectApproveEffects {
             ),
         { dispatch: false }
     );
+    @Effect({ dispatch: false }) updateBillingPaymentRejectFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.updateBillingPaymentRejectFailure),
+                map((action) => { 
+                    
+                    return action.payload
+                }),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    private _handleErrMessage(resp: ErrorHandler): string {
+        if (typeof resp.errors === 'string') {
+            return resp.errors;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
+        } else {
+            return resp.errors.message;
+        }
+    }
 
 
 

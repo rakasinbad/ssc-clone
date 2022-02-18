@@ -52,6 +52,8 @@ export class CollectionHistoryTableComponent implements OnInit {
 
     public subs: Subscription;
 
+    @Input() idDetail:any;
+
     ngOnInit() {
         const { id } = this.route.snapshot.params;
         this.dataDetail$ = this.store.select(BillingDetailSelectors.getSelectedItem, id);
@@ -82,7 +84,7 @@ export class CollectionHistoryTableComponent implements OnInit {
 
         const dialogReject = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: { title: 'Reject Billing', type: 'billing', status: 'reject', value: val },
+            data: { title: 'Reject Billing', type: 'billing', status: 'reject', value: this.idDetail },
         });
 
         dialogReject.afterClosed().subscribe((result) => {

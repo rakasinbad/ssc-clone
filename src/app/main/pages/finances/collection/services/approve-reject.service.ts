@@ -4,7 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 
 export interface IAPIOptions {
-    header_X_Type: string;
+    header_X_Type?: string;
 }
 
 @Injectable({
@@ -14,31 +14,35 @@ export class ApproveRejectApiService {
     private _url: string;
 
     private readonly _endpointCollection = '/collection/v1';
-    private readonly _urlMock = 'https://e7686c2e-1298-481b-a158-af31670f15b3.mock.pstmn.io/collection/v1'
+
 
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
     }
 
     getRejectReasonList(type: string): Observable<any> {
-        // this._url = this._$helper.handleApiRouter(
-        //     this._endpointCollection + '/reject-reasons?type=' + type
-        // );
-        // return this.http.get(`${this._url}`);
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/reject-reasons?type=' + type
+        );
 
-        //using mock
-        return this.http.get(`${this._urlMock}`+ '/reject-reasons?'+type);
+        return this.http.get(`${this._url}`);
 
     }
 
-    patchRejectApprove(body: any, id: number, opts?: IAPIOptions): Observable<any> {
-        // this._url = this._$helper.handleApiRouter(
-        //     this._endpointCollection + '/internal/payment-approval'
-        // );
-        let headers: HttpHeaders;
+    patchRejectApproveCollection(body : any, id:any): Observable<any> {
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/payment-approval'
+        );
 
-        let url = this._urlMock + '/internal/payment-approval'
-        return this.http.patch(`${url}/${id}`, body, { headers });
+        return this.http.patch(`${this._url}/${id}`,body);
+    }
+
+    patchRejectApproveBilling(body : any, id:any): Observable<any> {
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/payment-approval'
+        );
+
+        return this.http.patch(`${this._url}/${id}`,body);
     }
 
 }

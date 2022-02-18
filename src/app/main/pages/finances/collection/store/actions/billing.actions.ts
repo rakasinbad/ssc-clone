@@ -58,8 +58,13 @@ export const fetchBillingDetailUpdateFailure = createAction(
     props<{ payload: ErrorHandler }>()
 );
 
-export const fetchBillingDetailUpdateSuccess = createAction(
-    `${featureKey} Fetch Detail Billing Update Request Success`,
+export const fetchBillingDetailUpdateAfterApproveSuccess = createAction(
+    `${featureKey} Fetch Detail Billing Update After Approve Request Success`,
+    props<{ payload: Update<FinanceDetailBillingV1> }>()
+);
+
+export const fetchBillingDetailUpdateAfterRejectSuccess = createAction(
+    `${featureKey} Fetch Detail Billing Update After Reject Request Success`,
     props<{ payload: Update<FinanceDetailBillingV1> }>()
 );
 
