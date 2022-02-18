@@ -79,7 +79,7 @@ export class DetailCollectionTableComponent implements OnInit {
     numberFormat(num) {
         if (num) {
             return 'Rp' + num
-                .toFixed(2)
+                .toFixed(0)
                 .replace('.', ',')
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
@@ -103,7 +103,7 @@ export class DetailCollectionTableComponent implements OnInit {
         let value = parseInt(num);
         if (num) {
             return 'Rp' + value
-                .toFixed(2)
+                .toFixed(0)
                 .replace('.', ',')
                 .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }

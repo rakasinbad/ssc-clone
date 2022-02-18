@@ -15,10 +15,21 @@ export class RejectReason {
     }
 }
 
+export class PaymColApprove {
+    approvalStatus: string;
+    collectionRef: string;
+}
+
+export class PaymColReject {
+    approvalStatus: string;
+    collectionRef: string;
+    rejectedReasonId: number;
+}
+
 export class PaymApproval {
-        approvalStatus: string;
-        billingRef: string;
-        rejectedReasonId?: string;
+    approvalStatus: string;
+    billingRef: string;
+    rejectedReasonId?: string;
 }
 
 export interface IColPaymentApproval {
@@ -50,4 +61,4 @@ export class ColPaymentApproval {
     }
 }
 
-export class ColPaymentReject extends ColPaymentApproval{}
+export class ColPaymentReject extends ColPaymentApproval {}
