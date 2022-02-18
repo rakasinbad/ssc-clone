@@ -7,14 +7,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import {
-    CalculateOrderApiService,
-    DownloadApiService,
-    LogService,
-    NoticeService,
-    UploadApiService,
-} from 'app/shared/helpers';
-import { UiActions } from 'app/shared/store/actions';
+import { LogService, NoticeService } from 'app/shared/helpers';
 import { of } from 'rxjs';
 import {
     catchError,
@@ -27,8 +20,13 @@ import {
 } from 'rxjs/operators';
 
 import { CollectionApiService } from '../../services';
-import { CollectionActions } from '../actions';
-import { BillingStatus, CalculateCollectionStatusPayment, CollectionStatus } from '../../models';
+import { BillingActions, CollectionActions } from '../actions';
+import {
+    BillingStatus,
+    CalculateCollectionStatusPayment,
+    CollectionStatus,
+    FinanceDetailBillingV1,
+} from '../../models';
 import * as collectionStatus from '../reducers';
 import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
@@ -183,7 +181,7 @@ export class CollectionEffects {
 
     fetchBillingStatusRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(CollectionActions.fetchBillingStatusRequest),
+            ofType(BillingActions.fetchBillingStatusRequest),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             exhaustMap(([params, userSupplier]) => {
                 if (!userSupplier) {
@@ -199,7 +197,7 @@ export class CollectionEffects {
             switchMap(([params, data]: [any, string | Auth]) => {
                 if (!data) {
                     return of(
-                        CollectionActions.fetchBillingStatusFailure({
+                        BillingActions.fetchBillingStatusFailure({
                             payload: {
                                 id: 'fetchBillingStatusFailure',
                                 errors: 'Not Found!',
@@ -218,7 +216,7 @@ export class CollectionEffects {
 
                 if (!supplierId) {
                     return of(
-                        CollectionActions.fetchBillingStatusFailure({
+                        BillingActions.fetchBillingStatusFailure({
                             payload: {
                                 id: 'fetchBillingStatusFailure',
                                 errors: 'Not Found!',
@@ -233,7 +231,6 @@ export class CollectionEffects {
                     newParams['supplierId'] = supplierId;
                     newParams['limit'] = params.payload.limit;
                     newParams['skip'] = params.payload.skip;
-                    newParams['approvalStatus'] = params.payload.approvalStatus;
                     newParams['searchBy'] = params.payload.searchBy;
                     newParams['keyword'] = params.payload.keyword;
                 }
@@ -251,13 +248,13 @@ export class CollectionEffects {
                                 total: resp['meta']['total'],
                             };
 
-                            return CollectionActions.fetchBillingStatusSuccess({
+                            return BillingActions.fetchBillingStatusSuccess({
                                 payload: newResp,
                             });
                         }),
                         catchError((err) =>
                             of(
-                                CollectionActions.fetchBillingStatusFailure({
+                                BillingActions.fetchBillingStatusFailure({
                                     payload: {
                                         id: 'fetchBillingStatusFailure',
                                         errors: err,
@@ -278,7 +275,7 @@ export class CollectionEffects {
     fetchBillingStatusFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(CollectionActions.fetchBillingStatusFailure),
+                ofType(BillingActions.fetchBillingStatusFailure),
                 map((action) => action.payload),
                 tap((resp) => {
                     const message =
@@ -300,6 +297,73 @@ export class CollectionEffects {
                         },
                         'groupCollapsed'
                     );
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    //detial
+    /**
+     *
+     * [REQUEST] Detail Billing
+     * @memberof CollectionEffects
+     */
+    fetchBillingDetailRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(BillingActions.fetchBillingDetailRequest),
+            map((action) => action.payload),
+            switchMap((id) => {
+                return this._$collectionStatusApi.findByIdBilling(id).pipe(
+                    catchOffline(),
+                    map((resp) => {
+                        return BillingActions.fetchBillingDetailSuccess({
+                            payload: resp,
+                        });
+                    }),
+                    catchError((err) =>
+                        of(
+                            BillingActions.fetchBillingDetailFailure({
+                                payload: {
+                                    id: 'fetchBillingDetailFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchBillingDetailFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(BillingActions.fetchBillingDetailFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map((r) => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -430,7 +494,7 @@ export class CollectionEffects {
      * [REQUEST] Detail Collection
      * @memberof CollectionEffects
      */
-     fetchCollectionDetailRequest$ = createEffect(() =>
+    fetchCollectionDetailRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CollectionActions.fetchCollectionDetailRequest),
             map((action) => action.payload),
@@ -505,7 +569,7 @@ export class CollectionEffects {
                     catchOffline(),
                     map((resp) => {
                         return CollectionActions.fetchCollectionPhotoSuccess({
-                            payload: resp
+                            payload: resp,
                         });
                     }),
                     catchError((err) =>

@@ -3,8 +3,13 @@ import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Update } from '@ngrx/entity';
 
-import { CollectionStatus, BillingStatus, FinanceCollectionPayload, 
-    FinanceBillingPayload, FinanceDetailCollection, CalculateCollectionStatusPayment, ICollectionPhoto } from '../../models';
+import {
+    FinanceCollectionPayload,
+    FinanceDetailCollection,
+    CalculateCollectionStatusPayment,
+    ICollectionPhoto,
+    CollectionStatus,
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Calculate Collection Status by Payment
@@ -12,7 +17,7 @@ import { CollectionStatus, BillingStatus, FinanceCollectionPayload,
 
 export const fetchCalculateCollectionStatusRequest = createAction(
     '[Calculate Collection API] Fetch Calculate Collection Status Request',
-    props<{ payload: { parameter?: IQueryParams }}>()
+    props<{ payload: { parameter?: IQueryParams } }>()
 );
 
 export const fetchCalculateCollectionStatusFailure = createAction(
@@ -22,7 +27,7 @@ export const fetchCalculateCollectionStatusFailure = createAction(
 
 export const fetchCalculateCollectionStatusSuccess = createAction(
     '[Calculate Collection API] Fetch Calculate Collection Status Success',
-    props<{ payload: { data: CalculateCollectionStatusPayment[]}}>()
+    props<{ payload: { data: CalculateCollectionStatusPayment[] } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -31,7 +36,7 @@ export const fetchCalculateCollectionStatusSuccess = createAction(
 
 export const fetchCollectionStatusRequest = createAction(
     '[Collection API] Fetch Collection Status List Request',
-    props<{ payload: IQueryParams}>()
+    props<{ payload: IQueryParams }>()
 );
 
 export const fetchCollectionStatusFailure = createAction(
@@ -42,25 +47,6 @@ export const fetchCollectionStatusFailure = createAction(
 export const fetchCollectionStatusSuccess = createAction(
     '[Collection API] Fetch Collection Status List Success',
     props<{ payload: { data: CollectionStatus[]; total: number } }>()
-);
-
-// -----------------------------------------------------------------------------------------------------
-// Fetch Billing Status List
-// -----------------------------------------------------------------------------------------------------
-
-export const fetchBillingStatusRequest = createAction(
-    '[Billing API] Fetch Billing Status List Request',
-    props<{ payload: IQueryParams}>()
-);
-
-export const fetchBillingStatusFailure = createAction(
-    '[Billing API] Fetch Billing Status List Failure',
-    props<{ payload: ErrorHandler }>()
-);
-
-export const fetchBillingStatusSuccess = createAction(
-    '[Billing API] Fetch Billing Status List Success',
-    props<{ payload: { data: BillingStatus[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -88,7 +74,7 @@ export const fetchCollectionDetailSuccess = createAction(
 
 export const fetchCollectionPhotoRequest = createAction(
     '[Collection API] Fetch Collection Photo Request',
-    props<{ payload: { id: number }}>()
+    props<{ payload: { id: number } }>()
 );
 
 export const fetchCollectionPhotoFailure = createAction(
@@ -109,7 +95,7 @@ export const clearCollectionPhoto = createAction('[Collection Page] Reset Collec
 
 export const updateCollectionStatusRequest = createAction(
     '[Collection API] Update Collection Status Request',
-    props<{ payload: { body: FinanceCollectionPayload }}>()
+    props<{ payload: { body: FinanceCollectionPayload } }>()
 );
 
 export const updateCollectionStatusSuccess = createAction(
@@ -132,7 +118,6 @@ export const clearState = createAction('[Collection Page] Reset Collection Core 
 export type FailureActions =
     | 'fetchCalculateCollectionStatusFailure'
     | 'fetchCollectionStatusFailure'
-    | 'fetchBillingStatusFailure'
     | 'fetchCollectionDetailFailure'
     | 'fetchCollectionPhotoFailure'
     | 'updateCollectionStatusFailure';

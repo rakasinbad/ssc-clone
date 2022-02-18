@@ -16,6 +16,7 @@ import { CollectionDetailSelectors, CollectionPhotoSelectors } from '../../../st
 import { ActivatedRoute } from '@angular/router';
 import { FinanceDetailCollection } from '../../../models';
 import * as StatusPaymentLabel from '../../../constants';
+import { NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-detail-collection-sales',
@@ -29,10 +30,15 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     public idDetail: number;
     private subs: Subscription = new Subscription();
+    private skpImageSub: Subscription = new Subscription();
     private collectionPhoto$: Observable<any>;
+    private skpPhoto$: Observable<any>;
+    private image$: Observable<any>;
 
     collectionId: number;
     isLoadingPhoto$: Observable<boolean>;
+    isLoadingPhotoSkp$: Observable<boolean>;
+    collectionMethodType: string = 'promo';
 
     CASH = StatusPaymentLabel.CASH;
     CHECK = StatusPaymentLabel.CHECK;
@@ -41,7 +47,8 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
 
     constructor(
         private store: Store<fromCollectionPhoto.FeatureState>,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private _$notice: NoticeService
     ) {}
 
     ngOnInit() {
@@ -49,10 +56,13 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         this.collectionId = id;
 
-        this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
-        const sub = this.collectionPhoto$.subscribe({
+        this.image$ = this.store.select(CollectionPhotoSelectors.getId);
+
+        const sub = this.image$.subscribe({
             next: (resp) => {
-                if (resp) {
+                if (resp.image) {
+                    this.initViewerImage(resp);
+                } else if (resp.skpImage) {
                     this.initViewerImage(resp);
                 }
             },
@@ -60,23 +70,66 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         this.subs.add(sub);
 
         this.isLoadingPhoto$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
+        this.isLoadingPhotoSkp$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
     }
 
-    initViewerImage = (image: string): void => {
-        const imgSrc = 'data:image/jpeg;base64,' + image;
+    initViewerImage = (image): void => {
+        let imgView: string;
+        let text: string;
+        if (this.collectionMethodType == 'promo') {
+            if (image.skpImage == null) {
+                this._$notice.open('Photo Not Available', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                });
+            } else {
+                imgView = 'data:image/jpeg;base64,' + image.skpImage;
+                text = 'Promotion Cooperation Letter';
+                this.viewerImage(imgView, text);
+            }
+            
+        } else {
+            if (image.image == null) {
+                this._$notice.open('Photo Not Available', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                });
+            } else {
+                imgView = 'data:image/jpeg;base64,' + image.image;
+                text = 'Collection Photo';
+                this.viewerImage(imgView, text);
+            }
+           
+        }
 
-        const imgEl = document.createElement('img');
-        imgEl.src = imgSrc;
-        imgEl.alt = 'Collection Photo';
-
-        const viewer = new Viewer(imgEl, {
-            inline: false,
-        });
-        viewer.show();
+        
     };
 
-    onClickViewImage = (): void => {
+    viewerImage(src: string, text: string) {
+        const imgSrc = src;
+        const imgEl = document.createElement('img');
+        imgEl.src = imgSrc;
+        imgEl.alt = text;
+        const viewerImg = new Viewer(imgEl, {
+            inline: false,
+        });
+
+        viewerImg.show();
+    }
+
+    onClickViewImage = (type: string): void => {
+        this.collectionMethodType = type;
         this.clearCollectionPhotoState();
+        this.store.dispatch(
+            CollectionActions.fetchCollectionPhotoRequest({
+                payload: { id: this.collectionId },
+            })
+        );
+    };
+
+    onClickViewPromotion = (type: string): void => {
+        this.collectionMethodType = type;
+        this.clearCollectionPhotoStateSkp();
         this.store.dispatch(
             CollectionActions.fetchCollectionPhotoRequest({
                 payload: { id: this.collectionId },
@@ -88,10 +141,17 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         if (!this.subs.closed) {
             this.subs.unsubscribe();
         }
+        if (!this.skpImageSub.closed) {
+            this.skpImageSub.unsubscribe();
+        }
         this.clearCollectionPhotoState();
+        this.clearCollectionPhotoStateSkp();
     }
 
     clearCollectionPhotoState = (): void => {
+        this.store.dispatch(CollectionActions.clearCollectionPhoto());
+    };
+    clearCollectionPhotoStateSkp = (): void => {
         this.store.dispatch(CollectionActions.clearCollectionPhoto());
     };
 }

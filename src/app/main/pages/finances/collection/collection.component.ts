@@ -3,10 +3,7 @@ import {
     OnInit,
     OnDestroy,
     ChangeDetectorRef,
-    OnChanges,
-    SimpleChanges,
     ViewChild,
-    AfterViewInit,
     ViewEncapsulation,
 } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -21,19 +18,10 @@ import { HelperService } from 'app/shared/helpers';
 import { CollectionActions } from './store/actions';
 import { CollectionSelectors, CollectionType } from './store/selectors';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { CalculateCollectionStatusPayment, CollectionStatus } from './models';
-import {
-    AbstractControl,
-    FormArray,
-    FormBuilder,
-    FormControl,
-    FormGroup,
-    ValidationErrors,
-    ValidatorFn,
-} from '@angular/forms';
-import { SearchByList } from 'app/shared/models/search-by.model';
+import { CalculateCollectionStatusPayment } from './models';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatTabGroup } from '@angular/material';
-import { CssSelector } from '@angular/compiler';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-collection',
@@ -49,19 +37,26 @@ export class CollectionComponent implements OnInit, OnDestroy {
     search: string = '';
     selectedViewBy: string = 'cStatus';
     labelInfo: string = '';
-    isHidden: boolean = false;
+    //hidden status filter
+    isHiddenTab: boolean = false;
     allPayment: number = 2;
     waiting: number = 1;
     approvedCollection: number = 1;
     rejectedCollection: number = 1;
     selectedValue: string;
     searchByList = this._$helperService.searchByList();
+    searchByListCollection = this._$helperService.searchByListCollection();
+    searchByListBilling = this._$helperService.searchByListBilling();
     subs: Subscription;
     searchByValue: string = this.searchByList[0].id;
+    searchByValueCollection: string = this.searchByListCollection[0].id;
+    searchByValueBilling: string = this.searchByListBilling[0].id;
     approvalStatusType: number = 0;
     private subs$: Subject<void> = new Subject<void>();
     private _unSubs$: Subject<void> = new Subject<void>();
     selectedList = this.searchByList[0].id;
+    selectedListCollection = this.searchByListCollection[0].id;
+    selectedListBilling = this.searchByListBilling[0].id;
     selectTab: number;
     dataTabCollection = [];
     valueSearch: string = '';
@@ -95,7 +90,8 @@ export class CollectionComponent implements OnInit, OnDestroy {
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
         private _$helperService: HelperService,
-        private cdRef: ChangeDetectorRef
+        private cdRef: ChangeDetectorRef,
+        private router: Router
     ) {
         // Memuat terjemahan.
         this.fuseTranslationLoader$.loadTranslations(indonesian, english);
@@ -120,6 +116,11 @@ export class CollectionComponent implements OnInit, OnDestroy {
         );
     }
 
+    changeRoute(action: { route: string }): void {
+        if (action.route === 'collection') this.isHiddenTab = false;
+        else this.isHiddenTab = true;
+    }
+
     clickTabViewBy(action: string): void {
         if (!action) {
             return;
@@ -130,11 +131,13 @@ export class CollectionComponent implements OnInit, OnDestroy {
 
         switch (action) {
             case 'cStatus':
+                this.changeRoute({ route: 'collection' });
                 this.selectedViewBy = action;
                 this.getDataTab(COLLECTION_STATUS);
 
                 break;
             case 'bStatus':
+                this.changeRoute({ route: 'billing' });
                 this.selectedViewBy = action;
                 this.getDataTab(COLLECTION_BILLING);
             default:
@@ -143,17 +146,21 @@ export class CollectionComponent implements OnInit, OnDestroy {
     }
 
     onSearchByChange(event: string) {
-        this.searchByValue = event;
+        if (this.selectedViewBy == 'cStatus') {
+            this.searchByValueCollection = event;
+        } else {
+            this.searchByValueBilling = event;
+        }
     }
 
     keyUpKeyword(event: any) {
         this.form.get('searchValue').setValue(event.target.value);
         if (event.keyCode === 13) {
             this.searchKeyword();
-          }
+        }
     }
 
-    searchKeyword():void {
+    searchKeyword(): void {
         this.search = this.form.get('searchValue').value;
     }
 

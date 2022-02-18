@@ -19,6 +19,7 @@ export class CollectionApiService {
     private _urlBillingStatus: string;
 
     private readonly _endpointCollection = '/collection/v1';
+
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpointCollection);
         this._urlCalculate = this._$helper.handleApiRouter(this._endpointCollection);
@@ -72,12 +73,8 @@ export class CollectionApiService {
             newArg.push({ key: 'limit', value: params.limit });
         }
 
-        if (params['keyword'] !== '') {
-            newArg.push({ key: 'keyword', value: params['keyword'] });
-        }
-
-        if (params['searchBy'] && params['keyword'] !== '') {
-            newArg.push({ key: 'searchBy', value: params['searchBy'] });
+        if (params['searchBy'] && (params['keyword'] !== '' && params['keyword'] !== undefined)) {
+            newArg.push({ key: params['searchBy'], value: params['keyword']  });
         }
 
         if (params['approvalStatus'] !== 'all') {
@@ -91,7 +88,7 @@ export class CollectionApiService {
 
     findAllBilling<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         this._urlBillingStatus = this._$helper.handleApiRouter(
-            this._endpointCollection + '/web/payment-billings'
+            this._endpointCollection + '/billing-collections'
         );
         const newArg = [];
 
@@ -119,12 +116,8 @@ export class CollectionApiService {
             newArg.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['searchBy'] && params['keyword'] !== '') {
+        if (params['searchBy'] && (params['keyword'] !== '' && params['keyword'] !== undefined)) {
             newArg.push({ key: 'searchBy', value: params['searchBy'] });
-        }
-
-        if (params['approvalStatus'] !== 'all') {
-            newArg.push({ key: 'approvalStatus', value: params['approvalStatus'] });
         }
 
         const newParams = this._$helper.handleParams(this._urlBillingStatus, params, ...newArg);
@@ -141,10 +134,28 @@ export class CollectionApiService {
 
         return this.http.get(`${this._url}/${id}`);
     }
+
+    findByIdBilling(payload: { id: string }): Observable<any> {
+        this._url = this._$helper.handleApiMockRouter(
+            this._endpointCollection + '/web/payment-methods'
+        );
+
+        return this.http.get(`${this._url}/${payload.id}`);
+    }
+
+    findByIdBillingUpdateMock(payload: {id: string}): Observable<any> {
+        this._url = this._$helper.handleApiMockRouter(
+            this._endpointCollection + '/web/payment-methods'
+        );
+
+        return this.http.get(`${this._url}/${payload.id}/a`);
+    }
     
     // get data collection photo by id
     findCollectionPhotoById(id: number): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointCollection + '/payment-method/images');
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/payment-method/images'
+        );
 
         return this.http.get(`${this._url}/${id}`);
     }
