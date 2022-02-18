@@ -31,7 +31,7 @@ import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 import { EPaymentType, EPaymentTypeV2 } from '../models/payment-type.model';
 import { EPayLaterType, EPayLaterTypeV2 } from '../models/pay-later.model';
-import { SearchByList } from '../models/search-by.model';
+import { SearchByList, SearchByListBilling, SearchByListCollection } from '../models/search-by.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -670,7 +670,79 @@ export class HelperService {
         },
     ];
 
+    //filter v2 collection
+    private static readonly _searchByListCollection: {
+        id: SearchByListCollection;
+        label: string;
+    }[] = [
+        {
+            id: SearchByListCollection.COL_CODE,
+            label: 'Collection Code',
+        },
+        {
+            id: SearchByListCollection.STORE_NAME,
+            label: 'Store Name',
+        },
+        // {
+        //     id: SearchByListCollection.TOTAL_AMOUNT,
+        //     label: 'Total Amount',
+        // },
+        // {
+        //     id: SearchByListCollection.COL_DATE,
+        //     label: 'Col.Date',
+        // },
+        // {
+        //     id: SearchByListCollection.COL_DUE_DATE,
+        //     label: 'Col.Due Date',
+        // },
+        {
+            id: SearchByListCollection.SALES_REP_NAME,
+            label: 'Sales Rep',
+        },
+        {
+            id: SearchByListCollection.COL_METHOD,
+            label: 'Collection Method',
+        },
+        {
+            id: SearchByListCollection.COL_STATUS,
+            label: 'Status',
+        },
+    ];
+
+    //filter v2 billing
+    private static readonly _searchByListBilling: {
+        id: SearchByListBilling;
+        label: string;
+    }[] = [
+        {
+            id: SearchByListBilling.STORE_NAME,
+            label: 'Store Name',
+        },
+        {
+            id: SearchByListBilling.INVOICE_NUMBER,
+            label: 'Invoice Number',
+        },
+        {
+            id: SearchByListBilling.INVOICE_AMOUNT,
+            label: 'Invoice Amount',
+        },
+        {
+            id: SearchByListBilling.AMOUNT_PAID,
+            label: 'Amount Paid',
+        },
+        {
+            id: SearchByListBilling.COL_DATE,
+            label: 'Collection Date',
+        },
+        {
+            id: SearchByListBilling.INVOICE_DUE_DATE,
+            label: 'Invoice Due Date',
+        },
+    ];
+
     private static _host = environment.host;
+    private static _mockHostCollection = 'https://3fa72960-8441-4179-9df8-6ccf8d0fb05b.mock.pstmn.io';
+
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
@@ -895,6 +967,17 @@ export class HelperService {
         } */
 
         return `${HelperService._host}${endpoint}`;
+    }
+
+    handleApiMockRouter(endpoint: string): string {
+        /* if (
+            HelperService._regexIp.test(this._currentHost) ||
+            this._currentHost === 'localhost'
+        ) {
+            return `${}`
+        } */
+
+        return `${HelperService._mockHostCollection}${endpoint}`;
     }
 
     handleHeaders(queryParams: IQueryParams): HttpHeaders {
@@ -1417,6 +1500,14 @@ export class HelperService {
         return HelperService._searchByList;
     }
 
+    searchByListCollection(): { id: SearchByListCollection; label: string }[] {
+        return HelperService._searchByListCollection;
+    }
+
+    searchByListBilling(): { id: SearchByListBilling; label: string }[] {
+        return HelperService._searchByListBilling;
+    }
+    
     stockType(): { id: boolean; label: string }[] {
         return [
             {

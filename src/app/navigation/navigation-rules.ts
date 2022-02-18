@@ -512,6 +512,14 @@ export const Rules : Rule[] = [
       route: '',
     },
     {
+      privilages : 'FINANCE.CL.READ',
+      route: '',
+    },
+    {
+      privilages : 'FINANCE.CL.UPDATE',
+      route: '',
+    },
+    {
       privilages : 'OMS.CREATE',
       route: '',
     },

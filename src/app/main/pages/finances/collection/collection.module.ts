@@ -16,6 +16,11 @@ import { DetailCollectionTableComponent } from './components/detail-collection/d
 import { DetailCollectionInfoComponent } from './components/detail-collection/detail-collection-info/detail-collection-info.component';
 import { DetailCollectionSalesComponent } from './components/detail-collection/detail-collection-sales/detail-collection-sales.component';
 import { ListBillingComponent } from './components/list-billing/list-billing.component';
+import { DetailBillingComponent } from './components/detail-billing/detail-billing/detail-billing.component';
+import { DetailBillingGeneralinfoComponent } from './components/detail-billing/detail-billing/detail-billing-generalinfo/detail-billing-generalinfo.component';
+import { CollectionHistoryTableComponent } from './components/detail-billing/detail-billing/collection-history-table/collection-history-table.component';
+import { ModalDetailTableBillingComponent } from './components/modal/modal-detail-table-billing/modal-detail-table-billing.component';
+import { ApproveRejectCollectionBillingComponent } from './components/modal/approve-reject-collection-billing/approve-reject-collection-billing.component';
 
 @NgModule({
     declarations: [
@@ -26,6 +31,11 @@ import { ListBillingComponent } from './components/list-billing/list-billing.com
         DetailCollectionInfoComponent,
         DetailCollectionSalesComponent,
         ListBillingComponent,
+        DetailBillingComponent,
+        DetailBillingGeneralinfoComponent,
+        CollectionHistoryTableComponent,
+        ModalDetailTableBillingComponent,
+        ApproveRejectCollectionBillingComponent,
     ],
 
     imports: [
@@ -41,5 +51,13 @@ import { ListBillingComponent } from './components/list-billing/list-billing.com
         // Ngrx Store
         CollectionNgrxModule,
     ],
+    exports: [
+        ModalDetailTableBillingComponent,
+        ApproveRejectCollectionBillingComponent
+    ],
+    entryComponents: [
+        ModalDetailTableBillingComponent,
+        ApproveRejectCollectionBillingComponent
+    ]
 })
 export class CollectionModule {}
