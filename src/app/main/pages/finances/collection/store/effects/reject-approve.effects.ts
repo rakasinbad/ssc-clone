@@ -50,7 +50,7 @@ export class RejectApproveEffects {
                     )
                 );
             })
-        ),{dispatch: false}
+        ),{ dispatch: false }
     );
 
     @Effect() fetchRejectReasonFailure$ = createEffect(
@@ -125,7 +125,7 @@ export class RejectApproveEffects {
                     })
                 );
             })
-        ),{dispatch: false}
+        ),{ dispatch: false }
     );
 
     /**
