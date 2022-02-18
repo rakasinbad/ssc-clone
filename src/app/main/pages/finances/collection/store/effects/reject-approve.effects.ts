@@ -52,7 +52,7 @@ export class RejectApproveEffects {
                     )
                 );
             })
-        ),{dispatch: false}
+        ),{ dispatch: false }
     );
 
     @Effect() fetchRejectReasonFailure$ = createEffect(
@@ -99,7 +99,7 @@ export class RejectApproveEffects {
      * @memberof Reject Approve Effects
      */
 
-     @Effect() updateColPaymentApproval$ = createEffect(() =>
+    updateColPaymentApproval$ = createEffect(() =>
         this.actions$.pipe(
             ofType(RejectReasonActions.updateColPaymentApprovalRequest),
             map((action) => action.payload),
@@ -127,7 +127,7 @@ export class RejectApproveEffects {
                     })
                 );
             })
-        ),{dispatch: false}
+        ),{ dispatch: false }
     );
 
     /**
@@ -135,7 +135,7 @@ export class RejectApproveEffects {
      * [UPDATE - SUCCESS] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-     @Effect() updateColPaymentApprovalSuccess$ = createEffect(
+    updateColPaymentApprovalSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
@@ -155,7 +155,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-     @Effect() updateColPaymentApprovalFailure$ = createEffect(
+    updateColPaymentApprovalFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalFailure),
