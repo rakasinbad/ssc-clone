@@ -41,7 +41,7 @@
         <mat-header-cell *matHeaderCellDef> Col.Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.paymentCollectionMethod?.createdAt | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -51,7 +51,7 @@
         <mat-header-cell *matHeaderCellDef> Col.Due Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.billing?.orderParcel?.dueDate | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.billing?.paymentCollectionMethod?.dueDate | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -68,7 +68,7 @@
     <ng-container matColumnDef="finance-reason">
         <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.approvalReason || '-' }}</p>
+            <p style="word-break: break-word">{{ row?.paymentCollectionMethod?.approvalReason || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -86,8 +86,8 @@
     <ng-container matColumnDef="finance-collection-status">
         <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p class="text-{{ row?.approvalStatus }}">
-                {{ statusLabel(row?.approvalStatus) }}
+            <p class="text-{{ row?.paymentCollectionMethod?.approvalStatus }}">
+                {{ statusLabel(row?.paymentCollectionMethod?.approvalStatus) }}
             </p>
         </mat-cell>
     </ng-container>

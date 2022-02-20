@@ -77,6 +77,8 @@ interface paymentColMethodModels {
     paymentCollectionTypeName: string;
     createdAt: string;
     approvalStatus: string;
+    approvalReason: string;
+    dueDate: string;
     user: userModels;
     supplierStore: supplierStoreModels;
     supplier: supplierModels;
