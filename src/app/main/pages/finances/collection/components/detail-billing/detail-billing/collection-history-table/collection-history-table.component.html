@@ -7,10 +7,10 @@
         <mat-table
             class="collection-history-table sinbad-table"
             [class.sinbad-table-no-record]="
-                ((dataDetail$ | async)?.data?.collectionHistory?.length || 0) == 0
+                ((dataDetail$ | async)?.data?.billingPayments?.length || 0) == 0
             "
             #table
-            [dataSource]="(dataDetail$ | async)?.data?.collectionHistory"
+            [dataSource]="(dataDetail$ | async)?.data?.billingPayments"
             matSort
             [@animateStagger]="{ value: '50' }"
             fusePerfectScrollbar
@@ -19,7 +19,7 @@
             <ng-container matColumnDef="finance-collection-code">
                 <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p class="text-collectionCode" style="word-break: break-word">
+                    <p class="text-collectionCode">
                         {{ row?.collectionCode || '-' }}
                     </p>
                 </mat-cell>
@@ -70,13 +70,13 @@
                 <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <div style="display: inline-grid" class="text-{{ row?.collectionStatus }}">
-                        <span>
+                        <span class="text-status">
                             {{ row?.collectionStatus || '-' }}
                         </span>
-                        <span *ngIf="row?.collectionApprovedDate">
+                        <span class="text-status" *ngIf="row?.collectionApprovedDate">
                             {{ (row?.collectionApprovedDate | date: 'dd MMM yyyy') || '-' }}
                         </span>
-                        <span *ngIf="row?.collectionRejectedDate">
+                        <span class="text-status" *ngIf="row?.collectionRejectedDate">
                             {{ (row?.collectionApprovedDate | date: 'dd MMM yyyy') || '-' }}
                         </span>
                     </div>
@@ -88,13 +88,13 @@
                 <mat-header-cell *matHeaderCellDef> Billing Status </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <div style="display: inline-grid" class="text-{{ row?.billingStatus }}">
-                        <span>
+                        <span class="text-status">
                             {{ row?.billingStatus || '-' }}
                         </span>
-                        <span *ngIf="row?.billingApprovedDate">
+                        <span class="text-status" *ngIf="row?.billingApprovedDate">
                             {{ (row?.billingApprovedDate | date: 'dd MMM yyyy') || '-' }}
                         </span>
-                        <span *ngIf="row?.billingRejectedDate">
+                        <span class="text-status" *ngIf="row?.billingRejectedDate">
                             {{ (row?.billingRejectedDate | date: 'dd MMM yyyy') || '-' }}
                         </span>
                     </div>
@@ -127,10 +127,10 @@
                         <button
                             id="btn__actions"
                             mat-icon-button
-                            [matMenuTriggerFor]="row?.billingStatus == 'Approved' || row?.billingStatus == 'Rejected'? hiddenMatMenu : moreMenu"
+                            [matMenuTriggerFor]="row?.billingStatus == 'approved' || row?.billingStatus == 'rejected'? hiddenMatMenu : moreMenu"
                             matTooltip="Can’t reject and approve because the billing status already approved or rejected"
                             [matTooltipClass]="
-                                row?.billingStatus !== 'Approved' && 'tooltip-hidden'
+                                row?.billingStatus !== 'approved' && 'tooltip-hidden'
                             "
                             aria-label="More"
                             (click)="$event.stopPropagation()"
@@ -184,7 +184,7 @@
 
             <mat-footer-row
                 *matFooterRowDef="['no-record']"
-                [fxShow]="((dataDetail$ | async)?.data?.collectionHistory?.length || 0) == 0"
+                [fxShow]="((dataDetail$ | async)?.data?.billingPayments?.length || 0) == 0"
             ></mat-footer-row>
         </mat-table>
         <div

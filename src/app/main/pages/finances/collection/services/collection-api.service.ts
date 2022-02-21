@@ -139,7 +139,6 @@ export class CollectionApiService {
         this._url = this._$helper.handleApiRouter(
             this._endpointCollection + '/billing-collections'
         );
-        console.log("params", params)
         return this.http.get(`${this._url}/${payload.id}`, {params: params});
     }
 
