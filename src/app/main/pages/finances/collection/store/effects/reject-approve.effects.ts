@@ -384,8 +384,13 @@ export class RejectApproveEffects {
                             .pipe(
                                 catchOffline(),
                                 map((resp) => {
-                                    return BillingActions.fetchBillingDetailSuccess({
-                                        payload: resp,
+                                    return BillingActions.fetchBillingDetailUpdateAfterApproveSuccess({
+                                        payload: {
+                                            id: params.payload.id,
+                                            changes: {
+                                                ...resp,
+                                            },
+                                        },
                                     });
                                 }),
                                 catchError((err) =>
@@ -483,8 +488,13 @@ export class RejectApproveEffects {
                             .pipe(
                                 catchOffline(),
                                 map((resp) => {
-                                    return BillingActions.fetchBillingDetailSuccess({
-                                        payload: resp,
+                                    return BillingActions.fetchBillingDetailUpdateAfterRejectSuccess({
+                                        payload: {
+                                            id: params.payload.id,
+                                            changes: {
+                                                ...resp,
+                                            },
+                                        },
                                     });
                                 }),
                                 catchError((err) =>
