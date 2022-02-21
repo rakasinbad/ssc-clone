@@ -30,24 +30,16 @@ export class CalculateCollectionStatusPayment {
 }
 
 interface IFinanceCollectionStatus {
-    id: string;
-    supplierId: string;
-    supplierName: string;
-    collectionCode: string;
-    collectionMethodName: string;
-    referenceCode: string;
-    totalAmount: number;
+    readonly id: NonNullable<number>;
+    stampNominal: number;
+    approvalReason: string;
+    paidByCollectionMethod: number;
+    paidAmount: number;
+    billingPaymentCode: string;
     createdAt: string;
-    invalidDate: string; //NonNullable<string>
     approvalStatus: string;
-    salesmanName: string;
-    storeExternalId: string;
-    storeName: string;
-    orderCode: Array<any>;
-    orderRef: Array<any>;
-    reason: string;
-    collectionRef: string;
-    updatedAt: string;
+    paymentCollectionMethod: paymentColMethodModels;
+    billing: billingModels;
 }
 
 interface userModels {
@@ -65,20 +57,32 @@ interface stampModels {
     nominal: number;
 }
 
-interface financeCollectionMethod {
-    id: number;
-    amount: number;
-    approvalStatus: string;
-    balance: number;
+interface supplierStoreModels {
+    readonly id: NonNullable<number>;
+    externalId: string;
+}
+
+interface supplierModels {
+    readonly id: NonNullable<number>;
+    name: string;
+    code: string;
+}
+
+interface paymentColMethodModels {
+    readonly id: NonNullable<number>;
     collectionCode: string;
-    createdAt: string;
-    paymentCollectionTypeName: string;
     refNo: string;
+    balance: number;
+    amount: number;
+    paymentCollectionTypeName: string;
+    createdAt: string;
+    approvalStatus: string;
+    approvalReason: string;
+    dueDate: string;
     user: userModels;
+    supplierStore: supplierStoreModels;
+    supplier: supplierModels;
     store: storeModels;
-    supplier: supplierBilling;
-    supplierStore: supplierStoreBilling;
-    stampNominal: number;
 }
 
 interface orderParcelModels {
@@ -116,67 +120,43 @@ interface IFinanceBillingStatus {
 }
 
 export class CollectionStatus {
-    id: string;
-    supplierId: string;
-    supplierName: string;
-    collectionCode: string;
-    collectionMethodName: string;
-    referenceCode: string;
-    totalAmount: number;
+    readonly id: NonNullable<number>;
+    stampNominal: number;
+    approvalReason: string;
+    paidByCollectionMethod: number;
+    paidAmount: number;
+    billingPaymentCode: string;
     createdAt: string;
-    invalidDate: string; //NonNullable<string>
     approvalStatus: string;
-    salesmanName: string;
-    storeExternalId: string;
-    storeName: string;
-    orderCode: Array<any>;
-    orderRef: Array<any>;
-    reason: string;
-    collectionRef: string;
-    updatedAt: string;
+    paymentCollectionMethod: paymentColMethodModels;
+    billing: billingModels;
 
     constructor(data: IFinanceCollectionStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            supplierId,
-            supplierName,
-            collectionCode,
-            collectionMethodName,
-            referenceCode,
-            totalAmount,
+            stampNominal,
+            approvalReason,
+            paidByCollectionMethod,
+            paidAmount,
+            billingPaymentCode,
             createdAt,
-            invalidDate,
             approvalStatus,
-            salesmanName,
-            storeExternalId,
-            storeName,
-            orderCode,
-            orderRef,
-            reason,
-            collectionRef,
-            updatedAt
+            paymentCollectionMethod,
+            billing
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.supplierId = supplierId;
-        this.supplierName = supplierName;
-        this.collectionCode = collectionCode;
-        this.collectionMethodName = collectionMethodName;
-        this.referenceCode = referenceCode;
-        this.totalAmount = totalAmount;
+        this.stampNominal = stampNominal;
+        this.approvalReason = approvalReason;
+        this.paidByCollectionMethod = paidByCollectionMethod;
+        this.paidAmount = paidAmount;
+        this.billingPaymentCode = billingPaymentCode;
         this.createdAt = createdAt;
-        this.invalidDate = invalidDate || null;
         this.approvalStatus = approvalStatus;
-        this.salesmanName = salesmanName;
-        this.storeExternalId = storeExternalId;
-        this.storeName = storeName;
-        this.orderCode = orderCode;
-        this.orderRef = orderRef;
-        this.reason = reason;
-        this.collectionRef = collectionRef || null;
-        this.updatedAt = updatedAt || null;
+        this.paymentCollectionMethod = paymentCollectionMethod;
+        this.billing = billing;
     }
 }
 
