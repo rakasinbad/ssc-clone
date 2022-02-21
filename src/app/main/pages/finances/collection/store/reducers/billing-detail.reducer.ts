@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { FinanceDetailBillingV1, ICollectionHistory } from '../../models';
+import { FinanceDetailBillingV1, IBillingPayments } from '../../models';
 import { BillingActions, RejectReasonActions } from '../actions';
 
 // Keyname for reducer
@@ -19,8 +19,8 @@ export const adapterDetail = createEntityAdapter<FinanceDetailBillingV1>({
     selectId: (row) => row.data.id,
 });
 
-export const adapterCallectionHistory = createEntityAdapter<ICollectionHistory>({
-    selectId: (row) => row.collectionHistoryId,
+export const adapterCallectionHistory = createEntityAdapter<IBillingPayments>({
+    selectId: (row) => row.billingPyamentId,
 })
 
 // Initialize state

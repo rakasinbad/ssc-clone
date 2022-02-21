@@ -7,7 +7,7 @@ export class FinanceDetailBillingV1 {
     collectionDate: string;
     invoiceDueDate: string;
     oderReference: number;
-    collectionHistory: Array<ICollectionHistory>;
+    billingPayments: Array<IBillingPayments>;
     data: IFinanceDetailBillingV1;
     constructor(data: IFinanceDetailBillingV1) {
         const {
@@ -19,7 +19,7 @@ export class FinanceDetailBillingV1 {
             collectionDate,
             invoiceDueDate,
             oderReference,
-            collectionHistory,
+            billingPayments,
         } = data;
         (this.id = id),
             (this.storeName = storeName),
@@ -29,23 +29,23 @@ export class FinanceDetailBillingV1 {
             (this.collectionDate = collectionDate),
             (this.invoiceDueDate = invoiceDueDate),
             (this.oderReference = oderReference),
-            (this.collectionHistory = collectionHistory);
+            (this.billingPayments = billingPayments);
     }
 }
 
-export interface ICollectionHistory {
-    collectionHistoryId: number;
-    collectionCode: number;
-    billingDate: string;
+export interface IBillingPayments {
     amountPaid: number;
-    paymentMethod: string;
-    salesRepName: string;
-    collectionStatus: string;
-    billingStatus: string;
-    reason: string;
-    updatedBy: string;
     billingApprovedDate: string;
+    billingDate: string;
+    billingPyamentId: number;
+    billingStatus: string;
     collectionApprovedDate: string;
+    collectionCode: number;
+    collectionStatus: string;
+    paymentMethod: string;
+    reason: string;
+    salesRepName: string;
+    updatedBy: string;
 }
 //V1 Response
 interface IFinanceDetailBillingV1 {
@@ -57,7 +57,7 @@ interface IFinanceDetailBillingV1 {
     collectionDate: string;
     invoiceDueDate: string;
     oderReference: number;
-    collectionHistory: Array<ICollectionHistory>;
+    billingPayments: Array<IBillingPayments>;
 }
 export interface financeCollectionMethodV1 {
     id: number;

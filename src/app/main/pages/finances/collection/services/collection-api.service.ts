@@ -73,8 +73,8 @@ export class CollectionApiService {
             newArg.push({ key: 'limit', value: params.limit });
         }
 
-        if (params['searchBy'] && (params['keyword'] !== '' && params['keyword'] !== undefined)) {
-            newArg.push({ key: params['searchBy'], value: params['keyword']  });
+        if (params['searchBy'] && params['keyword'] !== '' && params['keyword'] !== undefined) {
+            newArg.push({ key: params['searchBy'], value: params['keyword'] });
         }
 
         if (params['approvalStatus'] !== 'all') {
@@ -116,7 +116,7 @@ export class CollectionApiService {
             newArg.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['searchBy'] && (params['keyword'] !== '' && params['keyword'] !== undefined)) {
+        if (params['searchBy'] && params['keyword'] !== '' && params['keyword'] !== undefined) {
             newArg.push({ key: 'searchBy', value: params['searchBy'] });
         }
 
@@ -135,22 +135,21 @@ export class CollectionApiService {
         return this.http.get(`${this._url}/${id}`);
     }
 
-    findByIdBilling(payload: { id: string }): Observable<any> {
-        this._url = this._$helper.handleApiMockRouter(
-            this._endpointCollection + '/web/payment-methods'
+    findByIdBilling(payload: { id: string }, params ): Observable<any> {
+        this._url = this._$helper.handleApiRouter(
+            this._endpointCollection + '/billing-collections'
         );
-
-        return this.http.get(`${this._url}/${payload.id}`);
+        return this.http.get(`${this._url}/${payload.id}`, {params: params});
     }
 
-    findByIdBillingUpdateMock(payload: {id: string}): Observable<any> {
+    findByIdBillingUpdateMock(payload: { id: string }): Observable<any> {
         this._url = this._$helper.handleApiMockRouter(
             this._endpointCollection + '/web/payment-methods'
         );
 
         return this.http.get(`${this._url}/${payload.id}/a`);
     }
-    
+
     // get data collection photo by id
     findCollectionPhotoById(id: number): Observable<any> {
         this._url = this._$helper.handleApiRouter(
