@@ -67,7 +67,7 @@ export class CollectionHistoryTableComponent implements OnInit {
     btnApproved(val) {
         const dialogApproved = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: { title: 'Approve Billing', type: 'billing', status: 'approved', value: val },
+            data: { title: 'Approve Billing', type: 'billing', status: 'approved', idDetail: this.idDetail, value: val },
         });
 
         dialogApproved.afterClosed().subscribe((result) => {});
@@ -84,7 +84,7 @@ export class CollectionHistoryTableComponent implements OnInit {
 
         const dialogReject = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: { title: 'Reject Billing', type: 'billing', status: 'reject', value: this.idDetail },
+            data: { title: 'Reject Billing', type: 'billing', status: 'reject', idDetail: this.idDetail, value: val },
         });
 
         dialogReject.afterClosed().subscribe((result) => {

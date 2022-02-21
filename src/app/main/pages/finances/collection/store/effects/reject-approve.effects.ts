@@ -9,12 +9,14 @@ import { LogService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import * as fromRoot from '../../../../../../store/app.reducer';
 import { of } from 'rxjs';
-import { catchError, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, exhaustMap, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { ApproveRejectApiService, CollectionApiService } from '../../services';
 import { BillingActions, RejectReasonActions } from '../actions';
 import * as collectionStatus from '../reducers';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { ColPaymentApproval } from '../../models';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { Auth } from 'app/main/pages/core/auth/models';
 
 @Injectable()
 export class RejectApproveEffects {
@@ -340,46 +342,78 @@ export class RejectApproveEffects {
                 switchMap(newPayload => {
                     return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.id).pipe(
                         catchOffline(),
-                        map((resp) => {
-                            if(resp && newPayload){
-                                return this._$collectionStatusApi.findByIdBilling(newPayload.id).pipe(
-                                    map((resp) => {
-                                        return BillingActions.fetchBillingDetailUpdateAfterApproveSuccess({
-                                            payload: {
-                                                id: newPayload.id,
-                                                changes: {
-                                                    ...resp,
-                                                },
-                                            },
-                                        });
-                                    }),
-                                    catchError((err) =>
-                                        of(
-                                            BillingActions.fetchBillingDetailUpdateFailure({
-                                                payload: {
-                                                    id: 'fetchBillingDetailUpdateFailure',
-                                                    errors: err,
-                                                },
-                                            })
-                                        )
-                                    ),
-                                    finalize(() => {
-                                        this.store.dispatch(UiActions.resetHighlightRow());
-                                    })
-                                )
-                            }else{
-                                return UiActions.resetHighlightRow();
+                        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+                        exhaustMap(([params, userSupplier]) => {
+                            if (!userSupplier) {
+                                return this.storage
+                                    .get('user')
+                                    .toPromise()
+                                    .then((user) => (user ? [params, user] : [params, null]));
                             }
+            
+                            const { supplierId } = userSupplier;
+                            return of([params, supplierId]);
+                        }),
+                        switchMap(([params,data]) => {
+                            let supplierId;
+
+                            if (typeof data === 'string') {
+                                supplierId = data;
+                            } else {
+                                supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                            }
+            
+                            if (!supplierId) {
+                                return of(
+                                    BillingActions.fetchBillingDetailFailure({
+                                        payload: {
+                                            id: 'fetchBillingDetailFailure',
+                                            errors: 'Not Found!',
+                                        },
+                                    })
+                                );
+                            }
+            
+                            const newParams = {};
+            
+                            if (supplierId) {
+                                newParams['supplierId'] = supplierId;
+                            }
+                            return this._$collectionStatusApi
+                            .findByIdBilling({ id: params.payload.id }, newParams)
+                            .pipe(
+                                catchOffline(),
+                                map((resp) => {
+                                    return BillingActions.fetchBillingDetailUpdateAfterApproveSuccess({
+                                        payload: {
+                                            id: params.payload.id,
+                                            changes: {
+                                                ...resp,
+                                            },
+                                        },
+                                    });
+                                }),
+                                catchError((err) =>
+                                    of(
+                                        BillingActions.fetchBillingDetailFailure({
+                                            payload: {
+                                                id: 'fetchBillingDetailFailure',
+                                                errors: err,
+                                            },
+                                        })
+                                    )
+                                )
+                            );
                         }),
                         catchError((err) =>
-                            of(
-                                RejectReasonActions.updateBillingPaymentApprovalFailure({
-                                    payload: {
-                                        id: 'updateBillingPaymentApprovalFailure',
-                                        errors: err,
-                                    },
-                                })
-                            )
+                        of(
+                            RejectReasonActions.updateBillingPaymentApprovalFailure({
+                                payload: {
+                                    id: 'updateBillingPaymentApprovalFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
                         ),
                         finalize(() => {
                             this.store.dispatch(UiActions.resetHighlightRow());
@@ -410,51 +444,81 @@ export class RejectApproveEffects {
                     }
                 ),
                 switchMap(newPayload => {
-                    return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.body.id).pipe(
+                    return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.id).pipe(
                         catchOffline(),
-                        map((resp) => {
-                            if(resp && newPayload){
-                                
-                                return this._$collectionStatusApi.findByIdBilling(newPayload.id).pipe(
-                                    map((resp) => {
-                                        return BillingActions.fetchBillingDetailUpdateAfterRejectSuccess({
-                                            payload: {
-                                                id: newPayload.id,
-                                                changes: {
-                                                    ...resp,
-                                                },
-                                            },
-                                        });
-                                    }),
-                                    catchError((err) =>
-                                        of(
-                                            BillingActions.fetchBillingDetailUpdateFailure({
-                                                payload: {
-                                                    id: 'fetchBillingDetailUpdateFailure',
-                                                    errors: err,
-                                                },
-                                            })
-                                        )
-                                    ),
-                                    finalize(() => {
-                                        this.store.dispatch(UiActions.resetHighlightRow());
-                                    })
-                                )
-                            }else{
-                                return UiActions.resetHighlightRow();
+                        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+                        exhaustMap(([params, userSupplier]) => {
+                            if (!userSupplier) {
+                                return this.storage
+                                    .get('user')
+                                    .toPromise()
+                                    .then((user) => (user ? [params, user] : [params, null]));
                             }
+            
+                            const { supplierId } = userSupplier;
+                            return of([params, supplierId]);
                         }),
-                        catchError((err) =>{
-                            
-                            return of(
-                                RejectReasonActions.updateBillingPaymentRejectFailure({
-                                    payload: {
-                                        id: 'updateBillingPaymentRejectFailure',
-                                        errors: err,
-                                    },
-                                })
-                            )
+                        switchMap(([params,data]) => {
+                            let supplierId;
+
+                            if (typeof data === 'string') {
+                                supplierId = data;
+                            } else {
+                                supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                            }
+            
+                            if (!supplierId) {
+                                return of(
+                                    BillingActions.fetchBillingDetailFailure({
+                                        payload: {
+                                            id: 'fetchBillingDetailFailure',
+                                            errors: 'Not Found!',
+                                        },
+                                    })
+                                );
+                            }
+            
+                            const newParams = {};
+            
+                            if (supplierId) {
+                                newParams['supplierId'] = supplierId;
+                            }
+                            return this._$collectionStatusApi
+                            .findByIdBilling({ id: params.payload.id }, newParams)
+                            .pipe(
+                                catchOffline(),
+                                map((resp) => {
+                                    return BillingActions.fetchBillingDetailUpdateAfterRejectSuccess({
+                                        payload: {
+                                            id: params.payload.id,
+                                            changes: {
+                                                ...resp,
+                                            },
+                                        },
+                                    });
+                                }),
+                                catchError((err) =>
+                                    of(
+                                        BillingActions.fetchBillingDetailFailure({
+                                            payload: {
+                                                id: 'fetchBillingDetailFailure',
+                                                errors: err,
+                                            },
+                                        })
+                                    )
+                                )
+                            );
                         }),
+                        catchError((err) =>
+                        of(
+                            RejectReasonActions.updateBillingPaymentRejectFailure({
+                                payload: {
+                                    id: 'updateBillingPaymentRejectFailure',
+                                    errors: err,
+                                },
+                            })
+                        )
+                        ),
                         finalize(() => {
                             this.store.dispatch(UiActions.resetHighlightRow());
                         })

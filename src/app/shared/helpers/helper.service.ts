@@ -705,7 +705,7 @@ export class HelperService {
         },
         {
             id: SearchByListCollection.COL_STATUS,
-            label: 'Status',
+            label: 'Collection Status',
         },
     ];
 

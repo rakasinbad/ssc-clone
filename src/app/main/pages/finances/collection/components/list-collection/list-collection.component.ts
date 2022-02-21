@@ -172,7 +172,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     openDetailPage(row: any): void {
-        this.router.navigate(['/pages/finances/collection/collection/' + row.id]);
+        this.router.navigate(['/pages/finances/collection/collection/' + row.paymentCollectionMethod.id]);
         let itemPromoHierarchy = {
             searchBy: this.searchBy,
             approvalStatus: this.approvalStatus,

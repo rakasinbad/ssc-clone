@@ -8,7 +8,7 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import {
     catchError,
     exhaustMap,
@@ -316,26 +316,65 @@ export class CollectionEffects {
     fetchBillingDetailRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(BillingActions.fetchBillingDetailRequest),
-            map((action) => action.payload),
-            switchMap((id) => {
-                return this._$collectionStatusApi.findByIdBilling(id).pipe(
-                    catchOffline(),
-                    map((resp) => {
-                        return BillingActions.fetchBillingDetailSuccess({
-                            payload: resp,
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            BillingActions.fetchBillingDetailFailure({
-                                payload: {
-                                    id: 'fetchBillingDetailFailure',
-                                    errors: err,
-                                },
-                            })
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then((user) => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [any, string | Auth]) => {
+                
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        BillingActions.fetchBillingDetailFailure({
+                            payload: {
+                                id: 'fetchBillingDetailFailure',
+                                errors: 'Not Found!',
+                            },
+                        })
+                    );
+                }
+
+                const newParams = {};
+
+                if (supplierId) {
+                    newParams['supplierId'] = supplierId;
+                }
+                
+                return this._$collectionStatusApi
+                    .findByIdBilling({ id: params.payload.id }, newParams)
+                    .pipe(
+                        catchOffline(),
+                        map((resp) => {
+                            return BillingActions.fetchBillingDetailSuccess({
+                                payload: resp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                BillingActions.fetchBillingDetailFailure({
+                                    payload: {
+                                        id: 'fetchBillingDetailFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );

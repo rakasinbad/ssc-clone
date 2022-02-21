@@ -26,20 +26,14 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     public type: string;
     public status: string;
     public selectedValue: string;
-    public payload: PaymApproval | null;
+    public payloadBilling: any;
     public payloadCollection: PaymColApprove | null;
     public buttonRejectDisabled: boolean;
+    public billingRef: string;
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
     subs: Subscription;
     listReason = [];
-
-    reasonList: Reason[] = [
-        { id: 1, reason: 'Empty Giro' },
-        { id: 2, reason: 'Empty Check' },
-        { id: 3, reason: 'Actual Cash Inapropriate' },
-        { id: 4, reason: 'Others' },
-    ];
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: any,
@@ -57,6 +51,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
         });
+
+        this.billingRef = this.data.value.billingPyamentId.toString()
         
     }
 
@@ -84,9 +80,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                     collectionRef: '', // di set empty string
                 };
             } else {
-                this.payload = {
-                    approvalStatus: 'rejected',
-                    billingRef: '', // di set empty string
+                this.payloadBilling = {
+                    billingRef: this.billingRef
                 };
             }
         }
@@ -126,10 +121,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateBillingPaymentApprovalRequest({
                     payload: {
-                        id: this.data.value,
+                        id: this.data.idDetail,
                         body: {
                             approvalStatus: 'approved',
-                            billingRef: '', // di set empty string
+                            billingRef: this.billingRef
                         }
                     }
                 })
@@ -141,9 +136,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateBillingPaymentRejectRequest({
                     payload: {
-                        id: this.data.value,
+                        id: this.data.idDetail,
                         body: {
-                            ...this.payload,
+                            approvalStatus: 'rejected',
+                            billingRef: this.billingRef,
                             rejectedReasonId: this.selectedValue
                         }
                     }

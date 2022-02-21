@@ -171,7 +171,11 @@ app-collection-history-table {
                 border-radius: 50%;
             }
 
-            .text-Approved {
+            .text-status{
+                text-transform:capitalize;
+            }
+
+            .text-approved {
                 color: #31b057;
                 background: #effbf3;
                 border-radius: 4px;
@@ -179,8 +183,8 @@ app-collection-history-table {
                 padding: 4px 6px;
             }
 
-            .text-Waiting,
-            .text-Pending {
+            .text-waiting,
+            .text-pending {
                 color: #e79b04;
                 background: #fff8eb;
                 border-radius: 4px;
@@ -188,7 +192,7 @@ app-collection-history-table {
                 padding: 4px 6px;
             }
 
-            .text-Rejected {
+            .text-rejected {
                 color: #ec1a24;
                 background: #ffedee;
                 border-radius: 4px;
