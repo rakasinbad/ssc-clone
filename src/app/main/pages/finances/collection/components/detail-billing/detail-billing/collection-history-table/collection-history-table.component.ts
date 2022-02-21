@@ -77,7 +77,7 @@ export class CollectionHistoryTableComponent implements OnInit {
         //for fetch reject reason list
         this.store.dispatch(
             RejectReasonActions.fetchRejectReasonRequest({
-                payload: { type: 'collection' },
+                payload: { type: 'payment' },
             })
         );
         this.isLoadingRejectReason$ = this.store.select(RejectReasonSelectors.getLoadingState);

@@ -135,7 +135,7 @@ export class RejectApproveEffects {
      * [UPDATE - SUCCESS] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-    updateColPaymentApprovalSuccess$ = createEffect(
+     @Effect() updateColPaymentApprovalSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
@@ -155,7 +155,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-    updateColPaymentApprovalFailure$ = createEffect(
+     @Effect({ dispatch: false }) updateColPaymentApprovalFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalFailure),
@@ -231,7 +231,7 @@ export class RejectApproveEffects {
      * [UPDATE - SUCCESS] Collection Payment Reject
      * @memberof Reject Approve Effects
      */
-    updateColPaymentRejectSuccess$ = createEffect(
+     @Effect() updateColPaymentRejectSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
@@ -250,7 +250,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Reject
      * @memberof Reject Approve Effects
      */
-    updateColPaymentRejectFailure$ = createEffect(
+     @Effect({ dispatch: false }) updateColPaymentRejectFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectFailure),

@@ -30,6 +30,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     public payloadCollection: PaymColApprove | null;
     public buttonRejectDisabled: boolean;
     public billingRef: string;
+    public collectionRef: string = '';
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
     subs: Subscription;
@@ -52,7 +53,13 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.listReason = val;
         });
 
-        this.billingRef = this.data.value.billingPyamentId.toString()
+        if (this.data.value.billingPyamentId) {
+            this.billingRef = this.data.value.billingPyamentId.toString();
+        }
+
+        if (this.data.value.paymentCollectionMethod) {
+            this.collectionRef = this.data.value.paymentCollectionMethod.collectionRef;
+        }
         
     }
 
@@ -77,7 +84,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             if (type === 'collection') {
                 this.payloadCollection = {
                     approvalStatus: 'rejected',
-                    collectionRef: '', // di set empty string
+                    collectionRef: this.collectionRef, // di set empty string
                 };
             } else {
                 this.payloadBilling = {
@@ -93,10 +100,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateColPaymentApprovalRequest({
                     payload: {
-                        id: this.data.value.data.id,
+                        id: this.data.value.id,
                         body: {
                             approvalStatus: 'approved',
-                            collectionRef: '', // di set empty string
+                            collectionRef: this.collectionRef, // di set empty string
                         }
                     }
                 })
@@ -107,10 +114,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateColPaymentRejectRequest({
                     payload: {
-                        id: this.data.value.data.id,
+                        id: this.data.value.id,
                         body: {
                             ...this.payloadCollection,
-                            rejectedReasonId: Number(this.selectedValue)
+                            rejectReasonId: Number(this.selectedValue)
                         }
                     }
                 })

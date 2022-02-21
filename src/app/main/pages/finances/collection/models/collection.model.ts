@@ -43,7 +43,6 @@ interface IFinanceCollectionStatus {
     createdAt: string;
     issuedDate: string;
     invalidDate: string;
-    dueDate: string;
     approvalStatus: string;
     salesmanName: string;
     storeExternalId: string;
@@ -144,7 +143,6 @@ export class CollectionStatus {
     createdAt: string;
     issuedDate: string;
     invalidDate: string;
-    dueDate: string;
     approvalStatus: string;
     salesmanName: string;
     storeExternalId: string;
@@ -169,7 +167,6 @@ export class CollectionStatus {
             createdAt,
             issuedDate,
             invalidDate,
-            dueDate,
             approvalStatus,
             salesmanName,
             storeExternalId,
@@ -193,7 +190,6 @@ export class CollectionStatus {
         this.createdAt = createdAt;
         this.issuedDate = issuedDate;
         this.invalidDate = invalidDate || null;
-        this.dueDate = dueDate || null;
         this.approvalStatus = approvalStatus;
         this.salesmanName = salesmanName;
         this.storeExternalId = storeExternalId;
