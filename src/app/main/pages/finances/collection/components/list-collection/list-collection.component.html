@@ -13,7 +13,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod?.collectionCode || '-' }}
+                {{ row?.collectionCode || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -22,7 +22,7 @@
     <ng-container matColumnDef="finance-store-name">
         <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.paymentCollectionMethod?.store?.name || '-' }}</p>
+            <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -31,7 +31,7 @@
         <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ numberFormat(row?.paymentCollectionMethod?.amount) }}
+                {{ numberFormat(row?.totalAmount) }}
             </p>
         </mat-cell>
     </ng-container>
@@ -41,7 +41,7 @@
         <mat-header-cell *matHeaderCellDef> Col.Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.paymentCollectionMethod?.createdAt | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -51,7 +51,7 @@
         <mat-header-cell *matHeaderCellDef> Col.Due Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ (row?.paymentCollectionMethod?.dueDate | date: 'dd MMM yyyy') || '-' }}
+                {{ (row?.dueDate | date: 'dd MMM yyyy') || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -60,7 +60,7 @@
     <ng-container matColumnDef="finance-sales-rep">
         <mat-header-cell *matHeaderCellDef> Sales Rep </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ (row?.paymentCollectionMethod?.user?.fullName | titlecase) || '-' }}</p>
+            <p style="word-break: break-word">{{ (row?.salesmanName | titlecase) || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -68,7 +68,7 @@
     <ng-container matColumnDef="finance-reason">
         <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.paymentCollectionMethod?.approvalReason || '-' }}</p>
+            <p style="word-break: break-word">{{ row?.reason || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -77,7 +77,7 @@
         <mat-header-cell *matHeaderCellDef> Collection Method </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
-                {{ row?.paymentCollectionMethod?.paymentCollectionTypeName || '-' }}
+                {{ row?.collectionMethodName || '-' }}
             </p>
         </mat-cell>
     </ng-container>
@@ -86,8 +86,8 @@
     <ng-container matColumnDef="finance-collection-status">
         <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p class="text-{{ row?.paymentCollectionMethod?.approvalStatus }}">
-                {{ statusLabel(row?.paymentCollectionMethod?.approvalStatus) }}
+            <p class="text-{{ row?.approvalStatus }}">
+                {{ statusLabel(row?.approvalStatus) }}
             </p>
         </mat-cell>
     </ng-container>
