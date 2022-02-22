@@ -49,7 +49,7 @@ export class CollectionApiService {
 
     findAllCollection<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         this._urlCollectionStatus = this._$helper.handleApiRouter(
-            this._endpointCollection + '/web/payment-billings'
+            this._endpointCollection + '/web/payment-methods'
         );
         const newArg = [];
 

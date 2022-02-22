@@ -31,15 +31,25 @@ export class CalculateCollectionStatusPayment {
 
 interface IFinanceCollectionStatus {
     readonly id: NonNullable<number>;
-    stampNominal: number;
-    approvalReason: string;
-    paidByCollectionMethod: number;
-    paidAmount: number;
-    billingPaymentCode: string;
+    supplierCode: string;
+    supplierName: string;
+    collectionCode: string;
+    collectionMethodName: string;
+    referenceCode: NonNullable<string>;
+    amount: number;
+    balance: number;
+    totalAmount: number;
+    totalBalance: number;
     createdAt: string;
+    issuedDate: string;
+    invalidDate: string;
     approvalStatus: string;
-    paymentCollectionMethod: paymentColMethodModels;
-    billing: billingModels;
+    salesmanName: string;
+    storeExternalId: string;
+    storeName: string;
+    orderCode: Array<any>;
+    orderRef: Array<any>;
+    reason: string;
 }
 
 interface userModels {
@@ -121,42 +131,72 @@ interface IFinanceBillingStatus {
 
 export class CollectionStatus {
     readonly id: NonNullable<number>;
-    stampNominal: number;
-    approvalReason: string;
-    paidByCollectionMethod: number;
-    paidAmount: number;
-    billingPaymentCode: string;
+    supplierCode: string;
+    supplierName: string;
+    collectionCode: string;
+    collectionMethodName: string;
+    referenceCode: NonNullable<string>;
+    amount: number;
+    balance: number;
+    totalAmount: number;
+    totalBalance: number;
     createdAt: string;
+    issuedDate: string;
+    invalidDate: string;
     approvalStatus: string;
-    paymentCollectionMethod: paymentColMethodModels;
-    billing: billingModels;
+    salesmanName: string;
+    storeExternalId: string;
+    storeName: string;
+    orderCode: Array<any>;
+    orderRef: Array<any>;
+    reason: string;
 
     constructor(data: IFinanceCollectionStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            stampNominal,
-            approvalReason,
-            paidByCollectionMethod,
-            paidAmount,
-            billingPaymentCode,
+            supplierCode,
+            supplierName,
+            collectionCode,
+            collectionMethodName,
+            referenceCode,
+            amount,
+            balance,
+            totalAmount,
+            totalBalance,
             createdAt,
+            issuedDate,
+            invalidDate,
             approvalStatus,
-            paymentCollectionMethod,
-            billing
+            salesmanName,
+            storeExternalId,
+            storeName,
+            orderCode,
+            orderRef,
+            reason
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.stampNominal = stampNominal;
-        this.approvalReason = approvalReason;
-        this.paidByCollectionMethod = paidByCollectionMethod;
-        this.paidAmount = paidAmount;
-        this.billingPaymentCode = billingPaymentCode;
+        this.supplierCode = supplierCode;
+        this.supplierName = supplierName;
+        this.collectionCode = collectionCode;
+        this.collectionMethodName = collectionMethodName;
+        this.referenceCode = referenceCode;
+        this.amount = amount;
+        this.balance = balance;
+        this.totalAmount = totalAmount;
+        this.totalBalance = totalBalance;
         this.createdAt = createdAt;
+        this.issuedDate = issuedDate;
+        this.invalidDate = invalidDate || null;
         this.approvalStatus = approvalStatus;
-        this.paymentCollectionMethod = paymentCollectionMethod;
-        this.billing = billing;
+        this.salesmanName = salesmanName;
+        this.storeExternalId = storeExternalId;
+        this.storeName = storeName;
+        this.orderCode = orderCode;
+        this.orderRef = orderRef;
+        this.reason = reason;
     }
 }
 
