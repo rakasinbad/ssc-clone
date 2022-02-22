@@ -110,7 +110,7 @@ export class RejectApproveEffects {
                             payload: {
                                 id,
                                 changes: {
-                                    ...body,
+                                    ...resp,
                                 },
                             },
                         });
@@ -139,16 +139,17 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
-                tap((resp) => {
-                    this._$notice.open('Collection Approved', 'success', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
+                tap(() => {
+                    this.router.navigate(['/pages/finances/collection']).finally(() => {
+                        this._$notice.open('Collection Approved', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
                     });
                 })
             ),
         { dispatch: false }
     );
-
 
     /**
      *
@@ -161,24 +162,7 @@ export class RejectApproveEffects {
                 ofType(RejectReasonActions.updateColPaymentApprovalFailure),
                 map((action) => action.payload),
                 tap((resp) => {
-                    let message;
-
-                    if (resp.errors.code === 406) {
-                        message = resp.errors.error.errors
-                            .map((r) => {
-                                return `${r.errCode}<br>${r.solve}`;
-                            })
-                            .join('<br><br>');
-                    } else {
-                        if (typeof resp.errors === 'string') {
-                            message = resp.errors;
-                        } else {
-                            message =
-                                resp.errors.error && resp.errors.error.message
-                                    ? resp.errors.error.message
-                                    : resp.errors.message;
-                        }
-                    }
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -206,7 +190,7 @@ export class RejectApproveEffects {
                             payload: {
                                 id,
                                 changes: {
-                                    ...body,
+                                    ...resp,
                                 },
                             },
                         });
@@ -235,10 +219,12 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
-                tap((resp) => {
-                    this._$notice.open('Collection Rejected', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
+                tap(() => {
+                    this.router.navigate(['/pages/finances/collection']).finally(() => {
+                        this._$notice.open('Collection Rejected', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
                     });
                 })
             ),
@@ -256,24 +242,7 @@ export class RejectApproveEffects {
                 ofType(RejectReasonActions.updateColPaymentRejectFailure),
                 map((action) => action.payload),
                 tap((resp) => {
-                    let message;
-
-                    if (resp.errors.code === 406) {
-                        message = resp.errors.error.errors
-                            .map((r) => {
-                                return `${r.errCode}<br>${r.solve}`;
-                            })
-                            .join('<br><br>');
-                    } else {
-                        if (typeof resp.errors === 'string') {
-                            message = resp.errors;
-                        } else {
-                            message =
-                                resp.errors.error && resp.errors.error.message
-                                    ? resp.errors.error.message
-                                    : resp.errors.message;
-                        }
-                    }
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
