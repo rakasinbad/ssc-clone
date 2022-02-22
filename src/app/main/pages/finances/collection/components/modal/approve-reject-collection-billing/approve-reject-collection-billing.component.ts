@@ -29,7 +29,6 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     public payloadBilling: any;
     public payloadCollection: PaymColApprove | null;
     public buttonRejectDisabled: boolean;
-    public billingRef: string;
     public collectionRef: string = '';
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
@@ -52,10 +51,6 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         this.subs = this.rejectReasonList$.subscribe((val) => {
             this.listReason = val;
         });
-
-        if (this.data.value.billingPyamentId) {
-            this.billingRef = this.data.value.billingPyamentId.toString();
-        }
 
         if (this.data.value.paymentCollectionMethod) {
             this.collectionRef = this.data.value.paymentCollectionMethod.collectionRef;
@@ -85,10 +80,6 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                 this.payloadCollection = {
                     approvalStatus: 'rejected',
                     collectionRef: this.collectionRef, // di set empty string
-                };
-            } else {
-                this.payloadBilling = {
-                    billingRef: this.billingRef
                 };
             }
         }
@@ -131,7 +122,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                         id: this.data.idDetail,
                         body: {
                             approvalStatus: 'approved',
-                            billingRef: this.billingRef
+                            billingRef: ''
                         }
                     }
                 })
@@ -146,7 +137,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
                         id: this.data.idDetail,
                         body: {
                             approvalStatus: 'rejected',
-                            billingRef: this.billingRef,
+                            billingRef: '',
                             rejectedReasonId: this.selectedValue
                         }
                     }
