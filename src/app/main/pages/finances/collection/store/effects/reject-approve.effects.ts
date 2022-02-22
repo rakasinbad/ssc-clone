@@ -151,6 +151,7 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
+                map(action => action.payload),
                 tap(() => {
                     this._$notice.open('Collection Approved', 'success', {
                         verticalPosition: 'bottom',
@@ -231,6 +232,7 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
+                map(action => action.payload),
                 tap(() => {
                     this._$notice.open('Collection Rejected', 'error', {
                         verticalPosition: 'bottom',
