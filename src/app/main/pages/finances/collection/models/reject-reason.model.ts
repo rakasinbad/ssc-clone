@@ -23,7 +23,7 @@ export class PaymColApprove {
 export class PaymColReject {
     approvalStatus: string;
     collectionRef: string;
-    rejectedReasonId: number;
+    rejectReasonId: number;
 }
 
 export class PaymApproval {

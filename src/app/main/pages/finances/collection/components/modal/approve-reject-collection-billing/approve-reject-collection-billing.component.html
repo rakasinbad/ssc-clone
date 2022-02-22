@@ -25,7 +25,7 @@
 
                                 <div class="info" fxFlex="100">
                                     {{
-                                        data?.value?.data?.paymentCollectionMethod
+                                        data?.value?.paymentCollectionMethod
                                             ?.paymentCollectionType?.name || '-'
                                     }}
                                 </div>
@@ -45,7 +45,7 @@
                                 <div class="info" fxFlex="100">
                                     {{
                                         numberFormat(
-                                            data?.value?.data?.paymentCollectionMethod?.totalAmount
+                                            data?.value?.paymentCollectionMethod?.totalAmount
                                         )
                                     }}
                                 </div>
