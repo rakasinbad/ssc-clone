@@ -9,7 +9,15 @@ import { LogService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import * as fromRoot from '../../../../../../store/app.reducer';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    catchError,
+    exhaustMap,
+    finalize,
+    map,
+    switchMap,
+    tap,
+    withLatestFrom,
+} from 'rxjs/operators';
 import { ApproveRejectApiService, CollectionApiService } from '../../services';
 import { BillingActions, RejectReasonActions } from '../actions';
 import * as collectionStatus from '../reducers';
@@ -28,31 +36,33 @@ export class RejectApproveEffects {
      * [REQUEST] Reject Reason List Statuses
      * @memberof Reject Approve Effects
      */
-     @Effect() fetchRejectReasonRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(RejectReasonActions.fetchRejectReasonRequest),
-            map((action) => action.payload),
-            switchMap((payload) => {
-                return this._$rejectApproveApi.getRejectReasonList(payload.type).pipe(
-                    catchOffline(),
-                    map((resp: {data: ColPaymentApproval[]}) => {
-                        return RejectReasonActions.fetchRejectReasonSuccess({
-                            payload: resp,
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            RejectReasonActions.fetchRejectReasonFailure({
-                                payload: {
-                                    id: 'fetchRejectReasonFailure',
-                                    errors: err,
-                                },
-                            })
+    @Effect() fetchRejectReasonRequest$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.fetchRejectReasonRequest),
+                map((action) => action.payload),
+                switchMap((payload) => {
+                    return this._$rejectApproveApi.getRejectReasonList(payload.type).pipe(
+                        catchOffline(),
+                        map((resp: { data: ColPaymentApproval[] }) => {
+                            return RejectReasonActions.fetchRejectReasonSuccess({
+                                payload: resp,
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                RejectReasonActions.fetchRejectReasonFailure({
+                                    payload: {
+                                        id: 'fetchRejectReasonFailure',
+                                        errors: err,
+                                    },
+                                })
+                            )
                         )
-                    )
-                );
-            })
-        ),{ dispatch: false }
+                    );
+                })
+            ),
+        { dispatch: false }
     );
 
     @Effect() fetchRejectReasonFailure$ = createEffect(
@@ -99,35 +109,37 @@ export class RejectApproveEffects {
      * @memberof Reject Approve Effects
      */
 
-    updateColPaymentApproval$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(RejectReasonActions.updateColPaymentApprovalRequest),
-            map((action) => action.payload),
-            switchMap(({ body, id }) => {
-                return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
-                    map((resp) => {
-                        return RejectReasonActions.updateColPaymentApprovalSuccess({
-                            payload: {
-                                id,
-                                changes: {
-                                    ...resp,
+    updateColPaymentApproval$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.updateColPaymentApprovalRequest),
+                map((action) => action.payload),
+                switchMap(({ body, id }) => {
+                    return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
+                        map((resp) => {
+                            return RejectReasonActions.updateColPaymentApprovalSuccess({
+                                payload: {
+                                    id,
+                                    changes: {
+                                        ...resp,
+                                    },
                                 },
-                            },
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            RejectReasonActions.updateColPaymentApprovalFailure({
-                                payload: { id: 'updateColPaymentApprovalFailure', errors: err },
-                            })
-                        )
-                    ),
-                    finalize(() => {
-                        this.store.dispatch(UiActions.resetHighlightRow());
-                    })
-                );
-            })
-        ),{ dispatch: false }
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                RejectReasonActions.updateColPaymentApprovalFailure({
+                                    payload: { id: 'updateColPaymentApprovalFailure', errors: err },
+                                })
+                            )
+                        ),
+                        finalize(() => {
+                            this.store.dispatch(UiActions.resetHighlightRow());
+                        })
+                    );
+                })
+            ),
+        { dispatch: false }
     );
 
     /**
@@ -135,16 +147,14 @@ export class RejectApproveEffects {
      * [UPDATE - SUCCESS] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-     @Effect() updateColPaymentApprovalSuccess$ = createEffect(
+    updateColPaymentApprovalSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
                 tap(() => {
-                    this.router.navigate(['/pages/finances/collection']).finally(() => {
-                        this._$notice.open('Collection Approved', 'success', {
-                            verticalPosition: 'bottom',
-                            horizontalPosition: 'right',
-                        });
+                    this._$notice.open('Collection Approved', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -156,7 +166,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-     @Effect({ dispatch: false }) updateColPaymentApprovalFailure$ = createEffect(
+    @Effect({ dispatch: false }) updateColPaymentApprovalFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalFailure),
@@ -179,35 +189,37 @@ export class RejectApproveEffects {
      * @memberof Reject Approve Effects
      */
 
-    updateColPaymentReject$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(RejectReasonActions.updateColPaymentRejectRequest),
-            map((action) => action.payload),
-            switchMap(({ body, id }) => {
-                return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
-                    map((resp) => {
-                        return RejectReasonActions.updateColPaymentRejectSuccess({
-                            payload: {
-                                id,
-                                changes: {
-                                    ...resp,
+    updateColPaymentReject$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(RejectReasonActions.updateColPaymentRejectRequest),
+                map((action) => action.payload),
+                switchMap(({ body, id }) => {
+                    return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
+                        map((resp) => {
+                            return RejectReasonActions.updateColPaymentRejectSuccess({
+                                payload: {
+                                    id,
+                                    changes: {
+                                        ...resp,
+                                    },
                                 },
-                            },
-                        });
-                    }),
-                    catchError((err) =>
-                        of(
-                            RejectReasonActions.updateColPaymentRejectFailure({
-                                payload: { id: 'updateColPaymentRejectFailure', errors: err },
-                            })
-                        )
-                    ),
-                    finalize(() => {
-                        this.store.dispatch(UiActions.resetHighlightRow());
-                    })
-                );
-            })
-        ),{dispatch: false}
+                            });
+                        }),
+                        catchError((err) =>
+                            of(
+                                RejectReasonActions.updateColPaymentRejectFailure({
+                                    payload: { id: 'updateColPaymentRejectFailure', errors: err },
+                                })
+                            )
+                        ),
+                        finalize(() => {
+                            this.store.dispatch(UiActions.resetHighlightRow());
+                        })
+                    );
+                })
+            ),
+        { dispatch: false }
     );
 
     /**
@@ -215,16 +227,14 @@ export class RejectApproveEffects {
      * [UPDATE - SUCCESS] Collection Payment Reject
      * @memberof Reject Approve Effects
      */
-     @Effect() updateColPaymentRejectSuccess$ = createEffect(
+    updateColPaymentRejectSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
                 tap(() => {
-                    this.router.navigate(['/pages/finances/collection']).finally(() => {
-                        this._$notice.open('Collection Rejected', 'error', {
-                            verticalPosition: 'bottom',
-                            horizontalPosition: 'right',
-                        });
+                    this._$notice.open('Collection Rejected', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
                     });
                 })
             ),
@@ -236,7 +246,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Reject
      * @memberof Reject Approve Effects
      */
-     @Effect({ dispatch: false }) updateColPaymentRejectFailure$ = createEffect(
+    @Effect({ dispatch: false }) updateColPaymentRejectFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectFailure),
@@ -260,9 +270,7 @@ export class RejectApproveEffects {
     @Effect() fetchBillingDetailUpdateAfterApproveSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(
-                    BillingActions.fetchBillingDetailUpdateAfterApproveSuccess,
-                ),
+                ofType(BillingActions.fetchBillingDetailUpdateAfterApproveSuccess),
                 tap((resp) => {
                     this._$notice.open('Billing Approved', 'success', {
                         verticalPosition: 'bottom',
@@ -276,11 +284,8 @@ export class RejectApproveEffects {
     @Effect() fetchBillingDetailUpdateAfterRejectSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(
-                    BillingActions.fetchBillingDetailUpdateAfterRejectSuccess,
-                ),
+                ofType(BillingActions.fetchBillingDetailUpdateAfterRejectSuccess),
                 tap((resp) => {
-                    
                     this._$notice.open('Billing Rejected', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right',
@@ -293,101 +298,100 @@ export class RejectApproveEffects {
      *
      * [UPDATE - REQUEST] Billing Payment Approval
      */
-     @Effect() updateBillingPaymentApprovalRequest$ = createEffect(
+    @Effect() updateBillingPaymentApprovalRequest$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(
-                    RejectReasonActions.updateBillingPaymentApprovalRequest,
-                ),
-                withLatestFrom(
-                    this.store.select(fromRoot.getRouterState),
-                    (action, router) => {
-                        return {
-                            id: router.state.params.id,
-                            body: action.payload
-                        }
-                    }
-                ),
-                switchMap(newPayload => {
-                    return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.id).pipe(
-                        catchOffline(),
-                        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-                        exhaustMap(([params, userSupplier]) => {
-                            if (!userSupplier) {
-                                return this.storage
-                                    .get('user')
-                                    .toPromise()
-                                    .then((user) => (user ? [params, user] : [params, null]));
-                            }
-            
-                            const { supplierId } = userSupplier;
-                            return of([params, supplierId]);
-                        }),
-                        switchMap(([params,data]) => {
-                            let supplierId;
+                ofType(RejectReasonActions.updateBillingPaymentApprovalRequest),
+                withLatestFrom(this.store.select(fromRoot.getRouterState), (action, router) => {
+                    return {
+                        id: router.state.params.id,
+                        body: action.payload,
+                    };
+                }),
+                switchMap((newPayload) => {
+                    return this._$rejectApproveApi
+                        .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
+                        .pipe(
+                            catchOffline(),
+                            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+                            exhaustMap(([params, userSupplier]) => {
+                                if (!userSupplier) {
+                                    return this.storage
+                                        .get('user')
+                                        .toPromise()
+                                        .then((user) => (user ? [params, user] : [params, null]));
+                                }
 
-                            if (typeof data === 'string') {
-                                supplierId = data;
-                            } else {
-                                supplierId = (data as Auth).user.userSuppliers[0].supplierId;
-                            }
-            
-                            if (!supplierId) {
-                                return of(
-                                    BillingActions.fetchBillingDetailFailure({
-                                        payload: {
-                                            id: 'fetchBillingDetailFailure',
-                                            errors: 'Not Found!',
-                                        },
-                                    })
-                                );
-                            }
-            
-                            const newParams = {};
-            
-                            if (supplierId) {
-                                newParams['supplierId'] = supplierId;
-                            }
-                            return this._$collectionStatusApi
-                            .findByIdBilling({ id: params.payload.id }, newParams)
-                            .pipe(
-                                catchOffline(),
-                                map((resp) => {
-                                    return BillingActions.fetchBillingDetailUpdateAfterApproveSuccess({
-                                        payload: {
-                                            id: params.payload.id,
-                                            changes: {
-                                                ...resp,
-                                            },
-                                        },
-                                    });
-                                }),
-                                catchError((err) =>
-                                    of(
+                                const { supplierId } = userSupplier;
+                                return of([params, supplierId]);
+                            }),
+                            switchMap(([params, data]) => {
+                                let supplierId;
+
+                                if (typeof data === 'string') {
+                                    supplierId = data;
+                                } else {
+                                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                                }
+
+                                if (!supplierId) {
+                                    return of(
                                         BillingActions.fetchBillingDetailFailure({
                                             payload: {
                                                 id: 'fetchBillingDetailFailure',
-                                                errors: err,
+                                                errors: 'Not Found!',
                                             },
                                         })
-                                    )
+                                    );
+                                }
+
+                                const newParams = {};
+
+                                if (supplierId) {
+                                    newParams['supplierId'] = supplierId;
+                                }
+                                return this._$collectionStatusApi
+                                    .findByIdBilling({ id: params.payload.id }, newParams)
+                                    .pipe(
+                                        catchOffline(),
+                                        map((resp) => {
+                                            return BillingActions.fetchBillingDetailUpdateAfterApproveSuccess(
+                                                {
+                                                    payload: {
+                                                        id: params.payload.id,
+                                                        changes: {
+                                                            ...resp,
+                                                        },
+                                                    },
+                                                }
+                                            );
+                                        }),
+                                        catchError((err) =>
+                                            of(
+                                                BillingActions.fetchBillingDetailFailure({
+                                                    payload: {
+                                                        id: 'fetchBillingDetailFailure',
+                                                        errors: err,
+                                                    },
+                                                })
+                                            )
+                                        )
+                                    );
+                            }),
+                            catchError((err) =>
+                                of(
+                                    RejectReasonActions.updateBillingPaymentApprovalFailure({
+                                        payload: {
+                                            id: 'updateBillingPaymentApprovalFailure',
+                                            errors: err,
+                                        },
+                                    })
                                 )
-                            );
-                        }),
-                        catchError((err) =>
-                        of(
-                            RejectReasonActions.updateBillingPaymentApprovalFailure({
-                                payload: {
-                                    id: 'updateBillingPaymentApprovalFailure',
-                                    errors: err,
-                                },
+                            ),
+                            finalize(() => {
+                                this.store.dispatch(UiActions.resetHighlightRow());
                             })
-                        )
-                        ),
-                        finalize(() => {
-                            this.store.dispatch(UiActions.resetHighlightRow());
-                        })
-                    );
+                        );
                 })
             ),
         { dispatch: false }
@@ -400,98 +404,97 @@ export class RejectApproveEffects {
     @Effect() updateBillingPaymentRejectRequest$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(
-                    RejectReasonActions.updateBillingPaymentRejectRequest,
-                ),
-                withLatestFrom(
-                    this.store.select(fromRoot.getRouterState),
-                    (action, router) => {
-                        return {
-                            id: router.state.params.id,
-                            body: action.payload
-                        }
-                    }
-                ),
-                switchMap(newPayload => {
-                    return this._$rejectApproveApi.patchRejectApproveBilling(newPayload.body.body, newPayload.id).pipe(
-                        catchOffline(),
-                        withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-                        exhaustMap(([params, userSupplier]) => {
-                            if (!userSupplier) {
-                                return this.storage
-                                    .get('user')
-                                    .toPromise()
-                                    .then((user) => (user ? [params, user] : [params, null]));
-                            }
-            
-                            const { supplierId } = userSupplier;
-                            return of([params, supplierId]);
-                        }),
-                        switchMap(([params,data]) => {
-                            let supplierId;
+                ofType(RejectReasonActions.updateBillingPaymentRejectRequest),
+                withLatestFrom(this.store.select(fromRoot.getRouterState), (action, router) => {
+                    return {
+                        id: router.state.params.id,
+                        body: action.payload,
+                    };
+                }),
+                switchMap((newPayload) => {
+                    return this._$rejectApproveApi
+                        .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
+                        .pipe(
+                            catchOffline(),
+                            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+                            exhaustMap(([params, userSupplier]) => {
+                                if (!userSupplier) {
+                                    return this.storage
+                                        .get('user')
+                                        .toPromise()
+                                        .then((user) => (user ? [params, user] : [params, null]));
+                                }
 
-                            if (typeof data === 'string') {
-                                supplierId = data;
-                            } else {
-                                supplierId = (data as Auth).user.userSuppliers[0].supplierId;
-                            }
-            
-                            if (!supplierId) {
-                                return of(
-                                    BillingActions.fetchBillingDetailFailure({
-                                        payload: {
-                                            id: 'fetchBillingDetailFailure',
-                                            errors: 'Not Found!',
-                                        },
-                                    })
-                                );
-                            }
-            
-                            const newParams = {};
-            
-                            if (supplierId) {
-                                newParams['supplierId'] = supplierId;
-                            }
-                            return this._$collectionStatusApi
-                            .findByIdBilling({ id: params.payload.id }, newParams)
-                            .pipe(
-                                catchOffline(),
-                                map((resp) => {
-                                    return BillingActions.fetchBillingDetailUpdateAfterRejectSuccess({
-                                        payload: {
-                                            id: params.payload.id,
-                                            changes: {
-                                                ...resp,
-                                            },
-                                        },
-                                    });
-                                }),
-                                catchError((err) =>
-                                    of(
+                                const { supplierId } = userSupplier;
+                                return of([params, supplierId]);
+                            }),
+                            switchMap(([params, data]) => {
+                                let supplierId;
+
+                                if (typeof data === 'string') {
+                                    supplierId = data;
+                                } else {
+                                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                                }
+
+                                if (!supplierId) {
+                                    return of(
                                         BillingActions.fetchBillingDetailFailure({
                                             payload: {
                                                 id: 'fetchBillingDetailFailure',
-                                                errors: err,
+                                                errors: 'Not Found!',
                                             },
                                         })
-                                    )
+                                    );
+                                }
+
+                                const newParams = {};
+
+                                if (supplierId) {
+                                    newParams['supplierId'] = supplierId;
+                                }
+                                return this._$collectionStatusApi
+                                    .findByIdBilling({ id: params.payload.id }, newParams)
+                                    .pipe(
+                                        catchOffline(),
+                                        map((resp) => {
+                                            return BillingActions.fetchBillingDetailUpdateAfterRejectSuccess(
+                                                {
+                                                    payload: {
+                                                        id: params.payload.id,
+                                                        changes: {
+                                                            ...resp,
+                                                        },
+                                                    },
+                                                }
+                                            );
+                                        }),
+                                        catchError((err) =>
+                                            of(
+                                                BillingActions.fetchBillingDetailFailure({
+                                                    payload: {
+                                                        id: 'fetchBillingDetailFailure',
+                                                        errors: err,
+                                                    },
+                                                })
+                                            )
+                                        )
+                                    );
+                            }),
+                            catchError((err) =>
+                                of(
+                                    RejectReasonActions.updateBillingPaymentRejectFailure({
+                                        payload: {
+                                            id: 'updateBillingPaymentRejectFailure',
+                                            errors: err,
+                                        },
+                                    })
                                 )
-                            );
-                        }),
-                        catchError((err) =>
-                        of(
-                            RejectReasonActions.updateBillingPaymentRejectFailure({
-                                payload: {
-                                    id: 'updateBillingPaymentRejectFailure',
-                                    errors: err,
-                                },
+                            ),
+                            finalize(() => {
+                                this.store.dispatch(UiActions.resetHighlightRow());
                             })
-                        )
-                        ),
-                        finalize(() => {
-                            this.store.dispatch(UiActions.resetHighlightRow());
-                        })
-                    );
+                        );
                 })
             ),
         { dispatch: false }
@@ -521,9 +524,8 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentRejectFailure),
-                map((action) => { 
-                    
-                    return action.payload
+                map((action) => {
+                    return action.payload;
                 }),
                 tap((resp) => {
                     const message = this._handleErrMessage(resp);
@@ -546,8 +548,6 @@ export class RejectApproveEffects {
             return resp.errors.message;
         }
     }
-
-
 
     constructor(
         private actions$: Actions,

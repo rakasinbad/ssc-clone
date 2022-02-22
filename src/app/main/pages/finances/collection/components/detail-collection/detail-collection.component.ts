@@ -112,9 +112,9 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
 
         dialogApproved.afterClosed().subscribe((result) => {
-            // if (result != undefined && result.status !== 'cancel') {
-            //     this.router.navigate(['/pages/finances/collection']);
-            // }
+            if (result != undefined && result.status !== 'cancel') {
+                this.router.navigate(['/pages/finances/collection']);
+            }
         });
     }
 
@@ -133,9 +133,9 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
 
         dialogReject.afterClosed().subscribe((result) => {
-            // if (result != undefined && result.status !== 'cancel') {
-            //     this.router.navigate(['/pages/finances/collection']);
-            // }
+            if (result != undefined && result.status !== 'cancel') {
+                this.router.navigate(['/pages/finances/collection']);
+            }
         });
     }
 
