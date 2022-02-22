@@ -58,7 +58,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
     form: FormGroup;
 
     @Input() viewByType: string = 'cStatus';
-    @Input() searchBy: string = 'supplierName';
+    @Input() searchBy: string = 'collectionCode';
     @Input() searchValue: string = '';
     @Input() approvalStatus: number = 0;
 

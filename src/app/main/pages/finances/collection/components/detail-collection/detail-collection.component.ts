@@ -107,7 +107,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
                 title: 'Collection Approve',
                 type: 'collection',
                 status: 'approved',
-                value: val,
+                value: val.data,
             },
         });
 
@@ -129,7 +129,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
 
         const dialogReject = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
-            data: { title: 'Collection Reject', type: 'collection', status: 'reject', value: val },
+            data: { title: 'Collection Reject', type: 'collection', status: 'reject', value: val.data },
         });
 
         dialogReject.afterClosed().subscribe((result) => {

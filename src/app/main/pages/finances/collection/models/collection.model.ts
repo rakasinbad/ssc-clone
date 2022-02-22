@@ -30,15 +30,19 @@ export class CalculateCollectionStatusPayment {
 }
 
 interface IFinanceCollectionStatus {
-    id: string;
-    supplierId: string;
+    readonly id: NonNullable<number>;
+    supplierCode: string;
     supplierName: string;
     collectionCode: string;
     collectionMethodName: string;
-    referenceCode: string;
+    referenceCode: NonNullable<string>;
+    amount: number;
+    balance: number;
     totalAmount: number;
+    totalBalance: number;
     createdAt: string;
-    invalidDate: string; //NonNullable<string>
+    issuedDate: string;
+    invalidDate: string;
     approvalStatus: string;
     salesmanName: string;
     storeExternalId: string;
@@ -46,8 +50,6 @@ interface IFinanceCollectionStatus {
     orderCode: Array<any>;
     orderRef: Array<any>;
     reason: string;
-    collectionRef: string;
-    updatedAt: string;
 }
 
 interface userModels {
@@ -65,20 +67,32 @@ interface stampModels {
     nominal: number;
 }
 
-interface financeCollectionMethod {
-    id: number;
-    amount: number;
-    approvalStatus: string;
-    balance: number;
+interface supplierStoreModels {
+    readonly id: NonNullable<number>;
+    externalId: string;
+}
+
+interface supplierModels {
+    readonly id: NonNullable<number>;
+    name: string;
+    code: string;
+}
+
+interface paymentColMethodModels {
+    readonly id: NonNullable<number>;
     collectionCode: string;
-    createdAt: string;
-    paymentCollectionTypeName: string;
     refNo: string;
+    balance: number;
+    amount: number;
+    paymentCollectionTypeName: string;
+    createdAt: string;
+    approvalStatus: string;
+    approvalReason: string;
+    dueDate: string;
     user: userModels;
+    supplierStore: supplierStoreModels;
+    supplier: supplierModels;
     store: storeModels;
-    supplier: supplierBilling;
-    supplierStore: supplierStoreBilling;
-    stampNominal: number;
 }
 
 interface orderParcelModels {
@@ -116,15 +130,19 @@ interface IFinanceBillingStatus {
 }
 
 export class CollectionStatus {
-    id: string;
-    supplierId: string;
+    readonly id: NonNullable<number>;
+    supplierCode: string;
     supplierName: string;
     collectionCode: string;
     collectionMethodName: string;
-    referenceCode: string;
+    referenceCode: NonNullable<string>;
+    amount: number;
+    balance: number;
     totalAmount: number;
+    totalBalance: number;
     createdAt: string;
-    invalidDate: string; //NonNullable<string>
+    issuedDate: string;
+    invalidDate: string;
     approvalStatus: string;
     salesmanName: string;
     storeExternalId: string;
@@ -132,20 +150,22 @@ export class CollectionStatus {
     orderCode: Array<any>;
     orderRef: Array<any>;
     reason: string;
-    collectionRef: string;
-    updatedAt: string;
 
     constructor(data: IFinanceCollectionStatus) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
         const {
             id,
-            supplierId,
+            supplierCode,
             supplierName,
             collectionCode,
             collectionMethodName,
             referenceCode,
+            amount,
+            balance,
             totalAmount,
+            totalBalance,
             createdAt,
+            issuedDate,
             invalidDate,
             approvalStatus,
             salesmanName,
@@ -153,20 +173,22 @@ export class CollectionStatus {
             storeName,
             orderCode,
             orderRef,
-            reason,
-            collectionRef,
-            updatedAt
+            reason
         } = data;
 
         // Memasukkan nilai ke dalam object dari parameter-nya constructor.
         this.id = id;
-        this.supplierId = supplierId;
+        this.supplierCode = supplierCode;
         this.supplierName = supplierName;
         this.collectionCode = collectionCode;
         this.collectionMethodName = collectionMethodName;
         this.referenceCode = referenceCode;
+        this.amount = amount;
+        this.balance = balance;
         this.totalAmount = totalAmount;
+        this.totalBalance = totalBalance;
         this.createdAt = createdAt;
+        this.issuedDate = issuedDate;
         this.invalidDate = invalidDate || null;
         this.approvalStatus = approvalStatus;
         this.salesmanName = salesmanName;
@@ -175,8 +197,6 @@ export class CollectionStatus {
         this.orderCode = orderCode;
         this.orderRef = orderRef;
         this.reason = reason;
-        this.collectionRef = collectionRef || null;
-        this.updatedAt = updatedAt || null;
     }
 }
 
