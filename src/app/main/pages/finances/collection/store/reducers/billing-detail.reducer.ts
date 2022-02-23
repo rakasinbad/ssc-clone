@@ -20,7 +20,7 @@ export const adapterDetail = createEntityAdapter<FinanceDetailBillingV1>({
 });
 
 export const adapterCallectionHistory = createEntityAdapter<IBillingPayments>({
-    selectId: (row) => row.billingPyamentId,
+    selectId: (row) => row.billingPaymentId,
 })
 
 // Initialize state
