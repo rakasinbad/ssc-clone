@@ -97,7 +97,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
 
     onClickBack(): void {
         this.location.back();
-        // localStorage.clear();
     }
 
     btnApproved(val) {
@@ -112,9 +111,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
 
         dialogApproved.afterClosed().subscribe((result) => {
-            if (result != undefined && result.status !== 'cancel') {
-                this.router.navigate(['/pages/finances/collection']);
-            }
         });
     }
 
@@ -133,9 +129,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         });
 
         dialogReject.afterClosed().subscribe((result) => {
-            if (result != undefined && result.status !== 'cancel') {
-                this.router.navigate(['/pages/finances/collection']);
-            }
         });
     }
 
@@ -191,9 +184,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
                 this.detailCollection$ = this.store.select(
                     CollectionDetailSelectors.getSelectedItem
                 );
-                // this.dataSource$ = this.CollectionStore.select(CollectionSelectors.selectAll);
-
-                // this.rejectReasonList$ = this.store.select(RejectReasonSelectors.selectAll);
 
                 this.subs = this.detailCollection$.subscribe((res) => {
                     this.dataDetail = res;
