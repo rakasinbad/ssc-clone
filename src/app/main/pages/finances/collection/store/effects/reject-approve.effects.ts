@@ -306,7 +306,7 @@ export class RejectApproveEffects {
                 ofType(RejectReasonActions.updateBillingPaymentApprovalRequest),
                 withLatestFrom(this.store.select(fromRoot.getRouterState), (action, router) => {
                     return {
-                        id: router.state.params.id,
+                        id: action.payload.id,
                         body: action.payload,
                     };
                 }),
