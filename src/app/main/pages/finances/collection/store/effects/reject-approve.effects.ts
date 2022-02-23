@@ -116,8 +116,8 @@ export class RejectApproveEffects {
                 map((action) => action.payload),
                 switchMap(({ body, id }) => {
                     return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
+                        catchOffline(),
                         map((resp) => {
-                            console.log('resp app col->', resp)
                             return RejectReasonActions.updateColPaymentApprovalSuccess({
                                 payload: {
                                     id,
@@ -198,6 +198,7 @@ export class RejectApproveEffects {
                 map((action) => action.payload),
                 switchMap(({ body, id }) => {
                     return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
+                        catchOffline(),
                         map((resp) => {
                             return RejectReasonActions.updateColPaymentRejectSuccess({
                                 payload: {
