@@ -5,7 +5,6 @@ import {
     ChangeDetectionStrategy,
     OnDestroy,
     ViewEncapsulation,
-    ChangeDetectorRef,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
@@ -30,15 +29,13 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     public idDetail: number;
     private subs: Subscription = new Subscription();
-    private skpImageSub: Subscription = new Subscription();
-    private collectionPhoto$: Observable<any>;
-    private skpPhoto$: Observable<any>;
     private image$: Observable<any>;
+    subsData: Subscription;
 
     collectionId: number;
     isLoadingPhoto$: Observable<boolean>;
     isLoadingPhotoSkp$: Observable<boolean>;
-    collectionMethodType: string = 'promo';
+    collectionMethodType: string = '';
 
     CASH = StatusPaymentLabel.CASH;
     CHECK = StatusPaymentLabel.CHECK;
@@ -56,27 +53,27 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         this.collectionId = id;
 
-        this.image$ = this.store.select(CollectionPhotoSelectors.getId);
-
-        const sub = this.image$.subscribe({
-            next: (resp) => {
-                if (resp.image) {
-                    this.initViewerImage(resp);
-                } else if (resp.skpImage) {
-                    this.initViewerImage(resp);
+        this.subsData = this.detailCollection$.subscribe((val) => {
+            if (val) {
+                if (val.data.paymentCollectionMethod.paymentCollectionType.code !== 'sales_return') {
+                    this.store.dispatch(
+                        CollectionActions.fetchCollectionPhotoRequest({
+                            payload: { id: this.collectionId },
+                        })
+                    );
                 }
-            },
-        });
-        this.subs.add(sub);
+            }
+        })
+        
 
         this.isLoadingPhoto$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
         this.isLoadingPhotoSkp$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
     }
 
-    initViewerImage = (image): void => {
+    initViewerImage = (image, type: string): void => {
         let imgView: string;
         let text: string;
-        if (this.collectionMethodType == 'promo') {
+        if (type == 'promo') {
             if (image.skpImage == null) {
                 this._$notice.open('Photo Not Available', 'error', {
                     verticalPosition: 'bottom',
@@ -87,8 +84,7 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
                 text = 'Promotion Cooperation Letter';
                 this.viewerImage(imgView, text);
             }
-            
-        } else {
+        } else if (type == 'other') {
             if (image.image == null) {
                 this._$notice.open('Photo Not Available', 'error', {
                     verticalPosition: 'bottom',
@@ -99,10 +95,7 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
                 text = 'Collection Photo';
                 this.viewerImage(imgView, text);
             }
-           
         }
-
-        
     };
 
     viewerImage(src: string, text: string) {
@@ -119,31 +112,37 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
 
     onClickViewImage = (type: string): void => {
         this.collectionMethodType = type;
-        this.clearCollectionPhotoState();
-        this.store.dispatch(
-            CollectionActions.fetchCollectionPhotoRequest({
-                payload: { id: this.collectionId },
-            })
-        );
+        this.image$ = this.store.select(CollectionPhotoSelectors.getId);
+
+        const sub = this.image$.subscribe({
+            next: (resp) => {
+                    this.initViewerImage(resp, this.collectionMethodType);
+            },
+        });
+
+        this.subs.add(sub);
+
     };
 
     onClickViewPromotion = (type: string): void => {
         this.collectionMethodType = type;
-        this.clearCollectionPhotoStateSkp();
-        this.store.dispatch(
-            CollectionActions.fetchCollectionPhotoRequest({
-                payload: { id: this.collectionId },
-            })
-        );
+        this.image$ = this.store.select(CollectionPhotoSelectors.getId);
+
+        const sub = this.image$.subscribe({
+            next: (resp) => {
+                    this.initViewerImage(resp, this.collectionMethodType);
+            },
+        });
+
+        this.subs.add(sub);
     };
 
     ngOnDestroy(): void {
         if (!this.subs.closed) {
             this.subs.unsubscribe();
         }
-        if (!this.skpImageSub.closed) {
-            this.skpImageSub.unsubscribe();
-        }
+        
+        this.subsData.unsubscribe();
         this.clearCollectionPhotoState();
         this.clearCollectionPhotoStateSkp();
     }

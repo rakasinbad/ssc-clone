@@ -135,6 +135,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         if (changes['searchBy']) {
             if (!changes['searchBy'].isFirstChange()) {
                 this.searchBy = changes['searchBy'].currentValue;
+                this.search.setValue('');
                 setTimeout(() => this._initTable());
             }
         }
@@ -176,7 +177,6 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         let itemPromoHierarchy = {
             searchBy: this.searchBy,
             approvalStatus: this.approvalStatus,
-            keyword: this.searchValue,
         };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
         localStorage.setItem('isFromDetail', 'true');
