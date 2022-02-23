@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
@@ -11,9 +11,10 @@ import { BillingDetailSelectors } from '../../../../store/selectors';
     templateUrl: './detail-billing-generalinfo.component.html',
     styleUrls: ['./detail-billing-generalinfo.component.scss'],
 })
-export class DetailBillingGeneralinfoComponent implements OnInit {
+export class DetailBillingGeneralinfoComponent implements OnInit, OnDestroy {
     dataDetail$: Observable<FinanceDetailBillingV1>;
     isLoading$: Observable<boolean>;
+    private subs: Subscription = new Subscription();
 
     constructor(private store: Store<billingStatus.FeatureState>, private route: ActivatedRoute) {}
 
@@ -22,6 +23,11 @@ export class DetailBillingGeneralinfoComponent implements OnInit {
 
         this.dataDetail$ = this.store.select(BillingDetailSelectors.getSelectedItem, id);
         this.isLoading$ = this.store.select(BillingDetailSelectors.getLoadingState);
+    }
+
+    ngOnDestroy(): void {
+        //unsubscribeAll
+        this.subs.unsubscribe();
     }
 
     numberFormat(num) {

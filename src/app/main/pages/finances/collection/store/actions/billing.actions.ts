@@ -4,10 +4,12 @@ import { ErrorHandler } from 'app/shared/models/global.model';
 import {
     BillingStatus,
     FinanceDetailBillingV1,
+    IBillingPayments,
 } from '../../models';
 import { Update } from '@ngrx/entity';
 
 const featureKey = `[Billing API]`;
+
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Billing Status List
@@ -32,7 +34,7 @@ export const fetchBillingStatusSuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 export const fetchBillingDetailRequest = createAction(
     `${featureKey} Fetch Detail Billing Request`,
-    props<{ payload: { id: string } }>()
+    props<{ payload: { id: string, type: "initial" | "approve" | "reject" } }>()
 );
 
 export const fetchBillingDetailFailure = createAction(
@@ -58,14 +60,24 @@ export const fetchBillingDetailUpdateFailure = createAction(
     props<{ payload: ErrorHandler }>()
 );
 
+export const fetchBillingDetailUpdateRequest = createAction(
+    `${featureKey} Fetch Detail Billing Update After Approve Request`,
+    props<{ payload: { idDetail: string, type: "approve" | "reject" } }>()
+);
+
+export const fetchBillingDetailUpdateAfterRejectRequest = createAction(
+    `${featureKey} Fetch Detail Billing Update After Reject Request`,
+    props<{ payload: { id: string } }>()
+);
+
 export const fetchBillingDetailUpdateAfterApproveSuccess = createAction(
     `${featureKey} Fetch Detail Billing Update After Approve Request Success`,
-    props<{ payload: Update<FinanceDetailBillingV1> }>()
+    props<{ payload: Update<IBillingPayments> }>()
 );
 
 export const fetchBillingDetailUpdateAfterRejectSuccess = createAction(
     `${featureKey} Fetch Detail Billing Update After Reject Request Success`,
-    props<{ payload: Update<FinanceDetailBillingV1> }>()
+    props<{ payload: Update<IBillingPayments> }>()
 );
 
 export const clearState = createAction(`${featureKey} Reset Billing Core State`);

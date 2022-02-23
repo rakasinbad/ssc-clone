@@ -32,6 +32,7 @@ import * as fromBilling from '../reducers/billing.reducer';
 import * as fromCollectionDetail from '../reducers/collection-detail.reducer';
 import { OrderActions } from '../../../../orders/store/actions';
 import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
+import { APPROVE, REJECT } from '../../constants';
 
 @Injectable()
 export class CollectionEffects {
@@ -360,6 +361,20 @@ export class CollectionEffects {
                     .pipe(
                         catchOffline(),
                         map((resp) => {
+                            if(params.payload.type === APPROVE){
+                                this._$notice.open("Billing Approved", 'success', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right',
+                                });
+                            }
+
+                            if(params.payload.type === REJECT){
+                                this._$notice.open("Billing Rejected", 'error', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right',
+                                });
+                            }
+
                             return BillingActions.fetchBillingDetailSuccess({
                                 payload: resp,
                             });

@@ -31,7 +31,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
             //         });
             //     }
             // }
-
+            
             if (
                 !req.headers.has('Content-Type') &&
                 !req.url.endsWith('import-order-parcels') &&
@@ -41,7 +41,8 @@ export class HttpConfigInterceptor implements HttpInterceptor {
                 !req.url.endsWith('import-journey-plans') &&
                 !req.url.endsWith('import-sales') &&
                 !req.url.endsWith('import-portfolios') &&
-                !req.url.endsWith('mass-upload')
+                !req.url.endsWith('mass-upload')&&
+                !req.url.includes('payment-approval')
             ) {
                 req = req.clone({
                     headers: req.headers.set('Content-Type', 'application/json')
