@@ -141,6 +141,8 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         if (!this.subs.closed) {
             this.subs.unsubscribe();
         }
+        
+        this.subsData.unsubscribe();
         this.clearCollectionPhotoState();
         this.clearCollectionPhotoStateSkp();
     }
