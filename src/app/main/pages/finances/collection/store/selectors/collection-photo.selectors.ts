@@ -1,6 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromCollectionCore from '../reducers';
-import * as fromCollectionPhoto from '../reducers/collection-photo.reducer';
 
 const getCollectionPhotoCoreState = createFeatureSelector<
     fromCollectionCore.FeatureState,

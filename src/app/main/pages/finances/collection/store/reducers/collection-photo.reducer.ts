@@ -43,7 +43,12 @@ export const reducer = createReducer(
         id: payload.id,
     })),
     on(CollectionActions.fetchCollectionPhotoSuccess, (state, { payload }) =>
-        adapter.addOne(payload.data, { ...state, isLoading: false, image: payload.data.image, skpImage: payload.data.skpImage })
+        adapter.addOne(payload.data, {
+            ...state,
+            isLoading: false,
+            image: payload.data.image,
+            skpImage: payload.data.skpImage,
+        })
     ),
     on(CollectionActions.clearState, CollectionActions.clearCollectionPhoto, () => initialState)
 );

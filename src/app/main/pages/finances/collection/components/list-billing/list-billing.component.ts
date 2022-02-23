@@ -126,6 +126,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
         if (changes['searchBy']) {
             if (!changes['searchBy'].isFirstChange()) {
                 this.searchBy = changes['searchBy'].currentValue;
+                this.search.setValue('');
                 setTimeout(() => this._initTable());
             }
         }

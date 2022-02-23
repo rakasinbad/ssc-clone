@@ -30,6 +30,8 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
     public payloadCollection: PaymColApprove | null;
     public buttonRejectDisabled: boolean;
     public collectionRef: string = '';
+    public billingPaymentId: number = null;
+
     rejectReasonList$: Observable<Array<RejectReason>>;
     isLoading$: Observable<boolean>;
     subs: Subscription;
@@ -55,7 +57,9 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
         if (this.data.value.paymentCollectionMethod) {
             this.collectionRef = this.data.value.paymentCollectionMethod.collectionRef;
         }
-        
+        if(this.data.value.billingPaymentId){
+            this.billingPaymentId = parseInt(this.data.value.billingPaymentId);
+        }
     }
 
     numberFormat(num) {
@@ -119,7 +123,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateBillingPaymentApprovalRequest({
                     payload: {
-                        id: this.data.idDetail,
+                        id: this.billingPaymentId,
                         body: {
                             approvalStatus: 'approved',
                             billingRef: ''
@@ -134,7 +138,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
             this.store.dispatch(
                 RejectReasonActions.updateBillingPaymentRejectRequest({
                     payload: {
-                        id: this.data.idDetail,
+                        id: this.billingPaymentId,
                         body: {
                             approvalStatus: 'rejected',
                             billingRef: '',

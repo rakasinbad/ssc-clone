@@ -5,7 +5,7 @@ export enum SearchByListCollection {
     // COL_DATE = 'colDate',
     // COL_DUE_DATE = 'colDueDate',
     SALES_REP_NAME = 'salesRep',
-    COL_METHOD = 'collectionMethodId',
+    COL_METHOD = 'collectionMethod',
     COL_STATUS = 'approvalStatus',
 }
 

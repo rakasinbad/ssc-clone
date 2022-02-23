@@ -116,7 +116,15 @@ export class RejectApproveEffects {
                 map((action) => action.payload),
                 switchMap(({ body, id }) => {
                     return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
+                        catchOffline(),
                         map((resp) => {
+                            this.router.navigate(['/pages/finances/collection']).finally(() => {
+                                this._$notice.open('Collection Approved', 'success', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right',
+                                });
+                            });
+
                             return RejectReasonActions.updateColPaymentApprovalSuccess({
                                 payload: {
                                     id,
@@ -151,7 +159,7 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
-                map(action => action.payload),
+                map((action) => action.payload),
                 tap(() => {
                     this._$notice.open('Collection Approved', 'success', {
                         verticalPosition: 'bottom',
@@ -197,7 +205,15 @@ export class RejectApproveEffects {
                 map((action) => action.payload),
                 switchMap(({ body, id }) => {
                     return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
+                        catchOffline(),
                         map((resp) => {
+                            this.router.navigate(['/pages/finances/collection']).finally(() => {
+                                this._$notice.open('Collection Rejected', 'error', {
+                                    verticalPosition: 'bottom',
+                                    horizontalPosition: 'right',
+                                });
+                            });
+
                             return RejectReasonActions.updateColPaymentRejectSuccess({
                                 payload: {
                                     id,
@@ -232,7 +248,7 @@ export class RejectApproveEffects {
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
-                map(action => action.payload),
+                map((action) => action.payload),
                 tap(() => {
                     this._$notice.open('Collection Rejected', 'error', {
                         verticalPosition: 'bottom',
@@ -306,7 +322,7 @@ export class RejectApproveEffects {
                 ofType(RejectReasonActions.updateBillingPaymentApprovalRequest),
                 withLatestFrom(this.store.select(fromRoot.getRouterState), (action, router) => {
                     return {
-                        id: router.state.params.id,
+                        id: action.payload.id,
                         body: action.payload,
                     };
                 }),
