@@ -128,7 +128,7 @@
                             id="btn__actions"
                             mat-icon-button
                             [matMenuTriggerFor]="row?.collectionStatus !== 'approved' || row?.billingStatus == 'approved' || row?.billingStatus == 'rejected'? hiddenMatMenu : moreMenu"
-                            matTooltip="Can’t reject and approve because the collection status already approved and billing status already approved or rejected"
+                            matTooltip="Can’t reject and approve because the collection status is still not approved yet or billing status is already approved or rejected"
                             [matTooltipClass]="
                                 row?.billingStatus == 'pending'  && 'tooltip-hidden'
                             "
