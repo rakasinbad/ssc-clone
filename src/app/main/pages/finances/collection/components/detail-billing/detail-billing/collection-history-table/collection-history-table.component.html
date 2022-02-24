@@ -130,7 +130,7 @@
                             [matMenuTriggerFor]="row?.billingStatus == 'approved' || row?.billingStatus == 'rejected'? hiddenMatMenu : moreMenu"
                             matTooltip="Can’t reject and approve because the billing status already approved or rejected"
                             [matTooltipClass]="
-                                row?.billingStatus !== 'approved' && 'tooltip-hidden'
+                                row?.billingStatus == 'pending'  && 'tooltip-hidden'
                             "
                             aria-label="More"
                             (click)="$event.stopPropagation()"
