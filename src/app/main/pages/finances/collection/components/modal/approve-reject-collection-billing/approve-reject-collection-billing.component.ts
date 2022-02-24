@@ -64,13 +64,10 @@ export class ApproveRejectCollectionBillingComponent implements OnInit {
 
     numberFormat(num) {
         if (num) {
-            return (
-                'Rp' +
-                num
-                    .toFixed(2)
-                    .replace('.', ',')
-                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
-            );
+            return 'Rp' + num
+                .toFixed(0)
+                .replace('.', ',')
+                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
 
         return '-';
