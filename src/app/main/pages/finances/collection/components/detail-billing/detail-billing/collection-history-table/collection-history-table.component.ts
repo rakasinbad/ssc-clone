@@ -16,7 +16,7 @@ import { RejectReasonActions } from '../../../../store/actions';
 import * as billingStatus from '../../../../store/reducers';
 import { BillingDetailSelectors, RejectReasonSelectors } from '../../../../store/selectors';
 import { ApproveRejectCollectionBillingComponent } from '../../../modal/approve-reject-collection-billing/approve-reject-collection-billing.component';
-
+import * as StatusPaymentLabel from '../../../../constants';
 @Component({
     selector: 'app-collection-history-table',
     templateUrl: './collection-history-table.component.html',
@@ -108,5 +108,54 @@ export class CollectionHistoryTableComponent implements OnInit {
         }
     
         return '-';
+    }
+
+    statusLabelBilling(status) {
+        switch (status) {
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            default:
+                return '-';
+                break;
+        }
+    }
+
+    statusLabelCollection(status) {
+        switch (status) {
+            case StatusPaymentLabel.VALUE_APPROVED_LABEL:
+                return StatusPaymentLabel.STATUS_APPROVED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PENDING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_OVERDUE_LABEL:
+                return StatusPaymentLabel.STATUS_OVERDUE_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_REJECTED_LABEL:
+                return StatusPaymentLabel.STATUS_REJECTED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAYMENT_FAILED_LABEL:
+                return StatusPaymentLabel.STATUS_PAYMENT_FAILED_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_WAITING_PAYMENT_LABEL:
+                return StatusPaymentLabel.STATUS_WAITING_PAYMENT_LABEL;
+                break;
+            case StatusPaymentLabel.VALUE_PAID_LABEL:
+                return StatusPaymentLabel.STATUS_PAID_LABEL;
+                break;
+            default:
+                return '-';
+                break;
+        }
     }
 }

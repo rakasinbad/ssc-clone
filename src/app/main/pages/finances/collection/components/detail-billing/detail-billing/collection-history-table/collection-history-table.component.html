@@ -71,7 +71,7 @@
                 <mat-cell *matCellDef="let row">
                     <div style="display: inline-grid" class="text-{{ row?.collectionStatus }}">
                         <span class="text-status">
-                            {{ row?.collectionStatus || '-' }}
+                            {{ statusLabelCollection(row?.collectionStatus) }}
                         </span>
                         <span class="text-status" *ngIf="row?.collectionApprovedDate">
                             {{ (row?.collectionApprovedDate | date: 'dd MMM yyyy') || '-' }}
@@ -89,7 +89,7 @@
                 <mat-cell *matCellDef="let row">
                     <div style="display: inline-grid" class="text-{{ row?.billingStatus }}">
                         <span class="text-status">
-                            {{ row?.billingStatus || '-' }}
+                            {{ statusLabelBilling(row?.billingStatus) }}
                         </span>
                         <span class="text-status" *ngIf="row?.billingApprovedDate">
                             {{ (row?.billingApprovedDate | date: 'dd MMM yyyy') || '-' }}
@@ -127,8 +127,8 @@
                         <button
                             id="btn__actions"
                             mat-icon-button
-                            [matMenuTriggerFor]="row?.billingStatus == 'approved' || row?.billingStatus == 'rejected'? hiddenMatMenu : moreMenu"
-                            matTooltip="Can’t reject and approve because the billing status already approved or rejected"
+                            [matMenuTriggerFor]="row?.collectionStatus !== 'approved' || row?.billingStatus == 'approved' || row?.billingStatus == 'rejected'? hiddenMatMenu : moreMenu"
+                            matTooltip="Can’t reject and approve because the collection status is still not approved yet or billing status is already approved or rejected"
                             [matTooltipClass]="
                                 row?.billingStatus == 'pending'  && 'tooltip-hidden'
                             "
