@@ -64,6 +64,11 @@ export class CollectionHistoryTableComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void {
+        //unsubscribeAll
+        this.subs.unsubscribe();
+    }
+
     btnApproved(val) {
         const dialogApproved = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',

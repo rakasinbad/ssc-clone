@@ -27,6 +27,7 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
     detailBilling$: Observable<FinanceDetailBillingV1>;
     isLoading$: Observable<boolean>;
     public idDetail: number;
+    private subs: Subscription = new Subscription();
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -67,7 +68,7 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
-
+        this.subs.unsubscribe();
         this._initPage(LifecyclePlatform.OnDestroy);
     }
 
@@ -91,6 +92,10 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
 
                 // Reset core state flexiCombos
                 this.store.dispatch(BillingActions.clearState());
+
+                //unsubscribeAll
+                this.subs.unsubscribe();
+                
                 break;
 
             default:
@@ -107,7 +112,7 @@ export class DetailBillingComponent implements OnInit, OnDestroy {
                 parameter['splitRequest'] = true;
 
                 this.store.dispatch(
-                    BillingActions.fetchBillingDetailRequest({ payload: { id: id } })
+                    BillingActions.fetchBillingDetailRequest({ payload: { id: id , type: "initial" } })
                 );
 
                 this.isLoading$ = this.store.select(BillingDetailSelectors.getLoadingState);

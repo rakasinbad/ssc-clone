@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 
 export interface IAPIOptions {
     header_X_Type?: string;
@@ -42,7 +43,7 @@ export class ApproveRejectApiService {
             this._endpointCollection + '/payment-approval'
         );
 
-        return this.http.patch(`${this._url}/${id}`,body);
+        return this.http.patch(`${this._url}/${id}`,body).pipe(shareReplay());
     }
 
 }

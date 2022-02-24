@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatRadioChange } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -21,7 +21,7 @@ interface Reason {
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
-export class ApproveRejectCollectionBillingComponent implements OnInit {
+export class ApproveRejectCollectionBillingComponent implements OnInit,OnDestroy {
     public title: string;
     public type: string;
     public status: string;
