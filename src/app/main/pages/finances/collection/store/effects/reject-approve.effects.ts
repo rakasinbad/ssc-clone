@@ -296,7 +296,7 @@ export class RejectApproveEffects {
      * [UPDATE - REQUEST] Billing Payment Approval
      *  @memberof Reject Approve Effects
      */
-    updateBillingPaymentApprovalRequest$ = createEffect(
+     @Effect() updateBillingPaymentApprovalRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentApprovalRequest),
@@ -391,7 +391,7 @@ export class RejectApproveEffects {
      *  @memberof Reject Approve Effects
      */
 
-    updateBillingPaymentRejectRequest$ = createEffect(
+    @Effect() updateBillingPaymentRejectRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentRejectRequest),
