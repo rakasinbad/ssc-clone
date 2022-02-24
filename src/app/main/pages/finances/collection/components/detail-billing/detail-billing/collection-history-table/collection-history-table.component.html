@@ -71,7 +71,7 @@
                 <mat-cell *matCellDef="let row">
                     <div style="display: inline-grid" class="text-{{ row?.collectionStatus }}">
                         <span class="text-status">
-                            {{ row?.collectionStatus || '-' }}
+                            {{ statusLabelCollection(row?.collectionStatus) }}
                         </span>
                         <span class="text-status" *ngIf="row?.collectionApprovedDate">
                             {{ (row?.collectionApprovedDate | date: 'dd MMM yyyy') || '-' }}
@@ -89,7 +89,7 @@
                 <mat-cell *matCellDef="let row">
                     <div style="display: inline-grid" class="text-{{ row?.billingStatus }}">
                         <span class="text-status">
-                            {{ row?.billingStatus || '-' }}
+                            {{ statusLabelBilling(row?.billingStatus) }}
                         </span>
                         <span class="text-status" *ngIf="row?.billingApprovedDate">
                             {{ (row?.billingApprovedDate | date: 'dd MMM yyyy') || '-' }}
