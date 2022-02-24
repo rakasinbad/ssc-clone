@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { BillingPayments, FinanceDetailBillingV1 } from '../../models';
+import {  FinanceDetailBillingV1 } from '../../models';
 import { BillingActions } from '../actions';
 
 // Keyname for reducer
@@ -13,14 +13,13 @@ export interface State extends EntityState<FinanceDetailBillingV1> {
     isRefresh: boolean;
     selectedId: string;
     total: number;
-    billingPayments?: Partial<BillingPayments>;
 }
 // Adapter for Detail state
 export const adapterDetail = createEntityAdapter<FinanceDetailBillingV1>({
     selectId: (row) => row.data.id,
 });
 
-export const adapterCollectionHistory = createEntityAdapter<BillingPayments>({
+export const adapterCollectionHistory = createEntityAdapter<any>({
     // selectId: (row) => row.billingPaymentId,
 })
 
