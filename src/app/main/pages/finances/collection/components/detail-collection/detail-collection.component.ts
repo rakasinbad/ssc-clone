@@ -103,7 +103,7 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
         const dialogApproved = this.dialog.open(ApproveRejectCollectionBillingComponent, {
             width: '457px',
             data: {
-                title: 'Collection Approve',
+                title: 'Approve Collection',
                 type: 'collection',
                 status: 'approved',
                 value: val.data,
