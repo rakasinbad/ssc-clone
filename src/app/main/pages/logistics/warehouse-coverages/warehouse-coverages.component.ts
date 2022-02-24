@@ -173,7 +173,7 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
 
             if (this.selectedViewBy === 'warehouse') {
                 data['viewBy'] = 'warehouse';
-                data['warehouseId'] = this.selectedWarehouse.id;
+                data['warehouseId'] = this.selectedWarehouse && this.selectedWarehouse.id;
             } else if (this.selectedViewBy === 'area') {
                 data['viewBy'] = 'area';
                 data['type'] = this.selectedAreaCoverage;
