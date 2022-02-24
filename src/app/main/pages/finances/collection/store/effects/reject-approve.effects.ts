@@ -17,7 +17,10 @@ import {
     switchMap,
     tap,
     withLatestFrom,
-    share
+    share,
+    take,
+    debounceTime,
+    distinctUntilChanged
 } from 'rxjs/operators';
 import { ApproveRejectApiService, CollectionApiService } from '../../services';
 import { BillingActions, RejectReasonActions } from '../actions';
@@ -277,7 +280,7 @@ export class RejectApproveEffects {
      * [UPDATE - REQUEST] Billing Payment Approval
      *  @memberof Reject Approve Effects
      */
-    @Effect() updateBillingPaymentApprovalRequest$ = createEffect(
+    updateBillingPaymentApprovalRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentApprovalRequest),
@@ -288,9 +291,14 @@ export class RejectApproveEffects {
                         router: router.state.params
                     };
                 }),
+                take(1),
+                debounceTime(500),
+                distinctUntilChanged(),
                 switchMap((newPayload) => {
+                    
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
+                        .pipe(take(1))
                         .pipe(
                             catchOffline(),
                             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
@@ -340,6 +348,7 @@ export class RejectApproveEffects {
                                     })
                                 )
                             }),
+                            take(1),
                             catchError((err) =>
                                 of(
                                     RejectReasonActions.updateBillingPaymentApprovalFailure({
@@ -350,6 +359,7 @@ export class RejectApproveEffects {
                                     })
                                 )
                             ),
+                            share(),
                             finalize(() => {
                                 this.store.dispatch(UiActions.resetHighlightRow());
                             })
@@ -365,7 +375,7 @@ export class RejectApproveEffects {
      *  @memberof Reject Approve Effects
      */
 
-    @Effect() updateBillingPaymentRejectRequest$ = createEffect(
+    updateBillingPaymentRejectRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentRejectRequest),
@@ -376,9 +386,14 @@ export class RejectApproveEffects {
                         router: router.state.params
                     };
                 }),
+                take(1),
+                debounceTime(500),
+                distinctUntilChanged(),
                 switchMap((newPayload) => {
+                    
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
+                        .pipe(take(1))
                         .pipe(
                             catchOffline(),
                             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
@@ -438,6 +453,7 @@ export class RejectApproveEffects {
                                     })
                                 )
                             ),
+                            share(),
                             finalize(() => {
                                 this.store.dispatch(UiActions.resetHighlightRow());
                             })
