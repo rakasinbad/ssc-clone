@@ -38,6 +38,7 @@ export interface IBillingPayments {
     billingApprovedDate: string;
     billingDate: string;
     billingPaymentId: number;
+    collectionId: number;
     billingStatus: string;
     collectionApprovedDate: string;
     collectionCode: number;
