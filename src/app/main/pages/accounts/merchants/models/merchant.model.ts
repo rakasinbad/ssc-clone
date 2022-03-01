@@ -437,6 +437,7 @@ export class Store implements IStore {
                 return new SupplierStore(
                     row.id,
                     row.supplierId,
+                    row.name,
                     row.storeId,
                     row.status,
                     row.store,
