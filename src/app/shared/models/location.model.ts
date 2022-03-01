@@ -81,7 +81,7 @@ export class District implements IDistrict {
 
     set setUrbans(value: Urban[]) {
         if (value && value.length > 0) {
-            const newUrbans = value.map(row => new Urban(row));
+            const newUrbans = value.map(row => new Urban(row)).filter((q) => q.provinceId == this.province.id);
 
             this.urbans = sortBy(newUrbans, ['urban'], ['asc']);
         } else {

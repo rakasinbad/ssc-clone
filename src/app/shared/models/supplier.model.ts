@@ -102,6 +102,7 @@ export type UserSupplierOptions = Partial<UserSupplier>;
 interface ISupplierStore {
     id: string;
     supplierId: string;
+    name: string;
     storeId: string;
     status: TStatus;
     store: Merchant;
@@ -112,6 +113,7 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
     constructor(
         public id: string,
         public supplierId: string,
+        public name: string = '-',
         public storeId: string,
         public status: TStatus,
         public store: Merchant,
