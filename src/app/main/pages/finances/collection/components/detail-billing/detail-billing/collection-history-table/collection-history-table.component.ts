@@ -78,6 +78,10 @@ export class CollectionHistoryTableComponent implements OnInit {
         dialogApproved.afterClosed().subscribe((result) => {});
     }
 
+    onClickCollectionCode(val:number){
+        this.router.navigateByUrl(`/pages/finances/collection/collection/${val}`);
+    }
+
     btnReject(val) {
         //for fetch reject reason list
         this.store.dispatch(

@@ -19,9 +19,13 @@
             <ng-container matColumnDef="finance-collection-code">
                 <mat-header-cell *matHeaderCellDef> Collection Code </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                    <p class="text-collectionCode">
+                    <a
+                        href="javascript:void(0)"
+                        (click)="onClickCollectionCode(row?.collectionId || '-')"
+                        class="text-collectionCode"
+                    >
                         {{ row?.collectionCode || '-' }}
-                    </p>
+                    </a>
                 </mat-cell>
             </ng-container>
 
@@ -127,11 +131,15 @@
                         <button
                             id="btn__actions"
                             mat-icon-button
-                            [matMenuTriggerFor]="row?.collectionStatus !== 'approved' || row?.billingStatus == 'approved' || row?.billingStatus == 'rejected'? hiddenMatMenu : moreMenu"
-                            matTooltip="Can’t reject and approve because the collection status is still not approved yet or billing status is already approved or rejected"
-                            [matTooltipClass]="
-                                row?.billingStatus == 'pending'  && 'tooltip-hidden'
+                            [matMenuTriggerFor]="
+                                row?.collectionStatus !== 'approved' ||
+                                row?.billingStatus == 'approved' ||
+                                row?.billingStatus == 'rejected'
+                                    ? hiddenMatMenu
+                                    : moreMenu
                             "
+                            matTooltip="Can’t reject and approve because the collection status is still not approved yet or billing status is already approved or rejected"
+                            [matTooltipClass]="row?.billingStatus == 'pending' && 'tooltip-hidden'"
                             aria-label="More"
                             (click)="$event.stopPropagation()"
                         >
@@ -187,10 +195,7 @@
                 [fxShow]="((dataDetail$ | async)?.data?.billingPayments?.length || 0) == 0"
             ></mat-footer-row>
         </mat-table>
-        <div
-            class="loader-content"
-            *ngIf="(isLoading$ | async)"
-        >
+        <div class="loader-content" *ngIf="isLoading$ | async">
             <mat-spinner color="accent"></mat-spinner>
         </div>
 
