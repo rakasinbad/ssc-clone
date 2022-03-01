@@ -1564,6 +1564,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.form.get('storeInfo.address.district').reset();
                         this.form.get('storeInfo.address.postcode').reset();
                     } else {
+                        this.form.get('storeInfo.address.urban').reset();
                         if (value.urbans.length > 0) {
                             // this.form.get('storeInfo.address.urban').enable();
 

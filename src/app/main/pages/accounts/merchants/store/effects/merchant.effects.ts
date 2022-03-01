@@ -1736,6 +1736,7 @@ export class MerchantEffects {
                                         return new SupplierStore(
                                             row.id,
                                             row.supplierId,
+                                            row.name,
                                             row.storeId,
                                             row.status,
                                             row.store,
@@ -1743,7 +1744,7 @@ export class MerchantEffects {
                                             row.createdAt,
                                             row.updatedAt,
                                             row.deletedAt,
-                                            row
+                                            row,
                                         );
                                     }),
                                 };
@@ -1821,6 +1822,7 @@ export class MerchantEffects {
                         const newResp = new SupplierStore(
                             resp.id,
                             resp.supplierId,
+                            resp.name,
                             resp.storeId,
                             resp.status,
                             resp.store,
@@ -1918,6 +1920,7 @@ export class MerchantEffects {
                             payload: new SupplierStore(
                                 resp.id,
                                 resp.supplierId,
+                                resp.name,
                                 resp.storeId,
                                 resp.status,
                                 resp.store,

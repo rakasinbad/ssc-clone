@@ -274,7 +274,7 @@ pipeline {
                 script{
                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
                         try{
-                            build job: 'Automation/Github Branch Cleansing', parameters: [[$class: 'StringParameterValue', name: 'REPOSITORY_NAME', value: SINBAD_REPO]]
+                            build job: 'DevOps/Automations/Github/Github Branch Cleansing', parameters: [[$class: 'StringParameterValue', name: 'REPOSITORY_NAME', value: SINBAD_REPO]]
                         }catch (Exception e) {
                             echo 'Exception occurred: ' + e.toString()
                             sh "exit 1"
