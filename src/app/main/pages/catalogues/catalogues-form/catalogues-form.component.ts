@@ -1950,7 +1950,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 ],
                 isEnableLargeUnit: false,
                 uomLargeUnit: [
-                    '',
+                    { value: '', disabled: true },
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
