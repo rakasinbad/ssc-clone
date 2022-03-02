@@ -87,8 +87,10 @@ import { SubBrand } from './../models/sub-brand.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 interface IUomType {
-    small: string;
-    large: string;
+    smallName: string;
+    smallId: string;
+    largeName: string;
+    largeId: string;
 }
 
 @Component({
@@ -169,8 +171,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     productCategory$: SafeHtml;
     private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
     uomNames$: BehaviorSubject<IUomType> = new BehaviorSubject({
-        large: '',
-        small: '',
+        largeName: '',
+        largeId: '',
+        smallName: '',
+        smallId: '',
     });
 
     subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
@@ -296,6 +300,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 .get('productCount.consistOfQtyLargeUnit')
                 .updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
+            this.form.patchValue({
+                productCount: {
+                    isEnableLargeUnit: true,
+                },
+            });
         } else {
             //UOM Large Unit
             this.form.get('productCount.uomLargeUnit').clearValidators();
@@ -307,6 +316,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 .get('productCount.consistOfQtyLargeUnit')
                 .updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.consistOfQtyLargeUnit').disable({ onlySelf: true });
+            this.form.patchValue({
+                productCount: {
+                    isEnableLargeUnit: false,
+                },
+            });
         }
     }
 
@@ -439,11 +453,14 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // PENGATURAN JUMLAH
             //TODO: Penyesuaian saat integrasi
+            unitOfMeasureId: this.uomNames$.value.smallId,
+            largeUomId: this.uomNames$.value.largeId,
+            enableLargeUom: formValues.productCount.isEnableLargeUnit,
             packagedQty: formValues.productCount.qtyPerMasterBox,
             minQty: formValues.productCount.minQtyValue,
-            minQtyType: formValues.productCount.minQtyOption,
-            multipleQty: formValues.productCount.additionalQtyValue,
-            multipleQtyType: formValues.productCount.additionalQtyOption,
+            minQtyType: this.uomNames$.value.smallName,
+            multipleQty: this.uomNames$.value.smallId,
+            multipleQtyType: this.uomNames$.value.smallName,
 
             // VISIBILITY SETTING
             status: formValues['productVisibility']['status'],
@@ -503,7 +520,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             /* HelperService.debug('[CataloguesFormComponent - Add] onSubmit', {
                 payload: catalogueData,
             }); */
-
             this.store.dispatch(
                 CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
             );
@@ -930,16 +946,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 this.form.get('productCount.uomSmallUnit')!.valueChanges.subscribe((change) => {
                     const selectedUnit = units.filter((unit) => unit.id === change);
                     this.uomNames$.next({
-                        small: selectedUnit[0].unit,
-                        large: this.uomNames$.value.large,
+                        smallName: selectedUnit[0].unit,
+                        smallId: selectedUnit[0].id,
+                        largeName: this.uomNames$.value.largeName,
+                        largeId: this.uomNames$.value.largeId,
                     });
                 });
 
                 this.form.get('productCount.uomLargeUnit')!.valueChanges.subscribe((change) => {
                     const selectedUnit = units.filter((unit) => unit.id === change);
                     this.uomNames$.next({
-                        large: selectedUnit[0].unit,
-                        small: this.uomNames$.value.small,
+                        largeName: selectedUnit[0].unit,
+                        largeId: selectedUnit[0].id,
+                        smallName: this.uomNames$.value.smallName,
+                        smallId: this.uomNames$.value.smallId,
                     });
                 });
 
@@ -982,8 +1002,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.unSubs$.next();
         this.unSubs$.complete();
         this.uomNames$.next({
-            large: '',
-            small: '',
+            largeName: '',
+            largeId: '',
+            smallName: '',
+            smallId: '',
         });
         this.uomNames$.complete();
 
