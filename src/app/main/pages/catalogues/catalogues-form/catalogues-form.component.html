@@ -1983,12 +1983,15 @@
                                 fxFlex="100"
                                 fxFlexAlign="start"
                             >
-                                <mat-select name="uomSmallUnit" formControlName="uomSmallUnit">
+                                <mat-select
+                                    name="uomSmallUnit"
+                                    formControlName="uomSmallUnit"
+                                    placeholder="Set type of measurement"
+                                >
                                     <mat-option
-                                        *ngFor="let unit of catalogueUnits"
+                                        *ngFor="let unit of catalogueSmallUnits"
                                         [value]="unit.id"
                                     >
-                                        {{ log(unit) }}
                                         {{ unit.unit }}
                                     </mat-option>
                                 </mat-select>
@@ -2042,7 +2045,9 @@
                                         }}
                                     </mat-error>
                                 </mat-form-field>
-                                <div style="width: 20%" class="box-type">PCS</div>
+                                <div style="width: 20%" class="box-type">
+                                    {{ (uomNames$ | async).small }}
+                                </div>
                             </div>
                         </div>
                         <!-- / AMOUNT INCREASE -->
@@ -2088,7 +2093,9 @@
                                         }}
                                     </mat-error>
                                 </mat-form-field>
-                                <div style="width: 20%" class="box-type">PCS</div>
+                                <div style="width: 20%" class="box-type">
+                                    {{ (uomNames$ | async).small }}
+                                </div>
                             </div>
                         </div>
                         <!-- / MINIMUM ORDER QUANTITY -->
@@ -2133,26 +2140,37 @@
                                     Unlimited
                                 </mat-checkbox>
                             </div>
-                            <mat-form-field style="width: 100%" appearance="outline">
-                                <input
-                                    matInput
-                                    formControlName="maxQtyValue"
-                                    mask="separator"
-                                    thousandSeparator="."
-                                    [placeholder]="
-                                        form.get('productCount.isMaximum').value
-                                            ? 'Set maximum order here'
-                                            : 'Unlimited'
-                                    "
-                                />
 
-                                <mat-error>
-                                    {{
-                                        form.get('productCount.maxQtyValue').value
-                                            | errorMessage: form:'productCount.maxQtyValue'
-                                    }}
-                                </mat-error>
-                            </mat-form-field>
+                            <div
+                                style="width: 100%; justify-content: space-between"
+                                fxFlex="100"
+                                fxLayoutGap="10"
+                                fxLayout="row"
+                            >
+                                <mat-form-field style="width: 79%" appearance="outline">
+                                    <input
+                                        matInput
+                                        formControlName="maxQtyValue"
+                                        mask="separator"
+                                        thousandSeparator="."
+                                        [placeholder]="
+                                            form.get('productCount.isMaximum').value
+                                                ? 'Set maximum order here'
+                                                : 'Unlimited'
+                                        "
+                                    />
+
+                                    <mat-error>
+                                        {{
+                                            form.get('productCount.maxQtyValue').value
+                                                | errorMessage: form:'productCount.maxQtyValue'
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                                <div style="width: 20%" class="box-type">
+                                    {{ (uomNames$ | async).small }}
+                                </div>
+                            </div>
                         </div>
                         <!-- / MAXIMUM ORDER QUANTITY  -->
                     </div>
@@ -2218,7 +2236,7 @@
                                     placeholder="Set type of measurement"
                                 >
                                     <mat-option
-                                        *ngFor="let unit of catalogueUnits$ | async"
+                                        *ngFor="let unit of catalogueLargeUnits"
                                         [value]="unit.id"
                                     >
                                         {{ unit.unit }}
@@ -2268,7 +2286,6 @@
                                     />
 
                                     <mat-error>
-                                        <!-- {{ getFormError(form.get('productCount.consistOfQtyLargeUnit')) }} -->
                                         {{
                                             form.get('productCount.consistOfQtyLargeUnit').value
                                                 | errorMessage
@@ -2277,7 +2294,9 @@
                                         }}
                                     </mat-error>
                                 </mat-form-field>
-                                <div style="width: 20%" class="box-type">PCS</div>
+                                <div style="width: 20%" class="box-type">
+                                    {{ (uomNames$ | async).small }}
+                                </div>
                             </div>
                         </div>
                         <!-- / CONSIST OF -->

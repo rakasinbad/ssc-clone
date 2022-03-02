@@ -86,6 +86,10 @@ import { CatalogueTax } from './../models/classes/catalogue-tax.class';
 import { SubBrand } from './../models/sub-brand.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
+interface IUomType {
+    small: string;
+    large: string;
+}
 
 @Component({
     selector: 'app-catalogues-form',
@@ -164,9 +168,16 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     brandUser$: { id: string; name: string } = { id: '0', name: '' };
     productCategory$: SafeHtml;
     private readonly subBrandCollections$: BehaviorSubject<SubBrand[]> = new BehaviorSubject([]);
+    uomNames$: BehaviorSubject<IUomType> = new BehaviorSubject({
+        large: '',
+        small: '',
+    });
+
     subBrands$: Observable<SubBrand[]> = this.subBrandCollections$.asObservable();
 
     catalogueUnits: CatalogueUnit[];
+    catalogueSmallUnits: CatalogueUnit[];
+    catalogueLargeUnits: CatalogueUnit[];
 
     productTagsControls: FormArray;
     productCourierControls: AbstractControl[];
@@ -273,6 +284,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
                 RxwebValidators.required({
                     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.minNumber({
+                    value: 1,
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', {
+                        minValue: 1,
+                    }),
                 }),
             ]);
             this.form
@@ -420,6 +437,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             dangerItem: false,
 
             // PENGATURAN JUMLAH
+            //TODO: Penyesuaian saat integrasi
             packagedQty: formValues.productCount.qtyPerMasterBox,
             minQty: formValues.productCount.minQtyValue,
             minQtyType: formValues.productCount.minQtyOption,
@@ -813,48 +831,48 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         //     });
 
         // Re-validate maximum order quantity field based on changes in minimum order quantity
-        // this.form
-        //     .get('productCount.minQtyValue')
-        //     .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
-        //     .subscribe((value) => {
-        //         const isMaximum = this.form.get('productCount.isMaximum').value;
+        this.form
+            .get('productCount.minQtyValue')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.unSubs$))
+            .subscribe((value) => {
+                const isMaximum = this.form.get('productCount.isMaximum').value;
 
-        //         /* HelperService.debug(
-        //             '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
-        //             {
-        //                 value,
-        //                 minQtyOption: this.form.get('productCount.minQtyOption').value,
-        //                 isMaximum,
-        //                 maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
-        //             }
-        //         ); */
+                /* HelperService.debug(
+                    '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
+                    {
+                        value,
+                        minQtyOption: this.form.get('productCount.minQtyOption').value,
+                        isMaximum,
+                        maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
+                    }
+                ); */
 
-        //         if (isMaximum) {
-        //             this.form.get('productCount.maxQtyValue').reset();
-        //             this.form.get('productCount.maxQtyValue').setValidators([
-        //                 RxwebValidators.required({
-        //                     message: this.errorMessageSvc.getErrorMessageNonState(
-        //                         'default',
-        //                         'required'
-        //                     ),
-        //                 }),
-        //                 RxwebValidators.greaterThanEqualTo({
-        //                     fieldName: 'productCount.minQtyValue',
-        //                     message: this.errorMessageSvc.getErrorMessageNonState(
-        //                         'default',
-        //                         'gte_number',
-        //                         {
-        //                             limitValue: value,
-        //                         }
-        //                     ),
-        //                 }),
-        //             ]);
+                if (isMaximum) {
+                    this.form.get('productCount.maxQtyValue').reset();
+                    this.form.get('productCount.maxQtyValue').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.greaterThanEqualTo({
+                            fieldName: 'productCount.minQtyValue',
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'gte_number',
+                                {
+                                    limitValue: value,
+                                }
+                            ),
+                        }),
+                    ]);
 
-        //             this.form
-        //                 .get('productCount.maxQtyValue')
-        //                 .updateValueAndValidity({ onlySelf: true });
-        //         }
-        //     });
+                    this.form
+                        .get('productCount.maxQtyValue')
+                        .updateValueAndValidity({ onlySelf: true });
+                }
+            });
 
         /** Melakukan subscribe ketika ada aksi menekan tombol "Simpan" pada form. */
         this.store
@@ -908,7 +926,26 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     });
                 }
 
+                this.form.get('productCount.uomSmallUnit')!.valueChanges.subscribe((change) => {
+                    const selectedUnit = units.filter((unit) => unit.id === change);
+                    this.uomNames$.next({
+                        small: selectedUnit[0].unit,
+                        large: this.uomNames$.value.large,
+                    });
+                });
+
+                this.form.get('productCount.uomLargeUnit')!.valueChanges.subscribe((change) => {
+                    const selectedUnit = units.filter((unit) => unit.id === change);
+                    this.uomNames$.next({
+                        large: selectedUnit[0].unit,
+                        small: this.uomNames$.value.small,
+                    });
+                });
+
                 this.catalogueUnits = units;
+                this.catalogueSmallUnits = units;
+                this.catalogueLargeUnits = units;
+
                 this._cd.markForCheck();
             });
 
@@ -943,6 +980,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         // Add 'implements OnDestroy' to the class.
         this.unSubs$.next();
         this.unSubs$.complete();
+        this.uomNames$.next({
+            large: '',
+            small: '',
+        });
+        this.uomNames$.complete();
 
         this.store.dispatch(CatalogueActions.resetSelectedCatalogue());
         this.store.dispatch(CatalogueActions.resetSelectedCategories());
@@ -1171,6 +1213,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                             // ])
                         },
                         productCount: {
+                            //TODO: Penyesuaian saat integrasi
                             qtyPerMasterBox: catalogue.packagedQty,
                             minQtyOption: catalogue.minQtyType,
                             minQtyValue: catalogue.minQty,
@@ -1832,48 +1875,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // AMOUNT SETTING
             productCount: this.fb.group({
-                qtyPerMasterBox: [
-                    null,
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.minNumber({
-                            value: 1,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                { minValue: 1 }
-                            ),
-                        }),
-                    ],
-                ],
-                minQtyOption: 'pcs',
                 minQtyValue: [
-                    { value: '1', disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.minNumber({
-                            value: 1,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                { minValue: 1 }
-                            ),
-                        }),
-                    ],
-                ],
-                additionalQtyOption: 'pcs',
-                additionalQtyValue: [
-                    { value: '1', disabled: true },
+                    { value: '1', disabled: false },
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -1892,8 +1895,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 isMaximum: false,
-                // maxQtyValue: [{ value: null, disabled: true }],
-                //enhacement
                 uomSmallUnit: [
                     '',
                     [
@@ -1925,8 +1926,36 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 isEnableLargeUnit: false,
-                uomLargeUnit: [{ value: null, disabled: true }],
-                consistOfQtyLargeUnit: [{ value: null, disabled: true }],
+                uomLargeUnit: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                    ],
+                ],
+                consistOfQtyLargeUnit: [
+                    { value: '', disabled: true },
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            ),
+                        }),
+                    ],
+                ],
                 maxQtyValue: [
                     { value: '', disabled: true },
                     [
