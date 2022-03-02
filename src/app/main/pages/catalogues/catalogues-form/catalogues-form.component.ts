@@ -407,7 +407,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     : formValues.productInfo.category[formValues.productInfo.category.length - 1]
                           .id,
             stock: newStock,
-            unitOfMeasureId: formValues.productInfo.uom,
+            //TODO: remove uom from product info
+            // unitOfMeasureId: formValues.productInfo.uom,
 
             // SALES INFORMATION
             discountedRetailBuyingPrice: formValues.productSale.retailPrice
@@ -916,15 +917,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     );
                 }
 
-                const uom = this.form.get('productInfo.uom').value;
-                const selectedUnit = units.filter((unit) => unit.id === uom);
-                if (selectedUnit.length > 0) {
-                    this.form.patchValue({
-                        productInfo: {
-                            uomName: selectedUnit[0].unit,
-                        },
-                    });
-                }
+                // const uom = this.form.get('productInfo.uom').value;
+                // const selectedUnit = units.filter((unit) => unit.id === uom);
+                // if (selectedUnit.length > 0) {
+                //     this.form.patchValue({
+                //         productInfo: {
+                //             uomName: selectedUnit[0].unit,
+                //         },
+                //     });
+                // }
 
                 this.form.get('productCount.uomSmallUnit')!.valueChanges.subscribe((change) => {
                     const selectedUnit = units.filter((unit) => unit.id === change);
@@ -1170,7 +1171,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                             brandName: catalogue.brand.name,
                             // category: ['', Validators.required],
                             stock: catalogue.stock,
-                            uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                            // uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
                             minQty: catalogue.minQty,
                             packagedQty: catalogue.packagedQty,
                             multipleQty: catalogue.multipleQty,
@@ -1222,15 +1223,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         },
                     });
 
-                    const uom = this.form.get('productInfo.uom').value;
-                    const selectedUnit = units.filter((unit) => unit.id === uom);
-                    if (selectedUnit.length > 0) {
-                        this.form.patchValue({
-                            productInfo: {
-                                uomName: selectedUnit[0].unit,
-                            },
-                        });
-                    }
+                    // const uom = this.form.get('productInfo.uom').value;
+                    // const selectedUnit = units.filter((unit) => unit.id === uom);
+                    // if (selectedUnit.length > 0) {
+                    //     this.form.patchValue({
+                    //         productInfo: {
+                    //             uomName: selectedUnit[0].unit,
+                    //         },
+                    //     });
+                    // }
                 });
 
                 if (this.isViewMode()) {
@@ -1693,18 +1694,18 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 ],
                 stock: null,
                 unlimitedStock: [{ value: false, disabled: true }],
-                uom: [
-                    null,
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
-                ],
-                uomName: null,
+                // uom: [
+                //     null,
+                //     [
+                //         RxwebValidators.required({
+                //             message: this.errorMessageSvc.getErrorMessageNonState(
+                //                 'default',
+                //                 'required'
+                //             ),
+                //         }),
+                //     ],
+                // ],
+                // uomName: null,
                 // minQty: ['', [Validators.required, Validators.min(1)]],
                 // packagedQty: ['', [Validators.required, Validators.min(1)]],
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]

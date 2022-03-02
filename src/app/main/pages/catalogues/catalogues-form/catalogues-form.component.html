@@ -610,7 +610,7 @@
                     <!-- / PRODUK STOK -->
 
                     <!-- UOM -->
-                    <div
+                    <!-- <div
                         class="custom-field"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
@@ -638,15 +638,15 @@
                             </mat-select>
 
                             <mat-error>
-                                <!-- {{ getFormError(form.get('productInfo.uom')) }} -->
                                 {{
                                     form.get('productInfo.uom').value
                                         | errorMessage: form:'productInfo.uom'
                                 }}
                             </mat-error>
                         </mat-form-field>
-
-                        <!-- <span
+                    </div> -->
+                    <!-- comment -->
+                    <!-- <span
                             class="grey-fg"
                             fxFlexAlign="center"
                             fxFlex="80"
@@ -662,7 +662,7 @@
                         >
                             &nbsp;
                         </span> -->
-                    </div>
+                    <!-- comment -->
                     <!-- / UOM -->
 
                     <!-- TAG PRODUK -->
