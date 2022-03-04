@@ -310,7 +310,7 @@ export class RejectApproveEffects {
                 take(1),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((newPayload) => {
+                exhaustMap((newPayload) => {
                     
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
@@ -405,7 +405,7 @@ export class RejectApproveEffects {
                 take(1),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((newPayload) => {
+                exhaustMap((newPayload) => {
                     
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
