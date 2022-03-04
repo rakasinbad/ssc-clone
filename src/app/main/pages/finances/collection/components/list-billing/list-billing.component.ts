@@ -153,7 +153,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
         const data: IQueryParams = {
             limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex,
+            skip: this.paginator.pageIndex + 1,
         };
 
         if (this.sort.direction) {
@@ -223,7 +223,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+                skip: this.paginator.pageIndex + 1,
             };
 
             data['paginate'] = true;
@@ -295,7 +295,8 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     numberFormat(num) {
         if (num) {
             return (
-                'Rp' + num
+                'Rp' +
+                num
                     .toFixed(0)
                     .replace('.', ',')
                     .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
