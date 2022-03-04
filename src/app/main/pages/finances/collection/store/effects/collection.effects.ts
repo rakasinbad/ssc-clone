@@ -282,9 +282,9 @@ export class CollectionEffects {
                 map((action) => action.payload),
                 tap((resp) => {
                     const message =
-                        resp.errors.error && resp.errors.error.message
-                            ? resp.errors.error.message
-                            : resp.errors.message;
+                        resp.errors.error && resp.errors.error.errorMessage
+                            ? resp.errors.error.errorMessage
+                            : resp.errors.errorMessage;
 
                     this._$log.generateGroup(
                         '[REQUEST FETCH BILLING LIST STATUS FAILURE]',
