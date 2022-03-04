@@ -89,9 +89,9 @@ export class RejectApproveEffects {
                             message = resp.errors;
                         } else {
                             message =
-                                resp.errors.error && resp.errors.error.errorMessage
-                                    ? resp.errors.error.errorMessage
-                                    : resp.errors.errorMessage;
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
                         }
                     }
 
@@ -560,10 +560,10 @@ export class RejectApproveEffects {
     private _handleErrMessage(resp: ErrorHandler): string {
         if (typeof resp.errors === 'string') {
             return resp.errors;
-        } else if (resp.errors.error && resp.errors.error.errorMessage) {
-            return resp.errors.error.errorMessage;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
         } else {
-            return resp.errors.errorMessage;
+            return resp.errors.message;
         }
     }
 
