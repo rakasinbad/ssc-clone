@@ -238,7 +238,7 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
+                skip: this.paginator.pageIndex + 1,
             };
 
             data['paginate'] = true;
@@ -319,10 +319,13 @@ export class ListCollectionComponent implements OnInit, OnChanges, AfterViewInit
 
     numberFormat(num) {
         if (num) {
-            return 'Rp' + num
-                .toFixed(0)
-                .replace('.', ',')
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            return (
+                'Rp' +
+                num
+                    .toFixed(0)
+                    .replace('.', ',')
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+            );
         }
 
         return '-';
