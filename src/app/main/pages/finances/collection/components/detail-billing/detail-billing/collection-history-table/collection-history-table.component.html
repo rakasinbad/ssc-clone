@@ -139,7 +139,7 @@
                                     : moreMenu
                             "
                             matTooltip="Can’t reject and approve because the collection status is still not approved yet or billing status is already approved or rejected"
-                            [matTooltipClass]="row?.billingStatus == 'pending' && 'tooltip-hidden'"
+                            [matTooltipClass]="(row?.collectionStatus == 'approved' && row?.billingStatus == 'pending') && 'tooltip-hidden'"
                             aria-label="More"
                             (click)="$event.stopPropagation()"
                         >

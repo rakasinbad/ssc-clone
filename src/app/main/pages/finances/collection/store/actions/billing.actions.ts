@@ -65,18 +65,8 @@ export const fetchBillingDetailUpdateRequest = createAction(
     props<{ payload: { idDetail: string, type: "approve" | "reject" } }>()
 );
 
-export const fetchBillingDetailUpdateAfterRejectRequest = createAction(
-    `${featureKey} Fetch Detail Billing Update After Reject Request`,
-    props<{ payload: { id: string } }>()
-);
-
-export const fetchBillingDetailUpdateAfterApproveSuccess = createAction(
-    `${featureKey} Fetch Detail Billing Update After Approve Request Success`,
-    props<{ payload: Update<IBillingPayments> }>()
-);
-
-export const fetchBillingDetailUpdateAfterRejectSuccess = createAction(
-    `${featureKey} Fetch Detail Billing Update After Reject Request Success`,
+export const fetchBillingDetailUpdate = createAction(
+    `${featureKey} Fetch Detail Billing Update Request`,
     props<{ payload: Update<IBillingPayments> }>()
 );
 
