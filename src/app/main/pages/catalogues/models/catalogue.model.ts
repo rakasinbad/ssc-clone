@@ -132,19 +132,23 @@ export interface ICatalogue extends ITimestamp {
     retailBuyingPrice: number; // Harga yang dibeli dari supplier.
     suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
     discountedRetailBuyingPrice: TNullable<number>; // Harga potongan yang diberikan oleh supplier untuk dijual ke toko.
+    //TODO: uom ehancement
+    largeUomId: string;
+    enableLargeUom: boolean;
     maxQty: number;
     minQty: number;
-    minQtyType: TQuantityType;
+    minQtyType: string;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
-    multipleQty: number; // Additional Quantity (Nilai pertambahan saat ingin membeli dengan menekan tombol "+" di aplikasi mobile)
-    multipleQtyType: TQuantityType; // Additional Quantity Type
+    multipleQty: number; // Consist Of Quantity (Nilai pertambahan saat ingin membeli dengan menekan tombol "+" di aplikasi mobile)
+    multipleQtyType: string; // Consist Of Quantity Type
+    unitOfMeasureId: number;
+    //TODO: uom ehancement
     displayStock: boolean;
     stock: number;
     unlimitedStock: boolean;
     // hazardLevel: number;
     dangerItem: boolean;
     // forSale: boolean;
-    unitOfMeasureId: number;
     status: TCatalogueStatus;
     // purchaseUnitOfMeasure: number;
     // principalId: number;
@@ -571,19 +575,23 @@ export class Catalogue implements ICatalogue {
     retailBuyingPrice: number; // Harga yang dibeli dari supplier.
     suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
     discountedRetailBuyingPrice: TNullable<number>; // Harga potongan untuk konsumen.
+    //TODO: uom enhacement
+    largeUomId: string;
+    enableLargeUom: boolean;
     maxQty: number;
     minQty: number;
-    minQtyType: TQuantityType;
+    minQtyType: string;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
-    multipleQty: number; // Additional Quantity (Nilai pertambahan saat ingin membeli dengan menekan tombol "+" di aplikasi mobile)
-    multipleQtyType: TQuantityType; // Additional Quantity Type
+    multipleQty: number; // Consist Of Quantity (Nilai pertambahan saat ingin membeli dengan menekan tombol "+" di aplikasi mobile)
+    multipleQtyType: string; // Consist Of Quantity Type
+    unitOfMeasureId: number;
+    //TODO: uom enhacement
     displayStock: boolean;
     stock: number;
     unlimitedStock: boolean;
     // hazardLevel: number;
     dangerItem: boolean;
     // forSale: boolean;
-    unitOfMeasureId: number;
     status: TCatalogueStatus;
     // purchaseUnitOfMeasure: number;
     // principalId: number;
@@ -642,17 +650,19 @@ export class Catalogue implements ICatalogue {
             retailBuyingPrice,
             suggestedConsumerBuyingPrice,
             discountedRetailBuyingPrice,
+            largeUomId,
+            enableLargeUom,
             maxQty,
             minQty,
             minQtyType,
             packagedQty,
             multipleQty,
             multipleQtyType,
+            unitOfMeasureId,
             displayStock,
             stock,
             unlimitedStock,
             dangerItem,
-            unitOfMeasureId,
             status,
             catalogueTaxId,
             brandId,
@@ -707,11 +717,13 @@ export class Catalogue implements ICatalogue {
         this.packagedQty = packagedQty;
         this.multipleQty = multipleQty;
         this.multipleQtyType = multipleQtyType;
-        this.displayStock = displayStock;
+        this.unitOfMeasureId = unitOfMeasureId;
+        (this.largeUomId = largeUomId),
+            (this.enableLargeUom = enableLargeUom),
+            (this.displayStock = displayStock);
         this.stock = stock;
         this.unlimitedStock = unlimitedStock;
         this.dangerItem = dangerItem;
-        this.unitOfMeasureId = unitOfMeasureId;
         this.status = status;
         this.catalogueTaxId = catalogueTaxId;
         this.brandId = brandId;

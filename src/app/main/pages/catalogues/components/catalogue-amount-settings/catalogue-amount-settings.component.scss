@@ -40,9 +40,10 @@ catalogue-amount-settings {
         max-width: 100%;
         min-width: 100%;
         height: calc(100% - 40px);
-// 
+        //
         &.ql-error {
-            .ql-toolbar, .ql-container {
+            .ql-toolbar,
+            .ql-container {
                 border: 1px solid #f44336 !important;
             }
         }
@@ -53,10 +54,36 @@ catalogue-amount-settings {
             .ql-editor {
                 padding: 0px 0px !important;
                 font-size: 10pt;
-                font-family: "Muli", "Helvetica Neue", "Arial", sans-serif;
+                font-family: 'Muli', 'Helvetica Neue', 'Arial', sans-serif;
                 line-height: 1.4 !important;
                 letter-spacing: -0.1px !important;
             }
         }
+    }
+
+    //FORM EDIT VIEW
+    .box-type {
+        background: #f3f5f7;
+        min-height: 43px;
+        height: 43px;
+        border: 1px solid #dae0e7;
+        box-sizing: border-box;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        color: #acb8c3;
+        margin-top: 0.25em;
+        padding: 0px 0.75em;
+    }
+
+    .box-largest-unit {
+        background: #f3f5f7;
+        border-radius: 4px;
+        padding: 1.5em 1em;
+        height: fit-content;
+    }
+
+    .mat-form-field-appearance-outline .mat-form-field-outline {
+        background-color: white;
     }
 }
