@@ -268,6 +268,8 @@ export class CollectionEffects {
         )
     );
 
+
+
     /**
      *
      * [REQUEST - FAILURE] Billing List Statuses
@@ -366,12 +368,30 @@ export class CollectionEffects {
                                     verticalPosition: 'bottom',
                                     horizontalPosition: 'right',
                                 });
+                              
+                                return BillingActions.fetchBillingDetailUpdate({
+                                    payload: {
+                                        id: params.payload.id,
+                                        changes: {
+                                            ...resp,
+                                        },
+                                    },
+                                });
                             }
 
                             if(params.payload.type === REJECT){
                                 this._$notice.open("Billing Rejected", 'error', {
                                     verticalPosition: 'bottom',
                                     horizontalPosition: 'right',
+                                });
+                                
+                                return BillingActions.fetchBillingDetailUpdate({
+                                    payload: {
+                                        id: params.payload.id,
+                                        changes: {
+                                            ...resp,
+                                        },
+                                    },
                                 });
                             }
 
