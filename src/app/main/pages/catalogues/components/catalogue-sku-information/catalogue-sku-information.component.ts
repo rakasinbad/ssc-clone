@@ -74,7 +74,8 @@ type IFormMode = 'add' | 'view' | 'edit';
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class CatalogueSkuInformationComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+    implements OnInit, AfterViewInit, OnChanges, OnDestroy
+{
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
@@ -334,12 +335,12 @@ export class CatalogueSkuInformationComponent
                                 subBrandId: catalogue.subBrandId,
                                 subBrandName: catalogue.subBrand && catalogue.subBrand.name,
                                 stock: catalogue.stock,
-                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                                uomName: catalogueUnits
-                                    .filter(
-                                        (u) => String(u.id) === String(catalogue.unitOfMeasureId)
-                                    )
-                                    .map((u) => u.unit),
+                                // uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                                // uomName: catalogueUnits
+                                //     .filter(
+                                //         (u) => String(u.id) === String(catalogue.unitOfMeasureId)
+                                //     )
+                                //     .map((u) => u.unit),
                             },
                         },
                         { onlySelf: false }
@@ -551,7 +552,7 @@ export class CatalogueSkuInformationComponent
                     let formValue = {
                         ...value.productInfo,
                         detail: value.productInfo.information,
-                        unitOfMeasureId: value.productInfo.uom,
+                        // unitOfMeasureId: value.productInfo.uom,
                     };
 
                     if (formValue.category.length > 0) {
@@ -798,18 +799,18 @@ export class CatalogueSkuInformationComponent
                         }),
                     ],
                 ],
-                uom: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
-                ],
-                uomName: [''],
+                // uom: [
+                //     '',
+                //     [
+                //         RxwebValidators.required({
+                //             message: this.errorMessage$.getErrorMessageNonState(
+                //                 'default',
+                //                 'required'
+                //             ),
+                //         }),
+                //     ],
+                // ],
+                // uomName: [''],
                 tags: this.fb.array(
                     [],
                     [
