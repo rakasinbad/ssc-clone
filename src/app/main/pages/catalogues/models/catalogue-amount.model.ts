@@ -5,8 +5,15 @@ export interface ICatalogueAmount {
     minQtyType: string;
     multipleQty: string;
     multipleQtyType: string;
+    largeUomId: string,
+    enableLargeUom: boolean
 }
 
+
+/**
+ * model for form detail amount setting
+ * @class
+ */
 export class CatalogueAmount implements ICatalogueAmount {
     catalogueId?: string;
     packagedQty: string;
@@ -14,6 +21,9 @@ export class CatalogueAmount implements ICatalogueAmount {
     minQtyType: string;
     multipleQty: string;
     multipleQtyType: string;
+    largeUomId: string;
+    enableLargeUom: boolean;
+
 
     constructor(data: ICatalogueAmount) {
         const {
@@ -23,6 +33,12 @@ export class CatalogueAmount implements ICatalogueAmount {
             minQtyType,
             multipleQty,
             multipleQtyType,
+            largeUomId,
+            enableLargeUom
+
+            // idCatalogueLargeUnit,
+            // unit,
+            // status
         } = data;
 
         this.catalogueId = catalogueId;
@@ -31,5 +47,11 @@ export class CatalogueAmount implements ICatalogueAmount {
         this.minQtyType = minQtyType;
         this.multipleQty = multipleQty;
         this.multipleQtyType = multipleQtyType;
+        this.largeUomId = largeUomId,
+        this.enableLargeUom = enableLargeUom
+
+        // this.idCatalogueLargeUnit = idCatalogueLargeUnit,
+        // this.unit = unit,
+        // this.status = status
     }
 }
