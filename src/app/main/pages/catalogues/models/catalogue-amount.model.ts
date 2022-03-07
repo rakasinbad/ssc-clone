@@ -1,68 +1,55 @@
 export interface ICatalogueAmount {
     catalogueId?: string;
-    minQtyValue: number,
-    isMaximum: boolean,
-    uomSmallUnit: string,
-    amountIncrease: number,
-    isEnableLargeUnit: boolean,
-    uomLargeUnit: string,
-    consistOfQtyLargeUnit: number,
-    maxQtyValue: number
+    packagedQty: string;
+    minQty: string;
+    minQtyType: string;
+    multipleQty: string;
+    multipleQtyType: string;
+    largeUomId: string,
+    enableLargeUom: boolean
 }
-//ICatalogueLargeUnit ada kalau isEnableLargeUnit true
-export interface ICatalogueLargeUnit{
-    idCatalogueLargeUnit: number,
-    unit: string,
-    status: string
-}
+
+
 /**
  * model for form detail amount setting
  * @class
  */
 export class CatalogueAmount implements ICatalogueAmount {
     catalogueId?: string;
-    minQtyValue: number;
-    isMaximum: boolean;
-    uomSmallUnit: string;
-    amountIncrease: number;
-    isEnableLargeUnit: boolean;
-    uomLargeUnit: string;
-    consistOfQtyLargeUnit: number;
-    maxQtyValue: number;
-    // idCatalogueLargeUnit: number;
-    // unit: string;
-    // status: string;
-    // packagedQty: string;
-    // minQty: string;
-    // minQtyType: string;
-    // multipleQty: string;
-    // multipleQtyType: string;
+    packagedQty: string;
+    minQty: string;
+    minQtyType: string;
+    multipleQty: string;
+    multipleQtyType: string;
+    largeUomId: string;
+    enableLargeUom: boolean;
+
 
     constructor(data: ICatalogueAmount) {
         const {
             catalogueId,
-            minQtyValue,
-            isMaximum,
-            uomSmallUnit,
-            amountIncrease,
-            isEnableLargeUnit,
-            uomLargeUnit,
-            consistOfQtyLargeUnit,
-            maxQtyValue,
+            packagedQty,
+            minQty,
+            minQtyType,
+            multipleQty,
+            multipleQtyType,
+            largeUomId,
+            enableLargeUom
+
             // idCatalogueLargeUnit,
             // unit,
             // status
         } = data;
 
         this.catalogueId = catalogueId;
-        this.minQtyValue = minQtyValue,
-        this.isMaximum = isMaximum,
-        this.uomSmallUnit = uomSmallUnit,
-        this.amountIncrease = amountIncrease,
-        this.isEnableLargeUnit = isEnableLargeUnit,
-        this.uomLargeUnit = uomLargeUnit,
-        this.consistOfQtyLargeUnit = consistOfQtyLargeUnit,
-        this.maxQtyValue = maxQtyValue
+        this.packagedQty = packagedQty;
+        this.minQty = minQty;
+        this.minQtyType = minQtyType;
+        this.multipleQty = multipleQty;
+        this.multipleQtyType = multipleQtyType;
+        this.largeUomId = largeUomId,
+        this.enableLargeUom = enableLargeUom
+
         // this.idCatalogueLargeUnit = idCatalogueLargeUnit,
         // this.unit = unit,
         // this.status = status

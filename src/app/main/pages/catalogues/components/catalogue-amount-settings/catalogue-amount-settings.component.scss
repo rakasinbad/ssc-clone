@@ -77,10 +77,38 @@ catalogue-amount-settings {
     }
 
     .box-largest-unit {
-        background: #f3f5f7;
         border-radius: 4px;
         padding: 1.5em 1em;
         height: fit-content;
+        &.edit-mode {
+            background-color: #f3f5f7;
+        }
+        &.view-mode {
+            background-color: #fff;
+            border: 1px solid #f3f5f7;
+        }
+    }
+
+    .box-info {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        box-shadow: inset 0px -1px 0px rgba(218, 224, 231, 0.5);
+        .label {
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 18px;
+            color: #677a8e;
+            margin-bottom: 0;
+        }
+        .description {
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 20px;
+            color: #0b1a28;
+        }
+        .custom-field {
+            margin-bottom: 0.5%;
+        }
     }
 
     .mat-form-field-appearance-outline .mat-form-field-outline {

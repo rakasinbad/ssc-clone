@@ -15,7 +15,7 @@
         >
             <div
                 fxLayout="column"
-                [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
+                [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '16px' : '15px'"
                 fxFlex
             >
                 <div class="p-16 pl-0 pb-20">
@@ -27,6 +27,7 @@
                     fxLayout="column"
                     fxLayoutAlign="space-between center"
                     formGroupName="productCount"
+                    *ngIf="!isViewMode()"
                 >
                     <label
                         class="pr-0 font-size-14"
@@ -60,30 +61,34 @@
                             {{ getFormError(form.get('productCount.uomSmallUnit')) }}
                         </mat-error>
                     </mat-form-field>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && form.get('productCount.uomSmallUnit').value"
-                    >
-                        {{ form.get('productCount.uomSmallUnit').value | number: '1.0-2' }}
-                    </span>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && !form.get('productCount.uomSmallUnit').value"
-                    >
-                        -
-                    </span>
+                </div>
+                <div class="box-info" *ngIf="isViewMode()">
+                    <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                        <div class="label">Unit of Measurement (UoM)</div>
+
+                        <div
+                            class="description"
+                            *ngIf="isViewMode() && form.get('productCount.uomSmallUnit').value"
+                        >
+                            {{ (uomNames$ | async).smallName }}
+                        </div>
+                        <div
+                            class="description"
+                            *ngIf="isViewMode() && !form.get('productCount.uomSmallUnit').value"
+                        >
+                            -
+                        </div>
+                    </div>
                 </div>
                 <!-- / UNIT OF MEASUREMENT (UOM) -->
                 <!-- AMOUNT INCREASE -->
                 <div
+                    [ngClass]="formClass"
                     class="custom-field"
                     fxLayout="column"
                     fxLayoutAlign="space-between center"
                     formGroupName="productCount"
+                    *ngIf="!isViewMode()"
                 >
                     <label
                         class="pr-0 font-size-14"
@@ -96,19 +101,18 @@
                         <span class="red-500-fg">*</span>
                         Amount Increase
                     </label>
+
                     <div
                         style="width: 100%; justify-content: space-between"
                         fxFlex="100"
                         fxLayoutGap="10"
                         fxLayout="row"
-                        *ngIf="!isViewMode()"
                     >
                         <mat-form-field
                             style="width: 79%"
                             appearance="outline"
-                            [class.mat-error]="
-                                !isViewMode() && hasError(form.get('productCount.amountIncrease'))
-                            "
+                            fxFlex="79"
+                            fxFlexAlign="start"
                         >
                             <input
                                 matInput
@@ -129,30 +133,44 @@
                             {{ (uomNames$ | async).smallName }}
                         </div>
                     </div>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && form.get('productCount.amountIncrease').value"
-                    >
-                        {{ form.get('productCount.amountIncrease').value | number: '1.0-2' }}
-                    </span>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && !form.get('productCount.amountIncrease').value"
-                    >
-                        -
-                    </span>
+                </div>
+                <div class="box-info" *ngIf="isViewMode()">
+                    <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                        <div class="label">Amount Increase</div>
+
+                        <div fxLayout="row">
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() && form.get('productCount.amountIncrease').value
+                                "
+                            >
+                                {{ form.get('productCount.amountIncrease').value }}
+                            </span>
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() && !form.get('productCount.amountIncrease').value
+                                "
+                            >
+                                -
+                            </span>
+                            &nbsp;
+                            <span class="description" *ngIf="isViewMode()">
+                                {{ (uomNames$ | async).smallName }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <!-- / AMOUNT INCREASE -->
                 <!-- MINIMUM ORDER QUANTITY -->
                 <div
+                    [ngClass]="formClass"
                     class="custom-field"
                     fxLayout="column"
                     fxLayoutAlign="space-between center"
                     formGroupName="productCount"
+                    *ngIf="!isViewMode()"
                 >
                     <label
                         class="pr-0 font-size-14"
@@ -165,19 +183,18 @@
                         <span class="red-500-fg">*</span>
                         Minimum Order Quantity
                     </label>
+
                     <div
                         style="width: 100%; justify-content: space-between"
                         fxFlex="100"
                         fxLayoutGap="10"
                         fxLayout="row"
-                        *ngIf="!isViewMode()"
                     >
                         <mat-form-field
                             style="width: 79%"
                             appearance="outline"
-                            [class.mat-error]="
-                                !isViewMode() && hasError(form.get('productCount.minQtyValue'))
-                            "
+                            fxFlex="79"
+                            fxFlexAlign="start"
                         >
                             <input
                                 matInput
@@ -198,23 +215,32 @@
                             {{ (uomNames$ | async).smallName }}
                         </div>
                     </div>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && form.get('productCount.minQtyValue').value"
-                    >
-                        {{ form.get('productCount.minQtyValue').value | number: '1.0-2' }}
-                    </span>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && !form.get('productCount.minQtyValue').value"
-                    >
-                        -
-                    </span>
                 </div>
+                <div class="box-info" *ngIf="isViewMode()">
+                    <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                        <div class="label">Minimum Order Quantity</div>
+
+                        <div fxLayout="row">
+                            <span
+                                class="description"
+                                *ngIf="isViewMode() && form.get('productCount.minQtyValue').value"
+                            >
+                                {{ form.get('productCount.minQtyValue').value }}
+                            </span>
+                            <span
+                                class="description"
+                                *ngIf="isViewMode() && !form.get('productCount.minQtyValue').value"
+                            >
+                                -
+                            </span>
+                            &nbsp;
+                            <span class="description" *ngIf="isViewMode()">
+                                {{ (uomNames$ | async).smallName }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- / MINIMUM ORDER QUANTITY -->
                 <!-- MAXIMUM ORDER QUANTITY  -->
                 <div
@@ -222,6 +248,7 @@
                     fxLayout="column"
                     fxLayoutAlign="space-between center"
                     formGroupName="productCount"
+                    *ngIf="!isViewMode()"
                 >
                     <div style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
                         <label
@@ -283,38 +310,72 @@
                             {{ (uomNames$ | async).smallName }}
                         </div>
                     </div>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && form.get('productCount.maxQtyValue').value"
-                    >
-                        {{ form.get('productCount.maxQtyValue').value | number: '1.0-2' }}
-                    </span>
-                    <span
-                        class="grey-fg"
-                        fxFlexAlign="center"
-                        fxFlex="80"
-                        *ngIf="isViewMode() && !form.get('productCount.maxQtyValue').value"
-                    >
-                        -
-                    </span>
                 </div>
+                <div class="box-info" *ngIf="isViewMode()">
+                    <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                        <div class="label">Maximum Order Quantity</div>
+
+                        <div fxLayout="row">
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() &&
+                                    form.get('productCount.maxQtyValue').value &&
+                                    form.get('productCount.isMaximum').value === false
+                                "
+                            >
+                                {{ form.get('productCount.maxQtyValue').value }}
+                            </span>
+                            <span
+                                class="description"
+                                *ngIf="isViewMode() && !form.get('productCount.maxQtyValue').value"
+                            >
+                                -
+                            </span>
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() &&
+                                    form.get('productCount.isMaximum').value === true
+                                "
+                            >
+                                Unlimited
+                            </span>
+                            &nbsp;
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() &&
+                                    form.get('productCount.isMaximum').value === false
+                                "
+                            >
+                                {{ (uomNames$ | async).smallName }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- / MAXIMUM ORDER QUANTITY  -->
             </div>
 
             <div
-                class="box-largest-unit"
+                [ngClass]="classBoxLargestUnit"
                 fxLayout="column"
-                [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
+                [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '16px' : '15px'"
                 fxFlex
             >
                 <!-- ENABLE ORDER BY LARGE UNIT -->
-                <div style="width: 100%" fxLayout="row" fxLayoutAlign="space-between center">
+                <div
+                    style="width: 100%"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                    formGroupName="productCount"
+                >
                     <label class="pr-0" fxFlexAlign="center"> Enable Order By Large Unit </label>
                     <mat-checkbox
                         formControlName="isEnableLargeUnit"
                         (change)="onChangeIsEnableLargeUnit($event)"
+                        [disabled]="isViewMode()"
                     >
                         Enable Large Unit
                     </mat-checkbox>
@@ -329,6 +390,7 @@
                     fxLayout="column"
                     fxLayoutAlign="space-between center"
                     formGroupName="productCount"
+                    *ngIf="!isViewMode()"
                 >
                     <label
                         class="pr-0 font-size-14"
@@ -379,6 +441,25 @@
                         -
                     </span>
                 </div>
+                <div class="box-info" *ngIf="isViewMode()">
+                    <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                        <div class="label">Unit of Measurement (UoM)</div>
+
+                        <div
+                            class="description"
+                            *ngIf="isViewMode() && form.get('productCount.uomLargeUnit').value"
+                        >
+                            {{ (uomNames$ | async).largeName }}
+                        </div>
+                        <div
+                            class="description"
+                            *ngIf="isViewMode() && !form.get('productCount.uomLargeUnit').value"
+                        >
+                            -
+                        </div>
+                    </div>
+                </div>
+
                 <!-- / UNIT OF MEASUREMENT (UOM) -->
                 <!-- CONSIST OF -->
                 <div
@@ -386,6 +467,7 @@
                     fxLayout="column"
                     fxLayoutAlign="space-between center"
                     formGroupName="productCount"
+                    *ngIf="!isViewMode()"
                 >
                     <label
                         class="pr-0 font-size-14"
@@ -444,6 +526,36 @@
                     >
                         -
                     </span>
+                </div>
+                <div class="box-info" *ngIf="isViewMode()">
+                    <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
+                        <div class="label">Consist Of</div>
+
+                        <div fxLayout="row">
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() &&
+                                    form.get('productCount.consistOfQtyLargeUnit').value
+                                "
+                            >
+                                {{ form.get('productCount.consistOfQtyLargeUnit').value }}
+                            </span>
+                            <span
+                                class="description"
+                                *ngIf="
+                                    isViewMode() &&
+                                    !form.get('productCount.consistOfQtyLargeUnit').value
+                                "
+                            >
+                                -
+                            </span>
+                            &nbsp;
+                            <span class="description" *ngIf="isViewMode()">
+                                {{ (uomNames$ | async).smallName }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <!-- / CONSIST OF -->
             </div>

@@ -31,7 +31,7 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-import { CatalogueAmount } from '../../models';
+import { Catalogue, CatalogueAmount, CatalogueUnit } from '../../models';
 import { CataloguesService } from '../../services';
 import { CatalogueActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
@@ -44,7 +44,12 @@ import { CatalogueSelectors } from '../../store/selectors';
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
-//
+interface IUomType {
+    smallName: string;
+    smallId: string;
+    largeName: string;
+    largeId: string;
+}
 @Component({
     selector: 'catalogue-amount-settings',
     templateUrl: './catalogue-amount-settings.component.html',
@@ -70,6 +75,16 @@ export class CatalogueAmountSettingsComponent
     formModeValue: IFormMode = 'add';
     // Untuk menyimpan pilihan kuantitas produk
     quantityChoices: Array<{ id: string; label: string }>;
+    //untuk jenis uom
+    uomNames$: BehaviorSubject<IUomType> = new BehaviorSubject({
+        largeName: '',
+        largeId: '',
+        smallName: '',
+        smallId: '',
+    });
+    catalogueUnits: CatalogueUnit[];
+    catalogueSmallUnits: CatalogueUnit[];
+    catalogueLargeUnits: CatalogueUnit[];
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<CatalogueAmount> = new EventEmitter<CatalogueAmount>();
@@ -95,10 +110,9 @@ export class CatalogueAmountSettingsComponent
         'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
-    // Untuk styling form field di mode form yang berbeda.
-    formClass: {
-        'custom-field-right': boolean;
-        'view-field-right': boolean;
+    classBoxLargestUnit: {
+        'box-largest-unit edit-mode': boolean;
+        'box-largest-unit view-mode': boolean;
     };
 
     constructor(
@@ -118,10 +132,12 @@ export class CatalogueAmountSettingsComponent
 
     private updateFormView(): void {
         // Penetapan class pada form field berdasarkan mode form-nya.
-        this.formClass = {
-            'custom-field-right': !this.isViewMode(),
-            'view-field-right': this.isViewMode(),
+        this.classBoxLargestUnit = {
+            'box-largest-unit edit-mode': !this.isViewMode(),
+            'box-largest-unit view-mode': this.isViewMode(),
         };
+        console.log('updateFormView', this.classBoxLargestUnit);
+
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
             'mt-16': true,
@@ -158,11 +174,12 @@ export class CatalogueAmountSettingsComponent
             .pipe(
                 withLatestFrom(
                     this.store.select(AuthSelectors.getUserSupplier),
-                    ([_, catalogue], userSupplier) => ({ catalogue, userSupplier })
+                    this.store.select(CatalogueSelectors.getCatalogueUnits),
+                    ([_, catalogue], userSupplier, units) => ({ catalogue, userSupplier, units })
                 ),
                 takeUntil(this.subs$)
             )
-            .subscribe(({ catalogue, userSupplier }) => {
+            .subscribe(({ catalogue, userSupplier, units }) => {
                 if (!catalogue) {
                     // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
                     if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
@@ -190,16 +207,64 @@ export class CatalogueAmountSettingsComponent
                     catalogue,
                 });
 
-                /** Penetapan nilai pada form. */
+                if (units.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueUnitRequest({
+                            payload: {
+                                paginate: false,
+                                sort: 'asc',
+                                sortBy: 'id',
+                            },
+                        })
+                    );
+                }
+
+                /** mencari largest uom  */
+                if (catalogue.largeUomId) {
+                    const selectedLargeUnit = units.filter(
+                        (unit) => unit.id === catalogue.largeUomId
+                    );
+
+                    this.uomNames$.next({
+                        smallName: catalogue.catalogueUnit.unit,
+                        smallId: catalogue.catalogueUnit.id,
+                        largeName: selectedLargeUnit[0].unit,
+                        largeId: selectedLargeUnit[0].id,
+                    });
+
+                    this.form.patchValue({
+                        productCount: {
+                            uomLargeUnit: selectedLargeUnit[0].id,
+                            uomSmallUnit: catalogue.catalogueUnit.id,
+                        },
+                    });
+
+                    this.cdRef.markForCheck();
+                } else {
+                    this.uomNames$.next({
+                        smallName: catalogue.catalogueUnit.unit,
+                        smallId: catalogue.catalogueUnit.id,
+                        largeName: '',
+                        largeId: null,
+                    });
+                    this.form.patchValue({
+                        productCount: {
+                            uomLargeUnit: '',
+                            uomSmallUnit: catalogue.catalogueUnit.id,
+                        },
+                    });
+
+                    this.cdRef.markForCheck();
+                }
+
+                /** Penetapan nilai pada form saat pertama render view sebelum edit. */
                 this.form.patchValue(
                     {
                         productCount: {
                             minQtyValue: catalogue.minQty,
                             isMaximum: catalogue.isMaximum,
-                            uomSmallUnit: catalogue.minQtyType,
                             amountIncrease: catalogue.packagedQty,
                             isEnableLargeUnit: catalogue.enableLargeUom,
-                            uomLargeUnit: catalogue.largeUomId, // TODO: harusnya name
                             consistOfQtyLargeUnit: catalogue.packagedQty,
                             maxQtyValue: catalogue.maxQty,
                             // minQtyType: ,
@@ -286,17 +351,19 @@ export class CatalogueAmountSettingsComponent
                     )
                 ),
                 map((value) => {
+
                     const formValue = {
-                        minQtyValue: value.productCount.minQtyValue,
+                        minQty: value.productCount.minQtyValue,
                         isMaximum: value.productCount.isMaximum,
-                        uomSmallUnit: value.productCount.uomSmallUnit,
-                        amountIncrease: value.productCount.amountIncrease,
-                        isEnableLargeUnit: value.productCount.isEnableLargeUnit,
-                        uomLargeUnit: value.productCount.uomLargeUnit,
-                        consistOfQtyLargeUnit: value.productCount.consistOfQtyLargeUnit,
-                        maxQtyValue: value.productCount.isMaximum
+                        minQtyType: value.productCount.uomSmallUnit,
+                        multipleQtyType: value.productCount.uomSmallUnit,
+                        multipleQty: value.productCount.amountIncrease,
+                        packagedQty: value.productCount.consistOfQtyLargeUnit,
+                        maxQty: value.productCount.isMaximum
                             ? value.productCount.maxQtyValue
                             : null,
+                        largeUomId: value.productCount.uomLargeUnit,
+                        enableLargeUom: value.productCount.isEnableLargeUnit
                     };
 
                     return formValue;
@@ -310,14 +377,13 @@ export class CatalogueAmountSettingsComponent
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
+                console.log('value', value);
                 this.formValueChange.emit(value);
             });
     }
 
     onChangeMaxOrderQty(ev: MatCheckboxChange): void {
         HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
-
-        this.form.get('productCount.maxQtyValue').reset();
 
         if (ev.checked) {
             const minQty = this.form.get('productCount.minQtyValue').value;
@@ -340,6 +406,11 @@ export class CatalogueAmountSettingsComponent
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
 
+            this.form.patchValue({
+                productCount: {
+                    isMaximum: true,
+                },
+            });
             /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
                 minQty,
                 maxQtyValue: this.form.get('productCount.maxQtyValue'),
@@ -350,6 +421,11 @@ export class CatalogueAmountSettingsComponent
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
 
+            this.form.patchValue({
+                productCount: {
+                    isMaximum: false,
+                },
+            });
             /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
                 maxQtyValue: this.form.get('productCount.maxQtyValue'),
                 qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
@@ -358,10 +434,6 @@ export class CatalogueAmountSettingsComponent
     }
 
     onChangeIsEnableLargeUnit(ev: MatCheckboxChange): void {
-        //UOM Large Unit
-        this.form.get('productCount.uomLargeUnit').reset();
-        this.form.get('productCount.consistOfQtyLargeUnit').reset();
-
         if (ev.checked) {
             //UOM Large Unit
             this.form.get('productCount.uomLargeUnit').setValidators([
@@ -531,7 +603,7 @@ export class CatalogueAmountSettingsComponent
                     ],
                 ],
                 maxQtyValue: [
-                    { value: '', disabled: true },
+                    { value: '', disabled: false },
                     [
                         RxwebValidators.required({
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -551,6 +623,53 @@ export class CatalogueAmountSettingsComponent
                 ],
             }),
         });
+
+        this.store
+            .select(CatalogueSelectors.getCatalogueUnits)
+            .pipe(takeUntil(this.subs$))
+            .subscribe((units) => {
+                if (units.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueUnitRequest({
+                            payload: {
+                                paginate: false,
+                                sort: 'asc',
+                                sortBy: 'id',
+                            },
+                        })
+                    );
+                }
+
+                this.form.get('productCount.uomSmallUnit')!.valueChanges.subscribe((change) => {
+                    const selectedUnit = units.filter((unit) => unit.id === change);
+                    if (selectedUnit) {
+                        this.uomNames$.next({
+                            smallName: selectedUnit[0].unit,
+                            smallId: selectedUnit[0].id,
+                            largeName: this.uomNames$.value.largeName,
+                            largeId: this.uomNames$.value.largeId,
+                        });
+                    }
+                });
+
+                this.form.get('productCount.uomLargeUnit')!.valueChanges.subscribe((change) => {
+                    const selectedUnit = units.filter((unit) => unit.id === change);
+                    if (selectedUnit) {
+                        this.uomNames$.next({
+                            largeName: selectedUnit[0].unit,
+                            largeId: selectedUnit[0].id,
+                            smallName: this.uomNames$.value.smallName,
+                            smallId: this.uomNames$.value.smallId,
+                        });
+                    }
+                });
+
+                this.catalogueUnits = units;
+                this.catalogueSmallUnits = units;
+                this.catalogueLargeUnits = units;
+
+                this.cdRef.markForCheck();
+            });
 
         this.checkRoute();
         this.initFormCheck();
