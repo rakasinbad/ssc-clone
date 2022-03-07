@@ -173,7 +173,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     subBrandId = null,
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
-                    unitOfMeasureId,
+                    // unitOfMeasureId,
                     tags: catalogueKeywords,
                 } = $event as CatalogueInformation;
 
@@ -187,7 +187,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     subBrandId,
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
-                    unitOfMeasureId,
+                    // unitOfMeasureId,
                     catalogueKeywords,
                 } as unknown) as CatalogueInformation;
 
@@ -235,6 +235,9 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     multipleQtyType,
                     isMaximum,
                     maxQty,
+                    largeUomId,
+                    enableLargeUom
+                    
                 } = $event as Catalogue;
 
                 this.formValue = {
@@ -245,6 +248,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     multipleQtyType,
                     isMaximum,
                     maxQty: isMaximum ? maxQty : null,
+                    largeUomId,
+                    enableLargeUom
                 };
 
                 break;

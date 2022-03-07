@@ -454,7 +454,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             // PENGATURAN JUMLAH
             //TODO: Penyesuaian saat integrasi
             unitOfMeasureId: this.uomNames$.value.smallId,
-            largeUomId: this.uomNames$.value.largeId,
+            largeUomId: formValues.productCount.uomLargeUnit,
             enableLargeUom: formValues.productCount.isEnableLargeUnit,
             packagedQty: formValues.productCount.qtyPerMasterBox,
             minQty: formValues.productCount.minQtyValue,
