@@ -247,7 +247,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     multipleQty,
                     multipleQtyType,
                     isMaximum,
-                    maxQty: isMaximum ? maxQty : null,
+                    maxQty: isMaximum ? null : maxQty,
                     largeUomId,
                     enableLargeUom
                 };

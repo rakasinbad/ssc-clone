@@ -293,9 +293,9 @@
                                 mask="separator"
                                 thousandSeparator="."
                                 [placeholder]="
-                                    form.get('productCount.isMaximum').value
-                                        ? 'Set maximum order here'
-                                        : 'Unlimited'
+                                form.get('productCount.isMaximum').value === true
+                                    ?  'Unlimited' 
+                                    : 'Set maximum order here'
                                 "
                             />
 

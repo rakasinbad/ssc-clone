@@ -2154,9 +2154,9 @@
                                         mask="separator"
                                         thousandSeparator="."
                                         [placeholder]="
-                                            form.get('productCount.isMaximum').value
-                                                ? 'Set maximum order here'
-                                                : 'Unlimited'
+                                            form.get('productCount.isMaximum').value === true
+                                            ?  'Unlimited' 
+                                            : 'Set maximum order here'
                                         "
                                     />
 
@@ -2186,6 +2186,7 @@
                             style="width: 100%"
                             fxLayout="row"
                             fxLayoutAlign="space-between center"
+                            formGroupName="productCount"
                         >
                             <label class="pr-0" fxFlexAlign="center">
                                 Enable Order By Large Unit
