@@ -294,8 +294,7 @@ export class LocationEffects {
                 id: 'ERR_CITY_NOT_SELECTED',
                 errors: 'City not selected to find urbans.',
             });
-        }
-        if (!selectedDistrict) {
+        } else if (!selectedDistrict) {
             throw new ErrorHandler({
                 id: 'ERR_DISTRICT_NOT_SELECTED',
                 errors: 'District not selected to find urbans.',
