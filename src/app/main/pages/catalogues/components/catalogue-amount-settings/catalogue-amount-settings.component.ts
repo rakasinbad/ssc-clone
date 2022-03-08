@@ -110,10 +110,6 @@ export class CatalogueAmountSettingsComponent
         'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
-    classBoxLargestUnit: {
-        'box-largest-unit edit-mode': boolean;
-        'box-largest-unit view-mode': boolean;
-    };
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -130,13 +126,21 @@ export class CatalogueAmountSettingsComponent
         this.quantityChoices = this.helper$.getQuantityChoices();
     }
 
-    private updateFormView(): void {
-        // Penetapan class pada form field berdasarkan mode form-nya.
-        this.classBoxLargestUnit = {
-            'box-largest-unit edit-mode': !this.isViewMode(),
-            'box-largest-unit view-mode': this.isViewMode(),
-        };
+    getClassLargeUnit(viewMode) {
+        switch (viewMode) {
+            case true:
+                return 'box-largest-unit view-mode';
+                break;
+            case false:
+                return 'box-largest-unit edit-mode';
+                break;
+            default:
+                return 'box-largest-unit view-mode';
+                break;
+        }
+    }
 
+    private updateFormView(): void {
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
             'mt-16': true,
@@ -257,7 +261,7 @@ export class CatalogueAmountSettingsComponent
                 }
 
                 /** Penetapan nilai pada form saat pertama render view sebelum edit. */
-                
+
                 this.form.patchValue(
                     {
                         productCount: {
@@ -274,24 +278,31 @@ export class CatalogueAmountSettingsComponent
                     },
                     { onlySelf: false }
                 );
-                if(catalogue.enableLargeUom){
+                if (catalogue.enableLargeUom) {
                     this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
                     this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
                     this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
                         RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
                         }),
                         RxwebValidators.minNumber({
                             value: 1,
-                            message: this.errorMessage$.getErrorMessageNonState('default', 'min_number', {
-                                minValue: 1,
-                            }),
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                {
+                                    minValue: 1,
+                                }
+                            ),
                         }),
                     ]);
                 }
 
-                if(catalogue.isMaximum){
-                    this.form.get('productCount.maxQtyValue').clearValidators()
+                if (catalogue.isMaximum) {
+                    this.form.get('productCount.maxQtyValue').clearValidators();
                     this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
                 }
 
@@ -371,21 +382,21 @@ export class CatalogueAmountSettingsComponent
                     )
                 ),
                 map((value) => {
-                    
                     const formValue = {
-                        largeUomId: value.productCount.uomLargeUnit,// integer
-                        unitOfMeasureId: this.uomNames$.value.smallId? parseInt(this.uomNames$.value.smallId): null ,//integer
-                        enableLargeUom: value.productCount.isEnableLargeUnit,//boolean
-                        packagedQty: value.productCount.consistOfQtyLargeUnit,//integer
-                        minQty: value.productCount.minQtyValue,//integer,
-                        minQtyType: `pcs`,//string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
-                        multipleQty: value.productCount.amountIncrease,//integer,
-                        multipleQtyType: `pcs`,//string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
-                        isMaximum: value.productCount.isMaximum,//boolean
+                        largeUomId: value.productCount.uomLargeUnit, // integer
+                        unitOfMeasureId: this.uomNames$.value.smallId
+                            ? parseInt(this.uomNames$.value.smallId)
+                            : null, //integer
+                        enableLargeUom: value.productCount.isEnableLargeUnit, //boolean
+                        packagedQty: value.productCount.consistOfQtyLargeUnit, //integer
+                        minQty: value.productCount.minQtyValue, //integer,
+                        minQtyType: `pcs`, //string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
+                        multipleQty: value.productCount.amountIncrease, //integer,
+                        multipleQtyType: `pcs`, //string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
+                        isMaximum: value.productCount.isMaximum, //boolean
                         maxQty: value.productCount.isMaximum
                             ? parseInt(value.productCount.minQtyValue)
-                            : parseInt(value.productCount.maxQtyValue),// integer
-                        
+                            : parseInt(value.productCount.maxQtyValue), // integer
                     };
 
                     return formValue;
@@ -399,7 +410,6 @@ export class CatalogueAmountSettingsComponent
                 takeUntil(this.subs$)
             )
             .subscribe((value) => {
-                
                 this.formValueChange.emit(value);
             });
     }
@@ -411,7 +421,6 @@ export class CatalogueAmountSettingsComponent
             this.form.get('productCount.maxQtyValue').clearValidators();
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
-
 
             /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
                 minQty,
@@ -441,7 +450,6 @@ export class CatalogueAmountSettingsComponent
                 qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
             }); */
         }
-        
     }
 
     onChangeIsEnableLargeUnit(ev: MatCheckboxChange): void {
@@ -460,7 +468,7 @@ export class CatalogueAmountSettingsComponent
             this.form.get('productCount.uomLargeUnit').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
             //consist Of Qty Large Unit
-            
+
             this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -476,7 +484,6 @@ export class CatalogueAmountSettingsComponent
                 .get('productCount.consistOfQtyLargeUnit')
                 .updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
-            
         } else {
             //UOM Large Unit
             this.form.get('productCount.uomLargeUnit').clearValidators();
@@ -491,8 +498,8 @@ export class CatalogueAmountSettingsComponent
             this.form.patchValue({
                 productCount: {
                     isEnableLargeUnit: false,
-                    consistOfQtyLargeUnit:0,
-                    uomLargeUnit: null
+                    consistOfQtyLargeUnit: 0,
+                    uomLargeUnit: null,
                 },
             });
         }
@@ -607,7 +614,7 @@ export class CatalogueAmountSettingsComponent
                                 'required'
                             ),
                         }),
-                        
+
                         RxwebValidators.minNumber({
                             value: 0,
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -635,7 +642,6 @@ export class CatalogueAmountSettingsComponent
                                 { minValue: 1 }
                             ),
                         }),
-                        
                     ],
                 ],
             }),
