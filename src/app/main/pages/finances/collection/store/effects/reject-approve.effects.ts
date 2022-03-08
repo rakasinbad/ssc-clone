@@ -295,14 +295,12 @@ export class RejectApproveEffects {
                         router: router.state.params
                     };
                 }),
-                take(1),
                 debounceTime(500),
                 distinctUntilChanged(),
                 exhaustMap((newPayload) => {
                     
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
-                        .pipe(take(1))
                         .pipe(
                             catchOffline(),
                             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
@@ -352,7 +350,6 @@ export class RejectApproveEffects {
                                     })
                                 )
                             }),
-                            take(1),
                             catchError((err) =>
                                 of(
                                     RejectReasonActions.updateBillingPaymentApprovalFailure({
@@ -389,14 +386,12 @@ export class RejectApproveEffects {
                         router: router.state.params
                     };
                 }),
-                take(1),
                 debounceTime(500),
                 distinctUntilChanged(),
                 exhaustMap((newPayload) => {
                     
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
-                        .pipe(take(1))
                         .pipe(
                             catchOffline(),
                             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
