@@ -235,6 +235,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.form.get('productCount.maxQtyValue').reset();
 
         if (ev.checked) {
+            this.form.get('productCount.maxQtyValue').clearValidators();
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+
+
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
+                minQty,
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        } else {
             const minQty = this.form.get('productCount.minQtyValue').value;
 
             this.form.get('productCount.maxQtyValue').setValidators([
@@ -249,16 +260,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 }),
             ]);
 
-            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
-            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
-
-            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
-                minQty,
-                maxQtyValue: this.form.get('productCount.maxQtyValue'),
-                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
-            }); */
-        } else {
-            this.form.get('productCount.maxQtyValue').clearValidators();
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
 
@@ -329,7 +330,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.patchValue({
                 productCount: {
                     isEnableLargeUnit: false,
-                    consistOfQtyLargeUnit: 0 
+                    consistOfQtyLargeUnit:0,
+                    uomLargeUnit: null
                 },
             });
         }
@@ -463,15 +465,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             dangerItem: false,
 
             // PENGATURAN JUMLAH
-            //TODO: Penyesuaian saat integrasi
-            unitOfMeasureId: `${this.uomNames$.value.smallId}`,//string of number
-            largeUomId: `${formValues.productCount.uomLargeUnit}`,//string of number
+            unitOfMeasureId: `${this.uomNames$.value.smallId}`,//string of integer
+            largeUomId: formValues.productCount.isEnableLargeUnit? `${formValues.productCount.uomLargeUnit}`: null,//string of integer
             enableLargeUom: formValues.productCount.isEnableLargeUnit,//boolean
-            packagedQty: `${formValues.productCount.consistOfQtyLargeUnit}`,//string of number
-            minQty: `${formValues.productCount.minQtyValue}`,//string of number
+            packagedQty: `${formValues.productCount.consistOfQtyLargeUnit}`,//string of integer
+            minQty: `${formValues.productCount.minQtyValue}`,//string of integer
             minQtyType: `pcs`,//string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
-            multipleQty: `${this.uomNames$.value.smallId}`,//string of number
-            multipleQtyType: `${this.uomNames$.value.smallName}`,//string of small uom name
+            multipleQty: `${formValues.productCount.amountIncrease}`,//string of integer
+            multipleQtyType: `pcs`,//string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
+            //`${this.uomNames$.value.smallName}`,//string of small uom name
 
             // VISIBILITY SETTING
             status: formValues['productVisibility']['status'],
@@ -494,7 +496,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
             // MAXIMUM ORDER QTY
             isMaximum: formValues.productCount.isMaximum,//boolean
-            maxQty: formValues.productCount.isMaximum ? 1 : formValues.productCount.maxQtyValue ,//maxQtyValue || 0
+            maxQty: formValues.productCount.isMaximum ? formValues.productCount.minQtyValue : formValues.productCount.maxQtyValue ,//maxQtyValue || 0<n
 
             // CatalogueTaxId
             catalogueTaxId: taxId,
@@ -1910,7 +1912,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             // AMOUNT SETTING
             productCount: this.fb.group({
                 minQtyValue: [
-                    { value: '1', disabled: false },
+                    { value: 1, disabled: false },
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
@@ -1992,7 +1994,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     ],
                 ],
                 maxQtyValue: [
-                    { value: null, disabled: true },
+                    { value: '', disabled: true },
                     [
                         RxwebValidators.required({
                             message: this.errorMessageSvc.getErrorMessageNonState(
