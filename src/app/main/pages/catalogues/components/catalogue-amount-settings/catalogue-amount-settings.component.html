@@ -293,9 +293,9 @@
                                 mask="separator"
                                 thousandSeparator="."
                                 [placeholder]="
-                                form.get('productCount.isMaximum').value === true
-                                    ?  'Unlimited' 
-                                    : 'Set maximum order here'
+                                    form.get('productCount.isMaximum').value === true
+                                        ? 'Unlimited'
+                                        : 'Set maximum order here'
                                 "
                             />
 
@@ -359,7 +359,7 @@
             </div>
 
             <div
-                [ngClass]="classBoxLargestUnit"
+                [ngClass]="getClassLargeUnit(isViewMode())"
                 fxLayout="column"
                 [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '16px' : '15px'"
                 fxFlex
