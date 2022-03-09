@@ -23,7 +23,7 @@ import { takeUntil, flatMap, filter } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store as NgRxStore } from '@ngrx/store';
-import { CollectionActions } from '../../store/actions';
+import { BillingActions, CollectionActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -71,26 +71,13 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     displayedColumnsBilling = [
-        'finance-external-id',
         'finance-store-name',
-        'finance-order-code',
-        'finance-order-ref',
-        'finance-total-amount',
-        'finance-order-due-date',
-        'finance-payment-status',
-        'finance-sales-rep',
-        'finance-collect-code',
-        'finance-collection-ref',
-        'finance-collection-amount',
+        'finance-invoice-number',
+        'finance-invoice-amount',
+        'finance-amount-paid',
         'finance-collection-date',
-        'finance-collection-status',
-        'finance-billing-code',
-        'finance-bill-amount',
-        'finance-materai',
-        'finance-total-bill-amount',
-        'finance-bill-date',
-        'finance-bill-status',
-        'finance-reason',
+        'finance-invoice-due-date',
+        'finance-actions',
     ];
 
     constructor(
@@ -139,6 +126,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
         if (changes['searchBy']) {
             if (!changes['searchBy'].isFirstChange()) {
                 this.searchBy = changes['searchBy'].currentValue;
+                this.search.setValue('');
                 setTimeout(() => this._initTable());
             }
         }
@@ -176,6 +164,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     openDetailPage(row: any): void {
+        this.router.navigate(['/pages/finances/collection/billing/' + row.id]);
         let itemPromoHierarchy = { type: row.promoType };
         localStorage.setItem('item', JSON.stringify(itemPromoHierarchy));
     }
@@ -274,7 +263,7 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
             data['type'] = this.viewByType;
             this.BillingStore.dispatch(
-                CollectionActions.fetchBillingStatusRequest({
+                BillingActions.fetchBillingStatusRequest({
                     payload: data,
                 })
             );
@@ -305,37 +294,16 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
 
     numberFormat(num) {
         if (num) {
-            return num
-                .toFixed(2)
-                .replace('.', ',')
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            return (
+                'Rp' +
+                num
+                    .toFixed(0)
+                    .replace('.', ',')
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+            );
         }
 
         return '-';
-    }
-
-    numberFormatFromString(num) {
-        let value = parseInt(num);
-        if (num) {
-            return value
-                .toFixed(2)
-                .replace('.', ',')
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        }
-
-        return '-';
-    }
-
-    totalAmountFormat(num) {
-        let value = parseInt(num);
-        if (num) {
-            return value
-                .toFixed(2)
-                .replace('.', ',')
-                .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        }
-
-        return '0';
     }
 
     statusLabel(status) {
@@ -369,5 +337,4 @@ export class ListBillingComponent implements OnInit, OnChanges, AfterViewInit {
                 break;
         }
     }
-
 }

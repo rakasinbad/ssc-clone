@@ -1,0 +1,192 @@
+<div id="billing-detail" class="page-layout carded fullwidth tabbed inner-scroll">
+    <div fxLayout="row" fxLayoutAlign="space-between center" style="margin-bottom: 5px;">
+        <h4 mat-dialog-title style="margin-bottom: 0px">Billing Details</h4>
+        <button mat-icon-button class="close-button" [mat-dialog-close]="true">
+            <mat-icon class="close-icon" color="black">close</mat-icon>
+        </button>
+    </div>
+
+    <mat-dialog-content class="mat-typography">
+        <div class="content-card">
+            <div class="content">
+                <div class="tab-content">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing-code"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">
+                                Billing Code
+                            </div>
+
+                            <div class="info text-billing" fxFlex="100">{{ data?.billingPaymentCode || '-' }}</div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Invoice Number</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ data?.orderCode || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">
+                                Total Invoice Amount
+                            </div>
+
+                            <div class="info" fxFlex="100">
+                                {{ numberFormat(data?.totalAmount) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">
+                                Invoice Due Date
+                            </div>
+
+                            <div class="info" fxFlex="100">
+                                {{ (data?.dueDate | date: 'dd MMM yyyy') || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Amount Use</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ numberFormat(data?.totalBillingAmount) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Sales Rep</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ data?.salesRepName || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Billing Status</div>
+                            <div class="text-status text-{{ data?.approvalStatus }}">
+                                {{ statusLabel(data?.approvalStatus) || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Order Ref</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ data?.orderRef || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Billing Date</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ (data?.createdAt | date: 'dd MMM yyyy') || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Updated By</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ data?.updatedBy || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Updated Date</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ (data?.updatedAt | date: 'dd MMM yyyy') || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="horizontal" fxLayout="column" fxLayoutGap="16px">
+                        <div
+                            class="detail-billing"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                        >
+                            <div class="label" fxFlexAlign="center" fxFlex="40">Reason</div>
+
+                            <div class="info" fxFlex="100">
+                                {{ data?.approvalReason || '-' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <!-- / CONTENT -->
+        </div>
+    </mat-dialog-content>
+</div>

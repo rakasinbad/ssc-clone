@@ -1,38 +1,40 @@
 <div id="finance-collection" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CENTER -->
     <div class="center p-8">
-        <ng-container *ngIf="(dataSource$ | async).length > 0; else others">
-            <mat-tab-group
-                color="accent"
-                style="border-radius: 4px"
-                class="
-                    px-16
-                    mt-0
-                    my-8
-                    sinbad-white sinbad-mat-tab-group
-                    narrow
-                    mat-tab-header-px-12
-                "
-                animationDuration="0ms"
-                [selectedIndex]="selectTab"
-                (selectedTabChange)="onSelectedTab($event)"
-            >
-                <ng-container *ngFor="let user of dataSource$ | async">
-                    <mat-tab
-                        class="collection-tab"
-                        [label]="(user?.title || '-') + ' (' + (user?.total || 0) + ')'"
-                    ></mat-tab>
-                </ng-container>
-            </mat-tab-group>
+        <ng-container *ngIf="!isHiddenTab">
+            <!-- CONTENT CARD -->
+            <ng-container *ngIf="(dataSource$ | async).length > 0; else others">
+                <mat-tab-group
+                    color="accent"
+                    style="border-radius: 4px"
+                    class="px-16 mt-0 my-8 sinbad-white sinbad-mat-tab-group narrow mat-tab-header-px-12"
+                    animationDuration="0ms"
+                    [selectedIndex]="selectTab"
+                    (selectedTabChange)="onSelectedTab($event)"
+                >
+                    <ng-container *ngFor="let user of dataSource$ | async">
+                        <mat-tab
+                            class="collection-tab"
+                            [label]="(user?.title || '-') + ' (' + (user?.total || 0) + ')'"
+                        ></mat-tab>
+                    </ng-container>
+                </mat-tab-group>
+            </ng-container>
+            <ng-template #others>
+                <div class="content-card" style="margin-bottom: 10px">
+                    <ngx-skeleton-loader
+                        [theme]="{
+                            width: '30%',
+                            height: '30px',
+                            'margin-bottom': '-15px',
+                            'margin-left': '10px'
+                        }"
+                        style="margin-top: 15px"
+                    ></ngx-skeleton-loader>
+                </div>
+            </ng-template>
+            <!-- CONTENT CARD -->
         </ng-container>
-        <ng-template #others>
-            <div class="content-card" style="margin-bottom: 10px;">
-                <ngx-skeleton-loader
-                    [theme]="{ width: '30%', height: '30px', 'margin-bottom': '-15px', 'margin-left': '10px' }" style="margin-top: 15px;"
-                ></ngx-skeleton-loader>
-            </div>
-        </ng-template>
-        <!-- CONTENT CARD -->
 
         <div class="content-card">
             <div class="menu" style="display: flex; justify-content: space-between">
@@ -46,11 +48,11 @@
                         fxLayoutAlign="start stretch"
                         style="height: 25px; margin-top: 30px; margin-bottom: 30px"
                     >
-                        <form fxFlex [formGroup]="form">
-                            <mat-form-field
-                                appearance="outline"
-                                style="padding-right: 10px; min-height: 31px"
-                            >
+                        <mat-form-field
+                            appearance="outline"
+                            style="padding-right: 10px; min-height: 31px"
+                        >
+                            <ng-container *ngIf="selectedViewBy == 'cStatus'; else viewByBilling">
                                 <mat-select
                                     style="
                                         min-height: 20px;
@@ -59,19 +61,44 @@
                                         font-size: 14px;
                                         line-height: 18px;
                                     "
-                                    [(value)]="searchByValue"
-                                    (change)="onSearchByChange($event)"
+                                    [(ngModel)]="searchByValueCollection"
+                                    (selectionChange)="onSearchByChangeCol()"
                                 >
-                                    <mat-option *ngFor="let row of searchByList" [value]="row.id">
+                                    <mat-option
+                                        *ngFor="let row of searchByListCollection"
+                                        [value]="row.id"
+                                    >
                                         {{ row.label }}
                                     </mat-option>
                                 </mat-select>
-                            </mat-form-field>
+                            </ng-container>
 
+                            <ng-template #viewByBilling>
+                                <mat-select
+                                    style="
+                                        min-height: 20px;
+                                        margin-top: -13px;
+                                        margin-bottom: -10px;
+                                        font-size: 14px;
+                                        line-height: 18px;
+                                    "
+                                    [(ngModel)]="searchByValueBilling"
+                                    (selectionChange)="onSearchByChangeBil()"
+                                >
+                                    <mat-option
+                                        *ngFor="let row of searchByListBilling"
+                                        [value]="row.id"
+                                    >
+                                        {{ row.label }}
+                                    </mat-option>
+                                </mat-select>
+                            </ng-template>
+                        </mat-form-field>
+
+                        <form fxFlex [formGroup]="form">
                             <mat-form-field
                                 class="search-section__value"
                                 appearance="outline"
-                                fxFlex="70"
                                 style="padding-right: 17px; min-height: 31px"
                             >
                                 <input
@@ -89,7 +116,11 @@
                                 />
                                 <mat-icon
                                     matSuffix
-                                    style="position: fixed; margin: -36px -36px -36px -20px; cursor: pointer;"
+                                    style="
+                                        position: fixed;
+                                        margin: -36px -36px -36px -20px;
+                                        cursor: pointer;
+                                    "
                                     (click)="searchKeyword()"
                                     >search</mat-icon
                                 >
@@ -105,7 +136,7 @@
                     class="mx-16"
                     [approvalStatus]="selectTab"
                     [viewByType]="selectedViewBy"
-                    [searchBy]="searchByValue"
+                    [searchBy]="searchByValueCollection"
                     [searchValue]="search"
                 ></app-list-collection>
             </ng-container>
@@ -113,9 +144,9 @@
             <ng-container *ngIf="selectedViewBy == 'bStatus'">
                 <app-list-billing
                     class="mx-16"
-                    [approvalStatus]="selectTab"
+                    [approvalStatus]="0"
                     [viewByType]="selectedViewBy"
-                    [searchBy]="searchByValue"
+                    [searchBy]="searchByValueBilling"
                     [searchValue]="search"
                 ></app-list-billing>
             </ng-container>
