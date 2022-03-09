@@ -133,6 +133,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                 sources: [
                     { id: 'agent-app', label: 'Agent', checked: false },
                     { id: 'mobile', label: 'Mobile', checked: false },
+                    { id: 'seller-center', label: 'Seller Center', checked: false },
                 ],
             }
         },
