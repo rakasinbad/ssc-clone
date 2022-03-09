@@ -495,8 +495,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             subBrandId: formValues.productInfo.subBrandId || null,
 
             // MAXIMUM ORDER QTY
-            isMaximum: formValues.productCount.isMaximum,//boolean
-            maxQty: formValues.productCount.isMaximum ? formValues.productCount.minQtyValue : formValues.productCount.maxQtyValue ,//maxQtyValue || 0<n
+            isMaximum: !formValues.productCount.isMaximum,//boolean
+            maxQty: !formValues.productCount.isMaximum ? formValues.productCount.maxQtyValue : null ,//maxQtyValue || 0<n
 
             // CatalogueTaxId
             catalogueTaxId: taxId,

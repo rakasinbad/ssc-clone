@@ -266,8 +266,8 @@ export class CatalogueAmountSettingsComponent
                     {
                         productCount: {
                             minQtyValue: catalogue.minQty,
-                            isMaximum: catalogue.isMaximum,
-                            amountIncrease: catalogue.packagedQty,
+                            isMaximum: !catalogue.isMaximum,
+                            amountIncrease: catalogue.multipleQty,
                             isEnableLargeUnit: catalogue.enableLargeUom,
                             consistOfQtyLargeUnit: catalogue.packagedQty,
                             maxQtyValue: catalogue.maxQty,
@@ -304,6 +304,34 @@ export class CatalogueAmountSettingsComponent
                 if (catalogue.isMaximum) {
                     this.form.get('productCount.maxQtyValue').clearValidators();
                     this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+                }
+                //init kebalikan isMaximum
+                if (!catalogue.isMaximum) {
+                    this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+                }
+                //init kebalikan isMaximum
+                if (catalogue.isMaximum) {
+                    const minQty = this.form.get('productCount.minQtyValue').value;
+
+                    this.form.get('productCount.maxQtyValue').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.greaterThanEqualTo({
+                            fieldName: 'productCount.minQtyValue',
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'gte_number',
+                                {
+                                    limitValue: minQty,
+                                }
+                            ),
+                        }),
+                    ]);
+                    this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
                 }
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
@@ -395,7 +423,7 @@ export class CatalogueAmountSettingsComponent
                         multipleQtyType: `pcs`, //string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
                         isMaximum: value.productCount.isMaximum, //boolean
                         maxQty: value.productCount.isMaximum
-                            ? parseInt(value.productCount.minQtyValue)
+                            ? null
                             : parseInt(value.productCount.maxQtyValue), // integer
                     };
 
