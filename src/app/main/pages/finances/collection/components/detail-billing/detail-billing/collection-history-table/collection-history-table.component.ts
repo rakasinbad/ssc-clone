@@ -96,11 +96,6 @@ export class CollectionHistoryTableComponent implements OnInit {
             data: { title: 'Reject Billing', type: 'billing', status: 'reject', idDetail: this.idDetail, value: val },
         });
 
-        dialogReject.afterClosed().subscribe((result) => {
-            if (result != undefined && result.status !== 'cancel') {
-                // console.log("result", result)
-            }
-        });
     }
 
     numberFormat(num) {
