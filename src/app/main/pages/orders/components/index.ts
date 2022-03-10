@@ -4,3 +4,6 @@ export * from './order-detail/order-detail.component';
 export * from './order-detail/_partials/delivery-status-info/delivery-status-info.component';
 export * from './order-detail/_partials/document-order-info/document-order-info.component';
 export * from './order-detail/_partials/order-status-info/order-status-info.component';
+export * from './order-add/order-add.component';
+export * from './order-add/order-list/order-list.component';
+export * from './order-add/order-store-shipment/order-store-shipment.component';

@@ -18,6 +18,9 @@ import {
     OmsOrderLineComponent,
     OrderDetailComponent,
     OrderStatusInfoComponent,
+    OrderAddComponent,
+    OrderStoreShipmentComponent,
+    OrderListComponent,
 } from './components';
 import { OrderQtyFormComponent } from './order-qty-form/order-qty-form.component';
 import { OrdersRoutingModule } from './orders-routing.module';
@@ -40,7 +43,10 @@ import { FuseSidebarModule } from '@fuse/components';
         OrdersComponent,
         OrderStatusInfoComponent,
         OrderStatusPipe,
-        OrderLogPipe
+        OrderLogPipe,
+        OrderAddComponent,
+        OrderStoreShipmentComponent,
+        OrderListComponent,
     ],
     imports: [
         OrdersRoutingModule,
