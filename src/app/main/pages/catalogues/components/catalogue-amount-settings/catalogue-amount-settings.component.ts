@@ -651,34 +651,9 @@ export class CatalogueAmountSettingsComponent
                 isEnableLargeUnit: false,
                 uomLargeUnit: [
                     { value: '', disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                    ],
                 ],
                 consistOfQtyLargeUnit: [
                     { value: 0, disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-
-                        RxwebValidators.minNumber({
-                            value: 0,
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                { minValue: 0 }
-                            ),
-                        }),
-                    ],
                 ],
                 maxQtyValue: [
                     { value: 0, disabled: false },
