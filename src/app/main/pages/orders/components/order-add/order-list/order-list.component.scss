@@ -2,7 +2,7 @@
 
 #sc-oms-add-manual-order-order-list {
     // height: 248px;
-    flex-grow: 0;
+    // flex-grow: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,5 +23,93 @@
         letter-spacing: -0.4px;
         text-align: left;
         color: var(--text-color-default);
+    }
+
+    .order-list-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        overflow: auto;
+        min-height: 40px;
+        // max-height: 350px;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+            // max-height: 350px;
+            .mat-header-row {
+                pointer-events: none;
+            }
+        }
+
+        .mat-header-row {
+            background: #F3F5F7;
+            min-width: fit-content;
+            width: 100%;
+        }
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .sinbad-order-list-table {
+            position: relative;
+            cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+        }
+
+        .mat-column-id {
+            flex: 0 1 84px;
+        }
+
+        .mat-column-order-sku-id {
+            flex: 0 1 180px;
+            min-width: 180px;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 7em;
+            justify-content: center;
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
     }
 }
