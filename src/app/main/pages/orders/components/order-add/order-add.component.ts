@@ -135,9 +135,6 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Hide footer action
                 this.store.dispatch(UiActions.hideFooterAction());
 
-                // Reset core state oms
-                // this.store.dispatch(SkpActions.clearState());
-
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
