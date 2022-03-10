@@ -270,6 +270,7 @@
                                 help
                             </mat-icon>
                         </label>
+                        <!-- ismaximum = true, maka nilai maxQty harus ada -->
                         <mat-checkbox
                             formControlName="isMaximum"
                             (change)="onChangeMaxOrderQty($event)"
@@ -314,7 +315,6 @@
                 <div class="box-info" *ngIf="isViewMode()">
                     <div class="custom-field info-field" fxLayout="column" fxLayoutGap="0.5%">
                         <div class="label">Maximum Order Quantity</div>
-
                         <div fxLayout="row">
                             <span
                                 class="description"
@@ -328,7 +328,11 @@
                             </span>
                             <span
                                 class="description"
-                                *ngIf="isViewMode() && !form.get('productCount.maxQtyValue').value"
+                                *ngIf="
+                                    isViewMode() &&
+                                    !form.get('productCount.maxQtyValue').value &&
+                                    form.get('productCount.isMaximum').value === false
+                                "
                             >
                                 -
                             </span>
