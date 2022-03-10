@@ -2025,35 +2025,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 isEnableLargeUnit: false,
                 uomLargeUnit: [
                     { value: '', disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        
-                    ],
                 ],
                 consistOfQtyLargeUnit: [
                     { value: 0, disabled: true },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        
-                        RxwebValidators.minNumber({
-                            value: 0,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                { minValue: 0 }
-                            ),
-                        }),
-                    ],
                 ],
                 maxQtyValue: [
                     { value: '', disabled: true },
