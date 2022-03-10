@@ -61,11 +61,29 @@ const routes: Routes = [
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true,
-                    },
-                },
-            },
-        },
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
+    },
+    {
+        path: 'collection-request',
+        loadChildren: () =>
+            import('./collection-request/collection-request.module').then(m => m.CollectionRequestModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['FINANCE.CL.READ'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     },
 ];
 
