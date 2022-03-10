@@ -268,6 +268,8 @@ export class CollectionEffects {
         )
     );
 
+
+
     /**
      *
      * [REQUEST - FAILURE] Billing List Statuses
@@ -280,9 +282,9 @@ export class CollectionEffects {
                 map((action) => action.payload),
                 tap((resp) => {
                     const message =
-                        resp.errors.error && resp.errors.error.message
-                            ? resp.errors.error.message
-                            : resp.errors.message;
+                        resp.errors.error && resp.errors.error.errorMessage
+                            ? resp.errors.error.errorMessage
+                            : resp.errors.errorMessage;
 
                     this._$log.generateGroup(
                         '[REQUEST FETCH BILLING LIST STATUS FAILURE]',
@@ -366,12 +368,30 @@ export class CollectionEffects {
                                     verticalPosition: 'bottom',
                                     horizontalPosition: 'right',
                                 });
+                              
+                                return BillingActions.fetchBillingDetailUpdate({
+                                    payload: {
+                                        id: params.payload.id,
+                                        changes: {
+                                            ...resp,
+                                        },
+                                    },
+                                });
                             }
 
                             if(params.payload.type === REJECT){
                                 this._$notice.open("Billing Rejected", 'error', {
                                     verticalPosition: 'bottom',
                                     horizontalPosition: 'right',
+                                });
+                                
+                                return BillingActions.fetchBillingDetailUpdate({
+                                    payload: {
+                                        id: params.payload.id,
+                                        changes: {
+                                            ...resp,
+                                        },
+                                    },
                                 });
                             }
 

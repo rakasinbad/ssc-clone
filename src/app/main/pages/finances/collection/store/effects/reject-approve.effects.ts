@@ -41,7 +41,7 @@ export class RejectApproveEffects {
      * [REQUEST] Reject Reason List Statuses
      * @memberof Reject Approve Effects
      */
-    @Effect() fetchRejectReasonRequest$ = createEffect(
+    fetchRejectReasonRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.fetchRejectReasonRequest),
@@ -67,10 +67,9 @@ export class RejectApproveEffects {
                     );
                 })
             ),
-        { dispatch: false }
     );
 
-    @Effect() fetchRejectReasonFailure$ = createEffect(
+    fetchRejectReasonFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.fetchRejectReasonFailure),
@@ -123,13 +122,6 @@ export class RejectApproveEffects {
                     return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
                         catchOffline(),
                         map((resp) => {
-                            this.router.navigate(['/pages/finances/collection']).finally(() => {
-                                this._$notice.open('Collection Approved', 'success', {
-                                    verticalPosition: 'bottom',
-                                    horizontalPosition: 'right',
-                                });
-                            });
-
                             return RejectReasonActions.updateColPaymentApprovalSuccess({
                                 payload: {
                                     id,
@@ -152,7 +144,6 @@ export class RejectApproveEffects {
                     );
                 })
             ),
-        { dispatch: false }
     );
 
     /**
@@ -166,9 +157,11 @@ export class RejectApproveEffects {
                 ofType(RejectReasonActions.updateColPaymentApprovalSuccess),
                 map((action) => action.payload),
                 tap(() => {
-                    this._$notice.open('Collection Approved', 'success', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
+                    this.router.navigate(['/pages/finances/collection']).finally(() => {
+                        this._$notice.open('Collection Approved', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
                     });
                 })
             ),
@@ -180,7 +173,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Approval
      * @memberof Reject Approve Effects
      */
-    @Effect({ dispatch: false }) updateColPaymentApprovalFailure$ = createEffect(
+    updateColPaymentApprovalFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentApprovalFailure),
@@ -212,12 +205,6 @@ export class RejectApproveEffects {
                     return this._$rejectApproveApi.patchRejectApproveCollection(body, id).pipe(
                         catchOffline(),
                         map((resp) => {
-                            this.router.navigate(['/pages/finances/collection']).finally(() => {
-                                this._$notice.open('Collection Rejected', 'error', {
-                                    verticalPosition: 'bottom',
-                                    horizontalPosition: 'right',
-                                });
-                            });
 
                             return RejectReasonActions.updateColPaymentRejectSuccess({
                                 payload: {
@@ -241,7 +228,6 @@ export class RejectApproveEffects {
                     );
                 })
             ),
-        { dispatch: false }
     );
 
     /**
@@ -255,9 +241,11 @@ export class RejectApproveEffects {
                 ofType(RejectReasonActions.updateColPaymentRejectSuccess),
                 map((action) => action.payload),
                 tap(() => {
-                    this._$notice.open('Collection Rejected', 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right',
+                    this.router.navigate(['/pages/finances/collection']).finally(() => {
+                        this._$notice.open('Collection Rejected', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
                     });
                 })
             ),
@@ -269,7 +257,7 @@ export class RejectApproveEffects {
      * [UPDATE - FAILURE] Collection Payment Reject
      * @memberof Reject Approve Effects
      */
-    @Effect({ dispatch: false }) updateColPaymentRejectFailure$ = createEffect(
+    updateColPaymentRejectFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateColPaymentRejectFailure),
@@ -296,7 +284,7 @@ export class RejectApproveEffects {
      * [UPDATE - REQUEST] Billing Payment Approval
      *  @memberof Reject Approve Effects
      */
-     @Effect() updateBillingPaymentApprovalRequest$ = createEffect(
+    updateBillingPaymentApprovalRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentApprovalRequest),
@@ -307,14 +295,12 @@ export class RejectApproveEffects {
                         router: router.state.params
                     };
                 }),
-                take(1),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((newPayload) => {
+                exhaustMap((newPayload) => {
                     
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
-                        .pipe(take(1))
                         .pipe(
                             catchOffline(),
                             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
@@ -364,7 +350,6 @@ export class RejectApproveEffects {
                                     })
                                 )
                             }),
-                            take(1),
                             catchError((err) =>
                                 of(
                                     RejectReasonActions.updateBillingPaymentApprovalFailure({
@@ -382,7 +367,6 @@ export class RejectApproveEffects {
                         );
                 })
             ),
-        { dispatch: false }
     );
 
     /**
@@ -391,7 +375,7 @@ export class RejectApproveEffects {
      *  @memberof Reject Approve Effects
      */
 
-    @Effect() updateBillingPaymentRejectRequest$ = createEffect(
+    updateBillingPaymentRejectRequest$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(RejectReasonActions.updateBillingPaymentRejectRequest),
@@ -402,14 +386,12 @@ export class RejectApproveEffects {
                         router: router.state.params
                     };
                 }),
-                take(1),
                 debounceTime(500),
                 distinctUntilChanged(),
-                switchMap((newPayload) => {
+                exhaustMap((newPayload) => {
                     
                     return this._$rejectApproveApi
                         .patchRejectApproveBilling(newPayload.body.body, newPayload.id)
-                        .pipe(take(1))
                         .pipe(
                             catchOffline(),
                             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
@@ -476,7 +458,6 @@ export class RejectApproveEffects {
                         );
                 })
             ),
-        { dispatch: false }
     );
 
     
@@ -485,7 +466,7 @@ export class RejectApproveEffects {
      * [UPDATE - REQUEST] Billing Payment Detail Update
      *  @memberof Reject Approve Effects
      */
-    @Effect() fetchBillingDetailUpdateRequest$ = createEffect(
+    fetchBillingDetailUpdateRequest$ = createEffect(
         () => this.actions$.pipe(
             ofType(BillingActions.fetchBillingDetailUpdateRequest),
             map((resp) => {

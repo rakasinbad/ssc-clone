@@ -48,10 +48,6 @@ export class DetailCollectionTableComponent implements OnInit {
             width: '882px',
             data: row
         });
-
-        dialogRef.afterClosed().subscribe((result) => {
-            // console.log('The dialog was closed');
-        });
     }
 
     getOrderCode(value): string {

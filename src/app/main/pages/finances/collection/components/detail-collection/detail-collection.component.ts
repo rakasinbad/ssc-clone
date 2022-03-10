@@ -128,8 +128,6 @@ export class DetailCollectionComponent implements OnInit, OnDestroy {
             data: { title: 'Reject Collection', type: 'collection', status: 'reject', value: val.data },
         });
 
-        dialogReject.afterClosed().subscribe((result) => {
-        });
     }
 
     statusLabel(status) {

@@ -139,7 +139,7 @@ export class ApproveRejectCollectionBillingComponent implements OnInit,OnDestroy
                         body: {
                             approvalStatus: 'rejected',
                             billingRef: '',
-                            rejectedReasonId: this.selectedValue
+                            rejectReasonId: this.selectedValue
                         }
                     }
                 })

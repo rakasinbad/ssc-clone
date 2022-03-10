@@ -78,6 +78,10 @@ export class CollectionHistoryTableComponent implements OnInit {
         dialogApproved.afterClosed().subscribe((result) => {});
     }
 
+    onClickCollectionCode(val:number){
+        this.router.navigateByUrl(`/pages/finances/collection/collection/${val}`);
+    }
+
     btnReject(val) {
         //for fetch reject reason list
         this.store.dispatch(
@@ -92,11 +96,6 @@ export class CollectionHistoryTableComponent implements OnInit {
             data: { title: 'Reject Billing', type: 'billing', status: 'reject', idDetail: this.idDetail, value: val },
         });
 
-        dialogReject.afterClosed().subscribe((result) => {
-            if (result != undefined && result.status !== 'cancel') {
-                // console.log("result", result)
-            }
-        });
     }
 
     numberFormat(num) {
