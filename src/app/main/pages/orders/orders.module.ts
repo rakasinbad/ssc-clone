@@ -21,6 +21,7 @@ import {
     OrderAddComponent,
     OrderStoreShipmentComponent,
     OrderListComponent,
+    AddProductListComponent
 } from './components';
 import { OrderQtyFormComponent } from './order-qty-form/order-qty-form.component';
 import { OrdersRoutingModule } from './orders-routing.module';
@@ -47,6 +48,7 @@ import { FuseSidebarModule } from '@fuse/components';
         OrderAddComponent,
         OrderStoreShipmentComponent,
         OrderListComponent,
+        AddProductListComponent,
     ],
     imports: [
         OrdersRoutingModule,

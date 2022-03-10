@@ -1,5 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
+import { locale as english } from '../../../i18n/en';
+import { locale as indonesian } from '../../../i18n/id';
 
 @Component({
     selector: 'app-order-list',
@@ -11,6 +16,8 @@ import { fuseAnimations } from '@fuse/animations';
 export class OrderListComponent implements OnInit {
     public labelNoRecord = 'No data available';
     totalDataSource: number = 0;
+    form: FormGroup;
+    search: string = '';
 
     dataSource = [
         {
@@ -32,7 +39,43 @@ export class OrderListComponent implements OnInit {
             tax: '10%',
         },
         {
-          skuId: '3',
+            skuId: '3',
+            skuSupplier: '567 coba',
+            productName: 'bango kecap',
+            qty: 100,
+            uom: 'PCS',
+            price: 10000,
+            tax: '5%',
+        },
+        {
+            skuId: '4',
+            skuSupplier: '89 test unilever',
+            productName: 'rinso',
+            qty: 12,
+            uom: 'PCS',
+            price: 34000,
+            tax: null,
+        },
+        {
+          skuId: '5',
+          skuSupplier: '123ABC',
+          productName: 'test sgm',
+          qty: 1,
+          uom: 'PCS',
+          price: 10000,
+          tax: '10%',
+      },
+      {
+          skuId: '6',
+          skuSupplier: '456ABC',
+          productName: 'test sgm2',
+          qty: 1,
+          uom: 'PCS',
+          price: 34000,
+          tax: '10%',
+      },
+      {
+          skuId: '7',
           skuSupplier: '567 coba',
           productName: 'bango kecap',
           qty: 100,
@@ -41,7 +84,7 @@ export class OrderListComponent implements OnInit {
           tax: '5%',
       },
       {
-          skuId: '4',
+          skuId: '8',
           skuSupplier: '89 test unilever',
           productName: 'rinso',
           qty: 12,
@@ -61,9 +104,29 @@ export class OrderListComponent implements OnInit {
         'order-action',
     ];
 
-    constructor() {}
+    constructor(
+        private fb: FormBuilder,
+        private fuseNavigation$: FuseNavigationService,
+        // private fuseTranslationLoader$: FuseTranslationLoaderService
+    ) {
+        // Memuat terjemahan.
+        // this.fuseTranslationLoader$.loadTranslations(indonesian, english);
+    }
+
+    keyUpKeyword(event: any) {
+        this.form.get('searchValue').setValue(event.target.value);
+        if (event.keyCode === 13) {
+            this.searchKeyword();
+        }
+    }
+
+    searchKeyword(): void {
+        this.search = this.form.get('searchValue').value;
+    }
 
     ngOnInit() {
+      this.initForm();
+
         this.totalDataSource = this.dataSource.length;
     }
 
@@ -83,5 +146,19 @@ export class OrderListComponent implements OnInit {
 
     deleteOrderList(val) {
         console.log('isi delete ->', val);
+    }
+
+    initForm() {
+        this.form = this.fb.group({
+            searchValue: '',
+        });
+    }
+
+    addProduct(){
+      
+    }
+
+    ngOnDestroy(): void {
+        this.fuseNavigation$.unregister('customNavigation');
     }
 }

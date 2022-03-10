@@ -1,4 +1,4 @@
-<div id="sc-oms-add-manual-order-order-list" class="center">
+<div id="sc-oms-add-manual-order-order-list" class="center inner-scroll" cdkScrollable fusePerfectScrollbar>
     <div class="content-card">
         <mat-card>
             <div fxLayout="column">
@@ -6,6 +6,77 @@
             </div>
 
             <br />
+
+            <div class="menu" style="display: flex; justify-content: space-between">
+                <div style="padding-top: 3px">
+                    <button
+                        mat-flat-button
+                        [ngClass]="buttonClasses"
+                        color="accent"
+                        fxFlexAlign="center"
+                        (click)="addProduct()"
+                    >
+                        + Add Product
+                    </button>
+                </div>
+                <div style="display: flex">
+                    <div
+                        class="search-section"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        style="height: 25px; margin-bottom: 50px"
+                    >
+                        <form fxFlex [formGroup]="form">
+                            <mat-form-field
+                                class="search-section__value"
+                                appearance="outline"
+                                fxFlex="100"
+                                style="padding-right: 8px; min-height: 30px"
+                            >
+                                <input
+                                    type="text"
+                                    matInput
+                                    placeholder="Search"
+                                    formControlName="searchValue"
+                                    (keyup)="keyUpKeyword($event)"
+                                    style="
+                                        position: fixed;
+                                        margin-top: -13px;
+                                        font-size: 14px;
+                                        line-height: 18px;
+                                    "
+                                />
+                                <mat-icon
+                                    matSuffix
+                                    style="
+                                        position: fixed;
+                                        margin: -36px -36px -36px -20px;
+                                        cursor: pointer;
+                                    "
+                                    (click)="searchKeyword()"
+                                    >search</mat-icon
+                                >
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <button
+                        mat-stroked-button
+                        color="primary"
+                        [ngClass]="buttonClasses"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        style="
+                            margin-bottom: 24px;
+                            height: 44px;
+                            background-color: #677a8e;
+                            color: white;
+                        "
+                    >
+                        <mat-icon>vertical_align_bottom</mat-icon>
+                        Import
+                    </button>
+                </div>
+            </div>
 
             <mat-table
                 class="order-list-table sinbad-table"
