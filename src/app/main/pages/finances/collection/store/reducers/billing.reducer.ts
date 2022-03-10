@@ -1,8 +1,8 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { BillingStatus, FinanceDetailCollection } from '../../models';
-import { CollectionActions } from '../actions';
+import { BillingStatus, financeCollectionMethodV1, FinanceDetailBillingV1 } from '../../models';
+import { BillingActions, CollectionActions } from '../actions';
 
 // Keyname for reducer
 export const featureKey = 'billingStatus';
@@ -14,7 +14,7 @@ export interface State extends EntityState<BillingStatus> {
     total: number;
 }
 
-export interface StateDetail extends EntityState<FinanceDetailCollection> {
+export interface StateDetail extends EntityState<FinanceDetailBillingV1> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
@@ -27,10 +27,9 @@ export const adapter = createEntityAdapter<BillingStatus>({
 });
 
 // Adapter for Detail state
-export const adapterDetail = createEntityAdapter<FinanceDetailCollection>({
+export const adapterDetail = createEntityAdapter<FinanceDetailBillingV1>({
     selectId: (row) => row.id,
 });
-
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -41,7 +40,9 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 });
 
 // Initialize state
-export const initialStateDetail: StateDetail = adapterDetail.getInitialState<Omit<StateDetail, 'ids' | 'entities'>>({
+export const initialStateDetail: StateDetail = adapterDetail.getInitialState<
+    Omit<StateDetail, 'ids' | 'entities'>
+>({
     isLoading: false,
     isRefresh: undefined,
     selectedId: null,
@@ -52,7 +53,7 @@ export const initialStateDetail: StateDetail = adapterDetail.getInitialState<Omi
 export const reducer = createReducer(
     initialState,
     on(
-        CollectionActions.fetchBillingStatusRequest,
+        BillingActions.fetchBillingStatusRequest,
         // CollectionActions.updateCollectionStatusRequest,
         (state) => ({
             ...state,
@@ -60,19 +61,19 @@ export const reducer = createReducer(
         })
     ),
     on(
-        CollectionActions.fetchBillingStatusFailure,
+        BillingActions.fetchBillingStatusFailure,
         // CollectionActions.updateCollectionStatusFailure,
         (state) => ({
             ...state,
             isLoading: false,
         })
     ),
-    on(CollectionActions.fetchBillingStatusSuccess, (state, { payload }) =>
+    on(BillingActions.fetchBillingStatusSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
     ),
-    on(CollectionActions.setRefreshStatus, (state, { payload }) => ({
+    on(BillingActions.setRefreshStatus, (state, { payload }) => ({
         ...state,
         needRefresh: payload,
     })),
-    on(CollectionActions.clearState, () => initialState)
+    on(BillingActions.clearState, () => initialState)
 );

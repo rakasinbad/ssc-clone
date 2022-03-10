@@ -1,0 +1,49 @@
+@import 'src/@fuse/scss/fuse';
+// https://www.figma.com/file/20yAZ3IZL5Adyq7bJczGCh/%5BSW%5D---Collection%3A-Billing-Method---S1?node-id=851%3A143645
+
+#billing-detail {
+    .top-bg {
+        height: 144px;
+    }
+
+    .header {
+        height: 60px !important;
+        min-height: 60px !important;
+        max-height: 60px !important;
+
+        &-title {
+            font-weight: bold;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+
+    .mat-headline {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+        letter-spacing: -0.01em;
+        color: #677a8e;
+    }
+
+    .label {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 18px;
+        color: #677a8e;
+    }
+
+    .description {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 20px;
+        color: #0b1a28;
+    }
+}

@@ -10,7 +10,7 @@ const routes: Routes = [
         path: 'credit-limit-balance',
         loadChildren: () =>
             import('./credit-limit-balance/credit-limit-balance.module').then(
-                m => m.CreditLimitBalanceModule
+                (m) => m.CreditLimitBalanceModule
             ),
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
@@ -20,11 +20,11 @@ const routes: Routes = [
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true
-                    }
-                }
-            }
-        }
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
     },
     // {
     //     path: 'banks',
@@ -34,7 +34,7 @@ const routes: Routes = [
     {
         path: 'payment-status',
         loadChildren: () =>
-            import('./payment-status/payment-status.module').then(m => m.PaymentStatusModule),
+            import('./payment-status/payment-status.module').then((m) => m.PaymentStatusModule),
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -43,16 +43,16 @@ const routes: Routes = [
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true
-                    }
-                }
-            }
-        }
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
     },
     {
         path: 'collection',
         loadChildren: () =>
-            import('./collection/collection.module').then(m => m.CollectionModule),
+            import('./collection/collection.module').then((m) => m.CollectionModule),
         canLoad: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -61,12 +61,12 @@ const routes: Routes = [
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true
-                    }
-                }
-            }
-        }
-    }
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
+    },
 ];
 
 /**
@@ -77,6 +77,6 @@ const routes: Routes = [
  */
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class FinancesRoutingModule {}
