@@ -446,9 +446,6 @@ export class GeolocationEffects {
         err: ErrorHandler | HttpErrorResponse | object,
         dispatchTo: GeolocationFailureActionNames
     ): Observable<AnyAction> => {
-        // Memunculkan error di console.
-        console.error(err);
-
         if (err instanceof ErrorHandler) {
             return of(
                 GeolocationActions[dispatchTo]({
