@@ -2084,6 +2084,7 @@
                                         mask="separator"
                                         thousandSeparator="."
                                         placeholder="Set minimum order here"
+                                        (input)="onChangeMinOrderQty($event.target.value)"
                                     />
 
                                     <mat-error>
@@ -2155,8 +2156,8 @@
                                         thousandSeparator="."
                                         [placeholder]="
                                             form.get('productCount.isMaximum').value === true
-                                            ?  'Unlimited' 
-                                            : 'Set maximum order here'
+                                                ? 'Unlimited'
+                                                : 'Set maximum order here'
                                         "
                                     />
 
