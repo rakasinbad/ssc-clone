@@ -202,6 +202,7 @@
                                 mask="separator"
                                 thousandSeparator="."
                                 placeholder="Set minimum order here"
+                                (input)="onChangeMinOrderQty($event.target.value)"
                             />
 
                             <mat-error>
