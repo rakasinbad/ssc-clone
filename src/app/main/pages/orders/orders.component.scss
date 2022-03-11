@@ -1,6 +1,11 @@
 @import 'src/@fuse/scss/fuse';
 
 app-orders {
+    #btn__add {
+        margin-right: 10px !important;
+        padding-right: 100%;
+    }
+
     #orders {
         .top-bg {
             @include media-breakpoint('lt-md') {

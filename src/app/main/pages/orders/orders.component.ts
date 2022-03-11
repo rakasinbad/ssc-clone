@@ -88,7 +88,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
             },
         },
         add: {
-            // permissions: ['INVENTORY.ISI.CREATE'],
+            label: 'Create Order',
+            permissions: ['OMS.CREATE'],
+            onClick: () => console.log('TODO: Handle onClick Create')
         },
         filter: {
             permissions: [],
@@ -153,12 +155,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         'payment-method',
         'paylater-type',
         'status',
-        'payment-status',
-        'total-product',
+        // 'payment-status',
+        // 'total-product',
         // 'deliveredOn',
         // 'actual-amount-delivered',
-        'delivered-date',
-        'order-source',
+        // 'delivered-date',
+        // 'order-source',
         'actions',
     ];
     importBtnConfig: IButtonImportConfig = {
@@ -552,12 +554,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                             'payment-method',
                             'paylater-type',
                             'status',
-                            'payment-status',
-                            'total-product',
+                            // 'payment-status',
+                            // 'total-product',
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
-                            'delivered-date',
-                            'order-source',
+                            // 'delivered-date',
+                            // 'order-source',
                             'actions',
                         ];
                     } else {
@@ -572,12 +574,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
                             'payment-method',
                             'paylater-type',
                             'status',
-                            'payment-status',
-                            'total-product',
+                            // 'payment-status',
+                            // 'total-product',
                             // 'deliveredOn',
                             // 'actual-amount-delivered',
-                            'delivered-date',
-                            'order-source',
+                            // 'delivered-date',
+                            // 'order-source',
                         ];
                     }
                 });
