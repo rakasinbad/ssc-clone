@@ -90,7 +90,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy, OnChan
         add: {
             label: 'Create Order',
             permissions: ['OMS.CREATE'],
-            onClick: () => console.log('TODO: Handle onClick Create')
+            onClick: () => this.router.navigateByUrl('/pages/orders/add')
         },
         filter: {
             permissions: [],
