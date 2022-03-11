@@ -502,16 +502,16 @@ export class CatalogueAmountSettingsComponent
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.markAsDirty({ onlySelf: false });
-            this.form.markAllAsTouched();
-            this.form.markAsPristine();
+            this.form.get('productCount.maxQtyValue').markAsDirty({ onlySelf: false });
+            this.form.get('productCount.maxQtyValue').markAllAsTouched();
+            this.form.get('productCount.maxQtyValue').markAsPristine();
         } else {
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.markAsDirty({ onlySelf: false });
-            this.form.markAllAsTouched();
-            this.form.markAsPristine();
+            this.form.get('productCount.maxQtyValue').markAsDirty({ onlySelf: false });
+            this.form.get('productCount.maxQtyValue').markAllAsTouched();
+            this.form.get('productCount.maxQtyValue').markAsPristine();
         }
     }
 
@@ -723,71 +723,85 @@ export class CatalogueAmountSettingsComponent
                     );
                 }
 
-                this.form.get('productCount.uomSmallUnit')!.valueChanges.subscribe((change) => {
-                    const selectedUnit = units.filter((unit) => unit.id === change);
-                    if (selectedUnit) {
-                        this.uomNames$.next({
-                            smallName: selectedUnit[0].unit,
-                            smallId: selectedUnit[0].id,
-                            largeName: this.uomNames$.value.largeName,
-                            largeId: this.uomNames$.value.largeId,
-                        });
-                    }
-                    this.form.get('productCount.uomSmallUnit').setValidators([
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.different({
-                            fieldName: 'productCount.uomLargeUnit',
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'uom_large_unit',
-                                'different',
-                                {
-                                    fieldComparedName: 'uom_small_unit',
-                                }
-                            ),
-                        }),
-                    ]);
-                    this.form
-                        .get('productCount.uomSmallUnit')
-                        .updateValueAndValidity({ onlySelf: true });
-                });
+                this.form
+                    .get('productCount.uomSmallUnit')!
+                    .valueChanges.pipe(
+                        distinctUntilChanged(),
+                        debounceTime(100),
+                        takeUntil(this.subs$)
+                    )
+                    .subscribe((change) => {
+                        const selectedUnit: any = units.filter((unit) => unit.id === change);
+                        if (selectedUnit && selectedUnit.length > 0) {
+                            this.uomNames$.next({
+                                smallName: selectedUnit[0].unit,
+                                smallId: selectedUnit[0].id,
+                                largeName: this.uomNames$.value.largeName,
+                                largeId: this.uomNames$.value.largeId,
+                            });
+                        }
+                        this.form.get('productCount.uomSmallUnit').setValidators([
+                            RxwebValidators.required({
+                                message: this.errorMessage$.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                            RxwebValidators.different({
+                                fieldName: 'productCount.uomLargeUnit',
+                                message: this.errorMessage$.getErrorMessageNonState(
+                                    'uom_large_unit',
+                                    'different',
+                                    {
+                                        fieldComparedName: 'uom_small_unit',
+                                    }
+                                ),
+                            }),
+                        ]);
+                        this.form
+                            .get('productCount.uomSmallUnit')
+                            .updateValueAndValidity({ onlySelf: true });
+                    });
 
-                this.form.get('productCount.uomLargeUnit')!.valueChanges.subscribe((change) => {
-                    const selectedUnit = units.filter((unit) => unit.id === change);
-                    if (selectedUnit) {
-                        this.uomNames$.next({
-                            largeName: selectedUnit[0].unit,
-                            largeId: selectedUnit[0].id,
-                            smallName: this.uomNames$.value.smallName,
-                            smallId: this.uomNames$.value.smallId,
-                        });
-                    }
-                    this.form.get('productCount.uomLargeUnit').setValidators([
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.different({
-                            fieldName: 'productCount.uomSmallUnit',
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'uom_small_unit',
-                                'different',
-                                {
-                                    fieldComparedName: 'uom_large_unit',
-                                }
-                            ),
-                        }),
-                    ]);
-                    this.form
-                        .get('productCount.uomLargeUnit')
-                        .updateValueAndValidity({ onlySelf: true });
-                });
+                this.form
+                    .get('productCount.uomLargeUnit')
+                    .valueChanges.pipe(
+                        distinctUntilChanged(),
+                        debounceTime(100),
+                        takeUntil(this.subs$)
+                    )
+                    .subscribe((change) => {
+                        const selectedUnit: any = units.filter((unit) => unit.id === change);
+                        if (selectedUnit && selectedUnit.length > 0) {
+                            this.uomNames$.next({
+                                largeName: selectedUnit[0].unit,
+                                largeId: selectedUnit[0].id,
+                                smallName: this.uomNames$.value.smallName,
+                                smallId: this.uomNames$.value.smallId,
+                            });
+                        }
+                        this.form.get('productCount.uomLargeUnit').setValidators([
+                            RxwebValidators.required({
+                                message: this.errorMessage$.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                ),
+                            }),
+                            RxwebValidators.different({
+                                fieldName: 'productCount.uomSmallUnit',
+                                message: this.errorMessage$.getErrorMessageNonState(
+                                    'uom_small_unit',
+                                    'different',
+                                    {
+                                        fieldComparedName: 'uom_large_unit',
+                                    }
+                                ),
+                            }),
+                        ]);
+                        this.form
+                            .get('productCount.uomLargeUnit')
+                            .updateValueAndValidity({ onlySelf: true });
+                    });
 
                 this.catalogueUnits = units;
                 this.catalogueSmallUnits = units;
