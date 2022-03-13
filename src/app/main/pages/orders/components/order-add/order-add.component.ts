@@ -86,7 +86,17 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
         private location: Location,
         private route: ActivatedRoute,
         private store: Store<fromOrder.FeatureState>
-    ) {}
+    ) {
+        // Set breadcrumbs
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: this._breadCrumbs,
+            })
+        );
+
+        // Set footer action
+        this.store.dispatch(UiActions.setFooterActionConfig({ payload: this.footerConfig }));
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -139,18 +149,6 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             default:
-                // Set breadcrumbs
-                this.store.dispatch(
-                    UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs,
-                    })
-                );
-
-                // Set footer action
-                this.store.dispatch(
-                    UiActions.setFooterActionConfig({ payload: this.footerConfig })
-                );
-
                 this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
                 this.store.dispatch(FormActions.enableSaveButton());
 

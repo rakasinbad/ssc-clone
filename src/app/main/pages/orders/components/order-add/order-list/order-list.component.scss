@@ -1,14 +1,10 @@
 @import 'src/@fuse/scss/fuse';
 
 #sc-oms-add-manual-order-order-list {
-    // height: 248px;
-    // flex-grow: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: stretch;
-    // gap: 16px;
-    // padding: 0 0 16px;
     background-color: var(--bg-color-light);
 
     .mat-form-field-flex {
@@ -50,7 +46,7 @@
         }
 
         .mat-header-row {
-            background: #F3F5F7;
+            background: #f3f5f7;
             min-width: fit-content;
             width: 100%;
         }
@@ -109,41 +105,81 @@
         .mat-column-order-sku-id {
             flex: 0 1 114px;
             min-width: 114px;
+            align-items: center;
+            padding: 12px 8px;
+            flex-direction: row;
         }
 
         .mat-column-order-sku-supplier {
             flex: 0 1 114px;
             min-width: 114px;
+            align-items: center;
+            padding: 12px 8px;
+            flex-direction: row;
         }
 
         .mat-column-order-product-name {
             flex: 0 1 406px;
             max-width: 406px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
+
+            .product-image {
+                height: 40px;
+                width: 40px;
+                border-radius: 4px;
+            }
         }
 
         .mat-column-order-qty {
             flex: 0 1 111px;
             min-width: 111px;
+            align-items: center;
+            padding-top: 12px;
+            justify-content: center;
+
+            .form-order-qty-input {
+                justify-content: center;
+            }
         }
 
         .mat-column-order-uom {
             flex: 0 1 77px;
             min-width: 77px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
         }
 
         .mat-column-order-price {
             flex: 0 1 127px;
             min-width: 127px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
         }
-        
+
         .mat-column-order-tax {
             flex: 0 1 77px;
             min-width: 77px;
+            flex-direction: row;
+            align-items: center;
+            padding: 12px 8px;
         }
         .mat-column-order-action {
             flex: 0 1 64px;
-            min-width: 64px;
+            max-width: 64px;
+            flex-direction: row;
+            padding: 12px 8px;
             align-items: center;
+
+            .sinbad-mat-menu-item {
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                padding: 0px 8px;
+            }
         }
 
         .mat-column-no-record {

@@ -5,6 +5,8 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { locale as english } from '../../../i18n/en';
 import { locale as indonesian } from '../../../i18n/id';
+import { MatDialog } from '@angular/material/dialog';
+import { AddProductListComponent } from '../add-product-list/add-product-list.component';
 
 @Component({
     selector: 'app-order-list',
@@ -22,77 +24,93 @@ export class OrderListComponent implements OnInit, AfterViewInit {
 
     dataSource = [
         {
-            skuId: '1',
-            skuSupplier: '123ABC',
+            catalogueId: 112001203,
+            skuSupplier: '11500032',
             productName: 'test sgm',
             qty: 1,
             uom: 'PCS',
             price: 10000,
             tax: 10,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
         },
         {
-            skuId: '2',
-            skuSupplier: '456ABC',
+            catalogueId: 11200120323,
+            skuSupplier: '11500032SK',
             productName: 'test sgm2',
             qty: 1,
             uom: 'PCS',
             price: 34000,
             tax: 10,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
         },
         {
-            skuId: '3',
-            skuSupplier: '567 coba',
+            catalogueId: 112001123203,
+            skuSupplier: '11500032222',
             productName: 'bango kecap',
             qty: 100,
             uom: 'PCS',
             price: 10000,
             tax: 5,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
         },
         {
-            skuId: '4',
-            skuSupplier: '89 test unilever',
+            catalogueId: 11200120312121,
+            skuSupplier: '115000dwdw32',
             productName: 'rinso',
             qty: 12,
             uom: 'PCS',
             price: 34000,
             tax: 11,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
         },
         {
-          skuId: '5',
-          skuSupplier: '123ABC',
-          productName: 'test sgm',
-          qty: 1,
-          uom: 'PCS',
-          price: 10000,
-          tax: 10,
-      },
-      {
-          skuId: '6',
-          skuSupplier: '456ABC',
-          productName: 'test sgm2',
-          qty: 1,
-          uom: 'PCS',
-          price: 34000,
-          tax: 10,
-      },
-      {
-          skuId: '7',
-          skuSupplier: '567 coba',
-          productName: 'bango kecap',
-          qty: 100,
-          uom: 'PCS',
-          price: 10000,
-          tax: 5,
-      },
-      {
-          skuId: '8',
-          skuSupplier: '89 test unilever',
-          productName: 'rinso',
-          qty: 12,
-          uom: 'PCS',
-          price: 34000,
-          tax: null,
-      },
+            catalogueId: 112001203222111,
+            skuSupplier: '1150003233dddd',
+            productName: 'test sgm',
+            qty: 1,
+            uom: 'PCS',
+            price: 10000,
+            tax: 10,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
+        },
+        {
+            catalogueId: 112001203678,
+            skuSupplier: '115000332fdf2',
+            productName: 'test sgm2',
+            qty: 1,
+            uom: 'PCS',
+            price: 34000,
+            tax: 10,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
+        },
+        {
+            catalogueId: 1120012033464,
+            skuSupplier: '11500032ffdg',
+            productName: 'bango kecap',
+            qty: 100,
+            uom: 'PCS',
+            price: 10000,
+            tax: 5,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
+        },
+        {
+            catalogueId: 1120012034343,
+            skuSupplier: '1150003rrrr2',
+            productName: 'rinso',
+            qty: 12,
+            uom: 'PCS',
+            price: 34000,
+            tax: null,
+            productImage:
+                'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/prod/catalogue-images/33408/image_1642432599187.png',
+        },
     ];
     displayedColumnsOrderList = [
         'order-sku-id',
@@ -108,7 +126,7 @@ export class OrderListComponent implements OnInit, AfterViewInit {
     constructor(
         private fb: FormBuilder,
         private fuseNavigation$: FuseNavigationService,
-        // private fuseTranslationLoader$: FuseTranslationLoaderService
+        private dialog: MatDialog // private fuseTranslationLoader$: FuseTranslationLoaderService
     ) {
         // Memuat terjemahan.
         // this.fuseTranslationLoader$.loadTranslations(indonesian, english);
@@ -126,7 +144,7 @@ export class OrderListComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-      this.initForm();
+        this.initForm();
 
         this.totalDataSource = this.dataSource.length;
     }
@@ -135,11 +153,10 @@ export class OrderListComponent implements OnInit, AfterViewInit {
         this.mappingData();
     }
 
-    mappingData(){
+    mappingData() {
         for (let i = 0; i < this.dataSource.length; i++) {
             this.formList.setValue(this.dataSource[i]);
         }
-        // console.log('this formlist->', this.formList)
     }
 
     numberFormat(num) {
@@ -163,22 +180,25 @@ export class OrderListComponent implements OnInit, AfterViewInit {
     initForm() {
         this.form = this.fb.group({
             searchValue: '',
-            qty: 0
         });
 
         this.formList = this.fb.group({
-            skuId: '',
+            catalogueId: '',
             skuSupplier: '',
             productName: '',
             qty: 0,
             uom: '',
             price: 0,
             tax: 0,
+            productImage: '',
         });
     }
 
-    addProduct(){
-      
+    addProduct() {
+        const dialogRef = this.dialog.open(AddProductListComponent, {
+            width: '1140px',
+            height: '620px',
+        });
     }
 
     ngOnDestroy(): void {
