@@ -134,5 +134,20 @@
             [pageSizeOptions]="defaultPageOpts"
             showFirstLastButtons
         ></mat-paginator>
+
+        <mat-dialog-actions align="end" style="margin-bottom: 0px">
+            <button class="btn-cancel" mat-button [mat-dialog-close]="{status: 'cancel'}">Cancel</button>
+            <button
+                class="btn-submit"
+                mat-button
+                [mat-dialog-close]="{ id: data?.value?.data?.id, reason: selectedValue, status: status }"
+                cdkFocusInitial
+                (click)="onClickButton(row)"
+                [disabled]="status == 'reject' && buttonRejectDisabled"
+            >
+                Next
+            </button>
+        </mat-dialog-actions>
+
     </div>
 </div>

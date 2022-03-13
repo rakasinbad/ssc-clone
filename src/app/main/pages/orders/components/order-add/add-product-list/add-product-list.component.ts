@@ -44,6 +44,9 @@ export class AddProductListComponent implements OnInit {
     formList: FormGroup;
     search: string = '';
 
+    public status: string;
+    public buttonRejectDisabled: boolean;
+
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -106,7 +109,7 @@ export class AddProductListComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private fuseNavigation$: FuseNavigationService // private fuseTranslationLoader$: FuseTranslationLoaderService
+        private fuseNavigation$: FuseNavigationService 
     ) {
         // Memuat terjemahan.
         // this.fuseTranslationLoader$.loadTranslations(indonesian, english);
@@ -118,7 +121,8 @@ export class AddProductListComponent implements OnInit {
         this.paginator.pageIndex = 0;
         this.paginator.pageSize = this.defaultPageSize;
         this.totalDataSource = this.dataSource.length;
-        this.dataSource;
+        this.status = 'false';
+        this.buttonRejectDisabled = true;
     }
 
     mappingData() {
@@ -160,6 +164,10 @@ export class AddProductListComponent implements OnInit {
           packageQty: 0,
           maxQty: 0,
         });
+    }
+
+    onClickButton(data) {
+      let selectedData = data;
     }
 
     ngOnDestroy(): void {
