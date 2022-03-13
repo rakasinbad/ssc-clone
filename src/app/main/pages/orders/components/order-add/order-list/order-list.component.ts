@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -13,10 +13,11 @@ import { locale as indonesian } from '../../../i18n/id';
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
 })
-export class OrderListComponent implements OnInit {
+export class OrderListComponent implements OnInit, AfterViewInit {
     public labelNoRecord = 'No data available';
     totalDataSource: number = 0;
     form: FormGroup;
+    formList: FormGroup;
     search: string = '';
 
     dataSource = [
@@ -27,7 +28,7 @@ export class OrderListComponent implements OnInit {
             qty: 1,
             uom: 'PCS',
             price: 10000,
-            tax: '10%',
+            tax: 10,
         },
         {
             skuId: '2',
@@ -36,7 +37,7 @@ export class OrderListComponent implements OnInit {
             qty: 1,
             uom: 'PCS',
             price: 34000,
-            tax: '10%',
+            tax: 10,
         },
         {
             skuId: '3',
@@ -45,7 +46,7 @@ export class OrderListComponent implements OnInit {
             qty: 100,
             uom: 'PCS',
             price: 10000,
-            tax: '5%',
+            tax: 5,
         },
         {
             skuId: '4',
@@ -54,7 +55,7 @@ export class OrderListComponent implements OnInit {
             qty: 12,
             uom: 'PCS',
             price: 34000,
-            tax: null,
+            tax: 11,
         },
         {
           skuId: '5',
@@ -63,7 +64,7 @@ export class OrderListComponent implements OnInit {
           qty: 1,
           uom: 'PCS',
           price: 10000,
-          tax: '10%',
+          tax: 10,
       },
       {
           skuId: '6',
@@ -72,7 +73,7 @@ export class OrderListComponent implements OnInit {
           qty: 1,
           uom: 'PCS',
           price: 34000,
-          tax: '10%',
+          tax: 10,
       },
       {
           skuId: '7',
@@ -81,7 +82,7 @@ export class OrderListComponent implements OnInit {
           qty: 100,
           uom: 'PCS',
           price: 10000,
-          tax: '5%',
+          tax: 5,
       },
       {
           skuId: '8',
@@ -130,6 +131,17 @@ export class OrderListComponent implements OnInit {
         this.totalDataSource = this.dataSource.length;
     }
 
+    ngAfterViewInit() {
+        this.mappingData();
+    }
+
+    mappingData(){
+        for (let i = 0; i < this.dataSource.length; i++) {
+            this.formList.setValue(this.dataSource[i]);
+        }
+        // console.log('this formlist->', this.formList)
+    }
+
     numberFormat(num) {
         if (num) {
             return (
@@ -151,6 +163,17 @@ export class OrderListComponent implements OnInit {
     initForm() {
         this.form = this.fb.group({
             searchValue: '',
+            qty: 0
+        });
+
+        this.formList = this.fb.group({
+            skuId: '',
+            skuSupplier: '',
+            productName: '',
+            qty: 0,
+            uom: '',
+            price: 0,
+            tax: 0,
         });
     }
 

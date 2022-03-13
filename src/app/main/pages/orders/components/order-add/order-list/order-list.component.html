@@ -1,4 +1,4 @@
-<div id="sc-oms-add-manual-order-order-list" class="center inner-scroll" cdkScrollable fusePerfectScrollbar>
+<div id="sc-oms-add-manual-order-order-list" class="center">
     <div class="content-card">
         <mat-card>
             <div fxLayout="column">
@@ -11,7 +11,6 @@
                 <div style="padding-top: 3px">
                     <button
                         mat-flat-button
-                        [ngClass]="buttonClasses"
                         color="accent"
                         fxFlexAlign="center"
                         (click)="addProduct()"
@@ -40,7 +39,6 @@
                                     formControlName="searchValue"
                                     (keyup)="keyUpKeyword($event)"
                                     style="
-                                        position: fixed;
                                         margin-top: -13px;
                                         font-size: 14px;
                                         line-height: 18px;
@@ -49,9 +47,9 @@
                                 <mat-icon
                                     matSuffix
                                     style="
-                                        position: fixed;
                                         margin: -36px -36px -36px -20px;
                                         cursor: pointer;
+                                        color: #ACB8C3;
                                     "
                                     (click)="searchKeyword()"
                                     >search</mat-icon
@@ -62,7 +60,6 @@
                     <button
                         mat-stroked-button
                         color="primary"
-                        [ngClass]="buttonClasses"
                         class="grey-300-border"
                         fxFlexAlign="center"
                         style="
@@ -121,9 +118,22 @@
                 <ng-container matColumnDef="order-qty">
                     <mat-header-cell *matHeaderCellDef> QTY </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word">
-                            {{ row?.qty || '-' }}
-                        </p>
+                        <!-- <p style="word-break: break-word"> -->
+                        <form fxFlex [formGroup]="formList">
+                            <mat-form-field
+                                class="order-qty-input"
+                                appearance="outline"
+                                fxFlex="22"
+                            >
+                                <input
+                                    type="text"
+                                    matInput
+                                    formControlName="qty"
+                                />
+                                </mat-form-field>
+                                </form>
+                            <!-- {{ row?.qty || '-' }} -->
+                        <!-- </p> -->
                     </mat-cell>
                 </ng-container>
 
@@ -131,13 +141,6 @@
                 <ng-container matColumnDef="order-uom">
                     <mat-header-cell *matHeaderCellDef>
                         UOM
-                        <mat-icon
-                            class="active-icon s-14 ml-8 cursor-pointer"
-                            matTooltip="Applicable prices for store segmentation"
-                            matTooltipPosition="right"
-                            matTooltipClass="tooltip-br"
-                            >info</mat-icon
-                        >
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word">
@@ -148,7 +151,16 @@
 
                 <!-- Price Column -->
                 <ng-container matColumnDef="order-price">
-                    <mat-header-cell *matHeaderCellDef> Price </mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef> 
+                        Price
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            matTooltip="Applicable prices for store segmentation"
+                            matTooltipPosition="above"
+                            matTooltipClass="tooltip-br"
+                            >info</mat-icon
+                        > 
+                    </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word">
                             {{ numberFormat(row?.price) }}
@@ -161,7 +173,10 @@
                     <mat-header-cell *matHeaderCellDef> Tax </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word">
-                            {{ row?.tax || '-' }}
+                            <ng-container *ngIf="row?.tax; else noResultTax">
+                                {{ row?.tax }}%
+                            </ng-container>
+                            <ng-template #noResultTax> - </ng-template>
                         </p>
                     </mat-cell>
                 </ng-container>

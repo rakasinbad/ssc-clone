@@ -11,6 +11,12 @@
     // padding: 0 0 16px;
     background-color: var(--bg-color-light);
 
+    .mat-form-field-flex {
+        height: 48px;
+    }
+    .mat-form-field-appearance-outline .mat-form-field-infix {
+        padding: 5px 0 5px 0;
+    }
     .title-section {
         height: 20px;
         flex-grow: 1;
@@ -67,6 +73,9 @@
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
+            color: #0b1a28;
+            font-family: Inter;
+            font-size: 14px;
 
             &:not(:last-of-type) {
                 padding-right: 8px;
@@ -98,8 +107,43 @@
         }
 
         .mat-column-order-sku-id {
-            flex: 0 1 180px;
-            min-width: 180px;
+            flex: 0 1 114px;
+            min-width: 114px;
+        }
+
+        .mat-column-order-sku-supplier {
+            flex: 0 1 114px;
+            min-width: 114px;
+        }
+
+        .mat-column-order-product-name {
+            flex: 0 1 406px;
+            max-width: 406px;
+        }
+
+        .mat-column-order-qty {
+            flex: 0 1 111px;
+            min-width: 111px;
+        }
+
+        .mat-column-order-uom {
+            flex: 0 1 77px;
+            min-width: 77px;
+        }
+
+        .mat-column-order-price {
+            flex: 0 1 127px;
+            min-width: 127px;
+        }
+        
+        .mat-column-order-tax {
+            flex: 0 1 77px;
+            min-width: 77px;
+        }
+        .mat-column-order-action {
+            flex: 0 1 64px;
+            min-width: 64px;
+            align-items: center;
         }
 
         .mat-column-no-record {

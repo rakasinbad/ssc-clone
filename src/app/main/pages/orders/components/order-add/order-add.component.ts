@@ -44,12 +44,11 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Home',
         },
         {
-            title: 'OMS',
+            title: 'Order Management',
         },
         {
             title: 'Manual Order',
             active: true,
-            translate: 'BREADCRUMBS.ORDER_MANAGEMENTS',
         },
     ];
 
@@ -181,7 +180,7 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
             )
             .subscribe(([isClick, userSupplier]) => {
                 if (isClick) {
-                  //submit to post cart preview
+                    //submit to post cart preview
                     this._onSubmit(userSupplier.supplierId);
                 }
             });
@@ -199,6 +198,5 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
             supplierId,
             name,
         };
-
     }
 }
