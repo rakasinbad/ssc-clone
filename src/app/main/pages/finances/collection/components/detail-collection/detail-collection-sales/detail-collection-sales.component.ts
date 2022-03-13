@@ -5,7 +5,6 @@ import {
     ChangeDetectionStrategy,
     OnDestroy,
     ViewEncapsulation,
-    ChangeDetectorRef,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
@@ -16,6 +15,7 @@ import { CollectionDetailSelectors, CollectionPhotoSelectors } from '../../../st
 import { ActivatedRoute } from '@angular/router';
 import { FinanceDetailCollection } from '../../../models';
 import * as StatusPaymentLabel from '../../../constants';
+import { NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-detail-collection-sales',
@@ -29,10 +29,13 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     public idDetail: number;
     private subs: Subscription = new Subscription();
-    private collectionPhoto$: Observable<any>;
+    private image$: Observable<any>;
+    subsData: Subscription;
 
     collectionId: number;
     isLoadingPhoto$: Observable<boolean>;
+    isLoadingPhotoSkp$: Observable<boolean>;
+    collectionMethodType: string = '';
 
     CASH = StatusPaymentLabel.CASH;
     CHECK = StatusPaymentLabel.CHECK;
@@ -41,7 +44,8 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
 
     constructor(
         private store: Store<fromCollectionPhoto.FeatureState>,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private _$notice: NoticeService
     ) {}
 
     ngOnInit() {
@@ -49,49 +53,104 @@ export class DetailCollectionSalesComponent implements OnInit, OnDestroy {
         this.detailCollection$ = this.store.select(CollectionDetailSelectors.getSelectedItem);
         this.collectionId = id;
 
-        this.collectionPhoto$ = this.store.select(CollectionPhotoSelectors.getImage);
-        const sub = this.collectionPhoto$.subscribe({
-            next: (resp) => {
-                if (resp) {
-                    this.initViewerImage(resp);
+        this.subsData = this.detailCollection$.subscribe((val) => {
+            if (val) {
+                if (val.data.paymentCollectionMethod.paymentCollectionType.code !== 'sales_return') {
+                    this.store.dispatch(
+                        CollectionActions.fetchCollectionPhotoRequest({
+                            payload: { id: this.collectionId },
+                        })
+                    );
                 }
-            },
-        });
-        this.subs.add(sub);
+            }
+        })
+        
 
         this.isLoadingPhoto$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
+        this.isLoadingPhotoSkp$ = this.store.select(CollectionPhotoSelectors.getIsLoading);
     }
 
-    initViewerImage = (image: string): void => {
-        const imgSrc = 'data:image/jpeg;base64,' + image;
-
-        const imgEl = document.createElement('img');
-        imgEl.src = imgSrc;
-        imgEl.alt = 'Collection Photo';
-
-        const viewer = new Viewer(imgEl, {
-            inline: false,
-        });
-        viewer.show();
+    initViewerImage = (image, type: string): void => {
+        let imgView: string;
+        let text: string;
+        if (type == 'promo') {
+            if (image.skpImage == null) {
+                this._$notice.open('Photo Not Available', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                });
+            } else {
+                imgView = 'data:image/jpeg;base64,' + image.skpImage;
+                text = 'Promotion Cooperation Letter';
+                this.viewerImage(imgView, text);
+            }
+        } else if (type == 'other') {
+            if (image.image == null) {
+                this._$notice.open('Photo Not Available', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                });
+            } else {
+                imgView = 'data:image/jpeg;base64,' + image.image;
+                text = 'Collection Photo';
+                this.viewerImage(imgView, text);
+            }
+        }
     };
 
-    onClickViewImage = (): void => {
-        this.clearCollectionPhotoState();
-        this.store.dispatch(
-            CollectionActions.fetchCollectionPhotoRequest({
-                payload: { id: this.collectionId },
-            })
-        );
+    viewerImage(src: string, text: string) {
+        const imgSrc = src;
+        const imgEl = document.createElement('img');
+        imgEl.src = imgSrc;
+        imgEl.alt = text;
+        const viewerImg = new Viewer(imgEl, {
+            inline: false,
+        });
+
+        viewerImg.show();
+    }
+
+    onClickViewImage = (type: string): void => {
+        this.collectionMethodType = type;
+        this.image$ = this.store.select(CollectionPhotoSelectors.getId);
+
+        const sub = this.image$.subscribe({
+            next: (resp) => {
+                    this.initViewerImage(resp, this.collectionMethodType);
+            },
+        });
+
+        this.subs.add(sub);
+
+    };
+
+    onClickViewPromotion = (type: string): void => {
+        this.collectionMethodType = type;
+        this.image$ = this.store.select(CollectionPhotoSelectors.getId);
+
+        const sub = this.image$.subscribe({
+            next: (resp) => {
+                    this.initViewerImage(resp, this.collectionMethodType);
+            },
+        });
+
+        this.subs.add(sub);
     };
 
     ngOnDestroy(): void {
         if (!this.subs.closed) {
             this.subs.unsubscribe();
         }
+        
+        this.subsData.unsubscribe();
         this.clearCollectionPhotoState();
+        this.clearCollectionPhotoStateSkp();
     }
 
     clearCollectionPhotoState = (): void => {
+        this.store.dispatch(CollectionActions.clearCollectionPhoto());
+    };
+    clearCollectionPhotoStateSkp = (): void => {
         this.store.dispatch(CollectionActions.clearCollectionPhoto());
     };
 }

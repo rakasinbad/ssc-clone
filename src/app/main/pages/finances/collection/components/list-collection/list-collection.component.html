@@ -1,5 +1,6 @@
 <mat-table
-    class="collection-list-table sinbad-table"
+    id="finance-list-collection-table"
+    class="sinbad-table"
     [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
     [dataSource]="dataSource$ | async"
@@ -17,27 +18,17 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Collection Method Column -->
-    <ng-container matColumnDef="finance-collection-method">
-        <mat-header-cell *matHeaderCellDef> Collection Method </mat-header-cell>
+    <!-- Store Name Column -->
+    <ng-container matColumnDef="finance-store-name">
+        <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ row?.collectionMethodName || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Collection Ref No Column -->
-    <ng-container matColumnDef="finance-collection-ref">
-        <mat-header-cell *matHeaderCellDef> Collection Ref No </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.referenceCode || '-' }}</p>
+            <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
         </mat-cell>
     </ng-container>
 
     <!-- Collection Total Amount Column -->
     <ng-container matColumnDef="finance-collection-amount">
-        <mat-header-cell *matHeaderCellDef> Collection Total Amount </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Total Amount </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ numberFormat(row?.totalAmount) }}
@@ -47,7 +38,7 @@
 
     <!-- Collection Date Column -->
     <ng-container matColumnDef="finance-collection-date">
-        <mat-header-cell *matHeaderCellDef> Collection Date </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Col.Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
@@ -57,19 +48,11 @@
 
     <!-- Collection Due Date Column -->
     <ng-container matColumnDef="finance-collection-due-date">
-        <mat-header-cell *matHeaderCellDef> Collection Due Date </mat-header-cell>
+        <mat-header-cell *matHeaderCellDef> Col.Due Date </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word">
                 {{ (row?.invalidDate | date: 'dd MMM yyyy') || '-' }}
             </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Collection Status Column -->
-    <ng-container matColumnDef="finance-collection-status">
-        <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ statusLabel(row?.approvalStatus) }}</p>
         </mat-cell>
     </ng-container>
 
@@ -81,40 +64,6 @@
         </mat-cell>
     </ng-container>
 
-    <!-- External Id Column -->
-    <ng-container matColumnDef="finance-external-id">
-        <mat-header-cell *matHeaderCellDef> External Id </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.storeExternalId || '-' }}</p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Store Name Column -->
-    <ng-container matColumnDef="finance-store-name">
-        <mat-header-cell *matHeaderCellDef> Store Name</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ row?.storeName || '-' }}</p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Order Code Column -->
-    <ng-container matColumnDef="finance-order-code">
-        <mat-header-cell *matHeaderCellDef> Order Code </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">{{ getOrderCode(row?.orderCode) }}</p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Order Red Column -->
-    <ng-container matColumnDef="finance-order-ref">
-        <mat-header-cell *matHeaderCellDef> Order Ref </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word">
-                {{ getOrderRef(row?.orderRef) }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
     <!-- Reason Column -->
     <ng-container matColumnDef="finance-reason">
         <mat-header-cell *matHeaderCellDef> Reason </mat-header-cell>
@@ -123,9 +72,62 @@
         </mat-cell>
     </ng-container>
 
+    <!-- Collection Method Column -->
+    <ng-container matColumnDef="finance-collection-method">
+        <mat-header-cell *matHeaderCellDef> Collection Method </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word">
+                {{ row?.collectionMethodName || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Collection Status Column -->
+    <ng-container matColumnDef="finance-collection-status">
+        <mat-header-cell *matHeaderCellDef> Collection Status </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-{{ row?.approvalStatus }}">
+                {{ statusLabel(row?.approvalStatus) }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="action">
+        <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="moreMenu"
+                    aria-label="More"
+                    (click)="$event.stopPropagation()"
+                >
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['FINANCE.CL.READ']">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Detail"
+                            (click)="openDetailPage(row)"
+                            [routerLink]="[row?.id, 'detail']"
+                        >
+                            <mat-icon>remove_red_eye</mat-icon>
+                            <span>Detail</span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
+
     <!-- No Record Column -->
     <ng-container matColumnDef="no-record">
-        <mat-footer-cell *matFooterCellDef colspan="8">{{labelNoRecord}}</mat-footer-cell>
+        <mat-footer-cell *matFooterCellDef colspan="8">{{ labelNoRecord }}</mat-footer-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumnsCollection; sticky: true"></mat-header-row>

@@ -1,0 +1,103 @@
+@import 'src/@fuse/scss/fuse';
+
+$background-netral: #f3f5f7;
+$box-shadow-netral: inset 0px -1px 0px rgba(218, 224, 231, 0.5);
+$red-color: #f0444c;
+
+#approve-reject {
+    .detail-approve-reject {
+        background: $background-netral;
+        box-shadow: $box-shadow-netral;
+        padding: 12px 16px;
+    }
+    .info-reject {
+        display: flex;
+        background: #fff8eb;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 18px;
+        letter-spacing: -0.01em;
+        color: #e79b04;
+        padding: 12px 16px;
+        span {
+            padding: 3px 3px;
+        }
+    }
+    
+    .mat-form-field-flex{    
+        min-height: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        padding-top: 0.5em !important;
+        padding-bottom: 1em !important; 
+    }
+
+    > .info {
+        .mat-form-field-outline,
+        .mat-select-arrow-wrapper {
+            visibility: hidden;
+        }
+
+        .mat-form-field-wrapper,
+        .mat-form-field-flex {
+            margin: 0;
+            padding: 0;
+        }
+
+        .mat-form-field-prefix {
+            top: 0;
+        }
+
+        .mat-select-placeholder,
+        .mat-select-value-text,
+        .mat-input-element:disabled {
+            color: #828282;
+        }
+
+        .mat-select-trigger {
+            cursor: text;
+        }
+
+        .mat-radio-button ~ .mat-radio-button {
+            margin-left: 20px;
+        }
+    }
+    .btn-cancel {
+        color: $red-color;
+        font-size: 12px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+        background: #ffffff;
+        border: 1px solid $red-color;
+        box-sizing: border-box;
+        border-radius: 4px;
+    }
+    .btn-submit {
+        color: #ffff;
+        display: flex;
+        align-items: center;
+        position: static;
+        height: 32px;
+        background: $red-color;
+        border-radius: 4px;
+        flex: none;
+        order: 1;
+        flex-grow: 0;
+        font-size: 12px;
+        margin: 0px 8px;
+    }
+    .btn-submit:disabled {
+        background: #FBC9CC;
+    }
+
+    
+}
+
+.matRadioButtonRejectApprove{
+    width: -webkit-fill-available !important;
+}
+
