@@ -8,7 +8,12 @@ import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { MaterialModule } from 'app/shared/material.module';
-import { CalculateGrossPricePipe, CatalogueTypePipe, OrderLogPipe, OrderStatusPipe } from 'app/shared/pipes';
+import {
+    CalculateGrossPricePipe,
+    CatalogueTypePipe,
+    OrderLogPipe,
+    OrderStatusPipe,
+} from 'app/shared/pipes';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
@@ -21,6 +26,7 @@ import {
     OrderAddComponent,
     OrderStoreShipmentComponent,
     OrderListComponent,
+    AddProductListComponent,
 } from './components';
 import { OrderQtyFormComponent } from './order-qty-form/order-qty-form.component';
 import { OrdersRoutingModule } from './orders-routing.module';
@@ -47,6 +53,7 @@ import { FuseSidebarModule } from '@fuse/components';
         OrderAddComponent,
         OrderStoreShipmentComponent,
         OrderListComponent,
+        AddProductListComponent,
     ],
     imports: [
         OrdersRoutingModule,
@@ -67,6 +74,7 @@ import { FuseSidebarModule } from '@fuse/components';
         StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
         EffectsModule.forFeature([ExportsEffects, OrderEffects]),
     ],
-    entryComponents: [OrderQtyFormComponent],
+    entryComponents: [OrderQtyFormComponent, AddProductListComponent],
+    exports: [AddProductListComponent],
 })
 export class OrdersModule {}
