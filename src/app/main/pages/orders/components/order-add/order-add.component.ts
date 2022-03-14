@@ -85,7 +85,8 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
         private formBuilder: FormBuilder,
         private location: Location,
         private route: ActivatedRoute,
-        private store: Store<fromOrder.FeatureState>
+        private store: Store<fromOrder.FeatureState>,
+        private router: Router,
     ) {
         // Set breadcrumbs
         this.store.dispatch(
@@ -163,7 +164,7 @@ export class OrderAddComponent implements OnInit, AfterViewInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe((isClick) => {
-                this.location.back();
+                this.router.navigateByUrl('/pages/orders')
 
                 this.store.dispatch(FormActions.resetClickCancelButton());
                 this.store.dispatch(FormActions.resetCancelButtonAction());
