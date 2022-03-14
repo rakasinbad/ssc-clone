@@ -1,9 +1,236 @@
-<div id="sc-oms-add-manual-order-order-list" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
-    <mat-card class="mb-24">
-        <div fxLayout="column">
-            <span class="title-section">
-                Order List
-            </span>
-        </div>
-    </mat-card>
+<div id="sc-oms-add-manual-order-order-list" class="center">
+    <div class="content-card">
+        <mat-card>
+            <div fxLayout="column">
+                <span class="title-section"> Order List </span>
+            </div>
+
+            <br />
+
+            <div class="menu" style="display: flex; justify-content: space-between">
+                <div style="padding-top: 3px">
+                    <button
+                        mat-flat-button
+                        color="accent"
+                        fxFlexAlign="center"
+                        (click)="addProduct()"
+                    >
+                        + Add Product
+                    </button>
+                </div>
+                <div style="display: flex">
+                    <div
+                        class="search-section"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        style="height: 25px; margin-bottom: 50px"
+                    >
+                        <form fxFlex [formGroup]="form">
+                            <mat-form-field
+                                class="search-section__value"
+                                appearance="outline"
+                                fxFlex="100"
+                                style="padding-right: 8px; min-height: 30px"
+                            >
+                                <input
+                                    type="text"
+                                    matInput
+                                    placeholder="Search"
+                                    formControlName="searchValue"
+                                    (keyup)="keyUpKeyword($event)"
+                                    style="margin-top: -13px; font-size: 14px; line-height: 18px"
+                                />
+                                <mat-icon
+                                    matSuffix
+                                    style="
+                                        margin: -36px -36px -36px -20px;
+                                        cursor: pointer;
+                                        color: #acb8c3;
+                                    "
+                                    (click)="searchKeyword()"
+                                    >search</mat-icon
+                                >
+                            </mat-form-field>
+                        </form>
+                    </div>
+                    <button
+                        mat-stroked-button
+                        color="primary"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        style="
+                            margin-bottom: 24px;
+                            height: 44px;
+                            background-color: #677a8e;
+                            color: white;
+                        "
+                    >
+                        <mat-icon>vertical_align_bottom</mat-icon>
+                        Import
+                    </button>
+                </div>
+            </div>
+
+            <mat-table
+                class="order-list-table sinbad-table"
+                [class.sinbad-table-no-record]="totalDataSource === 0"
+                #table
+                [dataSource]="dataSource"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- SKU ID Column -->
+                <ng-container matColumnDef="order-sku-id">
+                    <mat-header-cell *matHeaderCellDef> SKU ID </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word">
+                            {{ row?.catalogueId || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- SKU Supplier Column -->
+                <ng-container matColumnDef="order-sku-supplier">
+                    <mat-header-cell *matHeaderCellDef> SKU Supplier </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word">
+                            {{ row?.skuSupplier || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Product Name Column -->
+                <ng-container matColumnDef="order-product-name">
+                    <mat-header-cell *matHeaderCellDef> Product Name </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <img [src]="row?.productImage" alt="Product Images" class="product-image" />
+                        <p style="word-break: break-word">
+                            {{ row?.productName || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                 <!-- QTY Column -->
+                 <ng-container matColumnDef="order-qty">
+                    <mat-header-cell *matHeaderCellDef> QTY </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <form fxFlex [formGroup]="formList" class="form-order-qty-input">
+                            <mat-form-field
+                                class="order-qty-input"
+                                appearance="outline"
+                                fxFlex="22"
+                            >
+                                <input
+                                    type="text"
+                                    matInput
+                                    formControlName="qty"
+                                />
+                                </mat-form-field>
+                                </form>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- UOM Column -->
+                <ng-container matColumnDef="order-uom">
+                    <mat-header-cell *matHeaderCellDef>
+                        UOM
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word">
+                            {{ row?.uom || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Price Column -->
+                <ng-container matColumnDef="order-price">
+                    <mat-header-cell *matHeaderCellDef>
+                        Price
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            matTooltip="Applicable prices for store segmentation"
+                            matTooltipPosition="above"
+                            matTooltipClass="tooltip-br"
+                            >info</mat-icon
+                        >
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word">
+                            {{ numberFormat(row?.price) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Tax Column -->
+                <ng-container matColumnDef="order-tax">
+                    <mat-header-cell *matHeaderCellDef> Tax </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word">
+                            <ng-container *ngIf="row?.tax; else noResultTax">
+                                {{ row?.tax }}%
+                            </ng-container>
+                            <ng-template #noResultTax> - </ng-template>
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="order-action">
+                    <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            (click)="deleteOrderList(row)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- No Record Column -->
+                <ng-container matColumnDef="no-record">
+                    <mat-footer-cell *matFooterCellDef colspan="8">{{
+                        labelNoRecord
+                    }}</mat-footer-cell>
+                </ng-container>
+
+                <mat-header-row
+                    *matHeaderRowDef="displayedColumnsOrderList; sticky: true"
+                ></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumnsOrderList"
+                    class="sinbad-order-list-table"
+                ></mat-row>
+
+                <!-- <mat-footer-row
+                    *matFooterRowDef="['no-record']"
+                    [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                ></mat-footer-row> -->
+            </mat-table>
+
+            <!-- <div
+                class="loader-content"
+                *ngIf="
+                    (isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))
+                "
+            >
+                <mat-spinner color="accent"></mat-spinner>
+            </div> -->
+
+            <!-- <mat-paginator
+                [disabled]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                showFirstLastButtons
+            ></mat-paginator> -->
+        </mat-card>
+    </div>
 </div>

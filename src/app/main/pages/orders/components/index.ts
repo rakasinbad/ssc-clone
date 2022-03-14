@@ -7,3 +7,4 @@ export * from './order-detail/_partials/order-status-info/order-status-info.comp
 export * from './order-add/order-add.component';
 export * from './order-add/order-list/order-list.component';
 export * from './order-add/order-store-shipment/order-store-shipment.component';
+export * from './order-add/add-product-list/add-product-list.component';

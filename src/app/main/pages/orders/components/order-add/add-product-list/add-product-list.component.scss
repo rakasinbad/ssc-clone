@@ -1,33 +1,19 @@
 @import 'src/@fuse/scss/fuse';
 
-#sc-oms-add-manual-order-order-list {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-    background-color: var(--bg-color-light);
-
-    .mat-form-field-flex {
-        height: 48px;
-    }
-    .mat-form-field-appearance-outline .mat-form-field-infix {
-        padding: 5px 0 5px 0;
-    }
+#add-product-list {
     .title-section {
-        height: 20px;
-        flex-grow: 1;
-        font-family: Inter;
-        font-size: 16px;
-        font-weight: bold;
-        font-stretch: normal;
+        font-family: 'Inter';
         font-style: normal;
-        line-height: 1.25;
-        letter-spacing: -0.4px;
-        text-align: left;
-        color: var(--text-color-default);
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 24px;
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+        margin: 0px 16px;
     }
 
-    .order-list-table {
+    .add-product-list-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
@@ -60,8 +46,9 @@
             min-height: unset;
         }
 
-        .sinbad-order-list-table {
+        .sinbad-add-product-list-table {
             position: relative;
+            cursor: pointer;
             // height: 84px;
         }
 
@@ -118,8 +105,8 @@
         }
 
         .mat-column-order-product-name {
-            flex: 0 1 406px;
-            max-width: 406px;
+            flex: 0 1 570px;
+            max-width: 570px;
             flex-direction: row;
             align-items: center;
             padding: 12px 8px;
@@ -131,32 +118,15 @@
             }
         }
 
-        .mat-column-order-qty {
-            flex: 0 1 111px;
-            min-width: 111px;
-            align-items: center;
-            justify-content: center;
-
-            .form-order-qty-input {
-                justify-content: center;
-                padding-top: 12px;
-            }
-        }
-
-        .mat-column-order-uom {
-            flex: 0 1 77px;
-            min-width: 77px;
-            flex-direction: row;
-            align-items: center;
-            padding: 12px 8px;
-        }
-
         .mat-column-order-price {
             flex: 0 1 127px;
             min-width: 127px;
             flex-direction: row;
             align-items: center;
             padding: 12px 8px;
+            display: table;
+            flex: none;
+            flex-grow: 1;
         }
 
         .mat-column-order-tax {
@@ -166,20 +136,13 @@
             align-items: center;
             padding: 12px 8px;
         }
-        .mat-column-order-action {
-            flex: 0 1 64px;
-            max-width: 64px;
+        .mat-column-adv-price {
+            flex: 0 1 83px;
+            max-width: 83px;
             flex-direction: row;
             padding: 12px 8px;
             align-items: center;
-
-            .sinbad-mat-menu-item {
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                padding: 0px 8px;
-                background-color: white;
-            }
+            justify-content: center;
         }
 
         .mat-column-no-record {
