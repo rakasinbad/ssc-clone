@@ -310,38 +310,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         if (ev.checked) {
             //UOM Large Unit
-            this.form.get('productCount.uomSmallUnit').setValidators([
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.different({
-                    fieldName: 'productCount.uomLargeUnit',
-                    message: this.errorMessageSvc.getErrorMessageNonState(
-                        'uom_large_unit',
-                        'different',
-                        {
-                            fieldComparedName: 'uom_small_unit',
-                        }
-                    ),
-                }),
-            ]);
-            this.form.get('productCount.uomSmallUnit').updateValueAndValidity({ onlySelf: true });
-            this.form.get('productCount.uomLargeUnit').setValidators([
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.different({
-                    fieldName: 'productCount.uomSmallUnit',
-                    message: this.errorMessageSvc.getErrorMessageNonState(
-                        'uom_small_unit',
-                        'different',
-                        {
-                            fieldComparedName: 'uom_large_unit',
-                        }
-                    ),
-                }),
-            ]);
-            this.form.get('productCount.uomLargeUnit').updateValueAndValidity({ onlySelf: true });
+
             this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
             //consist Of Qty Large Unit
             this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
@@ -366,8 +335,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             });
         } else {
             //UOM Large Unit
-            this.form.get('productCount.uomLargeUnit').clearValidators();
-            this.form.get('productCount.uomLargeUnit').updateValueAndValidity({ onlySelf: true });
+            // this.form.get('productCount.uomLargeUnit').clearValidators();
+            // this.form.get('productCount.uomLargeUnit').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.uomLargeUnit').disable({ onlySelf: true });
             //consist Of Qty Large Unit
             //consist Of Qty Large Unit
@@ -393,6 +362,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     uomLargeUnit: null,
                 },
             });
+        }
+    }
+
+    getErrorMessage(field: string): string {
+        if (field) {
+            const { errors } = this.form.get(field);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
         }
     }
 
@@ -1045,16 +1028,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                             RxwebValidators.different({
                                 fieldName: 'productCount.uomLargeUnit',
                                 message: this.errorMessageSvc.getErrorMessageNonState(
-                                    'uom_large_unit',
+                                    'small_unit',
                                     'different',
                                     {
-                                        fieldComparedName: 'uom_small_unit',
+                                        fieldComparedName: 'large_unit',
                                     }
                                 ),
                             }),
                         ]);
                         this.form
                             .get('productCount.uomSmallUnit')
+                            .updateValueAndValidity({ onlySelf: true });
+                        this.form
+                            .get('productCount.uomLargeUnit')
                             .updateValueAndValidity({ onlySelf: true });
                     });
 
@@ -1086,16 +1072,19 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                             RxwebValidators.different({
                                 fieldName: 'productCount.uomSmallUnit',
                                 message: this.errorMessageSvc.getErrorMessageNonState(
-                                    'uom_small_unit',
+                                    'large_unit',
                                     'different',
                                     {
-                                        fieldComparedName: 'uom_large_unit',
+                                        fieldComparedName: 'small_unit',
                                     }
                                 ),
                             }),
                         ]);
                         this.form
                             .get('productCount.uomLargeUnit')
+                            .updateValueAndValidity({ onlySelf: true });
+                        this.form
+                            .get('productCount.uomSmallUnit')
                             .updateValueAndValidity({ onlySelf: true });
                     });
 

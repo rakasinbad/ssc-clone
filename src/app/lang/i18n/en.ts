@@ -62,6 +62,8 @@ export const globalEnLang = {
         ROLE: 'Role',
         STATUS: 'Status',
         USERNAME: 'Username',
+        SMALL_UNIT: 'Small UOM',
+        LARGE_UNIT: 'Large UOM',
     },
     GLOBAL_STATUS: {
         ALL: 'All',
@@ -81,7 +83,8 @@ export const globalEnLang = {
         BETWEEN_NUMBER: '{{ fieldName }} field must be between {{ minValue }} and {{ maxValue }}.',
         BETWEEN_GT_NUMBER: '{{ fieldName }} field must be > {{ minValue }} and <= {{ maxValue }}.',
         BETWEEN_LT_NUMBER: '{{ fieldName }} field must be >= {{ minValue }} and < {{ maxValue }}.',
-        BETWEEN_LTE_NUMBER: '{{ fieldName }} field must be >= {{ minValue }} and <= {{ maxValue }}.',
+        BETWEEN_LTE_NUMBER:
+            '{{ fieldName }} field must be >= {{ minValue }} and <= {{ maxValue }}.',
         CONFIRM: '{{ fieldName }} field does not match the {{ fieldNameCompare }} field.',
         CONFIRM_UNKNOWN: '{{ fieldName }} field does not match the other fields.',
         DEFAULT: '{{ fieldName }} field is required or selected.',
