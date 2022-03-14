@@ -166,9 +166,6 @@ export class AddProductListComponent implements OnInit {
         });
     }
 
-    onClickButton(data) {
-      let selectedData = data;
-    }
 
     ngOnDestroy(): void {
         this.fuseNavigation$.unregister('customNavigation');

@@ -93,7 +93,7 @@
                 <mat-header-cell *matHeaderCellDef> Adv. Price </mat-header-cell>
                 <mat-cell *matCellDef="let row">
                     <p style="word-break: break-word">
-                            {{ numberFormat(row?.advancePrice) }}
+                        {{ numberFormat(row?.advancePrice) }}
                     </p>
                 </mat-cell>
             </ng-container>
@@ -136,18 +136,16 @@
         ></mat-paginator>
 
         <mat-dialog-actions align="end" style="margin-bottom: 0px">
-            <button class="btn-cancel" mat-button [mat-dialog-close]="{status: 'cancel'}">Cancel</button>
+            <button class="btn-cancel" mat-button>
+                Cancel
+            </button>
             <button
                 class="btn-submit"
                 mat-button
-                [mat-dialog-close]="{ id: data?.value?.data?.id, reason: selectedValue, status: status }"
                 cdkFocusInitial
-                (click)="onClickButton(row)"
-                [disabled]="status == 'reject' && buttonRejectDisabled"
             >
                 Next
             </button>
         </mat-dialog-actions>
-
     </div>
 </div>
