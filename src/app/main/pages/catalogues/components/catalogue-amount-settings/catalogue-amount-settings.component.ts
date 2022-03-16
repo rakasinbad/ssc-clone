@@ -342,6 +342,55 @@ export class CatalogueAmountSettingsComponent
     }
 
     private initFormCheck(): void {
+        //Revalidate consist of based on max qty changes
+        this.form
+            .get('productCount.maxQtyValue')
+            .valueChanges.pipe(debounceTime(100), distinctUntilChanged(), takeUntil(this.subs$))
+            .subscribe((maxQtyValChanges) => {
+                let isEnableLargeUnit = this.form.get('productCount.isEnableLargeUnit').value;
+
+                //consist Of Qty Large Unit
+                if (isEnableLargeUnit) {
+                    this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            ),
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                {
+                                    minValue: 1,
+                                }
+                            ),
+                        }),
+                        RxwebValidators.lessThanEqualTo({
+                            fieldName: 'productCount.maxQtyValue',
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'lte_number',
+                                {
+                                    limitValue: maxQtyValChanges,
+                                }
+                            ),
+                        }),
+                    ]);
+                    this.form
+                        .get('productCount.consistOfQtyLargeUnit')
+                        .updateValueAndValidity({ onlySelf: true });
+                    /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+                    this.form
+                        .get('productCount.consistOfQtyLargeUnit')
+                        .markAsDirty({ onlySelf: false });
+                    this.form.get('productCount.consistOfQtyLargeUnit').markAllAsTouched();
+                    this.form.get('productCount.consistOfQtyLargeUnit').markAsPristine();
+                }
+            });
+
         // Re-validate maximum order quantity field based on changes in minimum order quantity
         this.form
             .get('productCount.minQtyValue')
@@ -441,7 +490,7 @@ export class CatalogueAmountSettingsComponent
                 this.formValueChange.emit(value);
             });
     }
-
+    //checkbox max order is unlimited
     onChangeMaxOrderQty(ev: MatCheckboxChange): void {
         // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
 
@@ -478,6 +527,13 @@ export class CatalogueAmountSettingsComponent
                 maxQtyValue: this.form.get('productCount.maxQtyValue'),
                 qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
             }); */
+        }
+    }
+
+    //input max order val
+    onChangeMaxQtyVal(val: string) {
+        if (this.form.get('productCount.consistOfQtyLargeUnit').value > parseInt(val)) {
+            this.form.get('productCount.consistOfQtyLargeUnit').reset();
         }
     }
 
@@ -523,10 +579,9 @@ export class CatalogueAmountSettingsComponent
                 },
             });
             //UOM Large Unit
-            
             this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
             //consist Of Qty Large Unit
-
+            let maxQtyValChanges = this.form.get('productCount.maxQtyValue').value;
             this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
@@ -535,6 +590,12 @@ export class CatalogueAmountSettingsComponent
                     value: 1,
                     message: this.errorMessage$.getErrorMessageNonState('default', 'min_number', {
                         minValue: 1,
+                    }),
+                }),
+                RxwebValidators.lessThanEqualTo({
+                    fieldName: 'productCount.maxQtyValue',
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'lte_number', {
+                        limitValue: maxQtyValChanges,
                     }),
                 }),
             ]);
