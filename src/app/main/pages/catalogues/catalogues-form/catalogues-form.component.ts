@@ -318,25 +318,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
             this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
 
-            this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.minNumber({
-                    value: 1,
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', {
-                        minValue: 1,
-                    }),
-                }),
-            ]);
-
-            this.form
-                .get('productCount.consistOfQtyLargeUnit')
-                .updateValueAndValidity({ onlySelf: true });
-            /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.get('productCount.consistOfQtyLargeUnit').markAsDirty({ onlySelf: false });
-            this.form.get('productCount.consistOfQtyLargeUnit').markAllAsTouched();
-            this.form.get('productCount.consistOfQtyLargeUnit').markAsPristine();
             this.form.patchValue({
                 productCount: {
                     isEnableLargeUnit: true,
@@ -374,6 +355,34 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 },
             });
         }
+    }
+
+    onChangeConsistOf(val: string) {
+        const maxQty = this.form.get('productCount.maxQtyValue').value;
+        this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
+            RxwebValidators.required({
+                message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+            }),
+            RxwebValidators.minNumber({
+                value: 0,
+                message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', {
+                    minValue: 0,
+                }),
+            }),
+            RxwebValidators.lessThanEqualTo({
+                fieldName: 'productCount.maxQtyValue',
+                message: this.errorMessageSvc.getErrorMessageNonState('default', 'lte_number', {
+                    limitValue: maxQty,
+                }),
+            }),
+        ]);
+        this.form
+            .get('productCount.consistOfQtyLargeUnit')
+            .updateValueAndValidity({ onlySelf: true });
+        /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+        this.form.get('productCount.consistOfQtyLargeUnit').markAsDirty({ onlySelf: false });
+        this.form.get('productCount.consistOfQtyLargeUnit').markAllAsTouched();
+        this.form.get('productCount.consistOfQtyLargeUnit').markAsPristine();
     }
 
     getErrorMessage(field: string): string {
@@ -830,54 +839,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
                 /** Melakukan update render pada front-end. */
                 this._cd.markForCheck();
-            });
-        //Revalidate consist of based on max qty changes
-        this.form
-            .get('productCount.maxQtyValue')
-            .valueChanges.pipe(debounceTime(100), distinctUntilChanged(), takeUntil(this.unSubs$))
-            .subscribe((maxQtyValChanges) => {
-                let isEnableLargeUnit = this.form.get('productCount.isEnableLargeUnit').value;
-
-                //consist Of Qty Large Unit
-                if (isEnableLargeUnit) {
-                    this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
-                        RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.minNumber({
-                            value: 1,
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                {
-                                    minValue: 1,
-                                }
-                            ),
-                        }),
-                        RxwebValidators.lessThanEqualTo({
-                            fieldName: 'productCount.maxQtyValue',
-                            message: this.errorMessageSvc.getErrorMessageNonState(
-                                'default',
-                                'lte_number',
-                                {
-                                    limitValue: maxQtyValChanges,
-                                }
-                            ),
-                        }),
-                    ]);
-                    this.form
-                        .get('productCount.consistOfQtyLargeUnit')
-                        .updateValueAndValidity({ onlySelf: true });
-                    /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-                    this.form
-                        .get('productCount.consistOfQtyLargeUnit')
-                        .markAsDirty({ onlySelf: false });
-                    this.form.get('productCount.consistOfQtyLargeUnit').markAllAsTouched();
-                    this.form.get('productCount.consistOfQtyLargeUnit').markAsPristine();
-                }
             });
 
         /** Melakukan subscribe ke perubahan nilai opsi Minimum Quantity Order. */
