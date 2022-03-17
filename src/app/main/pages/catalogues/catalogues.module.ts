@@ -29,6 +29,7 @@ import { CataloguePriceSettingsComponent } from './components/catalogue-price-se
 import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
 import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
+import { CatalogueMssSettingsComponent } from './components/catalogue-mss-settings/catalogue-mss-settings.component';
 import {
     CalculateAfterTaxPipe,
     ChannelPriceSettingPipe,
@@ -68,6 +69,7 @@ import { CatalogueNgrxModule } from './store';
         GroupPriceSettingPipe,
         TypePriceSettingPipe,
         WarehousePriceSettingPipe,
+        CatalogueMssSettingsComponent
     ],
     imports: [
         CataloguesRoutingModule,

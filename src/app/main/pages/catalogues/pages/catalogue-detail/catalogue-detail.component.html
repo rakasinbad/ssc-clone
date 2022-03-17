@@ -169,6 +169,19 @@
                 </ng-template>
             </mat-tab>
             <!-- / VISIBILITY TAB -->
+
+             <!-- MSS SETTINGS TAB -->
+             <mat-tab label="MSS Settings" [disabled]="isEditMode()">
+                <ng-template matTabContent>
+                    <app-catalogue-mss-settings
+                       
+                    ></app-catalogue-mss-settings>
+                     <!-- [(formMode)]="formMode"
+                    (formValueChange)="onFormValueChanged($event)"
+                    (formStatusChange)="onFormStatusChanged($event)" -->
+                </ng-template>
+            </mat-tab>
+            <!-- / MSS SETTINGS TAB -->
         </mat-tab-group>
         <!-- / TAB GROUP -->
     </div>
