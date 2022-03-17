@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store } from 'app/main/pages/accounts/merchants/models';
+// import { Store } from 'app/main/pages/accounts/merchants/models';
 import { HelperService } from 'app/shared/helpers';
 import { IPaginatedResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';

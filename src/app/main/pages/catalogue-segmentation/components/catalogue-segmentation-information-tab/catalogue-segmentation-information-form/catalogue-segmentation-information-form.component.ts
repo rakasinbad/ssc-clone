@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnD
 import { FormGroup } from '@angular/forms';
 import { fuseAnimations } from '@fuse/animations';
 import { StoreSegmentationChannel, StoreSegmentationCluster, StoreSegmentationGroup } from 'app/main/pages/catalogues/models';
-import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+// import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { FormMode, FormStatus } from 'app/shared/models';
@@ -162,7 +162,7 @@ export class CatalogueSegmentationInformationFormComponent implements OnChanges,
         }
     }
 
-    onWarehouseSelected(ev: Warehouse[]): void {
+    onWarehouseSelected(ev: any[]): void {
         const chosenWarehouseCtrl = this.form.get('chosenWarehouse');
 
         chosenWarehouseCtrl.markAsDirty();

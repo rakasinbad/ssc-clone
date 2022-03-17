@@ -1,4 +1,4 @@
-import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+// import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 
 import { EStatus, TNullable, TStatus } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
@@ -105,7 +105,7 @@ interface ISupplierStore {
     name: string;
     storeId: string;
     status: TStatus;
-    store: Merchant;
+    store: any;
     owner: any; // TOLONG DI CHECK LAGI @AULIA RAHMAN
 }
 
@@ -116,7 +116,7 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
         public name: string = '-',
         public storeId: string,
         public status: TStatus,
-        public store: Merchant,
+        public store: any,
         public owner: any,
         createdAt: string,
         updatedAt: string,
@@ -130,7 +130,7 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
         // }
 
         if (store) {
-            this.store = new Merchant(store);
+            this.store = store;
 
             if (store.owner) {
                 this.owner = this.store.owner;

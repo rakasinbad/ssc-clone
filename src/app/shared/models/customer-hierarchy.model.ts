@@ -1,4 +1,4 @@
-import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+// import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable, TStatus } from './global.model';
 import { ITimestamp } from './timestamp.model';
@@ -38,7 +38,7 @@ interface ICustomerHierarchy extends ITimestamp {
     hierarchyId: string;
     status: TStatus;
     hierarchy: Hierarchy;
-    store?: Merchant;
+    store?: any;
 }
 
 export class CustomerHierarchy implements ICustomerHierarchy {
@@ -47,7 +47,7 @@ export class CustomerHierarchy implements ICustomerHierarchy {
     hierarchyId: string;
     status: TStatus;
     hierarchy: Hierarchy;
-    store?: Merchant;
+    store?: any;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -77,8 +77,8 @@ export class CustomerHierarchy implements ICustomerHierarchy {
         this.setStore = store;
     }
 
-    set setStore(value: Merchant) {
-        this.store = value ? new Merchant(value) : null;
+    set setStore(value: any) {
+        this.store = value ? value : null;
     }
 }
 

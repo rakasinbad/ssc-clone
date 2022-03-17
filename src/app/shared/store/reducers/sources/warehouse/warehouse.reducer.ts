@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+// import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 import { WarehouseActions } from 'app/shared/store/actions';
 
 // Keyname for reducer
@@ -12,7 +12,7 @@ const featureKey = 'warehouses';
  * @interface State
  * @extends {EntityState<Warehouse>}
  */
-interface State extends EntityState<Warehouse> {
+interface State extends EntityState<any> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
@@ -20,7 +20,7 @@ interface State extends EntityState<Warehouse> {
 }
 
 // Adapter for warehouses state
-const adapter = createEntityAdapter<Warehouse>({ selectId: row => row.id });
+const adapter = createEntityAdapter<any>({ selectId: row => row.id });
 
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({

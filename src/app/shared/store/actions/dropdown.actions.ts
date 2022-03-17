@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
+// import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { Cluster } from 'app/shared/models/cluster.model';
 import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { GeoParameter, IErrorHandler } from 'app/shared/models/global.model';
@@ -104,7 +104,7 @@ export const fetchDropdownCreditLimitGroupFailure = createAction(
 
 export const fetchDropdownCreditLimitGroupSuccess = createAction(
     '[Helper Dropdown] Fetch Credit Limit Group Success',
-    props<{ payload: CreditLimitGroup[] }>()
+    props<{ payload: any }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -383,7 +383,7 @@ export const fetchSearchAccountFailure = createAction(
 
 export const fetchSearchAccountSuccess = createAction(
     '[Helper Search] Fetch Account Success',
-    props<{ payload: Account[] }>()
+    props<{ payload: any }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

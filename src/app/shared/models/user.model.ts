@@ -1,4 +1,4 @@
-import { UserStore } from 'app/main/pages/accounts/merchants/models';
+// import { UserStore } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable } from './global.model';
 import { Urban } from './location.model';
@@ -43,7 +43,7 @@ export interface IUser extends ITimestamp {
     totalTargetSales?: number;
     urban?: Urban;
     urbanId: string;
-    userStores?: Array<UserStore>;
+    userStores?: Array<any>;
     userSuppliers?: Array<UserSupplier>;
     lastAssociated?: TNullable<string>;
     storeQty?: number;
@@ -76,7 +76,7 @@ export class User implements IUser {
     totalTargetSales?: number;
     urban?: Urban;
     urbanId: string;
-    userStores?: Array<UserStore>;
+    userStores?: Array<any>;
     userSuppliers?: Array<UserSupplier>;
     lastAssociated?: TNullable<string>;
     storeQty?: number;
@@ -182,23 +182,11 @@ export class User implements IUser {
         this.saleTeam = value ? new Team(value) : null;
     }
 
-    set setUserStores(value: Array<UserStore>) {
+    set setUserStores(value: Array<any>) {
         this.userStores =
             value && value.length > 0
                 ? value.map(row => {
-                      const newUserStore = new UserStore(
-                          row.id,
-                          row.userId,
-                          row.storeId,
-                          row.status,
-                          row.createdAt,
-                          row.updatedAt,
-                          row.deletedAt
-                      );
-
-                      if (row.store) {
-                          newUserStore.setStore = row.store;
-                      }
+                      const newUserStore = value;
 
                       return newUserStore;
                   })

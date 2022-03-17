@@ -6,7 +6,7 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { debounceTime, distinctUntilChanged, filter, takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
-import * as fromFlexiCombos from '../../../../main/pages/promos/flexi-combo/store/reducers';
+// import * as fromFlexiCombos from '../../../../main/pages/promos/flexi-combo/store/reducers';
 import { Store } from '@ngrx/store';
 import * as moment from 'moment';
 
@@ -34,7 +34,7 @@ export class ExtendPromoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) private data: any,
     private formBuilder: FormBuilder,
     private matDialog: MatDialogRef<ExtendPromoComponent>,
-    private store: Store<fromFlexiCombos.FeatureState>,
+    private store: Store<any>,
     private _$errorMessage: ErrorMessageService
   ) {
     this.promoId = this.data.id

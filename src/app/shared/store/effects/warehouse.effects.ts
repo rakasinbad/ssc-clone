@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { IWarehouse, Warehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
+// import { IWarehouse, Warehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
 import { WarehouseApiService } from 'app/shared/helpers';
 import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -60,38 +60,38 @@ export class WarehouseEffects {
                 newParams['supplierId'] = supplierId;
 
                 return this._$warehouseApi
-                    .findAll<Array<IWarehouse> | PaginateResponse<IWarehouse>>(newParams)
+                    .findAll<Array<any> | PaginateResponse<any>>(newParams)
                     .pipe(
                         map(resp => {
                             if (params.paginate) {
-                                const res: PaginateResponse<IWarehouse> = resp as PaginateResponse<
-                                    IWarehouse
+                                const res: PaginateResponse<any> = resp as PaginateResponse<
+                                    any
                                 >;
 
                                 const newResp = {
                                     data:
                                         res && res.data && res.data.length > 0
-                                            ? res.data.map(row => new Warehouse(row))
+                                            ? res.data.map(row => row)
                                             : [],
                                     total: res.total
                                 };
 
                                 return WarehouseActions.fetchWarehouseSuccess({
-                                    payload: res.data.map(row => new Warehouse(row))
+                                    payload: res.data.map(row => row)
                                 });
                             } else {
-                                const res: Array<IWarehouse> = resp as Array<IWarehouse>;
+                                const res: Array<any> = resp as Array<any>;
 
                                 const newResp = {
                                     data:
                                         res && res.length > 0
-                                            ? res.map(row => new Warehouse(row))
+                                            ? res.map(row => row)
                                             : [],
                                     total: res.length
                                 };
 
                                 return WarehouseActions.fetchWarehouseSuccess({
-                                    payload: res.map(row => new Warehouse(row))
+                                    payload: res.map(row => row)
                                 });
                             }
                         }),

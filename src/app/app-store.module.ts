@@ -9,7 +9,7 @@ import createNgrxMiddleware from 'logrocket-ngrx';
 
 import { AuthEffects } from './main/pages/core/auth/store/effects/auth.effects';
 import {
-    DropdownEffects,
+    // DropdownEffects,
     NetworkEffects,
     PortfolioEffects,
     StockManagementReasonEffects,
@@ -41,7 +41,7 @@ export function getMetaReducers(): MetaReducer<fromRoot.State>[] {
         }),
         EffectsModule.forRoot([
             AuthEffects,
-            DropdownEffects,
+            // DropdownEffects,
             NetworkEffects,
             PortfolioEffects,
             StockManagementReasonEffects,

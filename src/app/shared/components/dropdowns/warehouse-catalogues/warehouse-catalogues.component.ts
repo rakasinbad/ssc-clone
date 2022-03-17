@@ -8,7 +8,7 @@ import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/he
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
-import { Warehouse as Entity } from './models';
+// import { Warehouse as Entity } from './models';
 import { StoreSegmentationTypesApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
@@ -22,7 +22,7 @@ import { MultipleSelectionComponent } from 'app/shared/components/multiple-selec
 import { SelectionList } from 'app/shared/components/multiple-selection/models';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
-import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
+// import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
 
@@ -44,11 +44,11 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
     dialogRef$: Subject<string> = new Subject<string>();
 
     // Untuk menyimpan Entity yang belum ditransformasi untuk keperluan select advanced.
-    rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
+    rawAvailableEntities$: BehaviorSubject<Array<any>> = new BehaviorSubject<Array<any>>([]);
     // Untuk menyimpan Entity yang tersedia.
     availableEntities$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Subject untuk mendeteksi adanya perubahan Entity yang terpilih.
-    selectedEntity$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>(null);
+    selectedEntity$: BehaviorSubject<Array<any>> = new BehaviorSubject<Array<any>>(null);
     // Menyimpan state loading-nya Entity.
     isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
@@ -56,7 +56,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
     // Untuk keperluan handle dialog.
     dialog: ApplyDialogService<MultipleSelectionComponent>;
     // Untuk menampung nilai-nilai yang sudah muncul di available selection.
-    cachedEntities: HashTable<Entity> = {};
+    cachedEntities: HashTable<any> = {};
 
     // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
@@ -76,7 +76,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
     @Input() placeholder: string = 'Search Warehouse';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
-    @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
+    @Output() selected: EventEmitter<TNullable<Array<any>>> = new EventEmitter<TNullable<Array<any>>>();
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
@@ -172,7 +172,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
             tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<WarehouseCatalogue>>>(([_, userSupplier]) => {
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<any>>>(([_, userSupplier]) => {
                 // Jika user tidak ada data supplier.
                 if (!userSupplier) {
                     throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
@@ -189,7 +189,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
-                    .find<IPaginatedResponse<WarehouseCatalogue>>(newQuery)
+                    .find<IPaginatedResponse<any>>(newQuery)
                     .pipe(
                         tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
@@ -200,22 +200,22 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
             next: (response) => {
                 if (Array.isArray(response)) {
                     this.rawAvailableEntities$.next(response);
-                    this.availableEntities$.next((response as Array<WarehouseCatalogue>).map(d =>
+                    this.availableEntities$.next((response as Array<any>).map(d =>
                         ({ id: d.warehouseId, label: d.warehouse.name, group: 'warehouse-catalogues' }))
                     );
-                    this.totalEntities$.next((response as Array<WarehouseCatalogue>).length);
+                    this.totalEntities$.next((response as Array<any>).length);
 
-                    for (const entity of (response as Array<WarehouseCatalogue>)) {
+                    for (const entity of (response as Array<any>)) {
                         this.upsertEntity(entity);
                     }
                 } else {
-                    this.rawAvailableEntities$.next(response.data.map(d => (d.warehouse as unknown as Entity)));
+                    this.rawAvailableEntities$.next(response.data.map(d => (d.warehouse as unknown as any)));
                     this.availableEntities$.next(response.data.map(d =>
                         ({ id: d.warehouseId, label: d.warehouse.name, group: 'warehouse-catalogues' }))
                     );
                     this.totalEntities$.next(response.total);
 
-                    for (const entity of (response.data as unknown as Array<WarehouseCatalogue>)) {
+                    for (const entity of (response.data as unknown as Array<any>)) {
                         this.upsertEntity(entity);
                     }
                 }
@@ -249,8 +249,8 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
         this.requestEntity(params);
     }
 
-    private upsertEntity(entity: WarehouseCatalogue): void {
-        this.cachedEntities[String(entity.warehouseId)] = entity as unknown as Entity;
+    private upsertEntity(entity: any): void {
+        this.cachedEntities[String(entity.warehouseId)] = entity as unknown as any;
     }
 
     getFormError(form: any): string {
@@ -460,7 +460,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, 
 
         //         return true;
         //     }),
-        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
+        //     tap<[string | Entity, TNullable<any>]>(([formValue, selectedEntity]) => {
         //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
         //     }),
         //     takeUntil(this.subs$)

@@ -22,7 +22,7 @@ import { MultipleSelectionComponent } from 'app/shared/components/multiple-selec
 import { SelectionList } from 'app/shared/components/multiple-selection/models';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
-import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
+// import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { HashTable } from 'app/shared/models/hashtable.model';
 

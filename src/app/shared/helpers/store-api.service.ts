@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+// import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 import { Observable } from 'rxjs';
 
 import { HelperService } from './helper.service';
@@ -58,7 +58,7 @@ export class StoreApiService {
      * @returns {Observable<Merchant>}
      * @memberof StoreApiService
      */
-    findById(id: string, supplierId?: string): Observable<Merchant> {
+    findById(id: string, supplierId?: string): Observable<any> {
         const newArg = supplierId
             ? [
                   {
@@ -70,17 +70,17 @@ export class StoreApiService {
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<Merchant>(`${this._url}/${id}`, { params: newParams });
+        return this.http.get<any>(`${this._url}/${id}`, { params: newParams });
     }
 
     /**
      *
      *
      * @param {*} body
-     * @returns {Observable<Merchant>}
+     * @returns {Observable<any>}
      * @memberof StoreApiService
      */
-    create(body: any): Observable<Merchant> {
+    create(body: any): Observable<any> {
         if (body['supplierStore']) {
             this._url = this._$helper.handleApiRouter(this._supplierStoreEndpoint);
         } else {
@@ -94,7 +94,7 @@ export class StoreApiService {
             }
         });
 
-        return this.http.post<Merchant>(this._url, newBody);
+        return this.http.post<any>(this._url, newBody);
     }
 
     /**
@@ -103,10 +103,10 @@ export class StoreApiService {
      * @template T
      * @param {T} body
      * @param {string} id
-     * @returns {Observable<Merchant>}
+     * @returns {Observable<any>}
      * @memberof StoreApiService
      */
-    patchCustom<T>(body: T, id: string, isSupplierStore?: boolean): Observable<Merchant> {
+    patchCustom<T>(body: T, id: string, isSupplierStore?: boolean): Observable<any> {
         if (body['supplierStore'] || isSupplierStore) {
             this._url = this._$helper.handleApiRouter(this._supplierStoreEndpoint);
         } else {
@@ -121,9 +121,9 @@ export class StoreApiService {
         });
 
         if (id) {
-            return this.http.patch<Merchant>(`${this._url}/${id}`, newBody);
+            return this.http.patch<any>(`${this._url}/${id}`, newBody);
         }
 
-        return this.http.patch<Merchant>(`${this._url}`, newBody);
+        return this.http.patch<any>(`${this._url}`, newBody);
     }
 }

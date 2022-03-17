@@ -1,4 +1,4 @@
-import { StorePortfolio } from 'app/main/pages/accounts/merchants/models';
+// import { any } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable } from './global.model';
 import { InvoiceGroup } from './invoice-group.model';
@@ -14,7 +14,7 @@ export interface IPortfolio extends ITimestamp {
     invoiceGroupId: string;
     name: string;
     portfolioHistories?: any;
-    portfolioStore?: StorePortfolio;
+    portfolioStore?: any;
     storeQty?: number;
     totalStore?: number;
     totalActualSales?: number;
@@ -33,7 +33,7 @@ export class Portfolio implements IPortfolio {
     invoiceGroupId: string;
     name: string;
     portfolioHistories?: any;
-    portfolioStore?: StorePortfolio;
+    portfolioStore?: any;
     storeQty?: number;
     totalStore?: number;
     totalActualSales?: number;
@@ -93,8 +93,8 @@ export class Portfolio implements IPortfolio {
         this.invoiceGroup = value ? new InvoiceGroup(value) : null;
     }
 
-    set setPortfolioStore(value: StorePortfolio) {
-        this.portfolioStore = value ? new StorePortfolio(value) : null;
+    set setPortfolioStore(value: any) {
+        this.portfolioStore = value ? value : null;
     }
 
     set setUser(value: User) {

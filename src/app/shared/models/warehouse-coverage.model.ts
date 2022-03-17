@@ -1,4 +1,4 @@
-import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+// import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 
 import { TNullable } from './global.model';
 import { Urban } from './location.model';
@@ -8,7 +8,7 @@ export interface IWarehouseCoverage extends ITimestamp {
     readonly id: NonNullable<string>;
     urban: Urban;
     urbanId: string;
-    warehouse: Warehouse;
+    warehouse: any;
     warehouseId: string;
 }
 
@@ -16,7 +16,7 @@ export class WarehouseCoverage implements IWarehouseCoverage {
     readonly id: NonNullable<string>;
     urban: Urban;
     urbanId: string;
-    warehouse: Warehouse;
+    warehouse: any;
     warehouseId: string;
     createdAt: string;
     updatedAt: string;
@@ -49,7 +49,7 @@ export class WarehouseCoverage implements IWarehouseCoverage {
         this.urban = value ? new Urban(value) : null;
     }
 
-    set setWarehouse(value: Warehouse) {
-        this.warehouse = value ? new Warehouse(value) : null;
+    set setWarehouse(value: any) {
+        this.warehouse = value ? value : null;
     }
 }
