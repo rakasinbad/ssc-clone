@@ -53,7 +53,6 @@ type TFindCatalogueMode = 'all' | 'live' | 'bonus' | 'regular' | 'inactive' | 'e
     encapsulation: ViewEncapsulation.None,
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
-    console = console;
     private form: FormGroup;
     private unSubs$: Subject<any> = new Subject<any>();
 

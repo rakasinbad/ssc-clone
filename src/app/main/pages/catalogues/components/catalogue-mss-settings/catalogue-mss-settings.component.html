@@ -4,145 +4,148 @@
   <div class="p-16 pb-28">
       <div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
   </div>
-	{{ console.log('availableEntities$ => ', availableEntities$) }}
-	{{ console.log('totalEntities$ => ', totalEntities$) }}
   <div class="p-16 pt-0 pb-40 line-height-1.75">
       <form
           class="w-100-p"
           fxLayout="column"
           fxFlex
-          [fxLayoutGap]="true ? '32px' : '5px'"
+          [fxLayoutGap]="'32px'"
           novalidate
       >
-        <!-- STATUS -->
-		<label
-			class="pr-0 font-size-14"
-			fxFlexAlign="start"
-			fxFlex="18"
-		>
-				You can only set 1 type of must selling SKU (MSS) for each cluster
-		</label>
-		<!-- [ngClass]="formClass" -->
-		<div  fxLayout="row" fxLayoutAlign="space-between stretch">
-			<label fxFlexAlign="center" fxFlex="18" class="pr-0"> Select All </label>
-			
-			<mat-radio-group  fxFlex="80">
-			<!-- [formControl]="form.get('status')" -->
-				<mat-radio-button class="pr-36" [value]="'active'">Non-MSS</mat-radio-button>
-				<mat-radio-button class="pr-36" [value]="'inactive'">MSS Only</mat-radio-button>
-				<mat-radio-button class="pr-36" [value]="'inactive'">MSS Core</mat-radio-button>
-			</mat-radio-group>
-		</div>
-          
-		<!-- [class.sinbad-table-no-record]="!isLoading && totalItem === 0"
-		[class.edit]="formMode | hasFormMode: 'edit'"
-		[class.h-360]="formMode === 'edit'"
-		[trackBy]="onTrackPriceSetting"
-		[@animateStagger]="{ value: '50' }"
-		fusePerfectScrollbar
-		[fxHide]="form.get('advancePrice').value === false"
-		[fusePerfectScrollbarOptions]="{
-			updateOnRouteChange: true,
-			suppressScrollX: totalItem ? false : true,
-			wheelSpeed: 0.5,
-			swipeEasing: true,
-			minScrollbarLength: 40,
-			maxScrollbarLength: 300
-		}" -->
-		
-		{{ console.log('dataSource => ', dataSource) }}
-    <mat-table
-			#table
-			class="catalogue-price-table sinbad-table sinbad-table__hover"
-			[dataSource]="dataSource"
-			
-        >
-			<!-- Segmentation Name Column -->
-			<ng-container matColumnDef="segmentation-name">
-				<mat-header-cell *matHeaderCellDef> Segmentation Name </mat-header-cell>
-				<mat-cell *matCellDef="let row">
-					<p>{{ row?.name || '-' }}</p>
-				</mat-cell>
-			</ng-container>
-			<!-- / Segmentation Name Column -->
-
-			<!-- Actions Column -->
-			<ng-container matColumnDef="actions">
-				<mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-				<mat-cell *matCellDef="let row; index as idx">
-					<button
-						type="button"
-						mat-icon-button
-						[matMenuTriggerFor]="actionMenu"
-						aria-label="More"
-						title="More Action"
-						(click)="$event.stopPropagation()"
+				<!-- [ngClass]="formClass" -->
+				<div>
+					<label
+						class="pr-0 font-size-14"
 					>
-						<mat-icon>more_vert</mat-icon>
-					</button>
+							You can only set 1 type of must selling SKU (MSS) for each cluster
+					</label>
+				</div>
+			
+				<div *ngIf="formMode !== 'view'">
+					<label fxFlexAlign="center" fxFlex="18" class="pr-0"> Select All </label>
+					
+					<mat-radio-group fxFlex="80" [formControl]="form.get('radioButton')">
+						<mat-radio-button 
+							class="pr-36" 
+							[value]="'non-mss'"
+						>Non-MSS</mat-radio-button>
+						<mat-radio-button 
+							class="pr-36" 
+							[value]="'mss-only'"	
+						>MSS Only</mat-radio-button>
+						<mat-radio-button 
+							class="pr-36" 
+							[value]="'mss-core'"	
+						>MSS Core</mat-radio-button>
+					</mat-radio-group>
+				</div>
 
-					<mat-menu class="actions-panel" #actionMenu="matMenu">
-						<!-- <button
-							type="button"
-							mat-menu-item
-							class="sinbad-mat-menu-item"
-							aria-label="Adjust Price"
-							(click)="onAdjustPrice(row, idx)"
-						>
-							<mat-icon>edit</mat-icon>
-							<span>Adjust Price</span>
-						</button> -->
-						<ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
-							<button
-								type="button"
-								mat-menu-item
-								class="sinbad-mat-menu-item"
-								aria-label="Delete"
-								(click)="onDelete(row, idx)"
-							>
-								<mat-icon>delete</mat-icon>
-								<span>Delete</span>
-							</button>
-						</ng-template>
-					</mat-menu>
-				</mat-cell>
-			</ng-container>
-			<!-- / Actions Column -->
+				<div>
+					<mat-table
+						#table
+						class="catalogue-price-table sinbad-table sinbad-table__hover"
+						[dataSource]="dataSource$ | async"
+						fusePerfectScrollbar
+						[@animateStagger]="{ value: '50' }"
+						[fusePerfectScrollbarOptions]="{
+							updateOnRouteChange: true,
+							suppressScrollX: true,
+							wheelSpeed: 0.5,
+							swipeEasing: true,
+							minScrollbarLength: 40,
+							maxScrollbarLength: 300
+						}"
+            [class.edit]="formMode | hasFormMode: 'edit'"	
+						[class.sinbad-table-no-record]="!(isLoading$ | async) && (totalItem$ | async) === 0"
+					>
+						<!-- Selected Cluster Column -->
+						<ng-container matColumnDef="selected-cluster">
+							<mat-header-cell *matHeaderCellDef> Selected Cluster (n) </mat-header-cell>
+							<mat-cell *matCellDef="let row">
+								<p>{{ row?.name || '-' }}</p>
+							</mat-cell>
+						</ng-container>
+						<!-- / Selected Cluster Column -->
 
-			<!-- No Record Column -->
-			<ng-container matColumnDef="no-record">
-				<mat-footer-cell *matFooterCellDef [attr.colspan]="formMode === 'view' ? 6 : 7">
-					No records found
-				</mat-footer-cell>
-			</ng-container>
-			<!-- / No Record Column -->
+						<!-- Non-MSS Column -->
+						<ng-container matColumnDef="non-mss">
+							<mat-header-cell *matHeaderCellDef> Non-MSS </mat-header-cell>
+							<mat-cell *matCellDef="let row">
+								<mat-radio-group [formControl]="form.get('columnRadioButton')"  fxFlex="80">
+									<mat-radio-button 
+										(click)="mssTypeColumnClick(row, 'non-mss')"
+										[checked]="selectedData[row.id] && selectedData[row.id].nonMss" 
+										class="pr-36" 
+										[value]="'non-mss-table'"
+									></mat-radio-button>
+								</mat-radio-group>
+							</mat-cell>
+						</ng-container>
+						<!-- / Non-MSS Column -->
 
-			<!-- <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row> -->
-			<!-- <mat-row
-				*matRowDef="let row; columns: displayedColumns"
-				class="catalogue-price-list__item"
-				[class.highlight-row]="selectedSegmentId === row.id"
-			></mat-row> -->
-			<mat-footer-row
-				*matFooterRowDef="['no-record']"
-				[fxShow]="!isLoading && totalItem === 0"
-			></mat-footer-row>
-    </mat-table>
+						<!-- MSS Only Column -->
+						<ng-container matColumnDef="mss-only">
+							<mat-header-cell *matHeaderCellDef> MSS Only </mat-header-cell>
+							<mat-cell *matCellDef="let row">
+								<mat-radio-group [formControl]="form.get('columnRadioButton')"  fxFlex="80">
+									<mat-radio-button 
+										(click)="mssTypeColumnClick(row, 'mss-only')"
+										[checked]="selectedData[row.id] && selectedData[row.id].mssOnly" 
+										class="pr-36" 
+										[value]="'non-mss-table'"
+									></mat-radio-button>
+								</mat-radio-group>
+							</mat-cell>
+						</ng-container>
+						<!-- / MSS Only Column -->
 
-		<!-- <div class="no-records" *ngIf="!isLoading && totalItem === 0">No records found</div> -->
+						<!-- MSS Core Column -->
+						<ng-container matColumnDef="mss-core">
+							<mat-header-cell *matHeaderCellDef> MSS Core </mat-header-cell>
+							<mat-cell *matCellDef="let row">
+								<mat-radio-group [formControl]="form.get('columnRadioButton')"  fxFlex="80">
+									<mat-radio-button 
+										(click)="mssTypeColumnClick(row, 'mss-core')"
+										[checked]="selectedData[row.id] && selectedData[row.id].mssCore" 
+										class="pr-36" 
+										[value]="'non-mss-table'"
+									></mat-radio-button>
+								</mat-radio-group>
+							</mat-cell>
+						</ng-container>
+						<!-- / MSS Core Column -->
+	
+						<!-- No Record Column -->
+						<ng-container matColumnDef="no-record">
+								<mat-footer-cell *matFooterCellDef colspan="2">
+									No Store Cluster Selected
+								</mat-footer-cell>
+						</ng-container>
+						<!-- / No Record Column -->
 
-		<!-- <mat-paginator
-				[fxHide]="totalItem === 0 || form.get('advancePrice').value === false"
-				[disabled]="(isLoading && !totalItem) || (!isLoading && totalItem === 0)"
-				[length]="totalItem"
-				[pageSize]="defaultPageSize"
-				[pageSizeOptions]="defaultPageOpts"
-				(page)="onChangePage($event)"
-				showFirstLastButtons
-		>
-		</mat-paginator> -->
+						<mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+						<mat-footer-row
+								*matFooterRowDef="['no-record']"
+								[fxShow]="!(isLoading$ | async) && (totalItem$ | async) === 0"
+						></mat-footer-row>
 
-		<h1>BAWAH TABLE</h1>
+						<mat-row
+								*matRowDef="let row; columns: displayedColumns"
+						></mat-row>
+
+					</mat-table>
+
+					<mat-paginator
+						[disabled]="!(isLoading$ | async) && (totalItem$ | async) === 0"
+						[length]="totalItem$ | async"
+						[pageSize]="defaultPageSize"
+						[pageSizeOptions]="defaultPageOpts"
+						(page)="onChangePage($event)"
+						showFirstLastButtons
+					>
+					</mat-paginator>
+
+				</div>
       </form>
   </div>
 </div>

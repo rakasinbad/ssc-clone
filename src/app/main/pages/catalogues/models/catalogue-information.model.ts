@@ -9,7 +9,7 @@ export interface ICatalogueInformation {
     subBrandId: string;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
-    // unitOfMeasureId: number;
+    unitOfMeasureId: number;
     tags: Array<string>;
 }
 
@@ -24,7 +24,7 @@ export class CatalogueInformation implements ICatalogueInformation {
     subBrandId: string;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
-    // unitOfMeasureId: number;
+    unitOfMeasureId: number;
     tags: Array<string>;
 
     constructor(data: ICatalogueInformation) {
@@ -39,7 +39,7 @@ export class CatalogueInformation implements ICatalogueInformation {
             subBrandId,
             firstCatalogueCategoryId,
             lastCatalogueCategoryId,
-            // unitOfMeasureId,
+            unitOfMeasureId,
             tags = [],
         } = data;
 
@@ -53,7 +53,7 @@ export class CatalogueInformation implements ICatalogueInformation {
         this.subBrandId = subBrandId;
         this.firstCatalogueCategoryId = firstCatalogueCategoryId;
         this.lastCatalogueCategoryId = lastCatalogueCategoryId;
-        // this.unitOfMeasureId = unitOfMeasureId;
+        this.unitOfMeasureId = unitOfMeasureId;
         this.tags = tags;
     }
 }

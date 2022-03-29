@@ -31,7 +31,7 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-import { Catalogue, CatalogueAmount, CatalogueUnit } from '../../models';
+import { CatalogueAmount } from '../../models';
 import { CataloguesService } from '../../services';
 import { CatalogueActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
@@ -44,12 +44,7 @@ import { CatalogueSelectors } from '../../store/selectors';
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
-interface IUomType {
-    smallName: string;
-    smallId: string;
-    largeName: string;
-    largeId: string;
-}
+//
 @Component({
     selector: 'catalogue-amount-settings',
     templateUrl: './catalogue-amount-settings.component.html',
@@ -59,8 +54,7 @@ interface IUomType {
     changeDetection: ChangeDetectionStrategy.Default,
 })
 export class CatalogueAmountSettingsComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy
-{
+    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
@@ -75,16 +69,6 @@ export class CatalogueAmountSettingsComponent
     formModeValue: IFormMode = 'add';
     // Untuk menyimpan pilihan kuantitas produk
     quantityChoices: Array<{ id: string; label: string }>;
-    //untuk jenis uom
-    uomNames$: BehaviorSubject<IUomType> = new BehaviorSubject({
-        largeName: '',
-        largeId: '',
-        smallName: '',
-        smallId: '',
-    });
-    catalogueUnits: CatalogueUnit[];
-    catalogueSmallUnits: CatalogueUnit[];
-    catalogueLargeUnits: CatalogueUnit[];
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<CatalogueAmount> = new EventEmitter<CatalogueAmount>();
@@ -110,6 +94,11 @@ export class CatalogueAmountSettingsComponent
         'mat-elevation-z1': boolean;
         'fuse-white': boolean;
     };
+    // Untuk styling form field di mode form yang berbeda.
+    formClass: {
+        'custom-field-right': boolean;
+        'view-field-right': boolean;
+    };
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -126,21 +115,12 @@ export class CatalogueAmountSettingsComponent
         this.quantityChoices = this.helper$.getQuantityChoices();
     }
 
-    getClassLargeUnit(viewMode) {
-        switch (viewMode) {
-            case true:
-                return 'box-largest-unit view-mode';
-                break;
-            case false:
-                return 'box-largest-unit edit-mode';
-                break;
-            default:
-                return 'box-largest-unit view-mode';
-                break;
-        }
-    }
-
     private updateFormView(): void {
+        // Penetapan class pada form field berdasarkan mode form-nya.
+        this.formClass = {
+            'custom-field-right': !this.isViewMode(),
+            'view-field-right': this.isViewMode(),
+        };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
             'mt-16': true,
@@ -177,12 +157,11 @@ export class CatalogueAmountSettingsComponent
             .pipe(
                 withLatestFrom(
                     this.store.select(AuthSelectors.getUserSupplier),
-                    this.store.select(CatalogueSelectors.getCatalogueUnits),
-                    ([_, catalogue], userSupplier, units) => ({ catalogue, userSupplier, units })
+                    ([_, catalogue], userSupplier) => ({ catalogue, userSupplier })
                 ),
                 takeUntil(this.subs$)
             )
-            .subscribe(({ catalogue, userSupplier, units }) => {
+            .subscribe(({ catalogue, userSupplier }) => {
                 if (!catalogue) {
                     // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
                     if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
@@ -210,129 +189,21 @@ export class CatalogueAmountSettingsComponent
                     catalogue,
                 });
 
-                if (units.length === 0) {
-                    return this.store.dispatch(
-                        CatalogueActions.fetchCatalogueUnitRequest({
-                            payload: {
-                                paginate: false,
-                                sort: 'asc',
-                                sortBy: 'id',
-                            },
-                        })
-                    );
-                }
-
-                /** mencari largest uom  */
-                if (catalogue.largeUomId) {
-                    const selectedLargeUnit = units.filter(
-                        (unit) => unit.id === catalogue.largeUomId
-                    );
-
-                    this.uomNames$.next({
-                        smallName: catalogue.catalogueUnit.unit,
-                        smallId: catalogue.catalogueUnit.id,
-                        largeName: selectedLargeUnit[0].unit,
-                        largeId: selectedLargeUnit[0].id,
-                    });
-
-                    this.form.patchValue({
-                        productCount: {
-                            uomLargeUnit: selectedLargeUnit[0].id,
-                            uomSmallUnit: catalogue.catalogueUnit.id,
-                        },
-                    });
-
-                    this.cdRef.markForCheck();
-                } else {
-                    this.uomNames$.next({
-                        smallName: catalogue.catalogueUnit.unit,
-                        smallId: catalogue.catalogueUnit.id,
-                        largeName: '',
-                        largeId: null,
-                    });
-                    this.form.patchValue({
-                        productCount: {
-                            uomLargeUnit: null,
-                            uomSmallUnit: catalogue.catalogueUnit.id,
-                        },
-                    });
-
-                    this.cdRef.markForCheck();
-                }
-
-                /** Penetapan nilai pada form saat pertama render view sebelum edit. */
-
+                /** Penetapan nilai pada form. */
                 this.form.patchValue(
                     {
                         productCount: {
+                            qtyPerMasterBox: catalogue.packagedQty,
+                            minQtyOption: catalogue.minQtyType,
                             minQtyValue: catalogue.minQty,
-                            isMaximum: !catalogue.isMaximum,
-                            amountIncrease: catalogue.multipleQty,
-                            isEnableLargeUnit: catalogue.enableLargeUom,
-                            consistOfQtyLargeUnit: catalogue.packagedQty,
+                            additionalQtyOption: catalogue.multipleQtyType,
+                            additionalQtyValue: catalogue.multipleQty,
+                            isMaximum: catalogue.isMaximum,
                             maxQtyValue: catalogue.maxQty,
-                            // minQtyType: ,
-                            // multipleQty: this.uomNames$.value.smallId,
-                            // multipleQtyType: this.uomNames$.value.smallName,
                         },
                     },
                     { onlySelf: false }
                 );
-                if (catalogue.enableLargeUom) {
-                    this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
-                    this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
-                    this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.minNumber({
-                            value: 1,
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                {
-                                    minValue: 1,
-                                }
-                            ),
-                        }),
-                    ]);
-                }
-
-                if (catalogue.isMaximum) {
-                    this.form.get('productCount.maxQtyValue').clearValidators();
-                    this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
-                }
-                //init kebalikan isMaximum
-                if (!catalogue.isMaximum) {
-                    this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
-                }
-                //init kebalikan isMaximum
-                if (catalogue.isMaximum) {
-                    const minQty = this.form.get('productCount.minQtyValue').value;
-
-                    this.form.get('productCount.maxQtyValue').setValidators([
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.greaterThanEqualTo({
-                            fieldName: 'productCount.minQtyValue',
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'gte_number',
-                                {
-                                    limitValue: minQty,
-                                }
-                            ),
-                        }),
-                    ]);
-                    this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
-                }
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
                 this.form.markAsDirty({ onlySelf: false });
@@ -342,53 +213,93 @@ export class CatalogueAmountSettingsComponent
     }
 
     private initFormCheck(): void {
-        //Revalidate consist of based on max qty changes
+        /** Melakukan subscribe ke perubahan nilai opsi Minimum Quantity Order. */
         this.form
-            .get('productCount.maxQtyValue')
-            .valueChanges.pipe(debounceTime(100), distinctUntilChanged(), takeUntil(this.subs$))
-            .subscribe((maxQtyValChanges) => {
-                let isEnableLargeUnit = this.form.get('productCount.isEnableLargeUnit').value;
+            .get('productCount.minQtyOption')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
+            .subscribe((value) => {
+                /** Mengambil nilai pada input Minimum Order Quantity. */
+                const minQtyValueController = this.form.get('productCount.minQtyValue');
+                /** Mengambil nilai Quantity per Master Box. */
+                const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
 
-                //consist Of Qty Large Unit
-                if (isEnableLargeUnit) {
-                    this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.minNumber({
-                            value: 1,
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                {
-                                    minValue: 1,
-                                }
-                            ),
-                        }),
-                        RxwebValidators.lessThanEqualTo({
-                            fieldName: 'productCount.maxQtyValue',
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'lte_number',
-                                {
-                                    limitValue: maxQtyValChanges,
-                                }
-                            ),
-                        }),
-                    ]);
-                    this.form
-                        .get('productCount.consistOfQtyLargeUnit')
-                        .updateValueAndValidity({ onlySelf: true });
-                    /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-                    this.form
-                        .get('productCount.consistOfQtyLargeUnit')
-                        .markAsDirty({ onlySelf: false });
-                    this.form.get('productCount.consistOfQtyLargeUnit').markAllAsTouched();
-                    this.form.get('productCount.consistOfQtyLargeUnit').markAsPristine();
+                /** Mengubah perilaku Form Control sesuai dengan opsi Minimum Order Quantity. */
+                switch (value) {
+                    case 'master_box':
+                        minQtyValueController.disable();
+                        minQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
+                        break;
+                    case 'custom':
+                        minQtyValueController.enable();
+                        // minQtyValueController.patchValue(1);
+                        break;
+                    case 'pcs':
+                    default:
+                        minQtyValueController.disable();
+                        minQtyValueController.patchValue(1);
+                        break;
                 }
+
+                this.formValue$.next();
+            });
+
+        /** Melakukan subscribe ke perubahan nilai opsi Additional Quantity. */
+        this.form
+            .get('productCount.additionalQtyOption')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
+            .subscribe((value) => {
+                /** Mengambil nilai pada input Additional Quantity. */
+                const additionalQtyValueController = this.form.get(
+                    'productCount.additionalQtyValue'
+                );
+                /** Mengambil nilai Quantity per Master Box. */
+                const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
+
+                /** Mengubah perilaku Form Control sesuai dengan opsi Minimum Order Quantity. */
+                switch (value) {
+                    case 'master_box':
+                        additionalQtyValueController.disable();
+                        additionalQtyValueController.patchValue(
+                            qtyPerMasterBox ? qtyPerMasterBox : 1
+                        );
+                        break;
+                    case 'custom':
+                        additionalQtyValueController.enable();
+                        // minQtyValueController.patchValue(1);
+                        break;
+                    case 'pcs':
+                    default:
+                        additionalQtyValueController.disable();
+                        additionalQtyValueController.patchValue(1);
+                        break;
+                }
+
+                this.formValue$.next();
+            });
+
+        /** Melakukan subscribe ke perubahan nilai input Quantity per Master Box. */
+        this.form
+            .get('productCount.qtyPerMasterBox')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this.subs$))
+            .subscribe((value) => {
+                /** Mengambil Form Control-nya option dan input Minimum Quantity Order. */
+                const minQtyOption = this.form.get('productCount.minQtyOption');
+                const minQtyValue = this.form.get('productCount.minQtyValue');
+                /** Mengambil Form Control-nya option dan input Additional Quantity. */
+                const additionalQtyOption = this.form.get('productCount.additionalQtyOption');
+                const additionalQtyValue = this.form.get('productCount.additionalQtyValue');
+
+                /** Menetapkan nilai input Minimum Quantity Order sesuai dengan nilai Quantity per Master Box jika opsinya adalah Master Box. */
+                if (minQtyOption.value === 'master_box') {
+                    minQtyValue.setValue(value);
+                }
+
+                /** Menetapkan nilai input Additional Quantity sesuai dengan nilai Quantity per Master Box jika opsinya adalah Master Box. */
+                if (additionalQtyOption.value === 'master_box') {
+                    additionalQtyValue.setValue(value);
+                }
+
+                this.formValue$.next();
             });
 
         // Re-validate maximum order quantity field based on changes in minimum order quantity
@@ -398,7 +309,7 @@ export class CatalogueAmountSettingsComponent
             .subscribe((value) => {
                 const isMaximum = this.form.get('productCount.isMaximum').value;
 
-                /* HelperService.debug(
+                HelperService.debug(
                     '[CataloguesFormComponent] productCount.minQtyValue valueChanges',
                     {
                         value,
@@ -406,10 +317,10 @@ export class CatalogueAmountSettingsComponent
                         isMaximum,
                         maxQtyValueForm: this.form.get('productCount.maxQtyValue'),
                     }
-                ); */
+                );
 
                 if (isMaximum) {
-                    this.form.get('productCount.maxQtyValue').reset();
+                    // this.form.get('productCount.maxQtyValue').reset();
                     this.form.get('productCount.maxQtyValue').setValidators([
                         RxwebValidators.required({
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -427,12 +338,21 @@ export class CatalogueAmountSettingsComponent
                                 }
                             ),
                         }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
                     ]);
 
                     this.form
                         .get('productCount.maxQtyValue')
                         .updateValueAndValidity({ onlySelf: true });
+                    this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
                 }
+
+                this.formValue$.next();
             });
 
         this.form.statusChanges
@@ -460,20 +380,15 @@ export class CatalogueAmountSettingsComponent
                 ),
                 map((value) => {
                     const formValue = {
-                        largeUomId: value.productCount.uomLargeUnit, // integer
-                        unitOfMeasureId: this.uomNames$.value.smallId
-                            ? parseInt(this.uomNames$.value.smallId)
-                            : null, //integer
-                        enableLargeUom: value.productCount.isEnableLargeUnit, //boolean
-                        packagedQty: value.productCount.consistOfQtyLargeUnit, //integer
-                        minQty: value.productCount.minQtyValue, //integer,
-                        minQtyType: `pcs`, //string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
-                        multipleQty: value.productCount.amountIncrease, //integer,
-                        multipleQtyType: `pcs`, //string of small uom name (master_box,custom,pcs)//sementara hardcode pcs
-                        isMaximum: value.productCount.isMaximum, //boolean
+                        packagedQty: value.productCount.qtyPerMasterBox,
+                        minQty: value.productCount.minQtyValue, // this.form.get('productCount.minQtyValue').value,
+                        minQtyType: value.productCount.minQtyOption,
+                        multipleQty: value.productCount.additionalQtyValue, // this.form.get('productCount.additionalQtyValue').value,
+                        multipleQtyType: value.productCount.additionalQtyOption,
+                        isMaximum: value.productCount.isMaximum,
                         maxQty: value.productCount.isMaximum
-                            ? null
-                            : parseInt(value.productCount.maxQtyValue), // integer
+                            ? value.productCount.maxQtyValue
+                            : null,
                     };
 
                     return formValue;
@@ -490,22 +405,13 @@ export class CatalogueAmountSettingsComponent
                 this.formValueChange.emit(value);
             });
     }
-    //checkbox max order is unlimited
+
     onChangeMaxOrderQty(ev: MatCheckboxChange): void {
-        // HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+        HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty', { ev });
+
+        this.form.get('productCount.maxQtyValue').reset();
 
         if (ev.checked) {
-            this.form.get('productCount.maxQtyValue').reset();
-            this.form.get('productCount.maxQtyValue').clearValidators();
-            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
-            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
-
-            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
-                minQty,
-                maxQtyValue: this.form.get('productCount.maxQtyValue'),
-                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
-            }); */
-        } else {
             const minQty = this.form.get('productCount.minQtyValue').value;
 
             this.form.get('productCount.maxQtyValue').setValidators([
@@ -518,129 +424,28 @@ export class CatalogueAmountSettingsComponent
                         limitValue: minQty,
                     }),
                 }),
+                RxwebValidators.digit({
+                    message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                }),
             ]);
 
             this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
             this.form.get('productCount.maxQtyValue').enable({ onlySelf: true });
 
+            /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked TRUE', {
+                minQty,
+                maxQtyValue: this.form.get('productCount.maxQtyValue'),
+                qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
+            }); */
+        } else {
+            this.form.get('productCount.maxQtyValue').clearValidators();
+            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
+            this.form.get('productCount.maxQtyValue').disable({ onlySelf: true });
+
             /* HelperService.debug('[CataloguesFormComponent] onChangeMaxOrderQty checked FALSE', {
                 maxQtyValue: this.form.get('productCount.maxQtyValue'),
                 qtyMasterBox: this.form.get('productCount.qtyPerMasterBox'),
             }); */
-        }
-    }
-
-    //input max order val
-    onChangeMaxQtyVal(val: string) {
-        if (this.form.get('productCount.consistOfQtyLargeUnit').value > parseInt(val)) {
-            this.form.get('productCount.consistOfQtyLargeUnit').reset();
-        }
-    }
-
-    onChangeMinOrderQty(val: string) {
-        const minQty = val ? parseInt(val) : 0;
-        const maxQty = this.form.get('productCount.maxQtyValue').value;
-
-        if (minQty > maxQty && !this.form.get('productCount.isMaximum').value) {
-            this.form.get('productCount.maxQtyValue').reset();
-            this.form.get('productCount.maxQtyValue').setValidators([
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.greaterThanEqualTo({
-                    fieldName: 'productCount.minQtyValue',
-                    message: this.errorMessage$.getErrorMessageNonState('default', 'gte_number', {
-                        limitValue: minQty,
-                    }),
-                }),
-            ]);
-
-            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
-
-            /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.get('productCount.maxQtyValue').markAsDirty({ onlySelf: false });
-            this.form.get('productCount.maxQtyValue').markAllAsTouched();
-            this.form.get('productCount.maxQtyValue').markAsPristine();
-        } else {
-            this.form.get('productCount.maxQtyValue').updateValueAndValidity({ onlySelf: true });
-
-            /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.get('productCount.maxQtyValue').markAsDirty({ onlySelf: false });
-            this.form.get('productCount.maxQtyValue').markAllAsTouched();
-            this.form.get('productCount.maxQtyValue').markAsPristine();
-        }
-    }
-
-    onChangeIsEnableLargeUnit(ev: MatCheckboxChange): void {
-        if (ev.checked) {
-            this.form.patchValue({
-                productCount: {
-                    isEnableLargeUnit: true,
-                },
-            });
-            //UOM Large Unit
-            this.form.get('productCount.uomLargeUnit').enable({ onlySelf: true });
-            this.form.get('productCount.consistOfQtyLargeUnit').enable({ onlySelf: true });
-        } else {
-            //UOM Large Unit
-            this.form.get('productCount.uomLargeUnit').clearValidators();
-            this.form.get('productCount.uomLargeUnit').updateValueAndValidity({ onlySelf: true });
-            this.form.get('productCount.uomLargeUnit').disable({ onlySelf: true });
-            //consist Of Qty Large Unit
-            this.form.get('productCount.consistOfQtyLargeUnit').clearValidators();
-            this.form
-                .get('productCount.consistOfQtyLargeUnit')
-                .updateValueAndValidity({ onlySelf: true });
-            this.form.get('productCount.consistOfQtyLargeUnit').disable({ onlySelf: true });
-            this.form.patchValue({
-                productCount: {
-                    isEnableLargeUnit: false,
-                    consistOfQtyLargeUnit: 0,
-                    uomLargeUnit: null,
-                },
-            });
-        }
-    }
-
-    onChangeConsistOf(val: string) {
-        const maxQty = this.form.get('productCount.maxQtyValue').value;
-        this.form.get('productCount.consistOfQtyLargeUnit').setValidators([
-            RxwebValidators.required({
-                message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
-            }),
-            RxwebValidators.minNumber({
-                value: 0,
-                message: this.errorMessage$.getErrorMessageNonState('default', 'min_number', {
-                    minValue: 0,
-                }),
-            }),
-            RxwebValidators.lessThanEqualTo({
-                fieldName: 'productCount.maxQtyValue',
-                message: this.errorMessage$.getErrorMessageNonState('default', 'lte_number', {
-                    limitValue: maxQty,
-                }),
-            }),
-        ]);
-        this.form
-            .get('productCount.consistOfQtyLargeUnit')
-            .updateValueAndValidity({ onlySelf: true });
-        /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-        this.form.get('productCount.consistOfQtyLargeUnit').markAsDirty({ onlySelf: false });
-        this.form.get('productCount.consistOfQtyLargeUnit').markAllAsTouched();
-        this.form.get('productCount.consistOfQtyLargeUnit').markAsPristine();
-    }
-
-    getErrorMessage(field: string): string {
-        if (field) {
-            const { errors } = this.form.get(field);
-
-            if (errors) {
-                const type = Object.keys(errors)[0];
-
-                if (type) {
-                    return errors[type].message;
-                }
-            }
         }
     }
 
@@ -679,30 +484,10 @@ export class CatalogueAmountSettingsComponent
     }
 
     ngOnInit(): void {
-        /** Menyiapkan form edit. */
+        /** Menyiapkan form. */
         this.form = this.fb.group({
             productCount: this.fb.group({
-                minQtyValue: [
-                    { value: 1, disabled: false },
-                    [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            ),
-                        }),
-                        RxwebValidators.minNumber({
-                            value: 1,
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'default',
-                                'min_number',
-                                { minValue: 1 }
-                            ),
-                        }),
-                    ],
-                ],
-                isMaximum: true,
-                uomSmallUnit: [
+                qtyPerMasterBox: [
                     '',
                     [
                         RxwebValidators.required({
@@ -711,10 +496,25 @@ export class CatalogueAmountSettingsComponent
                                 'required'
                             ),
                         }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            ),
+                        }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
                     ],
                 ],
-                amountIncrease: [
-                    { value: '', disabled: false },
+                minQtyOption: ['pcs'],
+                minQtyValue: [
+                    { value: '1', disabled: true },
                     [
                         RxwebValidators.required({
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -730,13 +530,17 @@ export class CatalogueAmountSettingsComponent
                                 { minValue: 1 }
                             ),
                         }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
                     ],
                 ],
-                isEnableLargeUnit: false,
-                uomLargeUnit: [{ value: '', disabled: true }],
-                consistOfQtyLargeUnit: [{ value: 0, disabled: true }],
-                maxQtyValue: [
-                    { value: 0, disabled: false },
+                additionalQtyOption: ['pcs'],
+                additionalQtyValue: [
+                    { value: '1', disabled: true },
                     [
                         RxwebValidators.required({
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -752,119 +556,18 @@ export class CatalogueAmountSettingsComponent
                                 { minValue: 1 }
                             ),
                         }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'numeric'
+                            ),
+                        }),
                     ],
                 ],
+                isMaximum: false,
+                maxQtyValue: [{ value: '1', disabled: true }],
             }),
         });
-
-        this.store
-            .select(CatalogueSelectors.getCatalogueUnits)
-            .pipe(takeUntil(this.subs$))
-            .subscribe((units) => {
-                if (units.length === 0) {
-                    return this.store.dispatch(
-                        CatalogueActions.fetchCatalogueUnitRequest({
-                            payload: {
-                                paginate: false,
-                                sort: 'asc',
-                                sortBy: 'id',
-                            },
-                        })
-                    );
-                }
-
-                this.form
-                    .get('productCount.uomSmallUnit')!
-                    .valueChanges.pipe(
-                        distinctUntilChanged(),
-                        debounceTime(100),
-                        takeUntil(this.subs$)
-                    )
-                    .subscribe((change) => {
-                        const selectedUnit: any = units.filter((unit) => unit.id === change);
-                        if (selectedUnit && selectedUnit.length > 0) {
-                            this.uomNames$.next({
-                                smallName: selectedUnit[0].unit,
-                                smallId: selectedUnit[0].id,
-                                largeName: this.uomNames$.value.largeName,
-                                largeId: this.uomNames$.value.largeId,
-                            });
-                        }
-                        this.form.get('productCount.uomSmallUnit').setValidators([
-                            RxwebValidators.required({
-                                message: this.errorMessage$.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                ),
-                            }),
-                            RxwebValidators.different({
-                                fieldName: 'productCount.uomLargeUnit',
-                                message: this.errorMessage$.getErrorMessageNonState(
-                                    'small_unit',
-                                    'different',
-                                    {
-                                        fieldComparedName: 'large_unit',
-                                    }
-                                ),
-                            }),
-                        ]);
-                        this.form
-                            .get('productCount.uomSmallUnit')
-                            .updateValueAndValidity({ onlySelf: true });
-                        this.form
-                            .get('productCount.uomLargeUnit')
-                            .updateValueAndValidity({ onlySelf: true });
-                    });
-
-                this.form
-                    .get('productCount.uomLargeUnit')
-                    .valueChanges.pipe(
-                        distinctUntilChanged(),
-                        debounceTime(100),
-                        takeUntil(this.subs$)
-                    )
-                    .subscribe((change) => {
-                        const selectedUnit: any = units.filter((unit) => unit.id === change);
-                        if (selectedUnit && selectedUnit.length > 0) {
-                            this.uomNames$.next({
-                                largeName: selectedUnit[0].unit,
-                                largeId: selectedUnit[0].id,
-                                smallName: this.uomNames$.value.smallName,
-                                smallId: this.uomNames$.value.smallId,
-                            });
-                        }
-                        this.form.get('productCount.uomLargeUnit').setValidators([
-                            RxwebValidators.required({
-                                message: this.errorMessage$.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                ),
-                            }),
-                            RxwebValidators.different({
-                                fieldName: 'productCount.uomSmallUnit',
-                                message: this.errorMessage$.getErrorMessageNonState(
-                                    'large_unit',
-                                    'different',
-                                    {
-                                        fieldComparedName: 'small_unit',
-                                    }
-                                ),
-                            }),
-                        ]);
-                        this.form
-                            .get('productCount.uomLargeUnit')
-                            .updateValueAndValidity({ onlySelf: true });
-                        this.form
-                            .get('productCount.uomSmallUnit')
-                            .updateValueAndValidity({ onlySelf: true });
-                    });
-
-                this.catalogueUnits = units;
-                this.catalogueSmallUnits = units;
-                this.catalogueLargeUnits = units;
-
-                this.cdRef.markForCheck();
-            });
 
         this.checkRoute();
         this.initFormCheck();

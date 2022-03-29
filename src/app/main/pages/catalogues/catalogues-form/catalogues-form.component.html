@@ -610,7 +610,7 @@
                     <!-- / PRODUK STOK -->
 
                     <!-- UOM -->
-                    <!-- <div
+                    <div
                         class="custom-field"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
@@ -638,15 +638,15 @@
                             </mat-select>
 
                             <mat-error>
+                                <!-- {{ getFormError(form.get('productInfo.uom')) }} -->
                                 {{
                                     form.get('productInfo.uom').value
                                         | errorMessage: form:'productInfo.uom'
                                 }}
                             </mat-error>
                         </mat-form-field>
-                    </div> -->
-                    <!-- comment -->
-                    <!-- <span
+
+                        <!-- <span
                             class="grey-fg"
                             fxFlexAlign="center"
                             fxFlex="80"
@@ -662,7 +662,7 @@
                         >
                             &nbsp;
                         </span> -->
-                    <!-- comment -->
+                    </div>
                     <!-- / UOM -->
 
                     <!-- TAG PRODUK -->
@@ -1937,378 +1937,325 @@
                 <div class="font-weight-600 font-size-24 line-height-20">Amount Settings</div>
             </div>
 
-            <div class="p-16 pt-0 pb-40 line-height-1.75" style="overflow: auto">
+            <div class="p-16 pt-0 pb-40 line-height-1.75">
                 <form
                     class="w-100-p"
                     [formGroup]="form"
-                    novalidate
-                    fxLayout="row"
+                    fxLayout="column"
                     [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
                     fxFlex
+                    novalidate
                 >
+                    <!-- QUANTITY PER MASTER BOX -->
                     <div
-                        fxLayout="column"
-                        [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
-                        fxFlex
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between center"
+                        formGroupName="productCount"
                     >
-                        <div class="p-16 pl-0 pb-20">
-                            <div class="font-weight-700 font-size-14 line-height-20">
-                                Small Unit
-                            </div>
-                        </div>
-                        <!-- UNIT OF MEASUREMENT (UOM) -->
-                        <div
-                            class="custom-field"
-                            fxLayout="column"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.sinbad-red-fg]="
+                                form.get('productCount.qtyPerMasterBox').value ||
+                                    form.get('productCount.qtyPerMasterBox').touched
+                                    | hasErrorField: form.get('productCount.qtyPerMasterBox'):false
+                            "
                         >
-                            <label
-                                class="pr-0 font-size-14"
-                                fxFlexAlign="start"
-                                fxFlex="18"
-                                [class.sinbad-red-fg]="
-                                    form.get('productCount.uomSmallUnit').value ||
-                                        form.get('productCount.uomSmallUnit').touched
-                                        | hasErrorField: form.get('productCount.uomSmallUnit'):false
-                                "
-                            >
-                                <span class="red-500-fg">*</span>
-                                Unit of Measurement (UoM)
-                            </label>
+                            <span class="red-500-fg">*</span>
+                            Quantity <br />
+                            per Master Box
+                        </label>
 
-                            <mat-form-field
-                                style="width: 100%"
-                                appearance="outline"
-                                fxFlex="100"
-                                fxFlexAlign="start"
-                            >
-                                <mat-select
-                                    name="uomSmallUnit"
-                                    formControlName="uomSmallUnit"
-                                    placeholder="Set type of measurement"
+                        <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center">
+                            <input
+                                matInput
+                                formControlName="qtyPerMasterBox"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+
+                            <mat-error>
+                                <!-- {{ getFormError(form.get('productCount.qtyPerMasterBox')) }} -->
+                                {{
+                                    form.get('productCount.qtyPerMasterBox').value
+                                        | errorMessage: form:'productCount.qtyPerMasterBox'
+                                }}
+                            </mat-error>
+                        </mat-form-field>
+
+                        <!-- <span
+                            class="grey-fg"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            *ngIf="isViewMode() && form.get('productCount.qtyPerMasterBox').value"
+                        >
+                            {{ form.get('productCount.qtyPerMasterBox').value | number: '1.0-2' }}
+                        </span>
+
+                        <span
+                            class="grey-fg"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            *ngIf="isViewMode() && !form.get('productCount.qtyPerMasterBox').value"
+                        >
+                            -
+                        </span> -->
+                    </div>
+                    <!-- / QUANTITY PER MASTER BOX -->
+
+                    <!-- MINIMUM OF QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            [class.sinbad-red-fg]="
+                                form.get('productCount.minQtyValue').value ||
+                                    form.get('productCount.minQtyValue').touched
+                                    | hasErrorField: form.get('productCount.minQtyValue'):false
+                            "
+                        >
+                            Minimum Order<br />
+                            Quantity
+                        </label>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxLayoutGap="5px"
+                            fxFlex="80"
+                        >
+                            <!-- RADIO BUTTON SELECT TYPE -->
+                            <mat-radio-group formControlName="minQtyOption">
+                                <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id"
                                 >
-                                    <mat-option
-                                        *ngFor="let unit of catalogueSmallUnits"
-                                        [value]="unit.id"
-                                    >
-                                        {{ unit.unit }}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error *ngIf="hasError(form.get('productCount.uomSmallUnit'))">
-                                    {{ getFormError(form.get('productCount.uomSmallUnit')) }}
+                                    {{ choice.label }}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                            <!-- / RADIO BUTTON SELECT TYPE -->
+
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    formControlName="minQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                />
+
+                                <mat-error>
+                                    <!--  {{ getFormError(form.get('productCount.minQtyValue')) }} -->
+                                    {{
+                                        form.get('productCount.minQtyValue').value
+                                            | errorMessage: form:'productCount.minQtyValue'
+                                    }}
                                 </mat-error>
                             </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
                         </div>
-                        <!-- / UNIT OF MEASUREMENT (UOM) -->
-                        <!-- AMOUNT INCREASE -->
-                        <div
-                            class="custom-field"
-                            fxLayout="column"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
+
+                        <!-- <span
+                            class="grey-fg"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            *ngIf="isViewMode() && form.get('productCount.minQtyValue').value"
                         >
-                            <label
-                                class="pr-0 font-size-14"
-                                fxFlexAlign="start"
-                                fxFlex="18"
-                                [class.sinbad-red-fg]="
-                                    form.get('productCount.amountIncrease').value ||
-                                        form.get('productCount.amountIncrease').touched
-                                        | hasErrorField
-                                            : form.get('productCount.amountIncrease')
-                                            : false
-                                "
-                            >
-                                <span class="red-500-fg">*</span>
-                                Amount Increase
-                            </label>
-                            <div
-                                style="width: 100%; justify-content: space-between"
-                                fxFlex="100"
-                                fxLayoutGap="10"
-                                fxLayout="row"
-                            >
-                                <mat-form-field style="width: 79%" appearance="outline">
-                                    <input
-                                        matInput
-                                        formControlName="amountIncrease"
-                                        mask="separator"
-                                        thousandSeparator="."
-                                        placeholder="Set amount (minimum 1)"
-                                    />
+                            {{ form.get('productCount.minQtyValue').value | number: '1.0-2' }}
+                        </span>
 
-                                    <mat-error>
-                                        {{
-                                            form.get('productCount.amountIncrease').value
-                                                | errorMessage: form:'productCount.amountIncrease'
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <div style="width: 20%" class="box-type">
-                                    {{ (uomNames$ | async).smallName }}
-                                </div>
-                            </div>
-                        </div>
-                        <!-- / AMOUNT INCREASE -->
-                        <!-- MINIMUM ORDER QUANTITY -->
-                        <div
-                            class="custom-field"
-                            fxLayout="column"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
+                        <span
+                            class="grey-fg"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            *ngIf="isViewMode() && !form.get('productCount.minQtyValue').value"
                         >
-                            <label
-                                class="pr-0 font-size-14"
-                                fxFlexAlign="start"
-                                fxFlex="18"
-                                [class.sinbad-red-fg]="
-                                    form.get('productCount.minQtyValue').value ||
-                                        form.get('productCount.minQtyValue').touched
-                                        | hasErrorField: form.get('productCount.minQtyValue'):false
-                                "
-                            >
-                                <span class="red-500-fg">*</span>
-                                Minimum Order Quantity
-                            </label>
-                            <div
-                                style="width: 100%; justify-content: space-between"
-                                fxFlex="100"
-                                fxLayoutGap="10"
-                                fxLayout="row"
-                            >
-                                <mat-form-field style="width: 79%" appearance="outline">
-                                    <input
-                                        matInput
-                                        formControlName="minQtyValue"
-                                        mask="separator"
-                                        thousandSeparator="."
-                                        placeholder="Set minimum order here"
-                                        (input)="onChangeMinOrderQty($event.target.value)"
-                                    />
-
-                                    <mat-error>
-                                        {{
-                                            form.get('productCount.minQtyValue').value
-                                                | errorMessage: form:'productCount.minQtyValue'
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <div style="width: 20%" class="box-type">
-                                    {{ (uomNames$ | async).smallName }}
-                                </div>
-                            </div>
-                        </div>
-                        <!-- / MINIMUM ORDER QUANTITY -->
-                        <!-- MAXIMUM ORDER QUANTITY  -->
-                        <div
-                            class="custom-field"
-                            fxLayout="column"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
-                        >
-                            <div
-                                style="width: 100%"
-                                fxLayout="row"
-                                fxLayoutAlign="space-between center"
-                            >
-                                <label
-                                    class="pr-0 font-size-14"
-                                    fxFlexAlign="start"
-                                    [class.sinbad-red-fg]="
-                                        form.get('productCount.maxQtyValue').value ||
-                                            form.get('productCount.maxQtyValue').touched
-                                            | hasErrorField
-                                                : form.get('productCount.maxQtyValue')
-                                                : false
-                                    "
-                                >
-                                    <span class="red-500-fg">*</span>
-                                    Maximum Order Quantity
-                                    <mat-icon
-                                        class="active-icon s-14 ml-8 cursor-pointer"
-                                        color="accent"
-                                        matTooltip="Maximum order quantity, will be&#10; applied if SKU does not have a&#10; maximum quantities orders in a&#10; particular segmentation"
-                                        matTooltipClass="tooltip-br"
-                                    >
-                                        help
-                                    </mat-icon>
-                                </label>
-                                <mat-checkbox
-                                    formControlName="isMaximum"
-                                    (change)="onChangeMaxOrderQty($event)"
-                                >
-                                    Unlimited
-                                </mat-checkbox>
-                            </div>
-
-                            <div
-                                style="width: 100%; justify-content: space-between"
-                                fxFlex="100"
-                                fxLayoutGap="10"
-                                fxLayout="row"
-                            >
-                                <mat-form-field style="width: 79%" appearance="outline">
-                                    <input
-                                        matInput
-                                        formControlName="maxQtyValue"
-                                        mask="separator"
-                                        thousandSeparator="."
-                                        [placeholder]="
-                                            form.get('productCount.isMaximum').value === true
-                                                ? 'Unlimited'
-                                                : 'Set maximum order here'
-                                        "
-                                        (input)="onChangeMaxQtyVal($event.target.value)"
-                                    />
-
-                                    <mat-error>
-                                        {{
-                                            form.get('productCount.maxQtyValue').value
-                                                | errorMessage: form:'productCount.maxQtyValue'
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <div style="width: 20%" class="box-type">
-                                    {{ (uomNames$ | async).smallName }}
-                                </div>
-                            </div>
-                        </div>
-                        <!-- / MAXIMUM ORDER QUANTITY  -->
+                            -
+                        </span> -->
                     </div>
+                    <!-- / MINIMUM OF QUANTITY -->
 
+                    <!-- MAXIMUM OF QUANTITY -->
                     <div
-                        class="box-largest-unit"
-                        fxLayout="column"
-                        [fxLayoutGap]="(formMode | hasFormMode: 'view') ? '32px' : '15px'"
-                        fxFlex
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
                     >
-                        <!-- ENABLE ORDER BY LARGE UNIT -->
-                        <div
-                            style="width: 100%"
-                            fxLayout="row"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            [class.sinbad-red-fg]="
+                                form.get('productCount.maxQtyValue').value ||
+                                    form.get('productCount.maxQtyValue').touched
+                                    | hasErrorField: form.get('productCount.maxQtyValue'):false
+                            "
                         >
-                            <label class="pr-0" fxFlexAlign="center">
-                                Enable Order By Large Unit
-                            </label>
+                            Maximum Order<br />
+                            Quantity
+
+                            <!-- HELP -->
+                            <mat-icon
+                                color="accent"
+                                style="font-size: 16px"
+                                matTooltip="Maximum order quantity, will be&#10; applied if SKU does not have a&#10; maximum quantities orders in a&#10; particular segmentation"
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
+                            <!-- / HELP -->
+                        </label>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxLayoutGap="5px"
+                            fxFlex="80"
+                        >
+                            <!-- CHECKBOX FOR IS MAXIMUM -->
+                            <!-- <mat-radio-group formControlName="minQtyOption">
+                                <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id"
+                                >
+                                    {{ choice.label }}
+                                </mat-radio-button>
+                            </mat-radio-group> -->
                             <mat-checkbox
-                                formControlName="isEnableLargeUnit"
-                                (change)="onChangeIsEnableLargeUnit($event)"
+                                formControlName="isMaximum"
+                                labelPosition="after"
+                                (change)="onChangeMaxOrderQty($event)"
                             >
-                                Enable Large Unit
+                                Custom
                             </mat-checkbox>
-                        </div>
-                        <div class="p-16 pl-0 pb-20">
-                            <div class="font-weight-700 font-size-14 line-height-20">
-                                Large Unit
-                            </div>
-                        </div>
-                        <!-- / ENABLE ORDER BY LARGE UNIT -->
-                        <!-- UNIT OF MEASUREMENT (UOM) -->
-                        <div
-                            class="custom-field"
-                            fxLayout="column"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
-                        >
-                            <label
-                                class="pr-0 font-size-14"
-                                fxFlexAlign="start"
-                                fxFlex="18"
-                                [class.sinbad-red-fg]="
-                                    form.get('productCount.uomLargeUnit').value ||
-                                        form.get('productCount.uomLargeUnit').touched
-                                        | hasErrorField: form.get('productCount.uomLargeUnit'):false
-                                "
-                            >
-                                <span class="red-500-fg">*</span>
-                                Unit of Measurement (UoM)
-                            </label>
+                            <!-- / CHECKBOX FOR IS MAXIMUM -->
 
-                            <mat-form-field
-                                style="width: 100%"
-                                appearance="outline"
-                                fxFlex="100"
-                                fxFlexAlign="start"
-                            >
-                                <mat-select
-                                    name="uomLargeUnit"
-                                    formControlName="uomLargeUnit"
-                                    placeholder="Set type of measurement"
-                                >
-                                    <mat-option
-                                        *ngFor="let unit of catalogueLargeUnits"
-                                        [value]="unit.id"
-                                    >
-                                        {{ unit.unit }}
-                                    </mat-option>
-                                </mat-select>
-                                <mat-error *ngIf="hasError(form.get('productCount.uomLargeUnit'))">
-                                    {{ getFormError(form.get('productCount.uomLargeUnit')) }}
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    formControlName="maxQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                    [placeholder]="
+                                        form.get('productCount.isMaximum').value
+                                            ? null
+                                            : 'Unlimited'
+                                    "
+                                />
+
+                                <mat-error *ngIf="form.get('productCount.maxQtyValue').invalid">
+                                    {{
+                                        form.get('productCount.maxQtyValue').value
+                                            | errorMessage: form:'productCount.maxQtyValue'
+                                    }}
                                 </mat-error>
                             </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
                         </div>
-                        <!-- / UNIT OF MEASUREMENT (UOM) -->
-                        <!-- CONSIST OF -->
-                        <div
-                            class="custom-field"
-                            fxLayout="column"
-                            fxLayoutAlign="space-between center"
-                            formGroupName="productCount"
-                        >
-                            <label
-                                class="pr-0 font-size-14"
-                                fxFlexAlign="start"
-                                fxFlex="18"
-                                [class.sinbad-red-fg]="
-                                    form.get('productCount.consistOfQtyLargeUnit').value ||
-                                        form.get('productCount.consistOfQtyLargeUnit').touched
-                                        | hasErrorField
-                                            : form.get('productCount.consistOfQtyLargeUnit')
-                                            : false
-                                "
-                            >
-                                <span class="red-500-fg">*</span>
-                                Consist Of
-                            </label>
-                            <div
-                                style="width: 100%; justify-content: space-between"
-                                fxFlex="100"
-                                fxLayoutGap="10"
-                                fxLayout="row"
-                            >
-                                <mat-form-field style="width: 79%" appearance="outline">
-                                    <input
-                                        matInput
-                                        formControlName="consistOfQtyLargeUnit"
-                                        mask="separator"
-                                        thousandSeparator="."
-                                        placeholder="Set consist of"
-                                        (input)="onChangeConsistOf($event.target.value)"
-                                    />
-
-                                    <mat-error>
-                                        {{
-                                            form.get('productCount.consistOfQtyLargeUnit').value
-                                                | errorMessage
-                                                    : form
-                                                    : 'productCount.consistOfQtyLargeUnit'
-                                        }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <div style="width: 20%" class="box-type">
-                                    {{ (uomNames$ | async).smallName }}
-                                </div>
-                            </div>
-                        </div>
-                        <!-- / CONSIST OF -->
                     </div>
+                    <!-- / MAXIMUM OF QUANTITY -->
+
+                    <!-- ADDITIONAL QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            [class.sinbad-red-fg]="
+                                form.get('productCount.additionalQtyValue').value ||
+                                    form.get('productCount.additionalQtyValue').touched
+                                    | hasErrorField
+                                        : form.get('productCount.additionalQtyValue')
+                                        : false
+                            "
+                        >
+                            Additional<br />
+                            Quantity
+                        </label>
+
+                        <div
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxLayoutGap="5px"
+                            fxFlex="80"
+                        >
+                            <!-- RADIO BUTTON SELECT TYPE -->
+                            <mat-radio-group formControlName="additionalQtyOption">
+                                <mat-radio-button
+                                    class="pr-36"
+                                    *ngFor="let choice of quantityChoices"
+                                    [value]="choice.id"
+                                >
+                                    {{ choice.label }}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                            <!-- / RADIO BUTTON SELECT TYPE -->
+
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input
+                                    matInput
+                                    formControlName="additionalQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                />
+
+                                <mat-error>
+                                    <!-- {{ getFormError(form.get('productCount.additionalQtyValue')) }} -->
+                                    {{
+                                        form.get('productCount.additionalQtyValue').value
+                                            | errorMessage: form:'productCount.additionalQtyValue'
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
+                        </div>
+
+                        <!-- <span
+                            class="grey-fg"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            *ngIf="
+                                isViewMode() && form.get('productCount.additionalQtyValue').value
+                            "
+                        >
+                            {{
+                                form.get('productCount.additionalQtyValue').value | number: '1.0-2'
+                            }}
+                        </span>
+
+                        <span
+                            class="grey-fg"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                            *ngIf="
+                                isViewMode() && !form.get('productCount.additionalQtyValue').value
+                            "
+                        >
+                            -
+                        </span> -->
+                    </div>
+                    <!-- / ADDITIONAL QUANTITY -->
                 </form>
             </div>
         </div>
-
         <!-- / CONTENT CARD (PENGIRIMAN PRODUK) -->
 
         <!-- CONTENT CARD (VISIBILITY) -->
@@ -2791,6 +2738,16 @@
             </div>
         </div>
         <!-- / CONTENT CARD (SEGMENTATION SETTING) -->
+
+        <!-- CONTENT CARD (MSS SETTING) -->
+        <div class="content-card">
+            <div class="pt-0 line-height-1.75">
+                <app-catalogue-mss-settings
+                    [(formMode)]="formMode"
+                ></app-catalogue-mss-settings>
+            </div>
+        </div>
+         <!-- / CONTENT CARD (MSS SETTING) -->
     </div>
     <!-- / CENTER -->
     <!-- Spinner Loader -->

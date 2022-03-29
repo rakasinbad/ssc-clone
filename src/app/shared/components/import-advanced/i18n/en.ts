@@ -27,5 +27,6 @@ export const locale = {
         UPDATE_STATUS_TEMPLATE: 'Update Status',
         UPDATE_STORES: 'Update Stores',
         UPDATE: 'Update',
+        UPDATE_MSS_TYPE: 'Update MSS Type',
     },
 };

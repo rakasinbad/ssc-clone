@@ -96,30 +96,5 @@ app-catalogues-form {
             opacity: 0.5;
             margin-top: -10px;
         }
-
-        .box-type {
-            background: #f3f5f7;
-            min-height: 43px;
-            height: 43px;
-            border: 1px solid #dae0e7;
-            box-sizing: border-box;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            color: #acb8c3;
-            margin-top: 0.25em;
-            padding: 0px 0.75em;
-        }
-
-        .box-largest-unit {
-            background: #f3f5f7;
-            border-radius: 4px;
-            padding: 1.5em 1em;
-            height: fit-content;
-        }
-
-        .mat-form-field-appearance-outline .mat-form-field-outline {
-            background-color: white;
-        }
     }
 }

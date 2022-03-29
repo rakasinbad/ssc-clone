@@ -174,11 +174,10 @@
              <mat-tab label="MSS Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <app-catalogue-mss-settings
-                       
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
                     ></app-catalogue-mss-settings>
-                     <!-- [(formMode)]="formMode"
-                    (formValueChange)="onFormValueChanged($event)"
-                    (formStatusChange)="onFormStatusChanged($event)" -->
                 </ng-template>
             </mat-tab>
             <!-- / MSS SETTINGS TAB -->
