@@ -1,50 +1,43 @@
 <!-- CONTENT CARD (MSS SETTINGS) -->
-<div >
-	<!-- [ngClass]="catalogueContent" -->
+<div [ngClass]="catalogueContent">
   <div class="p-16 pb-28">
       <div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
   </div>
-  <div class="p-16 pt-0 pb-40 line-height-1.75">
-      <form
-          class="w-100-p"
-          fxLayout="column"
-          fxFlex
-          [fxLayoutGap]="'32px'"
-          novalidate
-      >
-				<!-- [ngClass]="formClass" -->
-				<div>
-					<label
-						class="pr-0 font-size-14"
-					>
-							You can only set 1 type of must selling SKU (MSS) for each cluster
-					</label>
-				</div>
-			
-				<div *ngIf="formMode !== 'view'">
-					<label fxFlexAlign="center" fxFlex="18" class="pr-0"> Select All </label>
-					
-					<mat-radio-group fxFlex="80" [formControl]="form.get('radioButton')">
-						<mat-radio-button 
-							class="pr-36" 
-							[value]="'non-mss'"
-						>Non-MSS</mat-radio-button>
-						<mat-radio-button 
-							class="pr-36" 
-							[value]="'mss-only'"	
-						>MSS Only</mat-radio-button>
-						<mat-radio-button 
-							class="pr-36" 
-							[value]="'mss-core'"	
-						>MSS Core</mat-radio-button>
-					</mat-radio-group>
-				</div>
 
-				<div>
+	<!-- check if mss set or not set in admin panel -->
+	<ng-template [ngIf]="!(showMssInfo | async)">	
+		<div class="p-16 pt-0 pb-40 line-height-1.75">
+			<p class="font-size-14 text-center">To fill this section, please contact administrator.</p>
+		</div>
+	</ng-template>
+	
+	<!-- use style.visibility agar tetap dapat menggunakan @viewchild(matpaginator) -->
+	<div [style.visibility]="!(showMssInfo | async)? 'hidden': 'visible'" class="p-16 pt-0 pb-40 line-height-1.75">
+		<form
+			class="w-100-p"
+			fxLayout="column"
+			fxFlex
+			[fxLayoutGap]="'32px'"
+			novalidate
+		>
+			<div>
+				<label
+					class="pr-0 font-size-14"
+				>
+					Set each {{ screenConfig.info }} with specific MSS type for this product.
+				</label>
+			</div>
+
+			<div 
+				fxLayout="row" 
+				fxFlex
+				fxLayoutGap="16px"
+			>
+				<div fxFlex="20">
 					<mat-table
 						#table
 						class="catalogue-price-table sinbad-table sinbad-table__hover"
-						[dataSource]="dataSource$ | async"
+						[dataSource]="dataSource"
 						fusePerfectScrollbar
 						[@animateStagger]="{ value: '50' }"
 						[fusePerfectScrollbarOptions]="{
@@ -55,66 +48,157 @@
 							minScrollbarLength: 40,
 							maxScrollbarLength: 300
 						}"
-            [class.edit]="formMode | hasFormMode: 'edit'"	
-						[class.sinbad-table-no-record]="!(isLoading$ | async) && (totalItem$ | async) === 0"
+						[class.sinbad-table-no-record]="!isLoading && totalItem === 0"
 					>
-						<!-- Selected Cluster Column -->
-						<ng-container matColumnDef="selected-cluster">
-							<mat-header-cell *matHeaderCellDef> Selected Cluster (n) </mat-header-cell>
+						<!-- Store Cluster/Type by Segmentation Column -->
+						<ng-container matColumnDef="name">
+							<mat-header-cell *matHeaderCellDef> {{ screenConfig.title }} by Segmentation </mat-header-cell>
 							<mat-cell *matCellDef="let row">
 								<p>{{ row?.name || '-' }}</p>
 							</mat-cell>
 						</ng-container>
-						<!-- / Selected Cluster Column -->
+						<!-- / Store CLuster/Type Segmentation Column -->
 
-						<!-- Non-MSS Column -->
-						<ng-container matColumnDef="non-mss">
-							<mat-header-cell *matHeaderCellDef> Non-MSS </mat-header-cell>
+						<!-- No Record Column -->
+						<ng-container matColumnDef="no-record">
+								<mat-footer-cell *matFooterCellDef colspan="1">
+									No records found
+								</mat-footer-cell>
+						</ng-container>
+						<!-- / No Record Column -->
+
+						<mat-header-row *matHeaderRowDef="segmentationColumns; sticky: true"></mat-header-row>
+						<mat-footer-row
+								*matFooterRowDef="['no-record']"
+								[fxShow]="!isLoading && totalItem === 0"
+						></mat-footer-row>
+
+						<mat-row
+								*matRowDef="let row; columns: segmentationColumns"
+						></mat-row>
+					</mat-table>
+				</div>
+				
+				<div fxFlex="80" fxLayout="column" fxLayoutGap="16px">
+					<div 	
+						fxLayout="row" 
+						fxFlex
+						fxLayoutAlign=" start"
+					>
+						<ng-container *ngIf="!editTableMode">
+							<button 
+								mat-raised-button 
+								class="mat-accent mr-16" 
+								fxLayoutAlign="center center"
+								style="padding: 12px; margin-bottom: 20px;"
+								(click)="onEditTableMode()"
+							>
+								<mat-icon style="margin-top: -2px;">add</mat-icon>
+								{{ screenConfig.title }}
+							</button>
+						</ng-container>
+						<ng-container *ngIf="editTableMode">
+							<div 
+								class="custom-field"
+								fxLayout="row"
+								fxLayoutAlign=" start"
+								fxLayoutGap="16px"
+								fxFlex
+							>
+								<label
+									fxFlexAlign="center"
+									fxFlex="15"
+								>
+									Add {{ screenConfig.title }}
+								</label>
+								<mat-form-field
+									appearance="outline"
+									fxFlex="35"
+								>
+									<mat-select placeholder="{{screenConfig.dropdownPlaceholder}}">
+										<mat-option>(None)</mat-option>
+										<mat-option
+											*ngFor="let row of dataSource"
+										>
+											{{ row.name || '-' }}
+										</mat-option>
+									</mat-select>
+								</mat-form-field>
+
+								<mat-form-field
+									appearance="outline"
+									fxFlex="35"
+								>
+									<mat-select placeholder="Choose MSS type">
+										<mat-option>(None)</mat-option>
+										<mat-option
+											*ngFor="let row of dataSource"
+										>
+											{{ row.name || '-' }}
+										</mat-option>
+									</mat-select>
+								</mat-form-field>
+
+								<button 
+									mat-raised-button 
+									class="mat-accent" 
+									fxFlex="15"
+								>
+									Add to List
+								</button>
+							</div>
+						</ng-container>
+					</div>
+
+					<mat-table
+					#table
+					class="catalogue-price-table sinbad-table sinbad-table__hover"
+					[dataSource]="dataSource"
+					fusePerfectScrollbar
+					[@animateStagger]="{ value: '50' }"
+					[fusePerfectScrollbarOptions]="{
+						updateOnRouteChange: true,
+						suppressScrollX: true,
+						wheelSpeed: 0.5,
+						swipeEasing: true,
+						minScrollbarLength: 40,
+						maxScrollbarLength: 300
+					}"
+					[class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+					>
+					<!-- Cluster Name Column -->
+						<ng-container matColumnDef="cluster-name">
+							<mat-header-cell *matHeaderCellDef> Cluster Name </mat-header-cell>
 							<mat-cell *matCellDef="let row">
-								<mat-radio-group [formControl]="form.get('columnRadioButton')"  fxFlex="80">
-									<mat-radio-button 
-										(click)="mssTypeColumnClick(row, 'non-mss')"
-										[checked]="selectedData[row.id] && selectedData[row.id].nonMss" 
-										class="pr-36" 
-										[value]="'non-mss-table'"
-									></mat-radio-button>
-								</mat-radio-group>
+								<p>{{ row?.name || '-' }}</p>
 							</mat-cell>
 						</ng-container>
-						<!-- / Non-MSS Column -->
+						<!-- / Cluster Name Column -->
 
-						<!-- MSS Only Column -->
-						<ng-container matColumnDef="mss-only">
-							<mat-header-cell *matHeaderCellDef> MSS Only </mat-header-cell>
+						<!-- MSS Type Column -->
+						<ng-container matColumnDef="mss-type">
+							<mat-header-cell *matHeaderCellDef> MSS Type </mat-header-cell>
 							<mat-cell *matCellDef="let row">
-								<mat-radio-group [formControl]="form.get('columnRadioButton')"  fxFlex="80">
-									<mat-radio-button 
-										(click)="mssTypeColumnClick(row, 'mss-only')"
-										[checked]="selectedData[row.id] && selectedData[row.id].mssOnly" 
-										class="pr-36" 
-										[value]="'non-mss-table'"
-									></mat-radio-button>
-								</mat-radio-group>
+								<p>MSS Core</p>
 							</mat-cell>
 						</ng-container>
-						<!-- / MSS Only Column -->
+						<!-- / Mss Type Column -->
 
-						<!-- MSS Core Column -->
-						<ng-container matColumnDef="mss-core">
-							<mat-header-cell *matHeaderCellDef> MSS Core </mat-header-cell>
+						<!-- Action Column -->
+						<ng-container matColumnDef="action">
+							<mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
 							<mat-cell *matCellDef="let row">
-								<mat-radio-group [formControl]="form.get('columnRadioButton')"  fxFlex="80">
-									<mat-radio-button 
-										(click)="mssTypeColumnClick(row, 'mss-core')"
-										[checked]="selectedData[row.id] && selectedData[row.id].mssCore" 
-										class="pr-36" 
-										[value]="'non-mss-table'"
-									></mat-radio-button>
-								</mat-radio-group>
+								<button
+										mat-icon-button
+										aria-label="Delete"
+										(click)="$event.stopPropagation()"
+								>
+										<mat-icon class="secondary-text">delete</mat-icon>
+								</button>
 							</mat-cell>
 						</ng-container>
-						<!-- / MSS Core Column -->
-	
+						<!-- / Action Column -->
+
 						<!-- No Record Column -->
 						<ng-container matColumnDef="no-record">
 								<mat-footer-cell *matFooterCellDef colspan="2">
@@ -126,27 +210,27 @@
 						<mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 						<mat-footer-row
 								*matFooterRowDef="['no-record']"
-								[fxShow]="!(isLoading$ | async) && (totalItem$ | async) === 0"
+								[fxShow]="!isLoading && totalItem === 0"
 						></mat-footer-row>
 
 						<mat-row
 								*matRowDef="let row; columns: displayedColumns"
 						></mat-row>
-
 					</mat-table>
 
 					<mat-paginator
-						[disabled]="!(isLoading$ | async) && (totalItem$ | async) === 0"
-						[length]="totalItem$ | async"
+						[disabled]="!isLoading && totalItem === 0"
+						[length]="totalItem"
 						[pageSize]="defaultPageSize"
 						[pageSizeOptions]="defaultPageOpts"
 						(page)="onChangePage($event)"
 						showFirstLastButtons
 					>
 					</mat-paginator>
-
 				</div>
-      </form>
-  </div>
+			</div>
+		</form>
+	</div>
+
 </div>
 <!-- / CONTENT CARD (MSS SETTINGS) -->

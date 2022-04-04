@@ -5,7 +5,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Observable, Subject, BehaviorSubject, of, combineLatest, } from 'rxjs';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { tap, withLatestFrom, takeUntil, take, catchError, switchMap, map, debounceTime, distinctUntilChanged, } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { StoreSegmentationType as Entity } from 'app/shared/components/selection-tree/store-segmentation/models';
@@ -18,16 +17,15 @@ import { UserSupplier } from 'app/shared/models/supplier.model';
 import { SelectionTree, SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
 import { environment } from 'environments/environment';
 import { CatalogueMssSettings } from '../../models';
-import { CatalogueActions } from '../../store/actions';
+import { CatalogueMssSettingsDataSource } from '../../datasources/catalogue-mss-settings.datasource';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
-interface ISelectedData {
-    [id: number]: {
-        nonMss: boolean;
-        mssOnly: boolean;
-        mssCore: boolean;
-    }
+interface IScreenConfig {
+    mssTypeBy: 'store-cluster' | 'store-type';
+    title: 'Store Cluster' | 'Store Type';
+    info: 'store cluster' | 'store-type';
+    dropdownPlaceholder: 'Choose Cluster' | 'Choose Type',
 }
 
 @Component({
@@ -40,33 +38,50 @@ interface ISelectedData {
 })
 export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestroy {
     console = console;
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
     subs$: Subject<void> = new Subject<void>();
     trigger$: BehaviorSubject<string> = new BehaviorSubject('');
     updateForm$: BehaviorSubject<IFormMode> = new BehaviorSubject<IFormMode>(null);
 
     // state for table needs
-    dataSource$: BehaviorSubject<Array<SelectionTree>> = new BehaviorSubject<Array<SelectionTree>>([]);
-    isLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    totalItem$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    displayedColumns = [
-        `selected-cluster`,
-        `non-mss`,
-        `mss-only`,
-        `mss-core`
-    ];
-    readonly defaultPageSize = environment.pageSize;
-    readonly defaultPageOpts = environment.pageSizeTable;
+    /** primary table mss settings list */
+    dataSource: CatalogueMssSettingsDataSource;
+    isLoading: boolean = false;
+    totalItem: number = 0;
+    displayedColumns: string[] = [
+        `cluster-name`,
+        `mss-type`,
+        'action'
+    ]
+    /** store cluster/type segmentation list */
+    segmentationColumns: string[] = [
+        `name`,
+    ]
 
     formModeValue: IFormMode = 'add';
     
-    selectedData: ISelectedData = {};
-
     form: FormGroup;
 
-    formClass: {
-        'custom-field-right': boolean;
-        'view-field-right': boolean;
+    catalogueContent: {
+        'content-card': boolean;
+        'mt-16': boolean;
+        'sinbad-content': boolean;
+        'mat-elevation-z1': boolean;
+        'fuse-white': boolean;
     };
+
+    showMssInfo: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+    editTableMode: boolean = false;
+
+    screenConfig: IScreenConfig = {
+        mssTypeBy: 'store-cluster',
+        title: 'Store Cluster',
+        info: 'store cluster',
+        dropdownPlaceholder: 'Choose Cluster',
+    }
 
     @Input() initSelection: number;
 
@@ -108,11 +123,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         private notice$: NoticeService,
         private router: Router,
     ) {
-        this.dataSource$.pipe(
-            tap(x => HelperService.debug('AVAILABLE ENTITIES FROM CATALOGUE MSS SETTINGS', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
-
         this.form = this.fb.group({
             radioButton: [],
             columnRadioButton: ['']
@@ -120,27 +130,44 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     }
 
     ngOnInit(): void {
-        this.onRequest();
-        if (this.formMode === 'edit' || this.formMode === 'view') {
-            this._patchForm();
-            this.subscribeForm();
-        }
+        this.dataSource = new CatalogueMssSettingsDataSource(
+            this.store,
+            this.entityApi$,
+            this.helper$
+        );
+        this._patchForm();
+        this.subscribeForm();
+        this.checkMssSettings();
+        
+        this.dataSource.connect()
+            .subscribe(data => {
+                HelperService.debug('AVAILABLE ENTITIES FROM CATALOGUE MSS SETTINGS', data)
+            });
+
+        combineLatest([this.dataSource.isLoading, this.dataSource.total])
+        .pipe(
+            map(([isLoading, totalItem]) => ({ isLoading, totalItem })),
+            takeUntil(this.subs$)
+        )
+        .subscribe(
+            ({ isLoading, totalItem }) => {
+                this.isLoading = isLoading;
+                this.totalItem = totalItem;
+            }
+        );
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['formMode']) {
             if (
-                (!changes['formMode'].isFirstChange() &&
-                    changes['formMode'].currentValue === 'edit') ||
+                (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') ||
                 changes['formMode'].currentValue === 'view'
             ) {
-                if (changes['formMode'].currentValue === 'edit') {
-                    this.checkSelectAll();
-                }
-
                 this.trigger$.next('');
                 this.updateForm$.next(changes['formMode'].currentValue);
             }
+            
+            this.updateFormView();
         }
     }
 
@@ -148,14 +175,23 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         this.subs$.next();
         this.subs$.complete();
 
-        this.totalItem$.next(null);
-        this.totalItem$.complete();
+        this.showMssInfo.next(null);
+        this.showMssInfo.complete();
 
-        this.dataSource$.next(null);
-        this.dataSource$.complete();
+        this.updateForm$.next(null);
+        this.updateForm$.complete();
+    }
 
-        this.isLoading$.next(null);
-        this.isLoading$.complete();
+    isAddMode(): boolean {
+        return this.formMode === 'add';
+    }
+
+    isEditMode(): boolean {
+        return this.formMode === 'edit';
+    }
+
+    isViewMode(): boolean {
+        return this.formMode === 'view';
     }
 
     onChangePage(ev: PageEvent): void {
@@ -166,142 +202,19 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         this.onRequest();
     }
 
-    private requestEntity(params: IQueryParams): void {
-        of(null).pipe(
-            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
-            // delay(1000),
-            withLatestFrom<any, UserSupplier>(
-                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
-            ),
-            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
-                // Jika user tidak ada data supplier.
-                if (!userSupplier) {
-                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
-                }
-
-                // Mengambil ID supplier-nya.
-                const { supplierId } = userSupplier;
-
-                // Membentuk query baru.
-                const newQuery: IQueryParams = { ... params };
-                // Memasukkan ID supplier ke dalam params baru.
-                newQuery['supplierId'] = supplierId;
-                // Hanya mengambil yang tidak punya child.
-                // newQuery['hasChild'] = false;
-                // Request berdasarkan segmentasinya
-                newQuery['segmentation'] = 'cluster';
-
-                // Melakukan request data warehouse.
-                return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
-                    .pipe(
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
-                    );
-            }),
-            take(1),
-            catchError(err => { throw err; }),
-        ).subscribe({
-            next: (response) => {
-                if (Array.isArray(response)) {
-                    response.map(item => {
-                        if (!this.selectedData[item.id]) {
-                            this.selectedData[item.id] = {
-                                nonMss: true,
-                                mssOnly: false,
-                                mssCore: false
-                            }
-                            /** TODO:  check jika semua cluster mss-only | mss-core | non-mss */
-                            // if (
-                            //     Object.values(this.selectedData).every(item => item[type])
-                            // ) {
-                            //     this.form.controls["radioButton"].setValue(type);
-                            // }
-                        }
-                        
-                    })
-                    this.dataSource$.next((response as Array<SelectionTree>));
-                    this.totalItem$.next((response as Array<SelectionTree>).length);
-                    this.isLoading$.next(false);
-                } else {
-                    response.data.map(item => {
-                        if (!this.selectedData[item.id]) {
-                            this.selectedData[item.id] = {
-                                nonMss: true,
-                                mssOnly: false,
-                                mssCore: false
-                            }
-                        }
-                        
-                    })
-                    this.dataSource$.next(response.data as unknown as Array<SelectionTree>);
-                    this.totalItem$.next(response.total); 
-                    this.isLoading$.next(false);
-                }
-
-            },
-            error: (err) => {
-                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
-            },
-            complete: () => {
-                HelperService.debug('FIND ENTITY COMPLETED');
-            }
-        });
-    }
-
     private onRequest(): void {
-        const limit = this.paginator.pageSize ? this.paginator.pageSize : this.defaultPageSize
-        const skip = limit * this.paginator.pageIndex
+        let limit = this.defaultPageSize;
+        let skip = 0;
+        if (this.paginator) {
+            limit = this.paginator.pageSize ? this.paginator.pageSize : this.defaultPageSize;
+            skip = limit * this.paginator.pageIndex;
+        }
         const params: IQueryParams = {
             paginate: true,
             limit,
             skip,
         };
-        this.isLoading$.next(true);
-        this.requestEntity(params);
-    }
-
-    getFormError(form: any): string {
-        return this.errorMessage$.getFormError(form);
-    }
-
-    hasError(form: any, args: any = {}): boolean {
-        const { ignoreTouched, ignoreDirty } = args;
-
-        if (ignoreTouched && ignoreDirty) {
-            return !!form.errors;
-        }
-
-        if (ignoreDirty) {
-            return (form.errors || form.status === 'INVALID') && form.touched;
-        }
-
-        if (ignoreTouched) {
-            return (form.errors || form.status === 'INVALID') && form.dirty;
-        }
-
-        return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
-    }
-
-    onSelected($event: Array<SelectionTree>): void {
-        this.selected.emit($event as unknown as Array<Entity>);
-    }
-
-    onSelectionChanged($event: SelectedTree): void {
-        this.selectionChanged.emit($event);
-    }
-
-    mssTypeColumnClick(el, type) {
-        if (this.formMode === 'edit') {
-            this.selectedData[el.id] = {
-                nonMss: type === 'non-mss',
-                mssOnly: type === 'mss-only',
-                mssCore: type === 'mss-core'
-            }
-        }
-        
-        this.checkSelectAll();
+        this.dataSource.getTableData(params);
     }
 
     _patchForm(): void {
@@ -310,16 +223,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 takeUntil(this.subs$)
             )
             .subscribe(() => {
-                const radioButton = this.form.get('radioButton');
-                const columnRadioButton = this.form.get('columnRadioButton');
-
-                if (this.formMode === 'view') {
-                    radioButton.disable({ onlySelf: true });
-                    columnRadioButton.disable({ onlySelf: true });
-                } else if (this.formMode === 'edit') {
-                    radioButton.enable({ onlySelf: true });
-                    columnRadioButton.enable({ onlySelf: true });
-                }
+                
             });
     }
 
@@ -352,15 +256,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 )
             ),
             map((value) => {
-                if (value.radioButton) {
-                    this.dataSource$.value.map(item => {
-                        this.selectedData[item.id] = {
-                            nonMss: value.radioButton === 'non-mss',
-                            mssOnly: value.radioButton === 'mss-only',
-                            mssCore: value.radioButton === 'mss-core'
-                        }
-                    })
-                }
 
                 return value;
             }),
@@ -377,101 +272,44 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         });
     }
 
-    private prepareEditCatalogue(): void {
-        combineLatest([
-            this.trigger$,
-        ])
-            .pipe(
-                withLatestFrom(
-                    this.store.select(AuthSelectors.getUserSupplier),
-                    ([catalogue], userSupplier) => ({
-                        catalogue,
-                        userSupplier,
-                    })
-                ),
-                takeUntil(this.subs$)
-            )
-            .subscribe(({ catalogue, userSupplier, ...props }) => {
-                if (!props) {
-                    const { id } = this.route.snapshot.params;
+     private updateFormView(): void {
+        this.catalogueContent = {
+            'mt-16': true,
+            'content-card': this.isViewMode(),
+            'sinbad-content': this.isAddMode() || this.isEditMode(),
+            'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
+            'fuse-white': this.isAddMode() || this.isEditMode()
+        };
 
-                    this.store.dispatch(
-                        CatalogueActions.fetchCatalogueRequest({
-                            payload: id,
-                        })
-                    );
+        
+        if (this.isViewMode()) {
+            this.displayedColumns = [
+                `cluster-name`,
+                `mss-type`,
+            ] 
+        }
 
-                    this.store.dispatch(
-                        CatalogueActions.setSelectedCatalogue({
-                            payload: id,
-                        })
-                    );
-
-                    return;
-                } else {
-                    /** checking if this data not under supplier id */
-                    // if (propertyName.supplierId !== userSupplier.supplierId) {
-                    //     this.store.dispatch(
-                    //         CatalogueActions.spliceCatalogue({
-                    //             payload: catalogue.id,
-                    //         })
-                    //     );
-
-                    //     this.notice$.open('Produk tidak ditemukan.', 'error', {
-                    //         verticalPosition: 'bottom',
-                    //         horizontalPosition: 'right',
-                    //     });
-
-                    //     setTimeout(
-                    //         () => this.router.navigate(['pages', 'catalogues', 'list']),
-                    //         1000
-                    //     );
-
-                    //     return;
-                    // }
-                }
-
-                /** Set form value */
-                setTimeout(() => {
-                    HelperService.debug(
-                        '[CatalogueMssSettingsComponent - BEFORE] prepareEditCatalogue form.patchValue',
-                        {
-                            catalogue,
-                            form: this.form.getRawValue(),
-                        }
-                    );
-
-                    HelperService.debug(
-                        '[CatalogueMssSettingsComponent - AFTER] prepareEditCatalogue form.patchValue',
-                        {
-                            catalogue,
-                            formRaw: this.form.getRawValue(),
-                            form: this.form.value,
-                        }
-                    );
-                    
-                }, 500);
-
-                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-                this.form.markAsDirty({ onlySelf: false });
-                this.form.markAllAsTouched();
-                this.form.markAsPristine();
-            });
+        if (this.isEditMode()) {
+            this.displayedColumns = [
+                `cluster-name`,
+                `mss-type`,
+                'action'
+            ]
+        }
     }
 
-    checkSelectAll() {
-        const radioButton = this.form.get('radioButton');
-        const checkRadioButton = (type) => Object.values(this.selectedData).every(item => item[type]);
-        checkRadioButton('nonMss') && radioButton.setValue('non-mss');
-        checkRadioButton('mssOnly') && radioButton.setValue('mss-only');
-        checkRadioButton('mssCore') && radioButton.setValue('mss-core');
+    checkMssSettings(): void {
+        /** check mss settings, is it set by admin panel or not */
+        this.showMssInfo.next(true);
+        this.showMssInfo
+        .subscribe(show => {
+            if (show) {
+                this.onRequest();
+            }
+        })
+    }
 
-        if (
-            !checkRadioButton('nonMss') &&
-            !checkRadioButton('mssOnly') &&
-            !checkRadioButton('mssCore')
-        ) {
-            radioButton.setValue(null);
-        }
+    onEditTableMode(): void {
+        this.editTableMode = true;
     }
 }
