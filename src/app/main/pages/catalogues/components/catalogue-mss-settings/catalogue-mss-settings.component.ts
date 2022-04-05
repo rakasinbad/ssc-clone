@@ -83,6 +83,24 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         dropdownPlaceholder: 'Choose Cluster',
     }
 
+    segmentationDropdownData = [];
+
+    mssTypeData = [
+        {
+            id: 1,
+            name: 'MSS Core'
+        },
+         {
+            id: 2,
+            name: 'MSS'
+        }
+        ,
+         {
+            id: 3,
+            name: 'Non-MSS'
+        }
+    ]
+
     @Input() initSelection: number;
 
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -142,6 +160,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         this.dataSource.connect()
             .subscribe(data => {
                 HelperService.debug('AVAILABLE ENTITIES FROM CATALOGUE MSS SETTINGS', data)
+                this.segmentationDropdownData = data
             });
 
         combineLatest([this.dataSource.isLoading, this.dataSource.total])
