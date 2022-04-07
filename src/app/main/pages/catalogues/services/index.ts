@@ -7,3 +7,6 @@ export * from './catalogue-tax-facade.service';
 export * from './catalogue-tax.service';
 export * from './catalogues.service';
 export * from './sub-brand-api.service';
+export * from './catalogue-mss-settings-api.service';
+export * from './catalogue-mss-settings-facade.service';
+export * from './catalogue-mss-settings.service';

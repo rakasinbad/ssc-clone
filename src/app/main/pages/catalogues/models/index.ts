@@ -8,6 +8,7 @@ export * from './catalogue-wd.model';
 export * from './catalogue.model';
 export * from './sub-brand.model';
 export * from './catalogue-mss-settings.model';
+export * from './catalogue-mss-settings-segmentation.model';
 
 export * from './interfaces/adjust-catalogue-price.interface';
 export * from './interfaces/max-order-qty-segmentation-dto.interface';

@@ -14,7 +14,7 @@ import { Catalogue, CatalogueInformation, CatalogueWeightDimension } from '../..
 import { CatalogueMedia, CatalogueMediaForm } from '../../models/catalogue-media.model';
 import { CatalogueActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
-import { BrandSelectors, CatalogueSelectors } from '../../store/selectors';
+import { BrandSelectors, CatalogueSelectors, CatalogueMssSettingsSelectors } from '../../store/selectors';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -91,6 +91,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this.isLoading$ = combineLatest([
             this.store.select(BrandSelectors.getIsLoading),
             this.store.select(CatalogueSelectors.getIsLoading),
+            this.store.select(CatalogueMssSettingsSelectors.getIsLoading),
         ]).pipe(
             map((loadingStates) => loadingStates.includes(true)),
             takeUntil(this.subs$)

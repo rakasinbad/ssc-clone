@@ -10,8 +10,9 @@ import {
     DeletePriceSegmentationEffects,
     FetchCatalogueTaxesEffects,
     UpdateMaxOrderQtySegmentationEffects,
+    MssSettingsEffects,
 } from './effects';
-import { fromBrand, fromCatalogue, fromCatalogueTax } from './reducers';
+import { fromBrand, fromCatalogue, fromCatalogueTax, fromCatalogueMssSettings } from './reducers';
 
 @NgModule({
     imports: [
@@ -19,6 +20,7 @@ import { fromBrand, fromCatalogue, fromCatalogueTax } from './reducers';
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
         StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
         StoreModule.forFeature(fromCatalogueTax.catalogueTaxFeatureKey, fromCatalogueTax.reducer),
+        StoreModule.forFeature(fromCatalogueMssSettings.FEATURE_KEY, fromCatalogueMssSettings.reducer),
 
         EffectsModule.forFeature([
             AdjustPriceSettingEffects,
@@ -28,6 +30,7 @@ import { fromBrand, fromCatalogue, fromCatalogueTax } from './reducers';
             ExportsEffects,
             FetchCatalogueTaxesEffects,
             UpdateMaxOrderQtySegmentationEffects,
+            MssSettingsEffects,
         ]),
     ],
 })

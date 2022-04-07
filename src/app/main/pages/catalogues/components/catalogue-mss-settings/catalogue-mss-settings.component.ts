@@ -17,7 +17,8 @@ import { UserSupplier } from 'app/shared/models/supplier.model';
 import { SelectionTree, SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
 import { environment } from 'environments/environment';
 import { CatalogueMssSettings } from '../../models';
-import { CatalogueMssSettingsDataSource } from '../../datasources/catalogue-mss-settings.datasource';
+import { CatalogueMssSettingsDataSource, CatalogueMssSettingsSegmentationDataSource } from '../../datasources';
+import { CatalogueMssSettingsFacadeService } from '../../services';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -59,6 +60,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     segmentationColumns: string[] = [
         `name`,
     ]
+    segmentationsDatasource: CatalogueMssSettingsSegmentationDataSource;
 
     formModeValue: IFormMode = 'add';
     
@@ -140,6 +142,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         private route: ActivatedRoute,
         private notice$: NoticeService,
         private router: Router,
+        private catalogueMssSettingsFacadeService: CatalogueMssSettingsFacadeService,
     ) {
         this.form = this.fb.group({
             radioButton: [],
@@ -153,6 +156,8 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
             this.entityApi$,
             this.helper$
         );
+        this.segmentationsDatasource = new CatalogueMssSettingsSegmentationDataSource(this.catalogueMssSettingsFacadeService);
+
         this._patchForm();
         this.subscribeForm();
         this.checkMssSettings();
@@ -174,6 +179,8 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 this.totalItem = totalItem;
             }
         );
+
+        this.segmentationsDatasource.getWithQuery({})
     }
 
     ngOnChanges(changes: SimpleChanges): void {

@@ -4,6 +4,7 @@ import * as CatalogueMaxOrderQtySegmentationActions from './catalogue-max-order-
 import * as CataloguePriceSegmentationActions from './catalogue-price-segmentation.actions';
 import * as CatalogueTaxActions from './catalogue-tax.actions';
 import * as CatalogueActions from './catalogue.actions';
+import * as CatalogueMssSettingsActions from './catalogue-mss-settings.actions';
 
 export {
     BrandActions,
@@ -12,6 +13,7 @@ export {
     CataloguePriceSegmentationActions,
     CatalogueTaxActions,
     CatalogueActions,
+    CatalogueMssSettingsActions,
 };
 
 export type CatalogueDetailPageFailureActions = CatalogueDetailPageActions.FailureActions;
@@ -19,3 +21,4 @@ export type CatalogueMaxOrderQtySegmentationFailureActions = CatalogueMaxOrderQt
 export type CataloguePriceSegmentationFailureActions = CataloguePriceSegmentationActions.FailureActions;
 export type CatalogueTaxFailureActions = CatalogueTaxActions.FailureActions;
 export type FailureActionNames = CatalogueActions.FailureActionNames;
+export type CatalogueMssSettingsFailureActions = CatalogueMssSettingsActions.FailureActions;
