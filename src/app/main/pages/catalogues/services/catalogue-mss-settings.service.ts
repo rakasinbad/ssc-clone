@@ -7,7 +7,7 @@ import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { CatalogueMssSettingsSegmentation } from '../models';
+import { CatalogueMssSettings, CatalogueMssSettingsSegmentation } from '../models';
 import { CatalogueMssSettingsActions, CatalogueMssSettingsFailureActions } from '../store/actions';
 import { CatalogueMssSettingsApiService } from './catalogue-mss-settings-api.service';
 
@@ -15,6 +15,23 @@ import { CatalogueMssSettingsApiService } from './catalogue-mss-settings-api.ser
 export class CatalogueMssSettingsService {
     constructor(private readonly catalogueMssSettingsApi: CatalogueMssSettingsApiService) {}
 
+    fetchCatalogueMssSettingsRequest$(queryParams: IQueryParams): Observable<Action> {
+        return this.catalogueMssSettingsApi
+            .getWithQuery<PaginateResponse<CatalogueMssSettings>>(queryParams)
+            .pipe(
+                catchOffline(),
+                map(({ data: items, total: totalItems }) => {
+                    const data =
+                        items && !!items.length ? items.map((item) => new CatalogueMssSettings(item)) : [];
+                    const total = (totalItems && typeof totalItems === 'number') ? totalItems : 0 || data.length;
+        
+                    return { data, total };
+                }),
+                map(({ data, total }) => CatalogueMssSettingsActions.fetchSuccess({ data, total })),
+                catchError((err) => this._sendErrorToState$(err, 'fetchFailure'))
+            );
+    }
+    
     fetchCatalogueMssSettingsSegmentationRequest$(queryParams: IQueryParams): Observable<Action> {
         return this.catalogueMssSettingsApi
             .getSegmentationsWithQuery<PaginateResponse<CatalogueMssSettingsSegmentation>>(queryParams)
@@ -23,8 +40,8 @@ export class CatalogueMssSettingsService {
                 map(({ data: items, total: totalItems }) => {
                     const data =
                         items && !!items.length ? items.map((item) => new CatalogueMssSettingsSegmentation(item)) : [];
-                    const total = typeof totalItems === 'number' ? totalItems : 0;
-
+                    const total = (totalItems && typeof totalItems === 'number') ? totalItems : 0 || data.length;
+        
                     return { data, total };
                 }),
                 map(({ data, total }) => CatalogueMssSettingsActions.fetchSegmentationsSuccess({ data, total })),

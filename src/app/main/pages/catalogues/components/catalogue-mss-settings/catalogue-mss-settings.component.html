@@ -1,5 +1,5 @@
 <!-- CONTENT CARD (MSS SETTINGS) -->
-<div [ngClass]="catalogueContent">
+<div>
   <div class="p-16 pb-28">
       <div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
   </div>
@@ -39,6 +39,7 @@
 					fxLayout="row" 
 					fxFlex
 					fxLayoutGap="16px"
+					fxLayoutAlign="start start"
 				>
 					<div fxFlex="20">
 						<mat-table
@@ -55,7 +56,8 @@
 								minScrollbarLength: 40,
 								maxScrollbarLength: 300
 							}"
-							[class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+							[class.sinbad-table-no-record]="!isLoadingSegmentations && totalSegmentations === 0"
+							style="max-height: 870px; overflow-y: auto;"
 						>
 							<!-- Store Cluster/Type by Segmentation Column -->
 							<ng-container matColumnDef="name">
@@ -77,7 +79,7 @@
 							<mat-header-row *matHeaderRowDef="segmentationColumns; sticky: true"></mat-header-row>
 							<mat-footer-row
 									*matFooterRowDef="['no-record']"
-									[fxShow]="!isLoading && totalItem === 0"
+									[fxShow]="!isLoadingSegmentations && totalSegmentations === 0"
 							></mat-footer-row>
 	
 							<mat-row
@@ -122,12 +124,43 @@
 										appearance="outline"
 										fxFlex="35"
 									>
-										<mat-select placeholder="{{screenConfig.dropdownPlaceholder}}">
-											<mat-option
-												*ngFor="let row of segmentationDropdownData"
-											>
-												{{ row.name || '-' }}
-											</mat-option>
+										<mat-select placeholder="{{screenConfig.dropdownPlaceholder}}" (selectionChange)="onSelectSegmentation($event)" [(ngModel)]="selectedSegmentation" [ngModelOptions]="{standalone: true}">
+											<ng-container>
+												<mat-option disabled>
+													<div class="search-segmentation-wrapper" style="margin: 16px 0 0 0; padding: 12px 0; border: 1px solid #DAE0E7;">
+														<div class="search-segmentation" fxFlex fxLayout="row" fxLayoutAlign="start center">
+															<mat-icon style="margin-right: 0; margin-left: 8px;">search</mat-icon>
+															<input 
+																id='search' 
+																[placeholder]="screenConfig.searchPlaceholder" 
+																(keyup)="onSearchSegmentation($event.target.value)" 
+																autocomplete="off"
+															/>
+														</div>
+													</div>
+												</mat-option>
+											</ng-container>
+											<ng-container>
+												<mat-option *ngIf="isLoadingSegmentationData">
+													<mat-spinner color="accent" [diameter]="30" style="margin: 40px auto;"></mat-spinner>
+												</mat-option>
+											</ng-container>
+											<ng-container>
+												<mat-option
+													*ngIf="!isLoadingSegmentationData && segmentationDropdownData.length < 1"
+													style="margin: 0 auto; text-align: center;"
+												>
+													No Data
+												</mat-option>
+											</ng-container>
+											<ng-container *ngFor="let row of segmentationDropdownData">
+												<mat-option
+													*ngIf="!isLoadingSegmentationData && segmentationDropdownData.length > 0"
+													[value]="row"
+												>
+													{{ row.name || '-' }}
+												</mat-option>
+											</ng-container>
 										</mat-select>
 									</mat-form-field>
 	
@@ -135,19 +168,21 @@
 										appearance="outline"
 										fxFlex="35"
 									>
-										<mat-select placeholder="Choose MSS type">
+										<mat-select placeholder="Choose MSS type" (selectionChange)="onSelectType($event)" [(ngModel)]="selectedType" [ngModelOptions]="{standalone: true}">
 											<mat-option
 												*ngFor="let row of mssTypeData"
+												[value]="row"
 											>
 												{{ row.name || '-' }}
 											</mat-option>
 										</mat-select>
 									</mat-form-field>
-	
 									<button 
 										mat-raised-button 
 										class="mat-accent" 
 										fxFlex="15"
+										(click)="onAddToList()"
+										[disabled]="(!selectedSegmentation || !selectedType)"
 									>
 										Add to List
 									</button>
@@ -156,26 +191,27 @@
 						</div>
 	
 						<mat-table
-						#table
-						class="catalogue-price-table sinbad-table sinbad-table__hover"
-						[dataSource]="dataSource"
-						fusePerfectScrollbar
-						[@animateStagger]="{ value: '50' }"
-						[fusePerfectScrollbarOptions]="{
-							updateOnRouteChange: true,
-							suppressScrollX: true,
-							wheelSpeed: 0.5,
-							swipeEasing: true,
-							minScrollbarLength: 40,
-							maxScrollbarLength: 300
-						}"
-						[class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+							#table
+							class="catalogue-price-table sinbad-table sinbad-table__hover"
+							[dataSource]="dataSource"
+							fusePerfectScrollbar
+							[@animateStagger]="{ value: '50' }"
+							[fusePerfectScrollbarOptions]="{
+								updateOnRouteChange: true,
+								suppressScrollX: true,
+								wheelSpeed: 0.5,
+								swipeEasing: true,
+								minScrollbarLength: 40,
+								maxScrollbarLength: 300
+							}"
+							[class.sinbad-table-no-record]="!isLoading && totalItem === 0"
+							style="max-height: 800px; overflow-y: auto;"
 						>
 						<!-- Cluster Name Column -->
 							<ng-container matColumnDef="cluster-name">
 								<mat-header-cell *matHeaderCellDef> Cluster Name </mat-header-cell>
 								<mat-cell *matCellDef="let row">
-									<p>{{ row?.name || '-' }}</p>
+									<p>{{ row?.referenceName || '-' }}</p>
 								</mat-cell>
 							</ng-container>
 							<!-- / Cluster Name Column -->
@@ -184,7 +220,7 @@
 							<ng-container matColumnDef="mss-type">
 								<mat-header-cell *matHeaderCellDef> MSS Type </mat-header-cell>
 								<mat-cell *matCellDef="let row">
-									<p>MSS Core</p>
+									<p>{{ row?.mssTypeName || '-' }}</p>
 								</mat-cell>
 							</ng-container>
 							<!-- / Mss Type Column -->
@@ -206,8 +242,8 @@
 	
 							<!-- No Record Column -->
 							<ng-container matColumnDef="no-record">
-									<mat-footer-cell *matFooterCellDef colspan="2">
-										No Store Cluster Selected
+									<mat-footer-cell *matFooterCellDef colspan="3">
+										No {{ screenConfig.title }} Selected
 									</mat-footer-cell>
 							</ng-container>
 							<!-- / No Record Column -->
@@ -223,7 +259,7 @@
 							></mat-row>
 						</mat-table>
 	
-						<mat-paginator
+						<!-- <mat-paginator
 							[disabled]="!isLoading && totalItem === 0"
 							[length]="totalItem"
 							[pageSize]="defaultPageSize"
@@ -231,7 +267,7 @@
 							(page)="onChangePage($event)"
 							showFirstLastButtons
 						>
-						</mat-paginator>
+						</mat-paginator> -->
 					</div>
 				</div>
 			</form>

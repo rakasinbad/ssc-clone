@@ -6,6 +6,16 @@ import { CatalogueMssSettingsService } from './../../services';
 
 @Injectable()
 export class MssSettingsEffects {
+    readonly fetchCatalogueMssSettingsRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueMssSettingsActions.fetchRequest),
+            map((action) => action.queryParams),
+            mergeMap((queryParams) => 
+                this.catalogueMssSettingsService.fetchCatalogueMssSettingsRequest$(queryParams) 
+            )
+        )
+    );
+    
     readonly fetchCatalogueMssSettingsSegmentationRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueMssSettingsActions.fetchSegmentationsRequest),

@@ -15,6 +15,7 @@ export * from './interfaces/max-order-qty-segmentation-dto.interface';
 export * from './interfaces/catalogue-tax-response.interface';
 export * from './interfaces/catalogue-tax.interface';
 export * from './interfaces/sub-brand.interface';
+export * from './interfaces/mss-types-response.interface';
 
 export { StoreSegmentationChannel } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-channels/models';
 export { StoreSegmentationCluster } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-clusters/models';

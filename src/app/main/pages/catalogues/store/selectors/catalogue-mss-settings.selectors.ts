@@ -5,6 +5,16 @@ const selectCatalogueMssSettingsState = createFeatureSelector<
     fromCatalogueMssSettings.State
 >(fromCatalogueMssSettings.FEATURE_KEY);
 
+export const getMssSettings = createSelector(
+    selectCatalogueMssSettingsState,
+    fromCatalogueMssSettings.selectAllMssSettings
+);
+
+export const getTotalMssSettings = createSelector(
+    selectCatalogueMssSettingsState,
+    fromCatalogueMssSettings.selectMssSettingsTotal
+);
+
 export const getSegmentations = createSelector(
     selectCatalogueMssSettingsState,
     fromCatalogueMssSettings.selectAllSegmentations

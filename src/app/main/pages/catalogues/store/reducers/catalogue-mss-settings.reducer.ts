@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { CatalogueMssSettingsSegmentation } from '../../models';
+import { CatalogueMssSettings, CatalogueMssSettingsSegmentation } from '../../models';
 import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 import { CatalogueMssSettingsActions } from '../actions';
@@ -9,6 +9,10 @@ export const FEATURE_KEY = 'catalogueMssSettings';
 
 export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
+}
+
+interface MssSettingsState extends EntityState<CatalogueMssSettings> {
+    total: number;
 }
 
 interface SegmentationState extends EntityState<CatalogueMssSettingsSegmentation> {
@@ -22,6 +26,7 @@ export interface State {
     segmentations: SegmentationState;
     source: TSource;
     errors: ErrorState;
+    mssSettings: MssSettingsState;
 }
 
 /**
@@ -30,7 +35,15 @@ export interface State {
 export const adapterSegmentations: EntityAdapter<CatalogueMssSettingsSegmentation> = createEntityAdapter<CatalogueMssSettingsSegmentation>({
     selectId: MssSettingsSegmentation => MssSettingsSegmentation.id
 });
-const initialSegmentationstate = adapterSegmentations.getInitialState({ total: 0 });
+const initialSegmentationState = adapterSegmentations.getInitialState({ total: 0 });
+
+/**
+ * MSsSettings STATE
+ */
+ export const adapterMssSettings: EntityAdapter<CatalogueMssSettings> = createEntityAdapter<CatalogueMssSettings>({
+    selectId: MssSettingsSegmentation => MssSettingsSegmentation.id
+});
+const initialMssSetttingsState = adapterMssSettings.getInitialState({ total: 0 });
 
 /**
  * ERROR STATE
@@ -41,8 +54,9 @@ const initialErrorState = adapterError.getInitialState();
 const initialState: State = {
     isLoading: false,
     source: 'fetch',
-    segmentations: initialSegmentationstate,
-    errors: initialErrorState
+    segmentations: initialSegmentationState,
+    errors: initialErrorState,
+    mssSettings: initialMssSetttingsState,
 };
 
 const mssSettingsReducer = createReducer(
@@ -59,6 +73,10 @@ const mssSettingsReducer = createReducer(
      *  ===================================================================
      */
 
+    on(CatalogueMssSettingsActions.fetchRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
     on(CatalogueMssSettingsActions.fetchSegmentationsRequest, state => ({
         ...state,
         isLoading: true
@@ -68,7 +86,11 @@ const mssSettingsReducer = createReducer(
      *  FAILURES
      *  ===================================================================
      */
-
+    on(CatalogueMssSettingsActions.fetchFailure, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        errors: adapterError.upsertOne(payload, state.errors),
+    })),
     on(CatalogueMssSettingsActions.fetchSegmentationsFailure, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -79,7 +101,15 @@ const mssSettingsReducer = createReducer(
      *  SUCCESSES
      *  ===================================================================
      */
-
+    on(CatalogueMssSettingsActions.fetchSuccess, (state, { data, total }) => ({
+        ...state,
+        isLoading: false,
+        mssSettings: adapterMssSettings.addAll(data, {
+            ...state.mssSettings,
+            total
+        }),
+        errors: adapterError.removeOne('fetchFailure', state.errors)
+    })),
     on(CatalogueMssSettingsActions.fetchSegmentationsSuccess, (state, { data, total }) => ({
         ...state,
         isLoading: false,
@@ -88,20 +118,33 @@ const mssSettingsReducer = createReducer(
             total
         }),
         errors: adapterError.removeOne('fetchSegmentationsFailure', state.errors)
-    }))
+    })),
     /**
      *  ===================================================================
-     *  ERRORS
+     *  OTHER
      *  ===================================================================
      */
+     on(CatalogueMssSettingsActions.updateDataMssSettings, (state, { data, }) => ({
+        ...state,
+        mssSettings: adapterMssSettings.upsertMany(data, {
+            ...state.mssSettings,
+        }),
+    })),
 );
 
 export function reducer(state: State | undefined, action: Action): State {
     return mssSettingsReducer(state, action);
 }
 
-const getListSegmentationState = (state: State) => state.segmentations;
+const getListMssSettingsState = (state: State) => state.mssSettings;
+export const {
+    selectAll: selectAllMssSettings,
+    selectEntities: selectMssSettingsEntities,
+    selectIds: selectMssSettingIds,
+    selectTotal: selectMssSettingsTotal
+} = adapterMssSettings.getSelectors(getListMssSettingsState);
 
+const getListSegmentationState = (state: State) => state.segmentations;
 export const {
     selectAll: selectAllSegmentations,
     selectEntities: selectSegmentationsEntities,

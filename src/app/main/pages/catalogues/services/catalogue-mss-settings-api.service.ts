@@ -7,15 +7,21 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CatalogueMssSettingsApiService {
     private url: string;
-    private readonly segmentationEndpoint: string = '/segmentations';
+    private readonly endpoint: string = '/mss-settings';
+    private readonly segmentationEndpoint: string = '/mss-segmentation-recomendations';
     private readonly mssTypeEndpoint: string = '/mss-types';
 
     constructor(private readonly http: HttpClient, private readonly helperService: HelperService) {}
 
+    getWithQuery<T>(queryParams: IQueryParams): Observable<T> {
+        this.url = this.helperService.handleApiRouter(this.endpoint); 
+        const params = this.helperService.handleParams(this.url, queryParams);
+        
+        return this.http.get<T>(this.url, { params });
+    }
+
     getSegmentationsWithQuery<T>(queryParams: IQueryParams): Observable<T> {
         this.url = this.helperService.handleApiRouter(this.segmentationEndpoint);
-        /** temporary mock url */
-        this.url = `https://dc687b55-e036-4881-bd9d-e293f9177433.mock.pstmn.io/segmentations`;
         const params = this.helperService.handleParams(this.url, queryParams);
 
         return this.http.get<T>(this.url, { params });

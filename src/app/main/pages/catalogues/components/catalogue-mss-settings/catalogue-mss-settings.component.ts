@@ -1,32 +1,48 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, OnDestroy, EventEmitter, Output, ViewChild, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, OnDestroy, EventEmitter, Output, ViewChild, SimpleChanges, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
-import { PageEvent, MatPaginator } from '@angular/material';
+import { PageEvent, MatPaginator, MatSelectChange } from '@angular/material';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Observable, Subject, BehaviorSubject, of, combineLatest, } from 'rxjs';
 import { tap, withLatestFrom, takeUntil, take, catchError, switchMap, map, debounceTime, distinctUntilChanged, } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
-import { StoreSegmentationType as Entity } from 'app/shared/components/selection-tree/store-segmentation/models';
+import { StoreSegmentationType } from 'app/shared/components/selection-tree/store-segmentation/models';
 import { StoreSegmentationTypesApiService as EntitiesApiService } from 'app/shared/components/selection-tree/store-segmentation/services';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { TNullable, IPaginatedResponse, ErrorHandler, FormStatus, } from 'app/shared/models/global.model';
+import { IPaginatedResponse, ErrorHandler, FormStatus, } from 'app/shared/models/global.model';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { UserSupplier } from 'app/shared/models/supplier.model';
-import { SelectionTree, SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
 import { environment } from 'environments/environment';
-import { CatalogueMssSettings } from '../../models';
+import { CatalogueMssSettings, MssTypesResponseProps, MssTypesResponseData, UpsertMssSettings, } from '../../models';
 import { CatalogueMssSettingsDataSource, CatalogueMssSettingsSegmentationDataSource } from '../../datasources';
-import { CatalogueMssSettingsFacadeService } from '../../services';
+import { CatalogueMssSettingsFacadeService, CatalogueMssSettingsApiService } from '../../services';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
 interface IScreenConfig {
-    mssTypeBy: 'store-cluster' | 'store-type';
+    segmentation: 'cluster' | 'type';
     title: 'Store Cluster' | 'Store Type';
-    info: 'store cluster' | 'store-type';
-    dropdownPlaceholder: 'Choose Cluster' | 'Choose Type',
+    info: 'store cluster' | 'store type';
+    dropdownPlaceholder: 'Choose Cluster' | 'Choose Type';
+    searchPlaceholder: 'Find Store Cluster' | 'Find Store Type';
+}
+
+const clusterScreenConfig = {
+    segmentation: 'cluster',
+    title: 'Store Cluster',
+    info: 'store cluster',
+    dropdownPlaceholder: 'Choose Cluster',
+    searchPlaceholder: 'Find Store Cluster'
+}
+
+const typeScreenConfig = {
+    segmentation: 'type',
+    title: 'Store Type',
+    info: 'store type',
+    dropdownPlaceholder: 'Choose Type',
+    searchPlaceholder: 'Find Store Type'
 }
 
 @Component({
@@ -61,6 +77,8 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         `name`,
     ]
     segmentationsDatasource: CatalogueMssSettingsSegmentationDataSource;
+    isLoadingSegmentations: boolean = false;
+    totalSegmentations: number = 0;
 
     formModeValue: IFormMode = 'add';
     
@@ -78,36 +96,20 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
 
     editTableMode: boolean = false;
 
-    screenConfig: IScreenConfig = {
-        mssTypeBy: 'store-cluster',
-        title: 'Store Cluster',
-        info: 'store cluster',
-        dropdownPlaceholder: 'Choose Cluster',
-    }
+    screenConfig: IScreenConfig = clusterScreenConfig as IScreenConfig;
 
-    segmentationDropdownData = [];
+    segmentationDropdownData: StoreSegmentationType[] = [];
+    isLoadingSegmentationData: boolean = false;
 
-    mssTypeData = [
-        {
-            id: 1,
-            name: 'MSS Core'
-        },
-         {
-            id: 2,
-            name: 'MSS'
-        }
-        ,
-         {
-            id: 3,
-            name: 'Non-MSS'
-        }
-    ]
+    mssTypeData: MssTypesResponseProps[] = [];
+
+    // dropdown 
+    selectedSegmentation: StoreSegmentationType = null;
+    selectedType: MssTypesResponseProps = null;
+    payloadUpsert: UpsertMssSettings;
+    idCounter: number = 0;
 
     @Input() initSelection: number;
-
-    @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
-
-    @Output() selectionChanged: EventEmitter<SelectedTree> = new EventEmitter<SelectedTree>();
 
     @Output()
     formModeChange: EventEmitter<IFormMode> = new EventEmitter();
@@ -143,44 +145,22 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         private notice$: NoticeService,
         private router: Router,
         private catalogueMssSettingsFacadeService: CatalogueMssSettingsFacadeService,
+        private catalogueMssSettingsApiService: CatalogueMssSettingsApiService,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
+    }
+
+    ngOnInit(): void {
         this.form = this.fb.group({
             radioButton: [],
             columnRadioButton: ['']
         });
-    }
 
-    ngOnInit(): void {
-        this.dataSource = new CatalogueMssSettingsDataSource(
-            this.store,
-            this.entityApi$,
-            this.helper$
-        );
-        this.segmentationsDatasource = new CatalogueMssSettingsSegmentationDataSource(this.catalogueMssSettingsFacadeService);
-
+        this.onFetchAPI();
         this._patchForm();
         this.subscribeForm();
         this.checkMssSettings();
-        
-        this.dataSource.connect()
-            .subscribe(data => {
-                HelperService.debug('AVAILABLE ENTITIES FROM CATALOGUE MSS SETTINGS', data)
-                this.segmentationDropdownData = data
-            });
-
-        combineLatest([this.dataSource.isLoading, this.dataSource.total])
-        .pipe(
-            map(([isLoading, totalItem]) => ({ isLoading, totalItem })),
-            takeUntil(this.subs$)
-        )
-        .subscribe(
-            ({ isLoading, totalItem }) => {
-                this.isLoading = isLoading;
-                this.totalItem = totalItem;
-            }
-        );
-
-        this.segmentationsDatasource.getWithQuery({})
+        this.changeDetectorRef.detectChanges();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -191,6 +171,10 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
             ) {
                 this.trigger$.next('');
                 this.updateForm$.next(changes['formMode'].currentValue);
+
+                if (changes['formMode'].currentValue === 'view') {
+                    this.editTableMode = false;
+                }
             }
             
             this.updateFormView();
@@ -240,7 +224,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
             limit,
             skip,
         };
-        this.dataSource.getTableData(params);
+        
     }
 
     _patchForm(): void {
@@ -252,7 +236,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 
             });
     }
-
+    
     subscribeForm() {
         (this.form.statusChanges as Observable<FormStatus>)
         .pipe(
@@ -282,7 +266,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 )
             ),
             map((value) => {
-
                 return value;
             }),
             tap((value) =>
@@ -337,5 +320,195 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
 
     onEditTableMode(): void {
         this.editTableMode = true;
+    }
+
+    onFetchAPI(): void {
+        this.dataSource = new CatalogueMssSettingsDataSource(this.catalogueMssSettingsFacadeService);
+        this.segmentationsDatasource = new CatalogueMssSettingsSegmentationDataSource(this.catalogueMssSettingsFacadeService);
+        
+        combineLatest([this.dataSource.isLoading, this.dataSource.total, this.segmentationsDatasource.isLoading, this.segmentationsDatasource.total])
+        .pipe(
+            map(([isLoading, totalItem, isLoadingSegmentations, totalSegmentations]) => ({ isLoading, totalItem, isLoadingSegmentations, totalSegmentations })),
+            takeUntil(this.subs$)
+        )
+        .subscribe(
+            ({ isLoading, totalItem, isLoadingSegmentations, totalSegmentations }) => {
+                this.isLoading = isLoading;
+                this.totalItem = totalItem;
+                this.isLoadingSegmentations = isLoadingSegmentations;
+                this.totalSegmentations = totalSegmentations;
+                this.changeDetectorRef.markForCheck();
+            }
+        );
+
+        /** get mss settings data */
+        this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            .subscribe(({ supplierId }) => {
+                this.dataSource.getWithQuery({
+                    paginate: false,
+                    search: [
+                        {
+                            fieldName: 'supplierId',
+                            keyword: supplierId
+                        },
+                        {
+                            fieldName: 'catalogueId',
+                            keyword: this.route.snapshot.params.id
+                        }
+                    ]
+                });
+
+                this.segmentationsDatasource.getWithQuery({ 
+                    paginate: false,
+                    search: [
+                        {
+                            fieldName: 'supplierId',
+                            keyword: supplierId
+                        },
+                        {
+                            fieldName: 'catalogueId',
+                            keyword: this.route.snapshot.params.id
+                        }
+                    ]
+                });
+
+                /** setup payload upsert */
+                this.payloadUpsert = {
+                    supplierId: parseInt(supplierId),
+                    catalogueId: this.route.snapshot.params.id,
+                    data: []
+                }
+            });
+        this.getMssTypes();
+        this.getSegmentationData({ paginate: false });
+    }
+
+    private getMssTypes(): void {
+        of(null).pipe(
+            switchMap<any, Observable<MssTypesResponseData>>(() => {
+                return this.catalogueMssSettingsApiService
+                    .getMssTypes<MssTypesResponseData>()
+                    .pipe(
+                        tap(response => HelperService.debug('FIND MSS TYPES', { response }))
+                    );
+            }),
+            take(1),
+            catchError(err => { throw err; }),
+        ).subscribe({
+            next: (response) => {
+                this.mssTypeData = response.data;
+            },
+            error: (err) => {
+                HelperService.debug('ERROR MSS TYPES', { error: err }),
+                this.helper$.showErrorNotification(new ErrorHandler(err));
+            },
+            complete: () => {
+                HelperService.debug('FIND MSS TYPES COMPLETED');
+            }
+        });
+    }
+
+    private getSegmentationData(params: IQueryParams): void {
+        of(null).pipe(
+            withLatestFrom<any, UserSupplier>(
+                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            ),
+            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<StoreSegmentationType>>>(([_, userSupplier]) => {
+                if (!userSupplier) {
+                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                }
+
+                const { supplierId } = userSupplier;
+                const newQuery: IQueryParams = { ... params };
+                newQuery['supplierId'] = supplierId;
+                newQuery['segmentation'] = this.screenConfig.segmentation;
+                
+                this.isLoadingSegmentationData = true;
+
+                return this.entityApi$
+                    .find<IPaginatedResponse<StoreSegmentationType>>(newQuery)
+                    .pipe(
+                        tap(response => HelperService.debug('FIND SEGMENTATION', { params: newQuery, response }))
+                    );
+            }),
+            take(1),
+            catchError(err => { throw err; }),
+        )
+        .subscribe({
+            next: (response) => {
+                console.log('response segmentattin => ', response)
+                this.segmentationDropdownData = response as unknown as Array<StoreSegmentationType>;
+                this.isLoadingSegmentationData = false;
+                this.changeDetectorRef.markForCheck();
+            },
+            error: (err) => {
+                HelperService.debug('ERROR FIND SEGMENTATION', { params, error: err }),
+                this.helper$.showErrorNotification(new ErrorHandler(err));
+                this.isLoadingSegmentationData = false;
+                this.changeDetectorRef.markForCheck();
+            },
+            complete: () => {
+                HelperService.debug('FIND SEGMENTATION COMPLETED');
+                this.isLoadingSegmentationData = false;
+                this.changeDetectorRef.markForCheck();
+            }
+        });
+    }
+
+    onSearchSegmentation(keyword: string): void {
+        this.getSegmentationData({ 
+            paginate: false, 
+            search: [
+                { fieldName: 'name', keyword }
+            ] 
+        })
+    }
+
+    onSelectSegmentation(evt: MatSelectChange): void {
+        this.selectedSegmentation = evt.value;
+        this.changeDetectorRef.markForCheck();
+    }
+
+    onSelectType(evt: MatSelectChange): void {
+        this.selectedType = evt.value;
+        this.changeDetectorRef.markForCheck();
+    }
+
+    onAddToList(): void {
+        /** prepare payload upsert to be send to backend */
+        this.payloadUpsert.data = [
+            ...this.payloadUpsert.data,
+            {
+                id: this.idCounter.toString(),
+                referenceId: this.selectedSegmentation.id,
+                mssTypeId: this.selectedType.id,
+                action: 'insert'
+            }
+        ];
+        /** update data in table */
+        this.dataSource.connect()
+            .pipe(
+                take(1)
+            )
+            .subscribe(currentData => {
+                const data = [
+                    ...currentData,
+                    new CatalogueMssSettings({
+                        id: this.idCounter.toString(),
+                        referenceId: this.selectedSegmentation.id,
+                        referenceName: this.selectedSegmentation.name,
+                        mssTypeName: this.selectedType.name,
+                        mssTypeId: this.selectedType.id,
+                        action: 'insert'
+                    })
+                ];
+                this.catalogueMssSettingsFacadeService.upsertMssSettingsData(data);
+                this.idCounter++;
+            });
+        /** clear dropdown */
+        this.selectedSegmentation = null;
+        this.selectedType = null;
+        this.changeDetectorRef.markForCheck();
     }
 }
