@@ -43,3 +43,48 @@ export class UpsertMssSettings implements IUpsertMssSettings {
     this.data = data.data;
   }
 }
+
+export interface IResponseUpsertMssSettings {
+  supplierId: number;
+  catalogueId: number;
+  mssTypeId: string;
+  storeClusterId: string;
+  id: string;
+}
+
+export interface ResponseUpsertMssSettings {
+  updated: IResponseUpsertMssSettings[];
+  inserted: IResponseUpsertMssSettings[];
+  deleted: IResponseUpsertMssSettings[];
+}
+
+
+
+export interface IMssBases {
+  code: string;
+  name: string;
+}
+
+export interface IMssBaseSupplier {
+  id: string;
+  supplierId: string;
+  mssBases: IMssBases;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export class MssBaseSupplier implements IMssBaseSupplier {
+  id: string;
+  supplierId: string;
+  mssBases: IMssBases;
+  createdAt: string;
+  updatedAt: string;
+
+  constructor(data: IMssBaseSupplier) {
+    this.id = data.id;
+    this.supplierId = data.supplierId;
+    this.mssBases = data.mssBases;
+    this.createdAt = data.createdAt;
+    this.updatedAt = data.updatedAt;
+  }
+}

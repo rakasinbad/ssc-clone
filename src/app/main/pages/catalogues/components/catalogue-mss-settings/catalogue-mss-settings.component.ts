@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, OnDestroy, EventEmitter, Output, ViewChild, SimpleChanges, OnChanges, ChangeDetectorRef } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
-import { PageEvent, MatPaginator, MatSelectChange } from '@angular/material';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { PageEvent, MatPaginator, MatSelectChange, MatDialog } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { Observable, Subject, BehaviorSubject, of, combineLatest, } from 'rxjs';
-import { tap, withLatestFrom, takeUntil, take, catchError, switchMap, map, debounceTime, distinctUntilChanged, } from 'rxjs/operators';
+import { tap, withLatestFrom, takeUntil, take, catchError, switchMap, map, } from 'rxjs/operators';
 import { fuseAnimations } from '@fuse/animations';
 import { StoreSegmentationType } from 'app/shared/components/selection-tree/store-segmentation/models';
 import { StoreSegmentationTypesApiService as EntitiesApiService } from 'app/shared/components/selection-tree/store-segmentation/services';
@@ -18,6 +17,7 @@ import { CatalogueMssSettingsDataSource, CatalogueMssSettingsSegmentationDataSou
 import { CatalogueMssSettingsFacadeService, CatalogueMssSettingsApiService } from '../../services';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { DeleteCatalogueSegmentationsComponent } from 'app/shared/modals';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -27,22 +27,36 @@ interface IScreenConfig {
     info: 'store cluster' | 'store type';
     dropdownPlaceholder: 'Choose Cluster' | 'Choose Type';
     searchPlaceholder: 'Find Store Cluster' | 'Find Store Type';
+    tableHeader: 'Cluster Name' | 'Type Name';
+    deleteTitle: 'Delete Cluster' | 'Delete Type';
+    errorAlreadyExist: 'Store Cluster Already Exist' | 'Store Type Already Exist';
 }
 
-const clusterScreenConfig = {
+interface ScreenConfig {
+    "mss-02": IScreenConfig;
+    "mss-03": IScreenConfig
+}
+  
+const clusterScreenConfig: IScreenConfig = {
     segmentation: 'cluster',
     title: 'Store Cluster',
     info: 'store cluster',
     dropdownPlaceholder: 'Choose Cluster',
-    searchPlaceholder: 'Find Store Cluster'
+    searchPlaceholder: 'Find Store Cluster',
+    tableHeader: 'Cluster Name',
+    deleteTitle: 'Delete Cluster',
+    errorAlreadyExist: 'Store Cluster Already Exist',
 }
 
-const typeScreenConfig = {
+const typeScreenConfig: IScreenConfig = {
     segmentation: 'type',
     title: 'Store Type',
     info: 'store type',
     dropdownPlaceholder: 'Choose Type',
-    searchPlaceholder: 'Find Store Type'
+    searchPlaceholder: 'Find Store Type',
+    tableHeader: 'Type Name',
+    deleteTitle: 'Delete Type',
+    errorAlreadyExist: 'Store Type Already Exist',
 }
 
 @Component({
@@ -81,8 +95,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     totalSegmentations: number = 0;
 
     formModeValue: IFormMode = 'add';
-    
-    form: FormGroup;
 
     catalogueContent: {
         'content-card': boolean;
@@ -96,7 +108,12 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
 
     editTableMode: boolean = false;
 
-    screenConfig: IScreenConfig = clusterScreenConfig as IScreenConfig;
+    baseScreenConfig: ScreenConfig = {
+        "mss-02": typeScreenConfig,
+        "mss-03": clusterScreenConfig
+    };
+
+    screenConfig: IScreenConfig = clusterScreenConfig;
 
     segmentationDropdownData: StoreSegmentationType[] = [];
     isLoadingSegmentationData: boolean = false;
@@ -107,7 +124,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     selectedSegmentation: StoreSegmentationType = null;
     selectedType: MssTypesResponseProps = null;
     payloadUpsert: UpsertMssSettings;
-    idCounter: number = 0;
 
     @Input() initSelection: number;
 
@@ -117,9 +133,9 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     @Output()
     changePage: EventEmitter<void> = new EventEmitter();
 
-    @Output() formStatusChange: EventEmitter<any> = new EventEmitter<any>();
+    @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output()
-    formValueChange: EventEmitter<CatalogueMssSettings> = new EventEmitter<CatalogueMssSettings>();
+    formValueChange: EventEmitter<UpsertMssSettings> = new EventEmitter<UpsertMssSettings>();
 
     @Input()
     get formMode(): IFormMode {
@@ -137,29 +153,19 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
-        private errorMessage$: ErrorMessageService,
         private entityApi$: EntitiesApiService,
-        private fb: FormBuilder,
-        private errorMessageService: ErrorMessageService,
         private route: ActivatedRoute,
         private notice$: NoticeService,
-        private router: Router,
         private catalogueMssSettingsFacadeService: CatalogueMssSettingsFacadeService,
         private catalogueMssSettingsApiService: CatalogueMssSettingsApiService,
-        private changeDetectorRef: ChangeDetectorRef
+        private changeDetectorRef: ChangeDetectorRef,
+        private matDialog: MatDialog,
     ) {
     }
 
     ngOnInit(): void {
-        this.form = this.fb.group({
-            radioButton: [],
-            columnRadioButton: ['']
-        });
-
-        this.onFetchAPI();
-        this._patchForm();
-        this.subscribeForm();
         this.checkMssSettings();
+        this.onFetchAPI();
         this.changeDetectorRef.detectChanges();
     }
 
@@ -236,50 +242,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 
             });
     }
-    
-    subscribeForm() {
-        (this.form.statusChanges as Observable<FormStatus>)
-        .pipe(
-            distinctUntilChanged(),
-            debounceTime(250),
-            // map(() => this.form.status),
-            tap((value) =>
-                HelperService.debug(
-                    'CATALOGUE MSS SETTINGS SETTING FORM STATUS CHANGED:',
-                    value
-                )
-            ),
-            takeUntil(this.subs$)
-        )
-        .subscribe((status) => {
-            this.formStatusChange.emit(status);
-        });
-
-        this.form.valueChanges
-        .pipe(
-            debounceTime(250),
-            // map(() => this.form.getRawValue()),
-            tap((value) =>
-                HelperService.debug(
-                    '[BEFORE MAP] CATALOGUE MSS SETTINGS SETTINGS FORM VALUE CHANGED',
-                    value
-                )
-            ),
-            map((value) => {
-                return value;
-            }),
-            tap((value) =>
-                HelperService.debug(
-                    '[AFTER MAP] CATALOGUE MSS SETTINGS SETTINGS FORM VALUE CHANGED',
-                    value
-                )
-            ),
-            takeUntil(this.subs$)
-        )
-        .subscribe((value) => {
-            this.formValueChange.emit(value);
-        });
-    }
 
      private updateFormView(): void {
         this.catalogueContent = {
@@ -292,57 +254,10 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
 
         
         if (this.isViewMode()) {
-            this.displayedColumns = [
-                `cluster-name`,
-                `mss-type`,
-            ] 
-        }
+            /** get mss settings data */
+            if (!this.dataSource) this.dataSource = new CatalogueMssSettingsDataSource(this.catalogueMssSettingsFacadeService);
 
-        if (this.isEditMode()) {
-            this.displayedColumns = [
-                `cluster-name`,
-                `mss-type`,
-                'action'
-            ]
-        }
-    }
-
-    checkMssSettings(): void {
-        /** check mss settings, is it set by admin panel or not */
-        this.showMssInfo.next(true);
-        this.showMssInfo
-        .subscribe(show => {
-            if (show) {
-                this.onRequest();
-            }
-        })
-    }
-
-    onEditTableMode(): void {
-        this.editTableMode = true;
-    }
-
-    onFetchAPI(): void {
-        this.dataSource = new CatalogueMssSettingsDataSource(this.catalogueMssSettingsFacadeService);
-        this.segmentationsDatasource = new CatalogueMssSettingsSegmentationDataSource(this.catalogueMssSettingsFacadeService);
-        
-        combineLatest([this.dataSource.isLoading, this.dataSource.total, this.segmentationsDatasource.isLoading, this.segmentationsDatasource.total])
-        .pipe(
-            map(([isLoading, totalItem, isLoadingSegmentations, totalSegmentations]) => ({ isLoading, totalItem, isLoadingSegmentations, totalSegmentations })),
-            takeUntil(this.subs$)
-        )
-        .subscribe(
-            ({ isLoading, totalItem, isLoadingSegmentations, totalSegmentations }) => {
-                this.isLoading = isLoading;
-                this.totalItem = totalItem;
-                this.isLoadingSegmentations = isLoadingSegmentations;
-                this.totalSegmentations = totalSegmentations;
-                this.changeDetectorRef.markForCheck();
-            }
-        );
-
-        /** get mss settings data */
-        this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             .subscribe(({ supplierId }) => {
                 this.dataSource.getWithQuery({
                     paginate: false,
@@ -357,7 +272,87 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                         }
                     ]
                 });
+                
+                /** setup payload upsert */
+                this.payloadUpsert = new UpsertMssSettings({
+                    supplierId: parseInt(supplierId),
+                    catalogueId: this.route.snapshot.params.id,
+                    data: []
+                }); 
+                this.formValueChange.emit(this.payloadUpsert);
+            });
 
+            this.displayedColumns = [
+                `cluster-name`,
+                `mss-type`,
+            ] 
+        }
+
+        if (this.isEditMode()) {
+            this.showMssInfo.subscribe(show => this.formStatusChange.emit(show ? 'VALID' : 'DISABLED'));
+            this.displayedColumns = [
+                `cluster-name`,
+                `mss-type`,
+                'action'
+            ]
+        }
+    }
+
+    checkMssSettings(): void {
+        /** check mss settings, is it set by admin panel or not */
+        this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            .pipe(
+                take(1)
+            )
+            .subscribe(({ supplierId }) => {
+                return this.catalogueMssSettingsFacadeService.getMssBase(supplierId,{}) 
+            });
+
+        combineLatest([this.catalogueMssSettingsFacadeService.mssBaseSupplier$])
+            .pipe(
+                map(([data]) => {
+                    return {
+                        mssBaseSupplier: data && data['data'],
+                    }
+                })
+            )
+            .subscribe(({ mssBaseSupplier }) => {
+                if (mssBaseSupplier) {
+                    if (mssBaseSupplier.mssBases.code !== 'mss-01') {
+                        /** mss set by admin panel */
+                        this.showMssInfo.next(true);
+                        this.screenConfig = this.baseScreenConfig[mssBaseSupplier.mssBases.code]
+
+                        this._patchForm();
+                    }
+                }
+            })
+    }
+
+    onEditTableMode(): void {
+        this.editTableMode = true;
+    }
+
+    onFetchAPI(): void {
+        this.segmentationsDatasource = new CatalogueMssSettingsSegmentationDataSource(this.catalogueMssSettingsFacadeService);
+        
+        combineLatest([this.dataSource.isLoading, this.dataSource.total, this.segmentationsDatasource.isLoading, this.segmentationsDatasource.total])
+            .pipe(
+                map(([isLoading, totalItem, isLoadingSegmentations, totalSegmentations]) => ({ isLoading, totalItem, isLoadingSegmentations, totalSegmentations })),
+                takeUntil(this.subs$)
+            )
+            .subscribe(
+                ({ isLoading, totalItem, isLoadingSegmentations, totalSegmentations }) => {
+                    this.isLoading = isLoading;
+                    this.totalItem = totalItem;
+                    this.isLoadingSegmentations = isLoadingSegmentations;
+                    this.totalSegmentations = totalSegmentations;
+                    this.changeDetectorRef.markForCheck();
+                }
+            );
+
+        this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            .subscribe(({ supplierId }) => {
                 this.segmentationsDatasource.getWithQuery({ 
                     paginate: false,
                     search: [
@@ -371,14 +366,8 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                         }
                     ]
                 });
-
-                /** setup payload upsert */
-                this.payloadUpsert = {
-                    supplierId: parseInt(supplierId),
-                    catalogueId: this.route.snapshot.params.id,
-                    data: []
-                }
             });
+        
         this.getMssTypes();
         this.getSegmentationData({ paginate: false });
     }
@@ -437,7 +426,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         )
         .subscribe({
             next: (response) => {
-                console.log('response segmentattin => ', response)
                 this.segmentationDropdownData = response as unknown as Array<StoreSegmentationType>;
                 this.isLoadingSegmentationData = false;
                 this.changeDetectorRef.markForCheck();
@@ -475,40 +463,147 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
         this.changeDetectorRef.markForCheck();
     }
 
-    onAddToList(): void {
-        /** prepare payload upsert to be send to backend */
-        this.payloadUpsert.data = [
-            ...this.payloadUpsert.data,
-            {
-                id: this.idCounter.toString(),
-                referenceId: this.selectedSegmentation.id,
-                mssTypeId: this.selectedType.id,
-                action: 'insert'
-            }
-        ];
+    onSelectTypeTable(evt: MatSelectChange, data: CatalogueMssSettings): void {
+        const index = this.payloadUpsert.data.findIndex(item => item.referenceId === data.referenceId);
+        
+        if (index >= 0) {
+            /** if data exist in payload */
+            this.payloadUpsert.data[index].mssTypeId = evt.value;
+        } else {
+            /** add new data to payload */
+            this.payloadUpsert.data = [
+                ...this.payloadUpsert.data,
+                {
+                    id: data.id ? data.id : null,
+                    referenceId: data.referenceId,
+                    mssTypeId: evt.value,
+                    /** if there is id, means data get from db/backend else that is new data */
+                    action: data.id ? 'update' : 'insert'
+                }
+            ];
+        };
+
         /** update data in table */
         this.dataSource.connect()
             .pipe(
                 take(1)
             )
             .subscribe(currentData => {
-                const data = [
-                    ...currentData,
+                const newData = [
                     new CatalogueMssSettings({
-                        id: this.idCounter.toString(),
-                        referenceId: this.selectedSegmentation.id,
-                        referenceName: this.selectedSegmentation.name,
-                        mssTypeName: this.selectedType.name,
-                        mssTypeId: this.selectedType.id,
-                        action: 'insert'
-                    })
+                        ...data,
+                        mssTypeId: evt.value,
+                        action: data.id ? 'update' : 'insert'
+                    }),
+                    ...currentData,
                 ];
-                this.catalogueMssSettingsFacadeService.upsertMssSettingsData(data);
-                this.idCounter++;
+                this.catalogueMssSettingsFacadeService.upsertMssSettingsData(newData);
             });
-        /** clear dropdown */
-        this.selectedSegmentation = null;
-        this.selectedType = null;
+
+        this.formValueChange.emit(this.payloadUpsert);
         this.changeDetectorRef.markForCheck();
+    }
+
+    onAddToList(): void {
+        this.dataSource.connect()
+            .pipe(
+                take(1)
+            )
+            .subscribe(currentData => {
+                if (currentData.find(item => item.referenceId === this.selectedSegmentation.id))  {
+                    /** data already exist in table, should not allowd to add more */
+                    this.notice$.open(this.screenConfig.errorAlreadyExist, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                } else {
+                    /** prepare payload upsert to be send to backend */
+                    this.payloadUpsert.data = [
+                        ...this.payloadUpsert.data,
+                        {
+                            id: null,
+                            referenceId: this.selectedSegmentation.id,
+                            mssTypeId: this.selectedType.id,
+                            action: 'insert'
+                        }
+                    ];
+                    this.formValueChange.emit(this.payloadUpsert);
+
+                    /** update data in table */
+                    const data = [
+                        new CatalogueMssSettings({
+                            id: null,
+                            referenceId: this.selectedSegmentation.id,
+                            referenceName: this.selectedSegmentation.name,
+                            mssTypeName: this.selectedType.name,
+                            mssTypeId: this.selectedType.id,
+                            action: 'insert'
+                        }),
+                        ...currentData,
+                    ];
+                    this.catalogueMssSettingsFacadeService.upsertMssSettingsData(data);
+                }
+                
+                /** clear dropdown */
+                this.selectedSegmentation = null;
+                this.selectedType = null;
+                this.changeDetectorRef.markForCheck();
+            });
+    }
+
+    onDelete(id: string) {
+        const dialogRef = this.matDialog.open(DeleteCatalogueSegmentationsComponent, {
+            data: {
+                title: this.screenConfig.deleteTitle,
+                message: `This action can impacting the MSS settings for this product.Are you sure<br /> to continue delete this ${this.screenConfig.segmentation} from the list?`,
+                id
+            },
+            disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe(referenceId => {
+            if (referenceId) {
+                /** update data in table */
+                this.dataSource.connect()
+                .pipe(
+                    take(1)
+                )
+                .subscribe(currentData => {
+                    // /** prepare payload upsert to be send to backend *
+                    const index = this.payloadUpsert.data.findIndex(item => item.referenceId === referenceId);
+
+                    if (index >= 0) {
+                        /** if data exist in payload */
+                        if (this.payloadUpsert.data[index].id) {
+                            /** if data have id means data get from db/backend */
+                            this.payloadUpsert.data[index].action = 'delete';
+                        } else {
+                            /** if data dont have id, means new data currently added no nee to send payload to backend */
+                            this.payloadUpsert.data =  this.payloadUpsert.data.filter(item => item.id !== id);
+                        }
+
+                    } else {
+                        // /** prepare payload upsert to be send to backend *
+                        const currentIndex = currentData.findIndex(item => item.referenceId === referenceId);
+
+                        /** add new data to payload */
+                        this.payloadUpsert.data = [
+                            ...this.payloadUpsert.data,
+                            {
+                                id: currentData[currentIndex].id,
+                                referenceId: currentData[currentIndex].referenceId,
+                                mssTypeId: currentData[currentIndex].mssTypeId,
+                                action: 'delete'
+                            }
+                        ];
+                    }
+                    this.formValueChange.emit(this.payloadUpsert);
+
+                    /** edit data inside table */
+                    const data = currentData.filter(item => item.referenceId !== referenceId);
+                    this.catalogueMssSettingsFacadeService.upsertMssSettingsData(data);
+                });
+            }
+        });
     }
 }

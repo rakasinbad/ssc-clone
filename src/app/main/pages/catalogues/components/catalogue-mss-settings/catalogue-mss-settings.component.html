@@ -1,5 +1,5 @@
 <!-- CONTENT CARD (MSS SETTINGS) -->
-<div>
+<div [ngClass]="catalogueContent">
   <div class="p-16 pb-28">
       <div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
   </div>
@@ -207,20 +207,32 @@
 							[class.sinbad-table-no-record]="!isLoading && totalItem === 0"
 							style="max-height: 800px; overflow-y: auto;"
 						>
-						<!-- Cluster Name Column -->
+						<!-- Cluster/Type Name Column -->
 							<ng-container matColumnDef="cluster-name">
-								<mat-header-cell *matHeaderCellDef> Cluster Name </mat-header-cell>
+								<mat-header-cell *matHeaderCellDef> {{ screenConfig.tableHeader }} </mat-header-cell>
 								<mat-cell *matCellDef="let row">
 									<p>{{ row?.referenceName || '-' }}</p>
 								</mat-cell>
 							</ng-container>
-							<!-- / Cluster Name Column -->
+							<!-- / Cluster/Type Name Column -->
 	
 							<!-- MSS Type Column -->
 							<ng-container matColumnDef="mss-type">
 								<mat-header-cell *matHeaderCellDef> MSS Type </mat-header-cell>
 								<mat-cell *matCellDef="let row">
-									<p>{{ row?.mssTypeName || '-' }}</p>
+									<mat-form-field
+										appearance="outline"
+										class="mss-type-form-field"
+									>
+										<mat-select placeholder="Choose MSS type" style="margin-top: -8px;" [(value)]="row.mssTypeId" (selectionChange)="onSelectTypeTable($event, row)">
+											<mat-option
+												*ngFor="let optionRow of mssTypeData"
+												[value]="optionRow.id"
+											>	
+												{{ optionRow.name || '-' }}
+											</mat-option>
+										</mat-select>
+									</mat-form-field>
 								</mat-cell>
 							</ng-container>
 							<!-- / Mss Type Column -->
@@ -232,7 +244,7 @@
 									<button
 											mat-icon-button
 											aria-label="Delete"
-											(click)="$event.stopPropagation()"
+											(click)="onDelete(row?.referenceId)"
 									>
 											<mat-icon class="secondary-text">delete</mat-icon>
 									</button>

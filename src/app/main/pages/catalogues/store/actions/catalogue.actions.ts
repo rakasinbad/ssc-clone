@@ -41,7 +41,8 @@ type CatalogueSection =
     | 'media-settings'
     | 'weight-and-dimension'
     | 'amount-settings'
-    | 'visibility';
+    | 'visibility'
+    | 'mss-settings';
 
 export type FailureActionNames =
     | 'fetchCataloguePriceSettingsFailure'

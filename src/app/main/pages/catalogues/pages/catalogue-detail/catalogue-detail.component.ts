@@ -10,9 +10,9 @@ import { FormSelectors } from 'app/shared/store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-import { Catalogue, CatalogueInformation, CatalogueWeightDimension } from '../../models';
+import { Catalogue, CatalogueInformation, CatalogueWeightDimension, UpsertMssSettings } from '../../models';
 import { CatalogueMedia, CatalogueMediaForm } from '../../models/catalogue-media.model';
-import { CatalogueActions } from '../../store/actions';
+import { CatalogueActions, CatalogueMssSettingsActions } from '../../store/actions';
 import { fromCatalogue } from '../../store/reducers';
 import { BrandSelectors, CatalogueSelectors, CatalogueMssSettingsSelectors } from '../../store/selectors';
 
@@ -39,7 +39,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         | Partial<Catalogue>
         | Partial<CatalogueInformation>
         | Partial<CatalogueMediaForm>
-        | Partial<CatalogueWeightDimension>;
+        | Partial<CatalogueWeightDimension>
+        | Partial<UpsertMssSettings>;
 
     selectedCatalogue$: Observable<Catalogue>;
 
@@ -286,6 +287,20 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                 break;
             }
+            case 'mss-settings': {
+                const {
+                    catalogueId,
+                    supplierId,
+                    data,
+                } = $event as unknown as UpsertMssSettings;
+
+                this.formValue = ({
+                    catalogueId,
+                    supplierId,
+                    data,
+                } as unknown) as UpsertMssSettings;
+                break;
+            }
         }
     }
 
@@ -309,6 +324,10 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             case 5:
                 this.section = 'visibility';
                 break;
+            case 6:
+                this.section = 'mss-settings';
+                break;
+                
         }
     }
 
@@ -542,6 +561,17 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                                         source: 'form',
                                         section: this.section,
                                     },
+                                })
+                            );
+
+                            break;
+                        }
+
+                        case 'mss-settings': {
+                            this.store.dispatch(UiActions.hideFooterAction());
+                            this.store.dispatch(
+                                CatalogueMssSettingsActions.upsertRequest({
+                                    payload: this.formValue as UpsertMssSettings,
                                 })
                             );
 

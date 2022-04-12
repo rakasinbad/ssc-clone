@@ -26,3 +26,8 @@ export const getTotalSegmentations = createSelector(
 );
 
 export const getIsLoading = createSelector(selectCatalogueMssSettingsState, (state) => state.isLoading);
+
+export const getMssBaseSupplier = createSelector(
+    selectCatalogueMssSettingsState,
+    (state) => state.mssBase
+);

@@ -7,7 +7,7 @@ import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { CatalogueMssSettings, CatalogueMssSettingsSegmentation } from '../models';
+import { CatalogueMssSettings, CatalogueMssSettingsSegmentation, UpsertMssSettings, ResponseUpsertMssSettings, MssBaseSupplier } from '../models';
 import { CatalogueMssSettingsActions, CatalogueMssSettingsFailureActions } from '../store/actions';
 import { CatalogueMssSettingsApiService } from './catalogue-mss-settings-api.service';
 
@@ -31,6 +31,16 @@ export class CatalogueMssSettingsService {
                 catchError((err) => this._sendErrorToState$(err, 'fetchFailure'))
             );
     }
+
+    upsertCatalogueMssSettingsRequest$(body: Partial<UpsertMssSettings>): Observable<Action> {
+        return this.catalogueMssSettingsApi
+            .upsertMssSettings<ResponseUpsertMssSettings>(body)
+            .pipe(
+                catchOffline(),
+                map((data) => CatalogueMssSettingsActions.upsertSuccess({ data })),
+                catchError((err) => this._sendErrorToState$(err, 'upsertFailure'))
+            );
+    }
     
     fetchCatalogueMssSettingsSegmentationRequest$(queryParams: IQueryParams): Observable<Action> {
         return this.catalogueMssSettingsApi
@@ -48,6 +58,20 @@ export class CatalogueMssSettingsService {
                 catchError((err) => this._sendErrorToState$(err, 'fetchSegmentationsFailure'))
             );
     }
+
+
+    fetchMssBaseRequest$(supplierId: string, queryParams: IQueryParams): Observable<Action> {
+        return this.catalogueMssSettingsApi
+            .getMssBase<MssBaseSupplier>(supplierId)
+            .pipe(
+                catchOffline(),
+                map((data) => {
+                    return CatalogueMssSettingsActions.fetchMssBaseSuccess({ data });
+                }),
+                catchError((err) => this._sendErrorToState$(err, 'fetchMssBaseFailure'))
+            );
+    }
+
 
     private _sendErrorToState$(
         err: ErrorHandler | HttpErrorResponse | object,
