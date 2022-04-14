@@ -343,6 +343,7 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                         this.screenConfig = this.baseScreenConfig[mssBaseSupplier.mssBases.code]
 
                         this._patchForm();
+                        this.getSegmentationData({ paginate: false });
                     }
                 }
             })
@@ -396,17 +397,26 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                             skip: response.skip ? response.skip : 0,
                         }
                     }
-                },
-                error: (err) => {
-                    HelperService.debug('ERROR GET MSS LIST', { error: err }),
-                    this.helper$.showErrorNotification(new ErrorHandler(err));
                     this.dataSourceMssListIsLoading = false;
                     this.changeDetectorRef.detectChanges();
+                    this.changeDetectorRef.markForCheck();
+                },
+                error: (err) => {
+                    HelperService.debug('ERROR GET MSS LIST', { error: err });
+                    if (err.error) {
+                        if (err.error.code !== 406 && err.error.message !== "Mss base is not active yet") {
+                            this.helper$.showErrorNotification(new ErrorHandler(err));
+                        }
+                    }
+                    this.dataSourceMssListIsLoading = false;
+                    this.changeDetectorRef.detectChanges();
+                    this.changeDetectorRef.markForCheck();
                 },
                 complete: () => {
                     this.dataSourceMssListIsLoading = false;
                     HelperService.debug('GET MSS LIST COMPLETED');
                     this.changeDetectorRef.detectChanges();
+                    this.changeDetectorRef.markForCheck();
                 },
             });
     }
@@ -451,7 +461,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
             });
         
         this.getMssTypes();
-        this.getSegmentationData({ paginate: false });
     }
 
     private getMssTypes(): void {
@@ -470,8 +479,12 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 this.mssTypeData = response.data;
             },
             error: (err) => {
-                HelperService.debug('ERROR MSS TYPES', { error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
+                HelperService.debug('ERROR MSS TYPES', { error: err });
+                if (err.error) {
+                    if (err.error.code !== 406 && err.error.message !== "Mss base is not active yet") {
+                        this.helper$.showErrorNotification(new ErrorHandler(err));
+                    }
+                }
             },
             complete: () => {
                 HelperService.debug('FIND MSS TYPES COMPLETED');
@@ -513,8 +526,12 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                 this.changeDetectorRef.markForCheck();
             },
             error: (err) => {
-                HelperService.debug('ERROR FIND SEGMENTATION', { params, error: err }),
-                this.helper$.showErrorNotification(new ErrorHandler(err));
+                HelperService.debug('ERROR FIND SEGMENTATION', { params, error: err });
+                if (err.error) {
+                    if (err.error.code !== 406 && err.error.message !== "Mss base is not active yet") {
+                        this.helper$.showErrorNotification(new ErrorHandler(err));
+                    }
+                }
                 this.isLoadingSegmentationData = false;
                 this.changeDetectorRef.markForCheck();
             },

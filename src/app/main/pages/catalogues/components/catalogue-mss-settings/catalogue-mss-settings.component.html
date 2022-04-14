@@ -11,7 +11,7 @@
 		  </div>
 	  </ng-template>
 
-	  <div [fxHide]="formMode | hasFormMode: 'edit'">
+	  <div [fxHide]="(formMode | hasFormMode: 'edit') || (!(showMssInfo | async))">
 		<div fxLayout="row" fxFlex fxLayoutGap="16px">
 			<div fxFlex="100" class="mss-table-container">
 				<mat-table class="catalogue-price-table sinbad-table mss-table" [dataSource]="dataSourceMssList"
@@ -23,7 +23,7 @@
 					<!-- Cluster Name Column -->
 					<ng-container matColumnDef="cluster-name">
 						<th mat-header-cell *matHeaderCellDef class="mss-table-th">
-							<p>Cluster Name</p>
+							<p>{{ screenConfig.tableHeader }}</p>
 						</th>
 						<td mat-cell *matCellDef="let row">
 							<p>{{ row?.referenceName }}</p>
@@ -46,7 +46,7 @@
 				<div class="loader-content" *ngIf="dataSourceMssListIsLoading">
 					<mat-spinner color="accent"></mat-spinner>
 				</div>
-				<div *ngIf="dataSourceMssList.length === 0 && !dataSourceMssListIsLoading" style="margin: 10%;"><p style="text-align: center;">No Store Cluster Selected</p></div>
+				<div *ngIf="dataSourceMssList.length === 0 && !dataSourceMssListIsLoading" style="margin: 10%;"><p style="text-align: center;">No {{ screenConfig.title }} Selected</p></div>
 				<mat-paginator [length]="dataSourceMssListMeta.total" [pageSize]="dataSourceMssListMeta.limit" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="onChangePageMssList($event)">
 				</mat-paginator>
 			</div>
@@ -292,12 +292,14 @@
 	
 							<!-- No Record Column -->
 							<ng-container matColumnDef="no-record">
-									<mat-footer-cell *matFooterCellDef colspan="3">
-										No {{ screenConfig.title }} Selected
+									<mat-footer-cell *matFooterCellDef colspan="1">
+										<p style="width: 100%; text-align: center;">
+											No {{ screenConfig.title }} Selected
+										</p>
 									</mat-footer-cell>
 							</ng-container>
 							<!-- / No Record Column -->
-	
+							
 							<mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 							<mat-footer-row
 									*matFooterRowDef="['no-record']"
