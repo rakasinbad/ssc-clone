@@ -3,6 +3,22 @@ app-catalogue-mss-settings {
       opacity: 0.5;
     }
 
+    .mss-table-container {
+      padding: 10px;
+    }
+    .mss-table {
+      display: table;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 4px;
+      width: 100%;
+    }
+    .mss-table-tr {
+      height: unset !important;
+    }
+    .mss-table-th {
+      font-weight: bold;
+    }
+
     .search-segmentation-wrapper {
         width: 100%;
         border-radius: 4px;

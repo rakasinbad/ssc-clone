@@ -1,9 +1,22 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { TSort } from 'app/shared/models/global.model';
+import { IQueryParams, IQuerySearchParams } from 'app/shared/models/query.model';
 import { UpsertMssSettings } from '../models';
 import { Observable } from 'rxjs';
+
+interface IQueryParamsCustom {
+    supplierId: number,
+    catalogueId: number,
+    paginate: boolean;
+    limit?: number;
+    skip?: number;
+    sort?: TSort;
+    sortBy?: string;
+    search?: IQuerySearchParams[];
+    isWaitingForPayment?: boolean;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CatalogueMssSettingsApiService {
@@ -20,6 +33,15 @@ export class CatalogueMssSettingsApiService {
         this.url = this.helperService.handleApiRouter(this.endpoint); 
         const params = this.helperService.handleParams(this.url, queryParams);
         
+        return this.http.get<T>(this.url, { params });
+    }
+
+    getWithQueryCustom<T>(queryParams: IQueryParamsCustom): Observable<T> {
+        this.url = this.helperService.handleApiRouter(this.endpoint); 
+        let params = new HttpParams();
+        Object.keys(queryParams).forEach(k => {
+            params = params.set(k, queryParams[k]);
+        });
         return this.http.get<T>(this.url, { params });
     }
 

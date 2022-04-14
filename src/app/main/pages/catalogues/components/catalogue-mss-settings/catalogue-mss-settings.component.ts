@@ -36,6 +36,13 @@ interface ScreenConfig {
     "mss-02": IScreenConfig;
     "mss-03": IScreenConfig
 }
+interface IListMssSettings {
+    id: string;
+    referenceName: string;
+    referenceId: number;
+    mssTypeId: string;
+    mssTypeName: string;
+}
   
 const clusterScreenConfig: IScreenConfig = {
     segmentation: 'cluster',
@@ -124,6 +131,16 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
     selectedSegmentation: StoreSegmentationType = null;
     selectedType: MssTypesResponseProps = null;
     payloadUpsert: UpsertMssSettings;
+
+    /** mss list state */
+    dataSourceMssListIsLoading: boolean = false;
+    dataSourceMssList: IListMssSettings[] = [];
+    dataSourceMssListMeta: any = {
+        total: 0,
+        limit: 5,
+        skip: 0,
+    };
+    displayedColumnsMssList: string[] = [`cluster-name`, `mss-type`];
 
     @Input() initSelection: number;
 
@@ -254,6 +271,8 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
 
         
         if (this.isViewMode()) {
+            /** initial get mss settings list */
+            this.getMssLits({skip: this.dataSourceMssListMeta.skip, limit: this.dataSourceMssListMeta.limit});
             /** get mss settings data */
             if (!this.dataSource) this.dataSource = new CatalogueMssSettingsDataSource(this.catalogueMssSettingsFacadeService);
 
@@ -327,6 +346,69 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                     }
                 }
             })
+    }
+
+    onChangePageMssList(ev: PageEvent): void {
+        let newPage = {limit: ev.pageSize, skip: ev.pageIndex * this.dataSourceMssListMeta.limit};
+        HelperService.debug('onChangePageMssList', {ev, newPage, meta: this.dataSourceMssListMeta});
+        this.getMssLits(newPage);
+    }
+
+    getMssLits({skip, limit}): void {
+        this.dataSourceMssListIsLoading = true;
+        of(null)
+            .pipe(
+                withLatestFrom<any, UserSupplier>(
+                    this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+                ),
+                tap((x) => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+                switchMap<
+                    [null, UserSupplier],
+                    Observable<IPaginatedResponse<StoreSegmentationType>>
+                >(([_, userSupplier]) => {
+                    if (!userSupplier) {
+                        throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                    }
+
+                    const { supplierId } = userSupplier;
+                    return this.catalogueMssSettingsApiService
+                        .getWithQueryCustom<any>({
+                            catalogueId: this.route.snapshot.params.id,
+                            supplierId: Number(supplierId),
+                            skip,
+                            limit,
+                            paginate: true,
+                        })
+                        .pipe(tap((response) => HelperService.debug('GET MSS LIST', { response })));
+                }),
+                take(1),
+                catchError((err) => {
+                    throw err;
+                })
+            )
+            .subscribe({
+                next: (response: any) => {
+                    if (response){
+                        this.dataSourceMssList = response.data ? response.data : [];
+                        this.dataSourceMssListMeta = {
+                            total: response.total ? response.total : 0,
+                            limit: response.limit ? response.limit : this.dataSourceMssListMeta.limit,
+                            skip: response.skip ? response.skip : 0,
+                        }
+                    }
+                },
+                error: (err) => {
+                    HelperService.debug('ERROR GET MSS LIST', { error: err }),
+                    this.helper$.showErrorNotification(new ErrorHandler(err));
+                    this.dataSourceMssListIsLoading = false;
+                    this.changeDetectorRef.detectChanges();
+                },
+                complete: () => {
+                    this.dataSourceMssListIsLoading = false;
+                    HelperService.debug('GET MSS LIST COMPLETED');
+                    this.changeDetectorRef.detectChanges();
+                },
+            });
     }
 
     onEditTableMode(): void {

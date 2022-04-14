@@ -1,23 +1,61 @@
 <!-- CONTENT CARD (MSS SETTINGS) -->
 <div [ngClass]="catalogueContent">
-  <div class="p-16 pb-28">
-      <div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
-  </div>
+	<div class="p-16 pb-28">
+		<div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
+	</div>
+  
+	  <!-- check if mss set or not set in admin panel -->
+	  <ng-template [ngIf]="!(showMssInfo | async)">	
+		  <div class="p-16 pt-0 pb-40 line-height-1.75">
+			  <p class="font-size-14 text-center">To fill this section, please contact administrator.</p>
+		  </div>
+	  </ng-template>
 
-	<!-- check if mss set or not set in admin panel -->
-	<ng-template [ngIf]="!(showMssInfo | async)">	
-		<div class="p-16 pt-0 pb-40 line-height-1.75">
-			<p class="font-size-14 text-center">To fill this section, please contact administrator.</p>
+	  <div [fxHide]="formMode | hasFormMode: 'edit'">
+		<div fxLayout="row" fxFlex fxLayoutGap="16px">
+			<div fxFlex="100" class="mss-table-container">
+				<mat-table class="catalogue-price-table sinbad-table mss-table" [dataSource]="dataSourceMssList"
+					[class.sinbad-table-no-record]="!isLoading && totalItem === 0">
+	
+					<!--- Note that these columns can be defined in any order.
+							  The actual rendered columns are set as a property on the row definition" -->
+	
+					<!-- Cluster Name Column -->
+					<ng-container matColumnDef="cluster-name">
+						<th mat-header-cell *matHeaderCellDef class="mss-table-th">
+							<p>Cluster Name</p>
+						</th>
+						<td mat-cell *matCellDef="let row">
+							<p>{{ row?.referenceName }}</p>
+						</td>
+					</ng-container>
+	
+					<!-- MSS Type Column -->
+					<ng-container matColumnDef="mss-type">
+						<th mat-header-cell *matHeaderCellDef class="mss-table-th">
+							<p>MSS Type</p>
+						</th>
+						<td mat-cell *matCellDef="let row">
+							<p>{{ row?.mssTypeName }}</p>
+						</td>
+					</ng-container>
+	
+					<tr mat-header-row *matHeaderRowDef="displayedColumnsMssList sticky: true" class="mss-table-tr"></tr>
+					<tr mat-row *matRowDef="let row; columns: displayedColumnsMssList;"></tr>
+				</mat-table>
+				<div class="loader-content" *ngIf="dataSourceMssListIsLoading">
+					<mat-spinner color="accent"></mat-spinner>
+				</div>
+				<div *ngIf="dataSourceMssList.length === 0 && !dataSourceMssListIsLoading" style="margin: 10%;"><p style="text-align: center;">No Store Cluster Selected</p></div>
+				<mat-paginator [length]="dataSourceMssListMeta.total" [pageSize]="dataSourceMssListMeta.limit" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="onChangePageMssList($event)">
+				</mat-paginator>
+			</div>
 		</div>
-	</ng-template>
-
+	</div>
+  
 	<!-- use [fxHide] agar tetap dapat menggunakan @viewchild(matpaginator) -->
 	<div [fxHide]="!(showMssInfo | async)" class="p-16 pt-0 pb-40 line-height-1.75">
 
-		<ng-template [ngIf]="formMode | hasFormMode: 'view'">
-			<div>TSEP-1210 MSS Settings Info</div>
-		</ng-template>
-		
 		<!-- use [fxHide] agar tetap dapat menggunakan @viewchild(matpaginator) -->
 		<div [fxHide]="formMode | hasFormMode: 'view'">
 			<form
