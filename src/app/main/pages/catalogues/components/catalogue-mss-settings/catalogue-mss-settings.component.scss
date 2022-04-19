@@ -3,6 +3,13 @@ app-catalogue-mss-settings {
       opacity: 0.5;
     }
 
+    .mss-settings-title {
+      position: sticky;
+      top: 0;
+      z-index: 500;
+      background-color: #FFFFFF;
+    }
+    
     .mss-table-container {
       padding: 10px;
     }

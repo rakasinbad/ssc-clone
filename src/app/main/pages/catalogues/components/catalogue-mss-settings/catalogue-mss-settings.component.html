@@ -1,6 +1,6 @@
 <!-- CONTENT CARD (MSS SETTINGS) -->
 <div [ngClass]="catalogueContent">
-	<div class="p-16 pb-28">
+	<div class="p-16 pb-28 mss-settings-title">
 		<div class="font-weight-600 font-size-24 line-height-20">MSS Settings</div>
 	</div>
   
@@ -11,14 +11,14 @@
 		  </div>
 	  </ng-template>
 
-	  <div [fxHide]="(formMode | hasFormMode: 'edit') || (!(showMssInfo | async))">
+	<div [fxHide]="(formMode | hasFormMode: 'edit') || (!(showMssInfo | async))">
 		<div fxLayout="row" fxFlex fxLayoutGap="16px">
 			<div fxFlex="100" class="mss-table-container">
 				<mat-table class="catalogue-price-table sinbad-table mss-table" [dataSource]="dataSourceMssList"
 					[class.sinbad-table-no-record]="!isLoading && totalItem === 0">
 	
 					<!--- Note that these columns can be defined in any order.
-							  The actual rendered columns are set as a property on the row definition" -->
+								  The actual rendered columns are set as a property on the row definition" -->
 	
 					<!-- Cluster Name Column -->
 					<ng-container matColumnDef="cluster-name">
@@ -46,8 +46,11 @@
 				<div class="loader-content" *ngIf="dataSourceMssListIsLoading">
 					<mat-spinner color="accent"></mat-spinner>
 				</div>
-				<div *ngIf="dataSourceMssList.length === 0 && !dataSourceMssListIsLoading" style="margin: 10%;"><p style="text-align: center;">No {{ screenConfig.title }} Selected</p></div>
-				<mat-paginator [length]="dataSourceMssListMeta.total" [pageSize]="dataSourceMssListMeta.limit" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="onChangePageMssList($event)">
+				<div *ngIf="dataSourceMssList.length === 0 && !dataSourceMssListIsLoading" style="margin: 10%;">
+					<p style="text-align: center;">No {{ screenConfig.title }} Selected</p>
+				</div>
+				<mat-paginator [length]="dataSourceMssListMeta.total" [pageSize]="dataSourceMssListMeta.limit"
+					[pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="onChangePageMssList($event)">
 				</mat-paginator>
 			</div>
 		</div>
@@ -132,19 +135,7 @@
 							fxFlex
 							fxLayoutAlign=" start"
 						>
-							<ng-container *ngIf="!editTableMode">
-								<button 
-									mat-raised-button 
-									class="mat-accent mr-16" 
-									fxLayoutAlign="center center"
-									style="padding: 12px; margin-bottom: 20px;"
-									(click)="onEditTableMode()"
-								>
-									<mat-icon style="margin-top: -2px;">add</mat-icon>
-									{{ screenConfig.title }}
-								</button>
-							</ng-container>
-							<ng-container *ngIf="editTableMode">
+							<ng-container>
 								<div 
 									class="custom-field"
 									fxLayout="row"

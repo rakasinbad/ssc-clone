@@ -113,8 +113,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
 
     showMssInfo: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-    editTableMode: boolean = false;
-
     baseScreenConfig: ScreenConfig = {
         "mss-02": typeScreenConfig,
         "mss-03": clusterScreenConfig
@@ -194,10 +192,10 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
             ) {
                 this.trigger$.next('');
                 this.updateForm$.next(changes['formMode'].currentValue);
-
                 if (changes['formMode'].currentValue === 'view') {
-                    this.editTableMode = false;
-                }
+                    this.selectedSegmentation = null;
+                    this.selectedType = null;
+                } 
             }
             
             this.updateFormView();
@@ -419,10 +417,6 @@ export class CatalogueMssSettingsComponent implements OnInit, OnChanges, OnDestr
                     this.changeDetectorRef.markForCheck();
                 },
             });
-    }
-
-    onEditTableMode(): void {
-        this.editTableMode = true;
     }
 
     onFetchAPI(): void {
